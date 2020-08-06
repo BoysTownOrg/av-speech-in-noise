@@ -613,6 +613,21 @@ class ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
     }
 };
 
+class ConfirmingFixedLevelConsonantTest : public ConfirmingTestSetup {
+    ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
+
+  public:
+    ConfirmingFixedLevelConsonantTest(ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
+
+    void run() override {
+        setMethod(interpreter, Method::fixedLevelConsonants);
+        confirmTestSetup(view);
+    }
+};
+
 class ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
@@ -1038,6 +1053,8 @@ class PresenterTests : public ::testing::Test {
     ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
         confirmingFixedLevelFreeResponseWithTargetReplacementTest{
             &setupView, testSettingsInterpreter};
+    ConfirmingFixedLevelConsonantTest confirmingFixedLevelConsonantTest{
+        &setupView, testSettingsInterpreter};
     ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest{
             &setupView, testSettingsInterpreter};
@@ -1515,6 +1532,10 @@ PRESENTER_TEST(
     confirmingFixedLevelFreeResponseTestWithTargetReplacementHidesTestSetupView) {
     assertHidesTestSetupView(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(confirmingFixedLevelConsonantTestHidesTestSetupView) {
+    assertHidesTestSetupView(confirmingFixedLevelConsonantTest);
 }
 
 PRESENTER_TEST(
