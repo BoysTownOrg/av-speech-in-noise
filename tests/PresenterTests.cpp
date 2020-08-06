@@ -1999,6 +1999,10 @@ PRESENTER_TEST(playingTrialFromSubjectPlaysTrial) {
     assertPlaysTrial(playingCoordinateResponseMeasureTrial);
 }
 
+PRESENTER_TEST(playingTrialFromConsonantViewPlaysTrial) {
+    assertPlaysTrial(playingConsonantTrial);
+}
+
 PRESENTER_TEST(playingTrialFromExperimenterPlaysTrial) {
     assertPlaysTrial(playingTrialFromExperimenter);
 }
