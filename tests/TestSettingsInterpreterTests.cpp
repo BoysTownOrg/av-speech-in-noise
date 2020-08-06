@@ -452,6 +452,12 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelConsonantsPassesSimpleFixedLevelSettings) {
+    assertPassesSimpleFixedLevelSettings(
+        interpreter, model, Method::fixedLevelConsonants);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsPassesSimpleFixedLevelSettings) {
     assertPassesSimpleFixedLevelSettings(interpreter, model,
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
