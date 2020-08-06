@@ -299,6 +299,11 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::fixedLevelFreeResponseWithAllTargets, fixedLevelTestIdentity);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsPassesMethod) {
+    assertPassesTestMethod(interpreter, model, Method::fixedLevelConsonants,
+        fixedLevelTestIdentity);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
     assertPassesTestIdentity(
         interpreter, model, Method::adaptivePassFail, adaptiveTestIdentity);
