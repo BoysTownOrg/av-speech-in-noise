@@ -346,6 +346,11 @@ TEST_SETTINGS_INTERPRETER_TEST(
     assertTrue(model.initializedWithSingleSpeaker());
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
+    initialize(interpreter, model, Method::fixedLevelConsonants);
+    assertTrue(model.fixedLevelConsonantsTestInitialized());
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsInitializesFixedLevelTest) {
     initialize(interpreter, model,

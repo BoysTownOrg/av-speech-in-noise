@@ -32,6 +32,10 @@ class ModelStub : public Model {
         return initializedWithSingleSpeaker_;
     }
 
+    [[nodiscard]] auto fixedLevelConsonantsTestInitialized() const {
+        return fixedLevelConsonantsTestInitialized_;
+    }
+
     [[nodiscard]] auto initializedWithDelayedMasker() const {
         return initializedWithDelayedMasker_;
     }
@@ -119,6 +123,11 @@ class ModelStub : public Model {
         fixedLevelTestWithSilentIntervalTargetsInitialized_ = true;
     }
 
+    void initializeConsonants(const FixedLevelTest &p) {
+        fixedLevelTest_ = p;
+        fixedLevelConsonantsTestInitialized_ = true;
+    }
+
     void initializeWithAllTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithAllTargetsInitialized_ = true;
@@ -189,6 +198,7 @@ class ModelStub : public Model {
     bool fixedLevelTestWithSilentIntervalTargetsInitialized_{};
     bool fixedLevelTestWithAllTargetsInitialized_{};
     bool initializedWithSingleSpeaker_{};
+    bool fixedLevelConsonantsTestInitialized_{};
     bool initializedWithDelayedMasker_{};
     bool initializedWithEyeTracking_{};
     bool correctResponseSubmitted_{};

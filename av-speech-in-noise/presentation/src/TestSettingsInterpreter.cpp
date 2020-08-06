@@ -194,6 +194,8 @@ static void initializeFixedLevelTest(Model &model, const std::string &contents,
         model.initializeWithSilentIntervalTargets(test);
     else if (method_ == Method::fixedLevelFreeResponseWithAllTargets)
         model.initializeWithAllTargets(test);
+    else if (method_ == Method::fixedLevelConsonants)
+        model.initializeConsonants(test);
     else
         model.initializeWithTargetReplacement(test);
 }

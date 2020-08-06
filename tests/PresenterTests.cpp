@@ -1291,6 +1291,10 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
+    void initializeConsonants(const FixedLevelTest &) override {
+        throw RequestFailure{errorMessage};
+    }
+
     void initializeWithTargetReplacement(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
