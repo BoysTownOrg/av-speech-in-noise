@@ -2031,6 +2031,10 @@ PRESENTER_TEST(playingTrialFromSubjectPassesAudioDevice) {
     assertAudioDevicePassedToTrial(playingCoordinateResponseMeasureTrial);
 }
 
+PRESENTER_TEST(playingTrialFromConsonantViewPassesAudioDevice) {
+    assertAudioDevicePassedToTrial(playingConsonantTrial);
+}
+
 PRESENTER_TEST(playingTrialFromExperimenterPassesAudioDevice) {
     assertAudioDevicePassedToTrial(playingTrialFromExperimenter);
 }
