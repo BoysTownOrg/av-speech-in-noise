@@ -148,6 +148,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     model.subscribe(this);
     testSetup.becomeChild(this);
     coordinateResponseMeasurePresenter.becomeChild(this);
+    consonantPresenter.becomeChild(this);
     experimenterPresenter.becomeChild(this);
     view.populateAudioDeviceMenu(model.audioDevices());
 }
@@ -216,7 +217,7 @@ void Presenter::trialComplete() {
     experimenterPresenter.trialComplete();
 }
 
-void Presenter::submitSubjectResponse() {
+void Presenter::submitCoordinateResponse() {
     model.submit(coordinateResponseMeasurePresenter.subjectResponse());
     if (testComplete(model))
         switchToTestSetupView();
@@ -225,6 +226,8 @@ void Presenter::submitSubjectResponse() {
         playTrial();
     }
 }
+
+void Presenter::submitConsonantResponse() { playTrial(); }
 
 void Presenter::submitFreeResponse() {
     proceedToNextTrialAfter(&Presenter::submitFreeResponse_);
@@ -379,7 +382,9 @@ auto Presenter::TestSetup::startingSnr() -> std::string {
     return view->startingSnr();
 }
 
-Presenter::Consonant::Consonant(View::Consonant *view) : view{view} {}
+Presenter::Consonant::Consonant(View::Consonant *view) : view{view} {
+    view->subscribe(this);
+}
 
 void Presenter::Consonant::start() {
     view->show();
@@ -387,6 +392,12 @@ void Presenter::Consonant::start() {
 }
 
 void Presenter::Consonant::playTrial() {}
+
+void Presenter::Consonant::submitResponse() {
+    parent->submitConsonantResponse();
+}
+
+void Presenter::Consonant::becomeChild(Presenter *p) { parent = p; }
 
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
     View::CoordinateResponseMeasure *view)
@@ -418,7 +429,7 @@ void Presenter::CoordinateResponseMeasure::playTrial() {
 }
 
 void Presenter::CoordinateResponseMeasure::submitResponse() {
-    parent->submitSubjectResponse();
+    parent->submitCoordinateResponse();
     hideResponseButtons(view);
 }
 

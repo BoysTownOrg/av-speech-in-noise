@@ -155,9 +155,25 @@ class ViewStub : public View {
             return nextTrialButtonHidden_;
         }
 
+        void submitResponse() { listener_->submitResponse(); }
+
+        void hideResponseButtons() { responseButtonsHidden_ = true; }
+
+        [[nodiscard]] auto responseButtonsHidden() const {
+            return responseButtonsHidden_;
+        }
+
+        void showResponseButtons() { responseButtonsShown_ = true; }
+
+        [[nodiscard]] auto responseButtonsShown() const {
+            return responseButtonsShown_;
+        }
+
       private:
         EventListener *listener_{};
         bool shown_{};
+        bool responseButtonsShown_{};
+        bool responseButtonsHidden_{};
         bool nextTrialButtonShown_{};
         bool nextTrialButtonHidden_{};
     };
@@ -737,12 +753,34 @@ class TrialSubmission : public virtual UseCase {
     virtual auto responseViewHidden() -> bool = 0;
 };
 
-class RespondingFromSubject : public TrialSubmission {
+class SubmittingCoordinateResponseMeasure : public TrialSubmission {
     ViewStub::CoordinateResponseMeasureViewStub *view;
 
   public:
-    explicit RespondingFromSubject(
+    explicit SubmittingCoordinateResponseMeasure(
         ViewStub::CoordinateResponseMeasureViewStub *view)
+        : view{view} {}
+
+    void run() override { view->submitResponse(); }
+
+    auto nextTrialButtonShown() -> bool override {
+        return view->nextTrialButtonShown();
+    }
+
+    auto responseViewShown() -> bool override {
+        return view->responseButtonsShown();
+    }
+
+    auto responseViewHidden() -> bool override {
+        return view->responseButtonsHidden();
+    }
+};
+
+class SubmittingConsonant : public TrialSubmission {
+    ViewStub::ConsonantViewStub *view;
+
+  public:
+    explicit SubmittingConsonant(ViewStub::ConsonantViewStub *view)
         : view{view} {}
 
     void run() override { view->submitResponse(); }
@@ -1135,7 +1173,9 @@ class PresenterTests : public ::testing::Test {
         &coordinateResponseMeasureView};
     PlayingConsonantTrial playingConsonantTrial{&consonantView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{experimenterView};
-    RespondingFromSubject respondingFromSubject{&coordinateResponseMeasureView};
+    SubmittingCoordinateResponseMeasure submittingCoordinateResponseMeasure{
+        &coordinateResponseMeasureView};
+    SubmittingConsonant submittingConsonant{&consonantView};
     SubmittingFreeResponse submittingFreeResponse{experimenterView};
     SubmittingPassedTrial submittingPassedTrial{experimenterView};
     SubmittingCorrectKeywords submittingCorrectKeywords{experimenterView};
@@ -1947,8 +1987,12 @@ PRESENTER_TEST(
     assertFalse(experimenterView.nextTrialButtonShown());
 }
 
-PRESENTER_TEST(respondingFromSubjectPlaysTrial) {
-    assertPlaysTrial(respondingFromSubject);
+PRESENTER_TEST(submittingCoordinateResponseMeasurePlaysTrial) {
+    assertPlaysTrial(submittingCoordinateResponseMeasure);
+}
+
+PRESENTER_TEST(submittingConsonantPlaysTrial) {
+    assertPlaysTrial(submittingConsonant);
 }
 
 PRESENTER_TEST(playingTrialFromSubjectPlaysTrial) {
@@ -2038,7 +2082,7 @@ PRESENTER_TEST(failedTrialSubmitsIncorrectResponse) {
 }
 
 PRESENTER_TEST(respondFromSubjectShowsSetupViewWhenTestComplete) {
-    assertCompleteTestShowsSetupView(respondingFromSubject);
+    assertCompleteTestShowsSetupView(submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(respondFromExperimenterShowsSetupViewWhenTestComplete) {
@@ -2051,7 +2095,8 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(respondFromSubjectDoesNotShowSetupViewWhenTestIncomplete) {
-    assertIncompleteTestDoesNotShowSetupView(respondingFromSubject);
+    assertIncompleteTestDoesNotShowSetupView(
+        submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(respondFromExperimenterDoesNotShowSetupViewWhenTestIncomplete) {
@@ -2067,7 +2112,8 @@ PRESENTER_TEST(submitFailedTrialDoesNotShowSetupViewWhenTestIncomplete) {
 }
 
 PRESENTER_TEST(respondFromSubjectHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(respondingFromSubject);
+    assertCompleteTestHidesExperimenterView(
+        submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(respondFromExperimenterHidesExperimenterViewWhenTestComplete) {
@@ -2075,7 +2121,7 @@ PRESENTER_TEST(respondFromExperimenterHidesExperimenterViewWhenTestComplete) {
 }
 
 PRESENTER_TEST(submitCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
-    assertCompleteTestDoesNotPlayTrial(respondingFromSubject);
+    assertCompleteTestDoesNotPlayTrial(submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(
@@ -2085,7 +2131,7 @@ PRESENTER_TEST(
 
 PRESENTER_TEST(
     respondFromSubjectDoesNotHideExperimenterViewWhenTestIncomplete) {
-    assertDoesNotHideExperimenterView(respondingFromSubject);
+    assertDoesNotHideExperimenterView(submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(
@@ -2134,7 +2180,7 @@ PRESENTER_TEST(incorrectResponseHidesEvaluationButtons) {
 }
 
 PRESENTER_TEST(subjectResponseHidesResponseButtons) {
-    assertResponseViewHidden(respondingFromSubject);
+    assertResponseViewHidden(submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(subjectResponseHidesSubjectViewWhenTestComplete) {
@@ -2158,7 +2204,7 @@ PRESENTER_TEST(exitTestHidesExperimenterView) {
 
 PRESENTER_TEST(exitTestHidesResponseButtons) {
     run(exitingTest);
-    assertTrue(respondingFromSubject.responseViewHidden());
+    assertTrue(submittingCoordinateResponseMeasure.responseViewHidden());
 }
 
 PRESENTER_TEST(exitTestShowsTestSetupView) {
@@ -2235,7 +2281,7 @@ PRESENTER_TEST(submittingResponseFromExperimenterShowsTrialNumber) {
 }
 
 PRESENTER_TEST(submittingResponseFromSubjectShowsTrialNumber) {
-    assertShowsTrialNumber(respondingFromSubject);
+    assertShowsTrialNumber(submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(submittingPassedTrialShowsTrialNumber) {
@@ -2261,7 +2307,7 @@ TEST_F(PresenterTests, submittingCorrectKeywordsShowsTargetFileName) {
 }
 
 TEST_F(PresenterTests, submittingCoordinateResponseShowsTargetFileName) {
-    assertShowsTargetFileName(respondingFromSubject);
+    assertShowsTargetFileName(submittingCoordinateResponseMeasure);
 }
 
 TEST_F(PresenterTests, submittingFreeResponseShowsTargetFileName) {
@@ -2272,35 +2318,35 @@ PRESENTER_TEST(
     completingTrialShowsSubjectResponseButtonsForAdaptiveCoordinateResponseMeasureTest) {
     assertCompleteTrialShowsResponseView(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest,
-        respondingFromSubject);
+        submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(
     completingTrialShowsSubjectResponseButtonsForAdaptiveCoordinateResponseMeasureSingleSpeakerTest) {
     assertCompleteTrialShowsResponseView(
         confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker,
-        respondingFromSubject);
+        submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(
     completingTrialShowsSubjectResponseButtonsForAdaptiveCoordinateResponseMeasureTestWithDelayedMasker) {
     assertCompleteTrialShowsResponseView(
         confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker,
-        respondingFromSubject);
+        submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(
     completingTrialShowsSubjectResponseButtonsForFixedLevelCoordinateResponseMeasureWithTargetReplacementTest) {
     assertCompleteTrialShowsResponseView(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest,
-        respondingFromSubject);
+        submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(
     completingTrialShowsSubjectResponseButtonsForFixedLevelCoordinateResponseMeasureSilentIntervalsTest) {
     assertCompleteTrialShowsResponseView(
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest,
-        respondingFromSubject);
+        submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(

@@ -44,8 +44,10 @@ class View {
           public:
             virtual ~EventListener() = default;
             virtual void playTrial() = 0;
+            virtual void submitResponse() = 0;
         };
         virtual ~Consonant() = default;
+        virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
         virtual void showNextTrialButton() = 0;
     };
@@ -173,10 +175,13 @@ class Presenter : public Model::EventListener {
       public:
         explicit Consonant(View::Consonant *);
         void playTrial() override;
+        void submitResponse() override;
         void start();
+        void becomeChild(Presenter *parent);
 
       private:
         View::Consonant *view;
+        Presenter *parent{};
     };
 
     class CoordinateResponseMeasure
@@ -309,7 +314,8 @@ class Presenter : public Model::EventListener {
     void playTrial();
     void playCalibration();
     void browseForTestSettingsFile();
-    void submitSubjectResponse();
+    void submitCoordinateResponse();
+    void submitConsonantResponse();
     void submitFreeResponse();
     void submitPassedTrial();
     void submitFailedTrial();
