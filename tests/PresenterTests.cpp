@@ -938,20 +938,21 @@ class PresenterConstructionTests : public ::testing::Test {
   protected:
     ModelStub model;
     ViewStub::TestSetupViewStub setupView;
-    ViewStub::CoordinateResponseMeasureViewStub subjectView;
+    ViewStub::CoordinateResponseMeasureViewStub coordinateResponseMeasureView;
     ViewStub::ConsonantViewStub consonantView;
     ViewStub::ExperimenterViewStub experimenterView;
     ViewStub view;
     Presenter::TestSetup testSetup{&setupView};
-    Presenter::CoordinateResponseMeasure subject{&subjectView};
+    Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
+        &coordinateResponseMeasureView};
     Presenter::Consonant consonant{&consonantView};
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
 
     auto construct() -> Presenter {
-        return {model, view, testSetup, subject, consonant, experimenter,
-            testSettingsInterpreter, textFileReader};
+        return {model, view, testSetup, coordinateResponseMeasure, consonant,
+            experimenter, testSettingsInterpreter, textFileReader};
     }
 };
 
@@ -1401,11 +1402,12 @@ class PresenterFailureTests : public ::testing::Test {
     Model *model{&defaultModel};
     ViewStub view;
     ViewStub::TestSetupViewStub setupView;
-    ViewStub::CoordinateResponseMeasureViewStub subjectView;
+    ViewStub::CoordinateResponseMeasureViewStub coordinateResponseMeasureView;
     ViewStub::ConsonantViewStub consonantView;
     ViewStub::ExperimenterViewStub experimenterView;
     Presenter::TestSetup testSetup{&setupView};
-    Presenter::CoordinateResponseMeasure subject{&subjectView};
+    Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
+        &coordinateResponseMeasureView};
     Presenter::Consonant consonant{&consonantView};
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
@@ -1418,8 +1420,8 @@ class PresenterFailureTests : public ::testing::Test {
     }
 
     void confirmTestSetup() {
-        Presenter presenter{*model, view, testSetup, subject, consonant,
-            experimenter, testSettingsInterpreter, textFileReader};
+        Presenter presenter{*model, view, testSetup, coordinateResponseMeasure,
+            consonant, experimenter, testSettingsInterpreter, textFileReader};
         setupView.confirmTestSetup();
     }
 
