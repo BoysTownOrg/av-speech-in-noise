@@ -2158,6 +2158,10 @@ PRESENTER_TEST(
         submittingCoordinateResponseMeasure);
 }
 
+PRESENTER_TEST(submittingConsonantHidesExperimenterViewWhenTestComplete) {
+    assertCompleteTestHidesExperimenterView(submittingConsonant);
+}
+
 PRESENTER_TEST(respondFromExperimenterHidesExperimenterViewWhenTestComplete) {
     assertCompleteTestHidesExperimenterView(submittingFreeResponse);
 }
