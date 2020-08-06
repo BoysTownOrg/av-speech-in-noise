@@ -108,9 +108,19 @@ class CocoaTestSetupView : public View::TestSetup {
     EventListener *listener_{};
 };
 
-class CocoaSubjectView : public View::CoordinateResponseMeasure {
+class CocoaConsonantView : public View::Consonant {
   public:
-    CocoaSubjectView(NSRect);
+    explicit CocoaConsonantView(NSRect);
+    void show() override;
+
+  private:
+    NSWindow *window;
+};
+
+class CocoaCoordinateResponseMeasureView
+    : public View::CoordinateResponseMeasure {
+  public:
+    CocoaCoordinateResponseMeasureView(NSRect);
     std::string numberResponse() override;
     bool greenResponse() override;
     bool blueResponse() override;

@@ -275,14 +275,19 @@ void main() {
     auto subjectViewWidth = subjectScreenWidth / 3;
     auto subjectViewLeadingEdge =
         subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
-    CocoaSubjectView subjectView{NSMakeRect(subjectViewLeadingEdge,
+    CocoaConsonantView consonantView{NSMakeRect(subjectViewLeadingEdge,
         subjectScreenOrigin.y, subjectViewWidth, subjectViewHeight)};
-    Presenter::CoordinateResponseMeasure subject{&subjectView};
+    Presenter::Consonant consonant{&consonantView};
+    CocoaCoordinateResponseMeasureView coordinateResponseMeasureView{
+        NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
+            subjectViewWidth, subjectViewHeight)};
+    Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
+        &coordinateResponseMeasureView};
     Presenter::TestSetup testSetup{&view.testSetup()};
     Presenter::Experimenter experimenter{&view.experimenter()};
     TestSettingsInterpreterImpl testSettingsInterpreter;
-    Presenter presenter{model, view, testSetup, subject, experimenter,
-        testSettingsInterpreter, textFileReader};
+    Presenter presenter{model, view, testSetup, coordinateResponseMeasure,
+        consonant, experimenter, testSettingsInterpreter, textFileReader};
     presenter.run();
 }
 }
