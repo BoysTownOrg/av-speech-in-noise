@@ -139,7 +139,7 @@ class ViewStub : public View {
 
         [[nodiscard]] auto shown() const { return shown_; }
 
-        void hide() { hidden_ = true; }
+        void hide() override { hidden_ = true; }
 
         [[nodiscard]] auto hidden() const { return hidden_; }
 
@@ -161,7 +161,7 @@ class ViewStub : public View {
 
         void submitResponse() { listener_->submitResponse(); }
 
-        void hideResponseButtons() { responseButtonsHidden_ = true; }
+        void hideResponseButtons() override { responseButtonsHidden_ = true; }
 
         [[nodiscard]] auto responseButtonsHidden() const {
             return responseButtonsHidden_;
@@ -175,7 +175,7 @@ class ViewStub : public View {
 
         void setConsonant(std::string c) { consonant_ = std::move(c); }
 
-        auto consonant() -> std::string { return consonant_; }
+        auto consonant() -> std::string override { return consonant_; }
 
       private:
         std::string consonant_;
@@ -1966,7 +1966,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsNextTrialButtonForSubject) {
+    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsNextTrialButtonForCoordinateResponseMeasure) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest,
         playingCoordinateResponseMeasureTrial);
@@ -2013,11 +2013,11 @@ PRESENTER_TEST(submittingConsonantPlaysTrial) {
     assertPlaysTrial(submittingConsonant);
 }
 
-PRESENTER_TEST(playingTrialFromSubjectPlaysTrial) {
+PRESENTER_TEST(playingCoordinateResponseMeasureTrialPlaysTrial) {
     assertPlaysTrial(playingCoordinateResponseMeasureTrial);
 }
 
-PRESENTER_TEST(playingTrialFromConsonantViewPlaysTrial) {
+PRESENTER_TEST(playingConsonantTrialPlaysTrial) {
     assertPlaysTrial(playingConsonantTrial);
 }
 
@@ -2037,7 +2037,7 @@ PRESENTER_TEST(playingTrialHidesNextTrialButtonForExperimenter) {
     assertHidesPlayTrialButton(playingTrialFromExperimenter);
 }
 
-PRESENTER_TEST(playingTrialFromSubjectHidesExitTestButton) {
+PRESENTER_TEST(playingCoordinateResponseMeasureTrialHidesExitTestButton) {
     assertHidesExitTestButton(playingCoordinateResponseMeasureTrial);
 }
 
@@ -2045,7 +2045,7 @@ PRESENTER_TEST(playingTrialFromConsonantViewHidesExitTestButton) {
     assertHidesExitTestButton(playingConsonantTrial);
 }
 
-PRESENTER_TEST(playingTrialFromSubjectPassesAudioDevice) {
+PRESENTER_TEST(playingCoordinateResponseMeasureTrialPassesAudioDevice) {
     assertAudioDevicePassedToTrial(playingCoordinateResponseMeasureTrial);
 }
 
@@ -2063,31 +2063,31 @@ PRESENTER_TEST(playCalibrationPassesAudioDevice) {
     assertEqual("b", calibration(model).audioDevice);
 }
 
-PRESENTER_TEST(subjectResponsePassesNumberResponse) {
+PRESENTER_TEST(coordinateResponsePassesNumberResponse) {
     coordinateResponseMeasureView.setNumberResponse("1");
     submitResponse(coordinateResponseMeasureView);
     assertEqual(1, model.responseParameters().number);
 }
 
-PRESENTER_TEST(subjectResponsePassesGreenColor) {
+PRESENTER_TEST(coordinateResponsePassesGreenColor) {
     coordinateResponseMeasureView.setGreenResponse();
     submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::green);
 }
 
-PRESENTER_TEST(subjectResponsePassesRedColor) {
+PRESENTER_TEST(coordinateResponsePassesRedColor) {
     coordinateResponseMeasureView.setRedResponse();
     submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::red);
 }
 
-PRESENTER_TEST(subjectResponsePassesBlueColor) {
+PRESENTER_TEST(coordinateResponsePassesBlueColor) {
     coordinateResponseMeasureView.setBlueResponse();
     submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::blue);
 }
 
-PRESENTER_TEST(subjectResponsePassesWhiteColor) {
+PRESENTER_TEST(coordinateResponsePassesWhiteColor) {
     coordinateResponseMeasureView.setGrayResponse();
     submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::white);
@@ -2219,11 +2219,11 @@ PRESENTER_TEST(experimenterResponseShowsNextTrialButton) {
     assertShowsNextTrialButton(submittingFreeResponse);
 }
 
-PRESENTER_TEST(subjectPassedTrialShowsNextTrialButtonForExperimenter) {
+PRESENTER_TEST(submittingPassedTrialShowsNextTrialButtonForExperimenter) {
     assertShowsNextTrialButton(submittingPassedTrial);
 }
 
-PRESENTER_TEST(subjectFailedTrialShowsNextTrialButtonForExperimenter) {
+PRESENTER_TEST(submittingFailedTrialShowsNextTrialButtonForExperimenter) {
     assertShowsNextTrialButton(submittingFailedTrial);
 }
 
@@ -2243,7 +2243,7 @@ PRESENTER_TEST(incorrectResponseHidesEvaluationButtons) {
     assertResponseViewHidden(submittingFailedTrial);
 }
 
-PRESENTER_TEST(subjectResponseHidesResponseButtons) {
+PRESENTER_TEST(submittingCoordinateResponseHidesResponseButtons) {
     assertResponseViewHidden(submittingCoordinateResponseMeasure);
 }
 
@@ -2251,7 +2251,8 @@ PRESENTER_TEST(submittingConsonantHidesResponseButtons) {
     assertResponseViewHidden(submittingConsonant);
 }
 
-PRESENTER_TEST(subjectResponseHidesSubjectViewWhenTestComplete) {
+PRESENTER_TEST(
+    submittingCoordinateResponseHidesCoordinateViewWhenTestComplete) {
     setTestComplete(model);
     run(submittingCoordinateResponseMeasure);
     assertHidden(coordinateResponseMeasureView);
@@ -2263,7 +2264,7 @@ PRESENTER_TEST(submittingConsonantHidesConsonantViewWhenTestComplete) {
     assertHidden(consonantView);
 }
 
-PRESENTER_TEST(exitTestHidesSubjectView) {
+PRESENTER_TEST(exitTestHidesCoordinateView) {
     exitTest(experimenterView);
     assertHidden(coordinateResponseMeasureView);
 }
