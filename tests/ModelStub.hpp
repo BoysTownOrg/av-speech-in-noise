@@ -123,7 +123,7 @@ class ModelStub : public Model {
         fixedLevelTestWithSilentIntervalTargetsInitialized_ = true;
     }
 
-    void initializeConsonants(const FixedLevelTest &p) {
+    void initializeConsonants(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelConsonantsTestInitialized_ = true;
     }
