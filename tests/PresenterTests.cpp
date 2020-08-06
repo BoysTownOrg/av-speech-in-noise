@@ -2023,6 +2023,10 @@ PRESENTER_TEST(playingTrialFromSubjectHidesExitTestButton) {
     assertHidesExitTestButton(playingCoordinateResponseMeasureTrial);
 }
 
+PRESENTER_TEST(playingTrialFromConsonantViewHidesExitTestButton) {
+    assertHidesExitTestButton(playingConsonantTrial);
+}
+
 PRESENTER_TEST(playingTrialFromSubjectPassesAudioDevice) {
     assertAudioDevicePassedToTrial(playingCoordinateResponseMeasureTrial);
 }
