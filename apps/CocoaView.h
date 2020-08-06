@@ -5,7 +5,8 @@
 #import <Cocoa/Cocoa.h>
 
 @class SetupViewActions;
-@class SubjectViewActions;
+@class CoordinateResponseMeasureViewActions;
+@class ConsonantViewActions;
 @class ExperimenterViewActions;
 
 namespace av_speech_in_noise {
@@ -111,12 +112,19 @@ class CocoaTestSetupView : public View::TestSetup {
 class CocoaConsonantView : public View::Consonant {
   public:
     explicit CocoaConsonantView(NSRect);
+    void subscribe(EventListener *) override;
     void show() override;
     void showNextTrialButton() override;
+    void hideNextTrialButton() override;
+    void respond(id sender);
+    void playTrial();
 
   private:
     NSWindow *window;
     NSView *nextTrialButton;
+    NSButton *lastButtonPressed{};
+    ConsonantViewActions *actions;
+    EventListener *listener_{};
 };
 
 class CocoaCoordinateResponseMeasureView
@@ -146,8 +154,8 @@ class CocoaCoordinateResponseMeasureView
     NSWindow *window;
     NSView *responseButtons;
     NSView *nextTrialButton;
-    NSButton *lastButtonPressed;
-    SubjectViewActions *actions;
+    NSButton *lastButtonPressed{};
+    CoordinateResponseMeasureViewActions *actions;
     EventListener *listener_{};
 };
 

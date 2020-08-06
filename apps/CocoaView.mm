@@ -9,8 +9,14 @@
 - (void)playCalibration;
 @end
 
-@interface SubjectViewActions : NSObject
+@interface CoordinateResponseMeasureViewActions : NSObject
 @property av_speech_in_noise::CocoaCoordinateResponseMeasureView *controller;
+- (void)respond:(id)sender;
+- (void)playTrial;
+@end
+
+@interface ConsonantViewActions : NSObject
+@property av_speech_in_noise::CocoaConsonantView *controller;
 - (void)respond:(id)sender;
 - (void)playTrial;
 @end
@@ -45,7 +51,19 @@
 }
 @end
 
-@implementation SubjectViewActions
+@implementation CoordinateResponseMeasureViewActions
+@synthesize controller;
+
+- (void)respond:(id)sender {
+    controller->respond(sender);
+}
+
+- (void)playTrial {
+    controller->playTrial();
+}
+@end
+
+@implementation ConsonantViewActions
 @synthesize controller;
 
 - (void)respond:(id)sender {
@@ -314,13 +332,29 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
                                          styleMask:NSWindowStyleMaskBorderless
                                            backing:NSBackingStoreBuffered
                                              defer:YES]},
-      nextTrialButton{[[NSView alloc]
-          initWithFrame:NSMakeRect(0, 0, width(r), height(r))]} {}
+      nextTrialButton{
+          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
+      actions{[[ConsonantViewActions alloc] init]} {
+    actions.controller = this;
+}
 
 void CocoaConsonantView::show() { [window makeKeyAndOrderFront:nil]; }
 
 void CocoaConsonantView::showNextTrialButton() {
     av_speech_in_noise::show(nextTrialButton);
+}
+
+void CocoaConsonantView::hideNextTrialButton() {
+    av_speech_in_noise::hide(nextTrialButton);
+}
+
+void CocoaConsonantView::subscribe(EventListener *e) { listener_ = e; }
+
+void CocoaConsonantView::playTrial() { listener_->playTrial(); }
+
+void CocoaConsonantView::respond(id sender) {
+    lastButtonPressed = sender;
+    listener_->submitResponse();
 }
 
 static auto greenColor{NSColor.greenColor};
@@ -341,7 +375,7 @@ CocoaCoordinateResponseMeasureView::CocoaCoordinateResponseMeasureView(NSRect r)
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       nextTrialButton{
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
-      actions{[SubjectViewActions alloc]} {
+      actions{[[CoordinateResponseMeasureViewActions alloc] init]} {
     actions.controller = this;
     addButtonRow(blueColor, 0);
     addButtonRow(greenColor, 1);
