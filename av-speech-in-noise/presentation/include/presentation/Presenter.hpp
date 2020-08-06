@@ -49,6 +49,7 @@ class View {
         virtual ~Consonant() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
+        virtual void hide() = 0;
         virtual void showNextTrialButton() = 0;
         virtual void hideNextTrialButton() = 0;
         virtual void hideResponseButtons() = 0;
@@ -180,6 +181,7 @@ class Presenter : public Model::EventListener {
         void playTrial() override;
         void submitResponse() override;
         void start();
+        void stop();
         void becomeChild(Presenter *parent);
         auto subjectResponse() -> ConsonantResponse;
 

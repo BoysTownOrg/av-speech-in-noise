@@ -139,6 +139,10 @@ class ViewStub : public View {
 
         [[nodiscard]] auto shown() const { return shown_; }
 
+        void hide() { hidden_ = true; }
+
+        [[nodiscard]] auto hidden() const { return hidden_; }
+
         void playTrial() { listener_->playTrial(); }
 
         void subscribe(EventListener *e) override { listener_ = e; }
@@ -177,6 +181,7 @@ class ViewStub : public View {
         std::string consonant_;
         EventListener *listener_{};
         bool shown_{};
+        bool hidden_{};
         bool responseButtonsShown_{};
         bool responseButtonsHidden_{};
         bool nextTrialButtonShown_{};
@@ -1097,6 +1102,10 @@ auto shown(ViewStub::CoordinateResponseMeasureViewStub &view) -> bool {
 auto shown(ViewStub::ConsonantViewStub &view) -> bool { return view.shown(); }
 
 void assertHidden(ViewStub::CoordinateResponseMeasureViewStub &view) {
+    assertTrue(view.hidden());
+}
+
+void assertHidden(ViewStub::ConsonantViewStub &view) {
     assertTrue(view.hidden());
 }
 
@@ -2246,6 +2255,12 @@ PRESENTER_TEST(subjectResponseHidesSubjectViewWhenTestComplete) {
     setTestComplete(model);
     run(submittingCoordinateResponseMeasure);
     assertHidden(coordinateResponseMeasureView);
+}
+
+PRESENTER_TEST(submittingConsonantHidesConsonantViewWhenTestComplete) {
+    setTestComplete(model);
+    run(submittingConsonant);
+    assertHidden(consonantView);
 }
 
 PRESENTER_TEST(exitTestHidesSubjectView) {

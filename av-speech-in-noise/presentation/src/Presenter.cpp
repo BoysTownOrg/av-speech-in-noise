@@ -305,6 +305,7 @@ void Presenter::showTestSetup() { testSetup.show(); }
 void Presenter::hideTest() {
     experimenterPresenter.stop();
     coordinateResponseMeasurePresenter.stop();
+    consonantPresenter.stop();
 }
 
 void Presenter::playCalibration() {
@@ -396,6 +397,11 @@ Presenter::Consonant::Consonant(View::Consonant *view) : view{view} {
 void Presenter::Consonant::start() {
     view->show();
     view->showNextTrialButton();
+}
+
+void Presenter::Consonant::stop() {
+    view->hideResponseButtons();
+    view->hide();
 }
 
 void Presenter::Consonant::playTrial() {
