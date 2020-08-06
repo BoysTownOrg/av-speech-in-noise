@@ -229,7 +229,11 @@ void Presenter::submitCoordinateResponse() {
 
 void Presenter::submitConsonantResponse() {
     model.submit(consonantPresenter.subjectResponse());
-    playTrial();
+    if (testComplete(model))
+        switchToTestSetupView();
+    else {
+        playTrial();
+    }
 }
 
 void Presenter::submitFreeResponse() {

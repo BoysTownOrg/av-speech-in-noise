@@ -2116,6 +2116,10 @@ PRESENTER_TEST(respondFromSubjectShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(submittingCoordinateResponseMeasure);
 }
 
+PRESENTER_TEST(respondFromConsonantViewShowsSetupViewWhenTestComplete) {
+    assertCompleteTestShowsSetupView(submittingConsonant);
+}
+
 PRESENTER_TEST(respondFromExperimenterShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(submittingFreeResponse);
 }
