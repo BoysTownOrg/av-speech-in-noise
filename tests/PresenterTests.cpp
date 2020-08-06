@@ -135,12 +135,31 @@ class ViewStub : public View {
 
     class ConsonantViewStub : public Consonant {
       public:
-        void show() { shown_ = true; }
+        void show() override { shown_ = true; }
 
         [[nodiscard]] auto shown() const { return shown_; }
 
+        void playTrial() { listener_->playTrial(); }
+
+        void subscribe(EventListener *e) { listener_ = e; }
+
+        void showNextTrialButton() { nextTrialButtonShown_ = true; }
+
+        [[nodiscard]] auto nextTrialButtonShown() const {
+            return nextTrialButtonShown_;
+        }
+
+        void hideNextTrialButton() { nextTrialButtonHidden_ = true; }
+
+        [[nodiscard]] auto nextTrialButtonHidden() const {
+            return nextTrialButtonHidden_;
+        }
+
       private:
+        EventListener *listener_{};
         bool shown_{};
+        bool nextTrialButtonShown_{};
+        bool nextTrialButtonHidden_{};
     };
 
     class CoordinateResponseMeasureViewStub : public CoordinateResponseMeasure {
@@ -866,12 +885,30 @@ class PlayingTrial : public virtual UseCase {
     virtual auto nextTrialButtonShown() -> bool = 0;
 };
 
-class PlayingTrialFromSubject : public PlayingTrial {
+class PlayingCoordinateResponseMeasureTrial : public PlayingTrial {
     ViewStub::CoordinateResponseMeasureViewStub *view;
 
   public:
-    explicit PlayingTrialFromSubject(
+    explicit PlayingCoordinateResponseMeasureTrial(
         ViewStub::CoordinateResponseMeasureViewStub *view)
+        : view{view} {}
+
+    void run() override { view->playTrial(); }
+
+    auto nextTrialButtonHidden() -> bool override {
+        return view->nextTrialButtonHidden();
+    }
+
+    auto nextTrialButtonShown() -> bool override {
+        return view->nextTrialButtonShown();
+    }
+};
+
+class PlayingConsonantTrial : public PlayingTrial {
+    ViewStub::ConsonantViewStub *view;
+
+  public:
+    explicit PlayingConsonantTrial(ViewStub::ConsonantViewStub *view)
         : view{view} {}
 
     void run() override { view->playTrial(); }
@@ -1094,8 +1131,9 @@ class PresenterTests : public ::testing::Test {
         confirmingFixedLevelFreeResponseTestWithAllTargets{
             &setupView, testSettingsInterpreter};
     PlayingCalibration playingCalibration{&setupView};
-    PlayingTrialFromSubject playingTrialFromSubject{
+    PlayingCoordinateResponseMeasureTrial playingCoordinateResponseMeasureTrial{
         &coordinateResponseMeasureView};
+    PlayingConsonantTrial playingConsonantTrial{&consonantView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{experimenterView};
     RespondingFromSubject respondingFromSubject{&coordinateResponseMeasureView};
     SubmittingFreeResponse submittingFreeResponse{experimenterView};
@@ -1850,24 +1888,30 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsNextTrialButtonForSubject) {
+    confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsNextTrialButtonForCoordinateResponseMeasure) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest,
-        playingTrialFromSubject);
+        playingCoordinateResponseMeasureTrial);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsNextTrialButtonForSubject) {
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsNextTrialButtonForCoordinateResponseMeasure) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest,
-        playingTrialFromSubject);
+        playingCoordinateResponseMeasureTrial);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelConsonantTestShowsNextTrialButtonForConsonants) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingFixedLevelConsonantTest, playingConsonantTrial);
 }
 
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsNextTrialButtonForSubject) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest,
-        playingTrialFromSubject);
+        playingCoordinateResponseMeasureTrial);
 }
 
 PRESENTER_TEST(
@@ -1908,7 +1952,7 @@ PRESENTER_TEST(respondingFromSubjectPlaysTrial) {
 }
 
 PRESENTER_TEST(playingTrialFromSubjectPlaysTrial) {
-    assertPlaysTrial(playingTrialFromSubject);
+    assertPlaysTrial(playingCoordinateResponseMeasureTrial);
 }
 
 PRESENTER_TEST(playingTrialFromExperimenterPlaysTrial) {
@@ -1916,7 +1960,7 @@ PRESENTER_TEST(playingTrialFromExperimenterPlaysTrial) {
 }
 
 PRESENTER_TEST(playingTrialHidesNextTrialButton) {
-    assertHidesPlayTrialButton(playingTrialFromSubject);
+    assertHidesPlayTrialButton(playingCoordinateResponseMeasureTrial);
 }
 
 PRESENTER_TEST(playingTrialHidesNextTrialButtonForExperimenter) {
@@ -1924,11 +1968,11 @@ PRESENTER_TEST(playingTrialHidesNextTrialButtonForExperimenter) {
 }
 
 PRESENTER_TEST(playingTrialFromSubjectHidesExitTestButton) {
-    assertHidesExitTestButton(playingTrialFromSubject);
+    assertHidesExitTestButton(playingCoordinateResponseMeasureTrial);
 }
 
 PRESENTER_TEST(playingTrialFromSubjectPassesAudioDevice) {
-    assertAudioDevicePassedToTrial(playingTrialFromSubject);
+    assertAudioDevicePassedToTrial(playingCoordinateResponseMeasureTrial);
 }
 
 PRESENTER_TEST(playingTrialFromExperimenterPassesAudioDevice) {

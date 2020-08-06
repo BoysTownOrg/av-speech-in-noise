@@ -43,9 +43,11 @@ class View {
         class EventListener {
           public:
             virtual ~EventListener() = default;
+            virtual void playTrial() = 0;
         };
         virtual ~Consonant() = default;
         virtual void show() = 0;
+        virtual void showNextTrialButton() = 0;
     };
 
     class CoordinateResponseMeasure {
@@ -170,6 +172,7 @@ class Presenter : public Model::EventListener {
     class Consonant : public View::Consonant::EventListener {
       public:
         explicit Consonant(View::Consonant *);
+        void playTrial() override;
         void start();
 
       private:

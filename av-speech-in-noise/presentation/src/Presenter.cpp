@@ -381,7 +381,12 @@ auto Presenter::TestSetup::startingSnr() -> std::string {
 
 Presenter::Consonant::Consonant(View::Consonant *view) : view{view} {}
 
-void Presenter::Consonant::start() { view->show(); }
+void Presenter::Consonant::start() {
+    view->show();
+    view->showNextTrialButton();
+}
+
+void Presenter::Consonant::playTrial() {}
 
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
     View::CoordinateResponseMeasure *view)
