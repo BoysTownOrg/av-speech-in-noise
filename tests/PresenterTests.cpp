@@ -2112,11 +2112,12 @@ PRESENTER_TEST(failedTrialSubmitsIncorrectResponse) {
     assertTrue(model.incorrectResponseSubmitted());
 }
 
-PRESENTER_TEST(respondFromSubjectShowsSetupViewWhenTestComplete) {
+PRESENTER_TEST(
+    submittingCoordinateResponseMeasureShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(submittingCoordinateResponseMeasure);
 }
 
-PRESENTER_TEST(respondFromConsonantViewShowsSetupViewWhenTestComplete) {
+PRESENTER_TEST(submittingConsonantShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(submittingConsonant);
 }
 
@@ -2129,12 +2130,13 @@ PRESENTER_TEST(
     assertIncompleteTestDoesNotShowSetupView(submittingCorrectKeywords);
 }
 
-PRESENTER_TEST(respondFromSubjectDoesNotShowSetupViewWhenTestIncomplete) {
+PRESENTER_TEST(
+    submittingCoordinateResponseMeasureDoesNotShowSetupViewWhenTestIncomplete) {
     assertIncompleteTestDoesNotShowSetupView(
         submittingCoordinateResponseMeasure);
 }
 
-PRESENTER_TEST(respondFromConsonantViewDoesNotShowSetupViewWhenTestIncomplete) {
+PRESENTER_TEST(submittingConsonantDoesNotShowSetupViewWhenTestIncomplete) {
     assertIncompleteTestDoesNotShowSetupView(submittingConsonant);
 }
 
@@ -2150,7 +2152,8 @@ PRESENTER_TEST(submitFailedTrialDoesNotShowSetupViewWhenTestIncomplete) {
     assertIncompleteTestDoesNotShowSetupView(submittingFailedTrial);
 }
 
-PRESENTER_TEST(respondFromSubjectHidesExperimenterViewWhenTestComplete) {
+PRESENTER_TEST(
+    submittingCoordinateResponseMeasureHidesExperimenterViewWhenTestComplete) {
     assertCompleteTestHidesExperimenterView(
         submittingCoordinateResponseMeasure);
 }
@@ -2169,7 +2172,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    respondFromSubjectDoesNotHideExperimenterViewWhenTestIncomplete) {
+    submittingCoordinateResponseMeasureDoesNotHideExperimenterViewWhenTestIncomplete) {
     assertDoesNotHideExperimenterView(submittingCoordinateResponseMeasure);
 }
 
