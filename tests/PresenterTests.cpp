@@ -133,7 +133,7 @@ class ViewStub : public View {
         bool hidden_{};
     };
 
-    class SubjectViewStub : public CoordinateResponseMeasure {
+    class CoordinateResponseMeasureViewStub : public CoordinateResponseMeasure {
       public:
         void show() override { shown_ = true; }
 
@@ -709,10 +709,11 @@ class TrialSubmission : public virtual UseCase {
 };
 
 class RespondingFromSubject : public TrialSubmission {
-    ViewStub::SubjectViewStub *view;
+    ViewStub::CoordinateResponseMeasureViewStub *view;
 
   public:
-    explicit RespondingFromSubject(ViewStub::SubjectViewStub *view)
+    explicit RespondingFromSubject(
+        ViewStub::CoordinateResponseMeasureViewStub *view)
         : view{view} {}
 
     void run() override { view->submitResponse(); }
@@ -856,10 +857,11 @@ class PlayingTrial : public virtual UseCase {
 };
 
 class PlayingTrialFromSubject : public PlayingTrial {
-    ViewStub::SubjectViewStub *view;
+    ViewStub::CoordinateResponseMeasureViewStub *view;
 
   public:
-    explicit PlayingTrialFromSubject(ViewStub::SubjectViewStub *view)
+    explicit PlayingTrialFromSubject(
+        ViewStub::CoordinateResponseMeasureViewStub *view)
         : view{view} {}
 
     void run() override { view->playTrial(); }
@@ -926,7 +928,7 @@ class PresenterConstructionTests : public ::testing::Test {
   protected:
     ModelStub model;
     ViewStub::TestSetupViewStub setupView;
-    ViewStub::SubjectViewStub subjectView;
+    ViewStub::CoordinateResponseMeasureViewStub subjectView;
     ViewStub::ExperimenterViewStub experimenterView;
     ViewStub view;
     Presenter::TestSetup testSetup{&setupView};
@@ -971,7 +973,9 @@ void assertResponseViewHidden(TrialSubmission &useCase) {
     assertTrue(useCase.responseViewHidden());
 }
 
-void submitResponse(ViewStub::SubjectViewStub &view) { view.submitResponse(); }
+void submitResponse(ViewStub::CoordinateResponseMeasureViewStub &view) {
+    view.submitResponse();
+}
 
 void submitFreeResponse(ViewStub::ExperimenterViewStub &view) {
     view.submitFreeResponse();
@@ -993,9 +997,11 @@ auto hidden(ViewStub::ExperimenterViewStub &view) -> bool {
     return view.hidden();
 }
 
-auto shown(ViewStub::SubjectViewStub &view) -> bool { return view.shown(); }
+auto shown(ViewStub::CoordinateResponseMeasureViewStub &view) -> bool {
+    return view.shown();
+}
 
-void assertHidden(ViewStub::SubjectViewStub &view) {
+void assertHidden(ViewStub::CoordinateResponseMeasureViewStub &view) {
     assertTrue(view.hidden());
 }
 
@@ -1028,16 +1034,17 @@ class PresenterTests : public ::testing::Test {
     ModelStub model;
     ViewStub view;
     ViewStub::TestSetupViewStub setupView;
-    ViewStub::SubjectViewStub subjectView;
+    ViewStub::CoordinateResponseMeasureViewStub coordinateResponseMeasureView;
     ViewStub::ExperimenterViewStub experimenterView;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Experimenter experimenter{&experimenterView};
-    Presenter::CoordinateResponseMeasure subject{&subjectView};
+    Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
+        &coordinateResponseMeasureView};
     Calibration interpretedCalibration;
     TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
     TextFileReaderStub textFileReader;
-    Presenter presenter{model, view, testSetup, subject, experimenter,
-        testSettingsInterpreter, textFileReader};
+    Presenter presenter{model, view, testSetup, coordinateResponseMeasure,
+        experimenter, testSettingsInterpreter, textFileReader};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest{
@@ -1070,9 +1077,10 @@ class PresenterTests : public ::testing::Test {
         confirmingFixedLevelFreeResponseTestWithAllTargets{
             &setupView, testSettingsInterpreter};
     PlayingCalibration playingCalibration{&setupView};
-    PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
+    PlayingTrialFromSubject playingTrialFromSubject{
+        &coordinateResponseMeasureView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{experimenterView};
-    RespondingFromSubject respondingFromSubject{&subjectView};
+    RespondingFromSubject respondingFromSubject{&coordinateResponseMeasureView};
     SubmittingFreeResponse submittingFreeResponse{experimenterView};
     SubmittingPassedTrial submittingPassedTrial{experimenterView};
     SubmittingCorrectKeywords submittingCorrectKeywords{experimenterView};
@@ -1173,9 +1181,9 @@ class PresenterTests : public ::testing::Test {
         assertTrue(experimenterView.shown());
     }
 
-    void assertDoesNotShowSubjectView(UseCase &useCase) {
+    void assertDoesNotShowCoordinateResponseMeasureView(UseCase &useCase) {
         run(useCase);
-        assertFalse(shown(subjectView));
+        assertFalse(shown(coordinateResponseMeasureView));
     }
 
     void assertPassesTestSettingsFileToTextFileReader(UseCase &useCase) {
@@ -1260,9 +1268,9 @@ class PresenterTests : public ::testing::Test {
         assertEqual("a", experimenterView.secondaryDisplayed());
     }
 
-    void assertShowsSubjectView(UseCase &useCase) {
+    void assertShowsCoordinateResponseMeasureView(UseCase &useCase) {
         run(useCase);
-        assertTrue(shown(subjectView));
+        assertTrue(shown(coordinateResponseMeasureView));
     }
 
     void assertExitTestAfterCompletingTrialHidesResponseSubmission(
@@ -1372,7 +1380,7 @@ class PresenterFailureTests : public ::testing::Test {
     Model *model{&defaultModel};
     ViewStub view;
     ViewStub::TestSetupViewStub setupView;
-    ViewStub::SubjectViewStub subjectView;
+    ViewStub::CoordinateResponseMeasureViewStub subjectView;
     ViewStub::ExperimenterViewStub experimenterView;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
@@ -1576,65 +1584,69 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsSubjectView) {
-    assertShowsSubjectView(
+    confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsCoordinateResponseMeasureView) {
+    assertShowsCoordinateResponseMeasureView(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeakerShowsSubjectView) {
-    assertShowsSubjectView(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeakerShowsCoordinateResponseMeasureView) {
+    assertShowsCoordinateResponseMeasureView(
         confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker);
 }
 
 PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMaskerShowsSubjectView) {
-    assertShowsSubjectView(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMaskerShowsCoordinateResponseMeasureView) {
+    assertShowsCoordinateResponseMeasureView(
         confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsSubjectView) {
-    assertShowsSubjectView(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsCoordinateResponseMeasureView) {
+    assertShowsCoordinateResponseMeasureView(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsSubjectView) {
-    assertShowsSubjectView(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsCoordinateResponseMeasureView) {
+    assertShowsCoordinateResponseMeasureView(
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(confirmingAdaptiveCorrectKeywordsTest);
+PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestDoesNotShowCoordinateResponseMeasureView) {
+    assertDoesNotShowCoordinateResponseMeasureView(
+        confirmingAdaptiveCorrectKeywordsTest);
 }
 
 PRESENTER_TEST(
-    confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotShowSubjectViewWhenTestComplete) {
+    confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotShowCoordinateResponseMeasureViewWhenTestComplete) {
     setTestComplete(model);
-    assertDoesNotShowSubjectView(
+    assertDoesNotShowCoordinateResponseMeasureView(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
-PRESENTER_TEST(confirmingAdaptivePassFailTestDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(confirmingAdaptivePassFailTest);
+PRESENTER_TEST(
+    confirmingAdaptivePassFailTestDoesNotShowCoordinateResponseMeasureView) {
+    assertDoesNotShowCoordinateResponseMeasureView(
+        confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementDoesNotShowCoordinateResponseMeasureView) {
+    assertDoesNotShowCoordinateResponseMeasureView(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithAllTargetsDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(
+    confirmingFixedLevelFreeResponseTestWithAllTargetsDoesNotShowCoordinateResponseMeasureView) {
+    assertDoesNotShowCoordinateResponseMeasureView(
         confirmingFixedLevelFreeResponseTestWithAllTargets);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(
+    confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsDoesNotShowCoordinateResponseMeasureView) {
+    assertDoesNotShowCoordinateResponseMeasureView(
         confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest);
 }
 
@@ -1896,32 +1908,32 @@ PRESENTER_TEST(playCalibrationPassesAudioDevice) {
 }
 
 PRESENTER_TEST(subjectResponsePassesNumberResponse) {
-    subjectView.setNumberResponse("1");
-    submitResponse(subjectView);
+    coordinateResponseMeasureView.setNumberResponse("1");
+    submitResponse(coordinateResponseMeasureView);
     assertEqual(1, model.responseParameters().number);
 }
 
 PRESENTER_TEST(subjectResponsePassesGreenColor) {
-    subjectView.setGreenResponse();
-    submitResponse(subjectView);
+    coordinateResponseMeasureView.setGreenResponse();
+    submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::green);
 }
 
 PRESENTER_TEST(subjectResponsePassesRedColor) {
-    subjectView.setRedResponse();
-    submitResponse(subjectView);
+    coordinateResponseMeasureView.setRedResponse();
+    submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::red);
 }
 
 PRESENTER_TEST(subjectResponsePassesBlueColor) {
-    subjectView.setBlueResponse();
-    submitResponse(subjectView);
+    coordinateResponseMeasureView.setBlueResponse();
+    submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::blue);
 }
 
 PRESENTER_TEST(subjectResponsePassesWhiteColor) {
-    subjectView.setGrayResponse();
-    submitResponse(subjectView);
+    coordinateResponseMeasureView.setGrayResponse();
+    submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::white);
 }
 
@@ -2049,13 +2061,13 @@ PRESENTER_TEST(subjectResponseHidesResponseButtons) {
 
 PRESENTER_TEST(subjectResponseHidesSubjectViewWhenTestComplete) {
     setTestComplete(model);
-    submitResponse(subjectView);
-    assertHidden(subjectView);
+    submitResponse(coordinateResponseMeasureView);
+    assertHidden(coordinateResponseMeasureView);
 }
 
 PRESENTER_TEST(exitTestHidesSubjectView) {
     exitTest(experimenterView);
-    assertHidden(subjectView);
+    assertHidden(coordinateResponseMeasureView);
 }
 
 PRESENTER_TEST(decliningContinuingTestingHidesExperimenterView) {
