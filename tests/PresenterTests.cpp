@@ -1564,6 +1564,10 @@ PRESENTER_TEST(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
 
+PRESENTER_TEST(confirmingFixedLevelConsonantTestShowsExperimenterView) {
+    assertShowsExperimenterView(confirmingFixedLevelConsonantTest);
+}
+
 PRESENTER_TEST(
     confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotHideSetupViewWhenTestComplete) {
     setTestComplete(model);
