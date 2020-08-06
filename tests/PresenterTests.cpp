@@ -2185,6 +2185,11 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
+    submittingConsonantMeasureDoesNotHideExperimenterViewWhenTestIncomplete) {
+    assertDoesNotHideExperimenterView(submittingConsonant);
+}
+
+PRESENTER_TEST(
     respondFromExperimenterDoesNotHideExperimenterViewWhenTestIncomplete) {
     assertDoesNotHideExperimenterView(submittingFreeResponse);
 }
