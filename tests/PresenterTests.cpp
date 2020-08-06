@@ -2166,8 +2166,12 @@ PRESENTER_TEST(respondFromExperimenterHidesExperimenterViewWhenTestComplete) {
     assertCompleteTestHidesExperimenterView(submittingFreeResponse);
 }
 
-PRESENTER_TEST(submitCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
+PRESENTER_TEST(submittingCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
     assertCompleteTestDoesNotPlayTrial(submittingCoordinateResponseMeasure);
+}
+
+PRESENTER_TEST(submittingConsonantDoesNotPlayTrialWhenTestComplete) {
+    assertCompleteTestDoesNotPlayTrial(submittingConsonant);
 }
 
 PRESENTER_TEST(
