@@ -137,7 +137,8 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       correctKeywordsTrialCompletionHandler{experimenterPresenter},
       coordinateResponseMeasureTrialCompletionHandler{
           coordinateResponseMeasurePresenter},
-      model{model}, view{view}, testSetup{testSetup},
+      consonantTrialCompletionHandler{consonantPresenter}, model{model},
+      view{view}, testSetup{testSetup},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       consonantPresenter{consonantPresenter},
       experimenterPresenter{experimenterPresenter},
@@ -194,6 +195,8 @@ void Presenter::showTest(Method m) {
 auto Presenter::trialCompletionHandler(Method m) -> TrialCompletionHandler * {
     if (coordinateResponseMeasure(m))
         return &coordinateResponseMeasureTrialCompletionHandler;
+    if (consonant(m))
+        return &consonantTrialCompletionHandler;
     if (adaptivePassFail(m))
         return &passFailTrialCompletionHandler;
     if (adaptiveCorrectKeywords(m))
@@ -419,6 +422,10 @@ void Presenter::Consonant::becomeChild(Presenter *p) { parent = p; }
 
 auto Presenter::Consonant::subjectResponse() -> ConsonantResponse {
     return ConsonantResponse{view->consonant().front()};
+}
+
+void Presenter::Consonant::showResponseButtons() {
+    view->showResponseButtons();
 }
 
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(

@@ -2402,7 +2402,7 @@ PRESENTER_TEST(submittingConsonantResponseShowsTargetFileName) {
     assertShowsTargetFileName(submittingConsonant);
 }
 
-TEST_F(PresenterTests, submittingFreeResponseShowsTargetFileName) {
+PRESENTER_TEST(submittingFreeResponseShowsTargetFileName) {
     assertShowsTargetFileName(submittingFreeResponse);
 }
 
@@ -2411,6 +2411,12 @@ PRESENTER_TEST(
     assertCompleteTrialShowsResponseView(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest,
         submittingCoordinateResponseMeasure);
+}
+
+PRESENTER_TEST(
+    completingTrialShowsConsonantResponseButtonsForFixedLevelConsonantTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingFixedLevelConsonantTest, submittingConsonant);
 }
 
 PRESENTER_TEST(

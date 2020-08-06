@@ -53,6 +53,7 @@ class View {
         virtual void showNextTrialButton() = 0;
         virtual void hideNextTrialButton() = 0;
         virtual void hideResponseButtons() = 0;
+        virtual void showResponseButtons() = 0;
         virtual auto consonant() -> std::string = 0;
     };
 
@@ -184,6 +185,7 @@ class Presenter : public Model::EventListener {
         void stop();
         void becomeChild(Presenter *parent);
         auto subjectResponse() -> ConsonantResponse;
+        void showResponseButtons();
 
       private:
         View::Consonant *view;
@@ -265,6 +267,19 @@ class Presenter : public Model::EventListener {
 
       private:
         CoordinateResponseMeasure &coordinateResponseMeasure;
+    };
+
+    class ConsonantTrialCompletionHandler : public TrialCompletionHandler {
+      public:
+        explicit ConsonantTrialCompletionHandler(Consonant &consonant)
+            : consonant{consonant} {}
+
+        void showResponseSubmission() override {
+            consonant.showResponseButtons();
+        }
+
+      private:
+        Consonant &consonant;
     };
 
     class PassFailTrialCompletionHandler : public TrialCompletionHandler {
@@ -359,6 +374,7 @@ class Presenter : public Model::EventListener {
     CorrectKeywordsTrialCompletionHandler correctKeywordsTrialCompletionHandler;
     CoordinateResponseMeasureTestTrialCompletionHandler
         coordinateResponseMeasureTrialCompletionHandler;
+    ConsonantTrialCompletionHandler consonantTrialCompletionHandler;
     Model &model;
     View &view;
     TestSetup &testSetup;
