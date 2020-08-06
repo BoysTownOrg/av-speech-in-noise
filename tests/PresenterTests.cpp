@@ -2377,14 +2377,17 @@ PRESENTER_TEST(submittingFailedTrialShowsTrialNumber) {
     assertShowsTrialNumber(submittingFailedTrial);
 }
 
-TEST_F(
-    PresenterTests, confirmingAdaptiveCorrectKeywordsTestShowsTargetFileName) {
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTargetFileName) {
     assertShowsTargetFileName(confirmingAdaptiveCorrectKeywordsTest);
 }
 
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestShowsTargetFileName) {
+PRESENTER_TEST(confirmingAdaptiveClosedSetTestShowsTargetFileName) {
     assertShowsTargetFileName(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingFixedLevelConsonantTestShowsTargetFileName) {
+    assertShowsTargetFileName(confirmingFixedLevelConsonantTest);
 }
 
 TEST_F(PresenterTests, submittingCorrectKeywordsShowsTargetFileName) {
