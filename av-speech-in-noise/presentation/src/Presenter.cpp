@@ -57,6 +57,10 @@ static auto fixedLevelCoordinateResponseMeasureWithTargetReplacement(Method m)
         Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement;
 }
 
+static auto fixedLevelConsonant(Method m) -> bool {
+    return m == Method::fixedLevelConsonants;
+}
+
 static auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(
     Method m) -> bool {
     return m ==
@@ -86,6 +90,8 @@ static auto coordinateResponseMeasure(Method m) -> bool {
     return adaptiveCoordinateResponseMeasure(m) ||
         fixedLevelCoordinateResponseMeasure(m);
 }
+
+static auto consonant(Method m) -> bool { return fixedLevelConsonant(m); }
 
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
@@ -123,7 +129,7 @@ static void showContinueTestingDialogWithResultsWhenComplete(
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
-    Experimenter &experimenterPresenter,
+    Consonant &consonantPresenter, Experimenter &experimenterPresenter,
     TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader)
     : freeResponseTrialCompletionHandler{experimenterPresenter},
@@ -133,6 +139,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
           coordinateResponseMeasurePresenter},
       model{model}, view{view}, testSetup{testSetup},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
+      consonantPresenter{consonantPresenter},
       experimenterPresenter{experimenterPresenter},
       testSettingsInterpreter{testSettingsInterpreter},
       textFileReader{textFileReader},
@@ -177,6 +184,8 @@ void Presenter::showTest(Method m) {
     displayTrialInformation(experimenterPresenter, model);
     if (coordinateResponseMeasure(m))
         coordinateResponseMeasurePresenter.start();
+    else if (consonant(m))
+        consonantPresenter.start();
     else
         experimenterPresenter.start();
 }
@@ -369,6 +378,10 @@ auto Presenter::TestSetup::testSettingsFile() -> std::string {
 auto Presenter::TestSetup::startingSnr() -> std::string {
     return view->startingSnr();
 }
+
+Presenter::Consonant::Consonant(View::Consonant *view) : view{view} {}
+
+void Presenter::Consonant::start() { view->show(); }
 
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
     View::CoordinateResponseMeasure *view)

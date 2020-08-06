@@ -38,6 +38,16 @@ class TextFileReader {
 
 class View {
   public:
+    class Consonant {
+      public:
+        class EventListener {
+          public:
+            virtual ~EventListener() = default;
+        };
+        virtual ~Consonant() = default;
+        virtual void show() = 0;
+    };
+
     class CoordinateResponseMeasure {
       public:
         class EventListener {
@@ -155,6 +165,15 @@ class Presenter : public Model::EventListener {
       private:
         View::TestSetup *view;
         Presenter *parent{};
+    };
+
+    class Consonant : public View::Consonant::EventListener {
+      public:
+        explicit Consonant(View::Consonant *);
+        void start();
+
+      private:
+        View::Consonant *view;
     };
 
     class CoordinateResponseMeasure
@@ -279,7 +298,8 @@ class Presenter : public Model::EventListener {
     };
 
     Presenter(Model &, View &, TestSetup &, CoordinateResponseMeasure &,
-        Experimenter &, TestSettingsInterpreter &, TextFileReader &);
+        Consonant &, Experimenter &, TestSettingsInterpreter &,
+        TextFileReader &);
     void trialComplete() override;
     void run();
     void confirmTestSetup();
@@ -328,6 +348,7 @@ class Presenter : public Model::EventListener {
     View &view;
     TestSetup &testSetup;
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter;
+    Consonant &consonantPresenter;
     Experimenter &experimenterPresenter;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;

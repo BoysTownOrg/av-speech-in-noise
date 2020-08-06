@@ -133,6 +133,16 @@ class ViewStub : public View {
         bool hidden_{};
     };
 
+    class ConsonantViewStub : public Consonant {
+      public:
+        void show() { shown_ = true; }
+
+        [[nodiscard]] auto shown() const { return shown_; }
+
+      private:
+        bool shown_{};
+    };
+
     class CoordinateResponseMeasureViewStub : public CoordinateResponseMeasure {
       public:
         void show() override { shown_ = true; }
@@ -929,16 +939,18 @@ class PresenterConstructionTests : public ::testing::Test {
     ModelStub model;
     ViewStub::TestSetupViewStub setupView;
     ViewStub::CoordinateResponseMeasureViewStub subjectView;
+    ViewStub::ConsonantViewStub consonantView;
     ViewStub::ExperimenterViewStub experimenterView;
     ViewStub view;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
+    Presenter::Consonant consonant{&consonantView};
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
 
     auto construct() -> Presenter {
-        return {model, view, testSetup, subject, experimenter,
+        return {model, view, testSetup, subject, consonant, experimenter,
             testSettingsInterpreter, textFileReader};
     }
 };
@@ -1001,6 +1013,8 @@ auto shown(ViewStub::CoordinateResponseMeasureViewStub &view) -> bool {
     return view.shown();
 }
 
+auto shown(ViewStub::ConsonantViewStub &view) -> bool { return view.shown(); }
+
 void assertHidden(ViewStub::CoordinateResponseMeasureViewStub &view) {
     assertTrue(view.hidden());
 }
@@ -1035,16 +1049,18 @@ class PresenterTests : public ::testing::Test {
     ViewStub view;
     ViewStub::TestSetupViewStub setupView;
     ViewStub::CoordinateResponseMeasureViewStub coordinateResponseMeasureView;
+    ViewStub::ConsonantViewStub consonantView;
     ViewStub::ExperimenterViewStub experimenterView;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
         &coordinateResponseMeasureView};
+    Presenter::Consonant consonant{&consonantView};
     Calibration interpretedCalibration;
     TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
     TextFileReaderStub textFileReader;
     Presenter presenter{model, view, testSetup, coordinateResponseMeasure,
-        experimenter, testSettingsInterpreter, textFileReader};
+        consonant, experimenter, testSettingsInterpreter, textFileReader};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest{
@@ -1273,6 +1289,11 @@ class PresenterTests : public ::testing::Test {
         assertTrue(shown(coordinateResponseMeasureView));
     }
 
+    void assertShowsConsonantView(UseCase &useCase) {
+        run(useCase);
+        assertTrue(shown(consonantView));
+    }
+
     void assertExitTestAfterCompletingTrialHidesResponseSubmission(
         UseCase &useCase, TrialSubmission &submission) {
         run(useCase);
@@ -1381,9 +1402,11 @@ class PresenterFailureTests : public ::testing::Test {
     ViewStub view;
     ViewStub::TestSetupViewStub setupView;
     ViewStub::CoordinateResponseMeasureViewStub subjectView;
+    ViewStub::ConsonantViewStub consonantView;
     ViewStub::ExperimenterViewStub experimenterView;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
+    Presenter::Consonant consonant{&consonantView};
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
@@ -1395,8 +1418,8 @@ class PresenterFailureTests : public ::testing::Test {
     }
 
     void confirmTestSetup() {
-        Presenter presenter{*model, view, testSetup, subject, experimenter,
-            testSettingsInterpreter, textFileReader};
+        Presenter presenter{*model, view, testSetup, subject, consonant,
+            experimenter, testSettingsInterpreter, textFileReader};
         setupView.confirmTestSetup();
     }
 
@@ -1605,6 +1628,11 @@ PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsCoordinateResponseMeasureView) {
     assertShowsCoordinateResponseMeasureView(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelConsonantTestWithTargetReplacementShowsCoordinateResponseMeasureView) {
+    assertShowsConsonantView(confirmingFixedLevelConsonantTest);
 }
 
 PRESENTER_TEST(
