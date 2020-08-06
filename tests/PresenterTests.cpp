@@ -2310,6 +2310,10 @@ PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTrialNumber) {
     assertShowsTrialNumber(confirmingAdaptiveCorrectKeywordsTest);
 }
 
+PRESENTER_TEST(confirmingFixedLevelConsonantTestShowsTrialNumber) {
+    assertShowsTrialNumber(confirmingFixedLevelConsonantTest);
+}
+
 PRESENTER_TEST(submittingCorrectKeywordsShowsTrialNumber) {
     assertShowsTrialNumber(submittingCorrectKeywords);
 }
