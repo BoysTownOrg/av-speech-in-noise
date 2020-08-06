@@ -141,7 +141,7 @@ class ViewStub : public View {
 
         void playTrial() { listener_->playTrial(); }
 
-        void subscribe(EventListener *e) { listener_ = e; }
+        void subscribe(EventListener *e) override { listener_ = e; }
 
         void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
@@ -149,7 +149,7 @@ class ViewStub : public View {
             return nextTrialButtonShown_;
         }
 
-        void hideNextTrialButton() { nextTrialButtonHidden_ = true; }
+        void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
 
         [[nodiscard]] auto nextTrialButtonHidden() const {
             return nextTrialButtonHidden_;
@@ -169,7 +169,12 @@ class ViewStub : public View {
             return responseButtonsShown_;
         }
 
+        void setConsonant(std::string c) { consonant_ = std::move(c); }
+
+        auto consonant() -> std::string { return consonant_; }
+
       private:
+        std::string consonant_;
         EventListener *listener_{};
         bool shown_{};
         bool responseButtonsShown_{};
@@ -1460,6 +1465,10 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
+    void submit(const ConsonantResponse &) override {
+        throw RequestFailure{errorMessage};
+    }
+
     void playCalibration(const Calibration &) override {
         throw RequestFailure{errorMessage};
     }
@@ -2073,6 +2082,12 @@ PRESENTER_TEST(subjectResponsePassesWhiteColor) {
     coordinateResponseMeasureView.setGrayResponse();
     submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::white);
+}
+
+PRESENTER_TEST(consonantResponsePassesConsonant) {
+    consonantView.setConsonant("b");
+    run(submittingConsonant);
+    assertEqual('b', model.consonantResponse().consonant);
 }
 
 PRESENTER_TEST(experimenterResponsePassesResponse) {

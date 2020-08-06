@@ -76,6 +76,8 @@ class ModelStub : public Model {
 
     [[nodiscard]] auto freeResponse() const { return freeResponse_; }
 
+    auto consonantResponse() { return consonantResponse_; }
+
     [[nodiscard]] auto correctKeywords() const -> int {
         return correctKeywords_.count;
     }
@@ -170,6 +172,8 @@ class ModelStub : public Model {
 
     void submit(const CorrectKeywords &s) override { correctKeywords_ = s; }
 
+    void submit(const ConsonantResponse &s) { consonantResponse_ = s; }
+
     void restartAdaptiveTestWhilePreservingTargets() override {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
     }
@@ -187,6 +191,7 @@ class ModelStub : public Model {
     std::vector<std::string> audioDevices_{};
     AdaptiveTestResults adaptiveTestResults_{};
     FreeResponse freeResponse_{};
+    ConsonantResponse consonantResponse_{};
     CorrectKeywords correctKeywords_{};
     std::string targetFileName_{};
     EventListener *listener_{};

@@ -51,6 +51,7 @@ class View {
         virtual void show() = 0;
         virtual void showNextTrialButton() = 0;
         virtual void hideNextTrialButton() = 0;
+        virtual auto consonant() -> std::string = 0;
     };
 
     class CoordinateResponseMeasure {
@@ -179,6 +180,7 @@ class Presenter : public Model::EventListener {
         void submitResponse() override;
         void start();
         void becomeChild(Presenter *parent);
+        auto subjectResponse() -> ConsonantResponse;
 
       private:
         View::Consonant *view;

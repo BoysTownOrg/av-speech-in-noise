@@ -227,7 +227,10 @@ void Presenter::submitCoordinateResponse() {
     }
 }
 
-void Presenter::submitConsonantResponse() { playTrial(); }
+void Presenter::submitConsonantResponse() {
+    model.submit(consonantPresenter.subjectResponse());
+    playTrial();
+}
 
 void Presenter::submitFreeResponse() {
     proceedToNextTrialAfter(&Presenter::submitFreeResponse_);
@@ -401,6 +404,10 @@ void Presenter::Consonant::submitResponse() {
 }
 
 void Presenter::Consonant::becomeChild(Presenter *p) { parent = p; }
+
+auto Presenter::Consonant::subjectResponse() -> ConsonantResponse {
+    return ConsonantResponse{view->consonant().front()};
+}
 
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
     View::CoordinateResponseMeasure *view)

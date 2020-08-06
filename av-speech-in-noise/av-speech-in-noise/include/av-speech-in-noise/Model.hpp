@@ -57,6 +57,10 @@ struct FreeResponse {
 
 struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
+struct ConsonantResponse {
+    char consonant;
+};
+
 enum class Condition { auditoryOnly, audioVisual };
 
 constexpr auto name(Condition c) -> const char * {
@@ -184,6 +188,7 @@ class Model {
     virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const CorrectKeywords &) = 0;
+    virtual void submit(const ConsonantResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual auto testComplete() -> bool = 0;
