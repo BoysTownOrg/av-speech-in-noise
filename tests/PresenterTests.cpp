@@ -2269,6 +2269,11 @@ PRESENTER_TEST(exitTestHidesCoordinateView) {
     assertHidden(coordinateResponseMeasureView);
 }
 
+PRESENTER_TEST(exitTestHidesConsonantView) {
+    exitTest(experimenterView);
+    assertHidden(consonantView);
+}
+
 PRESENTER_TEST(decliningContinuingTestingHidesExperimenterView) {
     assertHidesExperimenterView(decliningContinuingTesting);
 }
