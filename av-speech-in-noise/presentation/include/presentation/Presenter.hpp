@@ -50,6 +50,7 @@ class View {
         virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
         virtual void showNextTrialButton() = 0;
+        virtual void hideNextTrialButton() = 0;
     };
 
     class CoordinateResponseMeasure {

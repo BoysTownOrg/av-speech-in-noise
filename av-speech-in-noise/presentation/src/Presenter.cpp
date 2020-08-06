@@ -391,7 +391,10 @@ void Presenter::Consonant::start() {
     view->showNextTrialButton();
 }
 
-void Presenter::Consonant::playTrial() { parent->playTrial(); }
+void Presenter::Consonant::playTrial() {
+    parent->playTrial();
+    view->hideNextTrialButton();
+}
 
 void Presenter::Consonant::submitResponse() {
     parent->submitConsonantResponse();

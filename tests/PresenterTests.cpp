@@ -2011,6 +2011,10 @@ PRESENTER_TEST(playingTrialHidesNextTrialButton) {
     assertHidesPlayTrialButton(playingCoordinateResponseMeasureTrial);
 }
 
+PRESENTER_TEST(playingTrialFromConsonantViewHidesNextTrialButton) {
+    assertHidesPlayTrialButton(playingConsonantTrial);
+}
+
 PRESENTER_TEST(playingTrialHidesNextTrialButtonForExperimenter) {
     assertHidesPlayTrialButton(playingTrialFromExperimenter);
 }
