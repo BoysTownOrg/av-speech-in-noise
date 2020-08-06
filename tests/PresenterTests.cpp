@@ -2285,6 +2285,7 @@ PRESENTER_TEST(exitTestHidesExperimenterView) {
 PRESENTER_TEST(exitTestHidesResponseButtons) {
     run(exitingTest);
     assertTrue(submittingCoordinateResponseMeasure.responseViewHidden());
+    assertTrue(submittingConsonant.responseViewHidden());
 }
 
 PRESENTER_TEST(exitTestShowsTestSetupView) {
