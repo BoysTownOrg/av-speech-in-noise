@@ -255,6 +255,10 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsReturnsMethod) {
+    assertMethod(interpreter, Method::fixedLevelConsonants);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithTargetReplacementReturnsMethod) {
     assertMethod(
