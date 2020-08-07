@@ -31,9 +31,8 @@ else()
   set(MAIN_IMPL_FILE main-no-eyetracking.mm)
 endif()
 
-add_executable(
-  AvSpeechInNoise MACOSX_BUNDLE TobiiEyeTracker.cpp AvFoundationPlayers.mm
-                                CocoaView.mm ${MAIN_IMPL_FILE} main.mm)
+add_executable(AvSpeechInNoise MACOSX_BUNDLE
+               AvFoundationPlayers.mm CocoaView.mm ${MAIN_IMPL_FILE} main.mm)
 target_compile_features(AvSpeechInNoise PRIVATE cxx_std_17)
 target_compile_options(AvSpeechInNoise PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})
 target_link_libraries(
