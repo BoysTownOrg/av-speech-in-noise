@@ -225,9 +225,23 @@ void Presenter::trialComplete() {
     experimenterPresenter.trialComplete();
 }
 
+static void show(Presenter::TestSetup &presenter) { presenter.show(); }
+
+static void switchToTestSetupView(Presenter::TestSetup &testSetup,
+    Presenter::Experimenter &experimenter,
+    Presenter::CoordinateResponseMeasure &coordinateResponseMeasure,
+    Presenter::Consonant &consonant) {
+    show(testSetup);
+    experimenter.stop();
+    coordinateResponseMeasure.stop();
+    consonant.stop();
+}
+
 void Presenter::playNextTrialIfNeeded() {
     if (testComplete(model))
-        switchToTestSetupView();
+        av_speech_in_noise::switchToTestSetupView(testSetup,
+            experimenterPresenter, coordinateResponseMeasurePresenter,
+            consonantPresenter);
     else {
         displayTrialInformation(experimenterPresenter, model);
         av_speech_in_noise::playTrial(model, view, experimenterPresenter);
@@ -236,7 +250,9 @@ void Presenter::playNextTrialIfNeeded() {
 
 void Presenter::readyNextTrialIfNeeded() {
     if (testComplete(model))
-        switchToTestSetupView();
+        av_speech_in_noise::switchToTestSetupView(testSetup,
+            experimenterPresenter, coordinateResponseMeasurePresenter,
+            consonantPresenter);
     else
         readyNextTrial(experimenterPresenter, model);
 }
@@ -289,7 +305,10 @@ void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
 
 void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
 
-void Presenter::declineContinuingTesting() { switchToTestSetupView(); }
+void Presenter::declineContinuingTesting() {
+    av_speech_in_noise::switchToTestSetupView(testSetup, experimenterPresenter,
+        coordinateResponseMeasurePresenter, consonantPresenter);
+}
 
 void Presenter::acceptContinuingTesting() {
     model.restartAdaptiveTestWhilePreservingTargets();
@@ -301,19 +320,9 @@ void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
     readyNextTrialIfNeeded();
 }
 
-void Presenter::exitTest() { switchToTestSetupView(); }
-
-static void show(Presenter::TestSetup &presenter) { presenter.show(); }
-
-void Presenter::switchToTestSetupView() {
-    show(testSetup);
-    hideTest();
-}
-
-void Presenter::hideTest() {
-    experimenterPresenter.stop();
-    coordinateResponseMeasurePresenter.stop();
-    consonantPresenter.stop();
+void Presenter::exitTest() {
+    av_speech_in_noise::switchToTestSetupView(testSetup, experimenterPresenter,
+        coordinateResponseMeasurePresenter, consonantPresenter);
 }
 
 void Presenter::playCalibration() {

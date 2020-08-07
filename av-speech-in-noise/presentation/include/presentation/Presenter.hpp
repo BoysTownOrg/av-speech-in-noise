@@ -357,8 +357,6 @@ class Presenter : public Model::EventListener {
     void submitPassedTrial_();
     void submitFreeResponse_();
     void submitCorrectKeywords_();
-    void hideTest();
-    void switchToTestSetupView();
     void showErrorMessage(std::string);
     void playCalibration_();
     void readyNextTrialIfNeeded();
