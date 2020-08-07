@@ -62,6 +62,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 class FixedLevelMethodStub : public FixedLevelMethod {
     const FixedLevelTest *test_{};
     const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
+    const FixedLevelTestWithRepeatedTargets *testWithRepeatedTargets_{};
     TargetPlaylist *targetList_{};
     bool initializedWithFiniteTargetPlaylist_{};
 
@@ -72,11 +73,17 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         fixedTrialsTest_ = &t;
     }
 
-    void initialize(
-        const FixedLevelTest &t, FiniteTargetPlaylist *list) override {
+    void initialize(const FixedLevelTest &t,
+        FiniteTargetPlaylistWithRepeatables *list) override {
         targetList_ = list;
         test_ = &t;
         initializedWithFiniteTargetPlaylist_ = true;
+    }
+
+    void initialize(const FixedLevelTestWithRepeatedTargets &t,
+        FiniteTargetPlaylist *list) {
+        targetList_ = list;
+        testWithRepeatedTargets_ = &t;
     }
 
     [[nodiscard]] auto initializedWithFiniteTargetPlaylist() const -> bool {
@@ -86,6 +93,11 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     [[nodiscard]] auto targetList() const { return targetList_; }
 
     [[nodiscard]] auto test() const { return test_; }
+
+    auto testWithRepeatedTargets()
+        -> const FixedLevelTestWithRepeatedTargets * {
+        return testWithRepeatedTargets_;
+    }
 
     auto fixedTrialsTest() -> const FixedLevelFixedTrialsTest * {
         return fixedTrialsTest_;
@@ -566,6 +578,27 @@ class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
+class InitializingFixedLevelTestWithRepeatedTargets
+    : public InitializingTestUseCase {
+    FixedLevelTestWithRepeatedTargets test_;
+    FixedLevelMethodStub *method;
+
+  public:
+    explicit InitializingFixedLevelTestWithRepeatedTargets(
+        FixedLevelMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override { model.initializeConsonants(test_); }
+
+    void run(ModelImpl &model, const FixedLevelTestWithRepeatedTargets &test) {
+        model.initializeConsonants(test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
 auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
     return m.initializedWithEyeTracking();
 }
@@ -586,6 +619,7 @@ class ModelTests : public ::testing::Test {
         internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
+    FixedLevelTestWithRepeatedTargets fixedLevelTestWithRepeatingTargets;
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest;
     InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{
         &adaptiveMethod};
@@ -615,6 +649,8 @@ class ModelTests : public ::testing::Test {
     InitializingFixedLevelTestWithAllTargetsAndEyeTracking
         initializingFixedLevelTestWithAllTargetsAndEyeTracking{
             &fixedLevelMethod};
+    InitializingFixedLevelTestWithRepeatedTargets
+        initializingFixedLevelTestWithRepeatedTargets{&fixedLevelMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
@@ -695,6 +731,14 @@ MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);
+}
+
+MODEL_TEST(
+    initializeFixedLevelTestWithRepeatedTargetsInitializesFixedLevelMethod) {
+    initializingFixedLevelTestWithRepeatedTargets.run(
+        model, fixedLevelTestWithRepeatingTargets);
+    assertEqual(&std::as_const(fixedLevelTestWithRepeatingTargets),
+        fixedLevelMethod.testWithRepeatedTargets());
 }
 
 MODEL_TEST(

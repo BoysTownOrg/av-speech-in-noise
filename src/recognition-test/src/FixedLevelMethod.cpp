@@ -20,7 +20,7 @@ void FixedLevelMethodImpl::initialize(
 }
 
 void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &p, FiniteTargetPlaylist *list) {
+    const FixedLevelTest &p, FiniteTargetPlaylistWithRepeatables *list) {
     usingFiniteTargetPlaylist_ = true;
     targetList = list;
     finiteTargetPlaylist = list;

@@ -50,7 +50,8 @@ class RandomizedTargetPlaylistWithReplacement : public TargetPlaylist {
     target_list::Randomizer *randomizer;
 };
 
-class RandomizedTargetPlaylistWithoutReplacement : public FiniteTargetPlaylist {
+class RandomizedTargetPlaylistWithoutReplacement
+    : public FiniteTargetPlaylistWithRepeatables {
   public:
     RandomizedTargetPlaylistWithoutReplacement(
         DirectoryReader *, target_list::Randomizer *);

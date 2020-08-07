@@ -6,8 +6,9 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     TargetPlaylistReader &targetsWithReplacementReader,
     TargetPlaylistReader &cyclicTargetsReader,
     TargetPlaylist &targetsWithReplacement,
-    FiniteTargetPlaylist &silentIntervalTargets,
-    FiniteTargetPlaylist &everyTargetOnce, RecognitionTestModel &model)
+    FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
+    FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
+    RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
       cyclicTargetsReader{cyclicTargetsReader},
@@ -25,13 +26,14 @@ static void initialize(FixedLevelMethod &method,
     method.initialize(test, &targets);
 }
 
-static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
-    TargetPlaylist &targets) {
+static void initialize(FixedLevelMethod &method,
+    const FixedLevelTestWithRepeatedTargets &test,
+    FiniteTargetPlaylist &targets) {
     method.initialize(test, &targets);
 }
 
 static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
-    FiniteTargetPlaylist &targets) {
+    FiniteTargetPlaylistWithRepeatables &targets) {
     method.initialize(test, &targets);
 }
 
@@ -78,6 +80,23 @@ void ModelImpl::initializeWithSilentIntervalTargets(
 void ModelImpl::initializeWithAllTargets(const FixedLevelTest &test) {
     av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
+}
+
+class FiniteTargetPlaylistStub : public FiniteTargetPlaylist {
+  public:
+    void loadFromDirectory(const LocalUrl &directory) {}
+    auto next() -> LocalUrl { return {}; }
+    auto current() -> LocalUrl { return {}; }
+    auto directory() -> LocalUrl { return {}; }
+    auto empty() -> bool { return {}; }
+};
+
+static FiniteTargetPlaylistStub finiteTargetPlaylistStub;
+
+void ModelImpl::initializeConsonants(
+    const FixedLevelTestWithRepeatedTargets &test) {
+    av_speech_in_noise::initialize(
+        fixedLevelMethod, test, finiteTargetPlaylistStub);
 }
 
 void ModelImpl::initializeWithAllTargetsAndEyeTracking(

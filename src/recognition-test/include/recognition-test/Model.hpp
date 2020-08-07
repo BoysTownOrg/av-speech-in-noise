@@ -125,10 +125,12 @@ class AdaptiveMethod : public virtual TestMethod {
 
 class FixedLevelMethod : public virtual TestMethod {
   public:
-    virtual void initialize(const FixedLevelTest &, TargetPlaylist *) {}
-    virtual void initialize(const FixedLevelTest &, FiniteTargetPlaylist *) = 0;
     virtual void initialize(
-        const FixedLevelFixedTrialsTest &, TargetPlaylist *) {}
+        const FixedLevelTestWithRepeatedTargets &, FiniteTargetPlaylist *) = 0;
+    virtual void initialize(
+        const FixedLevelTest &, FiniteTargetPlaylistWithRepeatables *) = 0;
+    virtual void initialize(
+        const FixedLevelFixedTrialsTest &, TargetPlaylist *) = 0;
 };
 
 class RecognitionTestModel {
@@ -159,8 +161,9 @@ class ModelImpl : public Model {
         TargetPlaylistReader &targetsWithReplacementReader,
         TargetPlaylistReader &cyclicTargetsReader,
         TargetPlaylist &targetsWithReplacement,
-        FiniteTargetPlaylist &silentIntervalTargets,
-        FiniteTargetPlaylist &everyTargetOnce, RecognitionTestModel &);
+        FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
+        FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
+        RecognitionTestModel &);
     void subscribe(Model::EventListener *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(
@@ -168,7 +171,7 @@ class ModelImpl : public Model {
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
     void initializeWithAllTargets(const FixedLevelTest &) override;
     void initializeConsonants(
-        const FixedLevelTestWithRepeatedTargets &) override {}
+        const FixedLevelTestWithRepeatedTargets &) override;
     void initializeWithAllTargetsAndEyeTracking(
         const FixedLevelTest &) override;
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;
@@ -204,8 +207,8 @@ class ModelImpl : public Model {
     TargetPlaylistReader &targetsWithReplacementReader;
     TargetPlaylistReader &cyclicTargetsReader;
     TargetPlaylist &targetsWithReplacement;
-    FiniteTargetPlaylist &silentIntervalTargets;
-    FiniteTargetPlaylist &everyTargetOnce;
+    FiniteTargetPlaylistWithRepeatables &silentIntervalTargets;
+    FiniteTargetPlaylistWithRepeatables &everyTargetOnce;
     RecognitionTestModel &model;
 };
 }

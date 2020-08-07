@@ -45,7 +45,8 @@ class TargetPlaylistStub : public virtual TargetPlaylist {
     bool nextCalled_{};
 };
 
-class FiniteTargetPlaylistStub : public FiniteTargetPlaylist, public TargetPlaylistStub {
+class FiniteTargetPlaylistStub : public FiniteTargetPlaylistWithRepeatables,
+                                 public TargetPlaylistStub {
   public:
     void setEmpty() { empty_ = true; }
 

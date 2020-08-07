@@ -17,6 +17,11 @@ class TargetPlaylist {
 class FiniteTargetPlaylist : public virtual TargetPlaylist {
   public:
     virtual auto empty() -> bool = 0;
+};
+
+class FiniteTargetPlaylistWithRepeatables
+    : public virtual FiniteTargetPlaylist {
+  public:
     virtual void reinsertCurrent() = 0;
 };
 }

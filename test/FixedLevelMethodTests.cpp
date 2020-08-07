@@ -29,13 +29,13 @@ class InitializingMethod : public UseCase {
 class InitializingMethodWithFiniteTargetPlaylist : public UseCase {
   public:
     InitializingMethodWithFiniteTargetPlaylist(
-        FiniteTargetPlaylist &list, const FixedLevelTest &test)
+        FiniteTargetPlaylistWithRepeatables &list, const FixedLevelTest &test)
         : list{list}, test{test} {}
 
     void run(FixedLevelMethodImpl &m) override { m.initialize(test, &list); }
 
   private:
-    FiniteTargetPlaylist &list;
+    FiniteTargetPlaylistWithRepeatables &list;
     const FixedLevelTest &test;
 };
 
@@ -328,7 +328,8 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     assertCurrentTargetReinserted(targetList);
 }
 
-class TargetPlaylistTestConcluderComboStub : public FiniteTargetPlaylist {
+class TargetPlaylistTestConcluderComboStub
+    : public FiniteTargetPlaylistWithRepeatables {
   public:
     void loadFromDirectory(const LocalUrl &) override {}
     auto directory() -> LocalUrl override { return {}; }
