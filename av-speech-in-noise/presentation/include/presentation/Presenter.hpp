@@ -352,7 +352,7 @@ class Presenter : public Model::EventListener {
     static constexpr auto trackBumpLimit{10};
 
   private:
-    void proceedToNextTrialAfter(void (Presenter::*f)());
+    void readyNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();
     void submitFreeResponse_();
@@ -361,7 +361,6 @@ class Presenter : public Model::EventListener {
     void switchToTestSetupView();
     void showErrorMessage(std::string);
     void playCalibration_();
-    void showTestSetup();
     void readyNextTrialIfNeeded();
     void showTest(Method);
     void switchToTestView(Method);

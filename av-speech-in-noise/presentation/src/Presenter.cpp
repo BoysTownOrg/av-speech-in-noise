@@ -208,11 +208,16 @@ void Presenter::showErrorMessage(std::string e) {
     view.showErrorMessage(std::move(e));
 }
 
-void Presenter::playTrial() {
+static void playTrial(
+    Model &model, View &view, Presenter::Experimenter &presenter) {
     AudioSettings p;
     p.audioDevice = view.audioDevice();
     model.playTrial(p);
-    experimenterPresenter.trialPlayed();
+    presenter.trialPlayed();
+}
+
+void Presenter::playTrial() {
+    av_speech_in_noise::playTrial(model, view, experimenterPresenter);
 }
 
 void Presenter::trialComplete() {
@@ -225,8 +230,15 @@ void Presenter::playNextTrialIfNeeded() {
         switchToTestSetupView();
     else {
         displayTrialInformation(experimenterPresenter, model);
-        playTrial();
+        av_speech_in_noise::playTrial(model, view, experimenterPresenter);
     }
+}
+
+void Presenter::readyNextTrialIfNeeded() {
+    if (testComplete(model))
+        switchToTestSetupView();
+    else
+        readyNextTrial(experimenterPresenter, model);
 }
 
 void Presenter::submitCoordinateResponse() {
@@ -240,7 +252,7 @@ void Presenter::submitConsonantResponse() {
 }
 
 void Presenter::submitFreeResponse() {
-    proceedToNextTrialAfter(&Presenter::submitFreeResponse_);
+    readyNextTrialAfter(&Presenter::submitFreeResponse_);
 }
 
 void Presenter::submitPassedTrial() {
@@ -253,13 +265,6 @@ void Presenter::submitFailedTrial() {
     submitFailedTrial_();
     showContinueTestingDialogWithResultsWhenComplete(
         experimenterPresenter, model);
-}
-
-void Presenter::declineContinuingTesting() { switchToTestSetupView(); }
-
-void Presenter::acceptContinuingTesting() {
-    model.restartAdaptiveTestWhilePreservingTargets();
-    readyNextTrial(experimenterPresenter, model);
 }
 
 void Presenter::submitCorrectKeywords() {
@@ -284,26 +289,26 @@ void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
 
 void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
 
-void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
+void Presenter::declineContinuingTesting() { switchToTestSetupView(); }
+
+void Presenter::acceptContinuingTesting() {
+    model.restartAdaptiveTestWhilePreservingTargets();
+    readyNextTrial(experimenterPresenter, model);
+}
+
+void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
     (this->*f)();
     readyNextTrialIfNeeded();
 }
 
-void Presenter::readyNextTrialIfNeeded() {
-    if (testComplete(model))
-        switchToTestSetupView();
-    else
-        readyNextTrial(experimenterPresenter, model);
-}
-
 void Presenter::exitTest() { switchToTestSetupView(); }
 
+static void show(Presenter::TestSetup &presenter) { presenter.show(); }
+
 void Presenter::switchToTestSetupView() {
-    showTestSetup();
+    show(testSetup);
     hideTest();
 }
-
-void Presenter::showTestSetup() { testSetup.show(); }
 
 void Presenter::hideTest() {
     experimenterPresenter.stop();
