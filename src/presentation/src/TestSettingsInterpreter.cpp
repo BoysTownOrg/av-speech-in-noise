@@ -195,35 +195,51 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents,
         model.initialize(test);
 }
 
-static void initializeFixedLevelTest(Model &model, const std::string &contents,
-    const TestIdentity &identity, SNR startingSnr) {
-    FixedLevelFixedTrialsTest test;
+static void initialize(FixedLevelTest &test, const std::string &contents,
+    Method method, const TestIdentity &identity, SNR startingSnr) {
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
     test.snr = startingSnr;
     test.fullScaleLevel = Presenter::fullScaleLevel;
     test.identity = identity;
+    test.identity.method = name(method);
+}
+
+static void initializeFixedLevelTest(Model &model, const std::string &contents,
+    const TestIdentity &identity, SNR startingSnr) {
     const auto method_{av_speech_in_noise::method(contents)};
-    test.identity.method = name(method_);
     if (method_ ==
             Method::
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets ||
-        method_ == Method::fixedLevelFreeResponseWithSilentIntervalTargets)
+        method_ == Method::fixedLevelFreeResponseWithSilentIntervalTargets) {
+        FixedLevelTest test;
+        initialize(test, contents, method_, identity, startingSnr);
         model.initializeWithSilentIntervalTargets(test);
-    else if (method_ == Method::fixedLevelFreeResponseWithAllTargets)
+    } else if (method_ == Method::fixedLevelFreeResponseWithAllTargets) {
+        FixedLevelTest test;
+        initialize(test, contents, method_, identity, startingSnr);
         model.initializeWithAllTargets(test);
-    else if (method_ == Method::fixedLevelConsonants)
+    } else if (method_ == Method::fixedLevelConsonants) {
+        FixedLevelTestWithRepeatedTargets test;
+        initialize(test, contents, method_, identity, startingSnr);
         model.initializeConsonants(test);
-    else if (method_ ==
-        Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking)
+    } else if (method_ ==
+        Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking) {
+        FixedLevelTest test;
+        initialize(test, contents, method_, identity, startingSnr);
         model.initializeWithAllTargetsAndEyeTracking(test);
-    else if (method_ ==
+    } else if (method_ ==
         Method::
-            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking)
+            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking) {
+        FixedLevelFixedTrialsTest test;
+        initialize(test, contents, method_, identity, startingSnr);
         model.initializeWithTargetReplacementAndEyeTracking(test);
-    else
+    } else {
+        FixedLevelFixedTrialsTest test;
+        initialize(test, contents, method_, identity, startingSnr);
         model.initializeWithTargetReplacement(test);
+    }
 }
 
 void TestSettingsInterpreterImpl::initialize(Model &model,

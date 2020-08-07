@@ -167,7 +167,8 @@ class ModelImpl : public Model {
         const FixedLevelFixedTrialsTest &) override;
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
     void initializeWithAllTargets(const FixedLevelTest &) override;
-    void initializeConsonants(const FixedLevelTest &) override {}
+    void initializeConsonants(
+        const FixedLevelTestWithRepeatedTargets &) override {}
     void initializeWithAllTargetsAndEyeTracking(
         const FixedLevelTest &) override;
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;

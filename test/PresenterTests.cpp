@@ -1490,7 +1490,8 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeConsonants(const FixedLevelTest &) override {
+    void initializeConsonants(
+        const FixedLevelTestWithRepeatedTargets &) override {
         throw RequestFailure{errorMessage};
     }
 

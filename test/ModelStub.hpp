@@ -164,7 +164,8 @@ class ModelStub : public Model {
         fixedLevelTestWithSilentIntervalTargetsInitialized_ = true;
     }
 
-    void initializeConsonants(const FixedLevelTest &p) override {
+    void initializeConsonants(
+        const FixedLevelTestWithRepeatedTargets &p) override {
         fixedLevelTest_ = p;
         fixedLevelConsonantsTestInitialized_ = true;
     }
