@@ -337,6 +337,7 @@ class Presenter : public Model::EventListener {
     void browseForTestSettingsFile();
     void submitCoordinateResponse();
     void submitConsonantResponse();
+    void playNextTrialIfNeeded();
     void submitFreeResponse();
     void submitPassedTrial();
     void submitFailedTrial();

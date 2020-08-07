@@ -220,8 +220,7 @@ void Presenter::trialComplete() {
     experimenterPresenter.trialComplete();
 }
 
-void Presenter::submitCoordinateResponse() {
-    model.submit(coordinateResponseMeasurePresenter.subjectResponse());
+void Presenter::playNextTrialIfNeeded() {
     if (testComplete(model))
         switchToTestSetupView();
     else {
@@ -230,14 +229,14 @@ void Presenter::submitCoordinateResponse() {
     }
 }
 
+void Presenter::submitCoordinateResponse() {
+    model.submit(coordinateResponseMeasurePresenter.subjectResponse());
+    playNextTrialIfNeeded();
+}
+
 void Presenter::submitConsonantResponse() {
     model.submit(consonantPresenter.subjectResponse());
-    if (testComplete(model))
-        switchToTestSetupView();
-    else {
-        displayTrialInformation(experimenterPresenter, model);
-        playTrial();
-    }
+    playNextTrialIfNeeded();
 }
 
 void Presenter::submitFreeResponse() {
