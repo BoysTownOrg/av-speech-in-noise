@@ -64,7 +64,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
     const FixedLevelTestWithRepeatedTargets *testWithRepeatedTargets_{};
     TargetPlaylist *targetList_{};
-    bool initializedWithFiniteTargetPlaylist_{};
 
   public:
     void initialize(
@@ -77,17 +76,12 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         FiniteTargetPlaylistWithRepeatables *list) override {
         targetList_ = list;
         test_ = &t;
-        initializedWithFiniteTargetPlaylist_ = true;
     }
 
     void initialize(const FixedLevelTestWithRepeatedTargets &t,
-        FiniteTargetPlaylist *list) {
+        FiniteTargetPlaylist *list) override {
         targetList_ = list;
         testWithRepeatedTargets_ = &t;
-    }
-
-    [[nodiscard]] auto initializedWithFiniteTargetPlaylist() const -> bool {
-        return initializedWithFiniteTargetPlaylist_;
     }
 
     [[nodiscard]] auto targetList() const { return targetList_; }
@@ -687,12 +681,6 @@ class ModelTests : public ::testing::Test {
         run(useCase);
         assertEqual(&targetList, fixedLevelMethod.targetList());
     }
-
-    void assertInitializesFixedLevelMethodWithFiniteTargetPlaylist(
-        InitializingTestUseCase &useCase) {
-        run(useCase);
-        assertTrue(fixedLevelMethod.initializedWithFiniteTargetPlaylist());
-    }
 };
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
@@ -778,18 +766,6 @@ MODEL_TEST(
     assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithAllTargetsAndEyeTracking,
         everyTargetOnce);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithSilentIntervalTargetsInitializesFixedLevelMethodWithFiniteTargetPlaylist) {
-    assertInitializesFixedLevelMethodWithFiniteTargetPlaylist(
-        initializingFixedLevelTestWithSilentIntervalTargets);
-}
-
-MODEL_TEST(
-    initializingFixedLevelTestWithAllTargetsInitializesFixedLevelMethodWithFiniteTargetPlaylist) {
-    assertInitializesFixedLevelMethodWithFiniteTargetPlaylist(
-        initializingFixedLevelTestWithAllTargets);
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
