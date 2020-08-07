@@ -1,0 +1,6 @@
+add_subdirectory(av-speech-in-noise)
+add_subdirectory(recognition-test)
+add_subdirectory(adaptive-track)
+add_subdirectory(presentation)
+add_subdirectory(stimulus-players)
+add_subdirectory(target-playlists)
