@@ -401,7 +401,7 @@ void MaskerPlayerImpl::AudioThread::applyLevel(
         const auto fadeScalar{nextFadeScalar()};
         updateFadeState(i);
         for (auto channel : audioBuffer)
-            channel.at(i) *=
+            at(channel, i) *=
                 gsl::narrow_cast<sample_type>(fadeScalar * levelScalar_);
     }
 }

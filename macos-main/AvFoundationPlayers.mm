@@ -275,7 +275,7 @@ void AvFoundationVideoPlayer::processTap_(CMItemCount numberFrames,
 
     for (UInt32 j{0}; j < bufferListInOut->mNumberBuffers; ++j)
         audio.at(j) = {static_cast<float *>(bufferListInOut->mBuffers[j].mData),
-            numberFrames};
+            gsl::narrow<gsl::span<float>::size_type>(numberFrames)};
     listener_->fillAudioBuffer(audio);
 }
 
