@@ -97,6 +97,7 @@ void ModelImpl::initializeConsonants(
     const FixedLevelTestWithRepeatedTargets &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, finiteTargetPlaylistStub);
+    av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
 void ModelImpl::initializeWithAllTargetsAndEyeTracking(
