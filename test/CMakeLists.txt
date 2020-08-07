@@ -27,3 +27,4 @@ target_link_libraries(
   target-playlists
   gtest_main
   GSL)
+add_test(NAME tests COMMAND tests)

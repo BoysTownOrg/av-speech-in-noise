@@ -1,5 +1,5 @@
+#include "main.h"
 #include "MersenneTwisterRandomizer.hpp"
-#include "TobiiEyeTracker.hpp"
 #include "AvFoundationPlayers.h"
 #include "CocoaView.h"
 #include "common-objc.h"
@@ -177,8 +177,9 @@ void TimerImpl::scheduleCallbackAfterSeconds(double x) {
 }
 
 void TimerImpl::timerCallback() { listener->callback(); }
+}
 
-void main() {
+void main(EyeTracker &eyeTracker) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     CoreAudioBufferedReader bufferedReader;
@@ -246,11 +247,11 @@ void main() {
     RandomizedTargetPlaylistWithoutReplacement everyTargetOnce{
         &onlyIncludesTargetFileExtensions, &randomizer};
     FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
-    TobiiEyeTracker eyeTracker;
     RecognitionTestModelImpl recognitionTestModel{targetPlayer, maskerPlayer,
         responseEvaluator, outputFile, randomizer, eyeTracker};
-    RandomizedTargetPlaylistWithReplacement::Factory targetsWithReplacementFactory{
-        &onlyIncludesTargetFileExtensions, &randomizer};
+    RandomizedTargetPlaylistWithReplacement::Factory
+        targetsWithReplacementFactory{
+            &onlyIncludesTargetFileExtensions, &randomizer};
     SubdirectoryTargetPlaylistReader targetsWithReplacementReader{
         &targetsWithReplacementFactory, &directoryReader};
     CyclicRandomizedTargetPlaylist::Factory cyclicTargetsFactory{
@@ -284,6 +285,3 @@ void main() {
     presenter.run();
 }
 }
-}
-
-int main() { av_speech_in_noise::main(); }
