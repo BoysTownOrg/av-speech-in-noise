@@ -2,6 +2,7 @@
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
 #include <sstream>
+#include <functional>
 
 namespace av_speech_in_noise {
 namespace {
@@ -237,24 +238,35 @@ static void switchToTestSetupView(Presenter::TestSetup &testSetup,
     consonant.stop();
 }
 
-void Presenter::playNextTrialIfNeeded() {
+static void updateTrialInformationAndPlayNext(
+    Model &model, View &view, Presenter::Experimenter &experimenter) {
+    displayTrialInformation(experimenter, model);
+    av_speech_in_noise::playTrial(model, view, experimenter);
+}
+
+static void switchToTestSetupViewIfCompleteElse(Model &model,
+    Presenter::TestSetup &testSetup, Presenter::Experimenter &experimenter,
+    Presenter::CoordinateResponseMeasure &coordinateResponseMeasure,
+    Presenter::Consonant &consonant, const std::function<void()> &f) {
     if (testComplete(model))
-        av_speech_in_noise::switchToTestSetupView(testSetup,
-            experimenterPresenter, coordinateResponseMeasurePresenter,
-            consonantPresenter);
-    else {
-        displayTrialInformation(experimenterPresenter, model);
-        av_speech_in_noise::playTrial(model, view, experimenterPresenter);
-    }
+        switchToTestSetupView(
+            testSetup, experimenter, coordinateResponseMeasure, consonant);
+    else
+        f();
+}
+
+void Presenter::playNextTrialIfNeeded() {
+    switchToTestSetupViewIfCompleteElse(model, testSetup, experimenterPresenter,
+        coordinateResponseMeasurePresenter, consonantPresenter, [&]() {
+            updateTrialInformationAndPlayNext(
+                model, view, experimenterPresenter);
+        });
 }
 
 void Presenter::readyNextTrialIfNeeded() {
-    if (testComplete(model))
-        av_speech_in_noise::switchToTestSetupView(testSetup,
-            experimenterPresenter, coordinateResponseMeasurePresenter,
-            consonantPresenter);
-    else
-        readyNextTrial(experimenterPresenter, model);
+    switchToTestSetupViewIfCompleteElse(model, testSetup, experimenterPresenter,
+        coordinateResponseMeasurePresenter, consonantPresenter,
+        [&]() { readyNextTrial(experimenterPresenter, model); });
 }
 
 void Presenter::submitCoordinateResponse() {
