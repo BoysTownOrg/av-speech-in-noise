@@ -172,7 +172,7 @@ class ModelStub : public Model {
 
     void submit(const CorrectKeywords &s) override { correctKeywords_ = s; }
 
-    void submit(const ConsonantResponse &s) { consonantResponse_ = s; }
+    void submit(const ConsonantResponse &s) override { consonantResponse_ = s; }
 
     void restartAdaptiveTestWhilePreservingTargets() override {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
