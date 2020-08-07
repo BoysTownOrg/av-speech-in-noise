@@ -70,25 +70,6 @@ static auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
 }
 
-static auto adaptivePassFail(Method m) -> bool {
-    return m == Method::adaptivePassFail;
-}
-
-static auto adaptiveCorrectKeywords(Method m) -> bool {
-    return m == Method::adaptiveCorrectKeywords;
-}
-
-static auto adaptiveCoordinateResponseMeasure(Method m) -> bool {
-    return defaultAdaptiveCoordinateResponseMeasure(m) ||
-        adaptiveCoordinateResponseMeasureWithSingleSpeaker(m) ||
-        adaptiveCoordinateResponseMeasureWithDelayedMasker(m);
-}
-
-static auto fixedLevelCoordinateResponseMeasure(Method m) -> bool {
-    return fixedLevelCoordinateResponseMeasureWithTargetReplacement(m) ||
-        fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(m);
-}
-
 static auto coordinateResponseMeasure(Method m) -> bool {
     return m == Method::adaptiveCoordinateResponseMeasure ||
         m == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||

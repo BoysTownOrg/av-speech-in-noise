@@ -10,9 +10,6 @@
 @end
 
 @interface ConsonantViewActions : NSObject
-@property av_speech_in_noise::CocoaConsonantView *controller;
-- (void)respond:(id)sender;
-- (void)playTrial;
 @end
 
 @interface ExperimenterViewActions : NSObject
@@ -312,7 +309,7 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
       nextTrialButton{
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       actions{[[ConsonantViewActions alloc] init]} {
-    actions.controller = this;
+    actions->controller = this;
 }
 
 void CocoaConsonantView::show() { [window makeKeyAndOrderFront:nil]; }
