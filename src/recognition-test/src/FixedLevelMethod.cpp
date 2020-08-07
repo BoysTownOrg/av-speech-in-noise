@@ -4,12 +4,13 @@ namespace av_speech_in_noise {
 FixedLevelMethodImpl::FixedLevelMethodImpl(ResponseEvaluator &evaluator)
     : evaluator{evaluator} {}
 
-static void loadFromDirectory(TargetPlaylist *list, const FixedLevelTest &test) {
+static void loadFromDirectory(
+    TargetPlaylist *list, const FixedLevelTest &test) {
     list->loadFromDirectory(test.targetsUrl);
 }
 
 void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &test, TargetPlaylist *list) {
+    const FixedLevelFixedTrialsTest &test, TargetPlaylist *list) {
     usingFiniteTargetPlaylist_ = false;
     targetList = list;
     test_ = &test;
@@ -39,7 +40,9 @@ auto FixedLevelMethodImpl::nextTarget() -> LocalUrl {
 
 auto FixedLevelMethodImpl::snr() -> SNR { return snr_; }
 
-static auto current(TargetPlaylist *list) -> LocalUrl { return list->current(); }
+static auto current(TargetPlaylist *list) -> LocalUrl {
+    return list->current();
+}
 
 void FixedLevelMethodImpl::submit(
     const coordinate_response_measure::Response &response) {

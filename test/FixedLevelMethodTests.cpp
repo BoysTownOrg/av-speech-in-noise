@@ -16,10 +16,11 @@ class UseCase {
 
 class InitializingMethod : public UseCase {
     TargetPlaylist &list;
-    const FixedLevelTest &test;
+    const FixedLevelFixedTrialsTest &test;
 
   public:
-    InitializingMethod(TargetPlaylist &list, const FixedLevelTest &test)
+    InitializingMethod(
+        TargetPlaylist &list, const FixedLevelFixedTrialsTest &test)
         : list{list}, test{test} {}
 
     void run(FixedLevelMethodImpl &m) override { m.initialize(test, &list); }
@@ -84,7 +85,7 @@ class FixedLevelMethodTests : public ::testing::Test {
     TargetPlaylistStub targetList;
     OutputFileStub outputFile;
     FixedLevelMethodImpl method{evaluator};
-    FixedLevelTest test{};
+    FixedLevelFixedTrialsTest test{};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
     InitializingMethod initializingMethod{targetList, test};
@@ -166,7 +167,8 @@ FIXED_LEVEL_METHOD_TEST(writeIncorrectCoordinateResponse) {
 
 FIXED_LEVEL_METHOD_TEST(writeTestPassesSettings) {
     method.writeTestingParameters(outputFile);
-    assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+    assertEqual(&static_cast<const FixedLevelTest &>(std::as_const(test)),
+        outputFile.fixedLevelTest());
 }
 
 FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesResponse) {
@@ -205,7 +207,7 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
     TargetPlaylistStub targetList;
     FiniteTargetPlaylistStub finiteTargetPlaylist;
     FixedLevelMethodImpl method{evaluator};
-    FixedLevelTest test{};
+    FixedLevelFixedTrialsTest test{};
     InitializingMethod initializingMethod{targetList, test};
     InitializingMethodWithFiniteTargetPlaylist
         initializingMethodWithFiniteTargetPlaylist{finiteTargetPlaylist, test};
@@ -224,8 +226,8 @@ TEST_F(PreInitializedFixedLevelMethodTests,
     assertEqual(1, method.snr().dB);
 }
 
-TEST_F(
-    PreInitializedFixedLevelMethodTests, initializePassesTargetPlaylistDirectory) {
+TEST_F(PreInitializedFixedLevelMethodTests,
+    initializePassesTargetPlaylistDirectory) {
     test.targetsUrl.path = "a";
     run(initializingMethod, method);
     assertEqual("a", targetList.directory().path);

@@ -44,6 +44,10 @@ auto fixedLevelTest(ModelStub &m) -> FixedLevelTest {
     return m.fixedLevelTest();
 }
 
+auto fixedLevelFixedTargetsTest(ModelStub &m) -> FixedLevelFixedTrialsTest {
+    return m.fixedLevelFixedTargetsTest();
+}
+
 void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
     const std::vector<std::string> &v, int startingSnr = {},
     const TestIdentity &identity = {}) {
@@ -543,10 +547,19 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptiveAuditoryOnly) {
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAudioVisual) {
     initialize(interpreter, model,
+        {entryWithNewline(
+             TestSetting::method, Method::fixedLevelFreeResponseWithAllTargets),
+            entryWithNewline(TestSetting::condition, Condition::audioVisual)});
+    assertEqual(Condition::audioVisual, fixedLevelTest(model).condition);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelFixedTargetsAudioVisual) {
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method,
              Method::fixedLevelFreeResponseWithTargetReplacement),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
-    assertEqual(Condition::audioVisual, fixedLevelTest(model).condition);
+    assertEqual(
+        Condition::audioVisual, fixedLevelFixedTargetsTest(model).condition);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAuditoryOnly) {

@@ -125,8 +125,10 @@ class AdaptiveMethod : public virtual TestMethod {
 
 class FixedLevelMethod : public virtual TestMethod {
   public:
-    virtual void initialize(const FixedLevelTest &, TargetPlaylist *) = 0;
+    virtual void initialize(const FixedLevelTest &, TargetPlaylist *) {}
     virtual void initialize(const FixedLevelTest &, FiniteTargetPlaylist *) = 0;
+    virtual void initialize(
+        const FixedLevelFixedTrialsTest &, TargetPlaylist *) {}
 };
 
 class RecognitionTestModel {
@@ -161,7 +163,8 @@ class ModelImpl : public Model {
         FiniteTargetPlaylist &everyTargetOnce, RecognitionTestModel &);
     void subscribe(Model::EventListener *) override;
     void initialize(const AdaptiveTest &) override;
-    void initializeWithTargetReplacement(const FixedLevelTest &) override;
+    void initializeWithTargetReplacement(
+        const FixedLevelFixedTrialsTest &) override;
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
     void initializeWithAllTargets(const FixedLevelTest &) override;
     void initializeConsonants(const FixedLevelTest &) override {}
@@ -170,7 +173,7 @@ class ModelImpl : public Model {
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeWithDelayedMasker(const AdaptiveTest &) override;
     void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelTest &) override;
+        const FixedLevelFixedTrialsTest &) override;
     void initializeWithSilentIntervalTargetsAndEyeTracking(
         const FixedLevelTest &);
     void initializeWithEyeTracking(const AdaptiveTest &) override;

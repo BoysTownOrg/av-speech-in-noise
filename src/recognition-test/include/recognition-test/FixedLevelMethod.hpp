@@ -7,7 +7,8 @@ namespace av_speech_in_noise {
 class FixedLevelMethodImpl : public FixedLevelMethod {
   public:
     explicit FixedLevelMethodImpl(ResponseEvaluator &);
-    void initialize(const FixedLevelTest &, TargetPlaylist *) override;
+    void initialize(
+        const FixedLevelFixedTrialsTest &, TargetPlaylist *) override;
     void initialize(const FixedLevelTest &, FiniteTargetPlaylist *) override;
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const FreeResponse &) override;

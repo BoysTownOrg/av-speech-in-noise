@@ -4,9 +4,10 @@ namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     FixedLevelMethod &fixedLevelMethod,
     TargetPlaylistReader &targetsWithReplacementReader,
-    TargetPlaylistReader &cyclicTargetsReader, TargetPlaylist &targetsWithReplacement,
-    FiniteTargetPlaylist &silentIntervalTargets, FiniteTargetPlaylist &everyTargetOnce,
-    RecognitionTestModel &model)
+    TargetPlaylistReader &cyclicTargetsReader,
+    TargetPlaylist &targetsWithReplacement,
+    FiniteTargetPlaylist &silentIntervalTargets,
+    FiniteTargetPlaylist &everyTargetOnce, RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
       cyclicTargetsReader{cyclicTargetsReader},
@@ -19,8 +20,13 @@ static void initialize(
     model.initialize(&method, test);
 }
 
-static void initialize(
-    FixedLevelMethod &method, const FixedLevelTest &test, TargetPlaylist &targets) {
+static void initialize(FixedLevelMethod &method,
+    const FixedLevelFixedTrialsTest &test, TargetPlaylist &targets) {
+    method.initialize(test, &targets);
+}
+
+static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
+    TargetPlaylist &targets) {
     method.initialize(test, &targets);
 }
 
@@ -49,7 +55,8 @@ static void initializeWithEyeTracking(
     model.initializeWithEyeTracking(&method, test);
 }
 
-void ModelImpl::initializeWithTargetReplacement(const FixedLevelTest &test) {
+void ModelImpl::initializeWithTargetReplacement(
+    const FixedLevelFixedTrialsTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, targetsWithReplacement);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
@@ -94,7 +101,7 @@ void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
 }
 
 void ModelImpl::initializeWithTargetReplacementAndEyeTracking(
-    const FixedLevelTest &test) {
+    const FixedLevelFixedTrialsTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, targetsWithReplacement);
     av_speech_in_noise::initializeWithEyeTracking(

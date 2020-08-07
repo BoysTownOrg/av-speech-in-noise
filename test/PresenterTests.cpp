@@ -1494,12 +1494,13 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeWithTargetReplacement(const FixedLevelTest &) override {
+    void initializeWithTargetReplacement(
+        const FixedLevelFixedTrialsTest &) override {
         throw RequestFailure{errorMessage};
     }
 
     void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelTest &) override {
+        const FixedLevelFixedTrialsTest &) override {
         throw RequestFailure{errorMessage};
     }
 

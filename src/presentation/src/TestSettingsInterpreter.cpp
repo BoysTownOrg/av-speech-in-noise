@@ -197,7 +197,7 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents,
 
 static void initializeFixedLevelTest(Model &model, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr) {
-    FixedLevelTest test;
+    FixedLevelFixedTrialsTest test;
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);

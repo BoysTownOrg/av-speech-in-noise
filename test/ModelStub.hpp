@@ -54,7 +54,8 @@ class ModelStub : public Model {
         return initializedWithCyclicTargets_;
     }
 
-    auto adaptiveTestInitializedWithCyclicTargetsAndEyeTracking() -> bool {
+    [[nodiscard]] auto
+    adaptiveTestInitializedWithCyclicTargetsAndEyeTracking() const -> bool {
         return adaptiveTestInitializedWithCyclicTargetsAndEyeTracking_;
     }
 
@@ -76,6 +77,10 @@ class ModelStub : public Model {
 
     [[nodiscard]] auto fixedLevelTest() const -> auto & {
         return fixedLevelTest_;
+    }
+
+    [[nodiscard]] auto fixedLevelFixedTargetsTest() const -> auto & {
+        return fixedLevelFixedTrialsTest_;
     }
 
     [[nodiscard]] auto calibration() const -> auto & { return calibration_; }
@@ -109,13 +114,16 @@ class ModelStub : public Model {
         return trialParameters_;
     }
 
-    void initializeWithTargetReplacement(const FixedLevelTest &p) override {
+    void initializeWithTargetReplacement(
+        const FixedLevelFixedTrialsTest &p) override {
+        fixedLevelFixedTrialsTest_ = p;
         fixedLevelTest_ = p;
         defaultFixedLevelTestInitialized_ = true;
     }
 
     void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelTest &p) override {
+        const FixedLevelFixedTrialsTest &p) override {
+        fixedLevelFixedTrialsTest_ = p;
         fixedLevelTest_ = p;
         fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_ = true;
     }
@@ -145,7 +153,8 @@ class ModelStub : public Model {
         initializedWithCyclicTargets_ = true;
     }
 
-    void initializeWithCyclicTargetsAndEyeTracking(const AdaptiveTest &p) override {
+    void initializeWithCyclicTargetsAndEyeTracking(
+        const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         adaptiveTestInitializedWithCyclicTargetsAndEyeTracking_ = true;
     }
@@ -221,6 +230,7 @@ class ModelStub : public Model {
   private:
     AdaptiveTest adaptiveTest_{};
     FixedLevelTest fixedLevelTest_{};
+    FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest_{};
     Calibration calibration_{};
     AudioSettings trialParameters_{};
     coordinate_response_measure::Response responseParameters_{};

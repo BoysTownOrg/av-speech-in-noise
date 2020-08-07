@@ -91,6 +91,9 @@ using AdaptiveTestResults = typename std::vector<AdaptiveTestResult>;
 
 struct FixedLevelTest : Test {
     SNR snr{};
+};
+
+struct FixedLevelFixedTrialsTest : FixedLevelTest {
     int trials{30};
 };
 
@@ -122,9 +125,10 @@ class Model {
     virtual ~Model() = default;
     virtual void subscribe(EventListener *) = 0;
     virtual void initialize(const AdaptiveTest &) = 0;
-    virtual void initializeWithTargetReplacement(const FixedLevelTest &) = 0;
+    virtual void initializeWithTargetReplacement(
+        const FixedLevelFixedTrialsTest &) = 0;
     virtual void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelTest &) = 0;
+        const FixedLevelFixedTrialsTest &) = 0;
     virtual void initializeWithSingleSpeaker(const AdaptiveTest &) = 0;
     virtual void initializeWithDelayedMasker(const AdaptiveTest &) = 0;
     virtual void initializeWithEyeTracking(const AdaptiveTest &) = 0;

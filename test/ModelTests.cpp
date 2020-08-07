@@ -18,7 +18,8 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return tracksResetted_;
     }
 
-    void initialize(const AdaptiveTest &t, TargetPlaylistReader *reader) override {
+    void initialize(
+        const AdaptiveTest &t, TargetPlaylistReader *reader) override {
         test_ = &t;
         targetListReader_ = reader;
     }
@@ -60,16 +61,19 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 
 class FixedLevelMethodStub : public FixedLevelMethod {
     const FixedLevelTest *test_{};
+    const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
     TargetPlaylist *targetList_{};
     bool initializedWithFiniteTargetPlaylist_{};
 
   public:
-    void initialize(const FixedLevelTest &t, TargetPlaylist *list) override {
+    void initialize(
+        const FixedLevelFixedTrialsTest &t, TargetPlaylist *list) override {
         targetList_ = list;
-        test_ = &t;
+        fixedTrialsTest_ = &t;
     }
 
-    void initialize(const FixedLevelTest &t, FiniteTargetPlaylist *list) override {
+    void initialize(
+        const FixedLevelTest &t, FiniteTargetPlaylist *list) override {
         targetList_ = list;
         test_ = &t;
         initializedWithFiniteTargetPlaylist_ = true;
@@ -82,6 +86,10 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     [[nodiscard]] auto targetList() const { return targetList_; }
 
     [[nodiscard]] auto test() const { return test_; }
+
+    auto fixedTrialsTest() -> const FixedLevelFixedTrialsTest * {
+        return fixedTrialsTest_;
+    }
 
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> LocalUrl override { return {}; }
@@ -230,6 +238,13 @@ class InitializingFixedLevelTest : public virtual InitializingTestUseCase {
     virtual void run(ModelImpl &model, const FixedLevelTest &test) = 0;
 };
 
+class InitializingFixedLevelFixedTrialsTest
+    : public virtual InitializingTestUseCase {
+  public:
+    virtual void run(
+        ModelImpl &model, const FixedLevelFixedTrialsTest &test) = 0;
+};
+
 class InitializingAdaptiveTest : public virtual InitializingTestUseCase {
   public:
     virtual void run(ModelImpl &model, const AdaptiveTest &test) = 0;
@@ -240,7 +255,7 @@ void initialize(ModelImpl &model, const AdaptiveTest &test) {
 }
 
 void initializeWithTargetReplacement(
-    ModelImpl &model, const FixedLevelTest &test) {
+    ModelImpl &model, const FixedLevelFixedTrialsTest &test) {
     model.initializeWithTargetReplacement(test);
 }
 
@@ -267,7 +282,7 @@ void initializeWithSilentIntervalTargets(
 }
 
 void initializeWithTargetReplacementAndEyeTracking(
-    ModelImpl &model, const FixedLevelTest &test) {
+    ModelImpl &model, const FixedLevelFixedTrialsTest &test) {
     model.initializeWithTargetReplacementAndEyeTracking(test);
 }
 
@@ -414,8 +429,8 @@ class InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking
 };
 
 class InitializingFixedLevelTestWithTargetReplacement
-    : public InitializingFixedLevelTest {
-    FixedLevelTest test_;
+    : public InitializingFixedLevelFixedTrialsTest {
+    FixedLevelFixedTrialsTest test_;
     FixedLevelMethodStub *method;
 
   public:
@@ -427,7 +442,7 @@ class InitializingFixedLevelTestWithTargetReplacement
         initializeWithTargetReplacement(model, test_);
     }
 
-    void run(ModelImpl &model, const FixedLevelTest &test) override {
+    void run(ModelImpl &model, const FixedLevelFixedTrialsTest &test) override {
         initializeWithTargetReplacement(model, test);
     }
 
@@ -460,8 +475,8 @@ class InitializingFixedLevelTestWithSilentIntervalTargets
 };
 
 class InitializingFixedLevelTestWithTargetReplacementAndEyeTracking
-    : public InitializingFixedLevelTest {
-    FixedLevelTest test_;
+    : public InitializingFixedLevelFixedTrialsTest {
+    FixedLevelFixedTrialsTest test_{};
     FixedLevelMethodStub *method;
 
   public:
@@ -473,7 +488,7 @@ class InitializingFixedLevelTestWithTargetReplacementAndEyeTracking
         initializeWithTargetReplacementAndEyeTracking(model, test_);
     }
 
-    void run(ModelImpl &model, const FixedLevelTest &test) override {
+    void run(ModelImpl &model, const FixedLevelFixedTrialsTest &test) override {
         initializeWithTargetReplacementAndEyeTracking(model, test);
     }
 
@@ -571,6 +586,7 @@ class ModelTests : public ::testing::Test {
         internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
+    FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest;
     InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{
         &adaptiveMethod};
     InitializingAdaptiveTestWithEyeTracking
@@ -614,6 +630,13 @@ class ModelTests : public ::testing::Test {
         InitializingFixedLevelTest &useCase) {
         useCase.run(model, fixedLevelTest);
         assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
+    }
+
+    void assertInitializesFixedLevelMethod(
+        InitializingFixedLevelFixedTrialsTest &useCase) {
+        useCase.run(model, fixedLevelFixedTrialsTest);
+        assertEqual(&std::as_const(fixedLevelFixedTrialsTest),
+            fixedLevelMethod.fixedTrialsTest());
     }
 
     void assertInitializesAdaptiveMethod(
@@ -887,7 +910,8 @@ MODEL_TEST(returnsAudioDevices) {
 
 MODEL_TEST(returnsAdaptiveTestResults) {
     adaptiveMethod.setTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
-    assertEqual({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}}, model.adaptiveTestResults());
+    assertEqual(
+        {{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}}, model.adaptiveTestResults());
 }
 
 MODEL_TEST(returnsTrialNumber) {
