@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(
   AvSpeechInNoise
   VERSION 3.5.0
-  LANGUAGES CXX)
+  LANGUAGES CXX OBJCXX)
 
 include(FetchContent)
 
@@ -11,10 +11,11 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/microsoft/GSL
   GIT_TAG v2.0.0)
 FetchContent_MakeAvailable(GSL)
-add_subdirectory(av-speech-in-noise)
-add_subdirectory(apps)
+add_subdirectory(src)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  add_subdirectory(macos-main)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(gtest_force_shared_crt
       ON
       CACHE BOOL "" FORCE)
@@ -31,5 +32,5 @@ if(${AV_SPEECH_IN_NOISE_ENABLE_TESTS})
     GIT_TAG release-1.10.0)
   FetchContent_MakeAvailable(googletest)
 
-  add_subdirectory(tests)
+  add_subdirectory(test)
 endif()
