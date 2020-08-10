@@ -132,6 +132,7 @@ EachTargetPlayedOnceThenShuffleAndRepeat::
 void EachTargetPlayedOnceThenShuffleAndRepeat::loadFromDirectory(
     const LocalUrl &d) {
     shuffle(randomizer, files = filesIn(reader, directory_ = d));
+    endOfPlaylistCount = 0;
 }
 
 auto EachTargetPlayedOnceThenShuffleAndRepeat::next() -> LocalUrl {
