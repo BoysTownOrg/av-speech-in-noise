@@ -28,7 +28,7 @@ void FixedLevelMethodImpl::initialize(
     test_ = &p;
     snr_ = p.snr;
     loadFromDirectory(targetList, p);
-    finiteTargetsExhausted_ = finiteTargetPlaylistWithRepeatables->empty();
+    finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
 }
 
 void FixedLevelMethodImpl::initialize(
@@ -39,6 +39,7 @@ void FixedLevelMethodImpl::initialize(
     test_ = &p;
     snr_ = p.snr;
     loadFromDirectory(targetList, p);
+    finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
 }
 
 auto FixedLevelMethodImpl::complete() -> bool {

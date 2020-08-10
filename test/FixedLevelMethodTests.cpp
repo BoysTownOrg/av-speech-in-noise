@@ -348,6 +348,11 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     assertTestCompleteOnlyAfter(submittingFreeResponse, method, targetList);
 }
 
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    completeWhenTestCompleteAfterInitializing) {
+    assertTestCompleteOnlyAfter(initializingMethod, method, targetList);
+}
+
 class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests
     : public ::testing::Test {
   protected:
