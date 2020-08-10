@@ -293,6 +293,11 @@ CYCLIC_RANDOMIZED_TARGET_LIST_TEST(currentReturnsEmptyIfNoFiles) {
     currentReturnsEmptyIfNoFiles(list, reader);
 }
 
+EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
+    currentReturnsEmptyIfNoFiles) {
+    currentReturnsEmptyIfNoFiles(list, reader);
+}
+
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     nextShufflesNextSetNotIncludingCurrent) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}, {"d"}});
