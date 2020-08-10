@@ -572,13 +572,13 @@ class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingFixedLevelTestWithRepeatedTargets
+class InitializingFixedLevelTestWithEachTargetNTimes
     : public InitializingTestUseCase {
     FixedLevelTestWithEachTargetNTimes test_;
     FixedLevelMethodStub *method;
 
   public:
-    explicit InitializingFixedLevelTestWithRepeatedTargets(
+    explicit InitializingFixedLevelTestWithEachTargetNTimes(
         FixedLevelMethodStub *method)
         : method{method} {}
 
@@ -643,8 +643,8 @@ class ModelTests : public ::testing::Test {
     InitializingFixedLevelTestWithAllTargetsAndEyeTracking
         initializingFixedLevelTestWithAllTargetsAndEyeTracking{
             &fixedLevelMethod};
-    InitializingFixedLevelTestWithRepeatedTargets
-        initializingFixedLevelTestWithRepeatedTargets{&fixedLevelMethod};
+    InitializingFixedLevelTestWithEachTargetNTimes
+        initializingFixedLevelTestWithEachTargetNTimes{&fixedLevelMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
@@ -722,8 +722,8 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
-    initializeFixedLevelTestWithRepeatedTargetsInitializesFixedLevelMethod) {
-    initializingFixedLevelTestWithRepeatedTargets.run(
+    initializingFixedLevelTestWithEachTargetNTimesInitializesFixedLevelMethod) {
+    initializingFixedLevelTestWithEachTargetNTimes.run(
         model, fixedLevelTestWithRepeatedTargets);
     assertEqual(&std::as_const(fixedLevelTestWithRepeatedTargets),
         fixedLevelMethod.testWithRepeatedTargets());
@@ -801,9 +801,9 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
-    initializeFixedLevelTestWithRepeatedTargetsInitializesInternalModel) {
+    initializingFixedLevelTestWithEachTargetNTimesInitializesInternalModel) {
     assertInitializesInternalModel(
-        initializingFixedLevelTestWithRepeatedTargets);
+        initializingFixedLevelTestWithEachTargetNTimes);
 }
 
 MODEL_TEST(
