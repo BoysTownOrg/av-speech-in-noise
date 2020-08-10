@@ -379,6 +379,10 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
     addConsonantImageButton(
         consonants, responseButtons, actions, "z", 2, 3, 3, 4);
     addNextTrialButton(nextTrialButton, actions);
+    addSubview(window.contentView, nextTrialButton);
+    addSubview(window.contentView, responseButtons);
+    hideResponseButtons();
+    hideNextTrialButton();
 }
 
 void CocoaConsonantView::show() { [window makeKeyAndOrderFront:nil]; }
