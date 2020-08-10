@@ -246,6 +246,8 @@ void main(EyeTracker &eyeTracker) {
         &silentIntervalTargetsDirectoryReader, &randomizer};
     RandomizedTargetPlaylistWithoutReplacement everyTargetOnce{
         &onlyIncludesTargetFileExtensions, &randomizer};
+    EachTargetPlayedOnceThenShuffleAndRepeat allTargetsNTimes{
+        &onlyIncludesTargetFileExtensions, &randomizer};
     FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
     RecognitionTestModelImpl recognitionTestModel{targetPlayer, maskerPlayer,
         responseEvaluator, outputFile, randomizer, eyeTracker};
@@ -261,7 +263,7 @@ void main(EyeTracker &eyeTracker) {
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
-        recognitionTestModel};
+        allTargetsNTimes, recognitionTestModel};
     CocoaView view{NSMakeRect(0, 0, 900, 270)};
     view.center();
     const auto delegate{[WindowDelegate alloc]};
