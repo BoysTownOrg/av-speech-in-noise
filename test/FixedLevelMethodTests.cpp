@@ -343,6 +343,11 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
         submittingCoordinateResponse, method, targetList);
 }
 
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    completeWhenTestCompleteAfterFreeResponse) {
+    assertTestCompleteOnlyAfter(submittingFreeResponse, method, targetList);
+}
+
 class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests
     : public ::testing::Test {
   protected:
