@@ -97,8 +97,8 @@ struct FixedLevelFixedTrialsTest : FixedLevelTest {
     int trials{30};
 };
 
-struct FixedLevelTestWithRepeatedTargets : FixedLevelTest {
-    int repetitions{1};
+struct FixedLevelTestWithEachTargetNTimes : FixedLevelTest {
+    int timesEachTargetIsPlayed{1};
 };
 
 struct AudioSettings {
@@ -143,7 +143,7 @@ class Model {
         const FixedLevelTest &) = 0;
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
     virtual void initializeConsonants(
-        const FixedLevelTestWithRepeatedTargets &) = 0;
+        const FixedLevelTestWithEachTargetNTimes &) = 0;
     virtual void initializeWithAllTargetsAndEyeTracking(
         const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;

@@ -126,7 +126,7 @@ class AdaptiveMethod : public virtual TestMethod {
 class FixedLevelMethod : public virtual TestMethod {
   public:
     virtual void initialize(
-        const FixedLevelTestWithRepeatedTargets &, FiniteTargetPlaylist *) = 0;
+        const FixedLevelTestWithEachTargetNTimes &, FiniteTargetPlaylist *) = 0;
     virtual void initialize(
         const FixedLevelTest &, FiniteTargetPlaylistWithRepeatables *) = 0;
     virtual void initialize(
@@ -171,7 +171,7 @@ class ModelImpl : public Model {
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
     void initializeWithAllTargets(const FixedLevelTest &) override;
     void initializeConsonants(
-        const FixedLevelTestWithRepeatedTargets &) override;
+        const FixedLevelTestWithEachTargetNTimes &) override;
     void initializeWithAllTargetsAndEyeTracking(
         const FixedLevelTest &) override;
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;

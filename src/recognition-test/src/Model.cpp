@@ -27,7 +27,7 @@ static void initialize(FixedLevelMethod &method,
 }
 
 static void initialize(FixedLevelMethod &method,
-    const FixedLevelTestWithRepeatedTargets &test,
+    const FixedLevelTestWithEachTargetNTimes &test,
     FiniteTargetPlaylist &targets) {
     method.initialize(test, &targets);
 }
@@ -94,7 +94,7 @@ class FiniteTargetPlaylistStub : public FiniteTargetPlaylist {
 static FiniteTargetPlaylistStub finiteTargetPlaylistStub;
 
 void ModelImpl::initializeConsonants(
-    const FixedLevelTestWithRepeatedTargets &test) {
+    const FixedLevelTestWithEachTargetNTimes &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, finiteTargetPlaylistStub);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);

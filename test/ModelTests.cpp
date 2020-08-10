@@ -62,7 +62,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 class FixedLevelMethodStub : public FixedLevelMethod {
     const FixedLevelTest *test_{};
     const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
-    const FixedLevelTestWithRepeatedTargets *testWithRepeatedTargets_{};
+    const FixedLevelTestWithEachTargetNTimes *testWithRepeatedTargets_{};
     TargetPlaylist *targetList_{};
 
   public:
@@ -78,7 +78,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         test_ = &t;
     }
 
-    void initialize(const FixedLevelTestWithRepeatedTargets &t,
+    void initialize(const FixedLevelTestWithEachTargetNTimes &t,
         FiniteTargetPlaylist *list) override {
         targetList_ = list;
         testWithRepeatedTargets_ = &t;
@@ -89,7 +89,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     [[nodiscard]] auto test() const { return test_; }
 
     auto testWithRepeatedTargets()
-        -> const FixedLevelTestWithRepeatedTargets * {
+        -> const FixedLevelTestWithEachTargetNTimes * {
         return testWithRepeatedTargets_;
     }
 
@@ -574,7 +574,7 @@ class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
 
 class InitializingFixedLevelTestWithRepeatedTargets
     : public InitializingTestUseCase {
-    FixedLevelTestWithRepeatedTargets test_;
+    FixedLevelTestWithEachTargetNTimes test_;
     FixedLevelMethodStub *method;
 
   public:
@@ -584,7 +584,7 @@ class InitializingFixedLevelTestWithRepeatedTargets
 
     void run(ModelImpl &model) override { model.initializeConsonants(test_); }
 
-    void run(ModelImpl &model, const FixedLevelTestWithRepeatedTargets &test) {
+    void run(ModelImpl &model, const FixedLevelTestWithEachTargetNTimes &test) {
         model.initializeConsonants(test);
     }
 
@@ -613,7 +613,7 @@ class ModelTests : public ::testing::Test {
         internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
-    FixedLevelTestWithRepeatedTargets fixedLevelTestWithRepeatedTargets;
+    FixedLevelTestWithEachTargetNTimes fixedLevelTestWithRepeatedTargets;
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest;
     InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{
         &adaptiveMethod};

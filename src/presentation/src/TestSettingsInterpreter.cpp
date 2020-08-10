@@ -221,7 +221,7 @@ static void initializeFixedLevelTest(Model &model, const std::string &contents,
         initialize(test, contents, method_, identity, startingSnr);
         model.initializeWithAllTargets(test);
     } else if (method_ == Method::fixedLevelConsonants) {
-        FixedLevelTestWithRepeatedTargets test;
+        FixedLevelTestWithEachTargetNTimes test;
         initialize(test, contents, method_, identity, startingSnr);
         model.initializeConsonants(test);
     } else if (method_ ==

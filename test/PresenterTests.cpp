@@ -1491,7 +1491,7 @@ class RequestFailingModel : public Model {
     }
 
     void initializeConsonants(
-        const FixedLevelTestWithRepeatedTargets &) override {
+        const FixedLevelTestWithEachTargetNTimes &) override {
         throw RequestFailure{errorMessage};
     }
 
