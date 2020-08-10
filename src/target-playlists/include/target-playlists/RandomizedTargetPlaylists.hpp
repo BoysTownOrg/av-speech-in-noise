@@ -101,7 +101,8 @@ class CyclicRandomizedTargetPlaylist : public TargetPlaylist {
     target_list::Randomizer *randomizer;
 };
 
-class EachTargetPlayedOnceThenShuffleAndRepeat : public FiniteTargetPlaylist {
+class EachTargetPlayedOnceThenShuffleAndRepeat
+    : public RepeatableFiniteTargetPlaylist {
   public:
     class Factory : public TargetPlaylistFactory {
       public:
@@ -125,7 +126,7 @@ class EachTargetPlayedOnceThenShuffleAndRepeat : public FiniteTargetPlaylist {
     auto current() -> LocalUrl override;
     auto directory() -> LocalUrl override;
     auto empty() -> bool override;
-    void setRepeats(gsl::index);
+    void setRepeats(gsl::index) override;
 
   private:
     LocalUrls files{};
