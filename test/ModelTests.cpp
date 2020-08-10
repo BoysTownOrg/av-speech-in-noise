@@ -78,10 +78,10 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         test_ = &t;
     }
 
-    void initialize(const FixedLevelTestWithEachTargetNTimes &t,
-        FiniteTargetPlaylist *list) override {
+    void initialize(
+        const FixedLevelTest &t, FiniteTargetPlaylist *list) override {
         targetList_ = list;
-        testWithRepeatedTargets_ = &t;
+        test_ = &t;
     }
 
     [[nodiscard]] auto targetList() const { return targetList_; }
@@ -726,8 +726,9 @@ MODEL_TEST(
     initializingFixedLevelTestWithEachTargetNTimesInitializesFixedLevelMethod) {
     initializingFixedLevelTestWithEachTargetNTimes.run(
         model, fixedLevelTestWithEachTargetNTimes);
-    assertEqual(&std::as_const(fixedLevelTestWithEachTargetNTimes),
-        fixedLevelMethod.testWithRepeatedTargets());
+    assertEqual(&static_cast<const FixedLevelTest &>(
+                    std::as_const(fixedLevelTestWithEachTargetNTimes)),
+        fixedLevelMethod.test());
 }
 
 MODEL_TEST(

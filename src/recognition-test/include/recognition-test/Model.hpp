@@ -125,8 +125,7 @@ class AdaptiveMethod : public virtual TestMethod {
 
 class FixedLevelMethod : public virtual TestMethod {
   public:
-    virtual void initialize(
-        const FixedLevelTestWithEachTargetNTimes &, FiniteTargetPlaylist *) = 0;
+    virtual void initialize(const FixedLevelTest &, FiniteTargetPlaylist *) = 0;
     virtual void initialize(
         const FixedLevelTest &, FiniteTargetPlaylistWithRepeatables *) = 0;
     virtual void initialize(
