@@ -31,8 +31,13 @@ else()
   set(MAIN_IMPL_FILE main-no-eyetracking.mm)
 endif()
 
-add_executable(AvSpeechInNoise MACOSX_BUNDLE
-               AvFoundationPlayers.mm CocoaView.mm ${MAIN_IMPL_FILE} main.mm)
+set(AV_SPEECH_IN_NOISE_MACOS_RESOURCES
+    ""
+    CACHE STRING "Resources for AV Speech in Noise")
+add_executable(
+  AvSpeechInNoise MACOSX_BUNDLE
+  AvFoundationPlayers.mm CocoaView.mm ${MAIN_IMPL_FILE} main.mm
+  ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
 target_compile_features(AvSpeechInNoise PRIVATE cxx_std_17)
 target_compile_options(AvSpeechInNoise PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})
 target_link_libraries(
@@ -62,6 +67,7 @@ set_target_properties(
   PROPERTIES MACOSX_BUNDLE_BUNDLE_VERSION ${CMAKE_PROJECT_VERSION}
              MACOSX_BUNDLE_SHORT_VERSION_STRING ${CMAKE_PROJECT_VERSION}
              MACOSX_BUNDLE_GUI_IDENTIFIER org.boystown.av-speech-in-noise
+             RESOURCE "${AV_SPEECH_IN_NOISE_MACOS_RESOURCES}"
              CXX_EXTENSIONS OFF
              OUTPUT_NAME "AV Speech in Noise"
              XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY
