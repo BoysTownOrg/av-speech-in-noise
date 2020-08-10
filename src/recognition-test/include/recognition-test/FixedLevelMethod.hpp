@@ -32,7 +32,8 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     coordinate_response_measure::FixedLevelTrial lastTrial{};
     const FixedLevelTest *test_{};
     TargetPlaylist *targetList{};
-    FiniteTargetPlaylistWithRepeatables *finiteTargetPlaylist{};
+    FiniteTargetPlaylist *finiteTargetPlaylist{};
+    FiniteTargetPlaylistWithRepeatables *finiteTargetPlaylistWithRepeatables{};
     ResponseEvaluator &evaluator;
     SNR snr_{};
     int trials_{};

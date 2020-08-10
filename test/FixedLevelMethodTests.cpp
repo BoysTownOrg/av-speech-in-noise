@@ -163,7 +163,7 @@ void assertIncomplete(FixedLevelMethodImpl &method) {
 }
 
 void assertTestCompleteOnlyAfter(UseCase &useCase, FixedLevelMethodImpl &method,
-    FiniteTargetPlaylistWithRepeatablesStub &list) {
+    FiniteTargetPlaylistStub &list) {
     list.setEmpty();
     assertIncomplete(method);
     run(useCase, method);
@@ -335,6 +335,12 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
     OutputFileStub outputFile;
     method.writeTestingParameters(outputFile);
     assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    completeWhenTestCompleteAfterCoordinateResponse) {
+    assertTestCompleteOnlyAfter(
+        submittingCoordinateResponse, method, targetList);
 }
 
 class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests

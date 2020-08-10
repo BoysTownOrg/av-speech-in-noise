@@ -24,15 +24,18 @@ void FixedLevelMethodImpl::initialize(
     usingFiniteTargetPlaylist_ = true;
     targetList = list;
     finiteTargetPlaylist = list;
+    finiteTargetPlaylistWithRepeatables = list;
     test_ = &p;
     snr_ = p.snr;
     loadFromDirectory(targetList, p);
-    finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
+    finiteTargetsExhausted_ = finiteTargetPlaylistWithRepeatables->empty();
 }
 
 void FixedLevelMethodImpl::initialize(
     const FixedLevelTest &p, FiniteTargetPlaylist *list) {
+    usingFiniteTargetPlaylist_ = true;
     targetList = list;
+    finiteTargetPlaylist = list;
     test_ = &p;
     snr_ = p.snr;
     loadFromDirectory(targetList, p);
@@ -85,7 +88,7 @@ void FixedLevelMethodImpl::submitCorrectResponse() {}
 void FixedLevelMethodImpl::submit(const FreeResponse &response) {
     if (usingFiniteTargetPlaylist_) {
         if (response.flagged)
-            finiteTargetPlaylist->reinsertCurrent();
+            finiteTargetPlaylistWithRepeatables->reinsertCurrent();
         finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
     } else
         --trials_;
