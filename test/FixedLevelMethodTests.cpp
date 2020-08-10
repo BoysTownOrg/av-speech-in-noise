@@ -232,27 +232,37 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
         initializingMethodWithFiniteTargetPlaylist{finiteTargetPlaylist, test};
 };
 
-TEST_F(PreInitializedFixedLevelMethodTests, snrReturnsInitializedSnr) {
+#define PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(a)                             \
+    TEST_F(PreInitializedFixedLevelMethodTests, a)
+
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(snrReturnsInitializedSnr) {
     testWithFixedTrials.snr.dB = 1;
     run(initializingMethod, method);
     assertEqual(1, method.snr().dB);
 }
 
-TEST_F(PreInitializedFixedLevelMethodTests,
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     snrReturnsInitializedWithFiniteTargetPlaylistWithRepeatablesSnr) {
     test.snr.dB = 1;
     run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);
     assertEqual(1, method.snr().dB);
 }
 
-TEST_F(PreInitializedFixedLevelMethodTests,
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
+    snrReturnsInitializedWithFiniteTargetPlaylistSnr) {
+    test.snr.dB = 1;
+    run(initializingMethodWithFiniteTargetPlaylist, method);
+    assertEqual(1, method.snr().dB);
+}
+
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     initializePassesTargetPlaylistDirectory) {
     testWithFixedTrials.targetsUrl.path = "a";
     run(initializingMethod, method);
     assertEqual("a", targetList.directory().path);
 }
 
-TEST_F(PreInitializedFixedLevelMethodTests,
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     initializeWithFiniteTargetPlaylistWithRepeatablesPassesTargetPlaylistDirectory) {
     test.targetsUrl.path = "a";
     run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);

@@ -30,6 +30,11 @@ void FixedLevelMethodImpl::initialize(
     finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
 }
 
+void FixedLevelMethodImpl::initialize(
+    const FixedLevelTest &p, FiniteTargetPlaylist *list) {
+    snr_ = p.snr;
+}
+
 auto FixedLevelMethodImpl::complete() -> bool {
     return usingFiniteTargetPlaylist_ ? finiteTargetsExhausted_ : trials_ == 0;
 }
