@@ -32,8 +32,9 @@ void FixedLevelMethodImpl::initialize(
 
 void FixedLevelMethodImpl::initialize(
     const FixedLevelTest &p, FiniteTargetPlaylist *list) {
-    snr_ = p.snr;
     targetList = list;
+    test_ = &p;
+    snr_ = p.snr;
     loadFromDirectory(targetList, p);
 }
 

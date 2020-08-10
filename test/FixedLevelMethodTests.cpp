@@ -331,6 +331,12 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(nextReturnsNextTarget) {
     assertNextTargetEquals(method, "a");
 }
 
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
+    OutputFileStub outputFile;
+    method.writeTestingParameters(outputFile);
+    assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+}
+
 class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests
     : public ::testing::Test {
   protected:
