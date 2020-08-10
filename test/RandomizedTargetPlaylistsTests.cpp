@@ -386,6 +386,16 @@ EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     assertNotEmpty(list);
 }
 
+EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
+    nextReturnsFullPathToFileAtFrontAfterReload) {
+    setFileNames(reader, {{"a"}, {"b"}, {"c"}});
+    loadFromDirectory(list);
+    next(list);
+    next(list);
+    loadFromDirectory(list);
+    nextReturnsFullPathToFile(list, reader);
+}
+
 RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(reinsertCurrent) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list, "C:");
