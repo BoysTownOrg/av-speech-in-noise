@@ -613,7 +613,7 @@ class ModelTests : public ::testing::Test {
         internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
-    FixedLevelTestWithEachTargetNTimes fixedLevelTestWithRepeatedTargets;
+    FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes;
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest;
     InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{
         &adaptiveMethod};
@@ -724,8 +724,8 @@ MODEL_TEST(
 MODEL_TEST(
     initializingFixedLevelTestWithEachTargetNTimesInitializesFixedLevelMethod) {
     initializingFixedLevelTestWithEachTargetNTimes.run(
-        model, fixedLevelTestWithRepeatedTargets);
-    assertEqual(&std::as_const(fixedLevelTestWithRepeatedTargets),
+        model, fixedLevelTestWithEachTargetNTimes);
+    assertEqual(&std::as_const(fixedLevelTestWithEachTargetNTimes),
         fixedLevelMethod.testWithRepeatedTargets());
 }
 
