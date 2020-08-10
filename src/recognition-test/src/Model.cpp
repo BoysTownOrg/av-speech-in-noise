@@ -83,17 +83,6 @@ void ModelImpl::initializeWithAllTargets(const FixedLevelTest &test) {
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
-class FiniteTargetPlaylistStub : public FiniteTargetPlaylist {
-  public:
-    void loadFromDirectory(const LocalUrl &directory) {}
-    auto next() -> LocalUrl { return {}; }
-    auto current() -> LocalUrl { return {}; }
-    auto directory() -> LocalUrl { return {}; }
-    auto empty() -> bool { return {}; }
-};
-
-static FiniteTargetPlaylistStub finiteTargetPlaylistStub;
-
 void ModelImpl::initializeConsonants(
     const FixedLevelTestWithEachTargetNTimes &test) {
     av_speech_in_noise::initialize(fixedLevelMethod, test, eachTargetNTimes);
