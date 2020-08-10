@@ -161,29 +161,29 @@ class EachTargetPlayedOnceThenShuffleAndRepeatTests : public ::testing::Test {
     EachTargetPlayedOnceThenShuffleAndRepeat list{&reader, &randomizer};
 };
 
-#define RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(a)                        \
+#define RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(a)                    \
     TEST_F(RandomizedTargetPlaylistWithReplacementTests, a)
 
-#define RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(a)                     \
+#define RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(a)                 \
     TEST_F(RandomizedTargetPlaylistWithoutReplacementTests, a)
 
-#define CYCLIC_RANDOMIZED_TARGET_LIST_TEST(a)                                  \
+#define CYCLIC_RANDOMIZED_TARGET_PLAYLIST_TEST(a)                              \
     TEST_F(CyclicRandomizedTargetPlaylistTests, a)
 
 #define EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(a)                \
     TEST_F(EachTargetPlayedOnceThenShuffleAndRepeatTests, a)
 
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
+RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
     loadFromDirectoryPassesDirectoryToDirectoryReader(list, reader);
 }
 
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
+RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
     loadFromDirectoryPassesDirectoryToDirectoryReader(list, reader);
 }
 
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(
+CYCLIC_RANDOMIZED_TARGET_PLAYLIST_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
     loadFromDirectoryPassesDirectoryToDirectoryReader(list, reader);
 }
@@ -193,17 +193,17 @@ EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader(list, reader);
 }
 
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
+RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(
     loadFromDirectoryShufflesFileNames) {
     loadFromDirectoryShufflesFileNames(list, reader, randomizer);
 }
 
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
+RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(
     loadFromDirectoryShufflesFileNames) {
     loadFromDirectoryShufflesFileNames(list, reader, randomizer);
 }
 
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(loadFromDirectoryShufflesFileNames) {
+CYCLIC_RANDOMIZED_TARGET_PLAYLIST_TEST(loadFromDirectoryShufflesFileNames) {
     loadFromDirectoryShufflesFileNames(list, reader, randomizer);
 }
 
@@ -212,16 +212,16 @@ EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     loadFromDirectoryShufflesFileNames(list, reader, randomizer);
 }
 
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsFullPathToFile) {
+RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(nextReturnsFullPathToFile) {
     nextReturnsFullPathToFile(list, reader);
 }
 
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
+RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(
     nextReturnsFullPathToFileAtFront) {
     nextReturnsFullPathToFile(list, reader);
 }
 
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextReturnsFullPathToFileAtFront) {
+CYCLIC_RANDOMIZED_TARGET_PLAYLIST_TEST(nextReturnsFullPathToFileAtFront) {
     nextReturnsFullPathToFile(list, reader);
 }
 
@@ -230,15 +230,16 @@ EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     nextReturnsFullPathToFile(list, reader);
 }
 
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
+RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
     currentReturnsFullPathToFile(list, reader);
 }
 
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
+RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(
+    currentReturnsFullPathToFile) {
     currentReturnsFullPathToFile(list, reader);
 }
 
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(currentReturnsFullPathToFile) {
+CYCLIC_RANDOMIZED_TARGET_PLAYLIST_TEST(currentReturnsFullPathToFile) {
     currentReturnsFullPathToFile(list, reader);
 }
 
@@ -247,15 +248,15 @@ EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     currentReturnsFullPathToFile(list, reader);
 }
 
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(directoryReturnsDirectory) {
+RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(directoryReturnsDirectory) {
     directoryReturnsDirectory(list);
 }
 
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(directoryReturnsDirectory) {
+RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(directoryReturnsDirectory) {
     directoryReturnsDirectory(list);
 }
 
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(directoryReturnsDirectory) {
+CYCLIC_RANDOMIZED_TARGET_PLAYLIST_TEST(directoryReturnsDirectory) {
     directoryReturnsDirectory(list);
 }
 
@@ -264,15 +265,15 @@ EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     directoryReturnsDirectory(list);
 }
 
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
+RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
     nextReturnsEmptyIfNoFiles(list, reader);
 }
 
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
+RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
     nextReturnsEmptyIfNoFiles(list, reader);
 }
 
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextReturnsEmptyIfNoFiles) {
+CYCLIC_RANDOMIZED_TARGET_PLAYLIST_TEST(nextReturnsEmptyIfNoFiles) {
     nextReturnsEmptyIfNoFiles(list, reader);
 }
 
@@ -281,15 +282,16 @@ EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     nextReturnsEmptyIfNoFiles(list, reader);
 }
 
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(currentReturnsEmptyIfNoFiles) {
+RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(currentReturnsEmptyIfNoFiles) {
     currentReturnsEmptyIfNoFiles(list, reader);
 }
 
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(currentReturnsEmptyIfNoFiles) {
+RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(
+    currentReturnsEmptyIfNoFiles) {
     currentReturnsEmptyIfNoFiles(list, reader);
 }
 
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(currentReturnsEmptyIfNoFiles) {
+CYCLIC_RANDOMIZED_TARGET_PLAYLIST_TEST(currentReturnsEmptyIfNoFiles) {
     currentReturnsEmptyIfNoFiles(list, reader);
 }
 
@@ -298,7 +300,7 @@ EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     currentReturnsEmptyIfNoFiles(list, reader);
 }
 
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
+RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(
     nextShufflesNextSetNotIncludingCurrent) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}, {"d"}});
     loadFromDirectory(list);
@@ -306,7 +308,8 @@ RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     assertShuffled(randomizer, {{"b"}, {"c"}, {"d"}});
 }
 
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReplacesSecondToLastTarget) {
+RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(
+    nextReplacesSecondToLastTarget) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}, {"d"}, {"e"}});
     loadFromDirectory(list);
     next(list);
@@ -314,7 +317,7 @@ RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReplacesSecondToLastTarget) {
     assertShuffled(randomizer, {{"c"}, {"d"}, {"e"}, {"a"}});
 }
 
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
+RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(
     emptyWhenStimulusFilesExhausted) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list);
@@ -327,7 +330,7 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     assertEmpty(list);
 }
 
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(reinsertCurrent) {
+RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(reinsertCurrent) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list, "C:");
     assertNextEquals(list, "C:/a");
@@ -337,7 +340,7 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(reinsertCurrent) {
     assertNextEquals(list, "C:/b");
 }
 
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextCyclesBackToBeginningOfFiles) {
+CYCLIC_RANDOMIZED_TARGET_PLAYLIST_TEST(nextCyclesBackToBeginningOfFiles) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list, "C:");
     next(list);
