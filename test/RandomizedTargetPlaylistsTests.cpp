@@ -225,12 +225,12 @@ CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextReturnsFullPathToFileAtFront) {
     nextReturnsFullPathToFile(list, reader);
 }
 
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
-    currentReturnsFullPathToFile(list, reader);
+EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
+    nextReturnsFullPathToFileAtFront) {
+    nextReturnsFullPathToFile(list, reader);
 }
 
-EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
-    currentReturnsFullPathToFile) {
+RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
     currentReturnsFullPathToFile(list, reader);
 }
 
@@ -239,6 +239,11 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
 }
 
 CYCLIC_RANDOMIZED_TARGET_LIST_TEST(currentReturnsFullPathToFile) {
+    currentReturnsFullPathToFile(list, reader);
+}
+
+EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
+    currentReturnsFullPathToFile) {
     currentReturnsFullPathToFile(list, reader);
 }
 
