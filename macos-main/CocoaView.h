@@ -3,6 +3,7 @@
 
 #include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>
+#include <unordered_map>
 
 @class SetupViewActions;
 @class CoordinateResponseMeasureViewActions;
@@ -119,11 +120,12 @@ class CocoaConsonantView : public View::Consonant {
     void hideResponseButtons() override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
-    auto consonant() -> std::string override { return {}; }
+    auto consonant() -> std::string override;
     void respond(id sender);
     void playTrial();
 
   private:
+    std::unordered_map<id, std::string> consonants;
     NSWindow *window;
     NSView *responseButtons;
     NSView *nextTrialButton;

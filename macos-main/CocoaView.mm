@@ -1,5 +1,6 @@
 #include "CocoaView.h"
 #include "common-objc.h"
+#include <gsl/gsl>
 #include <iterator>
 #include <array>
 
@@ -298,6 +299,49 @@ void CocoaTestSetupView::browseForTestSettings() {
 
 void CocoaTestSetupView::playCalibration() { listener_->playCalibration(); }
 
+static auto resourcePath(const std::string &stem, const std::string &extension)
+    -> std::string {
+    return [[NSBundle mainBundle] pathForResource:asNsString(stem)
+                                           ofType:asNsString(extension)]
+        .UTF8String;
+}
+
+static void addConsonantImageButton(
+    std::unordered_map<id, std::string> &consonants, NSView *parent,
+    ConsonantViewActions *actions, const std::string &consonant, gsl::index row,
+    gsl::index column, gsl::index totalRows, gsl::index totalColumns) {
+    const auto image{[[NSImage alloc]
+        initWithContentsOfFile:asNsString(resourcePath(consonant, "bmp"))]};
+    const auto button {
+        [NSButton buttonWithImage:image
+                           target:actions
+                           action:@selector(respond:)]
+    };
+    consonants[button] = consonant;
+    const auto imageWidth{width(parent.frame) / totalColumns};
+    const auto imageHeight{height(parent.frame) / totalRows};
+    [button setFrame:NSMakeRect(imageWidth * column, imageHeight * row,
+                         imageWidth, imageHeight)];
+    addSubview(parent, button);
+}
+
+static void addNextTrialButton(NSView *parent, ConsonantViewActions *actions) {
+    const auto button_ { button("", actions, @selector(playTrial)) };
+    [button_ setBezelStyle:NSBezelStyleTexturedSquare];
+    auto style{[[NSMutableParagraphStyle alloc] init]};
+    [style setAlignment:NSTextAlignmentCenter];
+    auto font{[NSFont fontWithName:@"Courier" size:36]};
+    auto attrsDictionary{[NSDictionary
+        dictionaryWithObjectsAndKeys:font, NSFontAttributeName, nil]};
+    auto attrString{
+        [[NSAttributedString alloc] initWithString:@"Press when ready"
+                                        attributes:attrsDictionary]};
+    [button_ setAttributedTitle:attrString];
+    [button_
+        setFrame:NSMakeRect(0, 0, width(parent.frame), height(parent.frame))];
+    addSubview(parent, button_);
+}
+
 CocoaConsonantView::CocoaConsonantView(NSRect r)
     : // Defer may be critical here...
       window{[[NSWindow alloc] initWithContentRect:r
@@ -310,6 +354,31 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       actions{[[ConsonantViewActions alloc] init]} {
     actions->controller = this;
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "b", 0, 0, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "c", 0, 1, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "d", 0, 2, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "h", 0, 3, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "k", 1, 0, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "m", 1, 1, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "n", 1, 2, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "p", 1, 3, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "s", 2, 0, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "t", 2, 1, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "v", 2, 2, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "z", 2, 3, 3, 4);
+    addNextTrialButton(nextTrialButton, actions);
 }
 
 void CocoaConsonantView::show() { [window makeKeyAndOrderFront:nil]; }
@@ -339,6 +408,10 @@ void CocoaConsonantView::showResponseButtons() {
 
 void CocoaConsonantView::hideResponseButtons() {
     av_speech_in_noise::hide(responseButtons);
+}
+
+auto CocoaConsonantView::consonant() -> std::string {
+    return consonants.at(lastButtonPressed);
 }
 
 static auto greenColor{NSColor.greenColor};
