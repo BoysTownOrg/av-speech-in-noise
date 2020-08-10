@@ -606,6 +606,7 @@ class ModelTests : public ::testing::Test {
     TargetPlaylistSetReaderStub cyclicTargetsReader;
     FiniteTargetPlaylistWithRepeatablesStub silentIntervals;
     FiniteTargetPlaylistWithRepeatablesStub everyTargetOnce;
+    FiniteTargetPlaylistStub eachTargetNTimes;
     RecognitionTestModelStub internalModel;
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,

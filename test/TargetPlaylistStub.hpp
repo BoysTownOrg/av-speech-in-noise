@@ -45,20 +45,26 @@ class TargetPlaylistStub : public virtual TargetPlaylist {
     bool nextCalled_{};
 };
 
-class FiniteTargetPlaylistWithRepeatablesStub
-    : public FiniteTargetPlaylistWithRepeatables,
-      public TargetPlaylistStub {
+class FiniteTargetPlaylistStub : public virtual FiniteTargetPlaylist,
+                                 public TargetPlaylistStub {
   public:
     void setEmpty() { empty_ = true; }
 
     auto empty() -> bool override { return empty_; }
 
+  private:
+    bool empty_{};
+};
+
+class FiniteTargetPlaylistWithRepeatablesStub
+    : public virtual FiniteTargetPlaylistWithRepeatables,
+      public FiniteTargetPlaylistStub {
+  public:
     void reinsertCurrent() override { reinsertCurrentCalled_ = true; }
 
     auto reinsertCurrentCalled() const { return reinsertCurrentCalled_; }
 
   private:
-    bool empty_{};
     bool reinsertCurrentCalled_{};
 };
 }
