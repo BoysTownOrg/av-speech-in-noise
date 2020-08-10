@@ -135,18 +135,29 @@ void EachTargetPlayedOnceThenShuffleAndRepeat::loadFromDirectory(
 }
 
 auto EachTargetPlayedOnceThenShuffleAndRepeat::next() -> LocalUrl {
-    if (empty(files))
+    if (av_speech_in_noise::empty(files))
         return {""};
 
-    moveFrontToBack(files);
-    return fullPathToLastFile(directory_, files);
+    currentFile = files.at(currentIndex);
+    if (++currentIndex == files.size()) {
+        currentIndex = 0;
+        shuffle(randomizer, files);
+    }
+    return joinPaths(directory_, currentFile);
 }
 
 auto EachTargetPlayedOnceThenShuffleAndRepeat::current() -> LocalUrl {
-    return fullPathToLastFile(directory_, files);
+    return currentFile.path.empty() ? av_speech_in_noise::LocalUrl{""}
+                                    : joinPaths(directory_, currentFile);
 }
 
 auto EachTargetPlayedOnceThenShuffleAndRepeat::directory() -> LocalUrl {
     return directory_;
 }
+
+auto EachTargetPlayedOnceThenShuffleAndRepeat::empty() -> bool {
+    return av_speech_in_noise::empty(files);
+}
+
+void EachTargetPlayedOnceThenShuffleAndRepeat::setRepeats(gsl::index) {}
 }

@@ -21,6 +21,7 @@ class RandomizerStub : public target_list::Randomizer {
 
     void shuffle(gsl::span<av_speech_in_noise::LocalUrl> s) override {
         shuffledStrings_ = {s.begin(), s.end()};
+        ++shuffledCount_;
     }
 
     void shuffle(gsl::span<int> s) override {
@@ -30,9 +31,12 @@ class RandomizerStub : public target_list::Randomizer {
 
     void rotateToTheLeft(int N) { rotateToTheLeft_ = N; }
 
+    auto shuffledCount() -> gsl::index { return shuffledCount_; }
+
   private:
     std::vector<av_speech_in_noise::LocalUrl> shuffledStrings_;
     std::vector<int> shuffledInts_;
+    gsl::index shuffledCount_{};
     int rotateToTheLeft_{};
 };
 
@@ -306,6 +310,19 @@ RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(
     loadFromDirectory(list);
     next(list);
     assertShuffled(randomizer, {{"b"}, {"c"}, {"d"}});
+}
+
+EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
+    nextShufflesAllWhenExhaustedAndSetToRepeat) {
+    list.setRepeats(1);
+    setFileNames(reader, {{"a"}, {"b"}, {"c"}, {"d"}});
+    loadFromDirectory(list);
+    next(list);
+    next(list);
+    next(list);
+    next(list);
+    assertShuffled(randomizer, {{"a"}, {"b"}, {"c"}, {"d"}});
+    assertEqual(gsl::index{2}, randomizer.shuffledCount());
 }
 
 RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(
