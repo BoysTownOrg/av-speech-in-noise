@@ -259,6 +259,11 @@ CYCLIC_RANDOMIZED_TARGET_LIST_TEST(directoryReturnsDirectory) {
     directoryReturnsDirectory(list);
 }
 
+EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
+    directoryReturnsDirectory) {
+    directoryReturnsDirectory(list);
+}
+
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
     nextReturnsEmptyIfNoFiles(list, reader);
 }
