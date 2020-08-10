@@ -26,9 +26,10 @@ class InitializingMethod : public UseCase {
     void run(FixedLevelMethodImpl &m) override { m.initialize(test, &list); }
 };
 
-class InitializingMethodWithFiniteTargetPlaylist : public UseCase {
+class InitializingMethodWithFiniteTargetPlaylistWithRepeatables
+    : public UseCase {
   public:
-    InitializingMethodWithFiniteTargetPlaylist(
+    InitializingMethodWithFiniteTargetPlaylistWithRepeatables(
         FiniteTargetPlaylistWithRepeatables &list, const FixedLevelTest &test)
         : list{list}, test{test} {}
 
@@ -36,6 +37,19 @@ class InitializingMethodWithFiniteTargetPlaylist : public UseCase {
 
   private:
     FiniteTargetPlaylistWithRepeatables &list;
+    const FixedLevelTest &test;
+};
+
+class InitializingMethodWithFiniteTargetPlaylist : public UseCase {
+  public:
+    InitializingMethodWithFiniteTargetPlaylist(
+        FiniteTargetPlaylist &list, const FixedLevelTest &test)
+        : list{list}, test{test} {}
+
+    void run(FixedLevelMethodImpl &m) override { m.initialize(test, &list); }
+
+  private:
+    FiniteTargetPlaylist &list;
     const FixedLevelTest &test;
 };
 
@@ -205,39 +219,44 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
     TargetPlaylistStub targetList;
-    FiniteTargetPlaylistWithRepeatablesStub finiteTargetPlaylist;
+    FiniteTargetPlaylistWithRepeatablesStub finiteTargetPlaylistWithRepeatables;
+    FiniteTargetPlaylistStub finiteTargetPlaylist;
     FixedLevelMethodImpl method{evaluator};
-    FixedLevelFixedTrialsTest test{};
-    InitializingMethod initializingMethod{targetList, test};
+    FixedLevelFixedTrialsTest testWithFixedTrials{};
+    InitializingMethod initializingMethod{targetList, testWithFixedTrials};
+    InitializingMethodWithFiniteTargetPlaylistWithRepeatables
+        initializingMethodWithFiniteTargetPlaylistWithRepeatables{
+            finiteTargetPlaylistWithRepeatables, testWithFixedTrials};
     InitializingMethodWithFiniteTargetPlaylist
-        initializingMethodWithFiniteTargetPlaylist{finiteTargetPlaylist, test};
+        initializingMethodWithFiniteTargetPlaylist{
+            finiteTargetPlaylist, testWithFixedTrials};
 };
 
 TEST_F(PreInitializedFixedLevelMethodTests, snrReturnsInitializedSnr) {
-    test.snr.dB = 1;
+    testWithFixedTrials.snr.dB = 1;
     run(initializingMethod, method);
     assertEqual(1, method.snr().dB);
 }
 
 TEST_F(PreInitializedFixedLevelMethodTests,
     snrReturnsInitializedWithFiniteTargetPlaylistSnr) {
-    test.snr.dB = 1;
-    run(initializingMethodWithFiniteTargetPlaylist, method);
+    testWithFixedTrials.snr.dB = 1;
+    run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);
     assertEqual(1, method.snr().dB);
 }
 
 TEST_F(PreInitializedFixedLevelMethodTests,
     initializePassesTargetPlaylistDirectory) {
-    test.targetsUrl.path = "a";
+    testWithFixedTrials.targetsUrl.path = "a";
     run(initializingMethod, method);
     assertEqual("a", targetList.directory().path);
 }
 
 TEST_F(PreInitializedFixedLevelMethodTests,
     initializeWithFiniteTargetPlaylistPassesTargetPlaylistDirectory) {
-    test.targetsUrl.path = "a";
-    run(initializingMethodWithFiniteTargetPlaylist, method);
-    assertEqual("a", finiteTargetPlaylist.directory().path);
+    testWithFixedTrials.targetsUrl.path = "a";
+    run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);
+    assertEqual("a", finiteTargetPlaylistWithRepeatables.directory().path);
 }
 
 void assertComplete(FixedLevelMethodImpl &method) {
@@ -277,7 +296,7 @@ class FixedLevelMethodWithFiniteTargetPlaylistTests : public ::testing::Test {
     FiniteTargetPlaylistWithRepeatablesStub targetList;
     FixedLevelMethodImpl method{evaluator};
     FixedLevelTest test{};
-    InitializingMethodWithFiniteTargetPlaylist
+    InitializingMethodWithFiniteTargetPlaylistWithRepeatables
         initializingMethodWithFiniteTargetPlaylist{targetList, test};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
