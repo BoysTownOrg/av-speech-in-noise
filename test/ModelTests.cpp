@@ -606,7 +606,7 @@ class ModelTests : public ::testing::Test {
     TargetPlaylistSetReaderStub cyclicTargetsReader;
     FiniteTargetPlaylistWithRepeatablesStub silentIntervals;
     FiniteTargetPlaylistWithRepeatablesStub everyTargetOnce;
-    FiniteTargetPlaylistStub eachTargetNTimes;
+    RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
     RecognitionTestModelStub internalModel;
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
@@ -774,6 +774,13 @@ MODEL_TEST(
     initializeFixedLevelTestWithEachTargetNTimesInitializesWithEachTargetNTimes) {
     assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithEachTargetNTimes, eachTargetNTimes);
+}
+
+MODEL_TEST(initializeFixedLevelTestWithEachTargetNTimesSetsTargetRepeats) {
+    fixedLevelTestWithEachTargetNTimes.timesEachTargetIsPlayed = 2;
+    initializingFixedLevelTestWithEachTargetNTimes.run(
+        model, fixedLevelTestWithEachTargetNTimes);
+    assertEqual(gsl::index{2}, eachTargetNTimes.repeats());
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {

@@ -8,7 +8,8 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     TargetPlaylist &targetsWithReplacement,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
-    FiniteTargetPlaylist &eachTargetNTimes, RecognitionTestModel &model)
+    RepeatableFiniteTargetPlaylist &eachTargetNTimes,
+    RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
       cyclicTargetsReader{cyclicTargetsReader},
@@ -85,6 +86,7 @@ void ModelImpl::initializeWithAllTargets(const FixedLevelTest &test) {
 
 void ModelImpl::initializeConsonants(
     const FixedLevelTestWithEachTargetNTimes &test) {
+    eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed);
     av_speech_in_noise::initialize(fixedLevelMethod, test, eachTargetNTimes);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
