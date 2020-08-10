@@ -205,7 +205,7 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
     TargetPlaylistStub targetList;
-    FiniteTargetPlaylistStub finiteTargetPlaylist;
+    FiniteTargetPlaylistWithRepeatablesStub finiteTargetPlaylist;
     FixedLevelMethodImpl method{evaluator};
     FixedLevelFixedTrialsTest test{};
     InitializingMethod initializingMethod{targetList, test};
@@ -249,29 +249,32 @@ void assertIncomplete(FixedLevelMethodImpl &method) {
 }
 
 void assertTestCompleteOnlyAfter(UseCase &useCase, FixedLevelMethodImpl &method,
-    FiniteTargetPlaylistStub &list) {
+    FiniteTargetPlaylistWithRepeatablesStub &list) {
     list.setEmpty();
     assertIncomplete(method);
     run(useCase, method);
     assertComplete(method);
 }
 
-auto reinsertCurrentCalled(FiniteTargetPlaylistStub &list) -> bool {
+auto reinsertCurrentCalled(FiniteTargetPlaylistWithRepeatablesStub &list)
+    -> bool {
     return list.reinsertCurrentCalled();
 }
 
-void assertCurrentTargetNotReinserted(FiniteTargetPlaylistStub &list) {
+void assertCurrentTargetNotReinserted(
+    FiniteTargetPlaylistWithRepeatablesStub &list) {
     assertFalse(reinsertCurrentCalled(list));
 }
 
-void assertCurrentTargetReinserted(FiniteTargetPlaylistStub &list) {
+void assertCurrentTargetReinserted(
+    FiniteTargetPlaylistWithRepeatablesStub &list) {
     assertTrue(reinsertCurrentCalled(list));
 }
 
 class FixedLevelMethodWithFiniteTargetPlaylistTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
-    FiniteTargetPlaylistStub targetList;
+    FiniteTargetPlaylistWithRepeatablesStub targetList;
     FixedLevelMethodImpl method{evaluator};
     FixedLevelTest test{};
     InitializingMethodWithFiniteTargetPlaylist
