@@ -611,7 +611,7 @@ class ModelTests : public ::testing::Test {
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervals, everyTargetOnce,
-        internalModel};
+        eachTargetNTimes, internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes;
@@ -767,6 +767,12 @@ MODEL_TEST(
     assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithAllTargetsAndEyeTracking,
         everyTargetOnce);
+}
+
+MODEL_TEST(
+    initializeFixedLevelTestWithEachTargetNTimesInitializesWithEachTargetNTimes) {
+    assertInitializesFixedLevelTestWithTargetPlaylist(
+        initializingFixedLevelTestWithEachTargetNTimes, eachTargetNTimes);
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {

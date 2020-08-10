@@ -8,13 +8,14 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     TargetPlaylist &targetsWithReplacement,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
-    RecognitionTestModel &model)
+    FiniteTargetPlaylist &eachTargetNTimes, RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
       cyclicTargetsReader{cyclicTargetsReader},
       targetsWithReplacement{targetsWithReplacement},
       silentIntervalTargets{silentIntervalTargets},
-      everyTargetOnce{everyTargetOnce}, model{model} {}
+      everyTargetOnce{everyTargetOnce},
+      eachTargetNTimes{eachTargetNTimes}, model{model} {}
 
 static void initialize(
     RecognitionTestModel &model, TestMethod &method, const Test &test) {
@@ -95,8 +96,7 @@ static FiniteTargetPlaylistStub finiteTargetPlaylistStub;
 
 void ModelImpl::initializeConsonants(
     const FixedLevelTestWithEachTargetNTimes &test) {
-    av_speech_in_noise::initialize(
-        fixedLevelMethod, test, finiteTargetPlaylistStub);
+    av_speech_in_noise::initialize(fixedLevelMethod, test, eachTargetNTimes);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
