@@ -354,6 +354,23 @@ EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     assertEmpty(list);
 }
 
+EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
+    emptyWhenStimulusFilesExhaustedWithRepeats) {
+    list.setRepeats(1);
+    setFileNames(reader, {{"a"}, {"b"}, {"c"}});
+    loadFromDirectory(list);
+    next(list);
+    next(list);
+    next(list);
+    assertNotEmpty(list);
+    next(list);
+    assertNotEmpty(list);
+    next(list);
+    assertNotEmpty(list);
+    next(list);
+    assertEmpty(list);
+}
+
 RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(reinsertCurrent) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list, "C:");
