@@ -207,6 +207,11 @@ CYCLIC_RANDOMIZED_TARGET_LIST_TEST(loadFromDirectoryShufflesFileNames) {
     loadFromDirectoryShufflesFileNames(list, reader, randomizer);
 }
 
+EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
+    loadFromDirectoryShufflesFileNames) {
+    loadFromDirectoryShufflesFileNames(list, reader, randomizer);
+}
+
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsFullPathToFile) {
     nextReturnsFullPathToFile(list, reader);
 }
