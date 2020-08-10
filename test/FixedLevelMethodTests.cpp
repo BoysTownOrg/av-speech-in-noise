@@ -310,16 +310,16 @@ void assertCurrentTargetReinserted(
 class FixedLevelMethodWithFiniteTargetPlaylistTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
-    FiniteTargetPlaylistWithRepeatablesStub targetList;
+    FiniteTargetPlaylistStub targetList;
     FixedLevelMethodImpl method{evaluator};
     FixedLevelTest test{};
-    InitializingMethodWithFiniteTargetPlaylistWithRepeatables
-        initializingMethodWithFiniteTargetPlaylist{targetList, test};
+    InitializingMethodWithFiniteTargetPlaylist initializingMethod{
+        targetList, test};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
 
     FixedLevelMethodWithFiniteTargetPlaylistTests() {
-        run(initializingMethodWithFiniteTargetPlaylist, method);
+        run(initializingMethod, method);
     }
 };
 
@@ -331,36 +331,63 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(nextReturnsNextTarget) {
     assertNextTargetEquals(method, "a");
 }
 
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
+class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests
+    : public ::testing::Test {
+  protected:
+    ResponseEvaluatorStub evaluator;
+    FiniteTargetPlaylistWithRepeatablesStub targetList;
+    FixedLevelMethodImpl method{evaluator};
+    FixedLevelTest test{};
+    InitializingMethodWithFiniteTargetPlaylistWithRepeatables
+        initializingMethodWithFiniteTargetPlaylist{targetList, test};
+    SubmittingCoordinateResponse submittingCoordinateResponse;
+    SubmittingFreeResponse submittingFreeResponse;
+
+    FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests() {
+        run(initializingMethodWithFiniteTargetPlaylist, method);
+    }
+};
+
+#define FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(a)    \
+    TEST_F(FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests, a)
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    nextReturnsNextTarget) {
+    setNext(targetList, "a");
+    assertNextTargetEquals(method, "a");
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    writeTestPassesSettings) {
     OutputFileStub outputFile;
     method.writeTestingParameters(outputFile);
     assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
 }
 
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     completeWhenTestCompleteAfterCoordinateResponse) {
     assertTestCompleteOnlyAfter(
         submittingCoordinateResponse, method, targetList);
 }
 
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     completeWhenTestCompleteAfterFreeResponse) {
     assertTestCompleteOnlyAfter(submittingFreeResponse, method, targetList);
 }
 
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     completeWhenTestCompleteAfterInitializing) {
     assertTestCompleteOnlyAfter(
         initializingMethodWithFiniteTargetPlaylist, method, targetList);
 }
 
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     submitFreeResponseDoesNotReinsertCurrentTarget) {
     run(submittingFreeResponse, method);
     assertCurrentTargetNotReinserted(targetList);
 }
 
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     submitFreeResponseReinsertsCurrentTargetIfFlagged) {
     submittingFreeResponse.setFlagged();
     run(submittingFreeResponse, method);
