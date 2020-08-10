@@ -64,17 +64,11 @@ void assertShuffled(RandomizerStub &randomizer,
     assertEqual(s, randomizer.shuffledStrings());
 }
 
-auto empty(RandomizedTargetPlaylistWithoutReplacement &list) {
-    return list.empty();
-}
+auto empty(FiniteTargetPlaylist &list) { return list.empty(); }
 
-void assertNotEmpty(RandomizedTargetPlaylistWithoutReplacement &list) {
-    assertFalse(empty(list));
-}
+void assertNotEmpty(FiniteTargetPlaylist &list) { assertFalse(empty(list)); }
 
-void assertEmpty(RandomizedTargetPlaylistWithoutReplacement &list) {
-    assertTrue(empty(list));
-}
+void assertEmpty(FiniteTargetPlaylist &list) { assertTrue(empty(list)); }
 
 void reinsertCurrent(RandomizedTargetPlaylistWithoutReplacement &list) {
     list.reinsertCurrent();
@@ -335,6 +329,19 @@ RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(
 }
 
 RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(
+    emptyWhenStimulusFilesExhausted) {
+    setFileNames(reader, {{"a"}, {"b"}, {"c"}});
+    loadFromDirectory(list);
+    assertNotEmpty(list);
+    next(list);
+    assertNotEmpty(list);
+    next(list);
+    assertNotEmpty(list);
+    next(list);
+    assertEmpty(list);
+}
+
+EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     emptyWhenStimulusFilesExhausted) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list);

@@ -141,6 +141,7 @@ auto EachTargetPlayedOnceThenShuffleAndRepeat::next() -> LocalUrl {
     currentFile = files.at(currentIndex);
     if (++currentIndex == files.size()) {
         currentIndex = 0;
+        ++endOfPlaylistCount;
         shuffle(randomizer, files);
     }
     return joinPaths(directory_, currentFile);
@@ -156,8 +157,10 @@ auto EachTargetPlayedOnceThenShuffleAndRepeat::directory() -> LocalUrl {
 }
 
 auto EachTargetPlayedOnceThenShuffleAndRepeat::empty() -> bool {
-    return av_speech_in_noise::empty(files);
+    return endOfPlaylistCount > repeats;
 }
 
-void EachTargetPlayedOnceThenShuffleAndRepeat::setRepeats(gsl::index) {}
+void EachTargetPlayedOnceThenShuffleAndRepeat::setRepeats(gsl::index n) {
+    repeats = n;
+}
 }

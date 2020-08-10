@@ -134,6 +134,8 @@ class EachTargetPlayedOnceThenShuffleAndRepeat : public FiniteTargetPlaylist {
     DirectoryReader *reader;
     target_list::Randomizer *randomizer;
     gsl::index currentIndex{};
+    gsl::index repeats{};
+    gsl::index endOfPlaylistCount{};
 };
 }
 
