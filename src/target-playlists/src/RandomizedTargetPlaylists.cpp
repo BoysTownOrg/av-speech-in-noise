@@ -37,11 +37,13 @@ static auto allButLast(gsl::span<av_speech_in_noise::LocalUrl> s)
     return s.first(s.size() - 1);
 }
 
-RandomizedTargetPlaylistWithReplacement::RandomizedTargetPlaylistWithReplacement(
-    DirectoryReader *reader, target_list::Randomizer *randomizer)
+RandomizedTargetPlaylistWithReplacement::
+    RandomizedTargetPlaylistWithReplacement(
+        DirectoryReader *reader, target_list::Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void RandomizedTargetPlaylistWithReplacement::loadFromDirectory(const LocalUrl &d) {
+void RandomizedTargetPlaylistWithReplacement::loadFromDirectory(
+    const LocalUrl &d) {
     shuffle(randomizer, files = filesIn(reader, directory_ = d));
 }
 
@@ -62,8 +64,9 @@ auto RandomizedTargetPlaylistWithReplacement::directory() -> LocalUrl {
     return directory_;
 }
 
-RandomizedTargetPlaylistWithoutReplacement::RandomizedTargetPlaylistWithoutReplacement(
-    DirectoryReader *reader, target_list::Randomizer *randomizer)
+RandomizedTargetPlaylistWithoutReplacement::
+    RandomizedTargetPlaylistWithoutReplacement(
+        DirectoryReader *reader, target_list::Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
 void RandomizedTargetPlaylistWithoutReplacement::loadFromDirectory(
@@ -117,5 +120,33 @@ auto CyclicRandomizedTargetPlaylist::current() -> LocalUrl {
     return fullPathToLastFile(directory_, files);
 }
 
-auto CyclicRandomizedTargetPlaylist::directory() -> LocalUrl { return directory_; }
+auto CyclicRandomizedTargetPlaylist::directory() -> LocalUrl {
+    return directory_;
+}
+
+EachTargetPlayedOnceThenShuffleAndRepeat::
+    EachTargetPlayedOnceThenShuffleAndRepeat(
+        DirectoryReader *reader, target_list::Randomizer *randomizer)
+    : reader{reader}, randomizer{randomizer} {}
+
+void EachTargetPlayedOnceThenShuffleAndRepeat::loadFromDirectory(
+    const LocalUrl &d) {
+    shuffle(randomizer, files = filesIn(reader, directory_ = d));
+}
+
+auto EachTargetPlayedOnceThenShuffleAndRepeat::next() -> LocalUrl {
+    if (empty(files))
+        return {""};
+
+    moveFrontToBack(files);
+    return fullPathToLastFile(directory_, files);
+}
+
+auto EachTargetPlayedOnceThenShuffleAndRepeat::current() -> LocalUrl {
+    return fullPathToLastFile(directory_, files);
+}
+
+auto EachTargetPlayedOnceThenShuffleAndRepeat::directory() -> LocalUrl {
+    return directory_;
+}
 }

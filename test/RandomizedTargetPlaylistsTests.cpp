@@ -90,14 +90,15 @@ void loadFromDirectoryPassesDirectoryToDirectoryReader(
     assertDirectoryEquals(reader, "a");
 }
 
-void loadFromDirectoryShufflesFileNames(
-    TargetPlaylist &list, DirectoryReaderStub &reader, RandomizerStub &randomizer) {
+void loadFromDirectoryShufflesFileNames(TargetPlaylist &list,
+    DirectoryReaderStub &reader, RandomizerStub &randomizer) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list);
     assertShuffled(randomizer, {{"a"}, {"b"}, {"c"}});
 }
 
-void nextReturnsFullPathToFile(TargetPlaylist &list, DirectoryReaderStub &reader) {
+void nextReturnsFullPathToFile(
+    TargetPlaylist &list, DirectoryReaderStub &reader) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list, "C:");
     assertNextEquals(list, "C:/a");
@@ -118,7 +119,8 @@ void directoryReturnsDirectory(TargetPlaylist &list) {
     assertEqual("a", list.directory().path);
 }
 
-void nextReturnsEmptyIfNoFiles(TargetPlaylist &list, DirectoryReaderStub &reader) {
+void nextReturnsEmptyIfNoFiles(
+    TargetPlaylist &list, DirectoryReaderStub &reader) {
     setFileNames(reader, {});
     loadFromDirectory(list);
     assertNextEquals(list, "");
@@ -152,6 +154,13 @@ class CyclicRandomizedTargetPlaylistTests : public ::testing::Test {
     CyclicRandomizedTargetPlaylist list{&reader, &randomizer};
 };
 
+class EachTargetPlayedOnceThenShuffleAndRepeatTests : public ::testing::Test {
+  protected:
+    DirectoryReaderStub reader;
+    RandomizerStub randomizer;
+    EachTargetPlayedOnceThenShuffleAndRepeat list{&reader, &randomizer};
+};
+
 #define RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(a)                        \
     TEST_F(RandomizedTargetPlaylistWithReplacementTests, a)
 
@@ -160,6 +169,9 @@ class CyclicRandomizedTargetPlaylistTests : public ::testing::Test {
 
 #define CYCLIC_RANDOMIZED_TARGET_LIST_TEST(a)                                  \
     TEST_F(CyclicRandomizedTargetPlaylistTests, a)
+
+#define EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(a)                \
+    TEST_F(EachTargetPlayedOnceThenShuffleAndRepeatTests, a)
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
@@ -172,6 +184,11 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
 }
 
 CYCLIC_RANDOMIZED_TARGET_LIST_TEST(
+    loadFromDirectoryPassesDirectoryToDirectoryReader) {
+    loadFromDirectoryPassesDirectoryToDirectoryReader(list, reader);
+}
+
+EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
     loadFromDirectoryPassesDirectoryToDirectoryReader(list, reader);
 }
