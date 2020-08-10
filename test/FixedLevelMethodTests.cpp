@@ -263,6 +263,13 @@ PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
 }
 
 PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
+    initializeWithFiniteTargetPlaylistPassesTargetPlaylistDirectory) {
+    test.targetsUrl.path = "a";
+    run(initializingMethodWithFiniteTargetPlaylist, method);
+    assertEqual("a", finiteTargetPlaylist.directory().path);
+}
+
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     initializeWithFiniteTargetPlaylistWithRepeatablesPassesTargetPlaylistDirectory) {
     test.targetsUrl.path = "a";
     run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);

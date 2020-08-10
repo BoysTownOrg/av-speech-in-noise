@@ -33,6 +33,8 @@ void FixedLevelMethodImpl::initialize(
 void FixedLevelMethodImpl::initialize(
     const FixedLevelTest &p, FiniteTargetPlaylist *list) {
     snr_ = p.snr;
+    targetList = list;
+    loadFromDirectory(targetList, p);
 }
 
 auto FixedLevelMethodImpl::complete() -> bool {
