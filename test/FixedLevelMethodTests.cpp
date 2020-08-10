@@ -93,6 +93,98 @@ void setNext(TargetPlaylistStub &list, std::string s) {
     list.setNext(std::move(s));
 }
 
+class PreInitializedFixedLevelMethodTests : public ::testing::Test {
+  protected:
+    ResponseEvaluatorStub evaluator;
+    TargetPlaylistStub targetList;
+    FiniteTargetPlaylistWithRepeatablesStub finiteTargetPlaylistWithRepeatables;
+    FiniteTargetPlaylistStub finiteTargetPlaylist;
+    FixedLevelMethodImpl method{evaluator};
+    FixedLevelTest test{};
+    FixedLevelFixedTrialsTest testWithFixedTrials{};
+    InitializingMethod initializingMethod{targetList, testWithFixedTrials};
+    InitializingMethodWithFiniteTargetPlaylistWithRepeatables
+        initializingMethodWithFiniteTargetPlaylistWithRepeatables{
+            finiteTargetPlaylistWithRepeatables, test};
+    InitializingMethodWithFiniteTargetPlaylist
+        initializingMethodWithFiniteTargetPlaylist{finiteTargetPlaylist, test};
+};
+
+#define PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(a)                             \
+    TEST_F(PreInitializedFixedLevelMethodTests, a)
+
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(snrReturnsInitializedSnr) {
+    testWithFixedTrials.snr.dB = 1;
+    run(initializingMethod, method);
+    assertEqual(1, method.snr().dB);
+}
+
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
+    snrReturnsInitializedWithFiniteTargetPlaylistWithRepeatablesSnr) {
+    test.snr.dB = 1;
+    run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);
+    assertEqual(1, method.snr().dB);
+}
+
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
+    snrReturnsInitializedWithFiniteTargetPlaylistSnr) {
+    test.snr.dB = 1;
+    run(initializingMethodWithFiniteTargetPlaylist, method);
+    assertEqual(1, method.snr().dB);
+}
+
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
+    initializePassesTargetPlaylistDirectory) {
+    testWithFixedTrials.targetsUrl.path = "a";
+    run(initializingMethod, method);
+    assertEqual("a", targetList.directory().path);
+}
+
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
+    initializeWithFiniteTargetPlaylistPassesTargetPlaylistDirectory) {
+    test.targetsUrl.path = "a";
+    run(initializingMethodWithFiniteTargetPlaylist, method);
+    assertEqual("a", finiteTargetPlaylist.directory().path);
+}
+
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
+    initializeWithFiniteTargetPlaylistWithRepeatablesPassesTargetPlaylistDirectory) {
+    test.targetsUrl.path = "a";
+    run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);
+    assertEqual("a", finiteTargetPlaylistWithRepeatables.directory().path);
+}
+
+void assertComplete(FixedLevelMethodImpl &method) {
+    assertTrue(method.complete());
+}
+
+void assertIncomplete(FixedLevelMethodImpl &method) {
+    assertFalse(method.complete());
+}
+
+void assertTestCompleteOnlyAfter(UseCase &useCase, FixedLevelMethodImpl &method,
+    FiniteTargetPlaylistWithRepeatablesStub &list) {
+    list.setEmpty();
+    assertIncomplete(method);
+    run(useCase, method);
+    assertComplete(method);
+}
+
+auto reinsertCurrentCalled(FiniteTargetPlaylistWithRepeatablesStub &list)
+    -> bool {
+    return list.reinsertCurrentCalled();
+}
+
+void assertCurrentTargetNotReinserted(
+    FiniteTargetPlaylistWithRepeatablesStub &list) {
+    assertFalse(reinsertCurrentCalled(list));
+}
+
+void assertCurrentTargetReinserted(
+    FiniteTargetPlaylistWithRepeatablesStub &list) {
+    assertTrue(reinsertCurrentCalled(list));
+}
+
 class FixedLevelMethodTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
@@ -215,98 +307,6 @@ FIXED_LEVEL_METHOD_TEST(
     assertEqual("a", evaluator.correctFilePath());
 }
 
-class PreInitializedFixedLevelMethodTests : public ::testing::Test {
-  protected:
-    ResponseEvaluatorStub evaluator;
-    TargetPlaylistStub targetList;
-    FiniteTargetPlaylistWithRepeatablesStub finiteTargetPlaylistWithRepeatables;
-    FiniteTargetPlaylistStub finiteTargetPlaylist;
-    FixedLevelMethodImpl method{evaluator};
-    FixedLevelTest test{};
-    FixedLevelFixedTrialsTest testWithFixedTrials{};
-    InitializingMethod initializingMethod{targetList, testWithFixedTrials};
-    InitializingMethodWithFiniteTargetPlaylistWithRepeatables
-        initializingMethodWithFiniteTargetPlaylistWithRepeatables{
-            finiteTargetPlaylistWithRepeatables, test};
-    InitializingMethodWithFiniteTargetPlaylist
-        initializingMethodWithFiniteTargetPlaylist{finiteTargetPlaylist, test};
-};
-
-#define PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(a)                             \
-    TEST_F(PreInitializedFixedLevelMethodTests, a)
-
-PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(snrReturnsInitializedSnr) {
-    testWithFixedTrials.snr.dB = 1;
-    run(initializingMethod, method);
-    assertEqual(1, method.snr().dB);
-}
-
-PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
-    snrReturnsInitializedWithFiniteTargetPlaylistWithRepeatablesSnr) {
-    test.snr.dB = 1;
-    run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);
-    assertEqual(1, method.snr().dB);
-}
-
-PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
-    snrReturnsInitializedWithFiniteTargetPlaylistSnr) {
-    test.snr.dB = 1;
-    run(initializingMethodWithFiniteTargetPlaylist, method);
-    assertEqual(1, method.snr().dB);
-}
-
-PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
-    initializePassesTargetPlaylistDirectory) {
-    testWithFixedTrials.targetsUrl.path = "a";
-    run(initializingMethod, method);
-    assertEqual("a", targetList.directory().path);
-}
-
-PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
-    initializeWithFiniteTargetPlaylistPassesTargetPlaylistDirectory) {
-    test.targetsUrl.path = "a";
-    run(initializingMethodWithFiniteTargetPlaylist, method);
-    assertEqual("a", finiteTargetPlaylist.directory().path);
-}
-
-PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
-    initializeWithFiniteTargetPlaylistWithRepeatablesPassesTargetPlaylistDirectory) {
-    test.targetsUrl.path = "a";
-    run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);
-    assertEqual("a", finiteTargetPlaylistWithRepeatables.directory().path);
-}
-
-void assertComplete(FixedLevelMethodImpl &method) {
-    assertTrue(method.complete());
-}
-
-void assertIncomplete(FixedLevelMethodImpl &method) {
-    assertFalse(method.complete());
-}
-
-void assertTestCompleteOnlyAfter(UseCase &useCase, FixedLevelMethodImpl &method,
-    FiniteTargetPlaylistWithRepeatablesStub &list) {
-    list.setEmpty();
-    assertIncomplete(method);
-    run(useCase, method);
-    assertComplete(method);
-}
-
-auto reinsertCurrentCalled(FiniteTargetPlaylistWithRepeatablesStub &list)
-    -> bool {
-    return list.reinsertCurrentCalled();
-}
-
-void assertCurrentTargetNotReinserted(
-    FiniteTargetPlaylistWithRepeatablesStub &list) {
-    assertFalse(reinsertCurrentCalled(list));
-}
-
-void assertCurrentTargetReinserted(
-    FiniteTargetPlaylistWithRepeatablesStub &list) {
-    assertTrue(reinsertCurrentCalled(list));
-}
-
 class FixedLevelMethodWithFiniteTargetPlaylistTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
@@ -339,12 +339,12 @@ class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests
     FixedLevelMethodImpl method{evaluator};
     FixedLevelTest test{};
     InitializingMethodWithFiniteTargetPlaylistWithRepeatables
-        initializingMethodWithFiniteTargetPlaylist{targetList, test};
+        initializingMethod{targetList, test};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
 
     FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests() {
-        run(initializingMethodWithFiniteTargetPlaylist, method);
+        run(initializingMethod, method);
     }
 };
 
@@ -377,8 +377,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     completeWhenTestCompleteAfterInitializing) {
-    assertTestCompleteOnlyAfter(
-        initializingMethodWithFiniteTargetPlaylist, method, targetList);
+    assertTestCompleteOnlyAfter(initializingMethod, method, targetList);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
