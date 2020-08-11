@@ -124,6 +124,7 @@ class OutputFileImpl : public OutputFile {
     bool justWroteFreeResponseTrial{};
     bool justWroteOpenSetAdaptiveTrial{};
     bool justWroteCorrectKeywordsTrial{};
+    bool justWroteConsonantTrial{};
 };
 }
 

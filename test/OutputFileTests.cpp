@@ -621,6 +621,10 @@ OUTPUT_FILE_TEST(
         writingFixedLevelCoordinateResponseTrial, 3);
 }
 
+OUTPUT_FILE_TEST(writingConsonantTrialTwiceDoesNotWriteHeadingTwice) {
+    assertWritesTrialOnLineAfterWritingTwice(writingConsonantTrial, 3);
+}
+
 OUTPUT_FILE_TEST(writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
     assertWritesTrialOnLineAfterWritingTwice(writingFreeResponseTrial, 3);
 }

@@ -416,8 +416,10 @@ void OutputFileImpl::write(const CorrectKeywordsTrial &trial) {
 }
 
 void OutputFileImpl::write(const ConsonantTrial &trial) {
-    write(formatConsonantTrialHeading());
+    if (!justWroteConsonantTrial)
+        write(formatConsonantTrialHeading());
     write(format(trial));
+    justWroteConsonantTrial = true;
 }
 
 void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
