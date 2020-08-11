@@ -674,6 +674,10 @@ OUTPUT_FILE_TEST(writeIncorrectAdaptiveCoordinateResponseTrial) {
         writingAdaptiveCoordinateResponseTrial);
 }
 
+OUTPUT_FILE_TEST(writingIncorrectConsonantTrial) {
+    assertIncorrectTrialWritesEvaluation(writingConsonantTrial);
+}
+
 OUTPUT_FILE_TEST(writeIncorrectFixedLevelCoordinateResponseTrial) {
     assertIncorrectTrialWritesEvaluation(
         writingFixedLevelCoordinateResponseTrial);
