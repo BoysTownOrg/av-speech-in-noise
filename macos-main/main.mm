@@ -263,7 +263,7 @@ void main(EyeTracker &eyeTracker) {
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
-        allTargetsNTimes, recognitionTestModel};
+        allTargetsNTimes, recognitionTestModel, outputFile};
     CocoaView view{NSMakeRect(0, 0, 900, 270)};
     view.center();
     const auto delegate{[WindowDelegate alloc]};
