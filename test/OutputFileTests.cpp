@@ -644,6 +644,11 @@ OUTPUT_FILE_TEST(
 }
 
 OUTPUT_FILE_TEST(
+    writingConsonantTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+    assertWritesHeadingTwiceWhenNewFileOpened(writingConsonantTrial);
+}
+
+OUTPUT_FILE_TEST(
     writingFixedLevelCoordinateResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     assertWritesHeadingTwiceWhenNewFileOpened(
         writingFixedLevelCoordinateResponseTrial);

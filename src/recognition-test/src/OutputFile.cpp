@@ -452,6 +452,7 @@ void OutputFileImpl::openNewFile(const TestIdentity &test) {
     justWroteFreeResponseTrial = false;
     justWroteOpenSetAdaptiveTrial = false;
     justWroteCorrectKeywordsTrial = false;
+    justWroteConsonantTrial = false;
 }
 
 auto OutputFileImpl::generateNewFilePath(const TestIdentity &test)
