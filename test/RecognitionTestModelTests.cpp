@@ -253,6 +253,17 @@ class SubmittingCorrectKeywords : public TargetWritingUseCase {
     }
 };
 
+class SubmittingConsonant : public TargetWritingUseCase {
+  public:
+    void run(RecognitionTestModelImpl &m) override {
+        m.submit(ConsonantResponse{});
+    }
+
+    auto target(OutputFileStub &file) -> std::string override {
+        return file.consonantTrial().target;
+    }
+};
+
 class SubmittingCoordinateResponse : public UseCase {
   public:
     void run(RecognitionTestModelImpl &m) override {
@@ -546,6 +557,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingFreeResponse submittingFreeResponse{freeResponse};
     AudioSampleTimeWithOffset fadeInCompleteTime{};
     SubmittingCorrectKeywords submittingCorrectKeywords;
+    SubmittingConsonant submittingConsonant;
 
     RecognitionTestModelTests() { model.subscribe(&listener); }
 
@@ -1106,6 +1118,11 @@ RECOGNITION_TEST_MODEL_TEST(submittingFreeResponseIncrementsTrialNumber) {
 RECOGNITION_TEST_MODEL_TEST(submittingCorrectKeywordsIncrementsTrialNumber) {
     run(initializingTest, model);
     assertYieldsTrialNumber(submittingCorrectKeywords, 2);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submittingConsonantIncrementsTrialNumber) {
+    run(initializingTest, model);
+    assertYieldsTrialNumber(submittingConsonant, 2);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

@@ -75,6 +75,12 @@ struct FixedLevelTrial : Trial {};
 
 struct CorrectKeywordsTrial : CorrectKeywords, open_set::AdaptiveTrial {};
 
+struct ConsonantTrial : Target {
+    char subjectConsonant{};
+    char correctConsonant{};
+    bool correct{};
+};
+
 struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
 class OutputFile {

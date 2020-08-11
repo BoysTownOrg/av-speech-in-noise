@@ -127,7 +127,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const FreeResponse &) override;
     void submit(const CorrectKeywords &) override;
-    void submit(const ConsonantResponse &) override {}
+    void submit(const ConsonantResponse &) override;
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
     auto testComplete() -> bool override;
