@@ -70,8 +70,8 @@ class View {
         virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
-        virtual void showNextTrialButton() = 0;
-        virtual void hideNextTrialButton() = 0;
+        virtual void showReadyButton() = 0;
+        virtual void hideReadyButton() = 0;
         virtual void hideResponseButtons() = 0;
         virtual void showResponseButtons() = 0;
         virtual auto consonant() -> std::string = 0;

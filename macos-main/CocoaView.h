@@ -118,8 +118,8 @@ class CocoaConsonantView : public View::Consonant {
     void hide() override;
     void showResponseButtons() override;
     void hideResponseButtons() override;
-    void showNextTrialButton() override;
-    void hideNextTrialButton() override;
+    void showReadyButton() override;
+    void hideReadyButton() override;
     auto consonant() -> std::string override;
     void respond(id sender);
     void playTrial();
@@ -128,7 +128,7 @@ class CocoaConsonantView : public View::Consonant {
     std::unordered_map<id, std::string> consonants;
     NSWindow *window;
     NSView *responseButtons;
-    NSView *nextTrialButton;
+    NSView *readyButton;
     NSButton *lastButtonPressed{};
     ConsonantViewActions *actions;
     EventListener *listener_{};

@@ -328,7 +328,7 @@ static void addConsonantImageButton(
     addSubview(parent, button);
 }
 
-static void addNextTrialButton(NSView *parent, ConsonantViewActions *actions) {
+static void addReadyButton(NSView *parent, ConsonantViewActions *actions) {
     const auto button_ { button("", actions, @selector(playTrial)) };
     [button_ setBezelStyle:NSBezelStyleTexturedSquare];
     auto style{[[NSMutableParagraphStyle alloc] init]};
@@ -353,7 +353,7 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
                                              defer:YES]},
       responseButtons{
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
-      nextTrialButton{
+      readyButton{
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       actions{[[ConsonantViewActions alloc] init]} {
     actions->controller = this;
@@ -381,23 +381,23 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
         consonants, responseButtons, actions, "v", 2, 2, 3, 4);
     addConsonantImageButton(
         consonants, responseButtons, actions, "z", 2, 3, 3, 4);
-    addNextTrialButton(nextTrialButton, actions);
-    addSubview(window.contentView, nextTrialButton);
+    addReadyButton(readyButton, actions);
+    addSubview(window.contentView, readyButton);
     addSubview(window.contentView, responseButtons);
     hideResponseButtons();
-    hideNextTrialButton();
+    hideReadyButton();
 }
 
 void CocoaConsonantView::show() { [window makeKeyAndOrderFront:nil]; }
 
 void CocoaConsonantView::hide() { [window orderOut:nil]; }
 
-void CocoaConsonantView::showNextTrialButton() {
-    av_speech_in_noise::show(nextTrialButton);
+void CocoaConsonantView::showReadyButton() {
+    av_speech_in_noise::show(readyButton);
 }
 
-void CocoaConsonantView::hideNextTrialButton() {
-    av_speech_in_noise::hide(nextTrialButton);
+void CocoaConsonantView::hideReadyButton() {
+    av_speech_in_noise::hide(readyButton);
 }
 
 void CocoaConsonantView::subscribe(EventListener *e) { listener_ = e; }

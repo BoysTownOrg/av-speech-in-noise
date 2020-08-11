@@ -382,7 +382,7 @@ Presenter::Consonant::Consonant(View::Consonant *view) : view{view} {
 
 void Presenter::Consonant::start() {
     view->show();
-    view->showNextTrialButton();
+    view->showReadyButton();
 }
 
 void Presenter::Consonant::stop() {
@@ -392,7 +392,7 @@ void Presenter::Consonant::stop() {
 
 void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {
     parent->playTrial();
-    view->hideNextTrialButton();
+    view->hideReadyButton();
 }
 
 void Presenter::Consonant::notifyThatResponseButtonHasBeenClicked() {

@@ -34,16 +34,16 @@ class ConsonantViewStub : public View::Consonant {
 
     void subscribe(EventListener *e) override { listener_ = e; }
 
-    void showNextTrialButton() override { nextTrialButtonShown_ = true; }
+    void showReadyButton() override { readyButtonShown_ = true; }
 
-    [[nodiscard]] auto nextTrialButtonShown() const -> bool {
-        return nextTrialButtonShown_;
+    [[nodiscard]] auto readyButtonShown() const -> bool {
+        return readyButtonShown_;
     }
 
-    void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
+    void hideReadyButton() override { readyButtonHidden_ = true; }
 
-    [[nodiscard]] auto nextTrialButtonHidden() const -> bool {
-        return nextTrialButtonHidden_;
+    [[nodiscard]] auto readyButtonHidden() const -> bool {
+        return readyButtonHidden_;
     }
 
     void submitResponse() {
@@ -73,8 +73,8 @@ class ConsonantViewStub : public View::Consonant {
     bool hidden_{};
     bool responseButtonsShown_{};
     bool responseButtonsHidden_{};
-    bool nextTrialButtonShown_{};
-    bool nextTrialButtonHidden_{};
+    bool readyButtonShown_{};
+    bool readyButtonHidden_{};
 };
 
 class CoordinateResponseMeasureViewStub
@@ -854,7 +854,7 @@ class SubmittingConsonant : public TrialSubmission {
     void run() override { view->submitResponse(); }
 
     auto nextTrialButtonShown() -> bool override {
-        return view->nextTrialButtonShown();
+        return view->readyButtonShown();
     }
 
     auto responseViewShown() -> bool override {
@@ -1016,11 +1016,11 @@ class PlayingConsonantTrial : public PlayingTrial {
     void run() override { view->playTrial(); }
 
     auto nextTrialButtonHidden() -> bool override {
-        return view->nextTrialButtonHidden();
+        return view->readyButtonHidden();
     }
 
     auto nextTrialButtonShown() -> bool override {
-        return view->nextTrialButtonShown();
+        return view->readyButtonShown();
     }
 };
 
