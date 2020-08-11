@@ -82,7 +82,8 @@ void assertPassesSimpleAdaptiveSettings(
 }
 
 void assertPassesSimpleFixedLevelSettings(
-    TestSettingsInterpreterImpl &interpreter, ModelStub &model, Method m) {
+    TestSettingsInterpreterImpl &interpreter, ModelStub &model, Method m,
+    const std::function<const FixedLevelTest &(ModelStub &)> &fixedLevelTest) {
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::targets, "a"),
@@ -95,22 +96,6 @@ void assertPassesSimpleFixedLevelSettings(
     assertEqual(5, fixedLevelTest(model).snr.dB);
     assertEqual(Presenter::fullScaleLevel.dB_SPL,
         fixedLevelTest(model).fullScaleLevel.dB_SPL);
-}
-
-void assertPassesSimpleFixedLevelFixedTrialsSettings(
-    TestSettingsInterpreterImpl &interpreter, ModelStub &model, Method m) {
-    initialize(interpreter, model,
-        {entryWithNewline(TestSetting::method, m),
-            entryWithNewline(TestSetting::targets, "a"),
-            entryWithNewline(TestSetting::masker, "b"),
-            entryWithNewline(TestSetting::maskerLevel, "65")},
-        5);
-    assertEqual("a", fixedLevelFixedTrialsTest(model).targetsUrl.path);
-    assertEqual("b", fixedLevelFixedTrialsTest(model).maskerFileUrl.path);
-    assertEqual(65, fixedLevelFixedTrialsTest(model).maskerLevel.dB_SPL);
-    assertEqual(5, fixedLevelFixedTrialsTest(model).snr.dB);
-    assertEqual(Presenter::fullScaleLevel.dB_SPL,
-        fixedLevelFixedTrialsTest(model).fullScaleLevel.dB_SPL);
 }
 
 void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
@@ -598,8 +583,8 @@ TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAuditoryOnly) {
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelSettings(
-        interpreter, model, Method::fixedLevelFreeResponseWithAllTargets);
+    assertPassesSimpleFixedLevelSettings(interpreter, model,
+        Method::fixedLevelFreeResponseWithAllTargets, fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -623,38 +608,44 @@ TEST_SETTINGS_INTERPRETER_TEST(
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingPassesSimpleFixedLevelSettings) {
     assertPassesSimpleFixedLevelSettings(interpreter, model,
-        Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
+        Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
+        fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsPassesSimpleFixedLevelSettings) {
     assertPassesSimpleFixedLevelSettings(interpreter, model,
-        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
+        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+        fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelFixedTrialsSettings(interpreter, model,
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
+    assertPassesSimpleFixedLevelSettings(interpreter, model,
+        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+        fixedLevelFixedTrialsTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelFixedTrialsSettings(interpreter, model,
+    assertPassesSimpleFixedLevelSettings(interpreter, model,
         Method::
-            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
+            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
+        fixedLevelFixedTrialsTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithSilentIntervalTargetsPassesSimpleFixedLevelSettings) {
     assertPassesSimpleFixedLevelSettings(interpreter, model,
-        Method::fixedLevelFreeResponseWithSilentIntervalTargets);
+        Method::fixedLevelFreeResponseWithSilentIntervalTargets,
+        fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithTargetReplacementPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelFixedTrialsSettings(interpreter, model,
-        Method::fixedLevelFreeResponseWithTargetReplacement);
+    assertPassesSimpleFixedLevelSettings(interpreter, model,
+        Method::fixedLevelFreeResponseWithTargetReplacement,
+        fixedLevelFixedTrialsTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(oneSequence) {
