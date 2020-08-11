@@ -593,6 +593,10 @@ OUTPUT_FILE_TEST(
     assertWritesTrialOnLine(writingFixedLevelCoordinateResponseTrial, 2);
 }
 
+OUTPUT_FILE_TEST(writingConsonantTrialWritesTrialOnSecondLine) {
+    assertWritesTrialOnLine(writingConsonantTrial, 2);
+}
+
 OUTPUT_FILE_TEST(writeFreeResponseTrialWritesTrialOnSecondLine) {
     assertWritesTrialOnLine(writingFreeResponseTrial, 2);
 }

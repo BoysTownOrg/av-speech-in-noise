@@ -93,6 +93,10 @@ static auto evaluation(const open_set::AdaptiveTrial &trial) -> std::string {
     return trial.correct ? correct : incorrect;
 }
 
+static auto evaluation(const ConsonantTrial &trial) -> std::string {
+    return trial.correct ? correct : incorrect;
+}
+
 static auto evaluation(const coordinate_response_measure::Trial &trial)
     -> std::string {
     return trial.correct ? correct : incorrect;
@@ -270,6 +274,19 @@ static auto format(const CorrectKeywordsTrial &trial) -> std::string {
     return string(stream);
 }
 
+static auto format(const ConsonantTrial &trial) -> std::string {
+    std::stringstream stream;
+    insert(stream, trial.correctConsonant);
+    insertCommaAndSpace(stream);
+    insert(stream, trial.subjectConsonant);
+    insertCommaAndSpace(stream);
+    insert(stream, evaluation(trial));
+    insertCommaAndSpace(stream);
+    insert(stream, trial.target);
+    insertNewLine(stream);
+    return string(stream);
+}
+
 static auto format(const AdaptiveTestResult &result) -> std::string {
     std::stringstream stream;
     writeLabeledLine(
@@ -398,8 +415,9 @@ void OutputFileImpl::write(const CorrectKeywordsTrial &trial) {
     justWroteCorrectKeywordsTrial = true;
 }
 
-void OutputFileImpl::write(const ConsonantTrial &) {
+void OutputFileImpl::write(const ConsonantTrial &trial) {
     write(formatConsonantTrialHeading());
+    write(format(trial));
 }
 
 void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
