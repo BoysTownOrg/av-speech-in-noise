@@ -34,7 +34,7 @@ struct TestIdentity {
 };
 
 struct ConsonantResponse {
-    char consonant;
+    char consonant{};
 };
 
 enum class Condition { auditoryOnly, audioVisual };

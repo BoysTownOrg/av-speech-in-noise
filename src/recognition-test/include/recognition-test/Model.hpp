@@ -145,6 +145,7 @@ class RecognitionTestModel {
     virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const CorrectKeywords &) = 0;
+    virtual void submit(const ConsonantResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual auto testComplete() -> bool = 0;
@@ -189,7 +190,7 @@ class ModelImpl : public Model {
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const FreeResponse &) override;
     void submit(const CorrectKeywords &) override;
-    void submit(const ConsonantResponse &) override {}
+    void submit(const ConsonantResponse &) override;
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
     auto testComplete() -> bool override;

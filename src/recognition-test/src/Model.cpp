@@ -165,6 +165,8 @@ void ModelImpl::submit(const FreeResponse &response) { model.submit(response); }
 
 void ModelImpl::submit(const CorrectKeywords &k) { model.submit(k); }
 
+void ModelImpl::submit(const ConsonantResponse &r) { model.submit(r); }
+
 void ModelImpl::playCalibration(const Calibration &p) {
     model.playCalibration(p);
 }

@@ -124,6 +124,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
     const CorrectKeywords *correctKeywords_{};
+    const ConsonantResponse *consonantResponse_{};
     int trialNumber_{};
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
@@ -182,6 +183,8 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void submit(const CorrectKeywords &p) override { correctKeywords_ = &p; }
 
+    void submit(const ConsonantResponse &p) { consonantResponse_ = &p; }
+
     auto testComplete() -> bool override { return complete_; }
 
     auto audioDevices() -> std::vector<std::string> override {
@@ -209,6 +212,8 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     }
 
     [[nodiscard]] auto correctKeywords() const { return correctKeywords_; }
+
+    [[nodiscard]] auto consonantResponse() const { return consonantResponse_; }
 
     [[nodiscard]] auto testMethod() const { return testMethod_; }
 
@@ -924,6 +929,12 @@ MODEL_TEST(submitCorrectKeywordsPassesCorrectKeywords) {
     CorrectKeywords k;
     model.submit(k);
     assertEqual(&std::as_const(k), internalModel.correctKeywords());
+}
+
+MODEL_TEST(submitConsonantPassesConsonant) {
+    ConsonantResponse r;
+    model.submit(r);
+    assertEqual(&std::as_const(r), internalModel.consonantResponse());
 }
 
 MODEL_TEST(playTrialPassesAudioSettings) {
