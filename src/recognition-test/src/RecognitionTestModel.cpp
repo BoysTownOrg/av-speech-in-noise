@@ -365,8 +365,6 @@ void RecognitionTestModelImpl::submit(const CorrectKeywords &correctKeywords) {
 }
 
 void RecognitionTestModelImpl::submit(const ConsonantResponse &r) {
-    testMethod->submit(r);
-    testMethod->writeLastConsonant(outputFile);
     save(outputFile);
     prepareNextTrialIfNeeded();
 }

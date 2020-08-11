@@ -1,9 +1,11 @@
+#include "OutputFileStub.hpp"
 #include "ModelEventListenerStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "assert-utility.hpp"
 #include <recognition-test/Model.hpp>
 #include <gtest/gtest.h>
+#include <sstream>
 
 namespace av_speech_in_noise {
 static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
@@ -62,10 +64,12 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 };
 
 class FixedLevelMethodStub : public FixedLevelMethod {
+    std::stringstream log_{};
     const FixedLevelTest *test_{};
     const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
     const FixedLevelTestWithEachTargetNTimes *testWithRepeatedTargets_{};
     TargetPlaylist *targetList_{};
+    bool submittedConsonant_{};
 
   public:
     void initialize(
@@ -99,21 +103,33 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         return fixedTrialsTest_;
     }
 
+    auto submittedConsonant() const -> bool { return submittedConsonant_; }
+
+    auto log() -> const std::stringstream & { return log_; }
+
     auto complete() -> bool override { return {}; }
-    auto nextTarget() -> LocalUrl override { return {}; }
+    auto nextTarget() -> LocalUrl override {
+        log_ << "nextTarget ";
+        return {};
+    }
     auto currentTarget() -> LocalUrl override { return {}; }
     auto snr() -> SNR override { return SNR{}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
     void submit(const CorrectKeywords &) override {}
-    void submit(const ConsonantResponse &) override {}
+    void submit(const ConsonantResponse &) override {
+        submittedConsonant_ = true;
+        log_ << "submitConsonant ";
+    }
     void writeTestingParameters(OutputFile &) override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
     void writeLastCorrectResponse(OutputFile &) override {}
     void writeLastIncorrectResponse(OutputFile &) override {}
     void writeLastCorrectKeywords(OutputFile &) override {}
-    void writeLastConsonant(OutputFile &) override {}
+    void writeLastConsonant(OutputFile &) override {
+        log_ << "writeLastConsonant ";
+    }
     void writeTestResult(OutputFile &) override {}
     void submit(const coordinate_response_measure::Response &) override {}
 };
@@ -121,6 +137,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 class RecognitionTestModelStub : public RecognitionTestModel {
     std::vector<std::string> audioDevices_{};
     std::string targetFileName_{};
+    TestMethod *testMethodToCallNextTargetOnSubmitConsonants_{};
     const Model::EventListener *listener_{};
     const Calibration *calibration_{};
     const AudioSettings *playTrialSettings_{};
@@ -189,6 +206,8 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void submit(const ConsonantResponse &p) override {
         consonantResponse_ = &p;
+        if (testMethodToCallNextTargetOnSubmitConsonants_ != nullptr)
+            testMethodToCallNextTargetOnSubmitConsonants_->nextTarget();
     }
 
     auto testComplete() -> bool override { return complete_; }
@@ -235,6 +254,10 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void setAudioDevices(std::vector<std::string> v) {
         audioDevices_ = std::move(v);
+    }
+
+    void callNextOnSubmitConsonants(TestMethod *t) {
+        testMethodToCallNextTargetOnSubmitConsonants_ = t;
     }
 
     void submitCorrectResponse() override {}
@@ -619,10 +642,11 @@ class ModelTests : public ::testing::Test {
     FiniteTargetPlaylistWithRepeatablesStub everyTargetOnce;
     RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
     RecognitionTestModelStub internalModel;
+    OutputFileStub outputFile;
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervals, everyTargetOnce,
-        eachTargetNTimes, internalModel};
+        eachTargetNTimes, internalModel, outputFile};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes;
@@ -941,6 +965,27 @@ MODEL_TEST(submitConsonantPassesConsonant) {
     ConsonantResponse r;
     model.submit(r);
     assertEqual(&std::as_const(r), internalModel.consonantResponse());
+}
+
+MODEL_TEST(submitConsonantSubmitsResponse) {
+    ConsonantResponse r;
+    model.submit(r);
+    assertTrue(fixedLevelMethod.submittedConsonant());
+}
+
+MODEL_TEST(submitConsonantWritesTrialAfterSubmittingResponse) {
+    ConsonantResponse r;
+    model.submit(r);
+    assertTrue(contains(
+        fixedLevelMethod.log(), "submitConsonant writeLastConsonant "));
+}
+
+MODEL_TEST(submitConsonantQueriesNextTargetAfterWritingResponse) {
+    internalModel.callNextOnSubmitConsonants(&fixedLevelMethod);
+    ConsonantResponse r;
+    model.submit(r);
+    assertTrue(
+        contains(fixedLevelMethod.log(), "writeLastConsonant nextTarget "));
 }
 
 MODEL_TEST(playTrialPassesAudioSettings) {

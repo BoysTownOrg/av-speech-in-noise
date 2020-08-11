@@ -171,7 +171,7 @@ class ModelImpl : public Model {
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         RepeatableFiniteTargetPlaylist &eachTargetNTimes,
-        RecognitionTestModel &);
+        RecognitionTestModel &, OutputFile &);
     void subscribe(Model::EventListener *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(
@@ -218,6 +218,7 @@ class ModelImpl : public Model {
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce;
     RepeatableFiniteTargetPlaylist &eachTargetNTimes;
     RecognitionTestModel &model;
+    OutputFile &outputFile;
 };
 }
 

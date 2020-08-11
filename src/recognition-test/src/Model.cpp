@@ -9,14 +9,15 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     RepeatableFiniteTargetPlaylist &eachTargetNTimes,
-    RecognitionTestModel &model)
+    RecognitionTestModel &model, OutputFile &outputFile)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
       cyclicTargetsReader{cyclicTargetsReader},
       targetsWithReplacement{targetsWithReplacement},
       silentIntervalTargets{silentIntervalTargets},
       everyTargetOnce{everyTargetOnce},
-      eachTargetNTimes{eachTargetNTimes}, model{model} {}
+      eachTargetNTimes{eachTargetNTimes}, model{model}, outputFile{outputFile} {
+}
 
 static void initialize(
     RecognitionTestModel &model, TestMethod &method, const Test &test) {
@@ -164,7 +165,11 @@ void ModelImpl::submit(const FreeResponse &response) { model.submit(response); }
 
 void ModelImpl::submit(const CorrectKeywords &k) { model.submit(k); }
 
-void ModelImpl::submit(const ConsonantResponse &r) { model.submit(r); }
+void ModelImpl::submit(const ConsonantResponse &r) {
+    fixedLevelMethod.submit(r);
+    fixedLevelMethod.writeLastConsonant(outputFile);
+    model.submit(r);
+}
 
 void ModelImpl::playCalibration(const Calibration &p) {
     model.playCalibration(p);

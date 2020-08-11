@@ -1596,11 +1596,6 @@ RECOGNITION_TEST_MODEL_TEST(
         "submitCoordinateResponse writeLastCoordinateResponse ");
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitConsonantWritesTrialAfterSubmittingResponse) {
-    assertTestMethodLogContains(
-        submittingConsonant, "submitConsonant writeLastConsonant ");
-}
-
 RECOGNITION_TEST_MODEL_TEST(
     submitCorrectResponseWritesTrialAfterSubmittingResponse) {
     assertTestMethodLogContains(submittingCorrectResponse,
@@ -1623,12 +1618,6 @@ RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseQueriesNextTargetAfterWritingResponse) {
     assertTestMethodLogContains(
         submittingCoordinateResponse, "writeLastCoordinateResponse next ");
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitConsonantQueriesNextTargetAfterWritingResponse) {
-    assertTestMethodLogContains(
-        submittingConsonant, "writeLastConsonant next ");
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1665,12 +1654,6 @@ RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSubmitsResponse) {
     run(initializingTest, model);
     run(submittingCorrectKeywords, model);
     assertTrue(testMethod.submittedCorrectKeywords());
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitConsonantSubmitsResponse) {
-    run(initializingTest, model);
-    run(submittingConsonant, model);
-    assertTrue(testMethod.submittedConsonant());
 }
 }
 }
