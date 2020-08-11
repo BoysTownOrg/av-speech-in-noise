@@ -48,6 +48,11 @@ auto fixedLevelFixedTargetsTest(ModelStub &m) -> FixedLevelFixedTrialsTest {
     return m.fixedLevelFixedTargetsTest();
 }
 
+auto fixedLevelTestWithEachTargetNTimes(ModelStub &m)
+    -> const FixedLevelTestWithEachTargetNTimes & {
+    return m.fixedLevelTestWithEachTargetNTimes();
+}
+
 void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
     const std::vector<std::string> &v, int startingSnr = {},
     const TestIdentity &identity = {}) {
@@ -126,6 +131,11 @@ auto adaptiveTestIdentity(ModelStub &model) -> TestIdentity {
 
 auto fixedLevelTestIdentity(ModelStub &model) -> TestIdentity {
     return fixedLevelTest(model).identity;
+}
+
+auto fixedLevelTestWithEachTargetNTimesIdentity(ModelStub &model)
+    -> TestIdentity {
+    return model.fixedLevelTestWithEachTargetNTimes().identity;
 }
 
 void setSubjectId(TestIdentity &identity, std::string s) {
@@ -344,7 +354,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsPassesMethod) {
     assertPassesTestMethod(interpreter, model, Method::fixedLevelConsonants,
-        fixedLevelTestIdentity);
+        fixedLevelTestWithEachTargetNTimesIdentity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -578,8 +588,20 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelConsonantsPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelSettings(
-        interpreter, model, Method::fixedLevelConsonants);
+    initialize(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
+            entryWithNewline(TestSetting::targets, "a"),
+            entryWithNewline(TestSetting::masker, "b"),
+            entryWithNewline(TestSetting::maskerLevel, "65")},
+        5);
+    assertEqual("a", fixedLevelTestWithEachTargetNTimes(model).targetsUrl.path);
+    assertEqual(
+        "b", fixedLevelTestWithEachTargetNTimes(model).maskerFileUrl.path);
+    assertEqual(
+        65, fixedLevelTestWithEachTargetNTimes(model).maskerLevel.dB_SPL);
+    assertEqual(5, fixedLevelTestWithEachTargetNTimes(model).snr.dB);
+    assertEqual(Presenter::fullScaleLevel.dB_SPL,
+        fixedLevelTestWithEachTargetNTimes(model).fullScaleLevel.dB_SPL);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

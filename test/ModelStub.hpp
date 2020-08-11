@@ -80,6 +80,11 @@ class ModelStub : public Model {
         return fixedLevelTest_;
     }
 
+    [[nodiscard]] auto fixedLevelTestWithEachTargetNTimes() const
+        -> const FixedLevelTestWithEachTargetNTimes & {
+        return fixedLevelTestWithEachTargetNTimes_;
+    }
+
     [[nodiscard]] auto fixedLevelFixedTargetsTest() const -> auto & {
         return fixedLevelFixedTrialsTest_;
     }
@@ -115,20 +120,6 @@ class ModelStub : public Model {
         return trialParameters_;
     }
 
-    void initializeWithTargetReplacement(
-        const FixedLevelFixedTrialsTest &p) override {
-        fixedLevelFixedTrialsTest_ = p;
-        fixedLevelTest_ = p;
-        defaultFixedLevelTestInitialized_ = true;
-    }
-
-    void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelFixedTrialsTest &p) override {
-        fixedLevelFixedTrialsTest_ = p;
-        fixedLevelTest_ = p;
-        fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_ = true;
-    }
-
     void initialize(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         defaultAdaptiveTestInitialized_ = true;
@@ -160,13 +151,27 @@ class ModelStub : public Model {
         adaptiveTestInitializedWithCyclicTargetsAndEyeTracking_ = true;
     }
 
+    void initializeWithTargetReplacement(
+        const FixedLevelFixedTrialsTest &p) override {
+        fixedLevelFixedTrialsTest_ = p;
+        fixedLevelTest_ = p;
+        defaultFixedLevelTestInitialized_ = true;
+    }
+
+    void initializeWithTargetReplacementAndEyeTracking(
+        const FixedLevelFixedTrialsTest &p) override {
+        fixedLevelFixedTrialsTest_ = p;
+        fixedLevelTest_ = p;
+        fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_ = true;
+    }
+
     void initializeWithSilentIntervalTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithSilentIntervalTargetsInitialized_ = true;
     }
 
     void initialize(const FixedLevelTestWithEachTargetNTimes &p) override {
-        fixedLevelTest_ = p;
+        fixedLevelTestWithEachTargetNTimes_ = p;
         fixedLevelTestWithEachTargetNTimesInitialized_ = true;
     }
 
@@ -232,6 +237,7 @@ class ModelStub : public Model {
     AdaptiveTest adaptiveTest_{};
     FixedLevelTest fixedLevelTest_{};
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest_{};
+    FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes_{};
     Calibration calibration_{};
     AudioSettings trialParameters_{};
     coordinate_response_measure::Response responseParameters_{};
