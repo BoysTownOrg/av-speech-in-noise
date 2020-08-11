@@ -24,11 +24,11 @@ class ConsonantViewStub : public View::Consonant {
   public:
     void show() override { shown_ = true; }
 
-    [[nodiscard]] auto shown() const { return shown_; }
+    [[nodiscard]] auto shown() const -> bool { return shown_; }
 
     void hide() override { hidden_ = true; }
 
-    [[nodiscard]] auto hidden() const { return hidden_; }
+    [[nodiscard]] auto hidden() const -> bool { return hidden_; }
 
     void playTrial() { listener_->playTrial(); }
 
@@ -36,13 +36,13 @@ class ConsonantViewStub : public View::Consonant {
 
     void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
-    [[nodiscard]] auto nextTrialButtonShown() const {
+    [[nodiscard]] auto nextTrialButtonShown() const -> bool {
         return nextTrialButtonShown_;
     }
 
     void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
 
-    [[nodiscard]] auto nextTrialButtonHidden() const {
+    [[nodiscard]] auto nextTrialButtonHidden() const -> bool {
         return nextTrialButtonHidden_;
     }
 
@@ -50,13 +50,13 @@ class ConsonantViewStub : public View::Consonant {
 
     void hideResponseButtons() override { responseButtonsHidden_ = true; }
 
-    [[nodiscard]] auto responseButtonsHidden() const {
+    [[nodiscard]] auto responseButtonsHidden() const -> bool {
         return responseButtonsHidden_;
     }
 
     void showResponseButtons() override { responseButtonsShown_ = true; }
 
-    [[nodiscard]] auto responseButtonsShown() const {
+    [[nodiscard]] auto responseButtonsShown() const -> bool {
         return responseButtonsShown_;
     }
 
