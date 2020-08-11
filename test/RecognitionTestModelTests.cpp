@@ -1140,6 +1140,11 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesNextTargetToPlayer(submittingCoordinateResponse);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submittingConsonantPassesNextTargetToTargetPlayer) {
+    run(initializingTest, model);
+    assertPassesNextTargetToPlayer(submittingConsonant);
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     submittingCorrectResponsePassesNextTargetToTargetPlayer) {
     run(initializingTest, model);
