@@ -23,6 +23,7 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     void writeLastCorrectKeywords(OutputFile &) override {}
     void writeTestingParameters(OutputFile &) override;
     void writeTestResult(OutputFile &) override {}
+    void writeLastConsonant(OutputFile &) override {}
     auto snr() -> SNR override;
     auto nextTarget() -> LocalUrl override;
     auto currentTarget() -> LocalUrl override;

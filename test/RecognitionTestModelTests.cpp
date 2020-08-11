@@ -109,6 +109,10 @@ class TestMethodStub : public TestMethod {
         insert(log_, "writeLastCorrectKeywords ");
     }
 
+    void writeLastConsonant(OutputFile &) override {
+        insert(log_, "writeLastConsonant ");
+    }
+
     void writeTestResult(OutputFile &) override {
         insert(log_, "writeTestResult ");
     }
@@ -1394,6 +1398,10 @@ RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteNotifiesTrialComplete) {
 RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingCoordinateResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitConsonantSavesOutputFileAfterWritingTrial) {
+    assertSavesOutputFileAfterWritingTrial(submittingConsonant);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

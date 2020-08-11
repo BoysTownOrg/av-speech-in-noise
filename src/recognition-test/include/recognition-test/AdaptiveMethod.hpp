@@ -55,6 +55,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void writeLastCorrectResponse(OutputFile &) override;
     void writeLastIncorrectResponse(OutputFile &) override;
     void writeLastCorrectKeywords(OutputFile &) override;
+    void writeLastConsonant(OutputFile &) override {}
     void writeTestingParameters(OutputFile &) override;
     void writeTestResult(OutputFile &) override;
     auto snr() -> SNR override;

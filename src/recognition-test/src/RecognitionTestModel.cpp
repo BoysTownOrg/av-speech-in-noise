@@ -21,6 +21,7 @@ class NullTestMethod : public TestMethod {
     void writeTestingParameters(OutputFile &) override {}
     void writeLastCorrectKeywords(OutputFile &) override {}
     void writeTestResult(OutputFile &) override {}
+    void writeLastConsonant(OutputFile &) override {}
 };
 }
 
@@ -363,6 +364,8 @@ void RecognitionTestModelImpl::submit(const CorrectKeywords &correctKeywords) {
 }
 
 void RecognitionTestModelImpl::submit(const ConsonantResponse &) {
+    testMethod->writeLastConsonant(outputFile);
+    save(outputFile);
     prepareNextTrialIfNeeded();
 }
 
