@@ -40,34 +40,8 @@ static void readyNextTrial(
     experimenterPresenter.readyNextTrial();
 }
 
-static auto defaultAdaptiveCoordinateResponseMeasure(Method m) -> bool {
-    return m == Method::adaptiveCoordinateResponseMeasure;
-}
-
-static auto adaptiveCoordinateResponseMeasureWithSingleSpeaker(Method m)
-    -> bool {
-    return m == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker;
-}
-
-static auto adaptiveCoordinateResponseMeasureWithDelayedMasker(Method m)
-    -> bool {
-    return m == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker;
-}
-
-static auto fixedLevelCoordinateResponseMeasureWithTargetReplacement(Method m)
-    -> bool {
-    return m ==
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement;
-}
-
 static auto fixedLevelConsonant(Method m) -> bool {
     return m == Method::fixedLevelConsonants;
-}
-
-static auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(
-    Method m) -> bool {
-    return m ==
-        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
 }
 
 static auto coordinateResponseMeasure(Method m) -> bool {
