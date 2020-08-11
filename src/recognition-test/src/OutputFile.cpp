@@ -272,8 +272,8 @@ static auto format(const CorrectKeywordsTrial &trial) -> std::string {
 
 static auto format(const AdaptiveTestResult &result) -> std::string {
     std::stringstream stream;
-    writeLabeledLine(stream, "threshold for " + result.targetsUrl.path,
-        result.threshold);
+    writeLabeledLine(
+        stream, "threshold for " + result.targetsUrl.path, result.threshold);
     return string(stream);
 }
 
@@ -297,6 +297,19 @@ static auto formatCorrectKeywordsTrialHeading() -> std::string {
     insert(stream, HeadingItem::evaluation);
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::reversals);
+    insertNewLine(stream);
+    return string(stream);
+}
+
+static auto formatConsonantTrialHeading() -> std::string {
+    std::stringstream stream;
+    insert(stream, HeadingItem::correctConsonant);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::subjectConsonant);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::evaluation);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::target);
     insertNewLine(stream);
     return string(stream);
 }
@@ -383,6 +396,10 @@ void OutputFileImpl::write(const CorrectKeywordsTrial &trial) {
         write(formatCorrectKeywordsTrialHeading());
     write(format(trial));
     justWroteCorrectKeywordsTrial = true;
+}
+
+void OutputFileImpl::write(const ConsonantTrial &) {
+    write(formatConsonantTrialHeading());
 }
 
 void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {

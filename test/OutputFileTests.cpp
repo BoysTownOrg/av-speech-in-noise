@@ -385,6 +385,45 @@ class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
         {HeadingItem::evaluation, 4}, {HeadingItem::reversals, 5}};
 };
 
+class WritingConsonantTrial : public WritingEvaluatedTrial {
+  public:
+    WritingConsonantTrial() {
+        trial.correctConsonant = 'a';
+        trial.subjectConsonant = 'b';
+        trial.target = "c";
+    }
+
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(writer, "a",
+            at(headingLabels_, HeadingItem::correctConsonant), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "b",
+            at(headingLabels_, HeadingItem::subjectConsonant), line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "c", at(headingLabels_, HeadingItem::target), line);
+    }
+
+    void incorrect() override { trial.correct = false; }
+
+    void correct() override { trial.correct = true; }
+
+    void run(OutputFileImpl &file) override { file.write(trial); }
+
+    auto evaluationEntryIndex() -> gsl::index override {
+        return at(headingLabels_, HeadingItem::evaluation);
+    }
+
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return headingLabels_;
+    }
+
+  private:
+    ConsonantTrial trial{};
+    std::map<HeadingItem, gsl::index> headingLabels_{
+        {HeadingItem::correctConsonant, 1}, {HeadingItem::subjectConsonant, 2},
+        {HeadingItem::evaluation, 3}, {HeadingItem::target, 4}};
+};
+
 class WritingFreeResponseTrial : public WritingTrial {
   public:
     WritingFreeResponseTrial() {
@@ -423,6 +462,7 @@ class OutputFileTests : public ::testing::Test {
         writingFixedLevelCoordinateResponseTrial;
     WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
+    WritingConsonantTrial writingConsonantTrial;
     WritingFreeResponseTrial writingFreeResponseTrial;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
@@ -534,6 +574,10 @@ OUTPUT_FILE_TEST(writingFreeResponseTrialWritesHeadingOnFirstLine) {
 
 OUTPUT_FILE_TEST(writingCorrectKeywordsTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingCorrectKeywordsTrial);
+}
+
+OUTPUT_FILE_TEST(writingConsonantTrialWritesHeadingOnFirstLine) {
+    assertWritesHeadingOnFirstLine(writingConsonantTrial);
 }
 
 OUTPUT_FILE_TEST(writingOpenSetAdaptiveTrialWritesHeadingOnFirstLine) {
