@@ -1213,6 +1213,11 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submitConsonantSubscribesToTargetPlaybackCompletionNotification) {
+    assertTargetPlayerPlaybackCompletionSubscribed(submittingConsonant);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitCorrectKeywordsSubscribesToTargetPlaybackCompletionNotification) {
     assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectKeywords);
 }
