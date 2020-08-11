@@ -1337,6 +1337,10 @@ RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingCorrectKeywords);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submitConsonantSetsTargetPlayerLevel) {
+    assertSetsTargetLevel(submittingConsonant);
+}
+
 RECOGNITION_TEST_MODEL_TEST(submitCorrectResponseSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingCorrectResponse);
 }
