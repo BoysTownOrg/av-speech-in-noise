@@ -1626,6 +1626,12 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submitConsonantQueriesNextTargetAfterWritingResponse) {
+    assertTestMethodLogContains(
+        submittingConsonant, "writeLastConsonant next ");
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitIncorrectResponseQueriesNextTargetAfterWritingResponse) {
     assertTestMethodLogContains(
         submittingIncorrectResponse, "writeLastIncorrectResponse next ");
