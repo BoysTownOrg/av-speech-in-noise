@@ -183,7 +183,9 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void submit(const CorrectKeywords &p) override { correctKeywords_ = &p; }
 
-    void submit(const ConsonantResponse &p) { consonantResponse_ = &p; }
+    void submit(const ConsonantResponse &p) override {
+        consonantResponse_ = &p;
+    }
 
     auto testComplete() -> bool override { return complete_; }
 
