@@ -593,10 +593,10 @@ class InitializingFixedLevelTestWithEachTargetNTimes
         FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override { model.initializeConsonants(test_); }
+    void run(ModelImpl &model) override { model.initialize(test_); }
 
     void run(ModelImpl &model, const FixedLevelTestWithEachTargetNTimes &test) {
-        model.initializeConsonants(test);
+        model.initialize(test);
     }
 
     auto test() -> const Test & override { return test_; }

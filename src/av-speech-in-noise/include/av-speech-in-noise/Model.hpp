@@ -142,8 +142,7 @@ class Model {
     virtual void initializeWithSilentIntervalTargets(
         const FixedLevelTest &) = 0;
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
-    virtual void initializeConsonants(
-        const FixedLevelTestWithEachTargetNTimes &) = 0;
+    virtual void initialize(const FixedLevelTestWithEachTargetNTimes &) = 0;
     virtual void initializeWithAllTargetsAndEyeTracking(
         const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;

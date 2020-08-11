@@ -178,8 +178,7 @@ class ModelImpl : public Model {
         const FixedLevelFixedTrialsTest &) override;
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
     void initializeWithAllTargets(const FixedLevelTest &) override;
-    void initializeConsonants(
-        const FixedLevelTestWithEachTargetNTimes &) override;
+    void initialize(const FixedLevelTestWithEachTargetNTimes &) override;
     void initializeWithAllTargetsAndEyeTracking(
         const FixedLevelTest &) override;
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;

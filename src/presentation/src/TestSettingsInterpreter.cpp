@@ -223,7 +223,7 @@ static void initializeFixedLevelTest(Model &model, const std::string &contents,
     } else if (method_ == Method::fixedLevelConsonants) {
         FixedLevelTestWithEachTargetNTimes test;
         initialize(test, contents, method_, identity, startingSnr);
-        model.initializeConsonants(test);
+        model.initialize(test);
     } else if (method_ ==
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking) {
         FixedLevelTest test;
