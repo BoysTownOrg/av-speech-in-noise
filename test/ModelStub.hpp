@@ -42,8 +42,9 @@ class ModelStub : public Model {
         return initializedWithSingleSpeaker_;
     }
 
-    [[nodiscard]] auto fixedLevelConsonantsTestInitialized() const {
-        return fixedLevelConsonantsTestInitialized_;
+    [[nodiscard]] auto fixedLevelTestWithEachTargetNTimesInitialized() const
+        -> bool {
+        return fixedLevelTestWithEachTargetNTimesInitialized_;
     }
 
     [[nodiscard]] auto initializedWithDelayedMasker() const {
@@ -166,7 +167,7 @@ class ModelStub : public Model {
 
     void initialize(const FixedLevelTestWithEachTargetNTimes &p) override {
         fixedLevelTest_ = p;
-        fixedLevelConsonantsTestInitialized_ = true;
+        fixedLevelTestWithEachTargetNTimesInitialized_ = true;
     }
 
     void initializeWithAllTargets(const FixedLevelTest &p) override {
@@ -251,7 +252,7 @@ class ModelStub : public Model {
     bool fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_{};
     bool fixedLevelTestWithAllTargetsAndEyeTrackingInitialized_{};
     bool initializedWithSingleSpeaker_{};
-    bool fixedLevelConsonantsTestInitialized_{};
+    bool fixedLevelTestWithEachTargetNTimesInitialized_{};
     bool initializedWithDelayedMasker_{};
     bool adaptiveTestInitializedWithEyeTracking_{};
     bool correctResponseSubmitted_{};

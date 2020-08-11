@@ -423,7 +423,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
     initialize(interpreter, model, Method::fixedLevelConsonants);
-    assertTrue(model.fixedLevelConsonantsTestInitialized());
+    assertTrue(model.fixedLevelTestWithEachTargetNTimesInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
