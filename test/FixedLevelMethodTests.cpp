@@ -370,6 +370,11 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    completeWhenTestCompleteAfterConsonantResponse) {
+    assertTestCompleteOnlyAfter(submittingConsonant, method, targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     completeWhenTestCompleteAfterFreeResponse) {
     assertTestCompleteOnlyAfter(submittingFreeResponse, method, targetList);
 }
