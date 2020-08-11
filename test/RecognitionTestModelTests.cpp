@@ -1250,6 +1250,11 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submitConsonantSeeksToRandomMaskerPositionWithinTrialDuration) {
+    assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingConsonant);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitCorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration) {
     assertSeeksToRandomMaskerPositionWithinTrialDuration(
         submittingCorrectResponse);
