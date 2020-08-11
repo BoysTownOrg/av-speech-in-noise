@@ -1287,6 +1287,10 @@ RECOGNITION_TEST_MODEL_TEST(
     assertMaskerPlayerSeekedToRandomTime(submittingCoordinateResponse);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submitConsonantSeeksToRandomMaskerPosition) {
+    assertMaskerPlayerSeekedToRandomTime(submittingConsonant);
+}
+
 RECOGNITION_TEST_MODEL_TEST(submitCorrectResponseSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(submittingCorrectResponse);
 }
