@@ -36,6 +36,8 @@ class TestMethodStub : public TestMethod {
         return submittedFreeResponse_;
     }
 
+    auto submittedConsonant() const -> bool { return submittedConsonant_; }
+
     auto submittedCorrectKeywords() const -> bool {
         return submittedCorrectKeywords_;
     }
@@ -84,6 +86,11 @@ class TestMethodStub : public TestMethod {
         submittedCorrectKeywords_ = true;
     }
 
+    void submit(const ConsonantResponse &) override {
+        insert(log_, "submitConsonant ");
+        submittedConsonant_ = true;
+    }
+
     void submit(const coordinate_response_measure::Response &) override {
         insert(log_, "submitCoordinateResponse ");
     }
@@ -130,6 +137,7 @@ class TestMethodStub : public TestMethod {
     bool submittedIncorrectResponse_{};
     bool submittedFreeResponse_{};
     bool submittedCorrectKeywords_{};
+    bool submittedConsonant_{};
 };
 
 class UseCase {
@@ -1586,6 +1594,11 @@ RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseWritesTrialAfterSubmittingResponse) {
     assertTestMethodLogContains(submittingCoordinateResponse,
         "submitCoordinateResponse writeLastCoordinateResponse ");
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitConsonantWritesTrialAfterSubmittingResponse) {
+    assertTestMethodLogContains(
+        submittingConsonant, "submitConsonant writeLastConsonant ");
 }
 
 RECOGNITION_TEST_MODEL_TEST(

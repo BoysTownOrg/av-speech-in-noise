@@ -44,6 +44,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
     void submit(const CorrectKeywords &) override {}
+    void submit(const ConsonantResponse &) override {}
     void writeTestingParameters(OutputFile &) override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
     void writeLastCorrectResponse(OutputFile &) override {}
@@ -106,6 +107,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
     void submit(const CorrectKeywords &) override {}
+    void submit(const ConsonantResponse &) override {}
     void writeTestingParameters(OutputFile &) override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
     void writeLastCorrectResponse(OutputFile &) override {}
