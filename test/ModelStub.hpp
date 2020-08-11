@@ -85,7 +85,7 @@ class ModelStub : public Model {
         return fixedLevelTestWithEachTargetNTimes_;
     }
 
-    [[nodiscard]] auto fixedLevelFixedTargetsTest() const -> auto & {
+    [[nodiscard]] auto fixedLevelFixedTrialsTest() const -> auto & {
         return fixedLevelFixedTrialsTest_;
     }
 
@@ -154,14 +154,12 @@ class ModelStub : public Model {
     void initializeWithTargetReplacement(
         const FixedLevelFixedTrialsTest &p) override {
         fixedLevelFixedTrialsTest_ = p;
-        fixedLevelTest_ = p;
         defaultFixedLevelTestInitialized_ = true;
     }
 
     void initializeWithTargetReplacementAndEyeTracking(
         const FixedLevelFixedTrialsTest &p) override {
         fixedLevelFixedTrialsTest_ = p;
-        fixedLevelTest_ = p;
         fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_ = true;
     }
 
