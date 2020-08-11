@@ -101,6 +101,7 @@ class OutputFileImpl : public OutputFile {
     void write(const coordinate_response_measure::FixedLevelTrial &) override;
     void write(const FreeResponseTrial &) override;
     void write(const CorrectKeywordsTrial &) override;
+    void write(const ConsonantTrial &) override {}
     void write(const AdaptiveTestResults &) override;
     void write(const BinocularGazeSamples &) override;
     void write(TargetStartTime) override;

@@ -94,6 +94,7 @@ class OutputFile {
     virtual void write(const FreeResponseTrial &) = 0;
     virtual void write(const CorrectKeywordsTrial &) = 0;
     virtual void write(const open_set::AdaptiveTrial &) = 0;
+    virtual void write(const ConsonantTrial &) = 0;
     virtual void write(const AdaptiveTest &) = 0;
     virtual void write(const FixedLevelTest &) = 0;
     virtual void write(const AdaptiveTestResults &) = 0;

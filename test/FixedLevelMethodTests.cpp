@@ -74,6 +74,15 @@ class SubmittingFreeResponse : public UseCase {
     void setFlagged() { response.flagged = true; }
 };
 
+class SubmittingConsonant : public UseCase {
+    ConsonantResponse response{};
+
+  public:
+    void run(FixedLevelMethodImpl &m) override { m.submit(response); }
+
+    void setConsonant(char c) { response.consonant = c; }
+};
+
 auto blueColor() { return coordinate_response_measure::Color::blue; }
 
 void run(UseCase &useCase, FixedLevelMethodImpl &method) {
@@ -317,6 +326,7 @@ class FixedLevelMethodWithFiniteTargetPlaylistTests : public ::testing::Test {
         targetList, test};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
+    SubmittingConsonant submittingConsonant;
 
     FixedLevelMethodWithFiniteTargetPlaylistTests() {
         run(initializingMethod, method);
@@ -335,6 +345,14 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
     OutputFileStub outputFile;
     method.writeTestingParameters(outputFile);
     assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeConsonantPassesConsonant) {
+    submittingConsonant.setConsonant('b');
+    run(submittingConsonant, method);
+    OutputFileStub outputFile;
+    method.writeLastConsonant(outputFile);
+    assertEqual('b', outputFile.consonantTrial().subjectConsonant);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(

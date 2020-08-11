@@ -56,14 +56,21 @@ static auto current(TargetPlaylist *list) -> LocalUrl {
     return list->current();
 }
 
+void FixedLevelMethodImpl::submit(const ConsonantResponse &response) {
+    lastConsonantTrial.subjectConsonant = response.consonant;
+}
+
 void FixedLevelMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
-    lastTrial.subjectColor = response.color;
-    lastTrial.subjectNumber = response.number;
-    lastTrial.correctColor = evaluator.correctColor(current(targetList));
-    lastTrial.correctNumber = evaluator.correctNumber(current(targetList));
-    lastTrial.correct = evaluator.correct(current(targetList), response);
-    lastTrial.target = current(targetList).path;
+    lastCoordinateResponseMeasureTrial.subjectColor = response.color;
+    lastCoordinateResponseMeasureTrial.subjectNumber = response.number;
+    lastCoordinateResponseMeasureTrial.correctColor =
+        evaluator.correctColor(current(targetList));
+    lastCoordinateResponseMeasureTrial.correctNumber =
+        evaluator.correctNumber(current(targetList));
+    lastCoordinateResponseMeasureTrial.correct =
+        evaluator.correct(current(targetList), response);
+    lastCoordinateResponseMeasureTrial.target = current(targetList).path;
     if (usingFiniteTargetPlaylist_)
         finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
     else
@@ -78,8 +85,12 @@ void FixedLevelMethodImpl::writeTestingParameters(OutputFile &file) {
     file.write(*test_);
 }
 
+void FixedLevelMethodImpl::writeLastConsonant(OutputFile &file) {
+    file.write(lastConsonantTrial);
+}
+
 void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile &file) {
-    file.write(lastTrial);
+    file.write(lastCoordinateResponseMeasureTrial);
 }
 
 void FixedLevelMethodImpl::submitIncorrectResponse() {}
