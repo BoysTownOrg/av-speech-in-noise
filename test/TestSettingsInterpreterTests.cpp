@@ -97,6 +97,22 @@ void assertPassesSimpleFixedLevelSettings(
         fixedLevelTest(model).fullScaleLevel.dB_SPL);
 }
 
+void assertPassesSimpleFixedLevelFixedTrialsSettings(
+    TestSettingsInterpreterImpl &interpreter, ModelStub &model, Method m) {
+    initialize(interpreter, model,
+        {entryWithNewline(TestSetting::method, m),
+            entryWithNewline(TestSetting::targets, "a"),
+            entryWithNewline(TestSetting::masker, "b"),
+            entryWithNewline(TestSetting::maskerLevel, "65")},
+        5);
+    assertEqual("a", fixedLevelFixedTrialsTest(model).targetsUrl.path);
+    assertEqual("b", fixedLevelFixedTrialsTest(model).maskerFileUrl.path);
+    assertEqual(65, fixedLevelFixedTrialsTest(model).maskerLevel.dB_SPL);
+    assertEqual(5, fixedLevelFixedTrialsTest(model).snr.dB);
+    assertEqual(Presenter::fullScaleLevel.dB_SPL,
+        fixedLevelFixedTrialsTest(model).fullScaleLevel.dB_SPL);
+}
+
 void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
     Method m, const TestIdentity &identity = {}, int startingSnr = {}) {
     initialize(interpreter, model, {entryWithNewline(TestSetting::method, m)},
@@ -618,37 +634,15 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementPassesSimpleFixedLevelSettings) {
-    initialize(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-             Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement),
-            entryWithNewline(TestSetting::targets, "a"),
-            entryWithNewline(TestSetting::masker, "b"),
-            entryWithNewline(TestSetting::maskerLevel, "65")},
-        5);
-    assertEqual("a", fixedLevelFixedTrialsTest(model).targetsUrl.path);
-    assertEqual("b", fixedLevelFixedTrialsTest(model).maskerFileUrl.path);
-    assertEqual(65, fixedLevelFixedTrialsTest(model).maskerLevel.dB_SPL);
-    assertEqual(5, fixedLevelFixedTrialsTest(model).snr.dB);
-    assertEqual(Presenter::fullScaleLevel.dB_SPL,
-        fixedLevelFixedTrialsTest(model).fullScaleLevel.dB_SPL);
+    assertPassesSimpleFixedLevelFixedTrialsSettings(interpreter, model,
+        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingPassesSimpleFixedLevelSettings) {
-    initialize(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-             Method::
-                 fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking),
-            entryWithNewline(TestSetting::targets, "a"),
-            entryWithNewline(TestSetting::masker, "b"),
-            entryWithNewline(TestSetting::maskerLevel, "65")},
-        5);
-    assertEqual("a", fixedLevelFixedTrialsTest(model).targetsUrl.path);
-    assertEqual("b", fixedLevelFixedTrialsTest(model).maskerFileUrl.path);
-    assertEqual(65, fixedLevelFixedTrialsTest(model).maskerLevel.dB_SPL);
-    assertEqual(5, fixedLevelFixedTrialsTest(model).snr.dB);
-    assertEqual(Presenter::fullScaleLevel.dB_SPL,
-        fixedLevelFixedTrialsTest(model).fullScaleLevel.dB_SPL);
+    assertPassesSimpleFixedLevelFixedTrialsSettings(interpreter, model,
+        Method::
+            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -659,19 +653,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithTargetReplacementPassesSimpleFixedLevelSettings) {
-    initialize(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-             Method::fixedLevelFreeResponseWithTargetReplacement),
-            entryWithNewline(TestSetting::targets, "a"),
-            entryWithNewline(TestSetting::masker, "b"),
-            entryWithNewline(TestSetting::maskerLevel, "65")},
-        5);
-    assertEqual("a", fixedLevelFixedTrialsTest(model).targetsUrl.path);
-    assertEqual("b", fixedLevelFixedTrialsTest(model).maskerFileUrl.path);
-    assertEqual(65, fixedLevelFixedTrialsTest(model).maskerLevel.dB_SPL);
-    assertEqual(5, fixedLevelFixedTrialsTest(model).snr.dB);
-    assertEqual(Presenter::fullScaleLevel.dB_SPL,
-        fixedLevelFixedTrialsTest(model).fullScaleLevel.dB_SPL);
+    assertPassesSimpleFixedLevelFixedTrialsSettings(interpreter, model,
+        Method::fixedLevelFreeResponseWithTargetReplacement);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(oneSequence) {
