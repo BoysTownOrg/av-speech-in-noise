@@ -1522,6 +1522,10 @@ RECOGNITION_TEST_MODEL_TEST(
         submittingCoordinateResponse);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submitConsonantDoesNotLoadNextTargetWhenComplete) {
+    assertResponseDoesNotLoadNextTargetWhenComplete(submittingConsonant);
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     submitFreeResponseDoesNotLoadNextTargetWhenComplete) {
     assertResponseDoesNotLoadNextTargetWhenComplete(submittingFreeResponse);
