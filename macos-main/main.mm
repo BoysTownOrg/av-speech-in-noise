@@ -277,7 +277,7 @@ void main(EyeTracker &eyeTracker) {
     auto subjectViewLeadingEdge =
         subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
     CocoaConsonantView consonantView{NSMakeRect(subjectViewLeadingEdge,
-        subjectScreenOrigin.y, subjectViewWidth, subjectViewHeight)};
+        subjectScreenOrigin.y, subjectViewWidth, subjectScreenSize.height / 3)};
     Presenter::Consonant consonant{&consonantView};
     CocoaCoordinateResponseMeasureView coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,

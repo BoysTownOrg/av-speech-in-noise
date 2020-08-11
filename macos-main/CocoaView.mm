@@ -320,8 +320,9 @@ static void addConsonantImageButton(
     consonants[button] = consonant;
     const auto imageWidth{width(parent.frame) / totalColumns};
     const auto imageHeight{height(parent.frame) / totalRows};
-    [button setFrame:NSMakeRect(imageWidth * column, imageHeight * row,
-                         imageWidth, imageHeight)];
+    [button setFrame:NSMakeRect(imageWidth * column,
+                         imageHeight * (totalRows - row - 1), imageWidth,
+                         imageHeight)];
     button.bordered = NO;
     button.imageScaling = NSImageScaleProportionallyUpOrDown;
     addSubview(parent, button);
