@@ -406,7 +406,7 @@ void CocoaConsonantView::playTrial() { listener_->playTrial(); }
 
 void CocoaConsonantView::respond(id sender) {
     lastButtonPressed = sender;
-    listener_->submitResponse();
+    listener_->notifyThatResponseButtonHasBeenClicked();
 }
 
 void CocoaConsonantView::showResponseButtons() {

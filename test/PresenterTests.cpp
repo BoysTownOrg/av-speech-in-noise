@@ -46,7 +46,9 @@ class ConsonantViewStub : public View::Consonant {
         return nextTrialButtonHidden_;
     }
 
-    void submitResponse() { listener_->submitResponse(); }
+    void submitResponse() {
+        listener_->notifyThatResponseButtonHasBeenClicked();
+    }
 
     void hideResponseButtons() override { responseButtonsHidden_ = true; }
 

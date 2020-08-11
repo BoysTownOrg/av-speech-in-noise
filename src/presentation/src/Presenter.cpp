@@ -395,7 +395,7 @@ void Presenter::Consonant::playTrial() {
     view->hideNextTrialButton();
 }
 
-void Presenter::Consonant::submitResponse() {
+void Presenter::Consonant::notifyThatResponseButtonHasBeenClicked() {
     parent->submitConsonantResponse();
     view->hideResponseButtons();
 }
