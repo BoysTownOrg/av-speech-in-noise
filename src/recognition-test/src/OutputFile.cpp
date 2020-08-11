@@ -383,7 +383,7 @@ static auto formatOpenSetAdaptiveTrialHeading() -> std::string {
 OutputFileImpl::OutputFileImpl(Writer &writer, OutputFilePath &path)
     : writer{writer}, path{path} {}
 
-void OutputFileImpl::write(std::string s) { writer.write(std::move(s)); }
+void OutputFileImpl::write(const std::string &s) { writer.write(s); }
 
 void OutputFileImpl::write(
     const coordinate_response_measure::AdaptiveTrial &trial) {

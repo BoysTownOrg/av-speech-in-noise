@@ -114,7 +114,7 @@ class OutputFileImpl : public OutputFile {
     void write(const EyeTrackerTargetPlayerSynchronization &) override;
 
   private:
-    void write(std::string);
+    void write(const std::string &);
     auto generateNewFilePath(const TestIdentity &) -> std::string;
 
     Writer &writer;
