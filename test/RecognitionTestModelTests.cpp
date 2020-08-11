@@ -1666,5 +1666,11 @@ RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSubmitsResponse) {
     run(submittingCorrectKeywords, model);
     assertTrue(testMethod.submittedCorrectKeywords());
 }
+
+RECOGNITION_TEST_MODEL_TEST(submitConsonantSubmitsResponse) {
+    run(initializingTest, model);
+    run(submittingConsonant, model);
+    assertTrue(testMethod.submittedConsonant());
+}
 }
 }
