@@ -402,7 +402,9 @@ void CocoaConsonantView::hideNextTrialButton() {
 
 void CocoaConsonantView::subscribe(EventListener *e) { listener_ = e; }
 
-void CocoaConsonantView::playTrial() { listener_->playTrial(); }
+void CocoaConsonantView::playTrial() {
+    listener_->notifyThatReadyButtonHasBeenClicked();
+}
 
 void CocoaConsonantView::respond(id sender) {
     lastButtonPressed = sender;

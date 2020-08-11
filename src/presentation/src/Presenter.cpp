@@ -390,7 +390,7 @@ void Presenter::Consonant::stop() {
     view->hide();
 }
 
-void Presenter::Consonant::playTrial() {
+void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {
     parent->playTrial();
     view->hideNextTrialButton();
 }

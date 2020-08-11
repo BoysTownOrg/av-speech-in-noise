@@ -63,7 +63,7 @@ class View {
         class EventListener {
           public:
             virtual ~EventListener() = default;
-            virtual void playTrial() = 0;
+            virtual void notifyThatReadyButtonHasBeenClicked() = 0;
             virtual void notifyThatResponseButtonHasBeenClicked() = 0;
         };
         virtual ~Consonant() = default;
@@ -199,7 +199,7 @@ class Presenter : public Model::EventListener {
     class Consonant : public View::Consonant::EventListener {
       public:
         explicit Consonant(View::Consonant *);
-        void playTrial() override;
+        void notifyThatReadyButtonHasBeenClicked() override;
         void notifyThatResponseButtonHasBeenClicked() override;
         void start();
         void stop();

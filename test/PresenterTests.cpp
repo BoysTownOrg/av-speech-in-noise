@@ -30,7 +30,7 @@ class ConsonantViewStub : public View::Consonant {
 
     [[nodiscard]] auto hidden() const -> bool { return hidden_; }
 
-    void playTrial() { listener_->playTrial(); }
+    void playTrial() { listener_->notifyThatReadyButtonHasBeenClicked(); }
 
     void subscribe(EventListener *e) override { listener_ = e; }
 
