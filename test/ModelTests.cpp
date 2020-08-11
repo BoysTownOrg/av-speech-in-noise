@@ -46,13 +46,11 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
     void submit(const CorrectKeywords &) override {}
-    void submit(const ConsonantResponse &) override {}
     void writeTestingParameters(OutputFile &) override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
     void writeLastCorrectResponse(OutputFile &) override {}
     void writeLastIncorrectResponse(OutputFile &) override {}
     void writeLastCorrectKeywords(OutputFile &) override {}
-    void writeLastConsonant(OutputFile &) override {}
     void writeTestResult(OutputFile &) override {}
     void submit(const coordinate_response_measure::Response &) override {}
 

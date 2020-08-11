@@ -137,6 +137,8 @@ class FixedLevelMethod : public virtual TestMethod {
         const FixedLevelTest &, FiniteTargetPlaylistWithRepeatables *) = 0;
     virtual void initialize(
         const FixedLevelFixedTrialsTest &, TargetPlaylist *) = 0;
+    virtual void submit(const ConsonantResponse &) = 0;
+    virtual void writeLastConsonant(OutputFile &) = 0;
 };
 
 class RecognitionTestModel {

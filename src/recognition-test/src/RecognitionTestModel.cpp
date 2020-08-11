@@ -13,7 +13,6 @@ class NullTestMethod : public TestMethod {
     void submit(const coordinate_response_measure::Response &) override {}
     void submit(const FreeResponse &) override {}
     void submit(const CorrectKeywords &) override {}
-    void submit(const ConsonantResponse &) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
@@ -22,7 +21,6 @@ class NullTestMethod : public TestMethod {
     void writeTestingParameters(OutputFile &) override {}
     void writeLastCorrectKeywords(OutputFile &) override {}
     void writeTestResult(OutputFile &) override {}
-    void writeLastConsonant(OutputFile &) override {}
 };
 }
 
@@ -364,7 +362,7 @@ void RecognitionTestModelImpl::submit(const CorrectKeywords &correctKeywords) {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::submit(const ConsonantResponse &r) {
+void RecognitionTestModelImpl::submit(const ConsonantResponse &) {
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
