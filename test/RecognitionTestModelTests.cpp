@@ -126,7 +126,6 @@ class TestMethodStub : public TestMethod {
     bool submittedIncorrectResponse_{};
     bool submittedFreeResponse_{};
     bool submittedCorrectKeywords_{};
-    bool submittedConsonant_{};
 };
 
 class UseCase {

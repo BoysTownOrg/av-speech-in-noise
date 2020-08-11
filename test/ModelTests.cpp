@@ -65,7 +65,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     std::stringstream log_{};
     const FixedLevelTest *test_{};
     const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
-    const FixedLevelTestWithEachTargetNTimes *testWithRepeatedTargets_{};
     TargetPlaylist *targetList_{};
     bool submittedConsonant_{};
 
@@ -91,11 +90,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     [[nodiscard]] auto targetList() const { return targetList_; }
 
     [[nodiscard]] auto test() const { return test_; }
-
-    auto testWithRepeatedTargets()
-        -> const FixedLevelTestWithEachTargetNTimes * {
-        return testWithRepeatedTargets_;
-    }
 
     auto fixedTrialsTest() -> const FixedLevelFixedTrialsTest * {
         return fixedTrialsTest_;
