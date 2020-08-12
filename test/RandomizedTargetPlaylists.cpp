@@ -627,7 +627,8 @@ TEST_F(DirectoryReaderCompositeTests,
     setDecoratedCount(3);
     auto reader = construct();
     subDirectories(reader, {"a"});
-    assertEqual({"a"}, directory(decoratedAt(0)));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, directory(decoratedAt(0)));
 }
 
 DIRECTORY_READER_COMPOSITE_TEST(returnsSubdirectoriesFromFirstDecorated) {

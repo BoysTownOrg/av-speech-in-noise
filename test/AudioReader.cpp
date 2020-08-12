@@ -76,7 +76,7 @@ class AudioReaderTests : public ::testing::Test {
 
 TEST_F(AudioReaderTests, loadsFile) {
     read("a");
-    assertEqual("a", bufferedReader.file());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, bufferedReader.file());
 }
 
 TEST_F(AudioReaderTests, readThrowsInvalidFileOnFailure) {

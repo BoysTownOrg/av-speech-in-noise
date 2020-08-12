@@ -15,15 +15,6 @@
 #define AV_SPEECH_IN_NOISE_ASSERT_EQUAL(expected, actual)                      \
     ASSERT_EQ(expected, actual)
 
-inline void assertEqual(
-    const std::string &expected, const std::string &actual) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected, actual);
-}
-
-template <typename T> void assertEqual(T expected, T actual) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected, actual);
-}
-
 template <typename T>
 void assertEqual(const std::vector<T> &expected, const std::vector<T> &actual) {
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(expected.size(), actual.size());
