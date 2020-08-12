@@ -122,7 +122,7 @@ class CocoaConsonantView : public View::Consonant {
     void hideReadyButton() override;
     auto consonant() -> std::string override;
     void respond(id sender);
-    void playTrial();
+    void notifyThatReadyButtonHasBeenClicked();
 
   private:
     std::unordered_map<id, std::string> consonants;
@@ -150,7 +150,7 @@ class CocoaCoordinateResponseMeasureView
     void show() override;
     void hide() override;
     void respond(id sender);
-    void playTrial();
+    void notifyThatReadyButtonHasBeenClicked();
 
   private:
     void addNextTrialButton();

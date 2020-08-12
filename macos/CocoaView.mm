@@ -43,8 +43,8 @@
     controller->respond(sender);
 }
 
-- (void)playTrial {
-    controller->playTrial();
+- (void)notifyThatReadyButtonHasBeenClicked {
+    controller->notifyThatReadyButtonHasBeenClicked();
 }
 @end
 
@@ -57,8 +57,8 @@
     controller->respond(sender);
 }
 
-- (void)playTrial {
-    controller->playTrial();
+- (void)notifyThatReadyButtonHasBeenClicked {
+    controller->notifyThatReadyButtonHasBeenClicked();
 }
 @end
 
@@ -333,7 +333,9 @@ static void addConsonantImageButton(
 }
 
 static void addReadyButton(NSView *parent, ConsonantViewActions *actions) {
-    const auto button_ { button("", actions, @selector(playTrial)) };
+    const auto button_ {
+        button("", actions, @selector(notifyThatReadyButtonHasBeenClicked))
+    };
     [button_ setBezelStyle:NSBezelStyleTexturedSquare];
     auto style{[[NSMutableParagraphStyle alloc] init]};
     [style setAlignment:NSTextAlignmentCenter];
@@ -406,7 +408,7 @@ void CocoaConsonantView::hideReadyButton() {
 
 void CocoaConsonantView::subscribe(EventListener *e) { listener_ = e; }
 
-void CocoaConsonantView::playTrial() {
+void CocoaConsonantView::notifyThatReadyButtonHasBeenClicked() {
     listener_->notifyThatReadyButtonHasBeenClicked();
 }
 
@@ -493,7 +495,9 @@ void CocoaCoordinateResponseMeasureView::addNumberButton(
 }
 
 void CocoaCoordinateResponseMeasureView::addNextTrialButton() {
-    const auto button_ { button("", actions, @selector(playTrial)) };
+    const auto button_ {
+        button("", actions, @selector(notifyThatReadyButtonHasBeenClicked))
+    };
     [button_ setBezelStyle:NSBezelStyleTexturedSquare];
     auto style{[[NSMutableParagraphStyle alloc] init]};
     [style setAlignment:NSTextAlignmentCenter];
@@ -549,7 +553,7 @@ void CocoaCoordinateResponseMeasureView::hideNextTrialButton() {
     av_speech_in_noise::hide(nextTrialButton);
 }
 
-void CocoaCoordinateResponseMeasureView::playTrial() {
+void CocoaCoordinateResponseMeasureView::notifyThatReadyButtonHasBeenClicked() {
     listener_->notifyThatReadyButtonHasBeenClicked();
 }
 
