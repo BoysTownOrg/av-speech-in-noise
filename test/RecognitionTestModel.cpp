@@ -385,13 +385,13 @@ void assertNotHidden(TargetPlayerStub &targetPlayer) {
 }
 
 void assertOnlyHidden(TargetPlayerStub &targetPlayer) {
-    assertTrue(hidden(targetPlayer));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(hidden(targetPlayer));
     assertNotShown(targetPlayer);
 }
 
 void assertOnlyShown(TargetPlayerStub &targetPlayer) {
     assertNotHidden(targetPlayer);
-    assertTrue(shown(targetPlayer));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(shown(targetPlayer));
 }
 
 auto log(OutputFileStub &file) -> const std::stringstream & {
@@ -408,7 +408,7 @@ auto fadedIn(MaskerPlayerStub &maskerPlayer) -> bool {
 
 auto played(TargetPlayerStub &player) -> bool { return player.played(); }
 
-void assertPlayed(TargetPlayerStub &player) { assertTrue(played(player)); }
+void assertPlayed(TargetPlayerStub &player) { AV_SPEECH_IN_NOISE_EXPECT_TRUE(played(player)); }
 
 auto filePath(TargetPlayerStub &player) { return player.filePath(); }
 
@@ -453,15 +453,15 @@ auto freeResponseTrial(OutputFileStub &file) {
 }
 
 void assertOnlyUsingFirstChannel(TargetPlayerStub &player) {
-    assertTrue(player.usingFirstChannelOnly());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.usingFirstChannelOnly());
 }
 
 void assertUsingAllChannels(MaskerPlayerStub &player) {
-    assertTrue(player.usingAllChannels());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.usingAllChannels());
 }
 
 void assertChannelDelaysCleared(MaskerPlayerStub &player) {
-    assertTrue(player.channelDelaysCleared());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.channelDelaysCleared());
 }
 
 auto targetPlayerEventListener(const RecognitionTestModelImpl &model)
@@ -590,7 +590,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertTargetPlayerPlaybackCompletionSubscribed(UseCase &useCase) {
         run(useCase, model);
-        assertTrue(playbackCompletionSubscribed(targetPlayer));
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(playbackCompletionSubscribed(targetPlayer));
     }
 
     void assertSeeksToRandomMaskerPositionWithinTrialDuration(
@@ -611,7 +611,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
         run(useCase, model);
-        assertTrue(endsWith(log(outputFile), "save "));
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(log(outputFile), "save "));
     }
 
     void assertCallThrowsRequestFailure(
@@ -687,7 +687,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         UseCase &useCase, const std::string &what) {
         run(initializingTest, model);
         run(useCase, model);
-        assertTrue(contains(testMethod.log(), what));
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(testMethod.log(), what));
     }
 
     void assertYieldsTrialNumber(UseCase &useCase, int n) {
@@ -696,11 +696,11 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 
     void assertUsingAllTargetPlayerChannels() {
-        assertTrue(targetPlayer.usingAllChannels());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetPlayer.usingAllChannels());
     }
 
     void assertUsingAllMaskerPlayerChannels() {
-        assertTrue(maskerPlayer.usingAllChannels());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(maskerPlayer.usingAllChannels());
     }
 
     void assertUsesAllTargetPlayerChannels(UseCase &useCase) {
@@ -786,7 +786,7 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
     run(initializingTest, model);
-    assertTrue(targetPlayer.usingAllChannels());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetPlayer.usingAllChannels());
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllMaskerPlayerChannels) {
@@ -835,7 +835,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithSingleSpeakerUsesFirstChannelOnlyOfMaskerPlayer) {
     run(initializingTestWithSingleSpeaker, model);
-    assertTrue(maskerPlayer.usingFirstChannelOnly());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(maskerPlayer.usingFirstChannelOnly());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -877,7 +877,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(playTrialForTestWithEyeTrackingStartsEyeTracking) {
     run(initializingTestWithEyeTracking, model);
     run(playingTrial, model);
-    assertTrue(started(eyeTracker));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(started(eyeTracker));
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotStartEyeTracking) {
@@ -898,7 +898,7 @@ RECOGNITION_TEST_MODEL_TEST(
     fadeOutCompleteForTestWithEyeTrackingStopsEyeTracking) {
     run(initializingTestWithEyeTracking, model);
     fadeOutComplete(maskerPlayer);
-    assertTrue(stopped(eyeTracker));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(stopped(eyeTracker));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -963,7 +963,7 @@ RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToMaskerPlayer) {
 
 RECOGNITION_TEST_MODEL_TEST(playTrialFadesInMasker) {
     run(playingTrial, model);
-    assertTrue(fadedIn(maskerPlayer));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(fadedIn(maskerPlayer));
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPlaysTarget) {
@@ -1130,8 +1130,8 @@ RECOGNITION_TEST_MODEL_TEST(
     run(initializingTest, model);
     testMethod.setComplete();
     run(submittingCorrectKeywords, model);
-    assertTrue(endsWith(testMethod.log(), "writeTestResult "));
-    assertTrue(endsWith(log(outputFile), "save "));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(testMethod.log(), "writeTestResult "));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(log(outputFile), "save "));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1361,7 +1361,7 @@ RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {
     test.condition = Condition::audioVisual;
     run(initializingTest, model);
     run(playingTrial, model);
-    assertTrue(shown(targetPlayer));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(shown(targetPlayer));
 }
 
 RECOGNITION_TEST_MODEL_TEST(maskerFadeOutCompleteHidesTargetPlayer) {
@@ -1383,12 +1383,12 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestHidesTargetPlayer) {
 
 RECOGNITION_TEST_MODEL_TEST(targetPlaybackCompleteFadesOutMasker) {
     targetPlayer.playbackComplete();
-    assertTrue(maskerPlayer.fadeOutCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(maskerPlayer.fadeOutCalled());
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteNotifiesTrialComplete) {
     fadeOutComplete(maskerPlayer);
-    assertTrue(listener.notified());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(listener.notified());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1509,7 +1509,7 @@ RECOGNITION_TEST_MODEL_TEST(testCompleteWhenComplete) {
     run(initializingTest, model);
     assertFalse(testComplete(model));
     testMethod.setComplete();
-    assertTrue(testComplete(model));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testComplete(model));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1560,7 +1560,7 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesResponse) {
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesFlagged) {
     freeResponse.flagged = true;
     run(submittingFreeResponse, model);
-    assertTrue(freeResponseTrial(outputFile).flagged);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(freeResponseTrial(outputFile).flagged);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesWithoutFlag) {
@@ -1623,25 +1623,25 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(submitCorrectResponseSubmitsCorrectResponse) {
     run(initializingTest, model);
     run(submittingCorrectResponse, model);
-    assertTrue(testMethod.submittedCorrectResponse());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedCorrectResponse());
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitIncorrectResponseSubmitsIncorrectResponse) {
     run(initializingTest, model);
     run(submittingIncorrectResponse, model);
-    assertTrue(testMethod.submittedIncorrectResponse());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedIncorrectResponse());
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSubmitsResponse) {
     run(initializingTest, model);
     run(submittingFreeResponse, model);
-    assertTrue(testMethod.submittedFreeResponse());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFreeResponse());
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSubmitsResponse) {
     run(initializingTest, model);
     run(submittingCorrectKeywords, model);
-    assertTrue(testMethod.submittedCorrectKeywords());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedCorrectKeywords());
 }
 }
 }

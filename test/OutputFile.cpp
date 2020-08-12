@@ -142,7 +142,7 @@ void writeTargetStartTimeNanoseconds(OutputFileImpl &file, std::uintmax_t t) {
 }
 
 void assertEndsWith(WriterStub &writer, const std::string &s) {
-    assertTrue(endsWith(written(writer), s));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(written(writer), s));
 }
 
 auto find_nth_element(const std::string &content, gsl::index n, char what)
@@ -175,7 +175,7 @@ auto nthCommaDelimitedEntryOfLine(
 
 void assertContainsColonDelimitedEntry(
     WriterStub &writer, const std::string &label, const std::string &what) {
-    assertTrue(contains(written(writer), label + ": " + what + '\n'));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(written(writer), label + ": " + what + '\n'));
 }
 
 void assertNthCommaDelimitedEntryOfLine(WriterStub &writer,
@@ -863,12 +863,12 @@ OUTPUT_FILE_TEST(openPassesFormattedFilePath) {
 
 OUTPUT_FILE_TEST(closeClosesWriter) {
     file.close();
-    assertTrue(writer.closed());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(writer.closed());
 }
 
 OUTPUT_FILE_TEST(saveSavesWriter) {
     file.save();
-    assertTrue(writer.saved());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(writer.saved());
 }
 
 OUTPUT_FILE_TEST(openPassesTestInformation) {

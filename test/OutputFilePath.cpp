@@ -114,7 +114,7 @@ TEST_F(OutputFilePathTests, generateFileNameFormatsTestInformationAndTime) {
 
 TEST_F(OutputFilePathTests, generateFileNameCapturesTimePriorToQueries) {
     generateFileName();
-    assertTrue(beginsWith(timeStamp.log(), "capture"));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(beginsWith(timeStamp.log(), "capture"));
 }
 
 TEST_F(OutputFilePathTests, outputDirectoryReturnsFullPath) {

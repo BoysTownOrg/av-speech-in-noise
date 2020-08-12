@@ -164,7 +164,7 @@ PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
 }
 
 void assertComplete(FixedLevelMethodImpl &method) {
-    assertTrue(method.complete());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(method.complete());
 }
 
 void assertIncomplete(FixedLevelMethodImpl &method) {
@@ -191,7 +191,7 @@ void assertCurrentTargetNotReinserted(
 
 void assertCurrentTargetReinserted(
     FiniteTargetPlaylistWithRepeatablesStub &list) {
-    assertTrue(reinsertCurrentCalled(list));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(reinsertCurrentCalled(list));
 }
 
 class FixedLevelMethodTests : public ::testing::Test {
@@ -270,7 +270,7 @@ FIXED_LEVEL_METHOD_TEST(writeCorrectCoordinateResponse) {
     evaluator.setCorrect();
     run(submittingCoordinateResponse, method);
     writeLastCoordinateResponse();
-    assertTrue(writtenFixedLevelTrialCorrect());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(writtenFixedLevelTrialCorrect());
 }
 
 FIXED_LEVEL_METHOD_TEST(writeIncorrectCoordinateResponse) {
@@ -299,7 +299,7 @@ FIXED_LEVEL_METHOD_TEST(completeWhenTrialsExhausted) {
     run(submittingFreeResponse, method);
     assertFalse(method.complete());
     run(submittingCoordinateResponse, method);
-    assertTrue(method.complete());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(method.complete());
 }
 
 FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesCurrentToEvaluator) {
@@ -378,7 +378,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     evaluator.setCorrect();
     run(submittingConsonant, method);
     writeLastConsonant(method, outputFile);
-    assertTrue(outputFile.consonantTrial().correct);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.consonantTrial().correct);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
@@ -514,7 +514,7 @@ TEST(FixedLevelMethodTestsTBD,
     FreeResponse response;
     response.flagged = true;
     method.submit(response);
-    assertTrue(endsWith(combo.log(), "reinsertCurrent empty "));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(combo.log(), "reinsertCurrent empty "));
 }
 }
 }

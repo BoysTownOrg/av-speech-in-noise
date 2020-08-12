@@ -716,13 +716,13 @@ class ModelTests : public ::testing::Test {
 MODEL_TEST(
     restartAdaptiveTestWhilePreservingCyclicTargetsPreparesNextTrialIfNeeded) {
     model.restartAdaptiveTestWhilePreservingTargets();
-    assertTrue(internalModel.nextTrialPreparedIfNeeded());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(internalModel.nextTrialPreparedIfNeeded());
 }
 
 MODEL_TEST(
     restartAdaptiveTestWhilePreservingCyclicTargetsResetsAdaptiveMethodTracks) {
     model.restartAdaptiveTestWhilePreservingTargets();
-    assertTrue(adaptiveMethod.tracksResetted());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(adaptiveMethod.tracksResetted());
 }
 
 MODEL_TEST(
@@ -910,35 +910,35 @@ MODEL_TEST(
 
 MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesSingleSpeaker) {
     run(initializingAdaptiveTestWithSingleSpeaker);
-    assertTrue(internalModel.initializedWithSingleSpeaker());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(internalModel.initializedWithSingleSpeaker());
 }
 
 MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
     run(initializingAdaptiveTestWithDelayedMasker);
-    assertTrue(internalModel.initializedWithDelayedMasker());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(internalModel.initializedWithDelayedMasker());
 }
 
 MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithEyeTracking);
-    assertTrue(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
 }
 
 MODEL_TEST(
     initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithCyclicTargetsAndEyeTracking);
-    assertTrue(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
 }
 
 MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithTargetReplacementAndEyeTracking);
-    assertTrue(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
 }
 
 MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);
-    assertTrue(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
 }
 
 MODEL_TEST(submitResponsePassesCoordinateResponse) {
@@ -962,13 +962,13 @@ MODEL_TEST(submitConsonantPassesConsonant) {
 MODEL_TEST(submitConsonantSubmitsResponse) {
     ConsonantResponse r;
     model.submit(r);
-    assertTrue(fixedLevelMethod.submittedConsonant());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(fixedLevelMethod.submittedConsonant());
 }
 
 MODEL_TEST(submitConsonantWritesTrialAfterSubmittingResponse) {
     ConsonantResponse r;
     model.submit(r);
-    assertTrue(contains(
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(
         fixedLevelMethod.log(), "submitConsonant writeLastConsonant "));
 }
 
@@ -976,7 +976,7 @@ MODEL_TEST(submitConsonantQueriesNextTargetAfterWritingResponse) {
     internalModel.callNextOnSubmitConsonants(&fixedLevelMethod);
     ConsonantResponse r;
     model.submit(r);
-    assertTrue(
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         contains(fixedLevelMethod.log(), "writeLastConsonant nextTarget "));
 }
 
@@ -995,7 +995,7 @@ MODEL_TEST(playCalibrationPassesCalibration) {
 MODEL_TEST(testCompleteWhenComplete) {
     assertFalse(testComplete());
     internalModel.setComplete();
-    assertTrue(testComplete());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testComplete());
 }
 
 MODEL_TEST(returnsAudioDevices) {

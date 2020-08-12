@@ -68,7 +68,7 @@ auto empty(FiniteTargetPlaylist &list) { return list.empty(); }
 
 void assertNotEmpty(FiniteTargetPlaylist &list) { assertFalse(empty(list)); }
 
-void assertEmpty(FiniteTargetPlaylist &list) { assertTrue(empty(list)); }
+void assertEmpty(FiniteTargetPlaylist &list) { AV_SPEECH_IN_NOISE_EXPECT_TRUE(empty(list)); }
 
 void reinsertCurrent(RandomizedTargetPlaylistWithoutReplacement &list) {
     list.reinsertCurrent();

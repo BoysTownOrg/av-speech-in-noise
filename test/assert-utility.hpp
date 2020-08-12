@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-inline void assertTrue(bool c) { EXPECT_TRUE(c); }
+#define AV_SPEECH_IN_NOISE_EXPECT_TRUE(c) EXPECT_TRUE(c)
 
 inline void assertFalse(bool c) { EXPECT_FALSE(c); }
 

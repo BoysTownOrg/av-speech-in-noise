@@ -1106,23 +1106,23 @@ void assertEntryEquals(
 
 void assertHidesPlayTrialButton(PlayingTrial &useCase) {
     run(useCase);
-    assertTrue(useCase.nextTrialButtonHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(useCase.nextTrialButtonHidden());
 }
 
 void assertConfirmTestSetupShowsNextTrialButton(
     ConfirmingTestSetup &confirmingTest, PlayingTrial &playingTrial) {
     run(confirmingTest);
-    assertTrue(playingTrial.nextTrialButtonShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(playingTrial.nextTrialButtonShown());
 }
 
 void assertShowsNextTrialButton(TrialSubmission &useCase) {
     run(useCase);
-    assertTrue(useCase.nextTrialButtonShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(useCase.nextTrialButtonShown());
 }
 
 void assertResponseViewHidden(TrialSubmission &useCase) {
     run(useCase);
-    assertTrue(useCase.responseViewHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(useCase.responseViewHidden());
 }
 
 void submitResponse(CoordinateResponseMeasureViewStub &view) {
@@ -1139,7 +1139,7 @@ void playCalibration(TestSetupViewStub &view) { view.playCalibration(); }
 
 auto shown(TestSetupViewStub &view) -> bool { return view.shown(); }
 
-void assertShown(TestSetupViewStub &view) { assertTrue(shown(view)); }
+void assertShown(TestSetupViewStub &view) { AV_SPEECH_IN_NOISE_EXPECT_TRUE(shown(view)); }
 
 auto hidden(TestSetupViewStub &view) -> bool { return view.hidden(); }
 
@@ -1152,10 +1152,10 @@ auto shown(CoordinateResponseMeasureViewStub &view) -> bool {
 auto shown(ConsonantViewStub &view) -> bool { return view.shown(); }
 
 void assertHidden(CoordinateResponseMeasureViewStub &view) {
-    assertTrue(view.hidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-void assertHidden(ConsonantViewStub &view) { assertTrue(view.hidden()); }
+void assertHidden(ConsonantViewStub &view) { AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden()); }
 
 void completeTrial(ModelStub &model) { model.completeTrial(); }
 
@@ -1288,12 +1288,12 @@ class PresenterTests : public ::testing::Test {
 
     void assertPlaysTrial(UseCase &useCase) {
         run(useCase);
-        assertTrue(trialPlayed(model));
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(trialPlayed(model));
     }
 
     void assertHidesExitTestButton(PlayingTrial &useCase) {
         run(useCase);
-        assertTrue(experimenterView.exitTestButtonHidden());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.exitTestButtonHidden());
     }
 
     void assertCompleteTestShowsSetupView(TrialSubmission &useCase) {
@@ -1309,7 +1309,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertHidesContinueTestingDialog(UseCase &useCase) {
         run(useCase);
-        assertTrue(experimenterView.continueTestingDialogHidden());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.continueTestingDialogHidden());
     }
 
     void assertIncompleteTestDoesNotShowSetupView(TrialSubmission &useCase) {
@@ -1324,7 +1324,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertHidesExperimenterView(UseCase &useCase) {
         run(useCase);
-        assertTrue(hidden(experimenterView));
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(hidden(experimenterView));
     }
 
     void assertCompleteTestDoesNotPlayTrial(UseCase &useCase) {
@@ -1340,7 +1340,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertHidesTestSetupView(UseCase &useCase) {
         run(useCase);
-        assertTrue(hidden(setupView));
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(hidden(setupView));
     }
 
     void assertDoesNotHideTestSetupView(UseCase &useCase) {
@@ -1350,7 +1350,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertShowsExperimenterView(UseCase &useCase) {
         run(useCase);
-        assertTrue(experimenterView.shown());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.shown());
     }
 
     void assertDoesNotShowCoordinateResponseMeasureView(UseCase &useCase) {
@@ -1424,7 +1424,7 @@ class PresenterTests : public ::testing::Test {
         ConfirmingTestSetup &useCase, TrialSubmission &trialSubmission) {
         run(useCase);
         completeTrial(model);
-        assertTrue(trialSubmission.responseViewShown());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(trialSubmission.responseViewShown());
     }
 
     void assertShowsTrialNumber(UseCase &useCase) {
@@ -1441,12 +1441,12 @@ class PresenterTests : public ::testing::Test {
 
     void assertShowsCoordinateResponseMeasureView(UseCase &useCase) {
         run(useCase);
-        assertTrue(shown(coordinateResponseMeasureView));
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(shown(coordinateResponseMeasureView));
     }
 
     void assertShowsConsonantView(UseCase &useCase) {
         run(useCase);
-        assertTrue(shown(consonantView));
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(shown(consonantView));
     }
 
     void assertExitTestAfterCompletingTrialHidesResponseSubmission(
@@ -1454,13 +1454,13 @@ class PresenterTests : public ::testing::Test {
         run(useCase);
         completeTrial(model);
         exitTest(experimenterView);
-        assertTrue(submission.responseViewHidden());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(submission.responseViewHidden());
     }
 
     void assertCompleteTestShowsContinueTestingDialog(UseCase &useCase) {
         setTestComplete(model);
         run(useCase);
-        assertTrue(experimenterView.continueTestingDialogShown());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.continueTestingDialogShown());
     }
 
     void assertCompleteTestShowsThresholds(UseCase &useCase) {
@@ -1474,7 +1474,7 @@ class PresenterTests : public ::testing::Test {
     void assertCompleteTestHidesResponse(TrialSubmission &useCase) {
         setTestComplete(model);
         run(useCase);
-        assertTrue(useCase.responseViewHidden());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(useCase.responseViewHidden());
     }
 };
 
@@ -1721,7 +1721,7 @@ PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
 PRESENTER_TEST(
     acceptingContinuingTestingRestartsAdaptiveTestWhilePreservingCyclicTargets) {
     run(acceptingContinuingTesting);
-    assertTrue(model.adaptiveTestRestartedWhilePreservingCyclicTargets());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.adaptiveTestRestartedWhilePreservingCyclicTargets());
 }
 
 PRESENTER_TEST(acceptingContinuingTestingHidesContinueTestingDialog) {
@@ -1788,7 +1788,7 @@ PRESENTER_TEST(
 
 PRESENTER_TEST(callsEventLoopWhenRun) {
     presenter.run();
-    assertTrue(view.eventLoopCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.eventLoopCalled());
 }
 
 PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestHidesTestSetupView) {
@@ -2363,17 +2363,17 @@ PRESENTER_TEST(experimenterResponsePassesResponse) {
 PRESENTER_TEST(experimenterResponseFlagsResponse) {
     experimenterView.flagResponse();
     submitFreeResponse(experimenterView);
-    assertTrue(model.freeResponse().flagged);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.freeResponse().flagged);
 }
 
 PRESENTER_TEST(passedTrialSubmitsCorrectResponse) {
     run(submittingPassedTrial);
-    assertTrue(model.correctResponseSubmitted());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.correctResponseSubmitted());
 }
 
 PRESENTER_TEST(failedTrialSubmitsIncorrectResponse) {
     run(submittingFailedTrial);
-    assertTrue(model.incorrectResponseSubmitted());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.incorrectResponseSubmitted());
 }
 
 PRESENTER_TEST(
@@ -2539,8 +2539,8 @@ PRESENTER_TEST(exitTestHidesExperimenterView) {
 
 PRESENTER_TEST(exitTestHidesResponseButtons) {
     run(exitingTest);
-    assertTrue(submittingCoordinateResponseMeasure.responseViewHidden());
-    assertTrue(submittingConsonant.responseViewHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(submittingCoordinateResponseMeasure.responseViewHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(submittingConsonant.responseViewHidden());
 }
 
 PRESENTER_TEST(exitTestShowsTestSetupView) {
@@ -2558,7 +2558,7 @@ PRESENTER_TEST(browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
 
 PRESENTER_TEST(completingTrialShowsExitTestButton) {
     completeTrial(model);
-    assertTrue(experimenterView.exitTestButtonShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.exitTestButtonShown());
 }
 
 PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTrialNumber) {
@@ -2761,7 +2761,7 @@ PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
 PRESENTER_TEST(completingTrialClearsFreeResponseForFixedLevelFreeResponseTest) {
     run(confirmingFixedLevelFreeResponseWithTargetReplacementTest);
     completeTrial(model);
-    assertTrue(experimenterView.freeResponseCleared());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.freeResponseCleared());
 }
 
 TEST_F(PresenterFailureTests,

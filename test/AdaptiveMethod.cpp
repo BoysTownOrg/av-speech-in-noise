@@ -333,7 +333,7 @@ auto at(const std::vector<std::shared_ptr<TrackStub>> &tracks, gsl::index n)
 auto complete(AdaptiveMethodImpl &method) -> bool { return method.complete(); }
 
 void assertComplete(AdaptiveMethodImpl &method) {
-    assertTrue(complete(method));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(complete(method));
 }
 
 void assertIncomplete(AdaptiveMethodImpl &method) {
@@ -473,7 +473,7 @@ class AdaptiveMethodTests : public ::testing::Test {
         initialize(method, test, targetListReader);
         selectNextList(randomizer, 2);
         run(useCase);
-        assertTrue(pushedDown(tracks, 1));
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(pushedDown(tracks, 1));
         assertFalse(pushedUp(tracks, 1));
     }
 
@@ -483,7 +483,7 @@ class AdaptiveMethodTests : public ::testing::Test {
         selectNextList(randomizer, 2);
         run(useCase);
         assertFalse(pushedDown(tracks, 1));
-        assertTrue(pushedUp(tracks, 1));
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(pushedUp(tracks, 1));
     }
 
     void assertSelectsListAmongThoseWithIncompleteTracks(UseCase &useCase) {
@@ -623,7 +623,7 @@ ADAPTIVE_METHOD_TEST(resetTracksResetsEachTrack) {
     initialize(method, test, targetListReader);
     resetTracks(method);
     for (auto &track : tracks)
-        assertTrue(track->resetted());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(track->resetted());
 }
 
 ADAPTIVE_METHOD_TEST(snrReturnsThatOfCurrentTrack) {
@@ -730,21 +730,21 @@ ADAPTIVE_METHOD_TEST(writeCorrectCoordinateResponseIsCorrect) {
     initialize(method, test, targetListReader);
     setCorrectCoordinateResponse();
     write(method, coordinateResponse, outputFile);
-    assertTrue(coordinateResponseTrialCorrect(outputFile));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(coordinateResponseTrialCorrect(outputFile));
 }
 
 ADAPTIVE_METHOD_TEST(writeCorrectResponseIsCorrect) {
     initialize(method, test, targetListReader);
     submitCorrectResponse(method);
     method.writeLastCorrectResponse(outputFile);
-    assertTrue(outputFile.openSetAdaptiveTrial().correct);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.openSetAdaptiveTrial().correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeSufficientCorrectKeywordsIsCorrect) {
     initialize(method, test, targetListReader);
     run(submittingSufficientCorrectKeywords);
     method.writeLastCorrectKeywords(outputFile);
-    assertTrue(correctKeywordsTrial(outputFile).correct);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(correctKeywordsTrial(outputFile).correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeIncorrectCoordinateResponseIsIncorrect) {

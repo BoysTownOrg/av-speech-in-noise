@@ -19,7 +19,7 @@ auto complete(AdaptiveTrack &track) -> bool { return track.complete(); }
 
 void assertIncomplete(AdaptiveTrack &track) { assertFalse(complete(track)); }
 
-void assertComplete(AdaptiveTrack &track) { assertTrue(complete(track)); }
+void assertComplete(AdaptiveTrack &track) { AV_SPEECH_IN_NOISE_EXPECT_TRUE(complete(track)); }
 
 void update(AdaptiveTrack &track, const std::string &directions) {
     for (const auto &c : directions)
@@ -408,7 +408,7 @@ ADAPTIVE_TRACK_TEST(thresholdNegativeReversals) {
     setFirstSequenceUp(1);
     auto track{construct(settings)};
     update(track, "dduddudd");
-    assertTrue(std::isnan(track.threshold(-1)));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(std::isnan(track.threshold(-1)));
 }
 
 // https://doi.org/10.1121/1.1912375

@@ -104,7 +104,7 @@ class ConsonantResponseEvaluatorTests : public ::testing::Test {
     }
 
     void assertCorrect(const std::string &s, char r) {
-        assertTrue(correct(s, {r}));
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(correct(s, {r}));
     }
 
     void assertIncorrect(const std::string &s, char r) {

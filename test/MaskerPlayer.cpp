@@ -314,7 +314,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void timerCallback() { timer.callback(); }
 
-    void assertCallbackScheduled() { assertTrue(callbackScheduled()); }
+    void assertCallbackScheduled() { AV_SPEECH_IN_NOISE_EXPECT_TRUE(callbackScheduled()); }
 
     auto callbackScheduled() -> bool { return timer.callbackScheduled(); }
 
@@ -400,7 +400,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertFadeInCompletedAfterMonoFill(channel_index_type n) {
         callbackAfterMonoFill(n);
-        assertTrue(listener.fadeInCompleted());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(listener.fadeInCompleted());
     }
 
     void assertFadeOutNotCompletedAfterMonoFill(channel_index_type n) {
@@ -412,7 +412,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertFadeOutCompletedAfterMonoFill(channel_index_type n) {
         callbackAfterMonoFill(n);
-        assertTrue(fadeOutCompleted());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(fadeOutCompleted());
     }
 
     void fadeInCompletely() {
@@ -506,7 +506,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
 MASKER_PLAYER_TEST(playingWhenAudioPlayerPlaying) {
     audioPlayer.setPlaying();
-    assertTrue(player.playing());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.playing());
 }
 
 MASKER_PLAYER_TEST(durationReturnsDuration) {
@@ -679,7 +679,7 @@ MASKER_PLAYER_TEST(loadFileLoadsAudioFile) {
 
 MASKER_PLAYER_TEST(fadeInPlaysVideoPlayer) {
     fadeIn();
-    assertTrue(audioPlayer.played());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioPlayer.played());
 }
 
 MASKER_PLAYER_TEST(twentydBMultipliesSignalByTen) {
@@ -912,7 +912,7 @@ MASKER_PLAYER_TEST(audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
         assertFalse(playerStopped());
     }
     callbackAfterMonoFill(1);
-    assertTrue(playerStopped());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(playerStopped());
 }
 
 MASKER_PLAYER_TEST(fadeInSchedulesCallback) { assertFadeInSchedulesCallback(); }

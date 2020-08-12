@@ -114,16 +114,16 @@ auto method(TestSettingsInterpreterImpl &interpreter, Method m) -> Method {
 }
 
 void assertDefaultAdaptiveTestInitialized(ModelStub &model) {
-    assertTrue(model.defaultAdaptiveTestInitialized());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.defaultAdaptiveTestInitialized());
 }
 
 void assertFixedLevelTestWithSilentIntervalTargetsInitialized(
     ModelStub &model) {
-    assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
 }
 
 void assertDefaultFixedLevelTestInitialized(ModelStub &model) {
-    assertTrue(model.defaultFixedLevelTestInitialized());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.defaultFixedLevelTestInitialized());
 }
 
 auto adaptiveTestIdentity(ModelStub &model) -> TestIdentity {
@@ -397,19 +397,19 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptivePassFailWithEyeTrackingInitializesAdaptiveTest) {
     initialize(interpreter, model, Method::adaptivePassFailWithEyeTracking);
-    assertTrue(model.adaptiveTestInitializedWithEyeTracking());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.adaptiveTestInitializedWithEyeTracking());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
     initialize(interpreter, model, Method::adaptiveCorrectKeywords);
-    assertTrue(model.initializedWithCyclicTargets());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.initializedWithCyclicTargets());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCorrectKeywordsWithEyeTrackingInitializesAdaptiveTest) {
     initialize(
         interpreter, model, Method::adaptiveCorrectKeywordsWithEyeTracking);
-    assertTrue(model.adaptiveTestInitializedWithCyclicTargetsAndEyeTracking());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.adaptiveTestInitializedWithCyclicTargetsAndEyeTracking());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -422,26 +422,26 @@ TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithDelayedMaskerInitializesAdaptiveTest) {
     initialize(interpreter, model,
         Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
-    assertTrue(model.initializedWithDelayedMasker());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.initializedWithDelayedMasker());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithSingleSpeakerInitializesAdaptiveTest) {
     initialize(interpreter, model,
         Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
-    assertTrue(model.initializedWithSingleSpeaker());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.initializedWithSingleSpeaker());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
     initialize(interpreter, model, Method::fixedLevelConsonants);
-    assertTrue(model.fixedLevelTestWithEachTargetNTimesInitialized());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.fixedLevelTestWithEachTargetNTimesInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithEyeTrackingInitializesAdaptiveTest) {
     initialize(interpreter, model,
         Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
-    assertTrue(model.adaptiveTestInitializedWithEyeTracking());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.adaptiveTestInitializedWithEyeTracking());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -463,7 +463,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initialize(interpreter, model,
         Method::
             fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
-    assertTrue(
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         model.fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized());
 }
 
@@ -471,14 +471,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsInitializesFixedLevelTest) {
     initialize(
         interpreter, model, Method::fixedLevelFreeResponseWithAllTargets);
-    assertTrue(model.fixedLevelTestWithAllTargetsInitialized());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.fixedLevelTestWithAllTargetsInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingInitializesFixedLevelTest) {
     initialize(interpreter, model,
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
-    assertTrue(model.fixedLevelTestWithAllTargetsAndEyeTrackingInitialized());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.fixedLevelTestWithAllTargetsAndEyeTrackingInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
