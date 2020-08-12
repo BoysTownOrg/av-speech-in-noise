@@ -72,9 +72,12 @@ COORDINATE_RESPONSE_EVALUATOR_TEST(invalidFormatIsAlwaysIncorrect) {
 }
 
 COORDINATE_RESPONSE_EVALUATOR_TEST(fileNameReturnsEverythingAfterFinalSlash) {
-    assertEqual("b", evaluator.fileName({"a/b"}));
-    assertEqual("a", evaluator.fileName({"a"}));
-    assertEqual("c.txt", evaluator.fileName({"a/b/c.txt"}));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"b"}, evaluator.fileName({"a/b"}));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, evaluator.fileName({"a"}));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c.txt"}, evaluator.fileName({"a/b/c.txt"}));
 }
 
 COORDINATE_RESPONSE_EVALUATOR_TEST(onlyEvaluatesFirstPartOfFileName) {
@@ -124,7 +127,7 @@ CONSONANT_RESPONSE_EVALUATOR_TEST(invalidFormatIsAlwaysIncorrect) {
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(parsesConsonant) {
-    assertEqual('b', evaluator.correctConsonant({"b.wav"}));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL('b', evaluator.correctConsonant({"b.wav"}));
 }
 }
 }
