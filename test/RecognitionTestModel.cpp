@@ -79,11 +79,6 @@ class TestMethodStub : public TestMethod {
         submittedFreeResponse_ = true;
     }
 
-    void submit(const CorrectKeywords &) override {
-        insert(log_, "submitCorrectKeywords ");
-        submittedCorrectKeywords_ = true;
-    }
-
     void submit(const coordinate_response_measure::Response &) override {
         insert(log_, "submitCoordinateResponse ");
     }
@@ -103,10 +98,6 @@ class TestMethodStub : public TestMethod {
 
     void writeLastIncorrectResponse(OutputFile &) override {
         insert(log_, "writeLastIncorrectResponse ");
-    }
-
-    void writeLastCorrectKeywords(OutputFile &) override {
-        insert(log_, "writeLastCorrectKeywords ");
     }
 
     void writeTestResult(OutputFile &) override {

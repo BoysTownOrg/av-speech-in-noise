@@ -131,6 +131,8 @@ class AdaptiveMethod : public virtual TestMethod {
     virtual void initialize(const AdaptiveTest &, TargetPlaylistReader *) = 0;
     virtual void resetTracks() = 0;
     virtual auto testResults() -> AdaptiveTestResults = 0;
+    virtual void submit(const CorrectKeywords &) = 0;
+    virtual void writeLastCorrectKeywords(OutputFile &) = 0;
 };
 
 class FixedLevelMethod : public virtual TestMethod {

@@ -119,7 +119,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
-    void submit(const CorrectKeywords &) override {}
     void submit(const ConsonantResponse &) override {
         submittedConsonant_ = true;
         log_ << "submitConsonant ";
@@ -128,7 +127,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     void writeLastCoordinateResponse(OutputFile &) override {}
     void writeLastCorrectResponse(OutputFile &) override {}
     void writeLastIncorrectResponse(OutputFile &) override {}
-    void writeLastCorrectKeywords(OutputFile &) override {}
     void writeLastConsonant(OutputFile &) override {
         log_ << "writeLastConsonant ";
     }

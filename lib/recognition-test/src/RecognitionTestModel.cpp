@@ -12,14 +12,12 @@ class NullTestMethod : public TestMethod {
     auto snr() -> SNR override { return SNR{}; }
     void submit(const coordinate_response_measure::Response &) override {}
     void submit(const FreeResponse &) override {}
-    void submit(const CorrectKeywords &) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
     void writeLastCorrectResponse(OutputFile &) override {}
     void writeLastIncorrectResponse(OutputFile &) override {}
     void writeTestingParameters(OutputFile &) override {}
-    void writeLastCorrectKeywords(OutputFile &) override {}
     void writeTestResult(OutputFile &) override {}
 };
 }
