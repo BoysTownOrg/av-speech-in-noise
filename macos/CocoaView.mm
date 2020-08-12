@@ -39,8 +39,8 @@
     av_speech_in_noise::CocoaCoordinateResponseMeasureView *controller;
 }
 
-- (void)respond:(id)sender {
-    controller->respond(sender);
+- (void)notifyThatResponseButtonHasBeenClicked:(id)sender {
+    controller->notifyThatResponseButtonHasBeenClicked(sender);
 }
 
 - (void)notifyThatReadyButtonHasBeenClicked {
@@ -53,8 +53,8 @@
     av_speech_in_noise::CocoaConsonantView *controller;
 }
 
-- (void)respond:(id)sender {
-    controller->respond(sender);
+- (void)notifyThatResponseButtonHasBeenClicked:(id)sender {
+    controller->notifyThatResponseButtonHasBeenClicked(sender);
 }
 
 - (void)notifyThatReadyButtonHasBeenClicked {
@@ -314,9 +314,10 @@ static void addConsonantImageButton(
     const auto image{[[NSImage alloc]
         initWithContentsOfFile:asNsString(resourcePath(consonant, "bmp"))]};
     const auto button {
-        [NSButton buttonWithImage:image
-                           target:actions
-                           action:@selector(respond:)]
+        [NSButton
+            buttonWithImage:image
+                     target:actions
+                     action:@selector(notifyThatResponseButtonHasBeenClicked:)]
     };
     consonants[button] = consonant;
     const auto imageWidth{
@@ -412,7 +413,7 @@ void CocoaConsonantView::notifyThatReadyButtonHasBeenClicked() {
     listener_->notifyThatReadyButtonHasBeenClicked();
 }
 
-void CocoaConsonantView::respond(id sender) {
+void CocoaConsonantView::notifyThatResponseButtonHasBeenClicked(id sender) {
     lastButtonPressed = sender;
     listener_->notifyThatResponseButtonHasBeenClicked();
 }
@@ -469,9 +470,10 @@ void CocoaCoordinateResponseMeasureView::addNumberButton(
     NSColor *color, int number, int row, std::size_t col) {
     auto title{asNsString(std::to_string(number))};
     const auto button {
-        [NSButton buttonWithTitle:title
-                           target:actions
-                           action:@selector(respond:)]
+        [NSButton
+            buttonWithTitle:title
+                     target:actions
+                     action:@selector(notifyThatResponseButtonHasBeenClicked:)]
     };
     auto responseWidth{width(responseButtons.frame) / responseNumbers};
     auto responseHeight{height(responseButtons.frame) / responseColors};
@@ -536,7 +538,8 @@ auto CocoaCoordinateResponseMeasureView::whiteResponse() -> bool {
     return lastPressedColor() == whiteColor;
 }
 
-void CocoaCoordinateResponseMeasureView::respond(id sender) {
+void CocoaCoordinateResponseMeasureView::notifyThatResponseButtonHasBeenClicked(
+    id sender) {
     lastButtonPressed = sender;
     listener_->notifyThatResponseButtonHasBeenClicked();
 }

@@ -121,7 +121,7 @@ class CocoaConsonantView : public View::Consonant {
     void showReadyButton() override;
     void hideReadyButton() override;
     auto consonant() -> std::string override;
-    void respond(id sender);
+    void notifyThatResponseButtonHasBeenClicked(id sender);
     void notifyThatReadyButtonHasBeenClicked();
 
   private:
@@ -149,7 +149,7 @@ class CocoaCoordinateResponseMeasureView
     void subscribe(EventListener *) override;
     void show() override;
     void hide() override;
-    void respond(id sender);
+    void notifyThatResponseButtonHasBeenClicked(id sender);
     void notifyThatReadyButtonHasBeenClicked();
 
   private:
