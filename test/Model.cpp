@@ -680,34 +680,40 @@ class ModelTests : public ::testing::Test {
 
     void assertInitializesInternalModel(InitializingTestUseCase &useCase) {
         run(useCase);
-        assertEqual(useCase.testMethod(), internalModel.testMethod());
-        assertEqual(&useCase.test(), internalModel.test());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            useCase.testMethod(), internalModel.testMethod());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&useCase.test(), internalModel.test());
     }
 
     void assertInitializesFixedLevelMethod(
         InitializingFixedLevelTest &useCase) {
         useCase.run(model, fixedLevelTest);
-        assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            &std::as_const(fixedLevelTest), fixedLevelMethod.test());
     }
 
     void assertInitializesFixedLevelMethod(
         InitializingFixedLevelFixedTrialsTest &useCase) {
         useCase.run(model, fixedLevelFixedTrialsTest);
-        assertEqual(&std::as_const(fixedLevelFixedTrialsTest),
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            &std::as_const(fixedLevelFixedTrialsTest),
             fixedLevelMethod.fixedTrialsTest());
     }
 
     void assertInitializesAdaptiveMethod(
         InitializingAdaptiveTest &useCase, TargetPlaylistReader &reader) {
         useCase.run(model, adaptiveTest);
-        assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
-        assertEqual(&reader, adaptiveMethod.targetListReader());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            &std::as_const(adaptiveTest), adaptiveMethod.test());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            &reader, adaptiveMethod.targetListReader());
     }
 
     void assertInitializesFixedLevelTestWithTargetPlaylist(
         InitializingTestUseCase &useCase, TargetPlaylist &targetList) {
         run(useCase);
-        assertEqual(&targetList, fixedLevelMethod.targetList());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            &targetList, fixedLevelMethod.targetList());
     }
 };
 
@@ -753,8 +759,9 @@ MODEL_TEST(
     initializingFixedLevelTestWithEachTargetNTimesInitializesFixedLevelMethod) {
     initializingFixedLevelTestWithEachTargetNTimes.run(
         model, fixedLevelTestWithEachTargetNTimes);
-    assertEqual(&static_cast<const FixedLevelTest &>(
-                    std::as_const(fixedLevelTestWithEachTargetNTimes)),
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &static_cast<const FixedLevelTest &>(
+            std::as_const(fixedLevelTestWithEachTargetNTimes)),
         fixedLevelMethod.test());
 }
 
@@ -807,7 +814,7 @@ MODEL_TEST(initializeFixedLevelTestWithEachTargetNTimesSetsTargetRepeats) {
     fixedLevelTestWithEachTargetNTimes.timesEachTargetIsPlayed = 2;
     initializingFixedLevelTestWithEachTargetNTimes.run(
         model, fixedLevelTestWithEachTargetNTimes);
-    assertEqual(gsl::index{1}, eachTargetNTimes.repeats());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(gsl::index{1}, eachTargetNTimes.repeats());
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
@@ -910,12 +917,14 @@ MODEL_TEST(
 
 MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesSingleSpeaker) {
     run(initializingAdaptiveTestWithSingleSpeaker);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(internalModel.initializedWithSingleSpeaker());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        internalModel.initializedWithSingleSpeaker());
 }
 
 MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
     run(initializingAdaptiveTestWithDelayedMasker);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(internalModel.initializedWithDelayedMasker());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        internalModel.initializedWithDelayedMasker());
 }
 
 MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {
@@ -944,19 +953,22 @@ MODEL_TEST(
 MODEL_TEST(submitResponsePassesCoordinateResponse) {
     coordinate_response_measure::Response response;
     model.submit(response);
-    assertEqual(&std::as_const(response), internalModel.coordinateResponse());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(response), internalModel.coordinateResponse());
 }
 
 MODEL_TEST(submitCorrectKeywordsPassesCorrectKeywords) {
     CorrectKeywords k;
     model.submit(k);
-    assertEqual(&std::as_const(k), internalModel.correctKeywords());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(k), internalModel.correctKeywords());
 }
 
 MODEL_TEST(submitConsonantPassesConsonant) {
     ConsonantResponse r;
     model.submit(r);
-    assertEqual(&std::as_const(r), internalModel.consonantResponse());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(r), internalModel.consonantResponse());
 }
 
 MODEL_TEST(submitConsonantSubmitsResponse) {
@@ -983,13 +995,15 @@ MODEL_TEST(submitConsonantQueriesNextTargetAfterWritingResponse) {
 MODEL_TEST(playTrialPassesAudioSettings) {
     AudioSettings settings;
     model.playTrial(settings);
-    assertEqual(&std::as_const(settings), internalModel.playTrialSettings());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(settings), internalModel.playTrialSettings());
 }
 
 MODEL_TEST(playCalibrationPassesCalibration) {
     Calibration calibration;
     model.playCalibration(calibration);
-    assertEqual(&std::as_const(calibration), internalModel.calibration());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(calibration), internalModel.calibration());
 }
 
 MODEL_TEST(testCompleteWhenComplete) {
@@ -1011,18 +1025,19 @@ MODEL_TEST(returnsAdaptiveTestResults) {
 
 MODEL_TEST(returnsTrialNumber) {
     internalModel.setTrialNumber(1);
-    assertEqual(1, model.trialNumber());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.trialNumber());
 }
 
 MODEL_TEST(returnsTargetFileName) {
     internalModel.setTargetFileName("a");
-    assertEqual("a", model.targetFileName());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, model.targetFileName());
 }
 
 MODEL_TEST(subscribesToListener) {
     ModelEventListenerStub listener;
     model.subscribe(&listener);
-    assertEqual(static_cast<const Model::EventListener *>(&listener),
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        static_cast<const Model::EventListener *>(&listener),
         internalModel.listener());
 }
 }
