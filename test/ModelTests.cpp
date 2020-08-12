@@ -807,7 +807,7 @@ MODEL_TEST(initializeFixedLevelTestWithEachTargetNTimesSetsTargetRepeats) {
     fixedLevelTestWithEachTargetNTimes.timesEachTargetIsPlayed = 2;
     initializingFixedLevelTestWithEachTargetNTimes.run(
         model, fixedLevelTestWithEachTargetNTimes);
-    assertEqual(gsl::index{2}, eachTargetNTimes.repeats());
+    assertEqual(gsl::index{1}, eachTargetNTimes.repeats());
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {

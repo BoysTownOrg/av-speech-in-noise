@@ -86,7 +86,7 @@ void ModelImpl::initializeWithAllTargets(const FixedLevelTest &test) {
 }
 
 void ModelImpl::initialize(const FixedLevelTestWithEachTargetNTimes &test) {
-    eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed);
+    eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
     av_speech_in_noise::initialize(fixedLevelMethod, test, eachTargetNTimes);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
