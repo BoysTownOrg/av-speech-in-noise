@@ -36,10 +36,6 @@ class TestMethodStub : public TestMethod {
         return submittedFreeResponse_;
     }
 
-    auto submittedCorrectKeywords() const -> bool {
-        return submittedCorrectKeywords_;
-    }
-
     void setSnr_dB(int x) { snr_dB_ = x; }
 
     auto snr() -> SNR override { return SNR{snr_dB_}; }
@@ -116,7 +112,6 @@ class TestMethodStub : public TestMethod {
     bool submittedCorrectResponse_{};
     bool submittedIncorrectResponse_{};
     bool submittedFreeResponse_{};
-    bool submittedCorrectKeywords_{};
 };
 
 class UseCase {
