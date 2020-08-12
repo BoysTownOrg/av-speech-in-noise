@@ -17,7 +17,7 @@ void assertXEquals(AdaptiveTrack &track, int expected) {
 
 auto complete(AdaptiveTrack &track) -> bool { return track.complete(); }
 
-void assertIncomplete(AdaptiveTrack &track) { assertFalse(complete(track)); }
+void assertIncomplete(AdaptiveTrack &track) { AV_SPEECH_IN_NOISE_EXPECT_FALSE(complete(track)); }
 
 void assertComplete(AdaptiveTrack &track) { AV_SPEECH_IN_NOISE_EXPECT_TRUE(complete(track)); }
 

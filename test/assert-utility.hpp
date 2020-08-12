@@ -7,7 +7,7 @@
 
 #define AV_SPEECH_IN_NOISE_EXPECT_TRUE(c) EXPECT_TRUE(c)
 
-inline void assertFalse(bool c) { EXPECT_FALSE(c); }
+#define AV_SPEECH_IN_NOISE_EXPECT_FALSE(c) EXPECT_FALSE(c)
 
 inline void assertEqual(
     const std::string &expected, const std::string &actual) {

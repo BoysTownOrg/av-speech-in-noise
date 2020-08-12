@@ -1314,7 +1314,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertIncompleteTestDoesNotShowSetupView(TrialSubmission &useCase) {
         run(useCase);
-        assertFalse(shown(setupView));
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(shown(setupView));
     }
 
     void assertCompleteTestHidesExperimenterView(UseCase &useCase) {
@@ -1330,12 +1330,12 @@ class PresenterTests : public ::testing::Test {
     void assertCompleteTestDoesNotPlayTrial(UseCase &useCase) {
         setTestComplete(model);
         run(useCase);
-        assertFalse(trialPlayed(model));
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(trialPlayed(model));
     }
 
     void assertDoesNotHideExperimenterView(TrialSubmission &useCase) {
         run(useCase);
-        assertFalse(hidden(experimenterView));
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(hidden(experimenterView));
     }
 
     void assertHidesTestSetupView(UseCase &useCase) {
@@ -1345,7 +1345,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertDoesNotHideTestSetupView(UseCase &useCase) {
         run(useCase);
-        assertFalse(hidden(setupView));
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(hidden(setupView));
     }
 
     void assertShowsExperimenterView(UseCase &useCase) {
@@ -1355,7 +1355,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertDoesNotShowCoordinateResponseMeasureView(UseCase &useCase) {
         run(useCase);
-        assertFalse(shown(coordinateResponseMeasureView));
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(shown(coordinateResponseMeasureView));
     }
 
     void assertPassesTestSettingsFileToTextFileReader(UseCase &useCase) {
@@ -1610,7 +1610,7 @@ class PresenterFailureTests : public ::testing::Test {
 
     void assertConfirmTestSetupDoesNotHideSetupView() {
         confirmTestSetup();
-        assertFalse(setupView.hidden());
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(setupView.hidden());
     }
 };
 
@@ -1632,7 +1632,7 @@ TEST_F(PresenterConstructionTests, populatesTransducerMenu) {
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowExperimentersNextTrialButton) {
     run(confirmingAdaptiveCoordinateResponseMeasureTest);
-    assertFalse(experimenterView.nextTrialButtonShown());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(experimenterView.nextTrialButtonShown());
 }
 
 PRESENTER_TEST(
@@ -1715,7 +1715,7 @@ PRESENTER_TEST(submittingInvalidCorrectKeywordsShowsErrorMessage) {
 PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
     setCorrectKeywords(experimenterView, "a");
     run(submittingCorrectKeywords);
-    assertFalse(submittingCorrectKeywords.responseViewHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(submittingCorrectKeywords.responseViewHidden());
 }
 
 PRESENTER_TEST(

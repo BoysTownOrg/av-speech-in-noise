@@ -993,7 +993,7 @@ MODEL_TEST(playCalibrationPassesCalibration) {
 }
 
 MODEL_TEST(testCompleteWhenComplete) {
-    assertFalse(testComplete());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(testComplete());
     internalModel.setComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testComplete());
 }

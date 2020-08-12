@@ -318,7 +318,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     auto callbackScheduled() -> bool { return timer.callbackScheduled(); }
 
-    void assertCallbackNotScheduled() { assertFalse(callbackScheduled()); }
+    void assertCallbackNotScheduled() { AV_SPEECH_IN_NOISE_EXPECT_FALSE(callbackScheduled()); }
 
     void loadAudio(audio_type x) {
         audioReader.set(std::move(x));
@@ -390,7 +390,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertFadeInNotCompletedAfterMonoFill(channel_index_type n) {
         callbackAfterMonoFill(n);
-        assertFalse(listener.fadeInCompleted());
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(listener.fadeInCompleted());
     }
 
     void callbackAfterMonoFill(channel_index_type n = 0) {
@@ -405,7 +405,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertFadeOutNotCompletedAfterMonoFill(channel_index_type n) {
         callbackAfterMonoFill(n);
-        assertFalse(fadeOutCompleted());
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(fadeOutCompleted());
     }
 
     auto fadeOutCompleted() -> bool { return listener.fadeOutCompleted(); }
@@ -909,7 +909,7 @@ MASKER_PLAYER_TEST(audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
     fadeOut();
     for (int i = 0; i < 3 * 4; ++i) {
         callbackAfterMonoFill(1);
-        assertFalse(playerStopped());
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(playerStopped());
     }
     callbackAfterMonoFill(1);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(playerStopped());

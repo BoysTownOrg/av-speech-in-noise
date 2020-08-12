@@ -377,11 +377,11 @@ auto shown(TargetPlayerStub &targetPlayer) -> bool {
 }
 
 void assertNotShown(TargetPlayerStub &targetPlayer) {
-    assertFalse(shown(targetPlayer));
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(shown(targetPlayer));
 }
 
 void assertNotHidden(TargetPlayerStub &targetPlayer) {
-    assertFalse(hidden(targetPlayer));
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(hidden(targetPlayer));
 }
 
 void assertOnlyHidden(TargetPlayerStub &targetPlayer) {
@@ -744,7 +744,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertPlayTrialDoesNotAllocateRecordingTime(UseCase &useCase) {
         run(useCase, model);
         run(playingTrial, model);
-        assertFalse(eyeTracker.recordingTimeAllocated());
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(eyeTracker.recordingTimeAllocated());
     }
 
     void
@@ -883,7 +883,7 @@ RECOGNITION_TEST_MODEL_TEST(playTrialForTestWithEyeTrackingStartsEyeTracking) {
 RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotStartEyeTracking) {
     run(initializingTest, model);
     run(playingTrial, model);
-    assertFalse(started(eyeTracker));
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(started(eyeTracker));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -905,7 +905,7 @@ RECOGNITION_TEST_MODEL_TEST(
     fadeOutCompleteForDefaultTestDoesNotStopEyeTracking) {
     run(initializingTest, model);
     fadeOutComplete(maskerPlayer);
-    assertFalse(stopped(eyeTracker));
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(stopped(eyeTracker));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1454,23 +1454,23 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     playTrialDoesNotChangeAudioDeviceWhenTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingTrial);
-    assertFalse(maskerPlayer.setDeviceCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(maskerPlayer.setDeviceCalled());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     playCalibrationDoesNotChangeAudioDeviceWhenTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingCalibration);
-    assertFalse(targetPlayer.setDeviceCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(targetPlayer.setDeviceCalled());
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialDoesNotPlayIfTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingTrial);
-    assertFalse(fadedIn(maskerPlayer));
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(fadedIn(maskerPlayer));
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationDoesNotPlayIfTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingCalibration);
-    assertFalse(played(targetPlayer));
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(played(targetPlayer));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1507,7 +1507,7 @@ RECOGNITION_TEST_MODEL_TEST(audioDevicesReturnsOutputAudioDeviceDescriptions) {
 
 RECOGNITION_TEST_MODEL_TEST(testCompleteWhenComplete) {
     run(initializingTest, model);
-    assertFalse(testComplete(model));
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(testComplete(model));
     testMethod.setComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testComplete(model));
 }
@@ -1565,7 +1565,7 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesFlagged) {
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesWithoutFlag) {
     run(submittingFreeResponse, model);
-    assertFalse(freeResponseTrial(outputFile).flagged);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(freeResponseTrial(outputFile).flagged);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesTarget) {

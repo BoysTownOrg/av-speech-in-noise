@@ -66,7 +66,7 @@ void assertShuffled(RandomizerStub &randomizer,
 
 auto empty(FiniteTargetPlaylist &list) { return list.empty(); }
 
-void assertNotEmpty(FiniteTargetPlaylist &list) { assertFalse(empty(list)); }
+void assertNotEmpty(FiniteTargetPlaylist &list) { AV_SPEECH_IN_NOISE_EXPECT_FALSE(empty(list)); }
 
 void assertEmpty(FiniteTargetPlaylist &list) { AV_SPEECH_IN_NOISE_EXPECT_TRUE(empty(list)); }
 
