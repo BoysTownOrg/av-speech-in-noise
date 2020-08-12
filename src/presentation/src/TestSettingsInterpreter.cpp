@@ -109,7 +109,7 @@ static void assign(Calibration &calibration, const std::string &entryName,
         calibration.level.dB_SPL = integer(entry);
 }
 
-static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
+static void assign(AdaptiveTest &test, const std::string &entryName,
     const std::string &entry) {
     if (entryName == name(TestSetting::up))
         applyToEachTrackingRule(test, applyToUp, entry);
@@ -121,6 +121,8 @@ static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
         applyToEachTrackingRule(test, applyToStepSize, entry);
     else if (entryName == name(TestSetting::thresholdReversals))
         test.thresholdReversals = integer(entry);
+    else
+        assign(static_cast<Test &>(test), entryName, entry);
 }
 
 static auto name(const std::string &contents) -> std::string {
@@ -170,11 +172,6 @@ static auto adaptive(const std::string &contents) -> bool {
 static void initializeAdaptiveTest(Model &model, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr) {
     AdaptiveTest test;
-    applyToEachEntry(
-        [&](auto entryName, auto entry) {
-            assignAdaptive(test, entryName, entry);
-        },
-        contents);
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
