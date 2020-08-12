@@ -691,5 +691,15 @@ TEST_SETTINGS_INTERPRETER_TEST(consonantTestWithTargetRepetitions) {
     assertEqual(
         2, fixedLevelTestWithEachTargetNTimes(model).timesEachTargetIsPlayed);
 }
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    consonantTestWithTargetRepetitionsDefaultsToOne) {
+    initialize(interpreter, model,
+        {"\n",
+            entryWithNewline(
+                TestSetting::method, Method::fixedLevelConsonants)});
+    assertEqual(
+        1, fixedLevelTestWithEachTargetNTimes(model).timesEachTargetIsPlayed);
+}
 }
 }
