@@ -95,7 +95,7 @@ auto nextTarget(FixedLevelMethodImpl &method) -> std::string {
 
 void assertNextTargetEquals(
     FixedLevelMethodImpl &method, const std::string &s) {
-    assertEqual(s, nextTarget(method));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, nextTarget(method));
 }
 
 void setNext(TargetPlaylistStub &list, std::string s) {
@@ -125,42 +125,45 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
 PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(snrReturnsInitializedSnr) {
     testWithFixedTrials.snr.dB = 1;
     run(initializingMethod, method);
-    assertEqual(1, method.snr().dB);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, method.snr().dB);
 }
 
 PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     snrReturnsInitializedWithFiniteTargetPlaylistWithRepeatablesSnr) {
     test.snr.dB = 1;
     run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);
-    assertEqual(1, method.snr().dB);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, method.snr().dB);
 }
 
 PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     snrReturnsInitializedWithFiniteTargetPlaylistSnr) {
     test.snr.dB = 1;
     run(initializingMethodWithFiniteTargetPlaylist, method);
-    assertEqual(1, method.snr().dB);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, method.snr().dB);
 }
 
 PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     initializePassesTargetPlaylistDirectory) {
     testWithFixedTrials.targetsUrl.path = "a";
     run(initializingMethod, method);
-    assertEqual("a", targetList.directory().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, targetList.directory().path);
 }
 
 PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     initializeWithFiniteTargetPlaylistPassesTargetPlaylistDirectory) {
     test.targetsUrl.path = "a";
     run(initializingMethodWithFiniteTargetPlaylist, method);
-    assertEqual("a", finiteTargetPlaylist.directory().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, finiteTargetPlaylist.directory().path);
 }
 
 PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     initializeWithFiniteTargetPlaylistWithRepeatablesPassesTargetPlaylistDirectory) {
     test.targetsUrl.path = "a";
     run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);
-    assertEqual("a", finiteTargetPlaylistWithRepeatables.directory().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, finiteTargetPlaylistWithRepeatables.directory().path);
 }
 
 void assertComplete(FixedLevelMethodImpl &method) {
@@ -235,35 +238,38 @@ FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesSubjectColor) {
     submittingCoordinateResponse.setColor(blueColor());
     run(submittingCoordinateResponse, method);
     writeLastCoordinateResponse();
-    assertEqual(blueColor(), writtenFixedLevelTrial().subjectColor);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        blueColor(), writtenFixedLevelTrial().subjectColor);
 }
 
 FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesSubjectNumber) {
     submittingCoordinateResponse.setNumber(1);
     run(submittingCoordinateResponse, method);
     writeLastCoordinateResponse();
-    assertEqual(1, writtenFixedLevelTrial().subjectNumber);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, writtenFixedLevelTrial().subjectNumber);
 }
 
 FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesCorrectColor) {
     evaluator.setCorrectColor(blueColor());
     run(submittingCoordinateResponse, method);
     writeLastCoordinateResponse();
-    assertEqual(blueColor(), writtenFixedLevelTrial().correctColor);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        blueColor(), writtenFixedLevelTrial().correctColor);
 }
 
 FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesCorrectNumber) {
     evaluator.setCorrectNumber(1);
     run(submittingCoordinateResponse, method);
     writeLastCoordinateResponse();
-    assertEqual(1, writtenFixedLevelTrial().correctNumber);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, writtenFixedLevelTrial().correctNumber);
 }
 
 FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesStimulus) {
     setCurrentTarget("a");
     run(submittingCoordinateResponse, method);
     writeLastCoordinateResponse();
-    assertEqual("a", writtenFixedLevelTrial().target);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, writtenFixedLevelTrial().target);
 }
 
 FIXED_LEVEL_METHOD_TEST(writeCorrectCoordinateResponse) {
@@ -282,13 +288,15 @@ FIXED_LEVEL_METHOD_TEST(writeIncorrectCoordinateResponse) {
 
 FIXED_LEVEL_METHOD_TEST(writeTestPassesSettings) {
     method.writeTestingParameters(outputFile);
-    assertEqual(&static_cast<const FixedLevelTest &>(std::as_const(test)),
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &static_cast<const FixedLevelTest &>(std::as_const(test)),
         outputFile.fixedLevelTest());
 }
 
 FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesResponse) {
     run(submittingCoordinateResponse, method);
-    assertEqual(&submittingCoordinateResponse.response(), evaluator.response());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &submittingCoordinateResponse.response(), evaluator.response());
 }
 
 FIXED_LEVEL_METHOD_TEST(completeWhenTrialsExhausted) {
@@ -305,15 +313,18 @@ FIXED_LEVEL_METHOD_TEST(completeWhenTrialsExhausted) {
 FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesCurrentToEvaluator) {
     setCurrentTarget("a");
     run(submittingCoordinateResponse, method);
-    assertEqual("a", evaluator.correctColorFilePath());
-    assertEqual("a", evaluator.correctNumberFilePath());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, evaluator.correctColorFilePath());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, evaluator.correctNumberFilePath());
 }
 
 FIXED_LEVEL_METHOD_TEST(
     submitCoordinateResponsePassesCorrectTargetToEvaluator) {
     setCurrentTarget("a");
     run(submittingCoordinateResponse, method);
-    assertEqual("a", evaluator.correctFilePath());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, evaluator.correctFilePath());
 }
 
 void writeLastConsonant(FixedLevelMethodImpl &method, OutputFile &outputFile) {
@@ -348,21 +359,24 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(nextReturnsNextTarget) {
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
     method.writeTestingParameters(outputFile);
-    assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(test), outputFile.fixedLevelTest());
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeConsonantPassesConsonant) {
     submittingConsonant.setConsonant('b');
     run(submittingConsonant, method);
     writeLastConsonant(method, outputFile);
-    assertEqual('b', outputFile.consonantTrial().subjectConsonant);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        'b', outputFile.consonantTrial().subjectConsonant);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeConsonantPassesTarget) {
     targetList.setCurrent("a");
     run(submittingConsonant, method);
     writeLastConsonant(method, outputFile);
-    assertEqual("a", outputFile.consonantTrial().target);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, outputFile.consonantTrial().target);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
@@ -370,7 +384,8 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     evaluator.setCorrectConsonant('b');
     run(submittingConsonant, method);
     writeLastConsonant(method, outputFile);
-    assertEqual('b', outputFile.consonantTrial().correctConsonant);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        'b', outputFile.consonantTrial().correctConsonant);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
@@ -393,14 +408,16 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     submitConsonantPassesCurrentTargetToEvaluator) {
     targetList.setCurrent("a");
     run(submittingConsonant, method);
-    assertEqual("a", evaluator.correctConsonantUrl().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, evaluator.correctConsonantUrl().path);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     submitConsonantPassesCorrectTargetToEvaluator) {
     targetList.setCurrent("a");
     run(submittingConsonant, method);
-    assertEqual("a", evaluator.correctUrlForConsonantResponse().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, evaluator.correctUrlForConsonantResponse().path);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
@@ -454,7 +471,8 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     writeTestPassesSettings) {
     OutputFileStub outputFile;
     method.writeTestingParameters(outputFile);
-    assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(test), outputFile.fixedLevelTest());
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
@@ -514,7 +532,8 @@ TEST(FixedLevelMethodTestsTBD,
     FreeResponse response;
     response.flagged = true;
     method.submit(response);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(combo.log(), "reinsertCurrent empty "));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        endsWith(combo.log(), "reinsertCurrent empty "));
 }
 }
 }

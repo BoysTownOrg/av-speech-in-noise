@@ -12,14 +12,18 @@ void down(AdaptiveTrack &track) { track.down(); }
 void up(AdaptiveTrack &track) { track.up(); }
 
 void assertXEquals(AdaptiveTrack &track, int expected) {
-    assertEqual(expected, track.x());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected, track.x());
 }
 
 auto complete(AdaptiveTrack &track) -> bool { return track.complete(); }
 
-void assertIncomplete(AdaptiveTrack &track) { AV_SPEECH_IN_NOISE_EXPECT_FALSE(complete(track)); }
+void assertIncomplete(AdaptiveTrack &track) {
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(complete(track));
+}
 
-void assertComplete(AdaptiveTrack &track) { AV_SPEECH_IN_NOISE_EXPECT_TRUE(complete(track)); }
+void assertComplete(AdaptiveTrack &track) {
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(complete(track));
+}
 
 void update(AdaptiveTrack &track, const std::string &directions) {
     for (const auto &c : directions)
@@ -30,7 +34,7 @@ void update(AdaptiveTrack &track, const std::string &directions) {
 }
 
 void assertReversalsEquals(AdaptiveTrack &track, int n) {
-    assertEqual(n, track.reversals());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(n, track.reversals());
 }
 
 void assertReversalsEqualsAfterDown(AdaptiveTrack &track, int n) {
@@ -80,7 +84,7 @@ void assertXEqualsAfter(
 }
 
 void assertThresholdEquals(AdaptiveTrack &track, int lastReversals, double x) {
-    assertEqual(x, track.threshold(lastReversals));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, track.threshold(lastReversals));
 }
 
 auto construct(const AdaptiveTrack::Settings &settings) -> AdaptiveTrack {

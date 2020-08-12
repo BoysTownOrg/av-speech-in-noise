@@ -314,11 +314,15 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void timerCallback() { timer.callback(); }
 
-    void assertCallbackScheduled() { AV_SPEECH_IN_NOISE_EXPECT_TRUE(callbackScheduled()); }
+    void assertCallbackScheduled() {
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(callbackScheduled());
+    }
 
     auto callbackScheduled() -> bool { return timer.callbackScheduled(); }
 
-    void assertCallbackNotScheduled() { AV_SPEECH_IN_NOISE_EXPECT_FALSE(callbackScheduled()); }
+    void assertCallbackNotScheduled() {
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(callbackScheduled());
+    }
 
     void loadAudio(audio_type x) {
         audioReader.set(std::move(x));
@@ -492,11 +496,11 @@ class MaskerPlayerTests : public ::testing::Test {
     void seekSeconds(double x) { player.seekSeconds(x); }
 
     void assertFadeInCompletions(int n) {
-        assertEqual(n, listener.fadeInCompletions());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(n, listener.fadeInCompletions());
     }
 
     void assertFadeOutCompletions(int n) {
-        assertEqual(n, listener.fadeOutCompletions());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(n, listener.fadeOutCompletions());
     }
 
     auto digitalLevel() -> DigitalLevel { return player.digitalLevel(); }
@@ -512,7 +516,7 @@ MASKER_PLAYER_TEST(playingWhenAudioPlayerPlaying) {
 MASKER_PLAYER_TEST(durationReturnsDuration) {
     setSampleRateHz(3);
     loadMonoAudio({1, 2, 3, 4, 5, 6});
-    assertEqual(6. / 3, player.duration().seconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6. / 3, player.duration().seconds);
 }
 
 MASKER_PLAYER_TEST(seekSeeksAudio) {
@@ -669,12 +673,12 @@ MASKER_PLAYER_TEST(noAudioLoadedMutesChannel) {
 
 MASKER_PLAYER_TEST(fadeTimeReturnsFadeTime) {
     player.setFadeInOutSeconds(1);
-    assertEqual(1., player.fadeTime().seconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1., player.fadeTime().seconds);
 }
 
 MASKER_PLAYER_TEST(loadFileLoadsAudioFile) {
     loadFile("a");
-    assertEqual("a", audioPlayer.filePath());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, audioPlayer.filePath());
 }
 
 MASKER_PLAYER_TEST(fadeInPlaysVideoPlayer) {
@@ -860,9 +864,9 @@ MASKER_PLAYER_TEST(fadeInCompletePassesSystemTimeAndSampleOffset) {
     fillAudioBufferMono(5);
     fillAudioBufferMono(3 * 4 - 5 + 1, 6);
     timerCallback();
-    assertEqual(
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         player_system_time_type{6}, listener.fadeInCompleteSystemTime());
-    assertEqual(gsl::index{3 * 4 - 5 + 1},
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(gsl::index{3 * 4 - 5 + 1},
         listener.fadeInCompleteSystemTimeSampleOffset());
 }
 
@@ -968,7 +972,7 @@ MASKER_PLAYER_TEST(
 MASKER_PLAYER_TEST(setAudioDeviceFindsIndex) {
     setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
     setAudioDevice("second");
-    assertEqual(2, audioPlayer.deviceIndex());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2, audioPlayer.deviceIndex());
 }
 
 MASKER_PLAYER_TEST(setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
@@ -989,7 +993,7 @@ MASKER_PLAYER_TEST(outputAudioDevicesReturnsDescriptions) {
 
 MASKER_PLAYER_TEST(digitalLevelComputedFromFirstChannel) {
     loadAudio({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-    assertEqual<double>(
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         20 * std::log10(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.F)),
         digitalLevel().dBov);
 }
@@ -997,24 +1001,24 @@ MASKER_PLAYER_TEST(digitalLevelComputedFromFirstChannel) {
 MASKER_PLAYER_TEST(digitalLevelPassesLoadedFileToVideoPlayer) {
     loadFile("a");
     digitalLevel();
-    assertEqual("a", audioReader.filePath());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, audioReader.filePath());
 }
 
 MASKER_PLAYER_TEST(returnsNanosecondConversion) {
     setNanoseconds(audioPlayer, 1);
-    assertEqual(std::uintmax_t{1}, nanoseconds(player));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::uintmax_t{1}, nanoseconds(player));
 }
 
 MASKER_PLAYER_TEST(returnsCurrentSystemTime) {
     setCurrentSystemTime(audioPlayer, 1);
     PlayerTime expected{};
     expected.system = 1;
-    assertEqual(expected, currentSystemTime(player));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected, currentSystemTime(player));
 }
 
 MASKER_PLAYER_TEST(passesSystemTimeToAudioPlayerForNanoseconds) {
     nanoseconds(player, 1);
-    assertEqual(
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         player_system_time_type{1}, systemTimeForNanoseconds(audioPlayer));
 }
 
