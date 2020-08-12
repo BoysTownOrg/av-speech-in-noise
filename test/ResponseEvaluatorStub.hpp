@@ -60,7 +60,7 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
         return filePathForFileName_;
     }
 
-    auto correctConsonant(const LocalUrl &) -> char {
+    auto correctConsonant(const LocalUrl &) -> char override {
         return correctConsonant_;
     }
 
