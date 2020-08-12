@@ -108,8 +108,9 @@ TEST_F(OutputFilePathTests, generateFileNameFormatsTestInformationAndTime) {
     timeStamp.setHour(4);
     timeStamp.setMinute(5);
     timeStamp.setSecond(6);
-    assertEqual(
-        "Subject_a_Session_b_Experimenter_c_1-2-3-4-5-6", generateFileName());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"Subject_a_Session_b_Experimenter_c_1-2-3-4-5-6"},
+        generateFileName());
 }
 
 TEST_F(OutputFilePathTests, generateFileNameCapturesTimePriorToQueries) {
@@ -120,13 +121,14 @@ TEST_F(OutputFilePathTests, generateFileNameCapturesTimePriorToQueries) {
 TEST_F(OutputFilePathTests, outputDirectoryReturnsFullPath) {
     setHomeDirectory("a");
     setRelativeOutputDirectory("b");
-    assertEqual("a/b", path.outputDirectory());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a/b"}, path.outputDirectory());
 }
 
 TEST_F(OutputFilePathTests, setRelativeOutputDirectoryCreatesDirectory) {
     setHomeDirectory("a");
     setRelativeOutputDirectory("b");
-    assertEqual("a/b", systemPath.directoryCreated());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a/b"}, systemPath.directoryCreated());
 }
 }
 }

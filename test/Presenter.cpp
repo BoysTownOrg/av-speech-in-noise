@@ -1101,7 +1101,7 @@ auto entry(BrowsingEnteredPathUseCase &useCase) -> std::string {
 
 void assertEntryEquals(
     BrowsingEnteredPathUseCase &useCase, const std::string &s) {
-    assertEqual(s, entry(useCase));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, entry(useCase));
 }
 
 void assertHidesPlayTrialButton(PlayingTrial &useCase) {
@@ -1139,7 +1139,9 @@ void playCalibration(TestSetupViewStub &view) { view.playCalibration(); }
 
 auto shown(TestSetupViewStub &view) -> bool { return view.shown(); }
 
-void assertShown(TestSetupViewStub &view) { AV_SPEECH_IN_NOISE_EXPECT_TRUE(shown(view)); }
+void assertShown(TestSetupViewStub &view) {
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(shown(view));
+}
 
 auto hidden(TestSetupViewStub &view) -> bool { return view.hidden(); }
 
@@ -1155,14 +1157,16 @@ void assertHidden(CoordinateResponseMeasureViewStub &view) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-void assertHidden(ConsonantViewStub &view) { AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden()); }
+void assertHidden(ConsonantViewStub &view) {
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
+}
 
 void completeTrial(ModelStub &model) { model.completeTrial(); }
 
 auto errorMessage(ViewStub &view) -> std::string { return view.errorMessage(); }
 
 void assertPassedColor(ModelStub &model, coordinate_response_measure::Color c) {
-    assertEqual(c, model.responseParameters().color);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(c, model.responseParameters().color);
 }
 
 auto calibration(ModelStub &model) -> const Calibration & {
@@ -1283,7 +1287,8 @@ class PresenterTests : public ::testing::Test {
     void assertAudioDevicePassedToTrial(PlayingTrial &useCase) {
         setAudioDevice(view, "a");
         run(useCase);
-        assertEqual("a", model.trialParameters().audioDevice);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"a"}, model.trialParameters().audioDevice);
     }
 
     void assertPlaysTrial(UseCase &useCase) {
@@ -1309,7 +1314,8 @@ class PresenterTests : public ::testing::Test {
 
     void assertHidesContinueTestingDialog(UseCase &useCase) {
         run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.continueTestingDialogHidden());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+            experimenterView.continueTestingDialogHidden());
     }
 
     void assertIncompleteTestDoesNotShowSetupView(TrialSubmission &useCase) {
@@ -1361,63 +1367,74 @@ class PresenterTests : public ::testing::Test {
     void assertPassesTestSettingsFileToTextFileReader(UseCase &useCase) {
         setupView.setTestSettingsFile("a");
         run(useCase);
-        assertEqual("a", textFileReader.filePath());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"a"}, textFileReader.filePath());
     }
 
     void assertPassesTestSettingsTextToTestSettingsInterpreter(
         UseCase &useCase) {
         textFileReader.setRead("a");
         run(useCase);
-        assertEqual("a", testSettingsInterpreter.text());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"a"}, testSettingsInterpreter.text());
     }
 
     void assertPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery(
         ConfirmingTestSetup &useCase) {
         textFileReader.setRead("a");
         run(useCase);
-        assertEqual("a", testSettingsInterpreter.textForMethodQuery());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"a"}, testSettingsInterpreter.textForMethodQuery());
     }
 
     void assertInvalidSnrShowsMessage(ConfirmingTestSetup &useCase) {
         setupView.setStartingSnr("a");
         run(useCase);
-        assertEqual("\"a\" is not a valid starting SNR.", errorMessage(view));
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"\"a\" is not a valid starting SNR."},
+            errorMessage(view));
     }
 
     void assertPassesStartingSnr(ConfirmingTestSetup &useCase) {
         setupView.setStartingSnr("1");
         run(useCase);
-        assertEqual(1, testSettingsInterpreter.startingSnr());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            1, testSettingsInterpreter.startingSnr());
     }
 
     void assertPassesSubjectId(ConfirmingTestSetup &useCase) {
         setupView.setSubjectId("b");
         run(useCase);
-        assertEqual("b", testSettingsInterpreter.identity().subjectId);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"b"}, testSettingsInterpreter.identity().subjectId);
     }
 
     void assertPassesTesterId(ConfirmingTestSetup &useCase) {
         setupView.setTesterId("c");
         run(useCase);
-        assertEqual("c", testSettingsInterpreter.identity().testerId);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"c"}, testSettingsInterpreter.identity().testerId);
     }
 
     void assertPassesSession(ConfirmingTestSetup &useCase) {
         setupView.setSession("e");
         run(useCase);
-        assertEqual("e", testSettingsInterpreter.identity().session);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"e"}, testSettingsInterpreter.identity().session);
     }
 
     void assertPassesRmeSetting(ConfirmingTestSetup &useCase) {
         setupView.setRmeSetting("e");
         run(useCase);
-        assertEqual("e", testSettingsInterpreter.identity().rmeSetting);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"e"}, testSettingsInterpreter.identity().rmeSetting);
     }
 
     void assertPassesTransducer(ConfirmingTestSetup &useCase) {
         setupView.setTransducer("a");
         run(useCase);
-        assertEqual("a", testSettingsInterpreter.identity().transducer);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"a"}, testSettingsInterpreter.identity().transducer);
     }
 
     void assertCompleteTrialShowsResponseView(
@@ -1430,13 +1447,15 @@ class PresenterTests : public ::testing::Test {
     void assertShowsTrialNumber(UseCase &useCase) {
         model.setTrialNumber(1);
         run(useCase);
-        assertEqual("Trial 1", experimenterView.displayed());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"Trial 1"}, experimenterView.displayed());
     }
 
     void assertShowsTargetFileName(UseCase &useCase) {
         model.setTargetFileName("a");
         run(useCase);
-        assertEqual("a", experimenterView.secondaryDisplayed());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"a"}, experimenterView.secondaryDisplayed());
     }
 
     void assertShowsCoordinateResponseMeasureView(UseCase &useCase) {
@@ -1460,14 +1479,16 @@ class PresenterTests : public ::testing::Test {
     void assertCompleteTestShowsContinueTestingDialog(UseCase &useCase) {
         setTestComplete(model);
         run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.continueTestingDialogShown());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+            experimenterView.continueTestingDialogShown());
     }
 
     void assertCompleteTestShowsThresholds(UseCase &useCase) {
         setTestComplete(model);
         model.setAdaptiveTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
         run(useCase);
-        assertEqual("thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3",
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3"},
             experimenterView.continueTestingDialogMessage());
     }
 
@@ -1605,7 +1626,7 @@ class PresenterFailureTests : public ::testing::Test {
 
     void assertConfirmTestSetupShowsErrorMessage(const std::string &s) {
         confirmTestSetup();
-        assertEqual(s, errorMessage(view));
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, errorMessage(view));
     }
 
     void assertConfirmTestSetupDoesNotHideSetupView() {
@@ -1703,25 +1724,28 @@ PRESENTER_TEST(submittingFreeResponseShowsTargetFileName) {
 PRESENTER_TEST(submittingCorrectKeywordsPassesCorrectKeywords) {
     setCorrectKeywords(experimenterView, "1");
     run(submittingCorrectKeywords);
-    assertEqual(1, model.correctKeywords());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.correctKeywords());
 }
 
 PRESENTER_TEST(submittingInvalidCorrectKeywordsShowsErrorMessage) {
     setCorrectKeywords(experimenterView, "a");
     run(submittingCorrectKeywords);
-    assertEqual("\"a\" is not a valid number.", errorMessage(view));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"\"a\" is not a valid number."}, errorMessage(view));
 }
 
 PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
     setCorrectKeywords(experimenterView, "a");
     run(submittingCorrectKeywords);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(submittingCorrectKeywords.responseViewHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
+        submittingCorrectKeywords.responseViewHidden());
 }
 
 PRESENTER_TEST(
     acceptingContinuingTestingRestartsAdaptiveTestWhilePreservingCyclicTargets) {
     run(acceptingContinuingTesting);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.adaptiveTestRestartedWhilePreservingCyclicTargets());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        model.adaptiveTestRestartedWhilePreservingCyclicTargets());
 }
 
 PRESENTER_TEST(acceptingContinuingTestingHidesContinueTestingDialog) {
@@ -2026,7 +2050,7 @@ PRESENTER_TEST(
 PRESENTER_TEST(playCalibrationPassesLevel) {
     interpretedCalibration.level.dB_SPL = 1;
     playCalibration(setupView);
-    assertEqual(1, calibration(model).level.dB_SPL);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, calibration(model).level.dB_SPL);
 }
 
 PRESENTER_TEST(playingCalibrationPassesTestSettingsFileToTextFileReader) {
@@ -2130,7 +2154,8 @@ PRESENTER_TEST(
 PRESENTER_TEST(playCalibrationPassesFilePath) {
     interpretedCalibration.fileUrl.path = "a";
     playCalibration(setupView);
-    assertEqual("a", calibration(model).fileUrl.path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, calibration(model).fileUrl.path);
 }
 
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
@@ -2315,13 +2340,14 @@ PRESENTER_TEST(playingTrialFromExperimenterPassesAudioDevice) {
 PRESENTER_TEST(playCalibrationPassesAudioDevice) {
     setAudioDevice(view, "b");
     playCalibration(setupView);
-    assertEqual("b", calibration(model).audioDevice);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"b"}, calibration(model).audioDevice);
 }
 
 PRESENTER_TEST(coordinateResponsePassesNumberResponse) {
     coordinateResponseMeasureView.setNumberResponse("1");
     submitResponse(coordinateResponseMeasureView);
-    assertEqual(1, model.responseParameters().number);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.responseParameters().number);
 }
 
 PRESENTER_TEST(coordinateResponsePassesGreenColor) {
@@ -2351,13 +2377,14 @@ PRESENTER_TEST(coordinateResponsePassesWhiteColor) {
 PRESENTER_TEST(consonantResponsePassesConsonant) {
     consonantView.setConsonant("b");
     run(submittingConsonant);
-    assertEqual('b', model.consonantResponse().consonant);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL('b', model.consonantResponse().consonant);
 }
 
 PRESENTER_TEST(experimenterResponsePassesResponse) {
     experimenterView.setResponse("a");
     submitFreeResponse(experimenterView);
-    assertEqual("a", model.freeResponse().response);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, model.freeResponse().response);
 }
 
 PRESENTER_TEST(experimenterResponseFlagsResponse) {
@@ -2539,7 +2566,8 @@ PRESENTER_TEST(exitTestHidesExperimenterView) {
 
 PRESENTER_TEST(exitTestHidesResponseButtons) {
     run(exitingTest);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(submittingCoordinateResponseMeasure.responseViewHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        submittingCoordinateResponseMeasure.responseViewHidden());
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(submittingConsonant.responseViewHidden());
 }
 
@@ -2755,7 +2783,8 @@ PRESENTER_TEST(
 PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
     interpretedCalibration.fullScaleLevel.dB_SPL = 1;
     run(playingCalibration);
-    assertEqual(1, calibration(model).fullScaleLevel.dB_SPL);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        1, calibration(model).fullScaleLevel.dB_SPL);
 }
 
 PRESENTER_TEST(completingTrialClearsFreeResponseForFixedLevelFreeResponseTest) {
