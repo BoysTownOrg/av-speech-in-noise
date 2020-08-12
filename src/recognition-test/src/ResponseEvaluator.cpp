@@ -32,9 +32,16 @@ static auto fileName(const LocalUrl &filePath) -> std::string {
     return subString(filePath.path, leadingPathLength(filePath.path));
 }
 
+static auto stem(const LocalUrl &file) -> std::string {
+    const auto fileName{av_speech_in_noise::fileName(file)};
+    auto dot{fileName.find('.')};
+    return fileName.substr(0, dot);
+}
+
 auto ResponseEvaluatorImpl::correct(
     const LocalUrl &file, const ConsonantResponse &r) -> bool {
-    return av_speech_in_noise::fileName(file).front() == r.consonant;
+    auto stem{av_speech_in_noise::stem(file)};
+    return stem.size() == 1 && stem.front() == r.consonant;
 }
 
 static auto colorNameLength(

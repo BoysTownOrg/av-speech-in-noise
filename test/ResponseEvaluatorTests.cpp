@@ -118,5 +118,9 @@ class ConsonantResponseEvaluatorTests : public ::testing::Test {
 CONSONANT_RESPONSE_EVALUATOR_TEST(b) { assertCorrect("b.wav", 'b'); }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(notB) { assertIncorrect("a.wav", 'b'); }
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(invalidFormatIsAlwaysIncorrect) {
+    assertIncorrect("bwav", 'b');
+}
 }
 }
