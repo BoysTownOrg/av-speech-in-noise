@@ -69,15 +69,20 @@ void assertPassesSimpleAdaptiveSettings(
             entryWithNewline(TestSetting::thresholdReversals, "4"),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)},
         5);
-    assertEqual("a", adaptiveTest(model).targetsUrl.path);
-    assertEqual("b", adaptiveTest(model).maskerFileUrl.path);
-    assertEqual(65, adaptiveTest(model).maskerLevel.dB_SPL);
-    assertEqual(5, adaptiveTest(model).startingSnr.dB);
-    assertEqual(4, adaptiveTest(model).thresholdReversals);
-    assertEqual(Presenter::ceilingSnr.dB, adaptiveTest(model).ceilingSnr.dB);
-    assertEqual(Presenter::floorSnr.dB, adaptiveTest(model).floorSnr.dB);
-    assertEqual(Presenter::trackBumpLimit, adaptiveTest(model).trackBumpLimit);
-    assertEqual(Presenter::fullScaleLevel.dB_SPL,
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, adaptiveTest(model).targetsUrl.path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"b"}, adaptiveTest(model).maskerFileUrl.path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(65, adaptiveTest(model).maskerLevel.dB_SPL);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(5, adaptiveTest(model).startingSnr.dB);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4, adaptiveTest(model).thresholdReversals);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Presenter::ceilingSnr.dB, adaptiveTest(model).ceilingSnr.dB);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Presenter::floorSnr.dB, adaptiveTest(model).floorSnr.dB);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Presenter::trackBumpLimit, adaptiveTest(model).trackBumpLimit);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(Presenter::fullScaleLevel.dB_SPL,
         adaptiveTest(model).fullScaleLevel.dB_SPL);
 }
 
@@ -90,11 +95,14 @@ void assertPassesSimpleFixedLevelSettings(
             entryWithNewline(TestSetting::masker, "b"),
             entryWithNewline(TestSetting::maskerLevel, "65")},
         5);
-    assertEqual("a", fixedLevelTest(model).targetsUrl.path);
-    assertEqual("b", fixedLevelTest(model).maskerFileUrl.path);
-    assertEqual(65, fixedLevelTest(model).maskerLevel.dB_SPL);
-    assertEqual(5, fixedLevelTest(model).snr.dB);
-    assertEqual(Presenter::fullScaleLevel.dB_SPL,
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, fixedLevelTest(model).targetsUrl.path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"b"}, fixedLevelTest(model).maskerFileUrl.path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        65, fixedLevelTest(model).maskerLevel.dB_SPL);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(5, fixedLevelTest(model).snr.dB);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(Presenter::fullScaleLevel.dB_SPL,
         fixedLevelTest(model).fullScaleLevel.dB_SPL);
 }
 
@@ -119,7 +127,8 @@ void assertDefaultAdaptiveTestInitialized(ModelStub &model) {
 
 void assertFixedLevelTestWithSilentIntervalTargetsInitialized(
     ModelStub &model) {
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        model.fixedLevelTestWithSilentIntervalTargetsInitialized());
 }
 
 void assertDefaultFixedLevelTestInitialized(ModelStub &model) {
@@ -164,20 +173,20 @@ auto session(const TestIdentity &identity) -> std::string {
 }
 
 void assertSubjectIdEquals(const std::string &s, const TestIdentity &identity) {
-    assertEqual(s, subjectId(identity));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, subjectId(identity));
 }
 
 void assertTesterIdEquals(const std::string &s, const TestIdentity &identity) {
-    assertEqual(s, testerId(identity));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, testerId(identity));
 }
 
 void assertSessionIdEquals(const std::string &s, const TestIdentity &identity) {
-    assertEqual(s, session(identity));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, session(identity));
 }
 
 void assertTestMethodEquals(
     const std::string &s, const TestIdentity &identity) {
-    assertEqual(s, identity.method);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, identity.method);
 }
 
 void assertPassesTestIdentity(TestSettingsInterpreterImpl &interpreter,
@@ -201,7 +210,7 @@ void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
 }
 
 void assertMethod(TestSettingsInterpreterImpl &interpreter, Method m) {
-    assertEqual(m, method(interpreter, m));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(m, method(interpreter, m));
 }
 
 class TestSettingsInterpreterTests : public ::testing::Test {
@@ -218,9 +227,9 @@ TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
     auto calibration{interpreter.calibration(
         concatenate({entryWithNewline(TestSetting::masker, "a"),
             entryWithNewline(TestSetting::maskerLevel, "1")}))};
-    assertEqual("a", calibration.fileUrl.path);
-    assertEqual(1, calibration.level.dB_SPL);
-    assertEqual(
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, calibration.fileUrl.path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, calibration.level.dB_SPL);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         Presenter::fullScaleLevel.dB_SPL, calibration.fullScaleLevel.dB_SPL);
 }
 
@@ -228,28 +237,31 @@ TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             "f:\n", entryWithNewline(TestSetting::targets, "a")});
-    assertEqual("a", adaptiveTest(model).targetsUrl.path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, adaptiveTest(model).targetsUrl.path);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine2) {
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail), "\n",
             entryWithNewline(TestSetting::targets, "a")});
-    assertEqual("a", adaptiveTest(model).targetsUrl.path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, adaptiveTest(model).targetsUrl.path);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
     initialize(interpreter, model,
         {"\n", entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             "\n", entryWithNewline(TestSetting::targets, "a")});
-    assertEqual("a", adaptiveTest(model).targetsUrl.path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, adaptiveTest(model).targetsUrl.path);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(badMaskerLevelResolvesToZero) {
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::maskerLevel, "a")});
-    assertEqual(0, adaptiveTest(model).maskerLevel.dB_SPL);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0, adaptiveTest(model).maskerLevel.dB_SPL);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailReturnsMethod) {
@@ -397,7 +409,8 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptivePassFailWithEyeTrackingInitializesAdaptiveTest) {
     initialize(interpreter, model, Method::adaptivePassFailWithEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.adaptiveTestInitializedWithEyeTracking());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        model.adaptiveTestInitializedWithEyeTracking());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
@@ -409,7 +422,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCorrectKeywordsWithEyeTrackingInitializesAdaptiveTest) {
     initialize(
         interpreter, model, Method::adaptiveCorrectKeywordsWithEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.adaptiveTestInitializedWithCyclicTargetsAndEyeTracking());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        model.adaptiveTestInitializedWithCyclicTargetsAndEyeTracking());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -434,14 +448,16 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
     initialize(interpreter, model, Method::fixedLevelConsonants);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.fixedLevelTestWithEachTargetNTimesInitialized());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        model.fixedLevelTestWithEachTargetNTimesInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithEyeTrackingInitializesAdaptiveTest) {
     initialize(interpreter, model,
         Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.adaptiveTestInitializedWithEyeTracking());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        model.adaptiveTestInitializedWithEyeTracking());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -471,14 +487,16 @@ TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsInitializesFixedLevelTest) {
     initialize(
         interpreter, model, Method::fixedLevelFreeResponseWithAllTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.fixedLevelTestWithAllTargetsInitialized());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        model.fixedLevelTestWithAllTargetsInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingInitializesFixedLevelTest) {
     initialize(interpreter, model,
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.fixedLevelTestWithAllTargetsAndEyeTrackingInitialized());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        model.fixedLevelTestWithAllTargetsAndEyeTrackingInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -546,14 +564,16 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptiveAudioVisual) {
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
-    assertEqual(Condition::audioVisual, adaptiveTest(model).condition);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Condition::audioVisual, adaptiveTest(model).condition);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveAuditoryOnly) {
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::condition, Condition::auditoryOnly)});
-    assertEqual(Condition::auditoryOnly, adaptiveTest(model).condition);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Condition::auditoryOnly, adaptiveTest(model).condition);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAudioVisual) {
@@ -561,7 +581,8 @@ TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAudioVisual) {
         {entryWithNewline(
              TestSetting::method, Method::fixedLevelFreeResponseWithAllTargets),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
-    assertEqual(Condition::audioVisual, fixedLevelTest(model).condition);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Condition::audioVisual, fixedLevelTest(model).condition);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelFixedTargetsAudioVisual) {
@@ -569,7 +590,7 @@ TEST_SETTINGS_INTERPRETER_TEST(fixedLevelFixedTargetsAudioVisual) {
         {entryWithNewline(TestSetting::method,
              Method::fixedLevelFreeResponseWithTargetReplacement),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
-    assertEqual(
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         Condition::audioVisual, fixedLevelFixedTrialsTest(model).condition);
 }
 
@@ -578,7 +599,8 @@ TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAuditoryOnly) {
         {entryWithNewline(TestSetting::method,
              Method::fixedLevelFreeResponseWithTargetReplacement),
             entryWithNewline(TestSetting::condition, Condition::auditoryOnly)});
-    assertEqual(Condition::auditoryOnly, fixedLevelTest(model).condition);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Condition::auditoryOnly, fixedLevelTest(model).condition);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -595,13 +617,15 @@ TEST_SETTINGS_INTERPRETER_TEST(
             entryWithNewline(TestSetting::masker, "b"),
             entryWithNewline(TestSetting::maskerLevel, "65")},
         5);
-    assertEqual("a", fixedLevelTestWithEachTargetNTimes(model).targetsUrl.path);
-    assertEqual(
-        "b", fixedLevelTestWithEachTargetNTimes(model).maskerFileUrl.path);
-    assertEqual(
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"},
+        fixedLevelTestWithEachTargetNTimes(model).targetsUrl.path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"b"},
+        fixedLevelTestWithEachTargetNTimes(model).maskerFileUrl.path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         65, fixedLevelTestWithEachTargetNTimes(model).maskerLevel.dB_SPL);
-    assertEqual(5, fixedLevelTestWithEachTargetNTimes(model).snr.dB);
-    assertEqual(Presenter::fullScaleLevel.dB_SPL,
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        5, fixedLevelTestWithEachTargetNTimes(model).snr.dB);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(Presenter::fullScaleLevel.dB_SPL,
         fixedLevelTestWithEachTargetNTimes(model).fullScaleLevel.dB_SPL);
 }
 
@@ -688,7 +712,7 @@ TEST_SETTINGS_INTERPRETER_TEST(consonantTestWithTargetRepetitions) {
         {"\n",
             entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
             "\n", entryWithNewline(TestSetting::targetRepetitions, "2")});
-    assertEqual(
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         2, fixedLevelTestWithEachTargetNTimes(model).timesEachTargetIsPlayed);
 }
 
@@ -698,7 +722,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
         {"\n",
             entryWithNewline(
                 TestSetting::method, Method::fixedLevelConsonants)});
-    assertEqual(
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         1, fixedLevelTestWithEachTargetNTimes(model).timesEachTargetIsPlayed);
 }
 }
