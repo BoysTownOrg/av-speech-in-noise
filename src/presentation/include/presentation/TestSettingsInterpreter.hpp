@@ -54,7 +54,8 @@ enum class TestSetting {
     down,
     reversalsPerStepSize,
     stepSizes,
-    thresholdReversals
+    thresholdReversals,
+    targetRepetitions
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -79,6 +80,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "step sizes (dB)";
     case TestSetting::thresholdReversals:
         return "threshold";
+    case TestSetting::targetRepetitions:
+        return "target repetitions";
     }
 }
 

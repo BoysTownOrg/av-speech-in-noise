@@ -93,6 +93,22 @@ static void assign(
                 test.condition = c;
 }
 
+static void assign(FixedLevelTestWithEachTargetNTimes &test,
+    const std::string &entryName, const std::string &entry) {
+    if (entryName == name(TestSetting::targets))
+        test.targetsUrl.path = entry;
+    else if (entryName == name(TestSetting::masker))
+        test.maskerFileUrl.path = entry;
+    else if (entryName == name(TestSetting::maskerLevel))
+        test.maskerLevel.dB_SPL = integer(entry);
+    else if (entryName == name(TestSetting::targetRepetitions))
+        test.timesEachTargetIsPlayed = integer(entry);
+    else if (entryName == name(TestSetting::condition))
+        for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
+            if (entry == name(c))
+                test.condition = c;
+}
+
 static void assign(Calibration &calibration, const std::string &entryName,
     const std::string &entry) {
     if (entryName == name(TestSetting::masker))
@@ -197,6 +213,18 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents,
 
 static void initialize(FixedLevelTest &test, const std::string &contents,
     Method method, const TestIdentity &identity, SNR startingSnr) {
+    applyToEachEntry(
+        [&](auto entryName, auto entry) { assign(test, entryName, entry); },
+        contents);
+    test.snr = startingSnr;
+    test.fullScaleLevel = Presenter::fullScaleLevel;
+    test.identity = identity;
+    test.identity.method = name(method);
+}
+
+static void initialize(FixedLevelTestWithEachTargetNTimes &test,
+    const std::string &contents, Method method, const TestIdentity &identity,
+    SNR startingSnr) {
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);

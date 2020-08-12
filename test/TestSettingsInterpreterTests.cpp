@@ -682,5 +682,14 @@ TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
             entryWithNewline(TestSetting::stepSizes, "7 8")});
     assertEqual({first, second}, adaptiveTest(model).trackingRule);
 }
+
+TEST_SETTINGS_INTERPRETER_TEST(consonantTestWithTargetRepetitions) {
+    initialize(interpreter, model,
+        {"\n",
+            entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
+            "\n", entryWithNewline(TestSetting::targetRepetitions, "2")});
+    assertEqual(
+        2, fixedLevelTestWithEachTargetNTimes(model).timesEachTargetIsPlayed);
+}
 }
 }
