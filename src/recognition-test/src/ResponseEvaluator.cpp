@@ -67,6 +67,10 @@ auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &filePath) -> int {
     }
 }
 
+auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &file) -> char {
+    return av_speech_in_noise::stem(file).front();
+}
+
 auto ResponseEvaluatorImpl::fileName(const LocalUrl &file) -> std::string {
     return av_speech_in_noise::fileName(file);
 }

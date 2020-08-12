@@ -122,5 +122,9 @@ CONSONANT_RESPONSE_EVALUATOR_TEST(notB) { assertIncorrect("a.wav", 'b'); }
 CONSONANT_RESPONSE_EVALUATOR_TEST(invalidFormatIsAlwaysIncorrect) {
     assertIncorrect("bwav", 'b');
 }
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(parsesConsonant) {
+    assertEqual('b', evaluator.correctConsonant({"b.wav"}));
+}
 }
 }
