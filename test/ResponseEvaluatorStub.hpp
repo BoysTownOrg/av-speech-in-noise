@@ -67,6 +67,15 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
 
     auto correctConsonantUrl() -> LocalUrl { return correctConsonantUrl_; }
 
+    auto correctUrlForConsonantResponse() -> LocalUrl {
+        return correctUrlForConsonantResponse_;
+    }
+
+    auto correct(const LocalUrl &url, const ConsonantResponse &) -> bool {
+        correctUrlForConsonantResponse_ = url;
+        return {};
+    }
+
   private:
     std::string correctTarget_;
     std::string correctNumberFilePath_;
@@ -74,6 +83,7 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
     std::string fileName_;
     std::string filePathForFileName_;
     LocalUrl correctConsonantUrl_;
+    LocalUrl correctUrlForConsonantResponse_;
     const coordinate_response_measure::Response *response_{};
     int correctNumber_{};
     char correctConsonant_{};

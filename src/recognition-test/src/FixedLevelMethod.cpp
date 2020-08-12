@@ -61,6 +61,8 @@ void FixedLevelMethodImpl::submit(const ConsonantResponse &response) {
     lastConsonantTrial.correctConsonant =
         evaluator.correctConsonant(current(targetList));
     lastConsonantTrial.target = current(targetList).path;
+    lastConsonantTrial.correct =
+        evaluator.correct(current(targetList), response);
     finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
 }
 
