@@ -4,7 +4,7 @@
 
 namespace av_speech_in_noise::coordinate_response_measure {
 namespace {
-class ResponseEvaluatorTests : public ::testing::Test {
+class CoordinateResponseEvaluatorTests : public ::testing::Test {
   protected:
     ResponseEvaluatorImpl evaluator{};
 
@@ -21,7 +21,8 @@ class ResponseEvaluatorTests : public ::testing::Test {
     }
 };
 
-#define COORDINATE_RESPONSE_EVALUATOR_TEST(a) TEST_F(ResponseEvaluatorTests, a)
+#define COORDINATE_RESPONSE_EVALUATOR_TEST(a)                                  \
+    TEST_F(CoordinateResponseEvaluatorTests, a)
 
 COORDINATE_RESPONSE_EVALUATOR_TEST(blue) {
     assertCorrect("blue1.mov", {1, Color::blue});
@@ -89,5 +90,27 @@ COORDINATE_RESPONSE_EVALUATOR_TEST(miscellaneous) {
     assertIncorrect("a/b/c/blue9-3.mov", {3, Color::blue});
     assertIncorrect("a/b/c/red8 4.mov", {4, Color::red});
 }
+}
+}
+
+namespace av_speech_in_noise {
+namespace {
+class ConsonantResponseEvaluatorTests : public ::testing::Test {
+  protected:
+    ResponseEvaluatorImpl evaluator{};
+
+    auto correct(const std::string &s, ConsonantResponse r) -> bool {
+        return evaluator.correct({s}, r);
+    }
+
+    void assertCorrect(const std::string &s, char r) {
+        assertTrue(correct(s, {r}));
+    }
+};
+
+#define CONSONANT_RESPONSE_EVALUATOR_TEST(a)                                   \
+    TEST_F(ConsonantResponseEvaluatorTests, a)
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(b) { assertCorrect("b.wav", 'b'); }
 }
 }

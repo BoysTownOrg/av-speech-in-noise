@@ -28,6 +28,11 @@ auto ResponseEvaluatorImpl::correct(const LocalUrl &filePath,
         r.number != invalidNumber;
 }
 
+auto ResponseEvaluatorImpl::correct(
+    const LocalUrl &filePath, const ConsonantResponse &r) -> bool {
+    return true;
+}
+
 static auto colorNameLength(
     const LocalUrl &filePath, gsl::index leadingPathLength_) -> gsl::index {
     auto fileNameBeginning = filePath.path.begin() + leadingPathLength_;

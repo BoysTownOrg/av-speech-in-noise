@@ -8,6 +8,7 @@ class ResponseEvaluatorImpl : public ResponseEvaluator {
   public:
     auto correct(const LocalUrl &filePath,
         const coordinate_response_measure::Response &r) -> bool override;
+    auto correct(const LocalUrl &filePath, const ConsonantResponse &r) -> bool;
     static int invalidNumber;
     auto correctNumber(const LocalUrl &filePath) -> int override;
     auto correctColor(const LocalUrl &filePath)
