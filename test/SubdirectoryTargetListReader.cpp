@@ -11,7 +11,8 @@ class TargetPlaylistFactoryStub : public TargetPlaylistFactory {
     std::vector<std::shared_ptr<av_speech_in_noise::TargetPlaylist>> lists_{};
 
   public:
-    auto make() -> std::shared_ptr<av_speech_in_noise::TargetPlaylist> override {
+    auto make()
+        -> std::shared_ptr<av_speech_in_noise::TargetPlaylist> override {
         auto list = lists_.front();
         lists_.erase(lists_.begin());
         return list;
@@ -56,17 +57,19 @@ class SubdirectoryTargetPlaylistReaderTests : public ::testing::Test {
     }
 };
 
-TEST_F(SubdirectoryTargetPlaylistReaderTests, readLoadsFullPathToEachSubDirectory) {
+TEST_F(SubdirectoryTargetPlaylistReaderTests,
+    readLoadsFullPathToEachSubDirectory) {
     setSubDirectories({{"a"}, {"b"}, {"c"}});
     read("d");
-    assertEqual("d/a", targetListDirectory(0));
-    assertEqual("d/b", targetListDirectory(1));
-    assertEqual("d/c", targetListDirectory(2));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"d/a"}, targetListDirectory(0));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"d/b"}, targetListDirectory(1));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"d/c"}, targetListDirectory(2));
 }
 
 TEST_F(SubdirectoryTargetPlaylistReaderTests, readPassesDirectory) {
     read("a");
-    assertEqual("a", directoryReader.directory());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, directoryReader.directory());
 }
 
 TEST_F(SubdirectoryTargetPlaylistReaderTests, readReturnsReadLists) {
@@ -82,11 +85,11 @@ TEST_F(SubdirectoryTargetPlaylistReaderTests,
     readPassesParentDirectoryToFirstListIfNoSubdirectories) {
     setSubDirectories({});
     read("d");
-    assertEqual("d", targetListDirectory(0));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"d"}, targetListDirectory(0));
 }
 
-TEST_F(
-    SubdirectoryTargetPlaylistReaderTests, readReturnsFirstListIfNoSubdirectories) {
+TEST_F(SubdirectoryTargetPlaylistReaderTests,
+    readReturnsFirstListIfNoSubdirectories) {
     setSubDirectories({});
     auto actual{read()};
     EXPECT_EQ(1, actual.size());
