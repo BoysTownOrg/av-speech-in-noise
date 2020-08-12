@@ -14,7 +14,7 @@ FetchContent_MakeAvailable(GSL)
 add_subdirectory(src)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  add_subdirectory(macos-main)
+  add_subdirectory(macos)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(gtest_force_shared_crt
       ON
