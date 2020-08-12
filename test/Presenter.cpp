@@ -134,7 +134,7 @@ class CoordinateResponseMeasureViewStub
 
     void submitResponse() { listener_->submitResponse(); }
 
-    void playTrial() { listener_->playTrial(); }
+    void playTrial() { listener_->notifyThatReadyButtonHasBeenClicked(); }
 
   private:
     std::string numberResponse_{"0"};

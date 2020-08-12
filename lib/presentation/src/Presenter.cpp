@@ -434,7 +434,8 @@ void Presenter::CoordinateResponseMeasure::stop() {
     view->hide();
 }
 
-void Presenter::CoordinateResponseMeasure::playTrial() {
+void Presenter::CoordinateResponseMeasure::
+    notifyThatReadyButtonHasBeenClicked() {
     parent->playTrial();
     view->hideNextTrialButton();
 }

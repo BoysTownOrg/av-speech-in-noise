@@ -549,7 +549,9 @@ void CocoaCoordinateResponseMeasureView::hideNextTrialButton() {
     av_speech_in_noise::hide(nextTrialButton);
 }
 
-void CocoaCoordinateResponseMeasureView::playTrial() { listener_->playTrial(); }
+void CocoaCoordinateResponseMeasureView::playTrial() {
+    listener_->notifyThatReadyButtonHasBeenClicked();
+}
 
 void CocoaCoordinateResponseMeasureView::hideResponseButtons() {
     av_speech_in_noise::hide(responseButtons);
