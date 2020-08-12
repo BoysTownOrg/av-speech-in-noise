@@ -73,7 +73,7 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
 
     auto correct(const LocalUrl &url, const ConsonantResponse &) -> bool {
         correctUrlForConsonantResponse_ = url;
-        return {};
+        return correct_;
     }
 
   private:

@@ -316,8 +316,7 @@ FIXED_LEVEL_METHOD_TEST(
     assertEqual("a", evaluator.correctFilePath());
 }
 
-static void writeLastConsonant(
-    FixedLevelMethodImpl &method, OutputFile &outputFile) {
+void writeLastConsonant(FixedLevelMethodImpl &method, OutputFile &outputFile) {
     method.writeLastConsonant(outputFile);
 }
 
@@ -372,6 +371,22 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     run(submittingConsonant, method);
     writeLastConsonant(method, outputFile);
     assertEqual('b', outputFile.consonantTrial().correctConsonant);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    writeCorrectCoordinateResponse) {
+    evaluator.setCorrect();
+    run(submittingConsonant, method);
+    writeLastConsonant(method, outputFile);
+    assertTrue(outputFile.consonantTrial().correct);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    writeIncorrectCoordinateResponse) {
+    evaluator.setIncorrect();
+    run(submittingConsonant, method);
+    writeLastConsonant(method, outputFile);
+    assertFalse(outputFile.consonantTrial().correct);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
