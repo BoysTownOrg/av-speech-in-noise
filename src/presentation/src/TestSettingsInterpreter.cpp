@@ -157,18 +157,6 @@ static auto method(const std::string &s) -> Method {
     return Method::unknown;
 }
 
-static auto adaptive(const std::string &contents) -> bool {
-    const auto method_{av_speech_in_noise::method(contents)};
-    return method_ == Method::adaptivePassFail ||
-        method_ == Method::adaptivePassFailWithEyeTracking ||
-        method_ == Method::adaptiveCorrectKeywords ||
-        method_ == Method::adaptiveCorrectKeywordsWithEyeTracking ||
-        method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker ||
-        method_ == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||
-        method_ == Method::adaptiveCoordinateResponseMeasure ||
-        method_ == Method::adaptiveCoordinateResponseMeasureWithEyeTracking;
-}
-
 static void initialize(AdaptiveTest &test, const std::string &contents,
     Method method, const TestIdentity &identity, SNR startingSnr) {
     applyToEachEntry(
@@ -211,76 +199,76 @@ static void initialize(FixedLevelTestWithEachTargetNTimes &test,
 void TestSettingsInterpreterImpl::initialize(Model &model,
     const std::string &contents, const TestIdentity &identity,
     SNR startingSnr) {
-    const auto method_{av_speech_in_noise::method(contents)};
-    if (method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker) {
+    const auto method{av_speech_in_noise::method(contents)};
+    if (method == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker) {
         AdaptiveTest test;
         av_speech_in_noise::initialize(
-            test, contents, method_, identity, startingSnr);
+            test, contents, method, identity, startingSnr);
         model.initializeWithDelayedMasker(test);
-    } else if (method_ ==
+    } else if (method ==
         Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker) {
         AdaptiveTest test;
         av_speech_in_noise::initialize(
-            test, contents, method_, identity, startingSnr);
+            test, contents, method, identity, startingSnr);
         model.initializeWithSingleSpeaker(test);
-    } else if (method_ == Method::adaptiveCorrectKeywords) {
+    } else if (method == Method::adaptiveCorrectKeywords) {
         AdaptiveTest test;
         av_speech_in_noise::initialize(
-            test, contents, method_, identity, startingSnr);
+            test, contents, method, identity, startingSnr);
         model.initializeWithCyclicTargets(test);
-    } else if (method_ == Method::adaptiveCorrectKeywordsWithEyeTracking) {
+    } else if (method == Method::adaptiveCorrectKeywordsWithEyeTracking) {
         AdaptiveTest test;
         av_speech_in_noise::initialize(
-            test, contents, method_, identity, startingSnr);
+            test, contents, method, identity, startingSnr);
         model.initializeWithCyclicTargetsAndEyeTracking(test);
-    } else if (method_ ==
+    } else if (method ==
             Method::adaptiveCoordinateResponseMeasureWithEyeTracking ||
-        method_ == Method::adaptivePassFailWithEyeTracking) {
+        method == Method::adaptivePassFailWithEyeTracking) {
         AdaptiveTest test;
         av_speech_in_noise::initialize(
-            test, contents, method_, identity, startingSnr);
+            test, contents, method, identity, startingSnr);
         model.initializeWithEyeTracking(test);
-    } else if (method_ == Method::adaptiveCoordinateResponseMeasure ||
-        method_ == Method::adaptivePassFail) {
+    } else if (method == Method::adaptiveCoordinateResponseMeasure ||
+        method == Method::adaptivePassFail) {
         AdaptiveTest test;
         av_speech_in_noise::initialize(
-            test, contents, method_, identity, startingSnr);
+            test, contents, method, identity, startingSnr);
         model.initialize(test);
-    } else if (method_ ==
+    } else if (method ==
             Method::
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets ||
-        method_ == Method::fixedLevelFreeResponseWithSilentIntervalTargets) {
+        method == Method::fixedLevelFreeResponseWithSilentIntervalTargets) {
         FixedLevelTest test;
         av_speech_in_noise::initialize(
-            test, contents, method_, identity, startingSnr);
+            test, contents, method, identity, startingSnr);
         model.initializeWithSilentIntervalTargets(test);
-    } else if (method_ == Method::fixedLevelFreeResponseWithAllTargets) {
+    } else if (method == Method::fixedLevelFreeResponseWithAllTargets) {
         FixedLevelTest test;
         av_speech_in_noise::initialize(
-            test, contents, method_, identity, startingSnr);
+            test, contents, method, identity, startingSnr);
         model.initializeWithAllTargets(test);
-    } else if (method_ == Method::fixedLevelConsonants) {
+    } else if (method == Method::fixedLevelConsonants) {
         FixedLevelTestWithEachTargetNTimes test;
         av_speech_in_noise::initialize(
-            test, contents, method_, identity, startingSnr);
+            test, contents, method, identity, startingSnr);
         model.initialize(test);
-    } else if (method_ ==
+    } else if (method ==
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking) {
         FixedLevelTest test;
         av_speech_in_noise::initialize(
-            test, contents, method_, identity, startingSnr);
+            test, contents, method, identity, startingSnr);
         model.initializeWithAllTargetsAndEyeTracking(test);
-    } else if (method_ ==
+    } else if (method ==
         Method::
             fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking) {
         FixedLevelFixedTrialsTest test;
         av_speech_in_noise::initialize(
-            test, contents, method_, identity, startingSnr);
+            test, contents, method, identity, startingSnr);
         model.initializeWithTargetReplacementAndEyeTracking(test);
     } else {
         FixedLevelFixedTrialsTest test;
         av_speech_in_noise::initialize(
-            test, contents, method_, identity, startingSnr);
+            test, contents, method, identity, startingSnr);
         model.initializeWithTargetReplacement(test);
     }
 }
