@@ -24,14 +24,6 @@ constexpr auto operator==(
 namespace {
 class TestMethodStub : public TestMethod {
   public:
-    auto submittedCorrectResponse() const -> bool {
-        return submittedCorrectResponse_;
-    }
-
-    auto submittedIncorrectResponse() const -> bool {
-        return submittedIncorrectResponse_;
-    }
-
     auto submittedFreeResponse() const -> bool {
         return submittedFreeResponse_;
     }
@@ -91,8 +83,6 @@ class TestMethodStub : public TestMethod {
     std::string nextTarget_{};
     int snr_dB_{};
     bool complete_{};
-    bool submittedCorrectResponse_{};
-    bool submittedIncorrectResponse_{};
     bool submittedFreeResponse_{};
 };
 
