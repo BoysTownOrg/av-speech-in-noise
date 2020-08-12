@@ -15,6 +15,8 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
         correctColor_ = c;
     }
 
+    void setCorrectConsonant(char c) { correctConsonant_ = c; }
+
     [[nodiscard]] auto correctNumberFilePath() const {
         return correctNumberFilePath_;
     }
@@ -58,6 +60,10 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
         return filePathForFileName_;
     }
 
+    auto correctConsonant(const LocalUrl &) -> char {
+        return correctConsonant_;
+    }
+
   private:
     std::string correctTarget_;
     std::string correctNumberFilePath_;
@@ -66,6 +72,7 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
     std::string filePathForFileName_;
     const coordinate_response_measure::Response *response_{};
     int correctNumber_{};
+    char correctConsonant_{};
     coordinate_response_measure::Color correctColor_{};
     bool correct_{};
 };

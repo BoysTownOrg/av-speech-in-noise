@@ -58,6 +58,7 @@ static auto current(TargetPlaylist *list) -> LocalUrl {
 
 void FixedLevelMethodImpl::submit(const ConsonantResponse &response) {
     lastConsonantTrial.subjectConsonant = response.consonant;
+    lastConsonantTrial.correctConsonant = evaluator.correctConsonant({});
     lastConsonantTrial.target = current(targetList).path;
     finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
 }

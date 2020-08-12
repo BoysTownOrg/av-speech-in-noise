@@ -113,6 +113,7 @@ class ResponseEvaluator {
     virtual auto correctColor(const LocalUrl &)
         -> coordinate_response_measure::Color = 0;
     virtual auto correctNumber(const LocalUrl &) -> int = 0;
+    virtual auto correctConsonant(const LocalUrl &) -> char = 0;
     virtual auto fileName(const LocalUrl &) -> std::string = 0;
 };
 

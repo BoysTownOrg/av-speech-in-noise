@@ -364,6 +364,15 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeConsonantPassesTarget) {
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    writeConsonantPassesCorrectConsonant) {
+    evaluator.setCorrectConsonant('b');
+    run(submittingConsonant, method);
+    OutputFileStub outputFile;
+    method.writeLastConsonant(outputFile);
+    assertEqual('b', outputFile.consonantTrial().correctConsonant);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     completeWhenTestCompleteAfterCoordinateResponse) {
     assertTestCompleteOnlyAfter(
         submittingCoordinateResponse, method, targetList);
