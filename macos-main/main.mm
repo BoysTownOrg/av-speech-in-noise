@@ -80,7 +80,7 @@ auto contents(NSString *parent) -> NSArray<NSString *> * {
 auto collectContentsIf(const LocalUrl &directory,
     const std::function<bool(NSString *)> &predicate) -> std::vector<LocalUrl> {
     std::vector<LocalUrl> items{};
-    const auto parent{asNsString(directory.path)};
+    const auto parent{asNsString(directory.path).stringByExpandingTildeInPath};
     for (NSString *item in contents(parent)) {
         const auto path{[parent stringByAppendingPathComponent:item]};
         if (predicate(path))
@@ -246,6 +246,8 @@ void main(EyeTracker &eyeTracker) {
         &silentIntervalTargetsDirectoryReader, &randomizer};
     RandomizedTargetPlaylistWithoutReplacement everyTargetOnce{
         &onlyIncludesTargetFileExtensions, &randomizer};
+    EachTargetPlayedOnceThenShuffleAndRepeat allTargetsNTimes{
+        &onlyIncludesTargetFileExtensions, &randomizer};
     FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
     RecognitionTestModelImpl recognitionTestModel{targetPlayer, maskerPlayer,
         responseEvaluator, outputFile, randomizer, eyeTracker};
@@ -261,7 +263,7 @@ void main(EyeTracker &eyeTracker) {
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
-        recognitionTestModel};
+        allTargetsNTimes, recognitionTestModel, outputFile};
     CocoaView view{NSMakeRect(0, 0, 900, 270)};
     view.center();
     const auto delegate{[WindowDelegate alloc]};
@@ -274,14 +276,19 @@ void main(EyeTracker &eyeTracker) {
     const auto subjectViewWidth{subjectScreenWidth / 3};
     auto subjectViewLeadingEdge =
         subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
-    CocoaSubjectView subjectView{NSMakeRect(subjectViewLeadingEdge,
-        subjectScreenOrigin.y, subjectViewWidth, subjectViewHeight)};
-    Presenter::CoordinateResponseMeasure subject{&subjectView};
+    CocoaConsonantView consonantView{NSMakeRect(subjectViewLeadingEdge,
+        subjectScreenOrigin.y, subjectViewWidth, subjectScreenSize.height / 3)};
+    Presenter::Consonant consonant{&consonantView};
+    CocoaCoordinateResponseMeasureView coordinateResponseMeasureView{
+        NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
+            subjectViewWidth, subjectViewHeight)};
+    Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
+        &coordinateResponseMeasureView};
     Presenter::TestSetup testSetup{&view.testSetup()};
     Presenter::Experimenter experimenter{&view.experimenter()};
     TestSettingsInterpreterImpl testSettingsInterpreter;
-    Presenter presenter{model, view, testSetup, subject, experimenter,
-        testSettingsInterpreter, textFileReader};
+    Presenter presenter{model, view, testSetup, coordinateResponseMeasure,
+        consonant, experimenter, testSettingsInterpreter, textFileReader};
     presenter.run();
 }
 }

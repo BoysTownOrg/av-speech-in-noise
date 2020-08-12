@@ -13,6 +13,7 @@ class OutputFileStub : public OutputFile {
     coordinate_response_measure::FixedLevelTrial fixedLevelTrial_{};
     FreeResponseTrial freeResponseTrial_{};
     CorrectKeywordsTrial correctKeywords_{};
+    ConsonantTrial consonantTrial_{};
     open_set::AdaptiveTrial openSetAdaptiveTrial_{};
     BinocularGazeSamples eyeGazes_;
     AdaptiveTestResults adaptiveTestResult_{};
@@ -66,6 +67,11 @@ class OutputFileStub : public OutputFile {
     void write(const CorrectKeywordsTrial &p) override {
         addToLog("writeTrial ");
         correctKeywords_ = p;
+    }
+
+    void write(const ConsonantTrial &p) {
+        addToLog("writeTrial ");
+        consonantTrial_ = p;
     }
 
     void write(const open_set::AdaptiveTrial &p) override {
@@ -135,6 +141,8 @@ class OutputFileStub : public OutputFile {
     auto freeResponseTrial() const -> auto & { return freeResponseTrial_; }
 
     auto correctKeywordsTrial() const -> auto & { return correctKeywords_; }
+
+    auto consonantTrial() const -> auto & { return consonantTrial_; }
 
     auto openSetAdaptiveTrial() const -> auto & {
         return openSetAdaptiveTrial_;

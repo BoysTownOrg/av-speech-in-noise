@@ -3,9 +3,11 @@
 
 #include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>
+#include <unordered_map>
 
 @class SetupViewActions;
-@class SubjectViewActions;
+@class CoordinateResponseMeasureViewActions;
+@class ConsonantViewActions;
 @class ExperimenterViewActions;
 
 namespace av_speech_in_noise {
@@ -108,9 +110,34 @@ class CocoaTestSetupView : public View::TestSetup {
     EventListener *listener_{};
 };
 
-class CocoaSubjectView : public View::CoordinateResponseMeasure {
+class CocoaConsonantView : public View::Consonant {
   public:
-    explicit CocoaSubjectView(NSRect);
+    explicit CocoaConsonantView(NSRect);
+    void subscribe(EventListener *) override;
+    void show() override;
+    void hide() override;
+    void showResponseButtons() override;
+    void hideResponseButtons() override;
+    void showReadyButton() override;
+    void hideReadyButton() override;
+    auto consonant() -> std::string override;
+    void respond(id sender);
+    void playTrial();
+
+  private:
+    std::unordered_map<id, std::string> consonants;
+    NSWindow *window;
+    NSView *responseButtons;
+    NSView *readyButton;
+    NSButton *lastButtonPressed{};
+    ConsonantViewActions *actions;
+    EventListener *listener_{};
+};
+
+class CocoaCoordinateResponseMeasureView
+    : public View::CoordinateResponseMeasure {
+  public:
+    CocoaCoordinateResponseMeasureView(NSRect);
     auto numberResponse() -> std::string override;
     auto greenResponse() -> bool override;
     auto blueResponse() -> bool override;
@@ -134,8 +161,8 @@ class CocoaSubjectView : public View::CoordinateResponseMeasure {
     NSWindow *window;
     NSView *responseButtons;
     NSView *nextTrialButton;
-    NSButton *lastButtonPressed;
-    SubjectViewActions *actions;
+    NSButton *lastButtonPressed{};
+    CoordinateResponseMeasureViewActions *actions;
     EventListener *listener_{};
 };
 

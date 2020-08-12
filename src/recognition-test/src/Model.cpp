@@ -4,28 +4,39 @@ namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     FixedLevelMethod &fixedLevelMethod,
     TargetPlaylistReader &targetsWithReplacementReader,
-    TargetPlaylistReader &cyclicTargetsReader, TargetPlaylist &targetsWithReplacement,
-    FiniteTargetPlaylist &silentIntervalTargets, FiniteTargetPlaylist &everyTargetOnce,
-    RecognitionTestModel &model)
+    TargetPlaylistReader &cyclicTargetsReader,
+    TargetPlaylist &targetsWithReplacement,
+    FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
+    FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
+    RepeatableFiniteTargetPlaylist &eachTargetNTimes,
+    RecognitionTestModel &model, OutputFile &outputFile)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
       cyclicTargetsReader{cyclicTargetsReader},
       targetsWithReplacement{targetsWithReplacement},
       silentIntervalTargets{silentIntervalTargets},
-      everyTargetOnce{everyTargetOnce}, model{model} {}
+      everyTargetOnce{everyTargetOnce},
+      eachTargetNTimes{eachTargetNTimes}, model{model}, outputFile{outputFile} {
+}
 
 static void initialize(
     RecognitionTestModel &model, TestMethod &method, const Test &test) {
     model.initialize(&method, test);
 }
 
-static void initialize(
-    FixedLevelMethod &method, const FixedLevelTest &test, TargetPlaylist &targets) {
+static void initialize(FixedLevelMethod &method,
+    const FixedLevelFixedTrialsTest &test, TargetPlaylist &targets) {
+    method.initialize(test, &targets);
+}
+
+static void initialize(FixedLevelMethod &method,
+    const FixedLevelTestWithEachTargetNTimes &test,
+    FiniteTargetPlaylist &targets) {
     method.initialize(test, &targets);
 }
 
 static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
-    FiniteTargetPlaylist &targets) {
+    FiniteTargetPlaylistWithRepeatables &targets) {
     method.initialize(test, &targets);
 }
 
@@ -49,7 +60,8 @@ static void initializeWithEyeTracking(
     model.initializeWithEyeTracking(&method, test);
 }
 
-void ModelImpl::initializeWithTargetReplacement(const FixedLevelTest &test) {
+void ModelImpl::initializeWithTargetReplacement(
+    const FixedLevelFixedTrialsTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, targetsWithReplacement);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
@@ -70,6 +82,12 @@ void ModelImpl::initializeWithSilentIntervalTargets(
 
 void ModelImpl::initializeWithAllTargets(const FixedLevelTest &test) {
     av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
+    av_speech_in_noise::initialize(model, fixedLevelMethod, test);
+}
+
+void ModelImpl::initialize(const FixedLevelTestWithEachTargetNTimes &test) {
+    eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
+    av_speech_in_noise::initialize(fixedLevelMethod, test, eachTargetNTimes);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
@@ -94,7 +112,7 @@ void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
 }
 
 void ModelImpl::initializeWithTargetReplacementAndEyeTracking(
-    const FixedLevelTest &test) {
+    const FixedLevelFixedTrialsTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, targetsWithReplacement);
     av_speech_in_noise::initializeWithEyeTracking(
@@ -146,6 +164,12 @@ void ModelImpl::submitIncorrectResponse() { model.submitIncorrectResponse(); }
 void ModelImpl::submit(const FreeResponse &response) { model.submit(response); }
 
 void ModelImpl::submit(const CorrectKeywords &k) { model.submit(k); }
+
+void ModelImpl::submit(const ConsonantResponse &r) {
+    fixedLevelMethod.submit(r);
+    fixedLevelMethod.writeLastConsonant(outputFile);
+    model.submit(r);
+}
 
 void ModelImpl::playCalibration(const Calibration &p) {
     model.playCalibration(p);

@@ -44,6 +44,15 @@ auto fixedLevelTest(ModelStub &m) -> FixedLevelTest {
     return m.fixedLevelTest();
 }
 
+auto fixedLevelFixedTrialsTest(ModelStub &m) -> FixedLevelFixedTrialsTest {
+    return m.fixedLevelFixedTrialsTest();
+}
+
+auto fixedLevelTestWithEachTargetNTimes(ModelStub &m)
+    -> const FixedLevelTestWithEachTargetNTimes & {
+    return m.fixedLevelTestWithEachTargetNTimes();
+}
+
 void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
     const std::vector<std::string> &v, int startingSnr = {},
     const TestIdentity &identity = {}) {
@@ -73,7 +82,8 @@ void assertPassesSimpleAdaptiveSettings(
 }
 
 void assertPassesSimpleFixedLevelSettings(
-    TestSettingsInterpreterImpl &interpreter, ModelStub &model, Method m) {
+    TestSettingsInterpreterImpl &interpreter, ModelStub &model, Method m,
+    const std::function<const FixedLevelTest &(ModelStub &)> &fixedLevelTest) {
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::targets, "a"),
@@ -122,6 +132,11 @@ auto adaptiveTestIdentity(ModelStub &model) -> TestIdentity {
 
 auto fixedLevelTestIdentity(ModelStub &model) -> TestIdentity {
     return fixedLevelTest(model).identity;
+}
+
+auto fixedLevelTestWithEachTargetNTimesIdentity(ModelStub &model)
+    -> TestIdentity {
+    return model.fixedLevelTestWithEachTargetNTimes().identity;
 }
 
 void setSubjectId(TestIdentity &identity, std::string s) {
@@ -270,6 +285,10 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsReturnsMethod) {
+    assertMethod(interpreter, Method::fixedLevelConsonants);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithEyeTrackingReturnsMethod) {
     assertMethod(
@@ -332,6 +351,11 @@ TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesMethod) {
     assertPassesTestMethod(interpreter, model,
         Method::fixedLevelFreeResponseWithAllTargets, fixedLevelTestIdentity);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsPassesMethod) {
+    assertPassesTestMethod(interpreter, model, Method::fixedLevelConsonants,
+        fixedLevelTestWithEachTargetNTimesIdentity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -406,6 +430,11 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initialize(interpreter, model,
         Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
     assertTrue(model.initializedWithSingleSpeaker());
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
+    initialize(interpreter, model, Method::fixedLevelConsonants);
+    assertTrue(model.fixedLevelTestWithEachTargetNTimesInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -529,10 +558,19 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptiveAuditoryOnly) {
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAudioVisual) {
     initialize(interpreter, model,
+        {entryWithNewline(
+             TestSetting::method, Method::fixedLevelFreeResponseWithAllTargets),
+            entryWithNewline(TestSetting::condition, Condition::audioVisual)});
+    assertEqual(Condition::audioVisual, fixedLevelTest(model).condition);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelFixedTargetsAudioVisual) {
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method,
              Method::fixedLevelFreeResponseWithTargetReplacement),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
-    assertEqual(Condition::audioVisual, fixedLevelTest(model).condition);
+    assertEqual(
+        Condition::audioVisual, fixedLevelFixedTrialsTest(model).condition);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAuditoryOnly) {
@@ -545,45 +583,69 @@ TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAuditoryOnly) {
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelSettings(
-        interpreter, model, Method::fixedLevelFreeResponseWithAllTargets);
+    assertPassesSimpleFixedLevelSettings(interpreter, model,
+        Method::fixedLevelFreeResponseWithAllTargets, fixedLevelTest);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelConsonantsPassesSimpleFixedLevelSettings) {
+    initialize(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
+            entryWithNewline(TestSetting::targets, "a"),
+            entryWithNewline(TestSetting::masker, "b"),
+            entryWithNewline(TestSetting::maskerLevel, "65")},
+        5);
+    assertEqual("a", fixedLevelTestWithEachTargetNTimes(model).targetsUrl.path);
+    assertEqual(
+        "b", fixedLevelTestWithEachTargetNTimes(model).maskerFileUrl.path);
+    assertEqual(
+        65, fixedLevelTestWithEachTargetNTimes(model).maskerLevel.dB_SPL);
+    assertEqual(5, fixedLevelTestWithEachTargetNTimes(model).snr.dB);
+    assertEqual(Presenter::fullScaleLevel.dB_SPL,
+        fixedLevelTestWithEachTargetNTimes(model).fullScaleLevel.dB_SPL);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingPassesSimpleFixedLevelSettings) {
     assertPassesSimpleFixedLevelSettings(interpreter, model,
-        Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
+        Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
+        fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsPassesSimpleFixedLevelSettings) {
     assertPassesSimpleFixedLevelSettings(interpreter, model,
-        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
+        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+        fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementPassesSimpleFixedLevelSettings) {
     assertPassesSimpleFixedLevelSettings(interpreter, model,
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
+        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+        fixedLevelFixedTrialsTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingPassesSimpleFixedLevelSettings) {
     assertPassesSimpleFixedLevelSettings(interpreter, model,
         Method::
-            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
+            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
+        fixedLevelFixedTrialsTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithSilentIntervalTargetsPassesSimpleFixedLevelSettings) {
     assertPassesSimpleFixedLevelSettings(interpreter, model,
-        Method::fixedLevelFreeResponseWithSilentIntervalTargets);
+        Method::fixedLevelFreeResponseWithSilentIntervalTargets,
+        fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithTargetReplacementPassesSimpleFixedLevelSettings) {
     assertPassesSimpleFixedLevelSettings(interpreter, model,
-        Method::fixedLevelFreeResponseWithTargetReplacement);
+        Method::fixedLevelFreeResponseWithTargetReplacement,
+        fixedLevelFixedTrialsTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(oneSequence) {
@@ -619,6 +681,25 @@ TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
             entryWithNewline(TestSetting::reversalsPerStepSize, "5 6"),
             entryWithNewline(TestSetting::stepSizes, "7 8")});
     assertEqual({first, second}, adaptiveTest(model).trackingRule);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(consonantTestWithTargetRepetitions) {
+    initialize(interpreter, model,
+        {"\n",
+            entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
+            "\n", entryWithNewline(TestSetting::targetRepetitions, "2")});
+    assertEqual(
+        2, fixedLevelTestWithEachTargetNTimes(model).timesEachTargetIsPlayed);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    consonantTestWithTargetRepetitionsDefaultsToOne) {
+    initialize(interpreter, model,
+        {"\n",
+            entryWithNewline(
+                TestSetting::method, Method::fixedLevelConsonants)});
+    assertEqual(
+        1, fixedLevelTestWithEachTargetNTimes(model).timesEachTargetIsPlayed);
 }
 }
 }

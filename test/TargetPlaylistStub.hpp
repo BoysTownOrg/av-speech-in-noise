@@ -45,18 +45,38 @@ class TargetPlaylistStub : public virtual TargetPlaylist {
     bool nextCalled_{};
 };
 
-class FiniteTargetPlaylistStub : public FiniteTargetPlaylist, public TargetPlaylistStub {
+class FiniteTargetPlaylistStub : public virtual FiniteTargetPlaylist,
+                                 public TargetPlaylistStub {
   public:
     void setEmpty() { empty_ = true; }
 
     auto empty() -> bool override { return empty_; }
 
+  private:
+    bool empty_{};
+};
+
+class RepeatableFiniteTargetPlaylistStub
+    : public virtual RepeatableFiniteTargetPlaylist,
+      public FiniteTargetPlaylistStub {
+  public:
+    void setRepeats(gsl::index n) { repeats_ = n; }
+
+    auto repeats() -> gsl::index { return repeats_; }
+
+  private:
+    gsl::index repeats_{};
+};
+
+class FiniteTargetPlaylistWithRepeatablesStub
+    : public virtual FiniteTargetPlaylistWithRepeatables,
+      public FiniteTargetPlaylistStub {
+  public:
     void reinsertCurrent() override { reinsertCurrentCalled_ = true; }
 
     auto reinsertCurrentCalled() const { return reinsertCurrentCalled_; }
 
   private:
-    bool empty_{};
     bool reinsertCurrentCalled_{};
 };
 }

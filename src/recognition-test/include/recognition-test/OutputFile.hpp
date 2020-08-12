@@ -19,7 +19,9 @@ enum class HeadingItem {
     leftGaze,
     rightGaze,
     eyeTrackerTime,
-    targetPlayerTime
+    targetPlayerTime,
+    correctConsonant,
+    subjectConsonant
 };
 
 constexpr auto name(HeadingItem i) -> const char * {
@@ -30,6 +32,10 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "correct number";
     case HeadingItem::subjectNumber:
         return "subject number";
+    case HeadingItem::correctConsonant:
+        return "correct consonant";
+    case HeadingItem::subjectConsonant:
+        return "subject consonant";
     case HeadingItem::correctColor:
         return "correct color";
     case HeadingItem::subjectColor:
@@ -101,13 +107,14 @@ class OutputFileImpl : public OutputFile {
     void write(const coordinate_response_measure::FixedLevelTrial &) override;
     void write(const FreeResponseTrial &) override;
     void write(const CorrectKeywordsTrial &) override;
+    void write(const ConsonantTrial &) override;
     void write(const AdaptiveTestResults &) override;
     void write(const BinocularGazeSamples &) override;
     void write(TargetStartTime) override;
     void write(const EyeTrackerTargetPlayerSynchronization &) override;
 
   private:
-    void write(std::string);
+    void write(const std::string &);
     auto generateNewFilePath(const TestIdentity &) -> std::string;
 
     Writer &writer;
@@ -117,6 +124,7 @@ class OutputFileImpl : public OutputFile {
     bool justWroteFreeResponseTrial{};
     bool justWroteOpenSetAdaptiveTrial{};
     bool justWroteCorrectKeywordsTrial{};
+    bool justWroteConsonantTrial{};
 };
 }
 

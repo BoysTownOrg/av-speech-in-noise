@@ -42,6 +42,11 @@ class ModelStub : public Model {
         return initializedWithSingleSpeaker_;
     }
 
+    [[nodiscard]] auto fixedLevelTestWithEachTargetNTimesInitialized() const
+        -> bool {
+        return fixedLevelTestWithEachTargetNTimesInitialized_;
+    }
+
     [[nodiscard]] auto initializedWithDelayedMasker() const {
         return initializedWithDelayedMasker_;
     }
@@ -50,7 +55,8 @@ class ModelStub : public Model {
         return initializedWithCyclicTargets_;
     }
 
-    auto adaptiveTestInitializedWithCyclicTargetsAndEyeTracking() -> bool {
+    [[nodiscard]] auto
+    adaptiveTestInitializedWithCyclicTargetsAndEyeTracking() const -> bool {
         return adaptiveTestInitializedWithCyclicTargetsAndEyeTracking_;
     }
 
@@ -74,6 +80,15 @@ class ModelStub : public Model {
         return fixedLevelTest_;
     }
 
+    [[nodiscard]] auto fixedLevelTestWithEachTargetNTimes() const
+        -> const FixedLevelTestWithEachTargetNTimes & {
+        return fixedLevelTestWithEachTargetNTimes_;
+    }
+
+    [[nodiscard]] auto fixedLevelFixedTrialsTest() const -> auto & {
+        return fixedLevelFixedTrialsTest_;
+    }
+
     [[nodiscard]] auto calibration() const -> auto & { return calibration_; }
 
     [[nodiscard]] auto incorrectResponseSubmitted() const {
@@ -85,6 +100,8 @@ class ModelStub : public Model {
     }
 
     [[nodiscard]] auto freeResponse() const { return freeResponse_; }
+
+    auto consonantResponse() { return consonantResponse_; }
 
     [[nodiscard]] auto correctKeywords() const -> int {
         return correctKeywords_.count;
@@ -101,17 +118,6 @@ class ModelStub : public Model {
 
     [[nodiscard]] auto trialParameters() const -> auto & {
         return trialParameters_;
-    }
-
-    void initializeWithTargetReplacement(const FixedLevelTest &p) override {
-        fixedLevelTest_ = p;
-        defaultFixedLevelTestInitialized_ = true;
-    }
-
-    void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelTest &p) override {
-        fixedLevelTest_ = p;
-        fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_ = true;
     }
 
     void initialize(const AdaptiveTest &p) override {
@@ -139,14 +145,32 @@ class ModelStub : public Model {
         initializedWithCyclicTargets_ = true;
     }
 
-    void initializeWithCyclicTargetsAndEyeTracking(const AdaptiveTest &p) override {
+    void initializeWithCyclicTargetsAndEyeTracking(
+        const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         adaptiveTestInitializedWithCyclicTargetsAndEyeTracking_ = true;
+    }
+
+    void initializeWithTargetReplacement(
+        const FixedLevelFixedTrialsTest &p) override {
+        fixedLevelFixedTrialsTest_ = p;
+        defaultFixedLevelTestInitialized_ = true;
+    }
+
+    void initializeWithTargetReplacementAndEyeTracking(
+        const FixedLevelFixedTrialsTest &p) override {
+        fixedLevelFixedTrialsTest_ = p;
+        fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_ = true;
     }
 
     void initializeWithSilentIntervalTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithSilentIntervalTargetsInitialized_ = true;
+    }
+
+    void initialize(const FixedLevelTestWithEachTargetNTimes &p) override {
+        fixedLevelTestWithEachTargetNTimes_ = p;
+        fixedLevelTestWithEachTargetNTimesInitialized_ = true;
     }
 
     void initializeWithAllTargets(const FixedLevelTest &p) override {
@@ -197,6 +221,8 @@ class ModelStub : public Model {
 
     void submit(const CorrectKeywords &s) override { correctKeywords_ = s; }
 
+    void submit(const ConsonantResponse &s) override { consonantResponse_ = s; }
+
     void restartAdaptiveTestWhilePreservingTargets() override {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
     }
@@ -208,12 +234,15 @@ class ModelStub : public Model {
   private:
     AdaptiveTest adaptiveTest_{};
     FixedLevelTest fixedLevelTest_{};
+    FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest_{};
+    FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes_{};
     Calibration calibration_{};
     AudioSettings trialParameters_{};
     coordinate_response_measure::Response responseParameters_{};
     std::vector<std::string> audioDevices_{};
     AdaptiveTestResults adaptiveTestResults_{};
     FreeResponse freeResponse_{};
+    ConsonantResponse consonantResponse_{};
     CorrectKeywords correctKeywords_{};
     std::string targetFileName_{};
     EventListener *listener_{};
@@ -227,6 +256,7 @@ class ModelStub : public Model {
     bool fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_{};
     bool fixedLevelTestWithAllTargetsAndEyeTrackingInitialized_{};
     bool initializedWithSingleSpeaker_{};
+    bool fixedLevelTestWithEachTargetNTimesInitialized_{};
     bool initializedWithDelayedMasker_{};
     bool adaptiveTestInitializedWithEyeTracking_{};
     bool correctResponseSubmitted_{};

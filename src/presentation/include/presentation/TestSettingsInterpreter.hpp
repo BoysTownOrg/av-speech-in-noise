@@ -35,6 +35,8 @@ constexpr auto name(Method c) -> const char * {
         return "fixed-level CRM silent intervals";
     case Method::fixedLevelFreeResponseWithAllTargets:
         return "fixed-level free response all stimuli";
+    case Method::fixedLevelConsonants:
+        return "fixed-level consonants";
     case Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking:
         return "fixed-level free response all stimuli eye tracking";
     case Method::unknown:
@@ -52,7 +54,8 @@ enum class TestSetting {
     down,
     reversalsPerStepSize,
     stepSizes,
-    thresholdReversals
+    thresholdReversals,
+    targetRepetitions
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -77,6 +80,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "step sizes (dB)";
     case TestSetting::thresholdReversals:
         return "threshold";
+    case TestSetting::targetRepetitions:
+        return "target repetitions";
     }
 }
 

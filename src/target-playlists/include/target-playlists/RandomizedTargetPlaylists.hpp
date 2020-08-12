@@ -50,7 +50,8 @@ class RandomizedTargetPlaylistWithReplacement : public TargetPlaylist {
     target_list::Randomizer *randomizer;
 };
 
-class RandomizedTargetPlaylistWithoutReplacement : public FiniteTargetPlaylist {
+class RandomizedTargetPlaylistWithoutReplacement
+    : public FiniteTargetPlaylistWithRepeatables {
   public:
     RandomizedTargetPlaylistWithoutReplacement(
         DirectoryReader *, target_list::Randomizer *);
@@ -98,6 +99,44 @@ class CyclicRandomizedTargetPlaylist : public TargetPlaylist {
     LocalUrl directory_{};
     DirectoryReader *reader;
     target_list::Randomizer *randomizer;
+};
+
+class EachTargetPlayedOnceThenShuffleAndRepeat
+    : public RepeatableFiniteTargetPlaylist {
+  public:
+    class Factory : public TargetPlaylistFactory {
+      public:
+        Factory(DirectoryReader *reader, target_list::Randomizer *randomizer)
+            : reader{reader}, randomizer{randomizer} {}
+
+        auto make() -> std::shared_ptr<TargetPlaylist> override {
+            return std::make_shared<EachTargetPlayedOnceThenShuffleAndRepeat>(
+                reader, randomizer);
+        }
+
+      private:
+        DirectoryReader *reader;
+        target_list::Randomizer *randomizer;
+    };
+
+    EachTargetPlayedOnceThenShuffleAndRepeat(
+        DirectoryReader *, target_list::Randomizer *);
+    void loadFromDirectory(const LocalUrl &directory) override;
+    auto next() -> LocalUrl override;
+    auto current() -> LocalUrl override;
+    auto directory() -> LocalUrl override;
+    auto empty() -> bool override;
+    void setRepeats(gsl::index) override;
+
+  private:
+    LocalUrls files{};
+    LocalUrl directory_{};
+    LocalUrl currentFile{};
+    DirectoryReader *reader;
+    target_list::Randomizer *randomizer;
+    gsl::index currentIndex{};
+    gsl::index repeats{};
+    gsl::index endOfPlaylistCount{};
 };
 }
 

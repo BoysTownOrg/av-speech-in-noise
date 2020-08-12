@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(
   AvSpeechInNoise
-  VERSION 3.5.0
+  VERSION 3.6.0
   LANGUAGES CXX OBJCXX)
 
 include(FetchContent)
@@ -9,7 +9,7 @@ include(FetchContent)
 FetchContent_Declare(
   GSL
   GIT_REPOSITORY https://github.com/microsoft/GSL
-  GIT_TAG v2.0.0)
+  GIT_TAG v3.1.0)
 FetchContent_MakeAvailable(GSL)
 add_subdirectory(src)
 

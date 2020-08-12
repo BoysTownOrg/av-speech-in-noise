@@ -385,6 +385,45 @@ class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
         {HeadingItem::evaluation, 4}, {HeadingItem::reversals, 5}};
 };
 
+class WritingConsonantTrial : public WritingEvaluatedTrial {
+  public:
+    WritingConsonantTrial() {
+        trial.correctConsonant = 'a';
+        trial.subjectConsonant = 'b';
+        trial.target = "c";
+    }
+
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(writer, "a",
+            at(headingLabels_, HeadingItem::correctConsonant), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "b",
+            at(headingLabels_, HeadingItem::subjectConsonant), line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "c", at(headingLabels_, HeadingItem::target), line);
+    }
+
+    void incorrect() override { trial.correct = false; }
+
+    void correct() override { trial.correct = true; }
+
+    void run(OutputFileImpl &file) override { file.write(trial); }
+
+    auto evaluationEntryIndex() -> gsl::index override {
+        return at(headingLabels_, HeadingItem::evaluation);
+    }
+
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return headingLabels_;
+    }
+
+  private:
+    ConsonantTrial trial{};
+    std::map<HeadingItem, gsl::index> headingLabels_{
+        {HeadingItem::correctConsonant, 1}, {HeadingItem::subjectConsonant, 2},
+        {HeadingItem::evaluation, 3}, {HeadingItem::target, 4}};
+};
+
 class WritingFreeResponseTrial : public WritingTrial {
   public:
     WritingFreeResponseTrial() {
@@ -423,6 +462,7 @@ class OutputFileTests : public ::testing::Test {
         writingFixedLevelCoordinateResponseTrial;
     WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
+    WritingConsonantTrial writingConsonantTrial;
     WritingFreeResponseTrial writingFreeResponseTrial;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
@@ -536,6 +576,10 @@ OUTPUT_FILE_TEST(writingCorrectKeywordsTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingCorrectKeywordsTrial);
 }
 
+OUTPUT_FILE_TEST(writingConsonantTrialWritesHeadingOnFirstLine) {
+    assertWritesHeadingOnFirstLine(writingConsonantTrial);
+}
+
 OUTPUT_FILE_TEST(writingOpenSetAdaptiveTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingOpenSetAdaptiveTrial);
 }
@@ -547,6 +591,10 @@ OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrialWritesTrialOnSecondLine) {
 OUTPUT_FILE_TEST(
     writeFixedLevelCoordinateResponseTrialWritesTrialOnSecondLine) {
     assertWritesTrialOnLine(writingFixedLevelCoordinateResponseTrial, 2);
+}
+
+OUTPUT_FILE_TEST(writingConsonantTrialWritesTrialOnSecondLine) {
+    assertWritesTrialOnLine(writingConsonantTrial, 2);
 }
 
 OUTPUT_FILE_TEST(writeFreeResponseTrialWritesTrialOnSecondLine) {
@@ -573,6 +621,10 @@ OUTPUT_FILE_TEST(
         writingFixedLevelCoordinateResponseTrial, 3);
 }
 
+OUTPUT_FILE_TEST(writingConsonantTrialTwiceDoesNotWriteHeadingTwice) {
+    assertWritesTrialOnLineAfterWritingTwice(writingConsonantTrial, 3);
+}
+
 OUTPUT_FILE_TEST(writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
     assertWritesTrialOnLineAfterWritingTwice(writingFreeResponseTrial, 3);
 }
@@ -589,6 +641,11 @@ OUTPUT_FILE_TEST(
     writingAdaptiveCoordinateResponseTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     assertWritesHeadingTwiceWhenNewFileOpened(
         writingAdaptiveCoordinateResponseTrial);
+}
+
+OUTPUT_FILE_TEST(
+    writingConsonantTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+    assertWritesHeadingTwiceWhenNewFileOpened(writingConsonantTrial);
 }
 
 OUTPUT_FILE_TEST(
@@ -617,6 +674,10 @@ OUTPUT_FILE_TEST(writeIncorrectAdaptiveCoordinateResponseTrial) {
         writingAdaptiveCoordinateResponseTrial);
 }
 
+OUTPUT_FILE_TEST(writingIncorrectConsonantTrial) {
+    assertIncorrectTrialWritesEvaluation(writingConsonantTrial);
+}
+
 OUTPUT_FILE_TEST(writeIncorrectFixedLevelCoordinateResponseTrial) {
     assertIncorrectTrialWritesEvaluation(
         writingFixedLevelCoordinateResponseTrial);
@@ -632,6 +693,10 @@ OUTPUT_FILE_TEST(writeIncorrectKeywordsTrial) {
 
 OUTPUT_FILE_TEST(writeCorrectAdaptiveCoordinateResponseTrial) {
     assertCorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
+}
+
+OUTPUT_FILE_TEST(writingCorrectConsonantTrial) {
+    assertCorrectTrialWritesEvaluation(writingConsonantTrial);
 }
 
 OUTPUT_FILE_TEST(writeCorrectFixedLevelCoordinateResponseTrial) {

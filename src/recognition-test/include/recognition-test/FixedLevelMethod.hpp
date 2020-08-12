@@ -7,11 +7,15 @@ namespace av_speech_in_noise {
 class FixedLevelMethodImpl : public FixedLevelMethod {
   public:
     explicit FixedLevelMethodImpl(ResponseEvaluator &);
-    void initialize(const FixedLevelTest &, TargetPlaylist *) override;
     void initialize(const FixedLevelTest &, FiniteTargetPlaylist *) override;
+    void initialize(
+        const FixedLevelFixedTrialsTest &, TargetPlaylist *) override;
+    void initialize(
+        const FixedLevelTest &, FiniteTargetPlaylistWithRepeatables *) override;
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const FreeResponse &) override;
     void submit(const CorrectKeywords &) override {}
+    void submit(const ConsonantResponse &) override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
     void writeLastCoordinateResponse(OutputFile &) override;
@@ -20,16 +24,20 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     void writeLastCorrectKeywords(OutputFile &) override {}
     void writeTestingParameters(OutputFile &) override;
     void writeTestResult(OutputFile &) override {}
+    void writeLastConsonant(OutputFile &) override;
     auto snr() -> SNR override;
     auto nextTarget() -> LocalUrl override;
     auto currentTarget() -> LocalUrl override;
     auto complete() -> bool override;
 
   private:
-    coordinate_response_measure::FixedLevelTrial lastTrial{};
+    coordinate_response_measure::FixedLevelTrial
+        lastCoordinateResponseMeasureTrial{};
+    ConsonantTrial lastConsonantTrial{};
     const FixedLevelTest *test_{};
     TargetPlaylist *targetList{};
     FiniteTargetPlaylist *finiteTargetPlaylist{};
+    FiniteTargetPlaylistWithRepeatables *finiteTargetPlaylistWithRepeatables{};
     ResponseEvaluator &evaluator;
     SNR snr_{};
     int trials_{};

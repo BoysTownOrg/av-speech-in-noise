@@ -1,12 +1,16 @@
 #include "CocoaView.h"
 #include "common-objc.h"
+#include <gsl/gsl>
 #include <iterator>
 #include <array>
 
 @interface SetupViewActions : NSObject
 @end
 
-@interface SubjectViewActions : NSObject
+@interface CoordinateResponseMeasureViewActions : NSObject
+@end
+
+@interface ConsonantViewActions : NSObject
 @end
 
 @interface ExperimenterViewActions : NSObject
@@ -30,9 +34,23 @@
 }
 @end
 
-@implementation SubjectViewActions {
+@implementation CoordinateResponseMeasureViewActions {
   @public
-    av_speech_in_noise::CocoaSubjectView *controller;
+    av_speech_in_noise::CocoaCoordinateResponseMeasureView *controller;
+}
+
+- (void)respond:(id)sender {
+    controller->respond(sender);
+}
+
+- (void)playTrial {
+    controller->playTrial();
+}
+@end
+
+@implementation ConsonantViewActions {
+  @public
+    av_speech_in_noise::CocoaConsonantView *controller;
 }
 
 - (void)respond:(id)sender {
@@ -281,6 +299,134 @@ void CocoaTestSetupView::browseForTestSettings() {
 
 void CocoaTestSetupView::playCalibration() { listener_->playCalibration(); }
 
+static auto resourcePath(const std::string &stem, const std::string &extension)
+    -> std::string {
+    return [[NSBundle mainBundle] pathForResource:asNsString(stem)
+                                           ofType:asNsString(extension)]
+        .UTF8String;
+}
+
+static void addConsonantImageButton(
+    std::unordered_map<id, std::string> &consonants, NSView *parent,
+    ConsonantViewActions *actions, const std::string &consonant, gsl::index row,
+    gsl::index column, gsl::index totalRows, gsl::index totalColumns) {
+    constexpr auto spacing{8};
+    const auto image{[[NSImage alloc]
+        initWithContentsOfFile:asNsString(resourcePath(consonant, "bmp"))]};
+    const auto button {
+        [NSButton buttonWithImage:image
+                           target:actions
+                           action:@selector(respond:)]
+    };
+    consonants[button] = consonant;
+    const auto imageWidth{
+        (width(parent.frame) - (totalColumns + 1) * spacing) / totalColumns};
+    const auto imageHeight{
+        (height(parent.frame) - (totalRows + 1) * spacing) / totalRows};
+    [button setFrame:NSMakeRect(imageWidth * column + spacing * (column + 1),
+                         imageHeight * (totalRows - row - 1) +
+                             spacing * (totalRows - row),
+                         imageWidth, imageHeight)];
+    button.bordered = NO;
+    button.imageScaling = NSImageScaleProportionallyUpOrDown;
+    addSubview(parent, button);
+}
+
+static void addReadyButton(NSView *parent, ConsonantViewActions *actions) {
+    const auto button_ { button("", actions, @selector(playTrial)) };
+    [button_ setBezelStyle:NSBezelStyleTexturedSquare];
+    auto style{[[NSMutableParagraphStyle alloc] init]};
+    [style setAlignment:NSTextAlignmentCenter];
+    auto font{[NSFont fontWithName:@"Courier" size:36]};
+    auto attrsDictionary{[NSDictionary
+        dictionaryWithObjectsAndKeys:font, NSFontAttributeName, nil]};
+    auto attrString{
+        [[NSAttributedString alloc] initWithString:@"Press when ready"
+                                        attributes:attrsDictionary]};
+    [button_ setAttributedTitle:attrString];
+    [button_
+        setFrame:NSMakeRect(0, 0, width(parent.frame), height(parent.frame))];
+    addSubview(parent, button_);
+}
+
+CocoaConsonantView::CocoaConsonantView(NSRect r)
+    : // Defer may be critical here...
+      window{[[NSWindow alloc] initWithContentRect:r
+                                         styleMask:NSWindowStyleMaskBorderless
+                                           backing:NSBackingStoreBuffered
+                                             defer:YES]},
+      responseButtons{
+          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
+      readyButton{
+          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
+      actions{[[ConsonantViewActions alloc] init]} {
+    actions->controller = this;
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "b", 0, 0, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "c", 0, 1, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "d", 0, 2, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "h", 0, 3, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "k", 1, 0, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "m", 1, 1, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "n", 1, 2, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "p", 1, 3, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "s", 2, 0, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "t", 2, 1, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "v", 2, 2, 3, 4);
+    addConsonantImageButton(
+        consonants, responseButtons, actions, "z", 2, 3, 3, 4);
+    addReadyButton(readyButton, actions);
+    addSubview(window.contentView, readyButton);
+    addSubview(window.contentView, responseButtons);
+    hideResponseButtons();
+    hideReadyButton();
+}
+
+void CocoaConsonantView::show() { [window makeKeyAndOrderFront:nil]; }
+
+void CocoaConsonantView::hide() { [window orderOut:nil]; }
+
+void CocoaConsonantView::showReadyButton() {
+    av_speech_in_noise::show(readyButton);
+}
+
+void CocoaConsonantView::hideReadyButton() {
+    av_speech_in_noise::hide(readyButton);
+}
+
+void CocoaConsonantView::subscribe(EventListener *e) { listener_ = e; }
+
+void CocoaConsonantView::playTrial() {
+    listener_->notifyThatReadyButtonHasBeenClicked();
+}
+
+void CocoaConsonantView::respond(id sender) {
+    lastButtonPressed = sender;
+    listener_->notifyThatResponseButtonHasBeenClicked();
+}
+
+void CocoaConsonantView::showResponseButtons() {
+    av_speech_in_noise::show(responseButtons);
+}
+
+void CocoaConsonantView::hideResponseButtons() {
+    av_speech_in_noise::hide(responseButtons);
+}
+
+auto CocoaConsonantView::consonant() -> std::string {
+    return consonants.at(lastButtonPressed);
+}
+
 static auto greenColor{NSColor.greenColor};
 static auto redColor{NSColor.redColor};
 static auto blueColor{NSColor.blueColor};
@@ -289,7 +435,7 @@ constexpr std::array<int, 8> numbers{{1, 2, 3, 4, 5, 6, 8, 9}};
 constexpr auto responseNumbers{std::size(numbers)};
 constexpr auto responseColors{4};
 
-CocoaSubjectView::CocoaSubjectView(NSRect r)
+CocoaCoordinateResponseMeasureView::CocoaCoordinateResponseMeasureView(NSRect r)
     : // Defer may be critical here...
       window{[[NSWindow alloc] initWithContentRect:r
                                          styleMask:NSWindowStyleMaskBorderless
@@ -299,7 +445,7 @@ CocoaSubjectView::CocoaSubjectView(NSRect r)
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       nextTrialButton{
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
-      actions{[[SubjectViewActions alloc] init]} {
+      actions{[[CoordinateResponseMeasureViewActions alloc] init]} {
     actions->controller = this;
     addButtonRow(blueColor, 0);
     addButtonRow(greenColor, 1);
@@ -312,12 +458,12 @@ CocoaSubjectView::CocoaSubjectView(NSRect r)
     hideNextTrialButton();
 }
 
-void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
+void CocoaCoordinateResponseMeasureView::addButtonRow(NSColor *color, int row) {
     for (std::size_t col{0}; col < responseNumbers; ++col)
         addNumberButton(color, numbers.at(col), row, col);
 }
 
-void CocoaSubjectView::addNumberButton(
+void CocoaCoordinateResponseMeasureView::addNumberButton(
     NSColor *color, int number, int row, std::size_t col) {
     auto title{asNsString(std::to_string(number))};
     const auto button {
@@ -346,7 +492,7 @@ void CocoaSubjectView::addNumberButton(
     addSubview(responseButtons, button);
 }
 
-void CocoaSubjectView::addNextTrialButton() {
+void CocoaCoordinateResponseMeasureView::addNextTrialButton() {
     const auto button_ { button("", actions, @selector(playTrial)) };
     [button_ setBezelStyle:NSBezelStyleTexturedSquare];
     auto style{[[NSMutableParagraphStyle alloc] init]};
@@ -363,57 +509,61 @@ void CocoaSubjectView::addNextTrialButton() {
     addSubview(nextTrialButton, button_);
 }
 
-auto CocoaSubjectView::numberResponse() -> std::string {
+auto CocoaCoordinateResponseMeasureView::numberResponse() -> std::string {
     return lastButtonPressed.title.UTF8String;
 }
 
-auto CocoaSubjectView::greenResponse() -> bool {
+auto CocoaCoordinateResponseMeasureView::greenResponse() -> bool {
     return lastPressedColor() == greenColor;
 }
 
-auto CocoaSubjectView::lastPressedColor() -> NSColor * {
+auto CocoaCoordinateResponseMeasureView::lastPressedColor() -> NSColor * {
     return [lastButtonPressed.attributedTitle
              attribute:NSForegroundColorAttributeName
                atIndex:0
         effectiveRange:nil];
 }
 
-auto CocoaSubjectView::blueResponse() -> bool {
+auto CocoaCoordinateResponseMeasureView::blueResponse() -> bool {
     return lastPressedColor() == blueColor;
 }
 
-auto CocoaSubjectView::whiteResponse() -> bool {
+auto CocoaCoordinateResponseMeasureView::whiteResponse() -> bool {
     return lastPressedColor() == whiteColor;
 }
 
-void CocoaSubjectView::respond(id sender) {
+void CocoaCoordinateResponseMeasureView::respond(id sender) {
     lastButtonPressed = sender;
     listener_->submitResponse();
 }
 
-void CocoaSubjectView::showResponseButtons() {
+void CocoaCoordinateResponseMeasureView::showResponseButtons() {
     av_speech_in_noise::show(responseButtons);
 }
 
-void CocoaSubjectView::showNextTrialButton() {
+void CocoaCoordinateResponseMeasureView::showNextTrialButton() {
     av_speech_in_noise::show(nextTrialButton);
 }
 
-void CocoaSubjectView::hideNextTrialButton() {
+void CocoaCoordinateResponseMeasureView::hideNextTrialButton() {
     av_speech_in_noise::hide(nextTrialButton);
 }
 
-void CocoaSubjectView::playTrial() { listener_->playTrial(); }
+void CocoaCoordinateResponseMeasureView::playTrial() { listener_->playTrial(); }
 
-void CocoaSubjectView::hideResponseButtons() {
+void CocoaCoordinateResponseMeasureView::hideResponseButtons() {
     av_speech_in_noise::hide(responseButtons);
 }
 
-void CocoaSubjectView::subscribe(EventListener *e) { listener_ = e; }
+void CocoaCoordinateResponseMeasureView::subscribe(EventListener *e) {
+    listener_ = e;
+}
 
-void CocoaSubjectView::show() { [window makeKeyAndOrderFront:nil]; }
+void CocoaCoordinateResponseMeasureView::show() {
+    [window makeKeyAndOrderFront:nil];
+}
 
-void CocoaSubjectView::hide() { [window orderOut:nil]; }
+void CocoaCoordinateResponseMeasureView::hide() { [window orderOut:nil]; }
 
 constexpr auto responseSubmissionWidth{250};
 constexpr auto leadingPrimaryTextEdge{buttonWidth + reasonableSpacing};

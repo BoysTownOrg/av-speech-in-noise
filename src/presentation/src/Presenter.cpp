@@ -3,6 +3,7 @@
 #include <av-speech-in-noise/name.hpp>
 #include <string>
 #include <sstream>
+#include <functional>
 
 namespace av_speech_in_noise {
 namespace {
@@ -39,6 +40,10 @@ static void readyNextTrial(
     experimenterPresenter.readyNextTrial();
 }
 
+static auto fixedLevelConsonant(Method m) -> bool {
+    return m == Method::fixedLevelConsonants;
+}
+
 static auto coordinateResponseMeasure(Method m) -> bool {
     return m == Method::adaptiveCoordinateResponseMeasure ||
         m == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||
@@ -51,6 +56,8 @@ static auto coordinateResponseMeasure(Method m) -> bool {
         m ==
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
 }
+
+static auto consonant(Method m) -> bool { return fixedLevelConsonant(m); }
 
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
@@ -87,7 +94,7 @@ static void showContinueTestingDialogWithResultsWhenComplete(
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
-    Experimenter &experimenterPresenter,
+    Consonant &consonantPresenter, Experimenter &experimenterPresenter,
     TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader)
     : freeResponseTrialCompletionHandler{experimenterPresenter},
@@ -95,8 +102,10 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       correctKeywordsTrialCompletionHandler{experimenterPresenter},
       coordinateResponseMeasureTrialCompletionHandler{
           coordinateResponseMeasurePresenter},
-      model{model}, view{view}, testSetup{testSetup},
+      consonantTrialCompletionHandler{consonantPresenter}, model{model},
+      view{view}, testSetup{testSetup},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
+      consonantPresenter{consonantPresenter},
       experimenterPresenter{experimenterPresenter},
       testSettingsInterpreter{testSettingsInterpreter},
       textFileReader{textFileReader},
@@ -105,6 +114,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     model.subscribe(this);
     testSetup.becomeChild(this);
     coordinateResponseMeasurePresenter.becomeChild(this);
+    consonantPresenter.becomeChild(this);
     experimenterPresenter.becomeChild(this);
     view.populateAudioDeviceMenu(model.audioDevices());
 }
@@ -142,6 +152,8 @@ void Presenter::showTest(Method m) {
     displayTrialInformation(experimenterPresenter, model);
     if (coordinateResponseMeasure(m))
         coordinateResponseMeasurePresenter.start();
+    else if (consonant(m))
+        consonantPresenter.start();
     else
         experimenterPresenter.start();
 }
@@ -149,6 +161,8 @@ void Presenter::showTest(Method m) {
 auto Presenter::trialCompletionHandler(Method m) -> TrialCompletionHandler * {
     if (coordinateResponseMeasure(m))
         return &coordinateResponseMeasureTrialCompletionHandler;
+    if (consonant(m))
+        return &consonantTrialCompletionHandler;
     if (m == Method::adaptivePassFail ||
         m == Method::adaptivePassFailWithEyeTracking)
         return &passFailTrialCompletionHandler;
@@ -162,11 +176,16 @@ void Presenter::showErrorMessage(std::string e) {
     view.showErrorMessage(std::move(e));
 }
 
-void Presenter::playTrial() {
+static void playTrial(
+    Model &model, View &view, Presenter::Experimenter &presenter) {
     AudioSettings p;
     p.audioDevice = view.audioDevice();
     model.playTrial(p);
-    experimenterPresenter.trialPlayed();
+    presenter.trialPlayed();
+}
+
+void Presenter::playTrial() {
+    av_speech_in_noise::playTrial(model, view, experimenterPresenter);
 }
 
 void Presenter::trialComplete() {
@@ -174,18 +193,61 @@ void Presenter::trialComplete() {
     experimenterPresenter.trialComplete();
 }
 
-void Presenter::submitSubjectResponse() {
-    model.submit(coordinateResponseMeasurePresenter.subjectResponse());
+static void show(Presenter::TestSetup &presenter) { presenter.show(); }
+
+static void switchToTestSetupView(Presenter::TestSetup &testSetup,
+    Presenter::Experimenter &experimenter,
+    Presenter::CoordinateResponseMeasure &coordinateResponseMeasure,
+    Presenter::Consonant &consonant) {
+    show(testSetup);
+    experimenter.stop();
+    coordinateResponseMeasure.stop();
+    consonant.stop();
+}
+
+static void updateTrialInformationAndPlayNext(
+    Model &model, View &view, Presenter::Experimenter &experimenter) {
+    displayTrialInformation(experimenter, model);
+    av_speech_in_noise::playTrial(model, view, experimenter);
+}
+
+static void switchToTestSetupViewIfCompleteElse(Model &model,
+    Presenter::TestSetup &testSetup, Presenter::Experimenter &experimenter,
+    Presenter::CoordinateResponseMeasure &coordinateResponseMeasure,
+    Presenter::Consonant &consonant, const std::function<void()> &f) {
     if (testComplete(model))
-        switchToTestSetupView();
-    else {
-        displayTrialInformation(experimenterPresenter, model);
-        playTrial();
-    }
+        switchToTestSetupView(
+            testSetup, experimenter, coordinateResponseMeasure, consonant);
+    else
+        f();
+}
+
+void Presenter::playNextTrialIfNeeded() {
+    switchToTestSetupViewIfCompleteElse(model, testSetup, experimenterPresenter,
+        coordinateResponseMeasurePresenter, consonantPresenter, [&]() {
+            updateTrialInformationAndPlayNext(
+                model, view, experimenterPresenter);
+        });
+}
+
+void Presenter::readyNextTrialIfNeeded() {
+    switchToTestSetupViewIfCompleteElse(model, testSetup, experimenterPresenter,
+        coordinateResponseMeasurePresenter, consonantPresenter,
+        [&]() { readyNextTrial(experimenterPresenter, model); });
+}
+
+void Presenter::submitCoordinateResponse() {
+    model.submit(coordinateResponseMeasurePresenter.subjectResponse());
+    playNextTrialIfNeeded();
+}
+
+void Presenter::submitConsonantResponse() {
+    model.submit(consonantPresenter.subjectResponse());
+    playNextTrialIfNeeded();
 }
 
 void Presenter::submitFreeResponse() {
-    proceedToNextTrialAfter(&Presenter::submitFreeResponse_);
+    readyNextTrialAfter(&Presenter::submitFreeResponse_);
 }
 
 void Presenter::submitPassedTrial() {
@@ -198,13 +260,6 @@ void Presenter::submitFailedTrial() {
     submitFailedTrial_();
     showContinueTestingDialogWithResultsWhenComplete(
         experimenterPresenter, model);
-}
-
-void Presenter::declineContinuingTesting() { switchToTestSetupView(); }
-
-void Presenter::acceptContinuingTesting() {
-    model.restartAdaptiveTestWhilePreservingTargets();
-    readyNextTrial(experimenterPresenter, model);
 }
 
 void Presenter::submitCorrectKeywords() {
@@ -229,30 +284,24 @@ void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
 
 void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
 
-void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
+void Presenter::declineContinuingTesting() {
+    av_speech_in_noise::switchToTestSetupView(testSetup, experimenterPresenter,
+        coordinateResponseMeasurePresenter, consonantPresenter);
+}
+
+void Presenter::acceptContinuingTesting() {
+    model.restartAdaptiveTestWhilePreservingTargets();
+    readyNextTrial(experimenterPresenter, model);
+}
+
+void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
     (this->*f)();
     readyNextTrialIfNeeded();
 }
 
-void Presenter::readyNextTrialIfNeeded() {
-    if (testComplete(model))
-        switchToTestSetupView();
-    else
-        readyNextTrial(experimenterPresenter, model);
-}
-
-void Presenter::exitTest() { switchToTestSetupView(); }
-
-void Presenter::switchToTestSetupView() {
-    showTestSetup();
-    hideTest();
-}
-
-void Presenter::showTestSetup() { testSetup.show(); }
-
-void Presenter::hideTest() {
-    experimenterPresenter.stop();
-    coordinateResponseMeasurePresenter.stop();
+void Presenter::exitTest() {
+    av_speech_in_noise::switchToTestSetupView(testSetup, experimenterPresenter,
+        coordinateResponseMeasurePresenter, consonantPresenter);
 }
 
 void Presenter::playCalibration() {
@@ -327,6 +376,40 @@ auto Presenter::TestSetup::startingSnr() -> std::string {
     return view->startingSnr();
 }
 
+Presenter::Consonant::Consonant(View::Consonant *view) : view{view} {
+    view->subscribe(this);
+}
+
+void Presenter::Consonant::start() {
+    view->show();
+    view->showReadyButton();
+}
+
+void Presenter::Consonant::stop() {
+    view->hideResponseButtons();
+    view->hide();
+}
+
+void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {
+    parent->playTrial();
+    view->hideReadyButton();
+}
+
+void Presenter::Consonant::notifyThatResponseButtonHasBeenClicked() {
+    parent->submitConsonantResponse();
+    view->hideResponseButtons();
+}
+
+void Presenter::Consonant::becomeChild(Presenter *p) { parent = p; }
+
+auto Presenter::Consonant::subjectResponse() -> ConsonantResponse {
+    return ConsonantResponse{view->consonant().front()};
+}
+
+void Presenter::Consonant::showResponseButtons() {
+    view->showResponseButtons();
+}
+
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
     View::CoordinateResponseMeasure *view)
     : view{view} {
@@ -357,7 +440,7 @@ void Presenter::CoordinateResponseMeasure::playTrial() {
 }
 
 void Presenter::CoordinateResponseMeasure::submitResponse() {
-    parent->submitSubjectResponse();
+    parent->submitCoordinateResponse();
     hideResponseButtons(view);
 }
 

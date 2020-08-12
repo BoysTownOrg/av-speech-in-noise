@@ -20,6 +20,384 @@ template <typename T> class Collection {
     std::vector<T> items{};
 };
 
+class ConsonantViewStub : public View::Consonant {
+  public:
+    void show() override { shown_ = true; }
+
+    [[nodiscard]] auto shown() const -> bool { return shown_; }
+
+    void hide() override { hidden_ = true; }
+
+    [[nodiscard]] auto hidden() const -> bool { return hidden_; }
+
+    void playTrial() { listener_->notifyThatReadyButtonHasBeenClicked(); }
+
+    void subscribe(EventListener *e) override { listener_ = e; }
+
+    void showReadyButton() override { readyButtonShown_ = true; }
+
+    [[nodiscard]] auto readyButtonShown() const -> bool {
+        return readyButtonShown_;
+    }
+
+    void hideReadyButton() override { readyButtonHidden_ = true; }
+
+    [[nodiscard]] auto readyButtonHidden() const -> bool {
+        return readyButtonHidden_;
+    }
+
+    void submitResponse() {
+        listener_->notifyThatResponseButtonHasBeenClicked();
+    }
+
+    void hideResponseButtons() override { responseButtonsHidden_ = true; }
+
+    [[nodiscard]] auto responseButtonsHidden() const -> bool {
+        return responseButtonsHidden_;
+    }
+
+    void showResponseButtons() override { responseButtonsShown_ = true; }
+
+    [[nodiscard]] auto responseButtonsShown() const -> bool {
+        return responseButtonsShown_;
+    }
+
+    void setConsonant(std::string c) { consonant_ = std::move(c); }
+
+    auto consonant() -> std::string override { return consonant_; }
+
+  private:
+    std::string consonant_;
+    EventListener *listener_{};
+    bool shown_{};
+    bool hidden_{};
+    bool responseButtonsShown_{};
+    bool responseButtonsHidden_{};
+    bool readyButtonShown_{};
+    bool readyButtonHidden_{};
+};
+
+class CoordinateResponseMeasureViewStub
+    : public View::CoordinateResponseMeasure {
+  public:
+    void show() override { shown_ = true; }
+
+    [[nodiscard]] auto shown() const { return shown_; }
+
+    void hide() override { hidden_ = true; }
+
+    [[nodiscard]] auto hidden() const { return hidden_; }
+
+    auto whiteResponse() -> bool override { return grayResponse_; }
+
+    void setGrayResponse() { grayResponse_ = true; }
+
+    auto blueResponse() -> bool override { return blueResponse_; }
+
+    void setBlueResponse() { blueResponse_ = true; }
+
+    void setRedResponse() { redResponse_ = true; }
+
+    void setGreenResponse() { greenResponse_ = true; }
+
+    auto greenResponse() -> bool override { return greenResponse_; }
+
+    void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
+
+    [[nodiscard]] auto nextTrialButtonHidden() const {
+        return nextTrialButtonHidden_;
+    }
+
+    void hideResponseButtons() override { responseButtonsHidden_ = true; }
+
+    [[nodiscard]] auto responseButtonsHidden() const {
+        return responseButtonsHidden_;
+    }
+
+    void showNextTrialButton() override { nextTrialButtonShown_ = true; }
+
+    [[nodiscard]] auto nextTrialButtonShown() const {
+        return nextTrialButtonShown_;
+    }
+
+    void showResponseButtons() override { responseButtonsShown_ = true; }
+
+    [[nodiscard]] auto responseButtonsShown() const {
+        return responseButtonsShown_;
+    }
+
+    void setNumberResponse(std::string s) { numberResponse_ = std::move(s); }
+
+    auto numberResponse() -> std::string override { return numberResponse_; }
+
+    void subscribe(EventListener *e) override { listener_ = e; }
+
+    void submitResponse() { listener_->submitResponse(); }
+
+    void playTrial() { listener_->playTrial(); }
+
+  private:
+    std::string numberResponse_{"0"};
+    EventListener *listener_{};
+    bool responseButtonsShown_{};
+    bool responseButtonsHidden_{};
+    bool shown_{};
+    bool hidden_{};
+    bool greenResponse_{};
+    bool redResponse_{};
+    bool blueResponse_{};
+    bool grayResponse_{};
+    bool nextTrialButtonHidden_{};
+    bool nextTrialButtonShown_{};
+};
+
+class TestSetupViewStub : public View::TestSetup {
+  public:
+    auto testSettingsFile() -> std::string override {
+        return testSettingsFile_;
+    }
+
+    auto startingSnr() -> std::string override { return startingSnr_; }
+
+    void setTestSettingsFile(std::string s) override {
+        testSettingsFile_ = std::move(s);
+    }
+
+    void browseForTestSettingsFile() { listener_->browseForTestSettingsFile(); }
+
+    [[nodiscard]] auto transducers() const -> std::vector<std::string> {
+        return transducers_;
+    }
+
+    void populateTransducerMenu(std::vector<std::string> v) override {
+        transducers_ = std::move(v);
+    }
+
+    void confirmTestSetup() { listener_->confirmTestSetup(); }
+
+    void playCalibration() { listener_->playCalibration(); }
+
+    auto session() -> std::string override { return session_; }
+
+    void setSession(std::string s) { session_ = std::move(s); }
+
+    void show() override { shown_ = true; }
+
+    [[nodiscard]] auto shown() const { return shown_; }
+
+    void hide() override { hidden_ = true; }
+
+    [[nodiscard]] auto hidden() const { return hidden_; }
+
+    void setRmeSetting(std::string s) { rmeSetting_ = std::move(s); }
+
+    auto rmeSetting() -> std::string override { return rmeSetting_; }
+
+    void setTransducer(std::string s) { transducer_ = std::move(s); }
+
+    void setSubjectId(std::string s) { subjectId_ = std::move(s); }
+
+    auto subjectId() -> std::string override { return subjectId_; }
+
+    void setTesterId(std::string s) { testerId_ = std::move(s); }
+
+    auto testerId() -> std::string override { return testerId_; }
+
+    auto transducer() -> std::string override { return transducer_; }
+
+    void subscribe(EventListener *listener) override { listener_ = listener; }
+
+    void setStartingSnr(std::string s) { startingSnr_ = std::move(s); }
+
+  private:
+    std::vector<std::string> transducers_;
+    std::string startingSnr_{"0"};
+    std::string subjectId_;
+    std::string testerId_;
+    std::string session_;
+    std::string rmeSetting_;
+    std::string transducer_;
+    std::string testSettingsFile_;
+    EventListener *listener_{};
+    bool shown_{};
+    bool hidden_{};
+};
+
+class ExperimenterViewStub : public View::Experimenter {
+  public:
+    void declineContinuingTesting() { listener_->declineContinuingTesting(); }
+
+    [[nodiscard]] auto continueTestingDialogMessage() const -> std::string {
+        return continueTestingDialogMessage_;
+    }
+
+    void setContinueTestingDialogMessage(const std::string &s) override {
+        continueTestingDialogMessage_ = s;
+    }
+
+    void acceptContinuingTesting() { listener_->acceptContinuingTesting(); }
+
+    void showContinueTestingDialog() override {
+        continueTestingDialogShown_ = true;
+    }
+
+    [[nodiscard]] auto continueTestingDialogShown() const -> bool {
+        return continueTestingDialogShown_;
+    }
+
+    void hideContinueTestingDialog() override {
+        continueTestingDialogHidden_ = true;
+    }
+
+    [[nodiscard]] auto continueTestingDialogHidden() const -> bool {
+        return continueTestingDialogHidden_;
+    }
+
+    void submitFailedTrial() { listener_->submitFailedTrial(); }
+
+    void hideFreeResponseSubmission() override {
+        responseSubmissionHidden_ = true;
+    }
+
+    [[nodiscard]] auto responseSubmissionHidden() const {
+        return responseSubmissionHidden_;
+    }
+
+    void hideEvaluationButtons() override { evaluationButtonsHidden_ = true; }
+
+    [[nodiscard]] auto evaluationButtonsHidden() const {
+        return evaluationButtonsHidden_;
+    }
+
+    void showCorrectKeywordsSubmission() override {
+        correctKeywordsEntryShown_ = true;
+    }
+
+    [[nodiscard]] auto correctKeywordsEntryShown() const {
+        return correctKeywordsEntryShown_;
+    }
+
+    void hideCorrectKeywordsSubmission() override {
+        correctKeywordsEntryHidden_ = true;
+    }
+
+    [[nodiscard]] auto correctKeywordsEntryHidden() const {
+        return correctKeywordsEntryHidden_;
+    }
+
+    void showEvaluationButtons() override { evaluationButtonsShown_ = true; }
+
+    [[nodiscard]] auto evaluationButtonsShown() const {
+        return evaluationButtonsShown_;
+    }
+
+    void showFreeResponseSubmission() override {
+        responseSubmissionShown_ = true;
+    }
+
+    [[nodiscard]] auto responseSubmissionShown() const {
+        return responseSubmissionShown_;
+    }
+
+    void setCorrectKeywords(std::string s) { correctKeywords_ = std::move(s); }
+
+    auto correctKeywords() -> std::string override { return correctKeywords_; }
+
+    void show() override { shown_ = true; }
+
+    [[nodiscard]] auto shown() const { return shown_; }
+
+    void hide() override { hidden_ = true; }
+
+    [[nodiscard]] auto hidden() const { return hidden_; }
+
+    void subscribe(EventListener *e) override { listener_ = e; }
+
+    void setResponse(std::string s) { response_ = std::move(s); }
+
+    auto freeResponse() -> std::string override { return response_; }
+
+    void submitPassedTrial() { listener_->submitPassedTrial(); }
+
+    void submitFreeResponse() { listener_->submitFreeResponse(); }
+
+    void submitCorrectKeywords() { listener_->submitCorrectKeywords(); }
+
+    void exitTest() { listener_->exitTest(); }
+
+    void playTrial() { listener_->playTrial(); }
+
+    void flagResponse() { flagged_ = true; }
+
+    auto flagged() -> bool override { return flagged_; }
+
+    void display(std::string s) override { displayed_ = std::move(s); }
+
+    [[nodiscard]] auto displayed() const { return displayed_; }
+
+    void secondaryDisplay(std::string s) override {
+        secondaryDisplayed_ = std::move(s);
+    }
+
+    [[nodiscard]] auto secondaryDisplayed() const {
+        return secondaryDisplayed_;
+    }
+
+    void showNextTrialButton() override { nextTrialButtonShown_ = true; }
+
+    [[nodiscard]] auto nextTrialButtonShown() const {
+        return nextTrialButtonShown_;
+    }
+
+    void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
+
+    [[nodiscard]] auto nextTrialButtonHidden() const {
+        return nextTrialButtonHidden_;
+    }
+
+    void showExitTestButton() override { exitTestButtonShown_ = true; }
+
+    [[nodiscard]] auto exitTestButtonShown() const {
+        return exitTestButtonShown_;
+    }
+
+    void hideExitTestButton() override { exitTestButtonHidden_ = true; }
+
+    [[nodiscard]] auto exitTestButtonHidden() const {
+        return exitTestButtonHidden_;
+    }
+
+    [[nodiscard]] auto freeResponseCleared() const -> bool {
+        return freeResponseCleared_;
+    }
+
+    void clearFreeResponse() override { freeResponseCleared_ = true; }
+
+  private:
+    std::string displayed_;
+    std::string secondaryDisplayed_;
+    std::string continueTestingDialogMessage_;
+    std::string response_;
+    std::string correctKeywords_{"0"};
+    EventListener *listener_{};
+    bool freeResponseCleared_{};
+    bool exitTestButtonHidden_{};
+    bool exitTestButtonShown_{};
+    bool nextTrialButtonShown_{};
+    bool nextTrialButtonHidden_{};
+    bool evaluationButtonsShown_{};
+    bool responseSubmissionShown_{};
+    bool responseSubmissionHidden_{};
+    bool evaluationButtonsHidden_{};
+    bool correctKeywordsEntryShown_{};
+    bool correctKeywordsEntryHidden_{};
+    bool continueTestingDialogShown_{};
+    bool continueTestingDialogHidden_{};
+    bool shown_{};
+    bool hidden_{};
+    bool flagged_{};
+};
+
 class ViewStub : public View {
   public:
     void setAudioDevice(std::string s) { audioDevice_ = std::move(s); }
@@ -57,344 +435,6 @@ class ViewStub : public View {
     }
 
     [[nodiscard]] auto audioDevices() const { return audioDevices_; }
-
-    class TestSetupViewStub : public TestSetup {
-      public:
-        auto testSettingsFile() -> std::string override {
-            return testSettingsFile_;
-        }
-
-        auto startingSnr() -> std::string override { return startingSnr_; }
-
-        void setTestSettingsFile(std::string s) override {
-            testSettingsFile_ = std::move(s);
-        }
-
-        void browseForTestSettingsFile() {
-            listener_->browseForTestSettingsFile();
-        }
-
-        [[nodiscard]] auto transducers() const -> std::vector<std::string> {
-            return transducers_;
-        }
-
-        void populateTransducerMenu(std::vector<std::string> v) override {
-            transducers_ = std::move(v);
-        }
-
-        void confirmTestSetup() { listener_->confirmTestSetup(); }
-
-        void playCalibration() { listener_->playCalibration(); }
-
-        auto session() -> std::string override { return session_; }
-
-        void setSession(std::string s) { session_ = std::move(s); }
-
-        void show() override { shown_ = true; }
-
-        [[nodiscard]] auto shown() const { return shown_; }
-
-        void hide() override { hidden_ = true; }
-
-        [[nodiscard]] auto hidden() const { return hidden_; }
-
-        void setRmeSetting(std::string s) { rmeSetting_ = std::move(s); }
-
-        auto rmeSetting() -> std::string override { return rmeSetting_; }
-
-        void setTransducer(std::string s) { transducer_ = std::move(s); }
-
-        void setSubjectId(std::string s) { subjectId_ = std::move(s); }
-
-        auto subjectId() -> std::string override { return subjectId_; }
-
-        void setTesterId(std::string s) { testerId_ = std::move(s); }
-
-        auto testerId() -> std::string override { return testerId_; }
-
-        auto transducer() -> std::string override { return transducer_; }
-
-        void subscribe(EventListener *listener) override {
-            listener_ = listener;
-        }
-
-        void setStartingSnr(std::string s) { startingSnr_ = std::move(s); }
-
-      private:
-        std::vector<std::string> transducers_;
-        std::string startingSnr_{"0"};
-        std::string subjectId_;
-        std::string testerId_;
-        std::string session_;
-        std::string rmeSetting_;
-        std::string transducer_;
-        std::string testSettingsFile_;
-        EventListener *listener_{};
-        bool shown_{};
-        bool hidden_{};
-    };
-
-    class SubjectViewStub : public CoordinateResponseMeasure {
-      public:
-        void show() override { shown_ = true; }
-
-        [[nodiscard]] auto shown() const { return shown_; }
-
-        void hide() override { hidden_ = true; }
-
-        [[nodiscard]] auto hidden() const { return hidden_; }
-
-        auto whiteResponse() -> bool override { return grayResponse_; }
-
-        void setGrayResponse() { grayResponse_ = true; }
-
-        auto blueResponse() -> bool override { return blueResponse_; }
-
-        void setBlueResponse() { blueResponse_ = true; }
-
-        void setRedResponse() { redResponse_ = true; }
-
-        void setGreenResponse() { greenResponse_ = true; }
-
-        auto greenResponse() -> bool override { return greenResponse_; }
-
-        void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
-
-        [[nodiscard]] auto nextTrialButtonHidden() const {
-            return nextTrialButtonHidden_;
-        }
-
-        void hideResponseButtons() override { responseButtonsHidden_ = true; }
-
-        [[nodiscard]] auto responseButtonsHidden() const {
-            return responseButtonsHidden_;
-        }
-
-        void showNextTrialButton() override { nextTrialButtonShown_ = true; }
-
-        [[nodiscard]] auto nextTrialButtonShown() const {
-            return nextTrialButtonShown_;
-        }
-
-        void showResponseButtons() override { responseButtonsShown_ = true; }
-
-        [[nodiscard]] auto responseButtonsShown() const {
-            return responseButtonsShown_;
-        }
-
-        void setNumberResponse(std::string s) {
-            numberResponse_ = std::move(s);
-        }
-
-        auto numberResponse() -> std::string override {
-            return numberResponse_;
-        }
-
-        void subscribe(EventListener *e) override { listener_ = e; }
-
-        void submitResponse() { listener_->submitResponse(); }
-
-        void playTrial() { listener_->playTrial(); }
-
-      private:
-        std::string numberResponse_{"0"};
-        EventListener *listener_{};
-        bool responseButtonsShown_{};
-        bool responseButtonsHidden_{};
-        bool shown_{};
-        bool hidden_{};
-        bool greenResponse_{};
-        bool redResponse_{};
-        bool blueResponse_{};
-        bool grayResponse_{};
-        bool nextTrialButtonHidden_{};
-        bool nextTrialButtonShown_{};
-    };
-
-    class ExperimenterViewStub : public Experimenter {
-      public:
-        void declineContinuingTesting() {
-            listener_->declineContinuingTesting();
-        }
-
-        [[nodiscard]] auto continueTestingDialogMessage() const -> std::string {
-            return continueTestingDialogMessage_;
-        }
-
-        void setContinueTestingDialogMessage(const std::string &s) override {
-            continueTestingDialogMessage_ = s;
-        }
-
-        void acceptContinuingTesting() { listener_->acceptContinuingTesting(); }
-
-        void showContinueTestingDialog() override {
-            continueTestingDialogShown_ = true;
-        }
-
-        [[nodiscard]] auto continueTestingDialogShown() const -> bool {
-            return continueTestingDialogShown_;
-        }
-
-        void hideContinueTestingDialog() override {
-            continueTestingDialogHidden_ = true;
-        }
-
-        [[nodiscard]] auto continueTestingDialogHidden() const -> bool {
-            return continueTestingDialogHidden_;
-        }
-
-        void submitFailedTrial() { listener_->submitFailedTrial(); }
-
-        void hideFreeResponseSubmission() override {
-            responseSubmissionHidden_ = true;
-        }
-
-        [[nodiscard]] auto responseSubmissionHidden() const {
-            return responseSubmissionHidden_;
-        }
-
-        void hideEvaluationButtons() override {
-            evaluationButtonsHidden_ = true;
-        }
-
-        [[nodiscard]] auto evaluationButtonsHidden() const {
-            return evaluationButtonsHidden_;
-        }
-
-        void showCorrectKeywordsSubmission() override {
-            correctKeywordsEntryShown_ = true;
-        }
-
-        [[nodiscard]] auto correctKeywordsEntryShown() const {
-            return correctKeywordsEntryShown_;
-        }
-
-        void hideCorrectKeywordsSubmission() override {
-            correctKeywordsEntryHidden_ = true;
-        }
-
-        [[nodiscard]] auto correctKeywordsEntryHidden() const {
-            return correctKeywordsEntryHidden_;
-        }
-
-        void showEvaluationButtons() override {
-            evaluationButtonsShown_ = true;
-        }
-
-        [[nodiscard]] auto evaluationButtonsShown() const {
-            return evaluationButtonsShown_;
-        }
-
-        void showFreeResponseSubmission() override {
-            responseSubmissionShown_ = true;
-        }
-
-        [[nodiscard]] auto responseSubmissionShown() const {
-            return responseSubmissionShown_;
-        }
-
-        void setCorrectKeywords(std::string s) {
-            correctKeywords_ = std::move(s);
-        }
-
-        auto correctKeywords() -> std::string override {
-            return correctKeywords_;
-        }
-
-        void show() override { shown_ = true; }
-
-        [[nodiscard]] auto shown() const { return shown_; }
-
-        void hide() override { hidden_ = true; }
-
-        [[nodiscard]] auto hidden() const { return hidden_; }
-
-        void subscribe(EventListener *e) override { listener_ = e; }
-
-        void setResponse(std::string s) { response_ = std::move(s); }
-
-        auto freeResponse() -> std::string override { return response_; }
-
-        void submitPassedTrial() { listener_->submitPassedTrial(); }
-
-        void submitFreeResponse() { listener_->submitFreeResponse(); }
-
-        void submitCorrectKeywords() { listener_->submitCorrectKeywords(); }
-
-        void exitTest() { listener_->exitTest(); }
-
-        void playTrial() { listener_->playTrial(); }
-
-        void flagResponse() { flagged_ = true; }
-
-        auto flagged() -> bool override { return flagged_; }
-
-        void display(std::string s) override { displayed_ = std::move(s); }
-
-        [[nodiscard]] auto displayed() const { return displayed_; }
-
-        void secondaryDisplay(std::string s) override {
-            secondaryDisplayed_ = std::move(s);
-        }
-
-        [[nodiscard]] auto secondaryDisplayed() const {
-            return secondaryDisplayed_;
-        }
-
-        void showNextTrialButton() override { nextTrialButtonShown_ = true; }
-
-        [[nodiscard]] auto nextTrialButtonShown() const {
-            return nextTrialButtonShown_;
-        }
-
-        void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
-
-        [[nodiscard]] auto nextTrialButtonHidden() const {
-            return nextTrialButtonHidden_;
-        }
-
-        void showExitTestButton() override { exitTestButtonShown_ = true; }
-
-        [[nodiscard]] auto exitTestButtonShown() const {
-            return exitTestButtonShown_;
-        }
-
-        void hideExitTestButton() override { exitTestButtonHidden_ = true; }
-
-        [[nodiscard]] auto exitTestButtonHidden() const {
-            return exitTestButtonHidden_;
-        }
-
-        [[nodiscard]] auto freeResponseCleared() const -> bool {
-            return freeResponseCleared_;
-        }
-
-        void clearFreeResponse() override { freeResponseCleared_ = true; }
-
-      private:
-        std::string displayed_;
-        std::string secondaryDisplayed_;
-        std::string continueTestingDialogMessage_;
-        std::string response_;
-        std::string correctKeywords_{"0"};
-        EventListener *listener_{};
-        bool freeResponseCleared_{};
-        bool exitTestButtonHidden_{};
-        bool exitTestButtonShown_{};
-        bool nextTrialButtonShown_{};
-        bool nextTrialButtonHidden_{};
-        bool evaluationButtonsShown_{};
-        bool responseSubmissionShown_{};
-        bool responseSubmissionHidden_{};
-        bool evaluationButtonsHidden_{};
-        bool correctKeywordsEntryShown_{};
-        bool correctKeywordsEntryHidden_{};
-        bool continueTestingDialogShown_{};
-        bool continueTestingDialogHidden_{};
-        bool shown_{};
-        bool hidden_{};
-        bool flagged_{};
-    };
 
   private:
     std::vector<std::string> audioDevices_;
@@ -489,11 +529,10 @@ class LevelUseCase : public virtual UseCase {
 };
 
 class PlayingCalibration : public LevelUseCase {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
 
   public:
-    explicit PlayingCalibration(ViewStub::TestSetupViewStub *view)
-        : view{view} {}
+    explicit PlayingCalibration(TestSetupViewStub *view) : view{view} {}
 
     void run() override { view->playCalibration(); }
 
@@ -504,9 +543,7 @@ class PlayingCalibration : public LevelUseCase {
 
 class ConfirmingTestSetup : public virtual UseCase {};
 
-void confirmTestSetup(ViewStub::TestSetupViewStub *view) {
-    view->confirmTestSetup();
-}
+void confirmTestSetup(TestSetupViewStub *view) { view->confirmTestSetup(); }
 
 void setMethod(TestSettingsInterpreterStub &interpeter, Method m) {
     interpeter.setMethod(m);
@@ -514,13 +551,12 @@ void setMethod(TestSettingsInterpreterStub &interpeter, Method m) {
 
 class ConfirmingAdaptiveCoordinateResponseMeasureTest
     : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
     ConfirmingAdaptiveCoordinateResponseMeasureTest(
-        ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -531,13 +567,12 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTest
 
 class ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
     : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
     explicit ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker(
-        ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -549,13 +584,12 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
 
 class ConfirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking
     : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
     explicit ConfirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking(
-        ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -567,13 +601,12 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking
 
 class ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker
     : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
     ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker(
-        ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -584,12 +617,12 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker
 };
 
 class ConfirmingAdaptivePassFailTest : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
-    ConfirmingAdaptivePassFailTest(ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+    ConfirmingAdaptivePassFailTest(
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -600,13 +633,12 @@ class ConfirmingAdaptivePassFailTest : public ConfirmingTestSetup {
 
 class ConfirmingAdaptivePassFailTestWithEyeTracking
     : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
     ConfirmingAdaptivePassFailTestWithEyeTracking(
-        ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -616,12 +648,12 @@ class ConfirmingAdaptivePassFailTestWithEyeTracking
 };
 
 class ConfirmingAdaptiveCorrectKeywordsTest : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
-    ConfirmingAdaptiveCorrectKeywordsTest(ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+    ConfirmingAdaptiveCorrectKeywordsTest(
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -632,13 +664,12 @@ class ConfirmingAdaptiveCorrectKeywordsTest : public ConfirmingTestSetup {
 
 class ConfirmingAdaptiveCorrectKeywordsTestWithEyeTracking
     : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
     ConfirmingAdaptiveCorrectKeywordsTestWithEyeTracking(
-        ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -649,13 +680,12 @@ class ConfirmingAdaptiveCorrectKeywordsTestWithEyeTracking
 
 class ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
     : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
     ConfirmingFixedLevelFreeResponseWithTargetReplacementTest(
-        ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -665,15 +695,29 @@ class ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
     }
 };
 
+class ConfirmingFixedLevelConsonantTest : public ConfirmingTestSetup {
+    TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
+
+  public:
+    ConfirmingFixedLevelConsonantTest(
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
+
+    void run() override {
+        setMethod(interpreter, Method::fixedLevelConsonants);
+        confirmTestSetup(view);
+    }
+};
+
 class ConfirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement
     : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
     ConfirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement(
-        ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -686,13 +730,12 @@ class ConfirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement
 class
     ConfirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking
     : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
     ConfirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking(
-        ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -705,13 +748,12 @@ class
 
 class ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
     : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
     ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets(
-        ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -725,13 +767,12 @@ class ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
 
 class ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest
     : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
     ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest(
-        ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -743,13 +784,12 @@ class ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest
 
 class ConfirmingFixedLevelFreeResponseTestWithAllTargets
     : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
     ConfirmingFixedLevelFreeResponseTestWithAllTargets(
-        ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -760,13 +800,12 @@ class ConfirmingFixedLevelFreeResponseTestWithAllTargets
 
 class ConfirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking
     : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
     ConfirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking(
-        ViewStub::TestSetupViewStub *view,
-        TestSettingsInterpreterStub &interpreter)
+        TestSetupViewStub *view, TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
@@ -783,11 +822,12 @@ class TrialSubmission : public virtual UseCase {
     virtual auto responseViewHidden() -> bool = 0;
 };
 
-class RespondingFromSubject : public TrialSubmission {
-    ViewStub::SubjectViewStub *view;
+class SubmittingCoordinateResponseMeasure : public TrialSubmission {
+    CoordinateResponseMeasureViewStub *view;
 
   public:
-    explicit RespondingFromSubject(ViewStub::SubjectViewStub *view)
+    explicit SubmittingCoordinateResponseMeasure(
+        CoordinateResponseMeasureViewStub *view)
         : view{view} {}
 
     void run() override { view->submitResponse(); }
@@ -805,12 +845,32 @@ class RespondingFromSubject : public TrialSubmission {
     }
 };
 
-class SubmittingFreeResponse : public TrialSubmission {
-    ViewStub::ExperimenterViewStub &view;
+class SubmittingConsonant : public TrialSubmission {
+    ConsonantViewStub *view;
 
   public:
-    explicit SubmittingFreeResponse(ViewStub::ExperimenterViewStub &view)
-        : view{view} {}
+    explicit SubmittingConsonant(ConsonantViewStub *view) : view{view} {}
+
+    void run() override { view->submitResponse(); }
+
+    auto nextTrialButtonShown() -> bool override {
+        return view->readyButtonShown();
+    }
+
+    auto responseViewShown() -> bool override {
+        return view->responseButtonsShown();
+    }
+
+    auto responseViewHidden() -> bool override {
+        return view->responseButtonsHidden();
+    }
+};
+
+class SubmittingFreeResponse : public TrialSubmission {
+    ExperimenterViewStub &view;
+
+  public:
+    explicit SubmittingFreeResponse(ExperimenterViewStub &view) : view{view} {}
 
     void run() override { view.submitFreeResponse(); }
 
@@ -828,20 +888,19 @@ class SubmittingFreeResponse : public TrialSubmission {
 };
 
 class ExitingTest : public UseCase {
-    ViewStub::ExperimenterViewStub *view;
+    ExperimenterViewStub *view;
 
   public:
-    explicit ExitingTest(ViewStub::ExperimenterViewStub *view) : view{view} {}
+    explicit ExitingTest(ExperimenterViewStub *view) : view{view} {}
 
     void run() override { view->exitTest(); }
 };
 
 class SubmittingPassedTrial : public TrialSubmission {
-    ViewStub::ExperimenterViewStub &view;
+    ExperimenterViewStub &view;
 
   public:
-    explicit SubmittingPassedTrial(ViewStub::ExperimenterViewStub &view)
-        : view{view} {}
+    explicit SubmittingPassedTrial(ExperimenterViewStub &view) : view{view} {}
 
     void run() override { view.submitPassedTrial(); }
 
@@ -859,11 +918,10 @@ class SubmittingPassedTrial : public TrialSubmission {
 };
 
 class SubmittingFailedTrial : public TrialSubmission {
-    ViewStub::ExperimenterViewStub &view;
+    ExperimenterViewStub &view;
 
   public:
-    explicit SubmittingFailedTrial(ViewStub::ExperimenterViewStub &view)
-        : view{view} {}
+    explicit SubmittingFailedTrial(ExperimenterViewStub &view) : view{view} {}
 
     void run() override { view.submitFailedTrial(); }
 
@@ -881,10 +939,10 @@ class SubmittingFailedTrial : public TrialSubmission {
 };
 
 class SubmittingCorrectKeywords : public TrialSubmission {
-    ViewStub::ExperimenterViewStub &view;
+    ExperimenterViewStub &view;
 
   public:
-    explicit SubmittingCorrectKeywords(ViewStub::ExperimenterViewStub &view)
+    explicit SubmittingCorrectKeywords(ExperimenterViewStub &view)
         : view{view} {}
 
     void run() override { view.submitCorrectKeywords(); }
@@ -904,24 +962,24 @@ class SubmittingCorrectKeywords : public TrialSubmission {
 
 class DecliningContinuingTesting : public UseCase {
   public:
-    explicit DecliningContinuingTesting(ViewStub::ExperimenterViewStub &view)
+    explicit DecliningContinuingTesting(ExperimenterViewStub &view)
         : view{view} {}
 
     void run() override { view.declineContinuingTesting(); }
 
   private:
-    ViewStub::ExperimenterViewStub &view;
+    ExperimenterViewStub &view;
 };
 
 class AcceptingContinuingTesting : public UseCase {
   public:
-    explicit AcceptingContinuingTesting(ViewStub::ExperimenterViewStub &view)
+    explicit AcceptingContinuingTesting(ExperimenterViewStub &view)
         : view{view} {}
 
     void run() override { view.acceptContinuingTesting(); }
 
   private:
-    ViewStub::ExperimenterViewStub &view;
+    ExperimenterViewStub &view;
 };
 
 class PlayingTrial : public virtual UseCase {
@@ -930,11 +988,12 @@ class PlayingTrial : public virtual UseCase {
     virtual auto nextTrialButtonShown() -> bool = 0;
 };
 
-class PlayingTrialFromSubject : public PlayingTrial {
-    ViewStub::SubjectViewStub *view;
+class PlayingCoordinateResponseMeasureTrial : public PlayingTrial {
+    CoordinateResponseMeasureViewStub *view;
 
   public:
-    explicit PlayingTrialFromSubject(ViewStub::SubjectViewStub *view)
+    explicit PlayingCoordinateResponseMeasureTrial(
+        CoordinateResponseMeasureViewStub *view)
         : view{view} {}
 
     void run() override { view->playTrial(); }
@@ -948,11 +1007,28 @@ class PlayingTrialFromSubject : public PlayingTrial {
     }
 };
 
-class PlayingTrialFromExperimenter : public PlayingTrial {
-    ViewStub::ExperimenterViewStub &view;
+class PlayingConsonantTrial : public PlayingTrial {
+    ConsonantViewStub *view;
 
   public:
-    explicit PlayingTrialFromExperimenter(ViewStub::ExperimenterViewStub &view)
+    explicit PlayingConsonantTrial(ConsonantViewStub *view) : view{view} {}
+
+    void run() override { view->playTrial(); }
+
+    auto nextTrialButtonHidden() -> bool override {
+        return view->readyButtonHidden();
+    }
+
+    auto nextTrialButtonShown() -> bool override {
+        return view->readyButtonShown();
+    }
+};
+
+class PlayingTrialFromExperimenter : public PlayingTrial {
+    ExperimenterViewStub &view;
+
+  public:
+    explicit PlayingTrialFromExperimenter(ExperimenterViewStub &view)
         : view{view} {}
 
     void run() override { view.playTrial(); }
@@ -978,10 +1054,10 @@ class BrowsingEnteredPathUseCase : public virtual BrowsingUseCase {
 };
 
 class BrowsingForTestSettingsFile : public BrowsingEnteredPathUseCase {
-    ViewStub::TestSetupViewStub *view;
+    TestSetupViewStub *view;
 
   public:
-    explicit BrowsingForTestSettingsFile(ViewStub::TestSetupViewStub *view)
+    explicit BrowsingForTestSettingsFile(TestSetupViewStub *view)
         : view{view} {}
 
     void run() override { view->browseForTestSettingsFile(); }
@@ -1000,19 +1076,22 @@ class BrowsingForTestSettingsFile : public BrowsingEnteredPathUseCase {
 class PresenterConstructionTests : public ::testing::Test {
   protected:
     ModelStub model;
-    ViewStub::TestSetupViewStub setupView;
-    ViewStub::SubjectViewStub subjectView;
-    ViewStub::ExperimenterViewStub experimenterView;
+    TestSetupViewStub setupView;
+    CoordinateResponseMeasureViewStub coordinateResponseMeasureView;
+    ConsonantViewStub consonantView;
+    ExperimenterViewStub experimenterView;
     ViewStub view;
     Presenter::TestSetup testSetup{&setupView};
-    Presenter::CoordinateResponseMeasure subject{&subjectView};
+    Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
+        &coordinateResponseMeasureView};
+    Presenter::Consonant consonant{&consonantView};
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
 
     auto construct() -> Presenter {
-        return {model, view, testSetup, subject, experimenter,
-            testSettingsInterpreter, textFileReader};
+        return {model, view, testSetup, coordinateResponseMeasure, consonant,
+            experimenter, testSettingsInterpreter, textFileReader};
     }
 };
 
@@ -1046,33 +1125,37 @@ void assertResponseViewHidden(TrialSubmission &useCase) {
     assertTrue(useCase.responseViewHidden());
 }
 
-void submitResponse(ViewStub::SubjectViewStub &view) { view.submitResponse(); }
+void submitResponse(CoordinateResponseMeasureViewStub &view) {
+    view.submitResponse();
+}
 
-void submitFreeResponse(ViewStub::ExperimenterViewStub &view) {
+void submitFreeResponse(ExperimenterViewStub &view) {
     view.submitFreeResponse();
 }
 
-void exitTest(ViewStub::ExperimenterViewStub &view) { view.exitTest(); }
+void exitTest(ExperimenterViewStub &view) { view.exitTest(); }
 
-void playCalibration(ViewStub::TestSetupViewStub &view) {
-    view.playCalibration();
+void playCalibration(TestSetupViewStub &view) { view.playCalibration(); }
+
+auto shown(TestSetupViewStub &view) -> bool { return view.shown(); }
+
+void assertShown(TestSetupViewStub &view) { assertTrue(shown(view)); }
+
+auto hidden(TestSetupViewStub &view) -> bool { return view.hidden(); }
+
+auto hidden(ExperimenterViewStub &view) -> bool { return view.hidden(); }
+
+auto shown(CoordinateResponseMeasureViewStub &view) -> bool {
+    return view.shown();
 }
 
-auto shown(ViewStub::TestSetupViewStub &view) -> bool { return view.shown(); }
+auto shown(ConsonantViewStub &view) -> bool { return view.shown(); }
 
-void assertShown(ViewStub::TestSetupViewStub &view) { assertTrue(shown(view)); }
-
-auto hidden(ViewStub::TestSetupViewStub &view) -> bool { return view.hidden(); }
-
-auto hidden(ViewStub::ExperimenterViewStub &view) -> bool {
-    return view.hidden();
-}
-
-auto shown(ViewStub::SubjectViewStub &view) -> bool { return view.shown(); }
-
-void assertHidden(ViewStub::SubjectViewStub &view) {
+void assertHidden(CoordinateResponseMeasureViewStub &view) {
     assertTrue(view.hidden());
 }
+
+void assertHidden(ConsonantViewStub &view) { assertTrue(view.hidden()); }
 
 void completeTrial(ModelStub &model) { model.completeTrial(); }
 
@@ -1094,7 +1177,7 @@ void setTestComplete(ModelStub &model) { model.setTestComplete(); }
 
 auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
 
-void setCorrectKeywords(ViewStub::ExperimenterViewStub &view, std::string s) {
+void setCorrectKeywords(ExperimenterViewStub &view, std::string s) {
     view.setCorrectKeywords(std::move(s));
 }
 
@@ -1102,17 +1185,20 @@ class PresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
     ViewStub view;
-    ViewStub::TestSetupViewStub setupView;
-    ViewStub::SubjectViewStub subjectView;
-    ViewStub::ExperimenterViewStub experimenterView;
+    TestSetupViewStub setupView;
+    CoordinateResponseMeasureViewStub coordinateResponseMeasureView;
+    ConsonantViewStub consonantView;
+    ExperimenterViewStub experimenterView;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Experimenter experimenter{&experimenterView};
-    Presenter::CoordinateResponseMeasure subject{&subjectView};
+    Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
+        &coordinateResponseMeasureView};
+    Presenter::Consonant consonant{&consonantView};
     Calibration interpretedCalibration;
     TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
     TextFileReaderStub textFileReader;
-    Presenter presenter{model, view, testSetup, subject, experimenter,
-        testSettingsInterpreter, textFileReader};
+    Presenter presenter{model, view, testSetup, coordinateResponseMeasure,
+        consonant, experimenter, testSettingsInterpreter, textFileReader};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTest
         confirmingAdaptiveCoordinateResponseMeasureTest{
@@ -1134,6 +1220,8 @@ class PresenterTests : public ::testing::Test {
     ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
         confirmingFixedLevelFreeResponseWithTargetReplacementTest{
             &setupView, testSettingsInterpreter};
+    ConfirmingFixedLevelConsonantTest confirmingFixedLevelConsonantTest{
+        &setupView, testSettingsInterpreter};
     ConfirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement
         confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement{
             &setupView, testSettingsInterpreter};
@@ -1158,9 +1246,13 @@ class PresenterTests : public ::testing::Test {
         confirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking{
             &setupView, testSettingsInterpreter};
     PlayingCalibration playingCalibration{&setupView};
-    PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
+    PlayingCoordinateResponseMeasureTrial playingCoordinateResponseMeasureTrial{
+        &coordinateResponseMeasureView};
+    PlayingConsonantTrial playingConsonantTrial{&consonantView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{experimenterView};
-    RespondingFromSubject respondingFromSubject{&subjectView};
+    SubmittingCoordinateResponseMeasure submittingCoordinateResponseMeasure{
+        &coordinateResponseMeasureView};
+    SubmittingConsonant submittingConsonant{&consonantView};
     SubmittingFreeResponse submittingFreeResponse{experimenterView};
     SubmittingPassedTrial submittingPassedTrial{experimenterView};
     SubmittingCorrectKeywords submittingCorrectKeywords{experimenterView};
@@ -1261,9 +1353,9 @@ class PresenterTests : public ::testing::Test {
         assertTrue(experimenterView.shown());
     }
 
-    void assertDoesNotShowSubjectView(UseCase &useCase) {
+    void assertDoesNotShowCoordinateResponseMeasureView(UseCase &useCase) {
         run(useCase);
-        assertFalse(shown(subjectView));
+        assertFalse(shown(coordinateResponseMeasureView));
     }
 
     void assertPassesTestSettingsFileToTextFileReader(UseCase &useCase) {
@@ -1347,9 +1439,14 @@ class PresenterTests : public ::testing::Test {
         assertEqual("a", experimenterView.secondaryDisplayed());
     }
 
-    void assertShowsSubjectView(UseCase &useCase) {
+    void assertShowsCoordinateResponseMeasureView(UseCase &useCase) {
         run(useCase);
-        assertTrue(shown(subjectView));
+        assertTrue(shown(coordinateResponseMeasureView));
+    }
+
+    void assertShowsConsonantView(UseCase &useCase) {
+        run(useCase);
+        assertTrue(shown(consonantView));
     }
 
     void assertExitTestAfterCompletingTrialHidesResponseSubmission(
@@ -1395,12 +1492,17 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeWithTargetReplacement(const FixedLevelTest &) override {
+    void initialize(const FixedLevelTestWithEachTargetNTimes &) override {
+        throw RequestFailure{errorMessage};
+    }
+
+    void initializeWithTargetReplacement(
+        const FixedLevelFixedTrialsTest &) override {
         throw RequestFailure{errorMessage};
     }
 
     void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelTest &) override {
+        const FixedLevelFixedTrialsTest &) override {
         throw RequestFailure{errorMessage};
     }
 
@@ -1454,6 +1556,10 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
+    void submit(const ConsonantResponse &) override {
+        throw RequestFailure{errorMessage};
+    }
+
     void playCalibration(const Calibration &) override {
         throw RequestFailure{errorMessage};
     }
@@ -1473,11 +1579,14 @@ class PresenterFailureTests : public ::testing::Test {
     ModelStub defaultModel;
     Model *model{&defaultModel};
     ViewStub view;
-    ViewStub::TestSetupViewStub setupView;
-    ViewStub::SubjectViewStub subjectView;
-    ViewStub::ExperimenterViewStub experimenterView;
+    TestSetupViewStub setupView;
+    CoordinateResponseMeasureViewStub coordinateResponseMeasureView;
+    ConsonantViewStub consonantView;
+    ExperimenterViewStub experimenterView;
     Presenter::TestSetup testSetup{&setupView};
-    Presenter::CoordinateResponseMeasure subject{&subjectView};
+    Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
+        &coordinateResponseMeasureView};
+    Presenter::Consonant consonant{&consonantView};
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
@@ -1489,8 +1598,8 @@ class PresenterFailureTests : public ::testing::Test {
     }
 
     void confirmTestSetup() {
-        Presenter presenter{*model, view, testSetup, subject, experimenter,
-            testSettingsInterpreter, textFileReader};
+        Presenter presenter{*model, view, testSetup, coordinateResponseMeasure,
+            consonant, experimenter, testSettingsInterpreter, textFileReader};
         setupView.confirmTestSetup();
     }
 
@@ -1584,7 +1693,7 @@ PRESENTER_TEST(submittingCorrectKeywordsShowsTargetFileName) {
 }
 
 PRESENTER_TEST(submittingCoordinateResponseShowsTargetFileName) {
-    assertShowsTargetFileName(respondingFromSubject);
+    assertShowsTargetFileName(submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(submittingFreeResponseShowsTargetFileName) {
@@ -1730,6 +1839,10 @@ PRESENTER_TEST(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
 
+PRESENTER_TEST(confirmingFixedLevelConsonantTestHidesTestSetupView) {
+    assertHidesTestSetupView(confirmingFixedLevelConsonantTest);
+}
+
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementHidesTestSetupView) {
     assertHidesTestSetupView(
@@ -1773,6 +1886,10 @@ PRESENTER_TEST(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
 
+PRESENTER_TEST(confirmingFixedLevelConsonantTestShowsExperimenterView) {
+    assertShowsExperimenterView(confirmingFixedLevelConsonantTest);
+}
+
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestDoesNotHideSetupViewWhenTestComplete) {
     setTestComplete(model);
@@ -1781,93 +1898,104 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestShowsSubjectView) {
-    assertShowsSubjectView(confirmingAdaptiveCoordinateResponseMeasureTest);
+    confirmingAdaptiveCoordinateResponseMeasureTestShowsCoordinateResponseMeasureView) {
+    assertShowsCoordinateResponseMeasureView(
+        confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeakerShowsSubjectView) {
-    assertShowsSubjectView(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeakerShowsCoordinateResponseMeasureView) {
+    assertShowsCoordinateResponseMeasureView(
         confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker);
 }
 
 PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMaskerShowsSubjectView) {
-    assertShowsSubjectView(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMaskerShowsCoordinateResponseMeasureView) {
+    assertShowsCoordinateResponseMeasureView(
         confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker);
 }
 
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestWithEyeTrackingShowsSubjectView) {
-    assertShowsSubjectView(
+    assertShowsCoordinateResponseMeasureView(
         confirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsSubjectView) {
-    assertShowsSubjectView(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsCoordinateResponseMeasureView) {
+    assertShowsCoordinateResponseMeasureView(
         confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
 }
 
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTrackingShowsSubjectView) {
-    assertShowsSubjectView(
+    assertShowsCoordinateResponseMeasureView(
         confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsSubjectView) {
-    assertShowsSubjectView(
-        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
-}
-
-PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(confirmingAdaptiveCorrectKeywordsTest);
+    confirmingFixedLevelConsonantTestWithTargetReplacementShowsCoordinateResponseMeasureView) {
+    assertShowsConsonantView(confirmingFixedLevelConsonantTest);
 }
 
 PRESENTER_TEST(
-    confirmingAdaptiveCorrectKeywordsTestWithEyeTrackingDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsCoordinateResponseMeasureView) {
+    assertShowsCoordinateResponseMeasureView(
+        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestDoesNotShowCoordinateResponseMeasureView) {
+    assertDoesNotShowCoordinateResponseMeasureView(
+        confirmingAdaptiveCorrectKeywordsTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestWithEyeTrackingDoesNotShowCoordinateResponseMeasureView) {
+    assertDoesNotShowCoordinateResponseMeasureView(
         confirmingAdaptiveCorrectKeywordsTestWithEyeTracking);
 }
 
 PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowSubjectViewWhenTestComplete) {
+    confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowCoordinateResponseMeasureViewWhenTestComplete) {
     setTestComplete(model);
-    assertDoesNotShowSubjectView(
+    assertDoesNotShowCoordinateResponseMeasureView(
         confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
-PRESENTER_TEST(confirmingAdaptivePassFailTestDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(confirmingAdaptivePassFailTest);
+PRESENTER_TEST(
+    confirmingAdaptivePassFailTestDoesNotShowCoordinateResponseMeasureView) {
+    assertDoesNotShowCoordinateResponseMeasureView(
+        confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(
-    confirmingAdaptivePassFailTestWithEyeTrackingDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(confirmingAdaptivePassFailTestWithEyeTracking);
+    confirmingAdaptivePassFailTestWithEyeTrackingDoesNotShowCoordinateResponseMeasureView) {
+    assertDoesNotShowCoordinateResponseMeasureView(
+        confirmingAdaptivePassFailTestWithEyeTracking);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementDoesNotShowCoordinateResponseMeasureView) {
+    assertDoesNotShowCoordinateResponseMeasureView(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithAllTargetsDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(
+    confirmingFixedLevelFreeResponseTestWithAllTargetsDoesNotShowCoordinateResponseMeasureView) {
+    assertDoesNotShowCoordinateResponseMeasureView(
         confirmingFixedLevelFreeResponseTestWithAllTargets);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTrackingDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(
+    confirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTrackingDoesNotShowCoordinateResponseMeasureView) {
+    assertDoesNotShowCoordinateResponseMeasureView(
         confirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(
+    confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsDoesNotShowCoordinateResponseMeasureView) {
+    assertDoesNotShowCoordinateResponseMeasureView(
         confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest);
 }
 
@@ -1969,6 +2097,10 @@ PRESENTER_TEST(
         confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking);
 }
 
+PRESENTER_TEST(confirmingFixedLevelConsonantTestPassesSubjectId) {
+    assertPassesSubjectId(confirmingFixedLevelConsonantTest);
+}
+
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
     assertPassesTesterId(confirmingAdaptiveCoordinateResponseMeasureTest);
 }
@@ -2050,28 +2182,41 @@ PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestShowsNextTrialButtonForSubject) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingAdaptiveCoordinateResponseMeasureTest,
-        playingTrialFromSubject);
+        playingCoordinateResponseMeasureTrial);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsNextTrialButtonForSubject) {
+    confirmingAdaptiveCoordinateResponseMeasureTestShowsNextTrialButtonForCoordinateResponseMeasure) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingAdaptiveCoordinateResponseMeasureTest,
+        playingCoordinateResponseMeasureTrial);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsNextTrialButtonForCoordinateResponseMeasure) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement,
-        playingTrialFromSubject);
+        playingCoordinateResponseMeasureTrial);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTrackingShowsNextTrialButtonForSubject) {
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTrackingShowsNextTrialButtonForCoordinateResponseMeasure) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking,
-        playingTrialFromSubject);
+        playingCoordinateResponseMeasureTrial);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsNextTrialButtonForSubject) {
+    confirmingFixedLevelConsonantTestShowsNextTrialButtonForConsonants) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingFixedLevelConsonantTest, playingConsonantTrial);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsNextTrialButtonForCoordinateResponseMeasure) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest,
-        playingTrialFromSubject);
+        playingCoordinateResponseMeasureTrial);
 }
 
 PRESENTER_TEST(
@@ -2115,12 +2260,20 @@ PRESENTER_TEST(
         playingTrialFromExperimenter);
 }
 
-PRESENTER_TEST(respondingFromSubjectPlaysTrial) {
-    assertPlaysTrial(respondingFromSubject);
+PRESENTER_TEST(submittingCoordinateResponseMeasurePlaysTrial) {
+    assertPlaysTrial(submittingCoordinateResponseMeasure);
 }
 
-PRESENTER_TEST(playingTrialFromSubjectPlaysTrial) {
-    assertPlaysTrial(playingTrialFromSubject);
+PRESENTER_TEST(submittingConsonantPlaysTrial) {
+    assertPlaysTrial(submittingConsonant);
+}
+
+PRESENTER_TEST(playingCoordinateResponseMeasureTrialPlaysTrial) {
+    assertPlaysTrial(playingCoordinateResponseMeasureTrial);
+}
+
+PRESENTER_TEST(playingConsonantTrialPlaysTrial) {
+    assertPlaysTrial(playingConsonantTrial);
 }
 
 PRESENTER_TEST(playingTrialFromExperimenterPlaysTrial) {
@@ -2128,19 +2281,31 @@ PRESENTER_TEST(playingTrialFromExperimenterPlaysTrial) {
 }
 
 PRESENTER_TEST(playingTrialHidesNextTrialButton) {
-    assertHidesPlayTrialButton(playingTrialFromSubject);
+    assertHidesPlayTrialButton(playingCoordinateResponseMeasureTrial);
+}
+
+PRESENTER_TEST(playingTrialFromConsonantViewHidesNextTrialButton) {
+    assertHidesPlayTrialButton(playingConsonantTrial);
 }
 
 PRESENTER_TEST(playingTrialHidesNextTrialButtonForExperimenter) {
     assertHidesPlayTrialButton(playingTrialFromExperimenter);
 }
 
-PRESENTER_TEST(playingTrialFromSubjectHidesExitTestButton) {
-    assertHidesExitTestButton(playingTrialFromSubject);
+PRESENTER_TEST(playingCoordinateResponseMeasureTrialHidesExitTestButton) {
+    assertHidesExitTestButton(playingCoordinateResponseMeasureTrial);
 }
 
-PRESENTER_TEST(playingTrialFromSubjectPassesAudioDevice) {
-    assertAudioDevicePassedToTrial(playingTrialFromSubject);
+PRESENTER_TEST(playingTrialFromConsonantViewHidesExitTestButton) {
+    assertHidesExitTestButton(playingConsonantTrial);
+}
+
+PRESENTER_TEST(playingCoordinateResponseMeasureTrialPassesAudioDevice) {
+    assertAudioDevicePassedToTrial(playingCoordinateResponseMeasureTrial);
+}
+
+PRESENTER_TEST(playingTrialFromConsonantViewPassesAudioDevice) {
+    assertAudioDevicePassedToTrial(playingConsonantTrial);
 }
 
 PRESENTER_TEST(playingTrialFromExperimenterPassesAudioDevice) {
@@ -2153,34 +2318,40 @@ PRESENTER_TEST(playCalibrationPassesAudioDevice) {
     assertEqual("b", calibration(model).audioDevice);
 }
 
-PRESENTER_TEST(subjectResponsePassesNumberResponse) {
-    subjectView.setNumberResponse("1");
-    submitResponse(subjectView);
+PRESENTER_TEST(coordinateResponsePassesNumberResponse) {
+    coordinateResponseMeasureView.setNumberResponse("1");
+    submitResponse(coordinateResponseMeasureView);
     assertEqual(1, model.responseParameters().number);
 }
 
-PRESENTER_TEST(subjectResponsePassesGreenColor) {
-    subjectView.setGreenResponse();
-    submitResponse(subjectView);
+PRESENTER_TEST(coordinateResponsePassesGreenColor) {
+    coordinateResponseMeasureView.setGreenResponse();
+    submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::green);
 }
 
-PRESENTER_TEST(subjectResponsePassesRedColor) {
-    subjectView.setRedResponse();
-    submitResponse(subjectView);
+PRESENTER_TEST(coordinateResponsePassesRedColor) {
+    coordinateResponseMeasureView.setRedResponse();
+    submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::red);
 }
 
-PRESENTER_TEST(subjectResponsePassesBlueColor) {
-    subjectView.setBlueResponse();
-    submitResponse(subjectView);
+PRESENTER_TEST(coordinateResponsePassesBlueColor) {
+    coordinateResponseMeasureView.setBlueResponse();
+    submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::blue);
 }
 
-PRESENTER_TEST(subjectResponsePassesWhiteColor) {
-    subjectView.setGrayResponse();
-    submitResponse(subjectView);
+PRESENTER_TEST(coordinateResponsePassesWhiteColor) {
+    coordinateResponseMeasureView.setGrayResponse();
+    submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::white);
+}
+
+PRESENTER_TEST(consonantResponsePassesConsonant) {
+    consonantView.setConsonant("b");
+    run(submittingConsonant);
+    assertEqual('b', model.consonantResponse().consonant);
 }
 
 PRESENTER_TEST(experimenterResponsePassesResponse) {
@@ -2205,8 +2376,13 @@ PRESENTER_TEST(failedTrialSubmitsIncorrectResponse) {
     assertTrue(model.incorrectResponseSubmitted());
 }
 
-PRESENTER_TEST(respondFromSubjectShowsSetupViewWhenTestComplete) {
-    assertCompleteTestShowsSetupView(respondingFromSubject);
+PRESENTER_TEST(
+    submittingCoordinateResponseMeasureShowsSetupViewWhenTestComplete) {
+    assertCompleteTestShowsSetupView(submittingCoordinateResponseMeasure);
+}
+
+PRESENTER_TEST(submittingConsonantShowsSetupViewWhenTestComplete) {
+    assertCompleteTestShowsSetupView(submittingConsonant);
 }
 
 PRESENTER_TEST(respondFromExperimenterShowsSetupViewWhenTestComplete) {
@@ -2218,8 +2394,14 @@ PRESENTER_TEST(
     assertIncompleteTestDoesNotShowSetupView(submittingCorrectKeywords);
 }
 
-PRESENTER_TEST(respondFromSubjectDoesNotShowSetupViewWhenTestIncomplete) {
-    assertIncompleteTestDoesNotShowSetupView(respondingFromSubject);
+PRESENTER_TEST(
+    submittingCoordinateResponseMeasureDoesNotShowSetupViewWhenTestIncomplete) {
+    assertIncompleteTestDoesNotShowSetupView(
+        submittingCoordinateResponseMeasure);
+}
+
+PRESENTER_TEST(submittingConsonantDoesNotShowSetupViewWhenTestIncomplete) {
+    assertIncompleteTestDoesNotShowSetupView(submittingConsonant);
 }
 
 PRESENTER_TEST(respondFromExperimenterDoesNotShowSetupViewWhenTestIncomplete) {
@@ -2234,16 +2416,26 @@ PRESENTER_TEST(submitFailedTrialDoesNotShowSetupViewWhenTestIncomplete) {
     assertIncompleteTestDoesNotShowSetupView(submittingFailedTrial);
 }
 
-PRESENTER_TEST(respondFromSubjectHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(respondingFromSubject);
+PRESENTER_TEST(
+    submittingCoordinateResponseMeasureHidesExperimenterViewWhenTestComplete) {
+    assertCompleteTestHidesExperimenterView(
+        submittingCoordinateResponseMeasure);
+}
+
+PRESENTER_TEST(submittingConsonantHidesExperimenterViewWhenTestComplete) {
+    assertCompleteTestHidesExperimenterView(submittingConsonant);
 }
 
 PRESENTER_TEST(respondFromExperimenterHidesExperimenterViewWhenTestComplete) {
     assertCompleteTestHidesExperimenterView(submittingFreeResponse);
 }
 
-PRESENTER_TEST(submitCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
-    assertCompleteTestDoesNotPlayTrial(respondingFromSubject);
+PRESENTER_TEST(submittingCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
+    assertCompleteTestDoesNotPlayTrial(submittingCoordinateResponseMeasure);
+}
+
+PRESENTER_TEST(submittingConsonantDoesNotPlayTrialWhenTestComplete) {
+    assertCompleteTestDoesNotPlayTrial(submittingConsonant);
 }
 
 PRESENTER_TEST(
@@ -2252,8 +2444,13 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    respondFromSubjectDoesNotHideExperimenterViewWhenTestIncomplete) {
-    assertDoesNotHideExperimenterView(respondingFromSubject);
+    submittingCoordinateResponseMeasureDoesNotHideExperimenterViewWhenTestIncomplete) {
+    assertDoesNotHideExperimenterView(submittingCoordinateResponseMeasure);
+}
+
+PRESENTER_TEST(
+    submittingConsonantMeasureDoesNotHideExperimenterViewWhenTestIncomplete) {
+    assertDoesNotHideExperimenterView(submittingConsonant);
 }
 
 PRESENTER_TEST(
@@ -2277,11 +2474,11 @@ PRESENTER_TEST(experimenterResponseShowsNextTrialButton) {
     assertShowsNextTrialButton(submittingFreeResponse);
 }
 
-PRESENTER_TEST(subjectPassedTrialShowsNextTrialButtonForExperimenter) {
+PRESENTER_TEST(submittingPassedTrialShowsNextTrialButtonForExperimenter) {
     assertShowsNextTrialButton(submittingPassedTrial);
 }
 
-PRESENTER_TEST(subjectFailedTrialShowsNextTrialButtonForExperimenter) {
+PRESENTER_TEST(submittingFailedTrialShowsNextTrialButtonForExperimenter) {
     assertShowsNextTrialButton(submittingFailedTrial);
 }
 
@@ -2301,19 +2498,35 @@ PRESENTER_TEST(incorrectResponseHidesEvaluationButtons) {
     assertResponseViewHidden(submittingFailedTrial);
 }
 
-PRESENTER_TEST(subjectResponseHidesResponseButtons) {
-    assertResponseViewHidden(respondingFromSubject);
+PRESENTER_TEST(submittingCoordinateResponseHidesResponseButtons) {
+    assertResponseViewHidden(submittingCoordinateResponseMeasure);
 }
 
-PRESENTER_TEST(subjectResponseHidesSubjectViewWhenTestComplete) {
+PRESENTER_TEST(submittingConsonantHidesResponseButtons) {
+    assertResponseViewHidden(submittingConsonant);
+}
+
+PRESENTER_TEST(
+    submittingCoordinateResponseHidesCoordinateViewWhenTestComplete) {
     setTestComplete(model);
-    submitResponse(subjectView);
-    assertHidden(subjectView);
+    run(submittingCoordinateResponseMeasure);
+    assertHidden(coordinateResponseMeasureView);
 }
 
-PRESENTER_TEST(exitTestHidesSubjectView) {
+PRESENTER_TEST(submittingConsonantHidesConsonantViewWhenTestComplete) {
+    setTestComplete(model);
+    run(submittingConsonant);
+    assertHidden(consonantView);
+}
+
+PRESENTER_TEST(exitTestHidesCoordinateView) {
     exitTest(experimenterView);
-    assertHidden(subjectView);
+    assertHidden(coordinateResponseMeasureView);
+}
+
+PRESENTER_TEST(exitTestHidesConsonantView) {
+    exitTest(experimenterView);
+    assertHidden(consonantView);
 }
 
 PRESENTER_TEST(decliningContinuingTestingHidesExperimenterView) {
@@ -2326,7 +2539,8 @@ PRESENTER_TEST(exitTestHidesExperimenterView) {
 
 PRESENTER_TEST(exitTestHidesResponseButtons) {
     run(exitingTest);
-    assertTrue(respondingFromSubject.responseViewHidden());
+    assertTrue(submittingCoordinateResponseMeasure.responseViewHidden());
+    assertTrue(submittingConsonant.responseViewHidden());
 }
 
 PRESENTER_TEST(exitTestShowsTestSetupView) {
@@ -2349,6 +2563,10 @@ PRESENTER_TEST(completingTrialShowsExitTestButton) {
 
 PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTrialNumber) {
     assertShowsTrialNumber(confirmingAdaptiveCorrectKeywordsTest);
+}
+
+PRESENTER_TEST(confirmingFixedLevelConsonantTestShowsTrialNumber) {
+    assertShowsTrialNumber(confirmingFixedLevelConsonantTest);
 }
 
 PRESENTER_TEST(
@@ -2420,7 +2638,7 @@ PRESENTER_TEST(submittingResponseFromExperimenterShowsTrialNumber) {
 }
 
 PRESENTER_TEST(submittingResponseFromSubjectShowsTrialNumber) {
-    assertShowsTrialNumber(respondingFromSubject);
+    assertShowsTrialNumber(submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(submittingPassedTrialShowsTrialNumber) {
@@ -2431,52 +2649,67 @@ PRESENTER_TEST(submittingFailedTrialShowsTrialNumber) {
     assertShowsTrialNumber(submittingFailedTrial);
 }
 
+PRESENTER_TEST(confirmingFixedLevelConsonantTestShowsTargetFileName) {
+    assertShowsTargetFileName(confirmingFixedLevelConsonantTest);
+}
+
+PRESENTER_TEST(submittingConsonantResponseShowsTargetFileName) {
+    assertShowsTargetFileName(submittingConsonant);
+}
+
 PRESENTER_TEST(
-    completingTrialShowsSubjectResponseButtonsForAdaptiveCoordinateResponseMeasureTest) {
+    completingTrialShowsCoordinateResponseMeasureResponseButtonsForAdaptiveCoordinateResponseMeasureTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingAdaptiveCoordinateResponseMeasureTest, respondingFromSubject);
+        confirmingAdaptiveCoordinateResponseMeasureTest,
+        submittingCoordinateResponseMeasure);
+}
+
+PRESENTER_TEST(
+    completingTrialShowsConsonantResponseButtonsForFixedLevelConsonantTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingFixedLevelConsonantTest, submittingConsonant);
 }
 
 PRESENTER_TEST(
     completingTrialShowsSubjectResponseButtonsForAdaptiveCoordinateResponseMeasureSingleSpeakerTest) {
     assertCompleteTrialShowsResponseView(
         confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker,
-        respondingFromSubject);
+        submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(
     completingTrialShowsSubjectResponseButtonsForAdaptiveCoordinateResponseMeasureTestWithDelayedMasker) {
     assertCompleteTrialShowsResponseView(
         confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker,
-        respondingFromSubject);
+        submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(
-    completingTrialShowsSubjectResponseButtonsForAdaptiveCoordinateResponseMeasureTestWithEyeTracking) {
+    completingTrialShowsCoordinateResponseMeasureResponseButtonsForAdaptiveCoordinateResponseMeasureTestWithEyeTracking) {
     assertCompleteTrialShowsResponseView(
         confirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking,
-        respondingFromSubject);
+        submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(
-    completingTrialShowsSubjectResponseButtonsForFixedLevelCoordinateResponseMeasureTestWithTargetReplacement) {
+    completingTrialShowsCoordinateResponseMeasureResponseButtonsForFixedLevelCoordinateResponseMeasureTestWithTargetReplacement) {
     assertCompleteTrialShowsResponseView(
         confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement,
-        respondingFromSubject);
+        submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(
-    completingTrialShowsSubjectResponseButtonsForFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking) {
+    completingTrialShowsCoordinateResponseMeasureResponseButtonsForFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking) {
     assertCompleteTrialShowsResponseView(
         confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking,
-        respondingFromSubject);
+        submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(
-    completingTrialShowsSubjectResponseButtonsForFixedLevelCoordinateResponseMeasureSilentIntervalsTest) {
+    completingTrialShowsCoordinateResponseMeasureResponseButtonsForFixedLevelCoordinateResponseMeasureSilentIntervalsTest) {
     assertCompleteTrialShowsResponseView(
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest,
-        respondingFromSubject);
+        submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(

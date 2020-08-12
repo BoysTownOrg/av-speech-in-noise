@@ -1,9 +1,11 @@
+#include "OutputFileStub.hpp"
 #include "ModelEventListenerStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "assert-utility.hpp"
 #include <recognition-test/Model.hpp>
 #include <gtest/gtest.h>
+#include <sstream>
 
 namespace av_speech_in_noise {
 static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
@@ -18,7 +20,8 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return tracksResetted_;
     }
 
-    void initialize(const AdaptiveTest &t, TargetPlaylistReader *reader) override {
+    void initialize(
+        const AdaptiveTest &t, TargetPlaylistReader *reader) override {
         test_ = &t;
         targetListReader_ = reader;
     }
@@ -59,43 +62,66 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 };
 
 class FixedLevelMethodStub : public FixedLevelMethod {
+    std::stringstream log_{};
     const FixedLevelTest *test_{};
+    const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
     TargetPlaylist *targetList_{};
-    bool initializedWithFiniteTargetPlaylist_{};
+    bool submittedConsonant_{};
 
   public:
-    void initialize(const FixedLevelTest &t, TargetPlaylist *list) override {
+    void initialize(
+        const FixedLevelFixedTrialsTest &t, TargetPlaylist *list) override {
+        targetList_ = list;
+        fixedTrialsTest_ = &t;
+    }
+
+    void initialize(const FixedLevelTest &t,
+        FiniteTargetPlaylistWithRepeatables *list) override {
         targetList_ = list;
         test_ = &t;
     }
 
-    void initialize(const FixedLevelTest &t, FiniteTargetPlaylist *list) override {
+    void initialize(
+        const FixedLevelTest &t, FiniteTargetPlaylist *list) override {
         targetList_ = list;
         test_ = &t;
-        initializedWithFiniteTargetPlaylist_ = true;
-    }
-
-    [[nodiscard]] auto initializedWithFiniteTargetPlaylist() const -> bool {
-        return initializedWithFiniteTargetPlaylist_;
     }
 
     [[nodiscard]] auto targetList() const { return targetList_; }
 
     [[nodiscard]] auto test() const { return test_; }
 
+    auto fixedTrialsTest() -> const FixedLevelFixedTrialsTest * {
+        return fixedTrialsTest_;
+    }
+
+    auto submittedConsonant() const -> bool { return submittedConsonant_; }
+
+    auto log() -> const std::stringstream & { return log_; }
+
     auto complete() -> bool override { return {}; }
-    auto nextTarget() -> LocalUrl override { return {}; }
+    auto nextTarget() -> LocalUrl override {
+        log_ << "nextTarget ";
+        return {};
+    }
     auto currentTarget() -> LocalUrl override { return {}; }
     auto snr() -> SNR override { return SNR{}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
     void submit(const CorrectKeywords &) override {}
+    void submit(const ConsonantResponse &) override {
+        submittedConsonant_ = true;
+        log_ << "submitConsonant ";
+    }
     void writeTestingParameters(OutputFile &) override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
     void writeLastCorrectResponse(OutputFile &) override {}
     void writeLastIncorrectResponse(OutputFile &) override {}
     void writeLastCorrectKeywords(OutputFile &) override {}
+    void writeLastConsonant(OutputFile &) override {
+        log_ << "writeLastConsonant ";
+    }
     void writeTestResult(OutputFile &) override {}
     void submit(const coordinate_response_measure::Response &) override {}
 };
@@ -103,6 +129,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 class RecognitionTestModelStub : public RecognitionTestModel {
     std::vector<std::string> audioDevices_{};
     std::string targetFileName_{};
+    TestMethod *testMethodToCallNextTargetOnSubmitConsonants_{};
     const Model::EventListener *listener_{};
     const Calibration *calibration_{};
     const AudioSettings *playTrialSettings_{};
@@ -110,6 +137,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
     const CorrectKeywords *correctKeywords_{};
+    const ConsonantResponse *consonantResponse_{};
     int trialNumber_{};
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
@@ -168,6 +196,12 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void submit(const CorrectKeywords &p) override { correctKeywords_ = &p; }
 
+    void submit(const ConsonantResponse &p) override {
+        consonantResponse_ = &p;
+        if (testMethodToCallNextTargetOnSubmitConsonants_ != nullptr)
+            testMethodToCallNextTargetOnSubmitConsonants_->nextTarget();
+    }
+
     auto testComplete() -> bool override { return complete_; }
 
     auto audioDevices() -> std::vector<std::string> override {
@@ -196,6 +230,8 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     [[nodiscard]] auto correctKeywords() const { return correctKeywords_; }
 
+    [[nodiscard]] auto consonantResponse() const { return consonantResponse_; }
+
     [[nodiscard]] auto testMethod() const { return testMethod_; }
 
     [[nodiscard]] auto test() const { return test_; }
@@ -210,6 +246,10 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void setAudioDevices(std::vector<std::string> v) {
         audioDevices_ = std::move(v);
+    }
+
+    void callNextOnSubmitConsonants(TestMethod *t) {
+        testMethodToCallNextTargetOnSubmitConsonants_ = t;
     }
 
     void submitCorrectResponse() override {}
@@ -230,6 +270,13 @@ class InitializingFixedLevelTest : public virtual InitializingTestUseCase {
     virtual void run(ModelImpl &model, const FixedLevelTest &test) = 0;
 };
 
+class InitializingFixedLevelFixedTrialsTest
+    : public virtual InitializingTestUseCase {
+  public:
+    virtual void run(
+        ModelImpl &model, const FixedLevelFixedTrialsTest &test) = 0;
+};
+
 class InitializingAdaptiveTest : public virtual InitializingTestUseCase {
   public:
     virtual void run(ModelImpl &model, const AdaptiveTest &test) = 0;
@@ -240,7 +287,7 @@ void initialize(ModelImpl &model, const AdaptiveTest &test) {
 }
 
 void initializeWithTargetReplacement(
-    ModelImpl &model, const FixedLevelTest &test) {
+    ModelImpl &model, const FixedLevelFixedTrialsTest &test) {
     model.initializeWithTargetReplacement(test);
 }
 
@@ -267,7 +314,7 @@ void initializeWithSilentIntervalTargets(
 }
 
 void initializeWithTargetReplacementAndEyeTracking(
-    ModelImpl &model, const FixedLevelTest &test) {
+    ModelImpl &model, const FixedLevelFixedTrialsTest &test) {
     model.initializeWithTargetReplacementAndEyeTracking(test);
 }
 
@@ -414,8 +461,8 @@ class InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking
 };
 
 class InitializingFixedLevelTestWithTargetReplacement
-    : public InitializingFixedLevelTest {
-    FixedLevelTest test_;
+    : public InitializingFixedLevelFixedTrialsTest {
+    FixedLevelFixedTrialsTest test_;
     FixedLevelMethodStub *method;
 
   public:
@@ -427,7 +474,7 @@ class InitializingFixedLevelTestWithTargetReplacement
         initializeWithTargetReplacement(model, test_);
     }
 
-    void run(ModelImpl &model, const FixedLevelTest &test) override {
+    void run(ModelImpl &model, const FixedLevelFixedTrialsTest &test) override {
         initializeWithTargetReplacement(model, test);
     }
 
@@ -460,8 +507,8 @@ class InitializingFixedLevelTestWithSilentIntervalTargets
 };
 
 class InitializingFixedLevelTestWithTargetReplacementAndEyeTracking
-    : public InitializingFixedLevelTest {
-    FixedLevelTest test_;
+    : public InitializingFixedLevelFixedTrialsTest {
+    FixedLevelFixedTrialsTest test_{};
     FixedLevelMethodStub *method;
 
   public:
@@ -473,7 +520,7 @@ class InitializingFixedLevelTestWithTargetReplacementAndEyeTracking
         initializeWithTargetReplacementAndEyeTracking(model, test_);
     }
 
-    void run(ModelImpl &model, const FixedLevelTest &test) override {
+    void run(ModelImpl &model, const FixedLevelFixedTrialsTest &test) override {
         initializeWithTargetReplacementAndEyeTracking(model, test);
     }
 
@@ -551,6 +598,27 @@ class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
+class InitializingFixedLevelTestWithEachTargetNTimes
+    : public InitializingTestUseCase {
+    FixedLevelTestWithEachTargetNTimes test_;
+    FixedLevelMethodStub *method;
+
+  public:
+    explicit InitializingFixedLevelTestWithEachTargetNTimes(
+        FixedLevelMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override { model.initialize(test_); }
+
+    void run(ModelImpl &model, const FixedLevelTestWithEachTargetNTimes &test) {
+        model.initialize(test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
 auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
     return m.initializedWithEyeTracking();
 }
@@ -562,15 +630,19 @@ class ModelTests : public ::testing::Test {
     TargetPlaylistStub targetsWithReplacement;
     TargetPlaylistSetReaderStub targetsWithReplacementReader;
     TargetPlaylistSetReaderStub cyclicTargetsReader;
-    FiniteTargetPlaylistStub silentIntervals;
-    FiniteTargetPlaylistStub everyTargetOnce;
+    FiniteTargetPlaylistWithRepeatablesStub silentIntervals;
+    FiniteTargetPlaylistWithRepeatablesStub everyTargetOnce;
+    RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
     RecognitionTestModelStub internalModel;
+    OutputFileStub outputFile;
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervals, everyTargetOnce,
-        internalModel};
+        eachTargetNTimes, internalModel, outputFile};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
+    FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes;
+    FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest;
     InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{
         &adaptiveMethod};
     InitializingAdaptiveTestWithEyeTracking
@@ -599,6 +671,8 @@ class ModelTests : public ::testing::Test {
     InitializingFixedLevelTestWithAllTargetsAndEyeTracking
         initializingFixedLevelTestWithAllTargetsAndEyeTracking{
             &fixedLevelMethod};
+    InitializingFixedLevelTestWithEachTargetNTimes
+        initializingFixedLevelTestWithEachTargetNTimes{&fixedLevelMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
@@ -616,6 +690,13 @@ class ModelTests : public ::testing::Test {
         assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
     }
 
+    void assertInitializesFixedLevelMethod(
+        InitializingFixedLevelFixedTrialsTest &useCase) {
+        useCase.run(model, fixedLevelFixedTrialsTest);
+        assertEqual(&std::as_const(fixedLevelFixedTrialsTest),
+            fixedLevelMethod.fixedTrialsTest());
+    }
+
     void assertInitializesAdaptiveMethod(
         InitializingAdaptiveTest &useCase, TargetPlaylistReader &reader) {
         useCase.run(model, adaptiveTest);
@@ -627,12 +708,6 @@ class ModelTests : public ::testing::Test {
         InitializingTestUseCase &useCase, TargetPlaylist &targetList) {
         run(useCase);
         assertEqual(&targetList, fixedLevelMethod.targetList());
-    }
-
-    void assertInitializesFixedLevelMethodWithFiniteTargetPlaylist(
-        InitializingTestUseCase &useCase) {
-        run(useCase);
-        assertTrue(fixedLevelMethod.initializedWithFiniteTargetPlaylist());
     }
 };
 
@@ -675,6 +750,15 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
+    initializingFixedLevelTestWithEachTargetNTimesInitializesFixedLevelMethod) {
+    initializingFixedLevelTestWithEachTargetNTimes.run(
+        model, fixedLevelTestWithEachTargetNTimes);
+    assertEqual(&static_cast<const FixedLevelTest &>(
+                    std::as_const(fixedLevelTestWithEachTargetNTimes)),
+        fixedLevelMethod.test());
+}
+
+MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementInitializesWithTargetsWithReplacement) {
     assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithTargetReplacement,
@@ -714,15 +798,16 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
-    initializeFixedLevelTestWithSilentIntervalTargetsInitializesFixedLevelMethodWithFiniteTargetPlaylist) {
-    assertInitializesFixedLevelMethodWithFiniteTargetPlaylist(
-        initializingFixedLevelTestWithSilentIntervalTargets);
+    initializeFixedLevelTestWithEachTargetNTimesInitializesWithEachTargetNTimes) {
+    assertInitializesFixedLevelTestWithTargetPlaylist(
+        initializingFixedLevelTestWithEachTargetNTimes, eachTargetNTimes);
 }
 
-MODEL_TEST(
-    initializingFixedLevelTestWithAllTargetsInitializesFixedLevelMethodWithFiniteTargetPlaylist) {
-    assertInitializesFixedLevelMethodWithFiniteTargetPlaylist(
-        initializingFixedLevelTestWithAllTargets);
+MODEL_TEST(initializeFixedLevelTestWithEachTargetNTimesSetsTargetRepeats) {
+    fixedLevelTestWithEachTargetNTimes.timesEachTargetIsPlayed = 2;
+    initializingFixedLevelTestWithEachTargetNTimes.run(
+        model, fixedLevelTestWithEachTargetNTimes);
+    assertEqual(gsl::index{1}, eachTargetNTimes.repeats());
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
@@ -755,6 +840,12 @@ MODEL_TEST(
     assertInitializesAdaptiveMethod(
         initializingAdaptiveTestWithCyclicTargetsAndEyeTracking,
         cyclicTargetsReader);
+}
+
+MODEL_TEST(
+    initializingFixedLevelTestWithEachTargetNTimesInitializesInternalModel) {
+    assertInitializesInternalModel(
+        initializingFixedLevelTestWithEachTargetNTimes);
 }
 
 MODEL_TEST(
@@ -862,6 +953,33 @@ MODEL_TEST(submitCorrectKeywordsPassesCorrectKeywords) {
     assertEqual(&std::as_const(k), internalModel.correctKeywords());
 }
 
+MODEL_TEST(submitConsonantPassesConsonant) {
+    ConsonantResponse r;
+    model.submit(r);
+    assertEqual(&std::as_const(r), internalModel.consonantResponse());
+}
+
+MODEL_TEST(submitConsonantSubmitsResponse) {
+    ConsonantResponse r;
+    model.submit(r);
+    assertTrue(fixedLevelMethod.submittedConsonant());
+}
+
+MODEL_TEST(submitConsonantWritesTrialAfterSubmittingResponse) {
+    ConsonantResponse r;
+    model.submit(r);
+    assertTrue(contains(
+        fixedLevelMethod.log(), "submitConsonant writeLastConsonant "));
+}
+
+MODEL_TEST(submitConsonantQueriesNextTargetAfterWritingResponse) {
+    internalModel.callNextOnSubmitConsonants(&fixedLevelMethod);
+    ConsonantResponse r;
+    model.submit(r);
+    assertTrue(
+        contains(fixedLevelMethod.log(), "writeLastConsonant nextTarget "));
+}
+
 MODEL_TEST(playTrialPassesAudioSettings) {
     AudioSettings settings;
     model.playTrial(settings);
@@ -887,7 +1005,8 @@ MODEL_TEST(returnsAudioDevices) {
 
 MODEL_TEST(returnsAdaptiveTestResults) {
     adaptiveMethod.setTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
-    assertEqual({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}}, model.adaptiveTestResults());
+    assertEqual(
+        {{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}}, model.adaptiveTestResults());
 }
 
 MODEL_TEST(returnsTrialNumber) {

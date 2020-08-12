@@ -33,6 +33,10 @@ struct TestIdentity {
     std::string transducer;
 };
 
+struct ConsonantResponse {
+    char consonant{};
+};
+
 enum class Condition { auditoryOnly, audioVisual };
 
 struct RealLevel {
@@ -87,7 +91,14 @@ using AdaptiveTestResults = typename std::vector<AdaptiveTestResult>;
 
 struct FixedLevelTest : Test {
     SNR snr{};
+};
+
+struct FixedLevelFixedTrialsTest : FixedLevelTest {
     int trials{30};
+};
+
+struct FixedLevelTestWithEachTargetNTimes : FixedLevelTest {
+    int timesEachTargetIsPlayed{1};
 };
 
 struct AudioSettings {
@@ -118,9 +129,10 @@ class Model {
     virtual ~Model() = default;
     virtual void subscribe(EventListener *) = 0;
     virtual void initialize(const AdaptiveTest &) = 0;
-    virtual void initializeWithTargetReplacement(const FixedLevelTest &) = 0;
+    virtual void initializeWithTargetReplacement(
+        const FixedLevelFixedTrialsTest &) = 0;
     virtual void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelTest &) = 0;
+        const FixedLevelFixedTrialsTest &) = 0;
     virtual void initializeWithSingleSpeaker(const AdaptiveTest &) = 0;
     virtual void initializeWithDelayedMasker(const AdaptiveTest &) = 0;
     virtual void initializeWithEyeTracking(const AdaptiveTest &) = 0;
@@ -130,6 +142,7 @@ class Model {
     virtual void initializeWithSilentIntervalTargets(
         const FixedLevelTest &) = 0;
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
+    virtual void initialize(const FixedLevelTestWithEachTargetNTimes &) = 0;
     virtual void initializeWithAllTargetsAndEyeTracking(
         const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
@@ -137,6 +150,7 @@ class Model {
     virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const CorrectKeywords &) = 0;
+    virtual void submit(const ConsonantResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual auto testComplete() -> bool = 0;

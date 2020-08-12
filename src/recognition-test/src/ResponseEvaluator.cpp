@@ -28,6 +28,22 @@ auto ResponseEvaluatorImpl::correct(const LocalUrl &filePath,
         r.number != invalidNumber;
 }
 
+static auto fileName(const LocalUrl &filePath) -> std::string {
+    return subString(filePath.path, leadingPathLength(filePath.path));
+}
+
+static auto stem(const LocalUrl &file) -> std::string {
+    const auto fileName{av_speech_in_noise::fileName(file)};
+    auto dot{fileName.find('.')};
+    return fileName.substr(0, dot);
+}
+
+auto ResponseEvaluatorImpl::correct(
+    const LocalUrl &file, const ConsonantResponse &r) -> bool {
+    auto stem{av_speech_in_noise::stem(file)};
+    return stem.size() == 1 && stem.front() == r.consonant;
+}
+
 static auto colorNameLength(
     const LocalUrl &filePath, gsl::index leadingPathLength_) -> gsl::index {
     auto fileNameBeginning = filePath.path.begin() + leadingPathLength_;
@@ -51,8 +67,12 @@ auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &filePath) -> int {
     }
 }
 
-auto ResponseEvaluatorImpl::fileName(const LocalUrl &filePath) -> std::string {
-    return subString(filePath.path, leadingPathLength(filePath.path));
+auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &file) -> char {
+    return av_speech_in_noise::stem(file).front();
+}
+
+auto ResponseEvaluatorImpl::fileName(const LocalUrl &file) -> std::string {
+    return av_speech_in_noise::fileName(file);
 }
 
 static auto color(const std::string &colorName)

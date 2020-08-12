@@ -253,6 +253,17 @@ class SubmittingCorrectKeywords : public TargetWritingUseCase {
     }
 };
 
+class SubmittingConsonant : public TargetWritingUseCase {
+  public:
+    void run(RecognitionTestModelImpl &m) override {
+        m.submit(ConsonantResponse{});
+    }
+
+    auto target(OutputFileStub &file) -> std::string override {
+        return file.consonantTrial().target;
+    }
+};
+
 class SubmittingCoordinateResponse : public UseCase {
   public:
     void run(RecognitionTestModelImpl &m) override {
@@ -546,6 +557,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingFreeResponse submittingFreeResponse{freeResponse};
     AudioSampleTimeWithOffset fadeInCompleteTime{};
     SubmittingCorrectKeywords submittingCorrectKeywords;
+    SubmittingConsonant submittingConsonant;
 
     RecognitionTestModelTests() { model.subscribe(&listener); }
 
@@ -1108,6 +1120,11 @@ RECOGNITION_TEST_MODEL_TEST(submittingCorrectKeywordsIncrementsTrialNumber) {
     assertYieldsTrialNumber(submittingCorrectKeywords, 2);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submittingConsonantIncrementsTrialNumber) {
+    run(initializingTest, model);
+    assertYieldsTrialNumber(submittingConsonant, 2);
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     submittingCorrectKeywordsWritesTestResultWhenComplete) {
     run(initializingTest, model);
@@ -1121,6 +1138,11 @@ RECOGNITION_TEST_MODEL_TEST(
     submittingCoordinateResponsePassesNextTargetToTargetPlayer) {
     run(initializingTest, model);
     assertPassesNextTargetToPlayer(submittingCoordinateResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submittingConsonantPassesNextTargetToTargetPlayer) {
+    run(initializingTest, model);
+    assertPassesNextTargetToPlayer(submittingConsonant);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1191,6 +1213,11 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submitConsonantSubscribesToTargetPlaybackCompletionNotification) {
+    assertTargetPlayerPlaybackCompletionSubscribed(submittingConsonant);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitCorrectKeywordsSubscribesToTargetPlaybackCompletionNotification) {
     assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectKeywords);
 }
@@ -1223,6 +1250,11 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submitConsonantSeeksToRandomMaskerPositionWithinTrialDuration) {
+    assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingConsonant);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitCorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration) {
     assertSeeksToRandomMaskerPositionWithinTrialDuration(
         submittingCorrectResponse);
@@ -1240,19 +1272,23 @@ RECOGNITION_TEST_MODEL_TEST(
         submittingFreeResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSeeksToRandomMaskerPosition) {
-    assertMaskerPlayerSeekedToRandomTime(initializingTest);
-}
-
 RECOGNITION_TEST_MODEL_TEST(
     submitCorrectKeywordsSeeksToRandomMaskerPositionWithinTrialDuration) {
     assertSeeksToRandomMaskerPositionWithinTrialDuration(
         submittingCorrectKeywords);
 }
 
+RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSeeksToRandomMaskerPosition) {
+    assertMaskerPlayerSeekedToRandomTime(initializingTest);
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(submittingCoordinateResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitConsonantSeeksToRandomMaskerPosition) {
+    assertMaskerPlayerSeekedToRandomTime(submittingConsonant);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitCorrectResponseSeeksToRandomMaskerPosition) {
@@ -1299,6 +1335,10 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSetsTargetPlayerLevel) {
 
 RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingCorrectKeywords);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitConsonantSetsTargetPlayerLevel) {
+    assertSetsTargetLevel(submittingConsonant);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitCorrectResponseSetsTargetPlayerLevel) {
@@ -1354,6 +1394,10 @@ RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteNotifiesTrialComplete) {
 RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingCoordinateResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitConsonantSavesOutputFileAfterWritingTrial) {
+    assertSavesOutputFileAfterWritingTrial(submittingConsonant);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1472,6 +1516,10 @@ RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseDoesNotLoadNextTargetWhenComplete) {
     assertResponseDoesNotLoadNextTargetWhenComplete(
         submittingCoordinateResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitConsonantDoesNotLoadNextTargetWhenComplete) {
+    assertResponseDoesNotLoadNextTargetWhenComplete(submittingConsonant);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

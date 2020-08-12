@@ -22,6 +22,7 @@ enum class Method {
     fixedLevelCoordinateResponseMeasureWithTargetReplacement,
     fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+    fixedLevelConsonants,
     unknown
 };
 
@@ -57,6 +58,25 @@ class TextFileReader {
 
 class View {
   public:
+    class Consonant {
+      public:
+        class EventListener {
+          public:
+            virtual ~EventListener() = default;
+            virtual void notifyThatReadyButtonHasBeenClicked() = 0;
+            virtual void notifyThatResponseButtonHasBeenClicked() = 0;
+        };
+        virtual ~Consonant() = default;
+        virtual void subscribe(EventListener *) = 0;
+        virtual void show() = 0;
+        virtual void hide() = 0;
+        virtual void showReadyButton() = 0;
+        virtual void hideReadyButton() = 0;
+        virtual void hideResponseButtons() = 0;
+        virtual void showResponseButtons() = 0;
+        virtual auto consonant() -> std::string = 0;
+    };
+
     class CoordinateResponseMeasure {
       public:
         class EventListener {
@@ -176,6 +196,22 @@ class Presenter : public Model::EventListener {
         Presenter *parent{};
     };
 
+    class Consonant : public View::Consonant::EventListener {
+      public:
+        explicit Consonant(View::Consonant *);
+        void notifyThatReadyButtonHasBeenClicked() override;
+        void notifyThatResponseButtonHasBeenClicked() override;
+        void start();
+        void stop();
+        void becomeChild(Presenter *parent);
+        auto subjectResponse() -> ConsonantResponse;
+        void showResponseButtons();
+
+      private:
+        View::Consonant *view;
+        Presenter *parent{};
+    };
+
     class CoordinateResponseMeasure
         : public View::CoordinateResponseMeasure::EventListener {
       public:
@@ -253,6 +289,19 @@ class Presenter : public Model::EventListener {
         CoordinateResponseMeasure &coordinateResponseMeasure;
     };
 
+    class ConsonantTrialCompletionHandler : public TrialCompletionHandler {
+      public:
+        explicit ConsonantTrialCompletionHandler(Consonant &consonant)
+            : consonant{consonant} {}
+
+        void showResponseSubmission() override {
+            consonant.showResponseButtons();
+        }
+
+      private:
+        Consonant &consonant;
+    };
+
     class PassFailTrialCompletionHandler : public TrialCompletionHandler {
       public:
         explicit PassFailTrialCompletionHandler(
@@ -298,14 +347,17 @@ class Presenter : public Model::EventListener {
     };
 
     Presenter(Model &, View &, TestSetup &, CoordinateResponseMeasure &,
-        Experimenter &, TestSettingsInterpreter &, TextFileReader &);
+        Consonant &, Experimenter &, TestSettingsInterpreter &,
+        TextFileReader &);
     void trialComplete() override;
     void run();
     void confirmTestSetup();
     void playTrial();
     void playCalibration();
     void browseForTestSettingsFile();
-    void submitSubjectResponse();
+    void submitCoordinateResponse();
+    void submitConsonantResponse();
+    void playNextTrialIfNeeded();
     void submitFreeResponse();
     void submitPassedTrial();
     void submitFailedTrial();
@@ -320,16 +372,13 @@ class Presenter : public Model::EventListener {
     static constexpr auto trackBumpLimit{10};
 
   private:
-    void proceedToNextTrialAfter(void (Presenter::*f)());
+    void readyNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();
     void submitFreeResponse_();
     void submitCorrectKeywords_();
-    void hideTest();
-    void switchToTestSetupView();
     void showErrorMessage(std::string);
     void playCalibration_();
-    void showTestSetup();
     void readyNextTrialIfNeeded();
     void showTest(Method);
     void switchToTestView(Method);
@@ -343,10 +392,12 @@ class Presenter : public Model::EventListener {
     CorrectKeywordsTrialCompletionHandler correctKeywordsTrialCompletionHandler;
     CoordinateResponseMeasureTestTrialCompletionHandler
         coordinateResponseMeasureTrialCompletionHandler;
+    ConsonantTrialCompletionHandler consonantTrialCompletionHandler;
     Model &model;
     View &view;
     TestSetup &testSetup;
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter;
+    Consonant &consonantPresenter;
     Experimenter &experimenterPresenter;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;

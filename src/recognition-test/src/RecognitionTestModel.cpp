@@ -362,6 +362,11 @@ void RecognitionTestModelImpl::submit(const CorrectKeywords &correctKeywords) {
     prepareNextTrialIfNeeded();
 }
 
+void RecognitionTestModelImpl::submit(const ConsonantResponse &) {
+    save(outputFile);
+    prepareNextTrialIfNeeded();
+}
+
 void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
     if (!testMethod->complete()) {
         ++trialNumber_;
