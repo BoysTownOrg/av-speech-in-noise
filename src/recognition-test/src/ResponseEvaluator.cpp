@@ -30,7 +30,8 @@ auto ResponseEvaluatorImpl::correct(const LocalUrl &filePath,
 
 auto ResponseEvaluatorImpl::correct(
     const LocalUrl &filePath, const ConsonantResponse &r) -> bool {
-    return true;
+    return subString(filePath.path, leadingPathLength(filePath.path)).front() ==
+        r.consonant;
 }
 
 static auto colorNameLength(

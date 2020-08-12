@@ -106,11 +106,17 @@ class ConsonantResponseEvaluatorTests : public ::testing::Test {
     void assertCorrect(const std::string &s, char r) {
         assertTrue(correct(s, {r}));
     }
+
+    void assertIncorrect(const std::string &s, char r) {
+        assertFalse(correct(s, {r}));
+    }
 };
 
 #define CONSONANT_RESPONSE_EVALUATOR_TEST(a)                                   \
     TEST_F(ConsonantResponseEvaluatorTests, a)
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(b) { assertCorrect("b.wav", 'b'); }
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(notB) { assertIncorrect("a.wav", 'b'); }
 }
 }
