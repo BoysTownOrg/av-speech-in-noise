@@ -71,7 +71,8 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
         return correctUrlForConsonantResponse_;
     }
 
-    auto correct(const LocalUrl &url, const ConsonantResponse &) -> bool {
+    auto correct(const LocalUrl &url, const ConsonantResponse &)
+        -> bool override {
         correctUrlForConsonantResponse_ = url;
         return correct_;
     }
