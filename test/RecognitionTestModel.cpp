@@ -60,16 +60,6 @@ class TestMethodStub : public TestMethod {
         currentTargetWhenNextTarget_ = std::move(s);
     }
 
-    void submitCorrectResponse() override {
-        insert(log_, "submitCorrectResponse ");
-        submittedCorrectResponse_ = true;
-    }
-
-    void submitIncorrectResponse() override {
-        insert(log_, "submitIncorrectResponse ");
-        submittedIncorrectResponse_ = true;
-    }
-
     void submit(const FreeResponse &) override {
         insert(log_, "submitFreeResponse ");
         submittedFreeResponse_ = true;
@@ -86,14 +76,6 @@ class TestMethodStub : public TestMethod {
 
     void writeLastCoordinateResponse(OutputFile &) override {
         insert(log_, "writeLastCoordinateResponse ");
-    }
-
-    void writeLastCorrectResponse(OutputFile &) override {
-        insert(log_, "writeLastCorrectResponse ");
-    }
-
-    void writeLastIncorrectResponse(OutputFile &) override {
-        insert(log_, "writeLastIncorrectResponse ");
     }
 
     void writeTestResult(OutputFile &) override {

@@ -122,8 +122,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     }
     auto currentTarget() -> LocalUrl override { return {}; }
     auto snr() -> SNR override { return SNR{}; }
-    void submitCorrectResponse() override {}
-    void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
     void submit(const ConsonantResponse &) override {
         submittedConsonant_ = true;
@@ -131,8 +129,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     }
     void writeTestingParameters(OutputFile &) override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
-    void writeLastCorrectResponse(OutputFile &) override {}
-    void writeLastIncorrectResponse(OutputFile &) override {}
     void writeLastConsonant(OutputFile &) override {
         log_ << "writeLastConsonant ";
     }

@@ -99,10 +99,6 @@ void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile &file) {
     file.write(lastCoordinateResponseMeasureTrial);
 }
 
-void FixedLevelMethodImpl::submitIncorrectResponse() {}
-
-void FixedLevelMethodImpl::submitCorrectResponse() {}
-
 void FixedLevelMethodImpl::submit(const FreeResponse &response) {
     if (usingFiniteTargetPlaylist_) {
         if (response.flagged)

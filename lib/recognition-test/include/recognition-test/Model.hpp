@@ -133,6 +133,10 @@ class AdaptiveMethod : public virtual TestMethod {
     virtual auto testResults() -> AdaptiveTestResults = 0;
     virtual void submit(const CorrectKeywords &) = 0;
     virtual void writeLastCorrectKeywords(OutputFile &) = 0;
+    virtual void submitCorrectResponse() = 0;
+    virtual void submitIncorrectResponse() = 0;
+    virtual void writeLastCorrectResponse(OutputFile &) = 0;
+    virtual void writeLastIncorrectResponse(OutputFile &) = 0;
 };
 
 class FixedLevelMethod : public virtual TestMethod {
