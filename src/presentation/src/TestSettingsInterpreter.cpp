@@ -183,29 +183,6 @@ static void initialize(AdaptiveTest &test, const std::string &contents,
     test.identity.method = name(method);
 }
 
-static void initializeAdaptiveTest(Model &model, const std::string &contents,
-    const TestIdentity &identity, SNR startingSnr) {
-    AdaptiveTest test;
-    const auto method_{av_speech_in_noise::method(contents)};
-    initialize(test, contents, method_, identity, startingSnr);
-    if (method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker) {
-        model.initializeWithDelayedMasker(test);
-    } else if (method_ ==
-        Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker) {
-        model.initializeWithSingleSpeaker(test);
-    } else if (method_ == Method::adaptiveCorrectKeywords) {
-        model.initializeWithCyclicTargets(test);
-    } else if (method_ == Method::adaptiveCorrectKeywordsWithEyeTracking) {
-        model.initializeWithCyclicTargetsAndEyeTracking(test);
-    } else if (method_ ==
-            Method::adaptiveCoordinateResponseMeasureWithEyeTracking ||
-        method_ == Method::adaptivePassFailWithEyeTracking) {
-        model.initializeWithEyeTracking(test);
-    } else {
-        model.initialize(test);
-    }
-}
-
 static void initialize(FixedLevelTest &test, Method method,
     const TestIdentity &identity, SNR startingSnr) {
     test.snr = startingSnr;
@@ -231,49 +208,81 @@ static void initialize(FixedLevelTestWithEachTargetNTimes &test,
     initialize(test, method, identity, startingSnr);
 }
 
-static void initializeFixedLevelTest(Model &model, const std::string &contents,
-    const TestIdentity &identity, SNR startingSnr) {
+void TestSettingsInterpreterImpl::initialize(Model &model,
+    const std::string &contents, const TestIdentity &identity,
+    SNR startingSnr) {
     const auto method_{av_speech_in_noise::method(contents)};
-    if (method_ ==
+    if (method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker) {
+        AdaptiveTest test;
+        av_speech_in_noise::initialize(
+            test, contents, method_, identity, startingSnr);
+        model.initializeWithDelayedMasker(test);
+    } else if (method_ ==
+        Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker) {
+        AdaptiveTest test;
+        av_speech_in_noise::initialize(
+            test, contents, method_, identity, startingSnr);
+        model.initializeWithSingleSpeaker(test);
+    } else if (method_ == Method::adaptiveCorrectKeywords) {
+        AdaptiveTest test;
+        av_speech_in_noise::initialize(
+            test, contents, method_, identity, startingSnr);
+        model.initializeWithCyclicTargets(test);
+    } else if (method_ == Method::adaptiveCorrectKeywordsWithEyeTracking) {
+        AdaptiveTest test;
+        av_speech_in_noise::initialize(
+            test, contents, method_, identity, startingSnr);
+        model.initializeWithCyclicTargetsAndEyeTracking(test);
+    } else if (method_ ==
+            Method::adaptiveCoordinateResponseMeasureWithEyeTracking ||
+        method_ == Method::adaptivePassFailWithEyeTracking) {
+        AdaptiveTest test;
+        av_speech_in_noise::initialize(
+            test, contents, method_, identity, startingSnr);
+        model.initializeWithEyeTracking(test);
+    } else if (method_ == Method::adaptiveCoordinateResponseMeasure ||
+        method_ == Method::adaptivePassFail) {
+        AdaptiveTest test;
+        av_speech_in_noise::initialize(
+            test, contents, method_, identity, startingSnr);
+        model.initialize(test);
+    } else if (method_ ==
             Method::
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets ||
         method_ == Method::fixedLevelFreeResponseWithSilentIntervalTargets) {
         FixedLevelTest test;
-        initialize(test, contents, method_, identity, startingSnr);
+        av_speech_in_noise::initialize(
+            test, contents, method_, identity, startingSnr);
         model.initializeWithSilentIntervalTargets(test);
     } else if (method_ == Method::fixedLevelFreeResponseWithAllTargets) {
         FixedLevelTest test;
-        initialize(test, contents, method_, identity, startingSnr);
+        av_speech_in_noise::initialize(
+            test, contents, method_, identity, startingSnr);
         model.initializeWithAllTargets(test);
     } else if (method_ == Method::fixedLevelConsonants) {
         FixedLevelTestWithEachTargetNTimes test;
-        initialize(test, contents, method_, identity, startingSnr);
+        av_speech_in_noise::initialize(
+            test, contents, method_, identity, startingSnr);
         model.initialize(test);
     } else if (method_ ==
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking) {
         FixedLevelTest test;
-        initialize(test, contents, method_, identity, startingSnr);
+        av_speech_in_noise::initialize(
+            test, contents, method_, identity, startingSnr);
         model.initializeWithAllTargetsAndEyeTracking(test);
     } else if (method_ ==
         Method::
             fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking) {
         FixedLevelFixedTrialsTest test;
-        initialize(test, contents, method_, identity, startingSnr);
+        av_speech_in_noise::initialize(
+            test, contents, method_, identity, startingSnr);
         model.initializeWithTargetReplacementAndEyeTracking(test);
     } else {
         FixedLevelFixedTrialsTest test;
-        initialize(test, contents, method_, identity, startingSnr);
+        av_speech_in_noise::initialize(
+            test, contents, method_, identity, startingSnr);
         model.initializeWithTargetReplacement(test);
     }
-}
-
-void TestSettingsInterpreterImpl::initialize(Model &model,
-    const std::string &contents, const TestIdentity &identity,
-    SNR startingSnr) {
-    if (adaptive(contents))
-        initializeAdaptiveTest(model, contents, identity, startingSnr);
-    else
-        initializeFixedLevelTest(model, contents, identity, startingSnr);
 }
 
 auto TestSettingsInterpreterImpl::method(const std::string &s) -> Method {
