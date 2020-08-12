@@ -375,6 +375,13 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    submitConsonantPassesCurrentTargetToEvaluator) {
+    targetList.setCurrent("a");
+    run(submittingConsonant, method);
+    assertEqual("a", evaluator.correctConsonantUrl().path);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     completeWhenTestCompleteAfterCoordinateResponse) {
     assertTestCompleteOnlyAfter(
         submittingCoordinateResponse, method, targetList);
