@@ -52,23 +52,27 @@ void setFileNames(
 auto next(TargetPlaylist &list) -> std::string { return list.next().path; }
 
 void assertNextEquals(TargetPlaylist &list, const std::string &s) {
-    assertEqual(s, next(list));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, next(list));
 }
 
 void assertCurrentEquals(TargetPlaylist &list, const std::string &s) {
-    assertEqual(s, list.current().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, list.current().path);
 }
 
 void assertShuffled(RandomizerStub &randomizer,
     const std::vector<av_speech_in_noise::LocalUrl> &s) {
-    assertEqual(s, randomizer.shuffledStrings());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, randomizer.shuffledStrings());
 }
 
 auto empty(FiniteTargetPlaylist &list) { return list.empty(); }
 
-void assertNotEmpty(FiniteTargetPlaylist &list) { AV_SPEECH_IN_NOISE_EXPECT_FALSE(empty(list)); }
+void assertNotEmpty(FiniteTargetPlaylist &list) {
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(empty(list));
+}
 
-void assertEmpty(FiniteTargetPlaylist &list) { AV_SPEECH_IN_NOISE_EXPECT_TRUE(empty(list)); }
+void assertEmpty(FiniteTargetPlaylist &list) {
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(empty(list));
+}
 
 void reinsertCurrent(RandomizedTargetPlaylistWithoutReplacement &list) {
     list.reinsertCurrent();
@@ -79,7 +83,7 @@ auto directory(DirectoryReaderStub &reader) -> std::string {
 }
 
 void assertDirectoryEquals(DirectoryReaderStub &reader, const std::string &s) {
-    assertEqual(s, directory(reader));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, directory(reader));
 }
 
 void loadFromDirectoryPassesDirectoryToDirectoryReader(
@@ -114,7 +118,7 @@ void currentReturnsFullPathToFile(
 
 void directoryReturnsDirectory(TargetPlaylist &list) {
     loadFromDirectory(list, "a");
-    assertEqual("a", list.directory().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, list.directory().path);
 }
 
 void nextReturnsEmptyIfNoFiles(
@@ -316,7 +320,7 @@ EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     next(list);
     next(list);
     assertShuffled(randomizer, {{"a"}, {"b"}, {"c"}, {"d"}});
-    assertEqual(gsl::index{2}, randomizer.shuffledCount());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(gsl::index{2}, randomizer.shuffledCount());
 }
 
 RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(
@@ -463,12 +467,12 @@ class FileFilterDecoratorTests : public ::testing::Test {
 
 FILE_FILTER_DECORATOR_TEST(passesDirectoryToDecoratedForFiles) {
     filesIn(decorator, {"a"});
-    assertEqual("a", directory(reader));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, directory(reader));
 }
 
 FILE_FILTER_DECORATOR_TEST(passesDirectoryToDecoratedForSubdirectories) {
     subDirectories(decorator, {"a"});
-    assertEqual("a", directory(reader));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, directory(reader));
 }
 
 FILE_FILTER_DECORATOR_TEST(passesFilesToFilter) {
@@ -587,7 +591,8 @@ class DirectoryReaderCompositeTests : public ::testing::Test {
 
     void assertEachDecoratedDirectory(const std::string &expected, int N) {
         for (int i = 0; i < N; ++i)
-            assertEqual(expected, decorated.at(i).directory());
+            AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+                expected, decorated.at(i).directory());
     }
 
     auto decoratedAt(int n) -> auto & { return decorated.at(n); }
