@@ -408,12 +408,14 @@ auto fadedIn(MaskerPlayerStub &maskerPlayer) -> bool {
 
 auto played(TargetPlayerStub &player) -> bool { return player.played(); }
 
-void assertPlayed(TargetPlayerStub &player) { AV_SPEECH_IN_NOISE_EXPECT_TRUE(played(player)); }
+void assertPlayed(TargetPlayerStub &player) {
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(played(player));
+}
 
 auto filePath(TargetPlayerStub &player) { return player.filePath(); }
 
 void assertFilePathEquals(TargetPlayerStub &player, const std::string &what) {
-    assertEqual(what, filePath(player));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, filePath(player));
 }
 
 auto playbackCompletionSubscribed(TargetPlayerStub &player) -> bool {
@@ -441,7 +443,7 @@ void fadeOutComplete(MaskerPlayerStub &player) { player.fadeOutComplete(); }
 void setTrialInProgress(MaskerPlayerStub &player) { player.setPlaying(); }
 
 void assertLevelEquals_dB(TargetPlayerStub &player, double x) {
-    assertEqual(x, player.level_dB());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, player.level_dB());
 }
 
 auto testComplete(RecognitionTestModelImpl &model) -> bool {
@@ -563,7 +565,8 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase, model);
-        assertEqual("close openNewFile write ", string(log(outputFile)));
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"close openNewFile write "}, string(log(outputFile)));
     }
 
     template <typename T>
@@ -571,7 +574,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         const T &player, AudioDeviceUseCase &useCase) {
         useCase.setAudioDevice("a");
         run(useCase, model);
-        assertEqual("a", player.device());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, player.device());
     }
 
     void assertDevicePassedToTargetPlayer(AudioDeviceUseCase &useCase) {
@@ -590,7 +593,8 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertTargetPlayerPlaybackCompletionSubscribed(UseCase &useCase) {
         run(useCase, model);
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(playbackCompletionSubscribed(targetPlayer));
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+            playbackCompletionSubscribed(targetPlayer));
     }
 
     void assertSeeksToRandomMaskerPositionWithinTrialDuration(
@@ -599,14 +603,15 @@ class RecognitionTestModelTests : public ::testing::Test {
         setFadeTimeSeconds(maskerPlayer, 2);
         maskerPlayer.setDurationSeconds(3);
         run(useCase, model);
-        assertEqual(0., randomizer.lowerFloatBound());
-        assertEqual(3. - 2 - 1 - 2, randomizer.upperFloatBound());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0., randomizer.lowerFloatBound());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            3. - 2 - 1 - 2, randomizer.upperFloatBound());
     }
 
     void assertMaskerPlayerSeekedToRandomTime(UseCase &useCase) {
         randomizer.setRandomFloat(1);
         run(useCase, model);
-        assertEqual(1., secondsSeeked(maskerPlayer));
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1., secondsSeeked(maskerPlayer));
     }
 
     void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
@@ -622,7 +627,7 @@ class RecognitionTestModelTests : public ::testing::Test {
                       "ModelImpl::"
                       "RequestFailure";
         } catch (const ModelImpl::RequestFailure &e) {
-            assertEqual(what, e.what());
+            AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, e.what());
         }
     }
 
@@ -671,7 +676,8 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertWritesTarget(TargetWritingUseCase &useCase) {
         evaluator.setFileName("a");
         run(useCase, model);
-        assertEqual("a", useCase.target(outputFile));
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"a"}, useCase.target(outputFile));
     }
 
     void assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
@@ -680,7 +686,8 @@ class RecognitionTestModelTests : public ::testing::Test {
         setCurrentTarget(testMethod, "a");
         testMethod.setCurrentTargetWhenNextTarget("b");
         run(useCase, model);
-        assertEqual("a", filePathForFileName(evaluator));
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"a"}, filePathForFileName(evaluator));
     }
 
     void assertTestMethodLogContains(
@@ -692,7 +699,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertYieldsTrialNumber(UseCase &useCase, int n) {
         run(useCase, model);
-        assertEqual(n, model.trialNumber());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(n, model.trialNumber());
     }
 
     void assertUsingAllTargetPlayerChannels() {
@@ -720,14 +727,15 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertPassesTestIdentityToOutputFile(UseCase &useCase) {
         run(useCase, model);
-        assertEqual(
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             outputFile.openNewFileParameters(), &std::as_const(test.identity));
     }
 
     void assertPassesMaskerFilePathToMaskerPlayer(UseCase &useCase) {
         setMaskerFilePath(test, "a");
         run(useCase, model);
-        assertEqual("a", maskerPlayer.filePath());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"a"}, maskerPlayer.filePath());
     }
 
     void assertAllocatesTrialDurationForEyeTracking(
@@ -736,7 +744,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         setDurationSeconds(targetPlayer, 3);
         setFadeTimeSeconds(maskerPlayer, 4);
         run(useCase, model);
-        assertEqual(3 + 2 * 4. +
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3 + 2 * 4. +
                 RecognitionTestModelImpl::additionalTargetDelay.seconds,
             eyeTracker.recordingTimeAllocatedSeconds());
     }
@@ -758,8 +766,10 @@ class RecognitionTestModelTests : public ::testing::Test {
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
 
 RECOGNITION_TEST_MODEL_TEST(subscribesToPlayerEvents) {
-    assertEqual(targetPlayerEventListener(model), targetPlayer.listener());
-    assertEqual(maskerPlayerEventListener(model), maskerPlayer.listener());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        targetPlayerEventListener(model), targetPlayer.listener());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        maskerPlayerEventListener(model), maskerPlayer.listener());
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetPlayer) {
@@ -853,8 +863,10 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithDelayedMaskerSetsFirstChannelMaskerDelay) {
     run(initializingTestWithDelayedMasker, model);
-    assertEqual(gsl::index{0}, maskerPlayer.channelDelayed());
-    assertEqual(RecognitionTestModelImpl::maskerChannelDelay.seconds,
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        gsl::index{0}, maskerPlayer.channelDelayed());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        RecognitionTestModelImpl::maskerChannelDelay.seconds,
         maskerPlayer.channelDelaySeconds());
 }
 
@@ -890,8 +902,9 @@ RECOGNITION_TEST_MODEL_TEST(
     playTrialForTestWithEyeTrackingStartsEyeTrackingAfterAllocatingRecordingTime) {
     run(initializingTestWithEyeTracking, model);
     run(playingTrial, model);
-    assertEqual(
-        "allocateRecordingTimeSeconds start ", string(eyeTracker.log()));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"allocateRecordingTimeSeconds start "},
+        string(eyeTracker.log()));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -945,7 +958,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestOpensNewOutputFilePassingTestIdentity) {
     run(initializingTest, model);
-    assertEqual(
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         outputFile.openNewFileParameters(), &std::as_const(test.identity));
 }
 
@@ -977,9 +990,9 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
     setSampleOffset(fadeInCompleteTime, 2);
     setSampleRateHz(maskerPlayer, 3);
     fadeInComplete(maskerPlayer, fadeInCompleteTime);
-    assertEqual(player_system_time_type{1},
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
         targetPlayer.timePlayedAt().playerTime.system);
-    assertEqual(
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         2 / 3. + RecognitionTestModelImpl::additionalTargetDelay.seconds,
         targetPlayer.timePlayedAt().delay.seconds);
 }
@@ -989,14 +1002,15 @@ RECOGNITION_TEST_MODEL_TEST(
     run(initializingTestWithEyeTracking, model);
     setSystemTime(fadeInCompleteTime, 1);
     fadeInComplete(maskerPlayer, fadeInCompleteTime);
-    assertEqual(player_system_time_type{1},
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
         maskerPlayer.toNanosecondsSystemTime().at(0));
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteStopsEyeTracker) {
     run(initializingTestWithEyeTracking, model);
     fadeOutComplete(maskerPlayer);
-    assertEqual("stop ", string(eyeTracker.log()));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"stop "}, string(eyeTracker.log()));
 }
 
 RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseWritesEyeGazes) {
@@ -1016,7 +1030,7 @@ RECOGNITION_TEST_MODEL_TEST(
     fadeInComplete(maskerPlayer, fadeInCompleteTime);
     fadeOutComplete(maskerPlayer);
     run(submittingCoordinateResponse, model);
-    assertEqual(1 +
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1 +
             gsl::narrow_cast<std::uintmax_t>(
                 (2 / 3. +
                     RecognitionTestModelImpl::additionalTargetDelay.seconds) *
@@ -1036,10 +1050,10 @@ RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesSyncTimes) {
     fadeInComplete(maskerPlayer, fadeInCompleteTime);
     fadeOutComplete(maskerPlayer);
     run(submittingCoordinateResponse, model);
-    assertEqual(std::uintmax_t{1},
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::uintmax_t{1},
         eyeTrackerTargetPlayerSynchronization(outputFile)
             .targetPlayerSystemTime.nanoseconds);
-    assertEqual(std::int_least64_t{2},
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::int_least64_t{2},
         eyeTrackerTargetPlayerSynchronization(outputFile)
             .eyeTrackerSystemTime.microseconds);
 }
@@ -1050,7 +1064,7 @@ RECOGNITION_TEST_MODEL_TEST(passesCurrentMaskerTimeForNanosecondConversion) {
     t.system = 1;
     maskerPlayer.setCurrentSystemTime(t);
     fadeInComplete(maskerPlayer, fadeInCompleteTime);
-    assertEqual(player_system_time_type{1},
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
         maskerPlayer.toNanosecondsSystemTime().at(1));
 }
 
@@ -1080,7 +1094,7 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingResetsTrialNumber) {
 
 RECOGNITION_TEST_MODEL_TEST(returnsTargetFileName) {
     evaluator.setFileName("a");
-    assertEqual("a", targetFileName(model));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, targetFileName(model));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1088,7 +1102,8 @@ RECOGNITION_TEST_MODEL_TEST(
     run(initializingTest, model);
     setCurrentTarget(testMethod, "a");
     targetFileName(model);
-    assertEqual("a", filePathForFileName(evaluator));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, filePathForFileName(evaluator));
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializingTestResetsTrialNumber) {
@@ -1130,7 +1145,8 @@ RECOGNITION_TEST_MODEL_TEST(
     run(initializingTest, model);
     testMethod.setComplete();
     run(submittingCorrectKeywords, model);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(testMethod.log(), "writeTestResult "));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        endsWith(testMethod.log(), "writeTestResult "));
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(log(outputFile), "save "));
 }
 
@@ -1192,7 +1208,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(initializeTestPassesMaskerFilePathToMaskerPlayer) {
     setMaskerFilePath(test, "a");
     run(initializingTest, model);
-    assertEqual("a", maskerPlayer.filePath());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, maskerPlayer.filePath());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1313,7 +1329,7 @@ RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsInitialMaskerPlayerLevel) {
     setFullScaleLevel_dB_SPL(test, 2);
     setDigitalLevel(maskerPlayer, DigitalLevel{3});
     run(initializingTest, model);
-    assertEqual(1 - 2 - 3., maskerPlayer.level_dB());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1 - 2 - 3., maskerPlayer.level_dB());
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsTargetPlayerLevel) {
@@ -1490,7 +1506,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(initializeTestDoesNotLoadMaskerIfTrialInProgress) {
     setMaskerFilePath(test, "a");
     runIgnoringFailureWithTrialInProgress(initializingTest);
-    assertEqual("", maskerPlayer.filePath());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{""}, maskerPlayer.filePath());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1554,7 +1570,8 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesResponse) {
     freeResponse.response = "a";
     run(submittingFreeResponse, model);
-    assertEqual("a", freeResponseTrial(outputFile).response);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, freeResponseTrial(outputFile).response);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesFlagged) {
