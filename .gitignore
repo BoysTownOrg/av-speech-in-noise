@@ -1,9 +1,6 @@
 .DS_Store
-build/
-.vscode/
-.vs/
-.clangd
-.clang-tidy
-.clang-format
-compile_commands.json
-CMakeSettings.json
+/build/
+/.vscode/
+/.clangd/
+/.clang-tidy
+/compile_commands.json
