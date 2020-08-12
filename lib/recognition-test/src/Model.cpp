@@ -163,7 +163,11 @@ void ModelImpl::submitIncorrectResponse() { model.submitIncorrectResponse(); }
 
 void ModelImpl::submit(const FreeResponse &response) { model.submit(response); }
 
-void ModelImpl::submit(const CorrectKeywords &k) { model.submit(k); }
+void ModelImpl::submit(const CorrectKeywords &k) {
+    adaptiveMethod.submit(k);
+    adaptiveMethod.writeLastCorrectKeywords(outputFile);
+    model.submit(k);
+}
 
 void ModelImpl::submit(const ConsonantResponse &r) {
     fixedLevelMethod.submit(r);

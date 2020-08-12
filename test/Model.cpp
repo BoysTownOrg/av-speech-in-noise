@@ -38,24 +38,34 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 
     void resetTracks() override { tracksResetted_ = true; }
 
+    auto log() -> const std::stringstream & { return log_; }
+
     auto complete() -> bool override { return {}; }
-    auto nextTarget() -> LocalUrl override { return {}; }
+    auto nextTarget() -> LocalUrl override {
+        log_ << "nextTarget ";
+        return {};
+    }
     auto currentTarget() -> LocalUrl override { return {}; }
     auto snr() -> SNR override { return SNR{}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
-    void submit(const CorrectKeywords &) override {}
+    void submit(const CorrectKeywords &) override {
+        log_ << "submitCorrectKeywords ";
+    }
     void writeTestingParameters(OutputFile &) override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
     void writeLastCorrectResponse(OutputFile &) override {}
     void writeLastIncorrectResponse(OutputFile &) override {}
-    void writeLastCorrectKeywords(OutputFile &) override {}
+    void writeLastCorrectKeywords(OutputFile &) override {
+        log_ << "writeLastCorrectKeywords ";
+    }
     void writeTestResult(OutputFile &) override {}
     void submit(const coordinate_response_measure::Response &) override {}
 
   private:
     AdaptiveTestResults testResults_;
+    std::stringstream log_{};
     const AdaptiveTest *test_{};
     TargetPlaylistReader *targetListReader_{};
     bool tracksResetted_{};
@@ -130,6 +140,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     std::vector<std::string> audioDevices_{};
     std::string targetFileName_{};
     TestMethod *testMethodToCallNextTargetOnSubmitConsonants_{};
+    TestMethod *testMethodToCallNextTargetOnSubmitCorrectKeywords_{};
     const Model::EventListener *listener_{};
     const Calibration *calibration_{};
     const AudioSettings *playTrialSettings_{};
@@ -194,7 +205,11 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         coordinateResponse_ = &p;
     }
 
-    void submit(const CorrectKeywords &p) override { correctKeywords_ = &p; }
+    void submit(const CorrectKeywords &p) override {
+        correctKeywords_ = &p;
+        if (testMethodToCallNextTargetOnSubmitCorrectKeywords_ != nullptr)
+            testMethodToCallNextTargetOnSubmitCorrectKeywords_->nextTarget();
+    }
 
     void submit(const ConsonantResponse &p) override {
         consonantResponse_ = &p;
@@ -250,6 +265,10 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void callNextOnSubmitConsonants(TestMethod *t) {
         testMethodToCallNextTargetOnSubmitConsonants_ = t;
+    }
+
+    void callNextOnSubmitCorrectKeywords(TestMethod *t) {
+        testMethodToCallNextTargetOnSubmitCorrectKeywords_ = t;
     }
 
     void submitCorrectResponse() override {}
@@ -984,12 +1003,27 @@ MODEL_TEST(submitConsonantWritesTrialAfterSubmittingResponse) {
         fixedLevelMethod.log(), "submitConsonant writeLastConsonant "));
 }
 
+MODEL_TEST(submitCorrectKeywordsWritesTrialAfterSubmittingResponse) {
+    CorrectKeywords r;
+    model.submit(r);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(adaptiveMethod.log(),
+        "submitCorrectKeywords writeLastCorrectKeywords "));
+}
+
 MODEL_TEST(submitConsonantQueriesNextTargetAfterWritingResponse) {
     internalModel.callNextOnSubmitConsonants(&fixedLevelMethod);
     ConsonantResponse r;
     model.submit(r);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         contains(fixedLevelMethod.log(), "writeLastConsonant nextTarget "));
+}
+
+MODEL_TEST(submitCorrectKeywordsQueriesNextTargetAfterWritingResponse) {
+    internalModel.callNextOnSubmitCorrectKeywords(&adaptiveMethod);
+    CorrectKeywords r;
+    model.submit(r);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        contains(adaptiveMethod.log(), "writeLastCorrectKeywords nextTarget "));
 }
 
 MODEL_TEST(playTrialPassesAudioSettings) {

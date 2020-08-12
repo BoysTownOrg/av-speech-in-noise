@@ -1614,12 +1614,6 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectKeywordsWritesTrialAfterSubmittingResponse) {
-    assertTestMethodLogContains(submittingCorrectKeywords,
-        "submitCorrectKeywords writeLastCorrectKeywords ");
-}
-
-RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseQueriesNextTargetAfterWritingResponse) {
     assertTestMethodLogContains(
         submittingCoordinateResponse, "writeLastCoordinateResponse next ");
@@ -1653,12 +1647,6 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSubmitsResponse) {
     run(initializingTest, model);
     run(submittingFreeResponse, model);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFreeResponse());
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSubmitsResponse) {
-    run(initializingTest, model);
-    run(submittingCorrectKeywords, model);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedCorrectKeywords());
 }
 }
 }
