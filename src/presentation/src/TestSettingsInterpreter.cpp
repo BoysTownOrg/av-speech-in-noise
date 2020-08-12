@@ -169,9 +169,8 @@ static auto adaptive(const std::string &contents) -> bool {
         method_ == Method::adaptiveCoordinateResponseMeasureWithEyeTracking;
 }
 
-static void initializeAdaptiveTest(Model &model, const std::string &contents,
-    const TestIdentity &identity, SNR startingSnr) {
-    AdaptiveTest test;
+static void initialize(AdaptiveTest &test, const std::string &contents,
+    Method method, const TestIdentity &identity, SNR startingSnr) {
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
@@ -181,23 +180,30 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents,
     test.trackBumpLimit = Presenter::trackBumpLimit;
     test.fullScaleLevel = Presenter::fullScaleLevel;
     test.identity = identity;
+    test.identity.method = name(method);
+}
+
+static void initializeAdaptiveTest(Model &model, const std::string &contents,
+    const TestIdentity &identity, SNR startingSnr) {
+    AdaptiveTest test;
     const auto method_{av_speech_in_noise::method(contents)};
-    test.identity.method = name(method_);
-    if (method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker)
+    initialize(test, contents, method_, identity, startingSnr);
+    if (method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker) {
         model.initializeWithDelayedMasker(test);
-    else if (method_ ==
-        Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker)
+    } else if (method_ ==
+        Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker) {
         model.initializeWithSingleSpeaker(test);
-    else if (method_ == Method::adaptiveCorrectKeywords)
+    } else if (method_ == Method::adaptiveCorrectKeywords) {
         model.initializeWithCyclicTargets(test);
-    else if (method_ == Method::adaptiveCorrectKeywordsWithEyeTracking)
+    } else if (method_ == Method::adaptiveCorrectKeywordsWithEyeTracking) {
         model.initializeWithCyclicTargetsAndEyeTracking(test);
-    else if (method_ ==
+    } else if (method_ ==
             Method::adaptiveCoordinateResponseMeasureWithEyeTracking ||
-        method_ == Method::adaptivePassFailWithEyeTracking)
+        method_ == Method::adaptivePassFailWithEyeTracking) {
         model.initializeWithEyeTracking(test);
-    else
+    } else {
         model.initialize(test);
+    }
 }
 
 static void initialize(FixedLevelTest &test, Method method,
