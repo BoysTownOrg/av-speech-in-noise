@@ -173,9 +173,9 @@ TEST_F(TargetPlayerTests, playAtPlaysVideoAt) {
     setBaseSystemTimeToPlayAt(1);
     setSecondsDelayedToPlayAt(2);
     playAt();
-    assertEqual(
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         player_system_time_type{1}, videoPlayer.baseSystemTimePlayedAt());
-    assertEqual(2., videoPlayer.secondsDelayedPlayedAt());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2., videoPlayer.secondsDelayedPlayedAt());
 }
 
 TEST_F(TargetPlayerTests, durationReturnsDuration) {
@@ -195,7 +195,7 @@ TEST_F(TargetPlayerTests, hideVideoHidesVideo) {
 
 TEST_F(TargetPlayerTests, loadFileLoadsFile) {
     player.loadFile({"a"});
-    assertEqual("a", videoPlayer.filePath());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, videoPlayer.filePath());
 }
 
 TEST_F(TargetPlayerTests, videoPlaybackCompleteNotifiesSubscriber) {
@@ -263,7 +263,7 @@ TEST_F(TargetPlayerTests, audioDevicesReturnsDescriptions) {
 
 TEST_F(TargetPlayerTests, digitalLevelComputesFirstChannel) {
     audioReader.set({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-    assertEqual<double>(
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         20 * std::log10(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.F)),
         player.digitalLevel().dBov);
 }
@@ -271,7 +271,7 @@ TEST_F(TargetPlayerTests, digitalLevelComputesFirstChannel) {
 TEST_F(TargetPlayerTests, digitalLevelPassesLoadedFileToVideoPlayer) {
     player.loadFile({"a"});
     player.digitalLevel();
-    assertEqual("a", audioReader.filePath());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, audioReader.filePath());
 }
 
 TEST_F(TargetPlayerTests, subscribesToTargetPlaybackCompletionNotification) {
