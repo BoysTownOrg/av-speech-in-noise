@@ -95,18 +95,10 @@ static void assign(
 
 static void assign(FixedLevelTestWithEachTargetNTimes &test,
     const std::string &entryName, const std::string &entry) {
-    if (entryName == name(TestSetting::targets))
-        test.targetsUrl.path = entry;
-    else if (entryName == name(TestSetting::masker))
-        test.maskerFileUrl.path = entry;
-    else if (entryName == name(TestSetting::maskerLevel))
-        test.maskerLevel.dB_SPL = integer(entry);
-    else if (entryName == name(TestSetting::targetRepetitions))
+    if (entryName == name(TestSetting::targetRepetitions))
         test.timesEachTargetIsPlayed = integer(entry);
-    else if (entryName == name(TestSetting::condition))
-        for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
-            if (entry == name(c))
-                test.condition = c;
+    else
+        assign(static_cast<Test &>(test), entryName, entry);
 }
 
 static void assign(Calibration &calibration, const std::string &entryName,
