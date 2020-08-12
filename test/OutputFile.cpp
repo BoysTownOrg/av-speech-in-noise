@@ -175,12 +175,14 @@ auto nthCommaDelimitedEntryOfLine(
 
 void assertContainsColonDelimitedEntry(
     WriterStub &writer, const std::string &label, const std::string &what) {
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(written(writer), label + ": " + what + '\n'));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        contains(written(writer), label + ": " + what + '\n'));
 }
 
 void assertNthCommaDelimitedEntryOfLine(WriterStub &writer,
     const std::string &what, gsl::index n, gsl::index line) {
-    assertEqual(what, nthCommaDelimitedEntryOfLine(writer, n, line));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        what, nthCommaDelimitedEntryOfLine(writer, n, line));
 }
 
 void assertNthCommaDelimitedEntryOfLine(WriterStub &writer,
@@ -190,7 +192,8 @@ void assertNthCommaDelimitedEntryOfLine(WriterStub &writer,
 
 void assertNthCommaDelimitedEntryOfLine(
     WriterStub &writer, HeadingItem item, gsl::index n, gsl::index line) {
-    assertEqual(name(item), nthCommaDelimitedEntryOfLine(writer, n, line));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        name(item), nthCommaDelimitedEntryOfLine(writer, n, line));
 }
 
 void assertNthEntryOfSecondLine(
@@ -724,7 +727,7 @@ OUTPUT_FILE_TEST(writeNoFlagFreeResponseTrialOnlyTwoEntries) {
     const auto precedingNewLine{
         find_nth_element(writtenString(writer), 2 - 1, '\n')};
     const auto line_{writtenString(writer).substr(precedingNewLine + 1)};
-    assertEqual(
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::iterator_traits<std::string::iterator>::difference_type{2 - 1},
         std::count(line_.begin(), line_.end(), ','));
 }
@@ -858,7 +861,7 @@ OUTPUT_FILE_TEST(openPassesFormattedFilePath) {
     path.setFileName("a");
     path.setOutputDirectory("b");
     openNewFile(file);
-    assertEqual("b/a.txt", writer.filePath());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"b/a.txt"}, writer.filePath());
 }
 
 OUTPUT_FILE_TEST(closeClosesWriter) {
@@ -874,7 +877,8 @@ OUTPUT_FILE_TEST(saveSavesWriter) {
 OUTPUT_FILE_TEST(openPassesTestInformation) {
     TestIdentity testIdentity;
     openNewFile(file, testIdentity);
-    assertEqual(&std::as_const(testIdentity), path.testIdentity());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(testIdentity), path.testIdentity());
 }
 
 class FailingWriter : public Writer {
