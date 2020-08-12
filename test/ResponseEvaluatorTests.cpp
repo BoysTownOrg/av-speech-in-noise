@@ -2,10 +2,8 @@
 #include <recognition-test/ResponseEvaluator.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise {
-using coordinate_response_measure::Color;
-using coordinate_response_measure::Response;
-
+namespace av_speech_in_noise::coordinate_response_measure {
+namespace {
 class ResponseEvaluatorTests : public ::testing::Test {
   protected:
     ResponseEvaluatorImpl evaluator{};
@@ -23,42 +21,44 @@ class ResponseEvaluatorTests : public ::testing::Test {
     }
 };
 
-TEST_F(ResponseEvaluatorTests, blue) {
+#define COORDINATE_RESPONSE_EVALUATOR_TEST(a) TEST_F(ResponseEvaluatorTests, a)
+
+COORDINATE_RESPONSE_EVALUATOR_TEST(blue) {
     assertCorrect("blue1.mov", {1, Color::blue});
 }
 
-TEST_F(ResponseEvaluatorTests, red) {
+COORDINATE_RESPONSE_EVALUATOR_TEST(red) {
     assertCorrect("red1.mov", {1, Color::red});
 }
 
-TEST_F(ResponseEvaluatorTests, white) {
+COORDINATE_RESPONSE_EVALUATOR_TEST(white) {
     assertCorrect("white1.mov", {1, Color::white});
 }
 
-TEST_F(ResponseEvaluatorTests, green) {
+COORDINATE_RESPONSE_EVALUATOR_TEST(green) {
     assertCorrect("green1.mov", {1, Color::green});
 }
 
-TEST_F(ResponseEvaluatorTests, rightColorWrongNumber) {
+COORDINATE_RESPONSE_EVALUATOR_TEST(rightColorWrongNumber) {
     assertIncorrect("blue2.mov", {1, Color::blue});
 }
 
-TEST_F(ResponseEvaluatorTests, rightNumberWrongColor) {
+COORDINATE_RESPONSE_EVALUATOR_TEST(rightNumberWrongColor) {
     assertIncorrect("green1.mov", {1, Color::blue});
 }
 
-TEST_F(ResponseEvaluatorTests, wrongNumberWrongColor) {
+COORDINATE_RESPONSE_EVALUATOR_TEST(wrongNumberWrongColor) {
     assertIncorrect("green2.mov", {1, Color::blue});
 }
 
-TEST_F(ResponseEvaluatorTests, ignoresLeadingPath) {
+COORDINATE_RESPONSE_EVALUATOR_TEST(ignoresLeadingPath) {
     assertCorrect("a/green1.mov", {1, Color::green});
     assertCorrect("a/b/green1.mov", {1, Color::green});
     assertIncorrect("a/red1.mov", {1, Color::green});
     assertIncorrect("a/b/red1.mov", {1, Color::green});
 }
 
-TEST_F(ResponseEvaluatorTests, invalidFormatIsAlwaysIncorrect) {
+COORDINATE_RESPONSE_EVALUATOR_TEST(invalidFormatIsAlwaysIncorrect) {
     assertIncorrect("not-valid", {1, Color::blue});
     assertIncorrect(
         "not-valid", {ResponseEvaluatorImpl::invalidNumber, Color::unknown});
@@ -70,23 +70,24 @@ TEST_F(ResponseEvaluatorTests, invalidFormatIsAlwaysIncorrect) {
         "/", {ResponseEvaluatorImpl::invalidNumber, Color::unknown});
 }
 
-TEST_F(ResponseEvaluatorTests, fileNameReturnsEverythingAfterFinalSlash) {
+COORDINATE_RESPONSE_EVALUATOR_TEST(fileNameReturnsEverythingAfterFinalSlash) {
     assertEqual("b", evaluator.fileName({"a/b"}));
     assertEqual("a", evaluator.fileName({"a"}));
     assertEqual("c.txt", evaluator.fileName({"a/b/c.txt"}));
 }
 
-TEST_F(ResponseEvaluatorTests, onlyEvaluatesFirstPartOfFileName) {
+COORDINATE_RESPONSE_EVALUATOR_TEST(onlyEvaluatesFirstPartOfFileName) {
     assertCorrect("blue2_3.mov", {2, Color::blue});
     assertCorrect("a/blue2_3.mov", {2, Color::blue});
     assertIncorrect("blue2_3.mov", {3, Color::blue});
     assertIncorrect("a/blue2_3.mov", {3, Color::blue});
 }
 
-TEST_F(ResponseEvaluatorTests, miscellaneous) {
+COORDINATE_RESPONSE_EVALUATOR_TEST(miscellaneous) {
     assertCorrect("a/b/c/blue9-3.mov", {9, Color::blue});
     assertCorrect("a/b/c/red8 4.mov", {8, Color::red});
     assertIncorrect("a/b/c/blue9-3.mov", {3, Color::blue});
     assertIncorrect("a/b/c/red8 4.mov", {4, Color::red});
+}
 }
 }
