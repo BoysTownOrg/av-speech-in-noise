@@ -440,7 +440,8 @@ void Presenter::CoordinateResponseMeasure::
     view->hideNextTrialButton();
 }
 
-void Presenter::CoordinateResponseMeasure::submitResponse() {
+void Presenter::CoordinateResponseMeasure::
+    notifyThatResponseButtonHasBeenClicked() {
     parent->submitCoordinateResponse();
     hideResponseButtons(view);
 }

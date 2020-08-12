@@ -538,7 +538,7 @@ auto CocoaCoordinateResponseMeasureView::whiteResponse() -> bool {
 
 void CocoaCoordinateResponseMeasureView::respond(id sender) {
     lastButtonPressed = sender;
-    listener_->submitResponse();
+    listener_->notifyThatResponseButtonHasBeenClicked();
 }
 
 void CocoaCoordinateResponseMeasureView::showResponseButtons() {

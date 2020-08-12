@@ -132,7 +132,9 @@ class CoordinateResponseMeasureViewStub
 
     void subscribe(EventListener *e) override { listener_ = e; }
 
-    void submitResponse() { listener_->submitResponse(); }
+    void submitResponse() {
+        listener_->notifyThatResponseButtonHasBeenClicked();
+    }
 
     void playTrial() { listener_->notifyThatReadyButtonHasBeenClicked(); }
 

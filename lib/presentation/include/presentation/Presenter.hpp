@@ -83,7 +83,7 @@ class View {
           public:
             virtual ~EventListener() = default;
             virtual void notifyThatReadyButtonHasBeenClicked() = 0;
-            virtual void submitResponse() = 0;
+            virtual void notifyThatResponseButtonHasBeenClicked() = 0;
         };
 
         virtual ~CoordinateResponseMeasure() = default;
@@ -217,7 +217,7 @@ class Presenter : public Model::EventListener {
       public:
         explicit CoordinateResponseMeasure(View::CoordinateResponseMeasure *);
         void notifyThatReadyButtonHasBeenClicked() override;
-        void submitResponse() override;
+        void notifyThatResponseButtonHasBeenClicked() override;
         void start();
         void stop();
         void becomeChild(Presenter *parent);
