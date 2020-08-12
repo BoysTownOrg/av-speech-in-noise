@@ -47,16 +47,22 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     }
     auto currentTarget() -> LocalUrl override { return {}; }
     auto snr() -> SNR override { return SNR{}; }
-    void submitCorrectResponse() override {}
-    void submitIncorrectResponse() override {}
+    void submitCorrectResponse() override { log_ << "submitCorrectResponse "; }
+    void submitIncorrectResponse() override {
+        log_ << "submitIncorrectResponse ";
+    }
     void submit(const FreeResponse &) override {}
     void submit(const CorrectKeywords &) override {
         log_ << "submitCorrectKeywords ";
     }
     void writeTestingParameters(OutputFile &) override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
-    void writeLastCorrectResponse(OutputFile &) override {}
-    void writeLastIncorrectResponse(OutputFile &) override {}
+    void writeLastCorrectResponse(OutputFile &) override {
+        log_ << "writeLastCorrectResponse ";
+    }
+    void writeLastIncorrectResponse(OutputFile &) override {
+        log_ << "writeLastIncorrectResponse ";
+    }
     void writeLastCorrectKeywords(OutputFile &) override {
         log_ << "writeLastCorrectKeywords ";
     }
@@ -138,7 +144,8 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     std::vector<std::string> audioDevices_{};
     std::string targetFileName_{};
     TestMethod *testMethodToCallNextTargetOnSubmitConsonants_{};
-    TestMethod *testMethodToCallNextTargetOnSubmitCorrectKeywords_{};
+    TestMethod *
+        testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_{};
     const Model::EventListener *listener_{};
     const Calibration *calibration_{};
     const AudioSettings *playTrialSettings_{};
@@ -205,8 +212,10 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void submit(const CorrectKeywords &p) override {
         correctKeywords_ = &p;
-        if (testMethodToCallNextTargetOnSubmitCorrectKeywords_ != nullptr)
-            testMethodToCallNextTargetOnSubmitCorrectKeywords_->nextTarget();
+        if (testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_ !=
+            nullptr)
+            testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_
+                ->nextTarget();
     }
 
     void submit(const ConsonantResponse &p) override {
@@ -265,12 +274,23 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         testMethodToCallNextTargetOnSubmitConsonants_ = t;
     }
 
-    void callNextOnSubmitCorrectKeywords(TestMethod *t) {
-        testMethodToCallNextTargetOnSubmitCorrectKeywords_ = t;
+    void callNextOnSubmitCorrectKeywordsOrCorrectOrIncorrect(TestMethod *t) {
+        testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_ =
+            t;
     }
 
-    void submitCorrectResponse() override {}
-    void submitIncorrectResponse() override {}
+    void submitCorrectResponse() override {
+        if (testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_ !=
+            nullptr)
+            testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_
+                ->nextTarget();
+    }
+    void submitIncorrectResponse() override {
+        if (testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_ !=
+            nullptr)
+            testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_
+                ->nextTarget();
+    }
     void submit(const FreeResponse &) override {}
 };
 
@@ -1008,6 +1028,18 @@ MODEL_TEST(submitCorrectKeywordsWritesTrialAfterSubmittingResponse) {
         "submitCorrectKeywords writeLastCorrectKeywords "));
 }
 
+MODEL_TEST(submitCorrectResponseWritesTrialAfterSubmittingResponse) {
+    model.submitCorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(adaptiveMethod.log(),
+        "submitCorrectResponse writeLastCorrectResponse "));
+}
+
+MODEL_TEST(submitIncorrectResponseWritesTrialAfterSubmittingResponse) {
+    model.submitIncorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(adaptiveMethod.log(),
+        "submitIncorrectResponse writeLastIncorrectResponse "));
+}
+
 MODEL_TEST(submitConsonantQueriesNextTargetAfterWritingResponse) {
     internalModel.callNextOnSubmitConsonants(&fixedLevelMethod);
     ConsonantResponse r;
@@ -1017,11 +1049,28 @@ MODEL_TEST(submitConsonantQueriesNextTargetAfterWritingResponse) {
 }
 
 MODEL_TEST(submitCorrectKeywordsQueriesNextTargetAfterWritingResponse) {
-    internalModel.callNextOnSubmitCorrectKeywords(&adaptiveMethod);
+    internalModel.callNextOnSubmitCorrectKeywordsOrCorrectOrIncorrect(
+        &adaptiveMethod);
     CorrectKeywords r;
     model.submit(r);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         contains(adaptiveMethod.log(), "writeLastCorrectKeywords nextTarget "));
+}
+
+MODEL_TEST(submitCorrectResponseQueriesNextTargetAfterWritingResponse) {
+    internalModel.callNextOnSubmitCorrectKeywordsOrCorrectOrIncorrect(
+        &adaptiveMethod);
+    model.submitCorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        contains(adaptiveMethod.log(), "writeLastCorrectResponse nextTarget "));
+}
+
+MODEL_TEST(submitIncorrectResponseQueriesNextTargetAfterWritingResponse) {
+    internalModel.callNextOnSubmitCorrectKeywordsOrCorrectOrIncorrect(
+        &adaptiveMethod);
+    model.submitIncorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(
+        adaptiveMethod.log(), "writeLastIncorrectResponse nextTarget "));
 }
 
 MODEL_TEST(playTrialPassesAudioSettings) {

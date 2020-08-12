@@ -157,9 +157,17 @@ void ModelImpl::submit(const coordinate_response_measure::Response &response) {
     model.submit(response);
 }
 
-void ModelImpl::submitCorrectResponse() { model.submitCorrectResponse(); }
+void ModelImpl::submitCorrectResponse() {
+    adaptiveMethod.submitCorrectResponse();
+    adaptiveMethod.writeLastCorrectResponse(outputFile);
+    model.submitCorrectResponse();
+}
 
-void ModelImpl::submitIncorrectResponse() { model.submitIncorrectResponse(); }
+void ModelImpl::submitIncorrectResponse() {
+    adaptiveMethod.submitIncorrectResponse();
+    adaptiveMethod.writeLastIncorrectResponse(outputFile);
+    model.submitIncorrectResponse();
+}
 
 void ModelImpl::submit(const FreeResponse &response) { model.submit(response); }
 

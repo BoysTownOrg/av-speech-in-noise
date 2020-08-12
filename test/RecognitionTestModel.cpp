@@ -1588,45 +1588,9 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectResponseWritesTrialAfterSubmittingResponse) {
-    assertTestMethodLogContains(submittingCorrectResponse,
-        "submitCorrectResponse writeLastCorrectResponse ");
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitIncorrectResponseWritesTrialAfterSubmittingResponse) {
-    assertTestMethodLogContains(submittingIncorrectResponse,
-        "submitIncorrectResponse writeLastIncorrectResponse ");
-}
-
-RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseQueriesNextTargetAfterWritingResponse) {
     assertTestMethodLogContains(
         submittingCoordinateResponse, "writeLastCoordinateResponse next ");
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitIncorrectResponseQueriesNextTargetAfterWritingResponse) {
-    assertTestMethodLogContains(
-        submittingIncorrectResponse, "writeLastIncorrectResponse next ");
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectResponseQueriesNextTargetAfterWritingResponse) {
-    assertTestMethodLogContains(
-        submittingCorrectResponse, "writeLastCorrectResponse next ");
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitCorrectResponseSubmitsCorrectResponse) {
-    run(initializingTest, model);
-    run(submittingCorrectResponse, model);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedCorrectResponse());
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitIncorrectResponseSubmitsIncorrectResponse) {
-    run(initializingTest, model);
-    run(submittingIncorrectResponse, model);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedIncorrectResponse());
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSubmitsResponse) {

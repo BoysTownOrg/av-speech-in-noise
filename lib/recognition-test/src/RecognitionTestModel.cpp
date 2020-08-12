@@ -316,15 +316,11 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
 }
 
 void RecognitionTestModelImpl::submitCorrectResponse() {
-    testMethod->submitCorrectResponse();
-    testMethod->writeLastCorrectResponse(outputFile);
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
 
 void RecognitionTestModelImpl::submitIncorrectResponse() {
-    testMethod->submitIncorrectResponse();
-    testMethod->writeLastIncorrectResponse(outputFile);
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
