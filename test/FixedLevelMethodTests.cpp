@@ -316,6 +316,11 @@ FIXED_LEVEL_METHOD_TEST(
     assertEqual("a", evaluator.correctFilePath());
 }
 
+static void writeLastConsonant(
+    FixedLevelMethodImpl &method, OutputFile &outputFile) {
+    method.writeLastConsonant(outputFile);
+}
+
 class FixedLevelMethodWithFiniteTargetPlaylistTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
@@ -350,14 +355,14 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeConsonantPassesConsonant) {
     submittingConsonant.setConsonant('b');
     run(submittingConsonant, method);
-    method.writeLastConsonant(outputFile);
+    writeLastConsonant(method, outputFile);
     assertEqual('b', outputFile.consonantTrial().subjectConsonant);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeConsonantPassesTarget) {
     targetList.setCurrent("a");
     run(submittingConsonant, method);
-    method.writeLastConsonant(outputFile);
+    writeLastConsonant(method, outputFile);
     assertEqual("a", outputFile.consonantTrial().target);
 }
 
@@ -365,7 +370,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     writeConsonantPassesCorrectConsonant) {
     evaluator.setCorrectConsonant('b');
     run(submittingConsonant, method);
-    method.writeLastConsonant(outputFile);
+    writeLastConsonant(method, outputFile);
     assertEqual('b', outputFile.consonantTrial().correctConsonant);
 }
 
