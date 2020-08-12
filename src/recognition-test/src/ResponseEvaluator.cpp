@@ -28,10 +28,13 @@ auto ResponseEvaluatorImpl::correct(const LocalUrl &filePath,
         r.number != invalidNumber;
 }
 
+static auto fileName(const LocalUrl &filePath) -> std::string {
+    return subString(filePath.path, leadingPathLength(filePath.path));
+}
+
 auto ResponseEvaluatorImpl::correct(
-    const LocalUrl &filePath, const ConsonantResponse &r) -> bool {
-    return subString(filePath.path, leadingPathLength(filePath.path)).front() ==
-        r.consonant;
+    const LocalUrl &file, const ConsonantResponse &r) -> bool {
+    return av_speech_in_noise::fileName(file).front() == r.consonant;
 }
 
 static auto colorNameLength(
@@ -57,8 +60,8 @@ auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &filePath) -> int {
     }
 }
 
-auto ResponseEvaluatorImpl::fileName(const LocalUrl &filePath) -> std::string {
-    return subString(filePath.path, leadingPathLength(filePath.path));
+auto ResponseEvaluatorImpl::fileName(const LocalUrl &file) -> std::string {
+    return av_speech_in_noise::fileName(file);
 }
 
 static auto color(const std::string &colorName)
