@@ -200,15 +200,20 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents,
         model.initialize(test);
 }
 
+static void initialize(FixedLevelTest &test, Method method,
+    const TestIdentity &identity, SNR startingSnr) {
+    test.snr = startingSnr;
+    test.fullScaleLevel = Presenter::fullScaleLevel;
+    test.identity = identity;
+    test.identity.method = name(method);
+}
+
 static void initialize(FixedLevelTest &test, const std::string &contents,
     Method method, const TestIdentity &identity, SNR startingSnr) {
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
-    test.snr = startingSnr;
-    test.fullScaleLevel = Presenter::fullScaleLevel;
-    test.identity = identity;
-    test.identity.method = name(method);
+    initialize(test, method, identity, startingSnr);
 }
 
 static void initialize(FixedLevelTestWithEachTargetNTimes &test,
@@ -217,10 +222,7 @@ static void initialize(FixedLevelTestWithEachTargetNTimes &test,
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
-    test.snr = startingSnr;
-    test.fullScaleLevel = Presenter::fullScaleLevel;
-    test.identity = identity;
-    test.identity.method = name(method);
+    initialize(test, method, identity, startingSnr);
 }
 
 static void initializeFixedLevelTest(Model &model, const std::string &contents,
