@@ -150,30 +150,9 @@ constexpr auto width(const NSRect &r) -> CGFloat { return r.size.width; }
 
 constexpr auto height(const NSRect &r) -> CGFloat { return r.size.height; }
 
-static auto textFieldSizeAtHeightWithWidth(CGFloat height, CGFloat width)
-    -> NSRect {
-    return NSMakeRect(textFieldLeadingEdge, height, width, labelHeight);
-}
-
-static auto normalTextFieldSizeAtHeight(CGFloat y) -> NSRect {
-    return textFieldSizeAtHeightWithWidth(y, normalTextFieldWidth);
-}
-
-static auto filePathTextFieldSizeAtHeight(CGFloat y) -> NSRect {
-    return textFieldSizeAtHeightWithWidth(y, filePathTextFieldWidth);
-}
-
-static auto normalTextFieldWithHeight(CGFloat x) -> NSTextField * {
-    return textFieldWithFrame(normalTextFieldSizeAtHeight(x));
-}
-
 static auto normalLabelWithHeight(CGFloat x, const std::string &s)
     -> NSTextField * {
     return allocLabel(s, NSMakeRect(0, x, labelWidth, labelHeight));
-}
-
-static auto filePathTextFieldSizeWithHeight(CGFloat x) -> NSTextField * {
-    return textFieldWithFrame(filePathTextFieldSizeAtHeight(x));
 }
 
 static auto button(const std::string &s, id target, SEL action) -> NSButton * {
