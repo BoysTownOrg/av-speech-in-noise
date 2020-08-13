@@ -642,8 +642,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                             width(r) - leadingSecondaryTextEdge, labelHeight)]},
       freeResponseField{[NSTextField textFieldWithString:@""]},
       correctKeywordsField{[NSTextField textFieldWithString:@""]},
-      freeResponseFlaggedButton{[[NSButton alloc]
-          initWithFrame:NSMakeRect(0, 0, normalTextFieldWidth, labelHeight)]},
+      freeResponseFlaggedButton{
+          [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 0, labelHeight)]},
       actions{[[ExperimenterViewActions alloc] init]} {
     exitTestButton = button("exit test", actions, @selector(exitTest));
     setStaticLike(displayedText_);
@@ -651,6 +651,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     setStaticLike(continueTestingDialogMessage_);
     [freeResponseFlaggedButton setButtonType:NSButtonTypeSwitch];
     [freeResponseFlaggedButton setTitle:@"flagged"];
+    [freeResponseFlaggedButton sizeToFit];
     nextTrialButton = button("play trial", actions, @selector(playTrial));
     const auto submitFreeResponseButton {
         button("submit", actions, @selector(submitFreeResponse))
@@ -714,6 +715,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
             constraintEqualToConstant:NSWidth(correctKeywordsField.frame)],
         [freeResponseField.widthAnchor
             constraintEqualToConstant:NSWidth(freeResponseField.frame)],
+        [freeResponseFlaggedButton.widthAnchor
+            constraintEqualToConstant:NSWidth(freeResponseFlaggedButton.frame)],
         firstToTheRightOfSecondConstraint(
             freeResponseField, freeResponseFlaggedButton, 8)
     ]];
