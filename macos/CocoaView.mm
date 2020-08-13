@@ -162,6 +162,12 @@ static auto firstToTheRightOfSecondConstraint(
                                                constant:x];
 }
 
+static auto firstAboveSecondConstraint(NSView *first, NSView *second, CGFloat x)
+    -> NSLayoutConstraint * {
+    return [first.bottomAnchor constraintEqualToAnchor:second.topAnchor
+                                              constant:-x];
+}
+
 static auto widthConstraint(NSView *a) -> NSLayoutConstraint * {
     return [a.widthAnchor constraintEqualToConstant:NSWidth(a.frame)];
 }
@@ -701,12 +707,10 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                                                  constant:8],
         firstToTheRightOfSecondConstraint(passButton, failButton, 8),
         yCenterConstraint(passButton, failButton),
-        [correctKeywordsField.bottomAnchor
-            constraintEqualToAnchor:submitCorrectKeywordsButton.topAnchor
-                           constant:-8],
-        [freeResponseField.bottomAnchor
-            constraintEqualToAnchor:submitFreeResponseButton.topAnchor
-                           constant:-8],
+        firstAboveSecondConstraint(
+            correctKeywordsField, submitCorrectKeywordsButton, 8),
+        firstAboveSecondConstraint(
+            freeResponseField, submitFreeResponseButton, 8),
         [correctKeywordsField.trailingAnchor
             constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor],
         [freeResponseField.trailingAnchor
