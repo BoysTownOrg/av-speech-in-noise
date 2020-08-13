@@ -625,6 +625,11 @@ static void activateChildConstraintNestledInBottomRightCorner(
     ]];
 }
 
+static auto trailingAnchorConstraint(NSView *a, NSView *b)
+    -> NSLayoutConstraint * {
+    return [a.trailingAnchor constraintEqualToAnchor:b.trailingAnchor];
+}
+
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]}, freeResponseView{[[NSView alloc]
                                                    initWithFrame:r]},
@@ -711,10 +716,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
             correctKeywordsField, submitCorrectKeywordsButton, 8),
         firstAboveSecondConstraint(
             freeResponseField, submitFreeResponseButton, 8),
-        [correctKeywordsField.trailingAnchor
-            constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor],
-        [freeResponseField.trailingAnchor
-            constraintEqualToAnchor:submitFreeResponseButton.trailingAnchor],
+        trailingAnchorConstraint(
+            correctKeywordsField, submitCorrectKeywordsButton),
+        trailingAnchorConstraint(freeResponseField, submitFreeResponseButton),
         widthConstraint(correctKeywordsField),
         widthConstraint(freeResponseField),
         widthConstraint(freeResponseFlaggedButton),
