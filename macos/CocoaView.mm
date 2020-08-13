@@ -218,10 +218,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
         button("Confirm", actions, @selector(confirmTestSetup))
     };
     const auto playCalibrationButton {
-        button("play calibration", actions, @selector(playCalibration),
-            NSMakeRect(
-                width(r) - buttonWidth - reasonableSpacing - 1.5 * buttonWidth,
-                0, 0, 0))
+        button("play calibration", actions, @selector(playCalibration))
     };
     [browseForTestSettingsButton sizeToFit];
     [confirmButton sizeToFit];
@@ -276,7 +273,12 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
             constraintEqualToAnchor:view_.trailingAnchor
                            constant:-8],
         [confirmButton.bottomAnchor constraintEqualToAnchor:view_.bottomAnchor
-                                                   constant:-8]
+                                                   constant:-8],
+        [playCalibrationButton.leadingAnchor
+            constraintEqualToAnchor:browseForTestSettingsButton.trailingAnchor
+                           constant:8],
+        [playCalibrationButton.centerYAnchor
+            constraintEqualToAnchor:browseForTestSettingsButton.centerYAnchor],
     ]];
     activateLabeledElementConstraintBelow(subjectId_, testerId_, testerIdLabel);
     activateLabeledElementConstraintBelow(testerId_, session_, sessionLabel);
