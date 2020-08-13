@@ -121,7 +121,6 @@ static void set(NSTextField *field, const std::string &s) {
 
 static constexpr auto labelHeight{22};
 static constexpr auto labelWidth{120};
-static constexpr auto normalTextFieldWidth{150};
 static constexpr auto menuWidth{180};
 static constexpr auto buttonHeight{25};
 static constexpr auto buttonWidth{100};
@@ -163,14 +162,17 @@ static auto firstToTheRightOfSecondConstraint(
                                                constant:x];
 }
 
+static auto widthConstraint(NSView *a) -> NSLayoutConstraint * {
+    return [a.widthAnchor constraintEqualToConstant:NSWidth(a.frame)];
+}
+
 static void activateLabeledElementConstraintBelow(
     NSView *above, NSView *below, NSView *belowLabel) {
     [NSLayoutConstraint activateConstraints:@[
         [above.leadingAnchor constraintEqualToAnchor:below.leadingAnchor],
         [below.topAnchor constraintEqualToAnchor:above.bottomAnchor constant:8],
         firstToTheRightOfSecondConstraint(below, belowLabel, 8),
-        yCenterConstraint(below, belowLabel),
-        [below.widthAnchor constraintEqualToConstant:NSWidth(below.frame)]
+        yCenterConstraint(below, belowLabel), widthConstraint(below)
     ]];
 }
 
@@ -242,8 +244,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
                                              constant:8],
         firstToTheRightOfSecondConstraint(subjectId_, subjectIdLabel, 8),
         yCenterConstraint(subjectId_, subjectIdLabel),
-        [subjectId_.widthAnchor
-            constraintEqualToConstant:NSWidth(subjectId_.frame)],
+        widthConstraint(subjectId_),
         [subjectId_.centerXAnchor constraintEqualToAnchor:view_.centerXAnchor],
         firstToTheRightOfSecondConstraint(
             browseForTestSettingsButton, testSettingsFile_, 8),
@@ -597,7 +598,6 @@ void CocoaCoordinateResponseMeasureView::show() {
 
 void CocoaCoordinateResponseMeasureView::hide() { [window orderOut:nil]; }
 
-constexpr auto responseSubmissionWidth{250};
 constexpr auto leadingPrimaryTextEdge{buttonWidth + reasonableSpacing};
 constexpr auto primaryTextWidth{labelWidth};
 constexpr auto leadingSecondaryTextEdge{
@@ -711,12 +711,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
             constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor],
         [freeResponseField.trailingAnchor
             constraintEqualToAnchor:submitFreeResponseButton.trailingAnchor],
-        [correctKeywordsField.widthAnchor
-            constraintEqualToConstant:NSWidth(correctKeywordsField.frame)],
-        [freeResponseField.widthAnchor
-            constraintEqualToConstant:NSWidth(freeResponseField.frame)],
-        [freeResponseFlaggedButton.widthAnchor
-            constraintEqualToConstant:NSWidth(freeResponseFlaggedButton.frame)],
+        widthConstraint(correctKeywordsField),
+        widthConstraint(freeResponseField),
+        widthConstraint(freeResponseFlaggedButton),
         firstToTheRightOfSecondConstraint(
             freeResponseField, freeResponseFlaggedButton, 8)
     ]];
