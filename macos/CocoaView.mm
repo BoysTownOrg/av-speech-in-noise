@@ -644,11 +644,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
           initWithFrame:NSMakeRect(leadingSecondaryTextEdge,
                             lowerPrimaryTextEdge(r),
                             width(r) - leadingSecondaryTextEdge, labelHeight)]},
-      freeResponseField{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(0,
-                            buttonHeight + reasonableSpacing + labelHeight +
-                                reasonableSpacing,
-                            0, labelHeight)]},
+      freeResponseField{[NSTextField textFieldWithString:@""]},
       correctKeywordsField{[NSTextField textFieldWithString:@""]},
       freeResponseFlaggedButton{[[NSButton alloc]
           initWithFrame:NSMakeRect(0, buttonHeight + reasonableSpacing,
