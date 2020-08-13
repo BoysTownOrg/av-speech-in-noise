@@ -101,10 +101,6 @@
 @end
 
 namespace av_speech_in_noise {
-static auto textFieldWithFrame(NSRect r) -> NSTextField * {
-    return [[NSTextField alloc] initWithFrame:r];
-}
-
 static void addSubview(NSView *parent, NSView *child) {
     [parent addSubview:child];
 }
@@ -123,22 +119,8 @@ static void set(NSTextField *field, const std::string &s) {
     [field setStringValue:asNsString(s)];
 }
 
-static auto allocLabel(const std::string &label, NSRect frame)
-    -> NSTextField * {
-    const auto text{textFieldWithFrame(frame)};
-    set(text, label);
-    setStaticLike(text);
-    [text setSelectable:NO];
-    [text setAlignment:NSTextAlignmentRight];
-    [text setTextColor:NSColor.labelColor];
-    return text;
-}
-
 static constexpr auto labelHeight{22};
 static constexpr auto labelWidth{120};
-static constexpr auto labelToTextFieldSpacing{5};
-static constexpr auto textFieldLeadingEdge{
-    labelWidth + labelToTextFieldSpacing};
 static constexpr auto normalTextFieldWidth{150};
 static constexpr auto menuWidth{180};
 static constexpr auto buttonHeight{25};
@@ -148,11 +130,6 @@ constexpr auto reasonableSpacing{15};
 constexpr auto width(const NSRect &r) -> CGFloat { return r.size.width; }
 
 constexpr auto height(const NSRect &r) -> CGFloat { return r.size.height; }
-
-static auto normalLabelWithHeight(CGFloat x, const std::string &s)
-    -> NSTextField * {
-    return allocLabel(s, NSMakeRect(0, x, labelWidth, labelHeight));
-}
 
 static auto button(const std::string &s, id target, SEL action) -> NSButton * {
     return [NSButton buttonWithTitle:asNsString(s) target:target action:action];
