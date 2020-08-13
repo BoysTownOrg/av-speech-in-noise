@@ -602,13 +602,21 @@ constexpr auto leadingPrimaryTextEdge{buttonWidth + reasonableSpacing};
 constexpr auto primaryTextWidth{labelWidth};
 constexpr auto leadingSecondaryTextEdge{
     leadingPrimaryTextEdge + primaryTextWidth + reasonableSpacing};
-constexpr auto evaluationButtonsInnerGap{0};
-constexpr auto evaluationButtonsWidth{
-    2 * buttonWidth + evaluationButtonsInnerGap};
 constexpr auto continueTestingDialogHeight{2 * labelHeight};
 
 constexpr auto lowerPrimaryTextEdge(const NSRect &r) -> CGFloat {
     return height(r) - labelHeight;
+}
+
+static void activateChildConstraintNestledInBottomRightCorner(
+    NSView *child, NSView *parent, CGFloat x) {
+
+    [NSLayoutConstraint activateConstraints:@[
+        [child.trailingAnchor constraintEqualToAnchor:parent.trailingAnchor
+                                             constant:-x],
+        [child.bottomAnchor constraintEqualToAnchor:parent.bottomAnchor
+                                           constant:-x]
+    ]];
 }
 
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
@@ -665,9 +673,6 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     const auto submitFreeResponse_ {
         button("submit", actions, @selector(submitFreeResponse))
     };
-    [submitFreeResponse_
-        setFrame:NSMakeRect(width(responseSubmission.frame) - buttonWidth, 0,
-                     buttonWidth, buttonHeight)];
     passButton_ = button("correct", actions, @selector(submitPassedTrial));
     failButton_ = button("incorrect", actions, @selector(submitFailedTrial));
     const auto continueButton_ {
@@ -683,7 +688,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     const auto submitCorrectKeywords_ {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
-    addSubview(responseSubmission, submitFreeResponse_);
+    addAutolayoutEnabledSubview(responseSubmission, submitFreeResponse_);
     addSubview(responseSubmission, response_);
     addSubview(responseSubmission, flagged_);
     addAutolayoutEnabledSubview(view_, passButton_);
@@ -704,25 +709,16 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                            constant:8],
         [exitTestButton_.topAnchor constraintEqualToAnchor:view_.topAnchor
                                                   constant:8],
-        [submitCorrectKeywords_.trailingAnchor
-            constraintEqualToAnchor:view_.trailingAnchor
-                           constant:-8],
-        [submitCorrectKeywords_.bottomAnchor
-            constraintEqualToAnchor:view_.bottomAnchor
-                           constant:-8],
         firstToTheRightOfSecondConstraint(passButton_, failButton_, 8),
-        [passButton_.trailingAnchor constraintEqualToAnchor:view_.trailingAnchor
-                                                   constant:-8],
-        [passButton_.bottomAnchor constraintEqualToAnchor:view_.bottomAnchor
-                                                 constant:-8],
-        yCenterConstraint(passButton_, failButton_),
-        [nextTrialButton_.trailingAnchor
-            constraintEqualToAnchor:view_.trailingAnchor
-                           constant:-8],
-        [nextTrialButton_.bottomAnchor
-            constraintEqualToAnchor:view_.bottomAnchor
-                           constant:-8]
+        yCenterConstraint(passButton_, failButton_)
     ]];
+    activateChildConstraintNestledInBottomRightCorner(passButton_, view_, 8);
+    activateChildConstraintNestledInBottomRightCorner(
+        submitCorrectKeywords_, view_, 8);
+    activateChildConstraintNestledInBottomRightCorner(
+        nextTrialButton_, view_, 8);
+    activateChildConstraintNestledInBottomRightCorner(
+        submitFreeResponse_, view_, 8);
     av_speech_in_noise::hide(passButton_);
     av_speech_in_noise::hide(failButton_);
     av_speech_in_noise::hide(nextTrialButton_);
