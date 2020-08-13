@@ -712,6 +712,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         [correctKeywordsField.bottomAnchor
             constraintEqualToAnchor:submitCorrectKeywordsButton.topAnchor
                            constant:-8],
+        [freeResponseField.bottomAnchor
+            constraintEqualToAnchor:submitFreeResponseButton.topAnchor
+                           constant:-8],
         [correctKeywordsField.trailingAnchor
             constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor],
         [freeResponseField.trailingAnchor
