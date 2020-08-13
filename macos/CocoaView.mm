@@ -662,8 +662,6 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [flagged_ setButtonType:NSButtonTypeSwitch];
     [flagged_ setTitle:@"flagged"];
     nextTrialButton_ = button("play trial", actions, @selector(playTrial));
-    [nextTrialButton_ setFrame:NSMakeRect(width(r) - buttonWidth, 0,
-                                   buttonWidth, buttonHeight)];
     const auto submitFreeResponse_ {
         button("submit", actions, @selector(submitFreeResponse))
     };
@@ -697,7 +695,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     addSubview(correctKeywordsSubmission, correctKeywordsEntry_);
     addAutolayoutEnabledSubview(
         correctKeywordsSubmission, submitCorrectKeywords_);
-    addSubview(view_, nextTrialButton_);
+    addAutolayoutEnabledSubview(view_, nextTrialButton_);
     addSubview(view_, responseSubmission);
     addSubview(view_, correctKeywordsSubmission);
     [NSLayoutConstraint activateConstraints:@[
@@ -717,7 +715,13 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                                                    constant:-8],
         [passButton_.bottomAnchor constraintEqualToAnchor:view_.bottomAnchor
                                                  constant:-8],
-        yCenterConstraint(passButton_, failButton_)
+        yCenterConstraint(passButton_, failButton_),
+        [nextTrialButton_.trailingAnchor
+            constraintEqualToAnchor:view_.trailingAnchor
+                           constant:-8],
+        [nextTrialButton_.bottomAnchor
+            constraintEqualToAnchor:view_.bottomAnchor
+                           constant:-8]
     ]];
     av_speech_in_noise::hide(passButton_);
     av_speech_in_noise::hide(failButton_);
