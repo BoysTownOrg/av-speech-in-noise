@@ -643,8 +643,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
       freeResponseField{[NSTextField textFieldWithString:@""]},
       correctKeywordsField{[NSTextField textFieldWithString:@""]},
       freeResponseFlaggedButton{[[NSButton alloc]
-          initWithFrame:NSMakeRect(0, buttonHeight + reasonableSpacing,
-                            normalTextFieldWidth, labelHeight)]},
+          initWithFrame:NSMakeRect(0, 0, normalTextFieldWidth, labelHeight)]},
       actions{[[ExperimenterViewActions alloc] init]} {
     exitTestButton = button("exit test", actions, @selector(exitTest));
     setStaticLike(displayedText_);
@@ -680,7 +679,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     addSubview(view_, secondaryDisplayedText_);
     addAutolayoutEnabledSubview(freeResponseView, submitFreeResponseButton);
     addAutolayoutEnabledSubview(freeResponseView, freeResponseField);
-    addSubview(freeResponseView, freeResponseFlaggedButton);
+    addAutolayoutEnabledSubview(freeResponseView, freeResponseFlaggedButton);
     addAutolayoutEnabledSubview(view_, passButton);
     addAutolayoutEnabledSubview(view_, failButton);
     addSubview(continueTestingDialog.contentView, continueButton_);
@@ -714,7 +713,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         [correctKeywordsField.widthAnchor
             constraintEqualToConstant:NSWidth(correctKeywordsField.frame)],
         [freeResponseField.widthAnchor
-            constraintEqualToConstant:NSWidth(freeResponseField.frame)]
+            constraintEqualToConstant:NSWidth(freeResponseField.frame)],
+        firstToTheRightOfSecondConstraint(
+            freeResponseField, freeResponseFlaggedButton, 8)
     ]];
     activateChildConstraintNestledInBottomRightCorner(passButton, view_, 8);
     activateChildConstraintNestledInBottomRightCorner(
