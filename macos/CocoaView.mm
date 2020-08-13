@@ -181,6 +181,17 @@ static void activateLabeledElementConstraintBelow(
     ]];
 }
 
+static void activateChildConstraintNestledInBottomRightCorner(
+    NSView *child, NSView *parent, CGFloat x) {
+
+    [NSLayoutConstraint activateConstraints:@[
+        [child.trailingAnchor constraintEqualToAnchor:parent.trailingAnchor
+                                             constant:-x],
+        [child.bottomAnchor constraintEqualToAnchor:parent.bottomAnchor
+                                           constant:-x]
+    ]];
+}
+
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
       subjectIdLabel{[NSTextField labelWithString:@"subject:"]},
@@ -251,11 +262,6 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
         firstToTheRightOfSecondConstraint(
             browseForTestSettingsButton, testSettingsField, 8),
         yCenterConstraint(browseForTestSettingsButton, testSettingsField),
-        [confirmButton.trailingAnchor
-            constraintEqualToAnchor:view_.trailingAnchor
-                           constant:-8],
-        [confirmButton.bottomAnchor constraintEqualToAnchor:view_.bottomAnchor
-                                                   constant:-8],
         firstToTheRightOfSecondConstraint(
             playCalibrationButton, browseForTestSettingsButton, 8),
         yCenterConstraint(playCalibrationButton, browseForTestSettingsButton),
@@ -275,6 +281,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
         transducerMenu, testSettingsField, testSettingsLabel);
     activateLabeledElementConstraintBelow(
         testSettingsField, startingSnrField, startingSnrLabel);
+    activateChildConstraintNestledInBottomRightCorner(confirmButton, view_, 8);
     av_speech_in_noise::show(view_);
 }
 
@@ -617,17 +624,6 @@ constexpr auto continueTestingDialogHeight{2 * labelHeight};
 
 constexpr auto lowerPrimaryTextEdge(const NSRect &r) -> CGFloat {
     return height(r) - labelHeight;
-}
-
-static void activateChildConstraintNestledInBottomRightCorner(
-    NSView *child, NSView *parent, CGFloat x) {
-
-    [NSLayoutConstraint activateConstraints:@[
-        [child.trailingAnchor constraintEqualToAnchor:parent.trailingAnchor
-                                             constant:-x],
-        [child.bottomAnchor constraintEqualToAnchor:parent.bottomAnchor
-                                           constant:-x]
-    ]];
 }
 
 static auto trailingAnchorConstraint(NSView *a, NSView *b)
