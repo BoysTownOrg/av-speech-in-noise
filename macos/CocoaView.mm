@@ -195,25 +195,40 @@ static void enableAutoLayout(NSView *view) {
     view.translatesAutoresizingMaskIntoConstraints = NO;
 }
 
+static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
+    enableAutoLayout(child);
+    [parent addSubview:child];
+}
+
+static void idk(NSView *above, NSView *below, NSView *belowLabel) {
+    [NSLayoutConstraint activateConstraints:@[
+        [above.leadingAnchor constraintEqualToAnchor:below.leadingAnchor],
+        [below.topAnchor constraintEqualToAnchor:above.bottomAnchor constant:8],
+        [below.leadingAnchor constraintEqualToAnchor:belowLabel.trailingAnchor
+                                            constant:8],
+        [below.centerYAnchor constraintEqualToAnchor:belowLabel.centerYAnchor],
+        [below.widthAnchor constraintEqualToConstant:NSWidth(below.frame)]
+    ]];
+}
+
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
       subjectIdLabel{[NSTextField labelWithString:@"subject:"]},
       subjectId_{[NSTextField textFieldWithString:@""]},
-      testerIdLabel{normalLabelWithHeight(180, "tester:")},
-      testerId_{normalTextFieldWithHeight(180)},
-      sessionLabel{normalLabelWithHeight(150, "session:")},
-      session_{normalTextFieldWithHeight(150)},
-      rmeSettingLabel{normalLabelWithHeight(120, "RME setting:")},
-      rmeSetting_{normalTextFieldWithHeight(120)},
-      transducerLabel{normalLabelWithHeight(90, "transducer:")},
-      transducerMenu{
-          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge,
-                                                   90, menuWidth, labelHeight)
-                                     pullsDown:NO]},
-      testSettingsFile_label{normalLabelWithHeight(60, "test settings:")},
-      testSettingsFile_{filePathTextFieldSizeWithHeight(60)},
-      startingSnr_label{normalLabelWithHeight(30, "starting SNR (dB):")},
-      startingSnr_{normalTextFieldWithHeight(30)},
+      testerIdLabel{[NSTextField labelWithString:@"tester:"]},
+      testerId_{[NSTextField textFieldWithString:@""]},
+      sessionLabel{[NSTextField labelWithString:@"session:"]},
+      session_{[NSTextField textFieldWithString:@""]},
+      rmeSettingLabel{[NSTextField labelWithString:@"RME setting:"]},
+      rmeSetting_{[NSTextField textFieldWithString:@""]},
+      transducerLabel{[NSTextField labelWithString:@"transducer:"]},
+      transducerMenu{[[NSPopUpButton alloc]
+          initWithFrame:NSMakeRect(0, 0, menuWidth, labelHeight)
+              pullsDown:NO]},
+      testSettingsFile_label{[NSTextField labelWithString:@"test settings:"]},
+      testSettingsFile_{[NSTextField textFieldWithString:@""]},
+      startingSnr_label{[NSTextField labelWithString:@"starting SNR (dB):"]},
+      startingSnr_{[NSTextField textFieldWithString:@""]},
       actions{[[SetupViewActions alloc] init]} {
     actions->controller = this;
     const auto browseForTestSettingsButton {
@@ -231,41 +246,54 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
                 width(r) - buttonWidth - reasonableSpacing - 1.5 * buttonWidth,
                 0, 1.5 * buttonWidth, buttonHeight))
     };
-    enableAutoLayout(subjectId_);
-    enableAutoLayout(subjectIdLabel);
     [subjectId_ setPlaceholderString:@"abc123"];
     [subjectId_ sizeToFit];
-    addSubview(view_, browseForTestSettingsButton);
-    addSubview(view_, confirmButton);
-    addSubview(view_, playCalibrationButton);
-    addSubview(view_, startingSnr_label);
-    addSubview(view_, startingSnr_);
-    addSubview(view_, subjectIdLabel);
-    addSubview(view_, subjectId_);
-    addSubview(view_, testerIdLabel);
-    addSubview(view_, testerId_);
-    addSubview(view_, sessionLabel);
-    addSubview(view_, session_);
-    addSubview(view_, rmeSettingLabel);
-    addSubview(view_, rmeSetting_);
-    addSubview(view_, transducerLabel);
-    addSubview(view_, transducerMenu);
-    addSubview(view_, testSettingsFile_label);
-    addSubview(view_, testSettingsFile_);
+    [testerId_ setPlaceholderString:@"abc123"];
+    [testerId_ sizeToFit];
+    [session_ setPlaceholderString:@"abc123"];
+    [session_ sizeToFit];
+    [rmeSetting_ setPlaceholderString:@"ihavenoideawhatgoeshere"];
+    [rmeSetting_ sizeToFit];
+    [testSettingsFile_
+        setPlaceholderString:@"/Users/username/Desktop/file.txt"];
+    [testSettingsFile_ sizeToFit];
+    [startingSnr_ setPlaceholderString:@"15"];
+    [startingSnr_ sizeToFit];
+    addAutolayoutEnabledSubview(view_, browseForTestSettingsButton);
+    addAutolayoutEnabledSubview(view_, confirmButton);
+    addAutolayoutEnabledSubview(view_, playCalibrationButton);
+    addAutolayoutEnabledSubview(view_, subjectIdLabel);
+    addAutolayoutEnabledSubview(view_, subjectId_);
+    addAutolayoutEnabledSubview(view_, testerIdLabel);
+    addAutolayoutEnabledSubview(view_, testerId_);
+    addAutolayoutEnabledSubview(view_, sessionLabel);
+    addAutolayoutEnabledSubview(view_, session_);
+    addAutolayoutEnabledSubview(view_, rmeSettingLabel);
+    addAutolayoutEnabledSubview(view_, rmeSetting_);
+    addAutolayoutEnabledSubview(view_, transducerLabel);
+    addAutolayoutEnabledSubview(view_, transducerMenu);
+    addAutolayoutEnabledSubview(view_, testSettingsFile_label);
+    addAutolayoutEnabledSubview(view_, testSettingsFile_);
+    addAutolayoutEnabledSubview(view_, startingSnr_label);
+    addAutolayoutEnabledSubview(view_, startingSnr_);
     [NSLayoutConstraint activateConstraints:@[
-        [subjectIdLabel.leadingAnchor
-            constraintEqualToAnchor:view_.leadingAnchor
+        [subjectId_.topAnchor constraintEqualToAnchor:view_.topAnchor
+                                             constant:8],
+        [subjectId_.leadingAnchor
+            constraintEqualToAnchor:subjectIdLabel.trailingAnchor
                            constant:8],
-        [subjectIdLabel.topAnchor constraintEqualToAnchor:view_.topAnchor
-                                                 constant:8],
-        [subjectIdLabel.trailingAnchor
-            constraintEqualToAnchor:subjectId_.leadingAnchor
-                           constant:-8],
-        [subjectIdLabel.centerYAnchor
-            constraintEqualToAnchor:subjectId_.centerYAnchor],
+        [subjectId_.centerYAnchor
+            constraintEqualToAnchor:subjectIdLabel.centerYAnchor],
         [subjectId_.widthAnchor
-            constraintEqualToConstant:NSWidth(subjectId_.frame)]
+            constraintEqualToConstant:NSWidth(subjectId_.frame)],
+        [subjectId_.centerXAnchor constraintEqualToAnchor:view_.centerXAnchor]
     ]];
+    idk(subjectId_, testerId_, testerIdLabel);
+    idk(testerId_, session_, sessionLabel);
+    idk(session_, rmeSetting_, rmeSettingLabel);
+    idk(rmeSetting_, transducerMenu, transducerLabel);
+    idk(transducerMenu, testSettingsFile_, testSettingsFile_label);
+    idk(testSettingsFile_, startingSnr_, startingSnr_label);
     av_speech_in_noise::show(view_);
 }
 
