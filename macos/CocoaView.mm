@@ -729,7 +729,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         widthConstraint(freeResponseField),
         widthConstraint(freeResponseFlaggedButton),
         firstToTheRightOfSecondConstraint(
-            freeResponseField, freeResponseFlaggedButton, 8)
+            freeResponseField, freeResponseFlaggedButton, 8),
+        yCenterConstraint(freeResponseField, freeResponseFlaggedButton)
     ]];
     activateChildConstraintNestledInBottomRightCorner(passButton, view_, 8);
     activateChildConstraintNestledInBottomRightCorner(
