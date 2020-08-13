@@ -121,7 +121,6 @@ static void set(NSTextField *field, const std::string &s) {
 
 static constexpr auto labelHeight{22};
 static constexpr auto labelWidth{120};
-static constexpr auto menuWidth{180};
 static constexpr auto buttonHeight{25};
 static constexpr auto buttonWidth{100};
 constexpr auto reasonableSpacing{15};
@@ -321,9 +320,6 @@ void CocoaTestSetupView::populateTransducerMenu(
     for (const auto &item : items)
         [transducerMenu addItemWithTitle:asNsString(item)];
     [transducerMenu sizeToFit];
-
-    [NSLayoutConstraint
-        activateConstraints:@[ widthConstraint(transducerMenu) ]];
 }
 
 void CocoaTestSetupView::setTestSettingsFile(std::string s) {
