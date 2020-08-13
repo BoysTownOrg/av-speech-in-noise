@@ -652,9 +652,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                             buttonHeight + reasonableSpacing + labelHeight +
                                 reasonableSpacing,
                             responseSubmissionWidth, labelHeight)]},
-      correctKeywordsEntry_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(0, buttonHeight + reasonableSpacing,
-                            normalTextFieldWidth, labelHeight)]},
+      correctKeywordsEntry_{[NSTextField textFieldWithString:@""]},
       flagged_{[[NSButton alloc]
           initWithFrame:NSMakeRect(0, buttonHeight + reasonableSpacing,
                             normalTextFieldWidth, labelHeight)]},
@@ -663,10 +661,6 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     setStaticLike(displayedText_);
     setStaticLike(secondaryDisplayedText_);
     setStaticLike(continueTestingDialogMessage_);
-    addAutolayoutEnabledSubview(view_, exitTestButton_);
-    addSubview(view_, displayedText_);
-    addSubview(view_, secondaryDisplayedText_);
-    av_speech_in_noise::hide(view_);
     [flagged_ setButtonType:NSButtonTypeSwitch];
     [flagged_ setTitle:@"flagged"];
     nextTrialButton_ = button("play trial", actions, @selector(playTrial));
@@ -688,6 +682,11 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     const auto submitCorrectKeywords_ {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
+    [correctKeywordsEntry_ setPlaceholderString:@"2"];
+    [correctKeywordsEntry_ sizeToFit];
+    addAutolayoutEnabledSubview(view_, exitTestButton_);
+    addSubview(view_, displayedText_);
+    addSubview(view_, secondaryDisplayedText_);
     addAutolayoutEnabledSubview(responseSubmission, submitFreeResponse_);
     addSubview(responseSubmission, response_);
     addSubview(responseSubmission, flagged_);
@@ -697,12 +696,13 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     addSubview(continueTestingDialog.contentView, exitButton_);
     addSubview(
         continueTestingDialog.contentView, continueTestingDialogMessage_);
-    addSubview(correctKeywordsSubmission, correctKeywordsEntry_);
+    addAutolayoutEnabledSubview(
+        correctKeywordsSubmission, correctKeywordsEntry_);
     addAutolayoutEnabledSubview(
         correctKeywordsSubmission, submitCorrectKeywords_);
     addAutolayoutEnabledSubview(view_, nextTrialButton_);
     addSubview(view_, responseSubmission);
-    addSubview(view_, correctKeywordsSubmission);
+    addAutolayoutEnabledSubview(view_, correctKeywordsSubmission);
     [NSLayoutConstraint activateConstraints:@[
         [exitTestButton_.leadingAnchor
             constraintEqualToAnchor:view_.leadingAnchor
@@ -710,7 +710,14 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         [exitTestButton_.topAnchor constraintEqualToAnchor:view_.topAnchor
                                                   constant:8],
         firstToTheRightOfSecondConstraint(passButton_, failButton_, 8),
-        yCenterConstraint(passButton_, failButton_)
+        yCenterConstraint(passButton_, failButton_),
+        [correctKeywordsEntry_.bottomAnchor
+            constraintEqualToAnchor:submitCorrectKeywords_.topAnchor
+                           constant:-8],
+        [correctKeywordsEntry_.trailingAnchor
+            constraintEqualToAnchor:submitCorrectKeywords_.trailingAnchor],
+        [correctKeywordsEntry_.widthAnchor
+            constraintEqualToConstant:NSWidth(correctKeywordsEntry_.frame)]
     ]];
     activateChildConstraintNestledInBottomRightCorner(passButton_, view_, 8);
     activateChildConstraintNestledInBottomRightCorner(
