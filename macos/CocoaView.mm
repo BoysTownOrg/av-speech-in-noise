@@ -212,8 +212,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     actions->controller = this;
     const auto browseForTestSettingsButton {
         button("browse", actions, @selector(browseForTestSettings),
-            NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 60,
-                buttonWidth, buttonHeight))
+            NSMakeRect(0, 0, buttonWidth, buttonHeight))
     };
     const auto confirmButton {
         button("Confirm", actions, @selector(confirmTestSetup),
@@ -265,7 +264,12 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
             constraintEqualToAnchor:subjectIdLabel.centerYAnchor],
         [subjectId_.widthAnchor
             constraintEqualToConstant:NSWidth(subjectId_.frame)],
-        [subjectId_.centerXAnchor constraintEqualToAnchor:view_.centerXAnchor]
+        [subjectId_.centerXAnchor constraintEqualToAnchor:view_.centerXAnchor],
+        [browseForTestSettingsButton.leadingAnchor
+            constraintEqualToAnchor:testSettingsFile_.trailingAnchor
+                           constant:8],
+        [browseForTestSettingsButton.centerYAnchor
+            constraintEqualToAnchor:testSettingsFile_.centerYAnchor]
     ]];
     idk(subjectId_, testerId_, testerIdLabel);
     idk(testerId_, session_, sessionLabel);
