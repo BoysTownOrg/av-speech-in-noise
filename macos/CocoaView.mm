@@ -620,12 +620,8 @@ static void activateChildConstraintNestledInBottomRightCorner(
 }
 
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
-    : view_{[[NSView alloc] initWithFrame:r]},
-      freeResponseView{[[NSView alloc]
-          initWithFrame:NSMakeRect(width(r) - responseSubmissionWidth, 0,
-                            responseSubmissionWidth,
-                            buttonHeight + reasonableSpacing + 2 * labelHeight +
-                                reasonableSpacing)]},
+    : view_{[[NSView alloc] initWithFrame:r]}, freeResponseView{[[NSView alloc]
+                                                   initWithFrame:r]},
       correctKeywordsView{[[NSView alloc] initWithFrame:r]},
       continueTestingDialog{[[NSWindow alloc]
           initWithContentRect:NSMakeRect(0, 0, width(r),
