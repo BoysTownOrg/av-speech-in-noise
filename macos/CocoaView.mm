@@ -889,9 +889,9 @@ CocoaView::CocoaView(NSRect r)
                                            backing:NSBackingStoreBuffered
                                              defer:NO]},
       view{[[NSView alloc] initWithFrame:embeddedFrame(r)]},
-      audioDevice_label{[NSTextField labelWithString:@"audio output:"]},
-      deviceMenu{
-          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, menuWidth, 0)
+      audioDeviceLabel{[NSTextField labelWithString:@"audio output:"]},
+      audioDeviceMenu{
+          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                      pullsDown:NO]} {
     app.mainMenu = [[NSMenu alloc] init];
 
@@ -904,14 +904,14 @@ CocoaView::CocoaView(NSRect r)
     [app.mainMenu addItem:appMenu];
     addSubview(view, testSetup_.view());
     addSubview(view, experimenter_.view());
-    addAutolayoutEnabledSubview(view, audioDevice_label);
-    addAutolayoutEnabledSubview(view, deviceMenu);
+    addAutolayoutEnabledSubview(view, audioDeviceLabel);
+    addAutolayoutEnabledSubview(view, audioDeviceMenu);
     addSubview(window.contentView, view);
     [NSLayoutConstraint activateConstraints:@[
-        firstToTheRightOfSecondConstraint(deviceMenu, audioDevice_label, 8),
-        yCenterConstraint(deviceMenu, audioDevice_label),
-        [deviceMenu.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
-                                                constant:-8]
+        firstToTheRightOfSecondConstraint(audioDeviceMenu, audioDeviceLabel, 8),
+        yCenterConstraint(audioDeviceMenu, audioDeviceLabel),
+        [audioDeviceMenu.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
+                                                     constant:-8]
     ]];
     [window makeKeyAndOrderFront:nil];
 }
@@ -954,12 +954,13 @@ auto CocoaView::browseModal(NSOpenPanel *panel) -> std::string {
 }
 
 auto CocoaView::audioDevice() -> std::string {
-    return deviceMenu.titleOfSelectedItem.UTF8String;
+    return audioDeviceMenu.titleOfSelectedItem.UTF8String;
 }
 
 void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (const auto &item : items)
-        [deviceMenu addItemWithTitle:asNsString(item)];
+        [audioDeviceMenu addItemWithTitle:asNsString(item)];
+    [audioDeviceMenu sizeToFit];
 }
 
 void CocoaView::setDelegate(id<NSWindowDelegate> delegate) {

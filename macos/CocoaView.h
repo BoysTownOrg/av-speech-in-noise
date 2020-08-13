@@ -190,8 +190,8 @@ class CocoaView : public View {
     NSApplication *app;
     NSWindow *window;
     NSView *view;
-    NSTextField *audioDevice_label;
-    NSPopUpButton *deviceMenu;
+    NSTextField *audioDeviceLabel;
+    NSPopUpButton *audioDeviceMenu;
     bool browseCancelled_{};
 };
 }
