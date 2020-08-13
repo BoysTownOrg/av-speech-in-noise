@@ -613,10 +613,6 @@ constexpr auto lowerPrimaryTextEdge(const NSRect &r) -> CGFloat {
 
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
-      evaluationButtons{[[NSView alloc]
-          initWithFrame:NSMakeRect(
-                            width(r) - evaluationButtonsWidth - buttonWidth, 0,
-                            evaluationButtonsWidth, buttonHeight)]},
       responseSubmission{[[NSView alloc]
           initWithFrame:NSMakeRect(width(r) - responseSubmissionWidth, 0,
                             responseSubmissionWidth,
@@ -674,19 +670,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [submitFreeResponse_
         setFrame:NSMakeRect(width(responseSubmission.frame) - buttonWidth, 0,
                      buttonWidth, buttonHeight)];
-    const auto passButton_ {
-        button("correct", actions, @selector(submitPassedTrial))
-    };
-    [passButton_ setFrame:NSMakeRect(width(evaluationButtons.frame) -
-                                  evaluationButtonsWidth,
-                              0, buttonWidth, buttonHeight)];
-    const auto failButton_ {
-        button("incorrect", actions, @selector(submitFailedTrial))
-    };
-    [failButton_ setFrame:NSMakeRect(width(evaluationButtons.frame) -
-                                  evaluationButtonsWidth + buttonWidth +
-                                  evaluationButtonsInnerGap,
-                              0, buttonWidth, buttonHeight)];
+    passButton_ = button("correct", actions, @selector(submitPassedTrial));
+    failButton_ = button("incorrect", actions, @selector(submitFailedTrial));
     const auto continueButton_ {
         button("continue", actions, @selector(acceptContinuingTesting))
     };
@@ -703,8 +688,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     addSubview(responseSubmission, submitFreeResponse_);
     addSubview(responseSubmission, response_);
     addSubview(responseSubmission, flagged_);
-    addSubview(evaluationButtons, passButton_);
-    addSubview(evaluationButtons, failButton_);
+    addAutolayoutEnabledSubview(view_, passButton_);
+    addAutolayoutEnabledSubview(view_, failButton_);
     addSubview(continueTestingDialog.contentView, continueButton_);
     addSubview(continueTestingDialog.contentView, exitButton_);
     addSubview(
@@ -714,7 +699,6 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         correctKeywordsSubmission, submitCorrectKeywords_);
     addSubview(view_, nextTrialButton_);
     addSubview(view_, responseSubmission);
-    addSubview(view_, evaluationButtons);
     addSubview(view_, correctKeywordsSubmission);
     [NSLayoutConstraint activateConstraints:@[
         [exitTestButton_.leadingAnchor
@@ -728,9 +712,15 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         [submitCorrectKeywords_.bottomAnchor
             constraintEqualToAnchor:view_.bottomAnchor
                            constant:-8],
-
+        firstToTheRightOfSecondConstraint(passButton_, failButton_, 8),
+        [passButton_.trailingAnchor constraintEqualToAnchor:view_.trailingAnchor
+                                                   constant:-8],
+        [passButton_.bottomAnchor constraintEqualToAnchor:view_.bottomAnchor
+                                                 constant:-8],
+        yCenterConstraint(passButton_, failButton_)
     ]];
-    av_speech_in_noise::hide(evaluationButtons);
+    av_speech_in_noise::hide(passButton_);
+    av_speech_in_noise::hide(failButton_);
     av_speech_in_noise::hide(nextTrialButton_);
     av_speech_in_noise::hide(responseSubmission);
     av_speech_in_noise::hide(correctKeywordsSubmission);
@@ -771,7 +761,8 @@ void CocoaExperimenterView::hideNextTrialButton() {
 }
 
 void CocoaExperimenterView::showEvaluationButtons() {
-    av_speech_in_noise::show(evaluationButtons);
+    av_speech_in_noise::show(passButton_);
+    av_speech_in_noise::show(failButton_);
 }
 
 void CocoaExperimenterView::showFreeResponseSubmission() {
@@ -783,7 +774,8 @@ void CocoaExperimenterView::hideFreeResponseSubmission() {
 }
 
 void CocoaExperimenterView::hideEvaluationButtons() {
-    av_speech_in_noise::hide(evaluationButtons);
+    av_speech_in_noise::hide(passButton_);
+    av_speech_in_noise::hide(failButton_);
 }
 
 void CocoaExperimenterView::showCorrectKeywordsSubmission() {
