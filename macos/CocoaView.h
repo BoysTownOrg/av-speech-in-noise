@@ -48,19 +48,19 @@ class CocoaExperimenterView : public View::Experimenter {
 
   private:
     NSView *view_;
-    NSView *responseSubmission;
-    NSView *correctKeywordsSubmission;
+    NSView *freeResponseView;
+    NSView *correctKeywordsView;
     NSWindow *continueTestingDialog;
     NSTextField *continueTestingDialogMessage_;
     NSTextField *displayedText_;
     NSTextField *secondaryDisplayedText_;
-    NSTextField *response_;
-    NSTextField *correctKeywordsEntry_;
-    NSButton *flagged_;
-    NSButton *exitTestButton_;
-    NSButton *nextTrialButton_;
-    NSButton *passButton_;
-    NSButton *failButton_;
+    NSTextField *freeResponseField;
+    NSTextField *correctKeywordsField;
+    NSButton *freeResponseFlaggedButton;
+    NSButton *exitTestButton;
+    NSButton *nextTrialButton;
+    NSButton *passButton;
+    NSButton *failButton;
     ExperimenterViewActions *actions;
     EventListener *listener_{};
 };

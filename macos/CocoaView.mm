@@ -621,12 +621,12 @@ static void activateChildConstraintNestledInBottomRightCorner(
 
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
-      responseSubmission{[[NSView alloc]
+      freeResponseView{[[NSView alloc]
           initWithFrame:NSMakeRect(width(r) - responseSubmissionWidth, 0,
                             responseSubmissionWidth,
                             buttonHeight + reasonableSpacing + 2 * labelHeight +
                                 reasonableSpacing)]},
-      correctKeywordsSubmission{[[NSView alloc] initWithFrame:r]},
+      correctKeywordsView{[[NSView alloc] initWithFrame:r]},
       continueTestingDialog{[[NSWindow alloc]
           initWithContentRect:NSMakeRect(0, 0, width(r),
                                   buttonHeight + continueTestingDialogHeight)
@@ -644,28 +644,28 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
           initWithFrame:NSMakeRect(leadingSecondaryTextEdge,
                             lowerPrimaryTextEdge(r),
                             width(r) - leadingSecondaryTextEdge, labelHeight)]},
-      response_{[[NSTextField alloc]
+      freeResponseField{[[NSTextField alloc]
           initWithFrame:NSMakeRect(0,
                             buttonHeight + reasonableSpacing + labelHeight +
                                 reasonableSpacing,
                             responseSubmissionWidth, labelHeight)]},
-      correctKeywordsEntry_{[NSTextField textFieldWithString:@""]},
-      flagged_{[[NSButton alloc]
+      correctKeywordsField{[NSTextField textFieldWithString:@""]},
+      freeResponseFlaggedButton{[[NSButton alloc]
           initWithFrame:NSMakeRect(0, buttonHeight + reasonableSpacing,
                             normalTextFieldWidth, labelHeight)]},
       actions{[[ExperimenterViewActions alloc] init]} {
-    exitTestButton_ = button("exit test", actions, @selector(exitTest));
+    exitTestButton = button("exit test", actions, @selector(exitTest));
     setStaticLike(displayedText_);
     setStaticLike(secondaryDisplayedText_);
     setStaticLike(continueTestingDialogMessage_);
-    [flagged_ setButtonType:NSButtonTypeSwitch];
-    [flagged_ setTitle:@"flagged"];
-    nextTrialButton_ = button("play trial", actions, @selector(playTrial));
-    const auto submitFreeResponse_ {
+    [freeResponseFlaggedButton setButtonType:NSButtonTypeSwitch];
+    [freeResponseFlaggedButton setTitle:@"flagged"];
+    nextTrialButton = button("play trial", actions, @selector(playTrial));
+    const auto submitFreeResponseButton {
         button("submit", actions, @selector(submitFreeResponse))
     };
-    passButton_ = button("correct", actions, @selector(submitPassedTrial));
-    failButton_ = button("incorrect", actions, @selector(submitFailedTrial));
+    passButton = button("correct", actions, @selector(submitPassedTrial));
+    failButton = button("incorrect", actions, @selector(submitFailedTrial));
     const auto continueButton_ {
         button("continue", actions, @selector(acceptContinuingTesting))
     };
@@ -676,58 +676,57 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                                   buttonHeight)];
     [exitButton_ setFrame:NSMakeRect(width(r) - 3 * buttonWidth, 0, buttonWidth,
                               buttonHeight)];
-    const auto submitCorrectKeywords_ {
+    const auto submitCorrectKeywordsButton {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
-    [correctKeywordsEntry_ setPlaceholderString:@"2"];
-    [correctKeywordsEntry_ sizeToFit];
-    addAutolayoutEnabledSubview(view_, exitTestButton_);
+    [correctKeywordsField setPlaceholderString:@"2"];
+    [correctKeywordsField sizeToFit];
+    addAutolayoutEnabledSubview(view_, exitTestButton);
     addSubview(view_, displayedText_);
     addSubview(view_, secondaryDisplayedText_);
-    addAutolayoutEnabledSubview(responseSubmission, submitFreeResponse_);
-    addSubview(responseSubmission, response_);
-    addSubview(responseSubmission, flagged_);
-    addAutolayoutEnabledSubview(view_, passButton_);
-    addAutolayoutEnabledSubview(view_, failButton_);
+    addAutolayoutEnabledSubview(freeResponseView, submitFreeResponseButton);
+    addSubview(freeResponseView, freeResponseField);
+    addSubview(freeResponseView, freeResponseFlaggedButton);
+    addAutolayoutEnabledSubview(view_, passButton);
+    addAutolayoutEnabledSubview(view_, failButton);
     addSubview(continueTestingDialog.contentView, continueButton_);
     addSubview(continueTestingDialog.contentView, exitButton_);
     addSubview(
         continueTestingDialog.contentView, continueTestingDialogMessage_);
+    addAutolayoutEnabledSubview(correctKeywordsView, correctKeywordsField);
     addAutolayoutEnabledSubview(
-        correctKeywordsSubmission, correctKeywordsEntry_);
-    addAutolayoutEnabledSubview(
-        correctKeywordsSubmission, submitCorrectKeywords_);
-    addAutolayoutEnabledSubview(view_, nextTrialButton_);
-    addSubview(view_, responseSubmission);
-    addAutolayoutEnabledSubview(view_, correctKeywordsSubmission);
+        correctKeywordsView, submitCorrectKeywordsButton);
+    addAutolayoutEnabledSubview(view_, nextTrialButton);
+    addSubview(view_, freeResponseView);
+    addAutolayoutEnabledSubview(view_, correctKeywordsView);
     [NSLayoutConstraint activateConstraints:@[
-        [exitTestButton_.leadingAnchor
+        [exitTestButton.leadingAnchor
             constraintEqualToAnchor:view_.leadingAnchor
                            constant:8],
-        [exitTestButton_.topAnchor constraintEqualToAnchor:view_.topAnchor
-                                                  constant:8],
-        firstToTheRightOfSecondConstraint(passButton_, failButton_, 8),
-        yCenterConstraint(passButton_, failButton_),
-        [correctKeywordsEntry_.bottomAnchor
-            constraintEqualToAnchor:submitCorrectKeywords_.topAnchor
+        [exitTestButton.topAnchor constraintEqualToAnchor:view_.topAnchor
+                                                 constant:8],
+        firstToTheRightOfSecondConstraint(passButton, failButton, 8),
+        yCenterConstraint(passButton, failButton),
+        [correctKeywordsField.bottomAnchor
+            constraintEqualToAnchor:submitCorrectKeywordsButton.topAnchor
                            constant:-8],
-        [correctKeywordsEntry_.trailingAnchor
-            constraintEqualToAnchor:submitCorrectKeywords_.trailingAnchor],
-        [correctKeywordsEntry_.widthAnchor
-            constraintEqualToConstant:NSWidth(correctKeywordsEntry_.frame)]
+        [correctKeywordsField.trailingAnchor
+            constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor],
+        [correctKeywordsField.widthAnchor
+            constraintEqualToConstant:NSWidth(correctKeywordsField.frame)]
     ]];
-    activateChildConstraintNestledInBottomRightCorner(passButton_, view_, 8);
+    activateChildConstraintNestledInBottomRightCorner(passButton, view_, 8);
     activateChildConstraintNestledInBottomRightCorner(
-        submitCorrectKeywords_, view_, 8);
+        submitCorrectKeywordsButton, view_, 8);
     activateChildConstraintNestledInBottomRightCorner(
-        nextTrialButton_, view_, 8);
+        nextTrialButton, view_, 8);
     activateChildConstraintNestledInBottomRightCorner(
-        submitFreeResponse_, view_, 8);
-    av_speech_in_noise::hide(passButton_);
-    av_speech_in_noise::hide(failButton_);
-    av_speech_in_noise::hide(nextTrialButton_);
-    av_speech_in_noise::hide(responseSubmission);
-    av_speech_in_noise::hide(correctKeywordsSubmission);
+        submitFreeResponseButton, view_, 8);
+    av_speech_in_noise::hide(passButton);
+    av_speech_in_noise::hide(failButton);
+    av_speech_in_noise::hide(nextTrialButton);
+    av_speech_in_noise::hide(freeResponseView);
+    av_speech_in_noise::hide(correctKeywordsView);
     av_speech_in_noise::hide(view_);
     actions->controller = this;
 }
@@ -735,11 +734,11 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
 void CocoaExperimenterView::subscribe(EventListener *e) { listener_ = e; }
 
 void CocoaExperimenterView::showExitTestButton() {
-    av_speech_in_noise::show(exitTestButton_);
+    av_speech_in_noise::show(exitTestButton);
 }
 
 void CocoaExperimenterView::hideExitTestButton() {
-    av_speech_in_noise::hide(exitTestButton_);
+    av_speech_in_noise::hide(exitTestButton);
 }
 
 void CocoaExperimenterView::show() { av_speech_in_noise::show(view_); }
@@ -757,37 +756,37 @@ void CocoaExperimenterView::secondaryDisplay(std::string s) {
 }
 
 void CocoaExperimenterView::showNextTrialButton() {
-    av_speech_in_noise::show(nextTrialButton_);
+    av_speech_in_noise::show(nextTrialButton);
 }
 
 void CocoaExperimenterView::hideNextTrialButton() {
-    av_speech_in_noise::hide(nextTrialButton_);
+    av_speech_in_noise::hide(nextTrialButton);
 }
 
 void CocoaExperimenterView::showEvaluationButtons() {
-    av_speech_in_noise::show(passButton_);
-    av_speech_in_noise::show(failButton_);
+    av_speech_in_noise::show(passButton);
+    av_speech_in_noise::show(failButton);
 }
 
 void CocoaExperimenterView::showFreeResponseSubmission() {
-    av_speech_in_noise::show(responseSubmission);
+    av_speech_in_noise::show(freeResponseView);
 }
 
 void CocoaExperimenterView::hideFreeResponseSubmission() {
-    av_speech_in_noise::hide(responseSubmission);
+    av_speech_in_noise::hide(freeResponseView);
 }
 
 void CocoaExperimenterView::hideEvaluationButtons() {
-    av_speech_in_noise::hide(passButton_);
-    av_speech_in_noise::hide(failButton_);
+    av_speech_in_noise::hide(passButton);
+    av_speech_in_noise::hide(failButton);
 }
 
 void CocoaExperimenterView::showCorrectKeywordsSubmission() {
-    av_speech_in_noise::show(correctKeywordsSubmission);
+    av_speech_in_noise::show(correctKeywordsView);
 }
 
 void CocoaExperimenterView::hideCorrectKeywordsSubmission() {
-    av_speech_in_noise::hide(correctKeywordsSubmission);
+    av_speech_in_noise::hide(correctKeywordsView);
 }
 
 void CocoaExperimenterView::showContinueTestingDialog() {
@@ -805,18 +804,18 @@ void CocoaExperimenterView::setContinueTestingDialogMessage(
     set(continueTestingDialogMessage_, s);
 }
 
-void CocoaExperimenterView::clearFreeResponse() { set(response_, ""); }
+void CocoaExperimenterView::clearFreeResponse() { set(freeResponseField, ""); }
 
 auto CocoaExperimenterView::freeResponse() -> std::string {
-    return string(response_);
+    return string(freeResponseField);
 }
 
 auto CocoaExperimenterView::correctKeywords() -> std::string {
-    return string(correctKeywordsEntry_);
+    return string(correctKeywordsField);
 }
 
 auto CocoaExperimenterView::flagged() -> bool {
-    return flagged_.state == NSControlStateValueOn;
+    return freeResponseFlaggedButton.state == NSControlStateValueOn;
 }
 
 void CocoaExperimenterView::playTrial() { listener_->playTrial(); }
