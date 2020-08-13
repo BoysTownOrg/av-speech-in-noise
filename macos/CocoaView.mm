@@ -141,7 +141,6 @@ static constexpr auto textFieldLeadingEdge{
     labelWidth + labelToTextFieldSpacing};
 static constexpr auto normalTextFieldWidth{150};
 static constexpr auto menuWidth{180};
-static constexpr auto filePathTextFieldWidth{500};
 static constexpr auto buttonHeight{25};
 static constexpr auto buttonWidth{100};
 constexpr auto reasonableSpacing{15};
@@ -179,7 +178,8 @@ static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
     [parent addSubview:child];
 }
 
-static void idk(NSView *above, NSView *below, NSView *belowLabel) {
+static void activateLabeledElementConstraintBelow(
+    NSView *above, NSView *below, NSView *belowLabel) {
     [NSLayoutConstraint activateConstraints:@[
         [above.leadingAnchor constraintEqualToAnchor:below.leadingAnchor],
         [below.topAnchor constraintEqualToAnchor:above.bottomAnchor constant:8],
@@ -212,18 +212,21 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     actions->controller = this;
     const auto browseForTestSettingsButton {
         button("browse", actions, @selector(browseForTestSettings),
-            NSMakeRect(0, 0, buttonWidth, buttonHeight))
+            NSMakeRect(0, 0, 0, buttonHeight))
     };
     const auto confirmButton {
         button("Confirm", actions, @selector(confirmTestSetup),
-            NSMakeRect(width(r) - buttonWidth, 0, buttonWidth, buttonHeight))
+            NSMakeRect(width(r) - buttonWidth, 0, 0, buttonHeight))
     };
     const auto playCalibrationButton {
         button("play calibration", actions, @selector(playCalibration),
             NSMakeRect(
                 width(r) - buttonWidth - reasonableSpacing - 1.5 * buttonWidth,
-                0, 1.5 * buttonWidth, buttonHeight))
+                0, 0, buttonHeight))
     };
+    [browseForTestSettingsButton sizeToFit];
+    [confirmButton sizeToFit];
+    [playCalibrationButton sizeToFit];
     [subjectId_ setPlaceholderString:@"abc123"];
     [subjectId_ sizeToFit];
     [testerId_ setPlaceholderString:@"abc123"];
@@ -271,12 +274,16 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
         [browseForTestSettingsButton.centerYAnchor
             constraintEqualToAnchor:testSettingsFile_.centerYAnchor]
     ]];
-    idk(subjectId_, testerId_, testerIdLabel);
-    idk(testerId_, session_, sessionLabel);
-    idk(session_, rmeSetting_, rmeSettingLabel);
-    idk(rmeSetting_, transducerMenu, transducerLabel);
-    idk(transducerMenu, testSettingsFile_, testSettingsFile_label);
-    idk(testSettingsFile_, startingSnr_, startingSnr_label);
+    activateLabeledElementConstraintBelow(subjectId_, testerId_, testerIdLabel);
+    activateLabeledElementConstraintBelow(testerId_, session_, sessionLabel);
+    activateLabeledElementConstraintBelow(
+        session_, rmeSetting_, rmeSettingLabel);
+    activateLabeledElementConstraintBelow(
+        rmeSetting_, transducerMenu, transducerLabel);
+    activateLabeledElementConstraintBelow(
+        transducerMenu, testSettingsFile_, testSettingsFile_label);
+    activateLabeledElementConstraintBelow(
+        testSettingsFile_, startingSnr_, startingSnr_label);
     av_speech_in_noise::show(view_);
 }
 
