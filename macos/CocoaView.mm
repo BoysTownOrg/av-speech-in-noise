@@ -700,10 +700,6 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     const auto submitCorrectKeywords_ {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
-    [submitCorrectKeywords_
-        setFrame:NSMakeRect(
-                     width(correctKeywordsSubmission.frame) - buttonWidth, 0,
-                     buttonWidth, buttonHeight)];
     addSubview(responseSubmission, submitFreeResponse_);
     addSubview(responseSubmission, response_);
     addSubview(responseSubmission, flagged_);
@@ -714,7 +710,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     addSubview(
         continueTestingDialog.contentView, continueTestingDialogMessage_);
     addSubview(correctKeywordsSubmission, correctKeywordsEntry_);
-    addSubview(correctKeywordsSubmission, submitCorrectKeywords_);
+    addAutolayoutEnabledSubview(
+        correctKeywordsSubmission, submitCorrectKeywords_);
     addSubview(view_, nextTrialButton_);
     addSubview(view_, responseSubmission);
     addSubview(view_, evaluationButtons);
@@ -724,7 +721,14 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
             constraintEqualToAnchor:view_.leadingAnchor
                            constant:8],
         [exitTestButton_.topAnchor constraintEqualToAnchor:view_.topAnchor
-                                                  constant:8]
+                                                  constant:8],
+        [submitCorrectKeywords_.trailingAnchor
+            constraintEqualToAnchor:view_.trailingAnchor
+                           constant:-8],
+        [submitCorrectKeywords_.bottomAnchor
+            constraintEqualToAnchor:view_.bottomAnchor
+                           constant:-8],
+
     ]];
     av_speech_in_noise::hide(evaluationButtons);
     av_speech_in_noise::hide(nextTrialButton_);
