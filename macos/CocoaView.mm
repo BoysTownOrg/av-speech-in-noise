@@ -648,7 +648,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
           initWithFrame:NSMakeRect(0,
                             buttonHeight + reasonableSpacing + labelHeight +
                                 reasonableSpacing,
-                            responseSubmissionWidth, labelHeight)]},
+                            0, labelHeight)]},
       correctKeywordsField{[NSTextField textFieldWithString:@""]},
       freeResponseFlaggedButton{[[NSButton alloc]
           initWithFrame:NSMakeRect(0, buttonHeight + reasonableSpacing,
@@ -687,7 +687,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     addSubview(view_, displayedText_);
     addSubview(view_, secondaryDisplayedText_);
     addAutolayoutEnabledSubview(freeResponseView, submitFreeResponseButton);
-    addSubview(freeResponseView, freeResponseField);
+    addAutolayoutEnabledSubview(freeResponseView, freeResponseField);
     addSubview(freeResponseView, freeResponseFlaggedButton);
     addAutolayoutEnabledSubview(view_, passButton);
     addAutolayoutEnabledSubview(view_, failButton);
@@ -715,7 +715,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         [correctKeywordsField.trailingAnchor
             constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor],
         [correctKeywordsField.widthAnchor
-            constraintEqualToConstant:NSWidth(correctKeywordsField.frame)]
+            constraintEqualToConstant:NSWidth(correctKeywordsField.frame)],
+        [freeResponseField.widthAnchor
+            constraintEqualToConstant:NSWidth(freeResponseField.frame)]
     ]];
     activateChildConstraintNestledInBottomRightCorner(passButton, view_, 8);
     activateChildConstraintNestledInBottomRightCorner(
