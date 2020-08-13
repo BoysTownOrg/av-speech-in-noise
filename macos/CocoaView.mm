@@ -201,9 +201,9 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       rmeSettingLabel{[NSTextField labelWithString:@"RME setting:"]},
       rmeSetting_{[NSTextField textFieldWithString:@""]},
       transducerLabel{[NSTextField labelWithString:@"transducer:"]},
-      transducerMenu{[[NSPopUpButton alloc]
-          initWithFrame:NSMakeRect(0, 0, menuWidth, labelHeight)
-              pullsDown:NO]},
+      transducerMenu{
+          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, menuWidth, 0)
+                                     pullsDown:NO]},
       testSettingsFile_label{[NSTextField labelWithString:@"test settings:"]},
       testSettingsFile_{[NSTextField textFieldWithString:@""]},
       startingSnr_label{[NSTextField labelWithString:@"starting SNR (dB):"]},
@@ -211,18 +211,20 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       actions{[[SetupViewActions alloc] init]} {
     actions->controller = this;
     const auto browseForTestSettingsButton {
-        button("browse", actions, @selector(browseForTestSettings),
-            NSMakeRect(0, 0, 0, buttonHeight))
+        [NSButton buttonWithTitle:@"browse"
+                           target:actions
+                           action:@selector(browseForTestSettings)]
     };
+
     const auto confirmButton {
         button("Confirm", actions, @selector(confirmTestSetup),
-            NSMakeRect(width(r) - buttonWidth, 0, 0, buttonHeight))
+            NSMakeRect(width(r) - buttonWidth, 0, 0, 0))
     };
     const auto playCalibrationButton {
         button("play calibration", actions, @selector(playCalibration),
             NSMakeRect(
                 width(r) - buttonWidth - reasonableSpacing - 1.5 * buttonWidth,
-                0, 0, buttonHeight))
+                0, 0, 0))
     };
     [browseForTestSettingsButton sizeToFit];
     [confirmButton sizeToFit];
@@ -634,6 +636,15 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
           initWithFrame:NSMakeRect(
                             width(r) - evaluationButtonsWidth - buttonWidth, 0,
                             evaluationButtonsWidth, buttonHeight)]},
+      responseSubmission{[[NSView alloc]
+          initWithFrame:NSMakeRect(width(r) - responseSubmissionWidth, 0,
+                            responseSubmissionWidth,
+                            buttonHeight + reasonableSpacing + 2 * labelHeight +
+                                reasonableSpacing)]},
+      correctKeywordsSubmission{[[NSView alloc]
+          initWithFrame:NSMakeRect(width(r) - normalTextFieldWidth, 0,
+                            normalTextFieldWidth,
+                            buttonHeight + reasonableSpacing + labelHeight)]},
       continueTestingDialog{[[NSWindow alloc]
           initWithContentRect:NSMakeRect(0, 0, width(r),
                                   buttonHeight + continueTestingDialogHeight)
@@ -651,15 +662,6 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
           initWithFrame:NSMakeRect(leadingSecondaryTextEdge,
                             lowerPrimaryTextEdge(r),
                             width(r) - leadingSecondaryTextEdge, labelHeight)]},
-      responseSubmission{[[NSView alloc]
-          initWithFrame:NSMakeRect(width(r) - responseSubmissionWidth, 0,
-                            responseSubmissionWidth,
-                            buttonHeight + reasonableSpacing + 2 * labelHeight +
-                                reasonableSpacing)]},
-      correctKeywordsSubmission{[[NSView alloc]
-          initWithFrame:NSMakeRect(width(r) - normalTextFieldWidth, 0,
-                            normalTextFieldWidth,
-                            buttonHeight + reasonableSpacing + labelHeight)]},
       response_{[[NSTextField alloc]
           initWithFrame:NSMakeRect(0,
                             buttonHeight + reasonableSpacing + labelHeight +
@@ -877,19 +879,19 @@ static auto innerFrame(NSRect r) -> NSRect {
 }
 
 CocoaView::CocoaView(NSRect r)
-    : testSetup_{innerFrame(r)}, experimenter_{innerFrame(r)},
-      view{[[NSView alloc] initWithFrame:embeddedFrame(r)]},
-      audioDevice_label{normalLabelWithHeight(0, "audio output:")},
-      deviceMenu{
-          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge,
-                                                   0, menuWidth, labelHeight)
-                                     pullsDown:NO]},
+    : testSetup_{innerFrame(r)},
+      experimenter_{innerFrame(r)}, app{[NSApplication sharedApplication]},
       window{[[NSWindow alloc] initWithContentRect:r
                                          styleMask:NSWindowStyleMaskClosable |
                                          NSWindowStyleMaskTitled
                                            backing:NSBackingStoreBuffered
                                              defer:NO]},
-      app{[NSApplication sharedApplication]} {
+      view{[[NSView alloc] initWithFrame:embeddedFrame(r)]},
+      audioDevice_label{normalLabelWithHeight(0, "audio output:")},
+      deviceMenu{
+          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge,
+                                                   0, menuWidth, labelHeight)
+                                     pullsDown:NO]} {
     app.mainMenu = [[NSMenu alloc] init];
 
     auto appMenu{[[NSMenuItem alloc] init]};
