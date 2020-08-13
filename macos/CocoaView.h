@@ -48,18 +48,19 @@ class CocoaExperimenterView : public View::Experimenter {
 
   private:
     NSView *view_;
-    NSView *evaluationButtons;
-    NSView *responseSubmission;
-    NSView *correctKeywordsSubmission;
+    NSView *freeResponseView;
+    NSView *correctKeywordsView;
     NSWindow *continueTestingDialog;
     NSTextField *continueTestingDialogMessage_;
     NSTextField *displayedText_;
     NSTextField *secondaryDisplayedText_;
-    NSTextField *response_;
-    NSTextField *correctKeywordsEntry_;
-    NSButton *flagged_;
-    NSButton *exitTestButton_;
-    NSButton *nextTrialButton_;
+    NSTextField *freeResponseField;
+    NSTextField *correctKeywordsField;
+    NSButton *freeResponseFlaggedButton;
+    NSButton *exitTestButton;
+    NSButton *nextTrialButton;
+    NSButton *passButton;
+    NSButton *failButton;
     ExperimenterViewActions *actions;
     EventListener *listener_{};
 };
@@ -93,19 +94,19 @@ class CocoaTestSetupView : public View::TestSetup {
   private:
     NSView *view_;
     NSTextField *subjectIdLabel;
-    NSTextField *subjectId_;
+    NSTextField *subjectIdField;
     NSTextField *testerIdLabel;
-    NSTextField *testerId_;
+    NSTextField *testerIdField;
     NSTextField *sessionLabel;
-    NSTextField *session_;
+    NSTextField *sessionField;
     NSTextField *rmeSettingLabel;
-    NSTextField *rmeSetting_;
+    NSTextField *rmeSettingField;
     NSTextField *transducerLabel;
     NSPopUpButton *transducerMenu;
-    NSTextField *testSettingsFile_label;
-    NSTextField *testSettingsFile_;
-    NSTextField *startingSnr_label;
-    NSTextField *startingSnr_;
+    NSTextField *testSettingsLabel;
+    NSTextField *testSettingsField;
+    NSTextField *startingSnrLabel;
+    NSTextField *startingSnrField;
     SetupViewActions *actions;
     EventListener *listener_{};
 };
@@ -189,8 +190,8 @@ class CocoaView : public View {
     NSApplication *app;
     NSWindow *window;
     NSView *view;
-    NSTextField *audioDevice_label;
-    NSPopUpButton *deviceMenu;
+    NSTextField *audioDeviceLabel;
+    NSPopUpButton *audioDeviceMenu;
     bool browseCancelled_{};
 };
 }
