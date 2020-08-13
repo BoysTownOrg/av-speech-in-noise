@@ -653,8 +653,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                             width(r) - leadingSecondaryTextEdge, labelHeight)]},
       freeResponseField{[NSTextField textFieldWithString:@""]},
       correctKeywordsField{[NSTextField textFieldWithString:@""]},
-      freeResponseFlaggedButton{
-          [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 0, labelHeight)]},
+      freeResponseFlaggedButton{[[NSButton alloc] init]},
       actions{[[ExperimenterViewActions alloc] init]} {
     exitTestButton = button("exit test", actions, @selector(exitTest));
     setStaticLike(displayedText_);
