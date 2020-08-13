@@ -178,7 +178,7 @@ static void activateLabeledElementConstraintBelow(
         [above.leadingAnchor constraintEqualToAnchor:below.leadingAnchor],
         [below.topAnchor constraintEqualToAnchor:above.bottomAnchor constant:8],
         firstToTheRightOfSecondConstraint(below, belowLabel, 8),
-        yCenterConstraint(below, belowLabel), widthConstraint(below)
+        yCenterConstraint(below, belowLabel)
     ]];
 }
 
@@ -193,9 +193,8 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       rmeSettingLabel{[NSTextField labelWithString:@"RME setting:"]},
       rmeSettingField{[NSTextField textFieldWithString:@""]},
       transducerLabel{[NSTextField labelWithString:@"transducer:"]},
-      transducerMenu{
-          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, menuWidth, 0)
-                                     pullsDown:NO]},
+      transducerMenu{[[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
+                                                pullsDown:NO]},
       testSettingsLabel{[NSTextField labelWithString:@"test settings:"]},
       testSettingsField{[NSTextField textFieldWithString:@""]},
       startingSnrLabel{[NSTextField labelWithString:@"starting SNR (dB):"]},
@@ -264,6 +263,9 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
         firstToTheRightOfSecondConstraint(
             playCalibrationButton, browseForTestSettingsButton, 8),
         yCenterConstraint(playCalibrationButton, browseForTestSettingsButton),
+        widthConstraint(testerIdField), widthConstraint(sessionField),
+        widthConstraint(rmeSettingField), widthConstraint(testSettingsField),
+        widthConstraint(startingSnrField)
     ]];
     activateLabeledElementConstraintBelow(
         subjectIdField, testerIdField, testerIdLabel);
@@ -318,6 +320,10 @@ void CocoaTestSetupView::populateTransducerMenu(
     std::vector<std::string> items) {
     for (const auto &item : items)
         [transducerMenu addItemWithTitle:asNsString(item)];
+    [transducerMenu sizeToFit];
+
+    [NSLayoutConstraint
+        activateConstraints:@[ widthConstraint(transducerMenu) ]];
 }
 
 void CocoaTestSetupView::setTestSettingsFile(std::string s) {
