@@ -191,10 +191,14 @@ static auto string(NSTextField *field) -> const char * {
     return field.stringValue.UTF8String;
 }
 
+static void enableAutoLayout(NSView *view) {
+    view.translatesAutoresizingMaskIntoConstraints = NO;
+}
+
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
-      subjectIdLabel{normalLabelWithHeight(210, "subject:")},
-      subjectId_{normalTextFieldWithHeight(210)},
+      subjectIdLabel{[NSTextField labelWithString:@"subject:"]},
+      subjectId_{[NSTextField textFieldWithString:@""]},
       testerIdLabel{normalLabelWithHeight(180, "tester:")},
       testerId_{normalTextFieldWithHeight(180)},
       sessionLabel{normalLabelWithHeight(150, "session:")},
@@ -227,6 +231,10 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
                 width(r) - buttonWidth - reasonableSpacing - 1.5 * buttonWidth,
                 0, 1.5 * buttonWidth, buttonHeight))
     };
+    enableAutoLayout(subjectId_);
+    enableAutoLayout(subjectIdLabel);
+    [subjectId_ setPlaceholderString:@"abc123"];
+    [subjectId_ sizeToFit];
     addSubview(view_, browseForTestSettingsButton);
     addSubview(view_, confirmButton);
     addSubview(view_, playCalibrationButton);
@@ -244,6 +252,20 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     addSubview(view_, transducerMenu);
     addSubview(view_, testSettingsFile_label);
     addSubview(view_, testSettingsFile_);
+    [NSLayoutConstraint activateConstraints:@[
+        [subjectIdLabel.leadingAnchor
+            constraintEqualToAnchor:view_.leadingAnchor
+                           constant:8],
+        [subjectIdLabel.topAnchor constraintEqualToAnchor:view_.topAnchor
+                                                 constant:8],
+        [subjectIdLabel.trailingAnchor
+            constraintEqualToAnchor:subjectId_.leadingAnchor
+                           constant:-8],
+        [subjectIdLabel.centerYAnchor
+            constraintEqualToAnchor:subjectId_.centerYAnchor],
+        [subjectId_.widthAnchor
+            constraintEqualToConstant:NSWidth(subjectId_.frame)]
+    ]];
     av_speech_in_noise::show(view_);
 }
 
