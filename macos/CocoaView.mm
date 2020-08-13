@@ -316,7 +316,6 @@ void CocoaTestSetupView::populateTransducerMenu(
     std::vector<std::string> items) {
     for (const auto &item : items)
         [transducerMenu addItemWithTitle:asNsString(item)];
-    [transducerMenu sizeToFit];
 }
 
 void CocoaTestSetupView::setTestSettingsFile(std::string s) {
@@ -959,7 +958,6 @@ auto CocoaView::audioDevice() -> std::string {
 void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (const auto &item : items)
         [audioDeviceMenu addItemWithTitle:asNsString(item)];
-    [audioDeviceMenu sizeToFit];
 }
 
 void CocoaView::setDelegate(id<NSWindowDelegate> delegate) {
