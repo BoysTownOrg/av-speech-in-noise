@@ -210,9 +210,6 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     const auto playCalibrationButton {
         button("play calibration", actions, @selector(playCalibration))
     };
-    [browseForTestSettingsButton sizeToFit];
-    [confirmButton sizeToFit];
-    [playCalibrationButton sizeToFit];
     [subjectIdField setPlaceholderString:@"abc123"];
     [subjectIdField sizeToFit];
     [testerIdField setPlaceholderString:@"abc123"];
