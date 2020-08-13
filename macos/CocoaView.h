@@ -94,19 +94,19 @@ class CocoaTestSetupView : public View::TestSetup {
   private:
     NSView *view_;
     NSTextField *subjectIdLabel;
-    NSTextField *subjectId_;
+    NSTextField *subjectIdField;
     NSTextField *testerIdLabel;
-    NSTextField *testerId_;
+    NSTextField *testerIdField;
     NSTextField *sessionLabel;
-    NSTextField *session_;
+    NSTextField *sessionField;
     NSTextField *rmeSettingLabel;
-    NSTextField *rmeSetting_;
+    NSTextField *rmeSettingField;
     NSTextField *transducerLabel;
     NSPopUpButton *transducerMenu;
-    NSTextField *testSettingsFile_label;
-    NSTextField *testSettingsFile_;
-    NSTextField *startingSnr_label;
-    NSTextField *startingSnr_;
+    NSTextField *testSettingsLabel;
+    NSTextField *testSettingsField;
+    NSTextField *startingSnrLabel;
+    NSTextField *startingSnrField;
     SetupViewActions *actions;
     EventListener *listener_{};
 };

@@ -185,21 +185,21 @@ static void activateLabeledElementConstraintBelow(
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
       subjectIdLabel{[NSTextField labelWithString:@"subject:"]},
-      subjectId_{[NSTextField textFieldWithString:@""]},
+      subjectIdField{[NSTextField textFieldWithString:@""]},
       testerIdLabel{[NSTextField labelWithString:@"tester:"]},
-      testerId_{[NSTextField textFieldWithString:@""]},
+      testerIdField{[NSTextField textFieldWithString:@""]},
       sessionLabel{[NSTextField labelWithString:@"session:"]},
-      session_{[NSTextField textFieldWithString:@""]},
+      sessionField{[NSTextField textFieldWithString:@""]},
       rmeSettingLabel{[NSTextField labelWithString:@"RME setting:"]},
-      rmeSetting_{[NSTextField textFieldWithString:@""]},
+      rmeSettingField{[NSTextField textFieldWithString:@""]},
       transducerLabel{[NSTextField labelWithString:@"transducer:"]},
       transducerMenu{
           [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, menuWidth, 0)
                                      pullsDown:NO]},
-      testSettingsFile_label{[NSTextField labelWithString:@"test settings:"]},
-      testSettingsFile_{[NSTextField textFieldWithString:@""]},
-      startingSnr_label{[NSTextField labelWithString:@"starting SNR (dB):"]},
-      startingSnr_{[NSTextField textFieldWithString:@""]},
+      testSettingsLabel{[NSTextField labelWithString:@"test settings:"]},
+      testSettingsField{[NSTextField textFieldWithString:@""]},
+      startingSnrLabel{[NSTextField labelWithString:@"starting SNR (dB):"]},
+      startingSnrField{[NSTextField textFieldWithString:@""]},
       actions{[[SetupViewActions alloc] init]} {
     actions->controller = this;
     const auto browseForTestSettingsButton {
@@ -215,46 +215,47 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     [browseForTestSettingsButton sizeToFit];
     [confirmButton sizeToFit];
     [playCalibrationButton sizeToFit];
-    [subjectId_ setPlaceholderString:@"abc123"];
-    [subjectId_ sizeToFit];
-    [testerId_ setPlaceholderString:@"abc123"];
-    [testerId_ sizeToFit];
-    [session_ setPlaceholderString:@"abc123"];
-    [session_ sizeToFit];
-    [rmeSetting_ setPlaceholderString:@"ihavenoideawhatgoeshere"];
-    [rmeSetting_ sizeToFit];
-    [testSettingsFile_
+    [subjectIdField setPlaceholderString:@"abc123"];
+    [subjectIdField sizeToFit];
+    [testerIdField setPlaceholderString:@"abc123"];
+    [testerIdField sizeToFit];
+    [sessionField setPlaceholderString:@"abc123"];
+    [sessionField sizeToFit];
+    [rmeSettingField setPlaceholderString:@"ihavenoideawhatgoeshere"];
+    [rmeSettingField sizeToFit];
+    [testSettingsField
         setPlaceholderString:@"/Users/username/Desktop/file.txt"];
-    [testSettingsFile_ sizeToFit];
-    [startingSnr_ setPlaceholderString:@"15"];
-    [startingSnr_ sizeToFit];
+    [testSettingsField sizeToFit];
+    [startingSnrField setPlaceholderString:@"15"];
+    [startingSnrField sizeToFit];
     addAutolayoutEnabledSubview(view_, browseForTestSettingsButton);
     addAutolayoutEnabledSubview(view_, confirmButton);
     addAutolayoutEnabledSubview(view_, playCalibrationButton);
     addAutolayoutEnabledSubview(view_, subjectIdLabel);
-    addAutolayoutEnabledSubview(view_, subjectId_);
+    addAutolayoutEnabledSubview(view_, subjectIdField);
     addAutolayoutEnabledSubview(view_, testerIdLabel);
-    addAutolayoutEnabledSubview(view_, testerId_);
+    addAutolayoutEnabledSubview(view_, testerIdField);
     addAutolayoutEnabledSubview(view_, sessionLabel);
-    addAutolayoutEnabledSubview(view_, session_);
+    addAutolayoutEnabledSubview(view_, sessionField);
     addAutolayoutEnabledSubview(view_, rmeSettingLabel);
-    addAutolayoutEnabledSubview(view_, rmeSetting_);
+    addAutolayoutEnabledSubview(view_, rmeSettingField);
     addAutolayoutEnabledSubview(view_, transducerLabel);
     addAutolayoutEnabledSubview(view_, transducerMenu);
-    addAutolayoutEnabledSubview(view_, testSettingsFile_label);
-    addAutolayoutEnabledSubview(view_, testSettingsFile_);
-    addAutolayoutEnabledSubview(view_, startingSnr_label);
-    addAutolayoutEnabledSubview(view_, startingSnr_);
+    addAutolayoutEnabledSubview(view_, testSettingsLabel);
+    addAutolayoutEnabledSubview(view_, testSettingsField);
+    addAutolayoutEnabledSubview(view_, startingSnrLabel);
+    addAutolayoutEnabledSubview(view_, startingSnrField);
     [NSLayoutConstraint activateConstraints:@[
-        [subjectId_.topAnchor constraintEqualToAnchor:view_.topAnchor
-                                             constant:8],
-        firstToTheRightOfSecondConstraint(subjectId_, subjectIdLabel, 8),
-        yCenterConstraint(subjectId_, subjectIdLabel),
-        widthConstraint(subjectId_),
-        [subjectId_.centerXAnchor constraintEqualToAnchor:view_.centerXAnchor],
+        [subjectIdField.topAnchor constraintEqualToAnchor:view_.topAnchor
+                                                 constant:8],
+        firstToTheRightOfSecondConstraint(subjectIdField, subjectIdLabel, 8),
+        yCenterConstraint(subjectIdField, subjectIdLabel),
+        widthConstraint(subjectIdField),
+        [subjectIdField.centerXAnchor
+            constraintEqualToAnchor:view_.centerXAnchor],
         firstToTheRightOfSecondConstraint(
-            browseForTestSettingsButton, testSettingsFile_, 8),
-        yCenterConstraint(browseForTestSettingsButton, testSettingsFile_),
+            browseForTestSettingsButton, testSettingsField, 8),
+        yCenterConstraint(browseForTestSettingsButton, testSettingsField),
         [confirmButton.trailingAnchor
             constraintEqualToAnchor:view_.trailingAnchor
                            constant:-8],
@@ -264,16 +265,18 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
             playCalibrationButton, browseForTestSettingsButton, 8),
         yCenterConstraint(playCalibrationButton, browseForTestSettingsButton),
     ]];
-    activateLabeledElementConstraintBelow(subjectId_, testerId_, testerIdLabel);
-    activateLabeledElementConstraintBelow(testerId_, session_, sessionLabel);
     activateLabeledElementConstraintBelow(
-        session_, rmeSetting_, rmeSettingLabel);
+        subjectIdField, testerIdField, testerIdLabel);
     activateLabeledElementConstraintBelow(
-        rmeSetting_, transducerMenu, transducerLabel);
+        testerIdField, sessionField, sessionLabel);
     activateLabeledElementConstraintBelow(
-        transducerMenu, testSettingsFile_, testSettingsFile_label);
+        sessionField, rmeSettingField, rmeSettingLabel);
     activateLabeledElementConstraintBelow(
-        testSettingsFile_, startingSnr_, startingSnr_label);
+        rmeSettingField, transducerMenu, transducerLabel);
+    activateLabeledElementConstraintBelow(
+        transducerMenu, testSettingsField, testSettingsLabel);
+    activateLabeledElementConstraintBelow(
+        testSettingsField, startingSnrField, startingSnrLabel);
     av_speech_in_noise::show(view_);
 }
 
@@ -284,27 +287,31 @@ void CocoaTestSetupView::show() { av_speech_in_noise::show(view_); }
 void CocoaTestSetupView::hide() { av_speech_in_noise::hide(view_); }
 
 auto CocoaTestSetupView::testSettingsFile() -> std::string {
-    return string(testSettingsFile_);
+    return string(testSettingsField);
 }
 
-auto CocoaTestSetupView::testerId() -> std::string { return string(testerId_); }
+auto CocoaTestSetupView::testerId() -> std::string {
+    return string(testerIdField);
+}
 
 auto CocoaTestSetupView::startingSnr() -> std::string {
-    return string(startingSnr_);
+    return string(startingSnrField);
 }
 
 auto CocoaTestSetupView::subjectId() -> std::string {
-    return string(subjectId_);
+    return string(subjectIdField);
 }
 
-auto CocoaTestSetupView::session() -> std::string { return string(session_); }
+auto CocoaTestSetupView::session() -> std::string {
+    return string(sessionField);
+}
 
 auto CocoaTestSetupView::transducer() -> std::string {
     return transducerMenu.titleOfSelectedItem.UTF8String;
 }
 
 auto CocoaTestSetupView::rmeSetting() -> std::string {
-    return string(rmeSetting_);
+    return string(rmeSettingField);
 }
 
 void CocoaTestSetupView::populateTransducerMenu(
@@ -314,7 +321,7 @@ void CocoaTestSetupView::populateTransducerMenu(
 }
 
 void CocoaTestSetupView::setTestSettingsFile(std::string s) {
-    set(testSettingsFile_, s);
+    set(testSettingsField, s);
 }
 
 void CocoaTestSetupView::confirm() { listener_->confirmTestSetup(); }
@@ -668,16 +675,16 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     };
     passButton = button("correct", actions, @selector(submitPassedTrial));
     failButton = button("incorrect", actions, @selector(submitFailedTrial));
-    const auto continueButton_ {
+    const auto continueButton {
         button("continue", actions, @selector(acceptContinuingTesting))
     };
-    const auto exitButton_ {
+    const auto exitButton {
         button("exit", actions, @selector(declineContinuingTesting))
     };
-    [continueButton_ setFrame:NSMakeRect(width(r) - buttonWidth, 0, buttonWidth,
-                                  buttonHeight)];
-    [exitButton_ setFrame:NSMakeRect(width(r) - 3 * buttonWidth, 0, buttonWidth,
-                              buttonHeight)];
+    [continueButton setFrame:NSMakeRect(width(r) - buttonWidth, 0, buttonWidth,
+                                 buttonHeight)];
+    [exitButton setFrame:NSMakeRect(width(r) - 3 * buttonWidth, 0, buttonWidth,
+                             buttonHeight)];
     const auto submitCorrectKeywordsButton {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
@@ -693,8 +700,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     addAutolayoutEnabledSubview(freeResponseView, freeResponseFlaggedButton);
     addAutolayoutEnabledSubview(view_, passButton);
     addAutolayoutEnabledSubview(view_, failButton);
-    addSubview(continueTestingDialog.contentView, continueButton_);
-    addSubview(continueTestingDialog.contentView, exitButton_);
+    addSubview(continueTestingDialog.contentView, continueButton);
+    addSubview(continueTestingDialog.contentView, exitButton);
     addSubview(
         continueTestingDialog.contentView, continueTestingDialogMessage_);
     addAutolayoutEnabledSubview(correctKeywordsView, correctKeywordsField);
