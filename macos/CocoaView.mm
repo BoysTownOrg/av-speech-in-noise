@@ -656,12 +656,10 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                             normalTextFieldWidth, labelHeight)]},
       actions{[[ExperimenterViewActions alloc] init]} {
     exitTestButton_ = button("exit test", actions, @selector(exitTest));
-    [exitTestButton_ setFrame:NSMakeRect(0, height(r) - buttonHeight,
-                                  buttonWidth, buttonHeight)];
     setStaticLike(displayedText_);
     setStaticLike(secondaryDisplayedText_);
     setStaticLike(continueTestingDialogMessage_);
-    addSubview(view_, exitTestButton_);
+    addAutolayoutEnabledSubview(view_, exitTestButton_);
     addSubview(view_, displayedText_);
     addSubview(view_, secondaryDisplayedText_);
     av_speech_in_noise::hide(view_);
@@ -721,6 +719,13 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     addSubview(view_, responseSubmission);
     addSubview(view_, evaluationButtons);
     addSubview(view_, correctKeywordsSubmission);
+    [NSLayoutConstraint activateConstraints:@[
+        [exitTestButton_.leadingAnchor
+            constraintEqualToAnchor:view_.leadingAnchor
+                           constant:8],
+        [exitTestButton_.topAnchor constraintEqualToAnchor:view_.topAnchor
+                                                  constant:8]
+    ]];
     av_speech_in_noise::hide(evaluationButtons);
     av_speech_in_noise::hide(nextTrialButton_);
     av_speech_in_noise::hide(responseSubmission);
