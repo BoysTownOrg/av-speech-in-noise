@@ -626,10 +626,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                             responseSubmissionWidth,
                             buttonHeight + reasonableSpacing + 2 * labelHeight +
                                 reasonableSpacing)]},
-      correctKeywordsSubmission{[[NSView alloc]
-          initWithFrame:NSMakeRect(width(r) - normalTextFieldWidth, 0,
-                            normalTextFieldWidth,
-                            buttonHeight + reasonableSpacing + labelHeight)]},
+      correctKeywordsSubmission{[[NSView alloc] initWithFrame:r]},
       continueTestingDialog{[[NSWindow alloc]
           initWithContentRect:NSMakeRect(0, 0, width(r),
                                   buttonHeight + continueTestingDialogHeight)
