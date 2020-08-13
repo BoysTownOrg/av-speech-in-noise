@@ -211,14 +211,11 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       actions{[[SetupViewActions alloc] init]} {
     actions->controller = this;
     const auto browseForTestSettingsButton {
-        [NSButton buttonWithTitle:@"browse"
-                           target:actions
-                           action:@selector(browseForTestSettings)]
+        button("browse", actions, @selector(browseForTestSettings))
     };
 
     const auto confirmButton {
-        button("Confirm", actions, @selector(confirmTestSetup),
-            NSMakeRect(width(r) - buttonWidth, 0, 0, 0))
+        button("Confirm", actions, @selector(confirmTestSetup))
     };
     const auto playCalibrationButton {
         button("play calibration", actions, @selector(playCalibration),
@@ -274,7 +271,12 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
             constraintEqualToAnchor:testSettingsFile_.trailingAnchor
                            constant:8],
         [browseForTestSettingsButton.centerYAnchor
-            constraintEqualToAnchor:testSettingsFile_.centerYAnchor]
+            constraintEqualToAnchor:testSettingsFile_.centerYAnchor],
+        [confirmButton.trailingAnchor
+            constraintEqualToAnchor:view_.trailingAnchor
+                           constant:-8],
+        [confirmButton.bottomAnchor constraintEqualToAnchor:view_.bottomAnchor
+                                                   constant:-8]
     ]];
     activateLabeledElementConstraintBelow(subjectId_, testerId_, testerIdLabel);
     activateLabeledElementConstraintBelow(testerId_, session_, sessionLabel);
