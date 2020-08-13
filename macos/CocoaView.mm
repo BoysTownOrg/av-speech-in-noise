@@ -891,10 +891,9 @@ CocoaView::CocoaView(NSRect r)
                                            backing:NSBackingStoreBuffered
                                              defer:NO]},
       view{[[NSView alloc] initWithFrame:embeddedFrame(r)]},
-      audioDevice_label{normalLabelWithHeight(0, "audio output:")},
+      audioDevice_label{[NSTextField labelWithString:@"audio output:"]},
       deviceMenu{
-          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge,
-                                                   0, menuWidth, labelHeight)
+          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, menuWidth, 0)
                                      pullsDown:NO]} {
     app.mainMenu = [[NSMenu alloc] init];
 
@@ -907,9 +906,15 @@ CocoaView::CocoaView(NSRect r)
     [app.mainMenu addItem:appMenu];
     addSubview(view, testSetup_.view());
     addSubview(view, experimenter_.view());
-    addSubview(view, audioDevice_label);
-    addSubview(view, deviceMenu);
+    addAutolayoutEnabledSubview(view, audioDevice_label);
+    addAutolayoutEnabledSubview(view, deviceMenu);
     addSubview(window.contentView, view);
+    [NSLayoutConstraint activateConstraints:@[
+        firstToTheRightOfSecondConstraint(deviceMenu, audioDevice_label, 8),
+        yCenterConstraint(deviceMenu, audioDevice_label),
+        [deviceMenu.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
+                                                constant:-8]
+    ]];
     [window makeKeyAndOrderFront:nil];
 }
 
