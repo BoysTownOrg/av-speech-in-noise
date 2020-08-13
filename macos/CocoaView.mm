@@ -681,6 +681,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     };
     [correctKeywordsField setPlaceholderString:@"2"];
     [correctKeywordsField sizeToFit];
+    [freeResponseField setPlaceholderString:@"This is a sentence."];
+    [freeResponseField sizeToFit];
     addAutolayoutEnabledSubview(view_, exitTestButton);
     addSubview(view_, displayedText_);
     addSubview(view_, secondaryDisplayedText_);
