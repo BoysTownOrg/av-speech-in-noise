@@ -158,13 +158,6 @@ static auto button(const std::string &s, id target, SEL action) -> NSButton * {
     return [NSButton buttonWithTitle:asNsString(s) target:target action:action];
 }
 
-static auto button(const std::string &s, id target, SEL action, NSRect frame)
-    -> NSButton * {
-    const auto b{button(s, target, action)};
-    [b setFrame:frame];
-    return b;
-}
-
 static auto string(NSTextField *field) -> const char * {
     return field.stringValue.UTF8String;
 }
@@ -178,14 +171,28 @@ static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
     [parent addSubview:child];
 }
 
+static auto constraint(NSLayoutYAxisAnchor *a, NSLayoutYAxisAnchor *b)
+    -> NSLayoutConstraint * {
+    return [a constraintEqualToAnchor:b];
+}
+
+static auto yCenterConstraint(NSView *a, NSView *b) -> NSLayoutConstraint * {
+    return constraint(a.centerYAnchor, b.centerYAnchor);
+}
+
+static auto firstToTheRightOfSecondConstraint(
+    NSView *first, NSView *second, CGFloat x) -> NSLayoutConstraint * {
+    return [first.leadingAnchor constraintEqualToAnchor:second.trailingAnchor
+                                               constant:x];
+}
+
 static void activateLabeledElementConstraintBelow(
     NSView *above, NSView *below, NSView *belowLabel) {
     [NSLayoutConstraint activateConstraints:@[
         [above.leadingAnchor constraintEqualToAnchor:below.leadingAnchor],
         [below.topAnchor constraintEqualToAnchor:above.bottomAnchor constant:8],
-        [below.leadingAnchor constraintEqualToAnchor:belowLabel.trailingAnchor
-                                            constant:8],
-        [below.centerYAnchor constraintEqualToAnchor:belowLabel.centerYAnchor],
+        firstToTheRightOfSecondConstraint(below, belowLabel, 8),
+        yCenterConstraint(below, belowLabel),
         [below.widthAnchor constraintEqualToConstant:NSWidth(below.frame)]
     ]];
 }
@@ -256,29 +263,22 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     [NSLayoutConstraint activateConstraints:@[
         [subjectId_.topAnchor constraintEqualToAnchor:view_.topAnchor
                                              constant:8],
-        [subjectId_.leadingAnchor
-            constraintEqualToAnchor:subjectIdLabel.trailingAnchor
-                           constant:8],
-        [subjectId_.centerYAnchor
-            constraintEqualToAnchor:subjectIdLabel.centerYAnchor],
+        firstToTheRightOfSecondConstraint(subjectId_, subjectIdLabel, 8),
+        yCenterConstraint(subjectId_, subjectIdLabel),
         [subjectId_.widthAnchor
             constraintEqualToConstant:NSWidth(subjectId_.frame)],
         [subjectId_.centerXAnchor constraintEqualToAnchor:view_.centerXAnchor],
-        [browseForTestSettingsButton.leadingAnchor
-            constraintEqualToAnchor:testSettingsFile_.trailingAnchor
-                           constant:8],
-        [browseForTestSettingsButton.centerYAnchor
-            constraintEqualToAnchor:testSettingsFile_.centerYAnchor],
+        firstToTheRightOfSecondConstraint(
+            browseForTestSettingsButton, testSettingsFile_, 8),
+        yCenterConstraint(browseForTestSettingsButton, testSettingsFile_),
         [confirmButton.trailingAnchor
             constraintEqualToAnchor:view_.trailingAnchor
                            constant:-8],
         [confirmButton.bottomAnchor constraintEqualToAnchor:view_.bottomAnchor
                                                    constant:-8],
-        [playCalibrationButton.leadingAnchor
-            constraintEqualToAnchor:browseForTestSettingsButton.trailingAnchor
-                           constant:8],
-        [playCalibrationButton.centerYAnchor
-            constraintEqualToAnchor:browseForTestSettingsButton.centerYAnchor],
+        firstToTheRightOfSecondConstraint(
+            playCalibrationButton, browseForTestSettingsButton, 8),
+        yCenterConstraint(playCalibrationButton, browseForTestSettingsButton),
     ]];
     activateLabeledElementConstraintBelow(subjectId_, testerId_, testerIdLabel);
     activateLabeledElementConstraintBelow(testerId_, session_, sessionLabel);
