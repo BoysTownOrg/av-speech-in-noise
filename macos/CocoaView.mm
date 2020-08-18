@@ -348,7 +348,7 @@ static auto resourcePath(const std::string &stem, const std::string &extension)
         .UTF8String;
 }
 
-static auto addConsonantImageButton(
+static auto consonantImageButton(
     std::unordered_map<id, std::string> &consonants,
     ConsonantViewActions *actions, const std::string &consonant) -> NSButton * {
     const auto image{[[NSImage alloc]
@@ -396,31 +396,32 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
     actions->controller = this;
     responseButtons = [NSStackView stackViewWithViews:@[
         [NSStackView stackViewWithViews:@[
-            addConsonantImageButton(consonants, actions, "b"),
-            addConsonantImageButton(consonants, actions, "c"),
-            addConsonantImageButton(consonants, actions, "d"),
-            addConsonantImageButton(consonants, actions, "h")
+            consonantImageButton(consonants, actions, "b"),
+            consonantImageButton(consonants, actions, "c"),
+            consonantImageButton(consonants, actions, "d"),
+            consonantImageButton(consonants, actions, "h")
         ]],
         [NSStackView stackViewWithViews:@[
-            addConsonantImageButton(consonants, actions, "k"),
-            addConsonantImageButton(consonants, actions, "m"),
-            addConsonantImageButton(consonants, actions, "n"),
-            addConsonantImageButton(consonants, actions, "p")
+            consonantImageButton(consonants, actions, "k"),
+            consonantImageButton(consonants, actions, "m"),
+            consonantImageButton(consonants, actions, "n"),
+            consonantImageButton(consonants, actions, "p")
         ]],
         [NSStackView stackViewWithViews:@[
-            addConsonantImageButton(consonants, actions, "s"),
-            addConsonantImageButton(consonants, actions, "t"),
-            addConsonantImageButton(consonants, actions, "v"),
-            addConsonantImageButton(consonants, actions, "z")
+            consonantImageButton(consonants, actions, "s"),
+            consonantImageButton(consonants, actions, "t"),
+            consonantImageButton(consonants, actions, "v"),
+            consonantImageButton(consonants, actions, "z")
         ]]
     ]];
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
     addReadyButton(readyButton, actions);
     addSubview(window.contentView, readyButton);
     addAutolayoutEnabledSubview(window.contentView, responseButtons);
+    const auto contentView{window.contentView};
     [NSLayoutConstraint activateConstraints:@[
         [responseButtons.centerXAnchor
-            constraintEqualToAnchor:window.contentView.centerXAnchor]
+            constraintEqualToAnchor:contentView.centerXAnchor]
     ]];
     hideResponseButtons();
     hideReadyButton();
