@@ -5,5 +5,5 @@ target_include_directories(
   PRIVATE include/presentation)
 target_link_libraries(presentation av-speech-in-noise GSL)
 target_compile_options(presentation PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})
-target_compile_features(presentation PUBLIC cxx_std_11)
+target_compile_features(presentation PUBLIC cxx_std_17)
 set_target_properties(presentation PROPERTIES CXX_EXTENSIONS OFF)
