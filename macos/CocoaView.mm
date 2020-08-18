@@ -348,10 +348,11 @@ static auto resourcePath(const std::string &stem, const std::string &extension)
         .UTF8String;
 }
 
-static void addConsonantImageButton(
+static auto addConsonantImageButton(
     std::unordered_map<id, std::string> &consonants, NSView *parent,
     ConsonantViewActions *actions, const std::string &consonant, gsl::index row,
-    gsl::index column, gsl::index totalRows, gsl::index totalColumns) {
+    gsl::index column, gsl::index totalRows, gsl::index totalColumns)
+    -> NSButton * {
     constexpr auto spacing{8};
     const auto image{[[NSImage alloc]
         initWithContentsOfFile:asNsString(resourcePath(consonant, "bmp"))]};
@@ -373,6 +374,7 @@ static void addConsonantImageButton(
     button.bordered = NO;
     button.imageScaling = NSImageScaleProportionallyUpOrDown;
     addSubview(parent, button);
+    return button;
 }
 
 static void addReadyButton(NSView *parent, ConsonantViewActions *actions) {
@@ -406,33 +408,50 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       actions{[[ConsonantViewActions alloc] init]} {
     actions->controller = this;
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "b", 0, 0, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "c", 0, 1, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "d", 0, 2, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "h", 0, 3, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "k", 1, 0, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "m", 1, 1, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "n", 1, 2, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "p", 1, 3, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "s", 2, 0, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "t", 2, 1, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "v", 2, 2, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "z", 2, 3, 3, 4);
+    auto firstRow {
+        [NSStackView stackViewWithViews:@[
+            addConsonantImageButton(
+                consonants, responseButtons, actions, "b", 0, 0, 3, 4),
+            addConsonantImageButton(
+                consonants, responseButtons, actions, "c", 0, 1, 3, 4),
+            addConsonantImageButton(
+                consonants, responseButtons, actions, "d", 0, 2, 3, 4),
+            addConsonantImageButton(
+                consonants, responseButtons, actions, "h", 0, 3, 3, 4)
+        ]]
+    };
+    auto secondRow {
+        [NSStackView stackViewWithViews:@[
+            addConsonantImageButton(
+                consonants, responseButtons, actions, "k", 1, 0, 3, 4),
+            addConsonantImageButton(
+                consonants, responseButtons, actions, "m", 1, 1, 3, 4),
+            addConsonantImageButton(
+                consonants, responseButtons, actions, "n", 1, 2, 3, 4),
+            addConsonantImageButton(
+                consonants, responseButtons, actions, "p", 1, 3, 3, 4)
+        ]]
+    };
+    auto thirdRow {
+        [NSStackView stackViewWithViews:@[
+            addConsonantImageButton(
+                consonants, responseButtons, actions, "s", 2, 0, 3, 4),
+            addConsonantImageButton(
+                consonants, responseButtons, actions, "t", 2, 1, 3, 4),
+            addConsonantImageButton(
+                consonants, responseButtons, actions, "v", 2, 2, 3, 4),
+            addConsonantImageButton(
+                consonants, responseButtons, actions, "z", 2, 3, 3, 4)
+        ]]
+    };
+    auto allRows {
+        [NSStackView stackViewWithViews:@[ firstRow, secondRow, thirdRow ]]
+    };
+    allRows.orientation = NSUserInterfaceLayoutOrientationVertical;
     addReadyButton(readyButton, actions);
     addSubview(window.contentView, readyButton);
     addSubview(window.contentView, responseButtons);
+    addSubview(window.contentView, allRows);
     hideResponseButtons();
     hideReadyButton();
 }
