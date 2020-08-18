@@ -417,7 +417,11 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
     addReadyButton(readyButton, actions);
     addSubview(window.contentView, readyButton);
-    addSubview(window.contentView, responseButtons);
+    addAutolayoutEnabledSubview(window.contentView, responseButtons);
+    [NSLayoutConstraint activateConstraints:@[
+        [responseButtons.centerXAnchor
+            constraintEqualToAnchor:window.contentView.centerXAnchor]
+    ]];
     hideResponseButtons();
     hideReadyButton();
 }
