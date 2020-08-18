@@ -362,7 +362,6 @@ static auto addConsonantImageButton(
     consonants[button] = consonant;
     button.bordered = NO;
     button.imageScaling = NSImageScaleProportionallyUpOrDown;
-    addSubview(parent, button);
     return button;
 }
 
@@ -391,8 +390,6 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
                                          styleMask:NSWindowStyleMaskBorderless
                                            backing:NSBackingStoreBuffered
                                              defer:YES]},
-      responseButtons{
-          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       readyButton{
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       actions{[[ConsonantViewActions alloc] init]} {
@@ -421,14 +418,12 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
             addConsonantImageButton(consonants, responseButtons, actions, "z")
         ]]
     };
-    auto allRows {
-        [NSStackView stackViewWithViews:@[ firstRow, secondRow, thirdRow ]]
-    };
-    allRows.orientation = NSUserInterfaceLayoutOrientationVertical;
+    responseButtons =
+        [NSStackView stackViewWithViews:@[ firstRow, secondRow, thirdRow ]];
+    responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
     addReadyButton(readyButton, actions);
     addSubview(window.contentView, readyButton);
     addSubview(window.contentView, responseButtons);
-    addSubview(window.contentView, allRows);
     hideResponseButtons();
     hideReadyButton();
 }

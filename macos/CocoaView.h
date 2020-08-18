@@ -128,7 +128,7 @@ class CocoaConsonantView : public View::Consonant {
   private:
     std::unordered_map<id, std::string> consonants;
     NSWindow *window;
-    NSView *responseButtons;
+    NSStackView *responseButtons;
     NSView *readyButton;
     NSButton *lastButtonPressed{};
     ConsonantViewActions *actions;
