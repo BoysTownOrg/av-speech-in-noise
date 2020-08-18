@@ -392,6 +392,7 @@ void Presenter::Consonant::stop() {
 }
 
 void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {
+    view->hideCursor();
     parent->playTrial();
     view->hideReadyButton();
 }

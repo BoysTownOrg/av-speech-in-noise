@@ -75,6 +75,7 @@ class View {
         virtual void hideResponseButtons() = 0;
         virtual void showResponseButtons() = 0;
         virtual auto consonant() -> std::string = 0;
+        virtual void hideCursor() = 0;
     };
 
     class CoordinateResponseMeasure {

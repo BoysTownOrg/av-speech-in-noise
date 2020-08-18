@@ -66,6 +66,10 @@ class ConsonantViewStub : public View::Consonant {
 
     auto consonant() -> std::string override { return consonant_; }
 
+    [[nodiscard]] auto cursorHidden() const -> bool { return cursorHidden_; }
+
+    void hideCursor() { cursorHidden_ = true; }
+
   private:
     std::string consonant_;
     EventListener *listener_{};
@@ -75,6 +79,7 @@ class ConsonantViewStub : public View::Consonant {
     bool responseButtonsHidden_{};
     bool readyButtonShown_{};
     bool readyButtonHidden_{};
+    bool cursorHidden_{};
 };
 
 class CoordinateResponseMeasureViewStub
@@ -2300,6 +2305,11 @@ PRESENTER_TEST(
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest,
         playingTrialFromExperimenter);
+}
+
+PRESENTER_TEST(playingConsonantTrialHidesCursor) {
+    run(playingConsonantTrial);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.cursorHidden());
 }
 
 PRESENTER_TEST(submittingCoordinateResponseMeasurePlaysTrial) {
