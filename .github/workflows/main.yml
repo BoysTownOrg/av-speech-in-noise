@@ -12,12 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: generate build system
-        run: cmake -S . -B build -GXcode -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 -DAV_SPEECH_IN_NOISE_ENABLE_TESTS=1
+        run: cmake -S . -B build -GXcode -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 -DAV_SPEECH_IN_NOISE_ENABLE_TESTS=1
       - name: build tests
         run: cmake --build build --target tests --config Release
       - name: test library
         run: |
           cd ./build
           ctest -V -C Release
-      - name: build app
+      - name: build app Release
         run: cmake --build build --target AvSpeechInNoise --config Release
+      - name: build app Debug
+        run: cmake --build build --target AvSpeechInNoise --config Debug
