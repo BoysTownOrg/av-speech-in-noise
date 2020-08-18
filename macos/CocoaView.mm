@@ -394,29 +394,32 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       actions{[[ConsonantViewActions alloc] init]} {
     actions->controller = this;
-    auto firstRow{[NSStackView stackViewWithViews:@[
+    auto firstRow {
+        [NSStackView stackViewWithViews:@[
             consonantImageButton(consonants, actions, "b"),
             consonantImageButton(consonants, actions, "c"),
             consonantImageButton(consonants, actions, "d"),
             consonantImageButton(consonants, actions, "h")
-        ]]};
-        auto secondRow{[NSStackView stackViewWithViews:@[
+        ]]
+    };
+    auto secondRow {
+        [NSStackView stackViewWithViews:@[
             consonantImageButton(consonants, actions, "k"),
             consonantImageButton(consonants, actions, "m"),
             consonantImageButton(consonants, actions, "n"),
             consonantImageButton(consonants, actions, "p")
-        ]]};
-        auto thirdRow{[NSStackView stackViewWithViews:@[
+        ]]
+    };
+    auto thirdRow {
+        [NSStackView stackViewWithViews:@[
             consonantImageButton(consonants, actions, "s"),
             consonantImageButton(consonants, actions, "t"),
             consonantImageButton(consonants, actions, "v"),
             consonantImageButton(consonants, actions, "z")
-        ]]};
-    responseButtons = [NSStackView stackViewWithViews:@[
-        firstRow,
-        secondRow,
-        thirdRow
-    ]];
+        ]]
+    };
+    responseButtons =
+        [NSStackView stackViewWithViews:@[ firstRow, secondRow, thirdRow ]];
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
     responseButtons.distribution = NSStackViewDistributionFillEqually;
     firstRow.distribution = NSStackViewDistributionFillEqually;
@@ -449,28 +452,22 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
             constraintEqualToAnchor:responseButtons.trailingAnchor]
     ]];
     for (NSView *view in firstRow.views) {
-    [NSLayoutConstraint activateConstraints:@[
-        [view.topAnchor
-            constraintEqualToAnchor:firstRow.topAnchor],
-        [view.bottomAnchor
-            constraintEqualToAnchor:firstRow.bottomAnchor]
-            ]];
+        [NSLayoutConstraint activateConstraints:@[
+            [view.topAnchor constraintEqualToAnchor:firstRow.topAnchor],
+            [view.bottomAnchor constraintEqualToAnchor:firstRow.bottomAnchor]
+        ]];
     }
     for (NSView *view in secondRow.views) {
-    [NSLayoutConstraint activateConstraints:@[
-        [view.topAnchor
-            constraintEqualToAnchor:secondRow.topAnchor],
-        [view.bottomAnchor
-            constraintEqualToAnchor:secondRow.bottomAnchor]
-            ]];
+        [NSLayoutConstraint activateConstraints:@[
+            [view.topAnchor constraintEqualToAnchor:secondRow.topAnchor],
+            [view.bottomAnchor constraintEqualToAnchor:secondRow.bottomAnchor]
+        ]];
     }
     for (NSView *view in thirdRow.views) {
-    [NSLayoutConstraint activateConstraints:@[
-        [view.topAnchor
-            constraintEqualToAnchor:thirdRow.topAnchor],
-        [view.bottomAnchor
-            constraintEqualToAnchor:thirdRow.bottomAnchor]
-            ]];
+        [NSLayoutConstraint activateConstraints:@[
+            [view.topAnchor constraintEqualToAnchor:thirdRow.topAnchor],
+            [view.bottomAnchor constraintEqualToAnchor:thirdRow.bottomAnchor]
+        ]];
     }
     hideResponseButtons();
     hideReadyButton();
