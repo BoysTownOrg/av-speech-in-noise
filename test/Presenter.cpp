@@ -438,6 +438,10 @@ class ViewStub : public View {
 
     [[nodiscard]] auto audioDevices() const { return audioDevices_; }
 
+    [[nodiscard]] auto cursorShown() const -> bool { return cursorShown_; }
+
+    void showCursor() { cursorShown_ = true; }
+
   private:
     std::vector<std::string> audioDevices_;
     std::string errorMessage_;
@@ -446,6 +450,7 @@ class ViewStub : public View {
     std::string audioDevice_;
     bool eventLoopCalled_{};
     bool browseCancelled_{};
+    bool cursorShown_{};
 };
 
 class TestSettingsInterpreterStub : public TestSettingsInterpreter {
@@ -1446,6 +1451,12 @@ class PresenterTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_TRUE(trialSubmission.responseViewShown());
     }
 
+    void assertCompleteTrialShowsCursor(ConfirmingTestSetup &useCase) {
+        run(useCase);
+        completeTrial(model);
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.cursorShown());
+    }
+
     void assertShowsTrialNumber(UseCase &useCase) {
         model.setTrialNumber(1);
         run(useCase);
@@ -1797,6 +1808,10 @@ PRESENTER_TEST(submittingPassedTrialHidesSubmissionEvenWhenTestComplete) {
 
 PRESENTER_TEST(submittingFailedTrialHidesSubmissionEvenWhenTestComplete) {
     assertCompleteTestHidesResponse(submittingFailedTrial);
+}
+
+PRESENTER_TEST(completingTrialShowsCursorForAdaptiveCorrectKeywordsTest) {
+    assertCompleteTrialShowsCursor(confirmingAdaptiveCorrectKeywordsTest);
 }
 
 PRESENTER_TEST(

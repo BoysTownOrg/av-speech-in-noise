@@ -173,6 +173,7 @@ class View {
     virtual void populateAudioDeviceMenu(std::vector<std::string>) = 0;
     virtual auto browseCancelled() -> bool = 0;
     virtual void showErrorMessage(std::string) = 0;
+    virtual void showCursor() = 0;
 };
 
 class Presenter : public Model::EventListener {
