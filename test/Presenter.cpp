@@ -440,7 +440,7 @@ class ViewStub : public View {
 
     [[nodiscard]] auto cursorShown() const -> bool { return cursorShown_; }
 
-    void showCursor() { cursorShown_ = true; }
+    void showCursor() override { cursorShown_ = true; }
 
   private:
     std::vector<std::string> audioDevices_;
