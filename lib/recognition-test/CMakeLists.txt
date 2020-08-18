@@ -12,6 +12,6 @@ target_include_directories(
   PUBLIC include
   PRIVATE include/recognition-test)
 target_compile_options(recognition-test PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})
-target_compile_features(recognition-test PUBLIC cxx_std_11)
+target_compile_features(recognition-test PUBLIC cxx_std_17)
 set_target_properties(recognition-test PROPERTIES CXX_EXTENSIONS OFF)
 target_link_libraries(recognition-test av-speech-in-noise GSL)
