@@ -349,7 +349,7 @@ static auto resourcePath(const std::string &stem, const std::string &extension)
 }
 
 static auto addConsonantImageButton(
-    std::unordered_map<id, std::string> &consonants, NSView *parent,
+    std::unordered_map<id, std::string> &consonants,
     ConsonantViewActions *actions, const std::string &consonant) -> NSButton * {
     const auto image{[[NSImage alloc]
         initWithContentsOfFile:asNsString(resourcePath(consonant, "bmp"))]};
@@ -394,32 +394,26 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       actions{[[ConsonantViewActions alloc] init]} {
     actions->controller = this;
-    auto firstRow {
+    responseButtons = [NSStackView stackViewWithViews:@[
         [NSStackView stackViewWithViews:@[
-            addConsonantImageButton(consonants, responseButtons, actions, "b"),
-            addConsonantImageButton(consonants, responseButtons, actions, "c"),
-            addConsonantImageButton(consonants, responseButtons, actions, "d"),
-            addConsonantImageButton(consonants, responseButtons, actions, "h")
-        ]]
-    };
-    auto secondRow {
+            addConsonantImageButton(consonants, actions, "b"),
+            addConsonantImageButton(consonants, actions, "c"),
+            addConsonantImageButton(consonants, actions, "d"),
+            addConsonantImageButton(consonants, actions, "h")
+        ]],
         [NSStackView stackViewWithViews:@[
-            addConsonantImageButton(consonants, responseButtons, actions, "k"),
-            addConsonantImageButton(consonants, responseButtons, actions, "m"),
-            addConsonantImageButton(consonants, responseButtons, actions, "n"),
-            addConsonantImageButton(consonants, responseButtons, actions, "p")
-        ]]
-    };
-    auto thirdRow {
+            addConsonantImageButton(consonants, actions, "k"),
+            addConsonantImageButton(consonants, actions, "m"),
+            addConsonantImageButton(consonants, actions, "n"),
+            addConsonantImageButton(consonants, actions, "p")
+        ]],
         [NSStackView stackViewWithViews:@[
-            addConsonantImageButton(consonants, responseButtons, actions, "s"),
-            addConsonantImageButton(consonants, responseButtons, actions, "t"),
-            addConsonantImageButton(consonants, responseButtons, actions, "v"),
-            addConsonantImageButton(consonants, responseButtons, actions, "z")
+            addConsonantImageButton(consonants, actions, "s"),
+            addConsonantImageButton(consonants, actions, "t"),
+            addConsonantImageButton(consonants, actions, "v"),
+            addConsonantImageButton(consonants, actions, "z")
         ]]
-    };
-    responseButtons =
-        [NSStackView stackViewWithViews:@[ firstRow, secondRow, thirdRow ]];
+    ]];
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
     addReadyButton(readyButton, actions);
     addSubview(window.contentView, readyButton);
