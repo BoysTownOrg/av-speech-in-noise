@@ -394,35 +394,84 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       actions{[[ConsonantViewActions alloc] init]} {
     actions->controller = this;
-    responseButtons = [NSStackView stackViewWithViews:@[
-        [NSStackView stackViewWithViews:@[
+    auto firstRow{[NSStackView stackViewWithViews:@[
             consonantImageButton(consonants, actions, "b"),
             consonantImageButton(consonants, actions, "c"),
             consonantImageButton(consonants, actions, "d"),
             consonantImageButton(consonants, actions, "h")
-        ]],
-        [NSStackView stackViewWithViews:@[
+        ]]};
+        auto secondRow{[NSStackView stackViewWithViews:@[
             consonantImageButton(consonants, actions, "k"),
             consonantImageButton(consonants, actions, "m"),
             consonantImageButton(consonants, actions, "n"),
             consonantImageButton(consonants, actions, "p")
-        ]],
-        [NSStackView stackViewWithViews:@[
+        ]]};
+        auto thirdRow{[NSStackView stackViewWithViews:@[
             consonantImageButton(consonants, actions, "s"),
             consonantImageButton(consonants, actions, "t"),
             consonantImageButton(consonants, actions, "v"),
             consonantImageButton(consonants, actions, "z")
-        ]]
+        ]]};
+    responseButtons = [NSStackView stackViewWithViews:@[
+        firstRow,
+        secondRow,
+        thirdRow
     ]];
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
+    responseButtons.distribution = NSStackViewDistributionFillEqually;
+    firstRow.distribution = NSStackViewDistributionFillEqually;
+    secondRow.distribution = NSStackViewDistributionFillEqually;
+    thirdRow.distribution = NSStackViewDistributionFillEqually;
     addReadyButton(readyButton, actions);
     addSubview(window.contentView, readyButton);
     addAutolayoutEnabledSubview(window.contentView, responseButtons);
     const auto contentView{window.contentView};
     [NSLayoutConstraint activateConstraints:@[
-        [responseButtons.centerXAnchor
-            constraintEqualToAnchor:contentView.centerXAnchor]
+        [responseButtons.topAnchor
+            constraintEqualToAnchor:contentView.topAnchor],
+        [responseButtons.bottomAnchor
+            constraintEqualToAnchor:contentView.bottomAnchor],
+        [responseButtons.leadingAnchor
+            constraintEqualToAnchor:contentView.leadingAnchor],
+        [responseButtons.trailingAnchor
+            constraintEqualToAnchor:contentView.trailingAnchor],
+        [firstRow.leadingAnchor
+            constraintEqualToAnchor:responseButtons.leadingAnchor],
+        [firstRow.trailingAnchor
+            constraintEqualToAnchor:responseButtons.trailingAnchor],
+        [secondRow.leadingAnchor
+            constraintEqualToAnchor:responseButtons.leadingAnchor],
+        [secondRow.trailingAnchor
+            constraintEqualToAnchor:responseButtons.trailingAnchor],
+        [thirdRow.leadingAnchor
+            constraintEqualToAnchor:responseButtons.leadingAnchor],
+        [thirdRow.trailingAnchor
+            constraintEqualToAnchor:responseButtons.trailingAnchor]
     ]];
+    for (NSView *view in firstRow.views) {
+    [NSLayoutConstraint activateConstraints:@[
+        [view.topAnchor
+            constraintEqualToAnchor:firstRow.topAnchor],
+        [view.bottomAnchor
+            constraintEqualToAnchor:firstRow.bottomAnchor]
+            ]];
+    }
+    for (NSView *view in secondRow.views) {
+    [NSLayoutConstraint activateConstraints:@[
+        [view.topAnchor
+            constraintEqualToAnchor:secondRow.topAnchor],
+        [view.bottomAnchor
+            constraintEqualToAnchor:secondRow.bottomAnchor]
+            ]];
+    }
+    for (NSView *view in thirdRow.views) {
+    [NSLayoutConstraint activateConstraints:@[
+        [view.topAnchor
+            constraintEqualToAnchor:thirdRow.topAnchor],
+        [view.bottomAnchor
+            constraintEqualToAnchor:thirdRow.bottomAnchor]
+            ]];
+    }
     hideResponseButtons();
     hideReadyButton();
 }
