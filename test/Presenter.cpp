@@ -2312,6 +2312,11 @@ PRESENTER_TEST(playingConsonantTrialHidesCursor) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.cursorHidden());
 }
 
+PRESENTER_TEST(submittingConsonantTrialHidesCursor) {
+    run(submittingConsonant);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.cursorHidden());
+}
+
 PRESENTER_TEST(submittingCoordinateResponseMeasurePlaysTrial) {
     assertPlaysTrial(submittingCoordinateResponseMeasure);
 }

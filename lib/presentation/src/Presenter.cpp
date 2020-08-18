@@ -398,6 +398,7 @@ void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {
 }
 
 void Presenter::Consonant::notifyThatResponseButtonHasBeenClicked() {
+    view->hideCursor();
     parent->submitConsonantResponse();
     view->hideResponseButtons();
 }
