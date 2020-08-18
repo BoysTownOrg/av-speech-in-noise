@@ -350,10 +350,8 @@ static auto resourcePath(const std::string &stem, const std::string &extension)
 
 static auto addConsonantImageButton(
     std::unordered_map<id, std::string> &consonants, NSView *parent,
-    ConsonantViewActions *actions, const std::string &consonant, gsl::index row,
-    gsl::index column, gsl::index totalRows, gsl::index totalColumns)
-    -> NSButton * {
-    constexpr auto spacing{8};
+    ConsonantViewActions *actions, const std::string &consonant, gsl::index,
+    gsl::index, gsl::index, gsl::index) -> NSButton * {
     const auto image{[[NSImage alloc]
         initWithContentsOfFile:asNsString(resourcePath(consonant, "bmp"))]};
     const auto button {
@@ -363,14 +361,6 @@ static auto addConsonantImageButton(
                      action:@selector(notifyThatResponseButtonHasBeenClicked:)]
     };
     consonants[button] = consonant;
-    const auto imageWidth{
-        (width(parent.frame) - (totalColumns + 1) * spacing) / totalColumns};
-    const auto imageHeight{
-        (height(parent.frame) - (totalRows + 1) * spacing) / totalRows};
-    [button setFrame:NSMakeRect(imageWidth * column + spacing * (column + 1),
-                         imageHeight * (totalRows - row - 1) +
-                             spacing * (totalRows - row),
-                         imageWidth, imageHeight)];
     button.bordered = NO;
     button.imageScaling = NSImageScaleProportionallyUpOrDown;
     addSubview(parent, button);
