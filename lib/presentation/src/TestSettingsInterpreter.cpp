@@ -177,18 +177,13 @@ static void initialize(AdaptiveTest &test, const std::string &contents,
     test.identity.method = name(method);
 }
 
-static void initialize(FixedLevelTest &test, Method method,
-    const TestIdentity &identity, SNR startingSnr) {
+static void initialize(FixedLevelTest &test, const std::string &contents,
+    Method method, const TestIdentity &identity, SNR startingSnr,
+    const std::function<void(const std::string &, const std::string &)> &f) {
     test.snr = startingSnr;
     test.fullScaleLevel = Presenter::fullScaleLevel;
     test.identity = identity;
     test.identity.method = name(method);
-}
-
-static void initialize(FixedLevelTest &test, const std::string &contents,
-    Method method, const TestIdentity &identity, SNR startingSnr,
-    const std::function<void(const std::string &, const std::string &)> &f) {
-    initialize(test, method, identity, startingSnr);
     applyToEachEntry(f, contents);
 }
 
