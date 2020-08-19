@@ -206,14 +206,14 @@ static void setPlaceholderAndFit(NSTextField *field, const std::string &s) {
 }
 
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
-    : view_{[[NSView alloc] initWithFrame:r]}, subjectIdField{[NSTextField
-                                                   textFieldWithString:@""]},
+    : view_{[[NSView alloc] initWithFrame:r]}, subjectIdField{emptyTextField()},
       testerIdField{emptyTextField()}, sessionField{emptyTextField()},
       rmeSettingField{emptyTextField()},
       transducerMenu{[[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                                 pullsDown:NO]},
       testSettingsField{emptyTextField()}, startingSnrField{emptyTextField()},
       actions{[[SetupViewActions alloc] init]} {
+    actions->controller = this;
     const auto subjectIdLabel{label("subject:")};
     const auto testerIdLabel{label("tester:")};
     const auto sessionLabel{label("session:")};
@@ -221,7 +221,6 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     const auto transducerLabel{label("transducer:")};
     const auto testSettingsLabel{label("test settings:")};
     const auto startingSnrLabel{label("starting SNR (dB):")};
-    actions->controller = this;
     const auto browseForTestSettingsButton {
         button("browse", actions,
             @selector(notifyThatBrowseForTestSettingsButtonHasBeenClicked))
@@ -318,12 +317,12 @@ auto CocoaTestSetupView::session() -> std::string {
     return string(sessionField);
 }
 
-auto CocoaTestSetupView::transducer() -> std::string {
-    return transducerMenu.titleOfSelectedItem.UTF8String;
-}
-
 auto CocoaTestSetupView::rmeSetting() -> std::string {
     return string(rmeSettingField);
+}
+
+void CocoaTestSetupView::setTestSettingsFile(std::string s) {
+    set(testSettingsField, s);
 }
 
 void CocoaTestSetupView::populateTransducerMenu(
@@ -332,8 +331,8 @@ void CocoaTestSetupView::populateTransducerMenu(
         [transducerMenu addItemWithTitle:asNsString(item)];
 }
 
-void CocoaTestSetupView::setTestSettingsFile(std::string s) {
-    set(testSettingsField, s);
+auto CocoaTestSetupView::transducer() -> std::string {
+    return transducerMenu.titleOfSelectedItem.UTF8String;
 }
 
 void CocoaTestSetupView::subscribe(EventListener *listener) {
