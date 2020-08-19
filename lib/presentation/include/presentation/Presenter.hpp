@@ -107,7 +107,7 @@ class View {
           public:
             virtual ~EventListener() = default;
             virtual void confirmTestSetup() = 0;
-            virtual void playCalibration() = 0;
+            virtual void notifyThatPlayCalibrationButtonHasBeenClicked() = 0;
             virtual void
             notifyThatBrowseForTestSettingsButtonHasBeenClicked() = 0;
         };
@@ -183,7 +183,7 @@ class Presenter : public Model::EventListener {
     class TestSetup : public View::TestSetup::EventListener {
       public:
         explicit TestSetup(View::TestSetup *);
-        void playCalibration() override;
+        void notifyThatPlayCalibrationButtonHasBeenClicked() override;
         void confirmTestSetup() override;
         void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
         void show();

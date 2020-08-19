@@ -184,7 +184,9 @@ class TestSetupViewStub : public View::TestSetup {
 
     void confirmTestSetup() { listener_->confirmTestSetup(); }
 
-    void playCalibration() { listener_->playCalibration(); }
+    void playCalibration() {
+        listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
+    }
 
     auto session() -> std::string override { return session_; }
 

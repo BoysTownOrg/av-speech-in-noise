@@ -345,7 +345,7 @@ void CocoaTestSetupView::notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
 }
 
 void CocoaTestSetupView::notifyThatPlayCalibrationButtonHasBeenClicked() {
-    listener_->playCalibration();
+    listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
 }
 
 static auto resourcePath(const std::string &stem, const std::string &extension)

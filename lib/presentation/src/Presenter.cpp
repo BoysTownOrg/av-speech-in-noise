@@ -355,7 +355,9 @@ auto Presenter::TestSetup::testIdentity() -> TestIdentity {
     return p;
 }
 
-void Presenter::TestSetup::playCalibration() { parent->playCalibration(); }
+void Presenter::TestSetup::notifyThatPlayCalibrationButtonHasBeenClicked() {
+    parent->playCalibration();
+}
 
 void Presenter::TestSetup::confirmTestSetup() { parent->confirmTestSetup(); }
 
