@@ -85,7 +85,7 @@ class CocoaTestSetupView : public View::TestSetup {
     void browseForTargetList();
     void browseForMasker();
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
-    void playCalibration();
+    void notifyThatPlayCalibrationButtonHasBeenClicked();
     void setMaskerLevel_dB_SPL(std::string);
     void setStartingSnr_dB(std::string);
     void setCalibrationLevel_dB_SPL(std::string);

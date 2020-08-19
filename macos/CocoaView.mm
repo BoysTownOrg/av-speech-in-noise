@@ -30,7 +30,7 @@
 }
 
 - (void)notifyThatPlayCalibrationButtonHasBeenClicked {
-    controller->playCalibration();
+    controller->notifyThatPlayCalibrationButtonHasBeenClicked();
 }
 @end
 
@@ -344,7 +344,9 @@ void CocoaTestSetupView::notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
     listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
 }
 
-void CocoaTestSetupView::playCalibration() { listener_->playCalibration(); }
+void CocoaTestSetupView::notifyThatPlayCalibrationButtonHasBeenClicked() {
+    listener_->playCalibration();
+}
 
 static auto resourcePath(const std::string &stem, const std::string &extension)
     -> std::string {
