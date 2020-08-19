@@ -332,12 +332,12 @@ void CocoaTestSetupView::setTestSettingsFile(std::string s) {
     set(testSettingsField, s);
 }
 
-void CocoaTestSetupView::notifyThatConfirmButtonHasBeenClicked() {
-    listener_->confirmTestSetup();
-}
-
 void CocoaTestSetupView::subscribe(EventListener *listener) {
     listener_ = listener;
+}
+
+void CocoaTestSetupView::notifyThatConfirmButtonHasBeenClicked() {
+    listener_->notifyThatConfirmButtonHasBeenClicked();
 }
 
 void CocoaTestSetupView::notifyThatBrowseForTestSettingsButtonHasBeenClicked() {

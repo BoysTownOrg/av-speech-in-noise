@@ -182,7 +182,9 @@ class TestSetupViewStub : public View::TestSetup {
         transducers_ = std::move(v);
     }
 
-    void confirmTestSetup() { listener_->confirmTestSetup(); }
+    void confirmTestSetup() {
+        listener_->notifyThatConfirmButtonHasBeenClicked();
+    }
 
     void playCalibration() {
         listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
