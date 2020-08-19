@@ -193,23 +193,25 @@ static void activateChildConstraintNestledInBottomRightCorner(
 }
 
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
-    : view_{[[NSView alloc] initWithFrame:r]},
-      subjectIdLabel{[NSTextField labelWithString:@"subject:"]},
-      subjectIdField{[NSTextField textFieldWithString:@""]},
-      testerIdLabel{[NSTextField labelWithString:@"tester:"]},
+    : view_{[[NSView alloc] initWithFrame:r]}, subjectIdField{[NSTextField
+                                                   textFieldWithString:@""]},
       testerIdField{[NSTextField textFieldWithString:@""]},
-      sessionLabel{[NSTextField labelWithString:@"session:"]},
       sessionField{[NSTextField textFieldWithString:@""]},
-      rmeSettingLabel{[NSTextField labelWithString:@"RME setting:"]},
       rmeSettingField{[NSTextField textFieldWithString:@""]},
-      transducerLabel{[NSTextField labelWithString:@"transducer:"]},
       transducerMenu{[[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                                 pullsDown:NO]},
-      testSettingsLabel{[NSTextField labelWithString:@"test settings:"]},
       testSettingsField{[NSTextField textFieldWithString:@""]},
-      startingSnrLabel{[NSTextField labelWithString:@"starting SNR (dB):"]},
       startingSnrField{[NSTextField textFieldWithString:@""]},
       actions{[[SetupViewActions alloc] init]} {
+    const auto subjectIdLabel{[NSTextField labelWithString:@"subject:"]};
+    const auto testerIdLabel{[NSTextField labelWithString:@"tester:"]};
+    const auto sessionLabel{[NSTextField labelWithString:@"session:"]};
+    const auto rmeSettingLabel{[NSTextField labelWithString:@"RME setting:"]};
+    const auto transducerLabel{[NSTextField labelWithString:@"transducer:"]};
+    const auto testSettingsLabel{
+        [NSTextField labelWithString:@"test settings:"]};
+    const auto startingSnrLabel{
+        [NSTextField labelWithString:@"starting SNR (dB):"]};
     actions->controller = this;
     const auto browseForTestSettingsButton {
         button("browse", actions,
