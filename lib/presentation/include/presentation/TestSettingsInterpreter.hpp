@@ -58,7 +58,9 @@ enum class TestSetting {
     targetRepetitions,
     subjectId,
     testerId,
-    session
+    session,
+    rmeSetting,
+    transducer
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -91,6 +93,10 @@ constexpr auto name(TestSetting p) -> const char * {
         return "tester ID";
     case TestSetting::session:
         return "session";
+    case TestSetting::rmeSetting:
+        return "RME setting";
+    case TestSetting::transducer:
+        return "transducer";
     }
 }
 

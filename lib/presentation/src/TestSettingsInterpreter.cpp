@@ -93,6 +93,10 @@ static void assign(
         test.identity.testerId = entry;
     else if (entryName == name(TestSetting::session))
         test.identity.session = entry;
+    else if (entryName == name(TestSetting::rmeSetting))
+        test.identity.rmeSetting = entry;
+    else if (entryName == name(TestSetting::transducer))
+        test.identity.transducer = entry;
     else if (entryName == name(TestSetting::condition))
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
             if (entry == name(c))

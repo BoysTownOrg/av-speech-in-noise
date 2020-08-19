@@ -209,15 +209,21 @@ void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     setSubjectId(testIdentity, "a");
     setTesterId(testIdentity, "b");
     setSession(testIdentity, "c");
+    testIdentity.rmeSetting = "g";
+    testIdentity.transducer = "h";
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::subjectId, "d"),
             entryWithNewline(TestSetting::testerId, "e"),
-            entryWithNewline(TestSetting::session, "f")},
+            entryWithNewline(TestSetting::session, "f"),
+            entryWithNewline(TestSetting::rmeSetting, "i"),
+            entryWithNewline(TestSetting::transducer, "j")},
         0, testIdentity);
     assertSubjectIdEquals("d", f(model));
     assertTesterIdEquals("e", f(model));
     assertSessionIdEquals("f", f(model));
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"i"}, f(model).rmeSetting);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"j"}, f(model).transducer);
 }
 
 void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
