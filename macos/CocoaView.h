@@ -122,6 +122,7 @@ class CocoaConsonantView : public View::Consonant {
     void showReadyButton() override;
     void hideReadyButton() override;
     auto consonant() -> std::string override;
+    void hideCursor() override;
     void notifyThatResponseButtonHasBeenClicked(id sender);
     void notifyThatReadyButtonHasBeenClicked();
 
@@ -177,6 +178,7 @@ class CocoaView : public View {
     auto browseForOpeningFile() -> std::string override;
     auto audioDevice() -> std::string override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
+    void showCursor() override;
     void setDelegate(id<NSWindowDelegate>);
     void center();
     auto testSetup() -> View::TestSetup &;

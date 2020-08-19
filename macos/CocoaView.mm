@@ -508,6 +508,8 @@ auto CocoaConsonantView::consonant() -> std::string {
     return consonants.at(lastButtonPressed);
 }
 
+void CocoaConsonantView::hideCursor() { [NSCursor hide]; }
+
 static auto greenColor{NSColor.greenColor};
 static auto redColor{NSColor.redColor};
 static auto blueColor{NSColor.blueColor};
@@ -1001,4 +1003,6 @@ void CocoaView::center() { [window center]; }
 auto CocoaView::testSetup() -> View::TestSetup & { return testSetup_; }
 
 auto CocoaView::experimenter() -> View::Experimenter & { return experimenter_; }
+
+void CocoaView::showCursor() { [NSCursor unhide]; }
 }
