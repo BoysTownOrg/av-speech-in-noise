@@ -196,6 +196,10 @@ static auto emptyTextField() -> NSTextField * {
     return [NSTextField textFieldWithString:@""];
 }
 
+static auto label(const std::string &s) -> NSTextField * {
+    return [NSTextField labelWithString:asNsString(s)];
+}
+
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]}, subjectIdField{[NSTextField
                                                    textFieldWithString:@""]},
@@ -205,15 +209,13 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
                                                 pullsDown:NO]},
       testSettingsField{emptyTextField()}, startingSnrField{emptyTextField()},
       actions{[[SetupViewActions alloc] init]} {
-    const auto subjectIdLabel{[NSTextField labelWithString:@"subject:"]};
-    const auto testerIdLabel{[NSTextField labelWithString:@"tester:"]};
-    const auto sessionLabel{[NSTextField labelWithString:@"session:"]};
-    const auto rmeSettingLabel{[NSTextField labelWithString:@"RME setting:"]};
-    const auto transducerLabel{[NSTextField labelWithString:@"transducer:"]};
-    const auto testSettingsLabel{
-        [NSTextField labelWithString:@"test settings:"]};
-    const auto startingSnrLabel{
-        [NSTextField labelWithString:@"starting SNR (dB):"]};
+    const auto subjectIdLabel{label("subject:")};
+    const auto testerIdLabel{label("tester:")};
+    const auto sessionLabel{label("session:")};
+    const auto rmeSettingLabel{label("RME setting:")};
+    const auto transducerLabel{label("transducer:")};
+    const auto testSettingsLabel{label("test settings:")};
+    const auto startingSnrLabel{label("starting SNR (dB):")};
     actions->controller = this;
     const auto browseForTestSettingsButton {
         button("browse", actions,
@@ -932,7 +934,7 @@ CocoaView::CocoaView(NSRect r)
                                            backing:NSBackingStoreBuffered
                                              defer:NO]},
       view{[[NSView alloc] initWithFrame:embeddedFrame(r)]},
-      audioDeviceLabel{[NSTextField labelWithString:@"audio output:"]},
+      audioDeviceLabel{label("audio output:")},
       audioDeviceMenu{
           [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                      pullsDown:NO]} {
