@@ -355,13 +355,18 @@ auto Presenter::TestSetup::testIdentity() -> TestIdentity {
     return p;
 }
 
-void Presenter::TestSetup::playCalibration() { parent->playCalibration(); }
-
-void Presenter::TestSetup::confirmTestSetup() { parent->confirmTestSetup(); }
-
 void Presenter::TestSetup::becomeChild(Presenter *p) { parent = p; }
 
-void Presenter::TestSetup::browseForTestSettingsFile() {
+void Presenter::TestSetup::notifyThatPlayCalibrationButtonHasBeenClicked() {
+    parent->playCalibration();
+}
+
+void Presenter::TestSetup::notifyThatConfirmButtonHasBeenClicked() {
+    parent->confirmTestSetup();
+}
+
+void Presenter::TestSetup::
+    notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
     parent->browseForTestSettingsFile();
 }
 

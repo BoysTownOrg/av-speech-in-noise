@@ -21,16 +21,16 @@
     av_speech_in_noise::CocoaTestSetupView *controller;
 }
 
-- (void)confirmTestSetup {
-    controller->confirm();
+- (void)notifyThatConfirmButtonHasBeenClicked {
+    controller->notifyThatConfirmButtonHasBeenClicked();
 }
 
-- (void)browseForTestSettings {
-    controller->browseForTestSettings();
+- (void)notifyThatBrowseForTestSettingsButtonHasBeenClicked {
+    controller->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
 }
 
-- (void)playCalibration {
-    controller->playCalibration();
+- (void)notifyThatPlayCalibrationButtonHasBeenClicked {
+    controller->notifyThatPlayCalibrationButtonHasBeenClicked();
 }
 @end
 
@@ -192,48 +192,54 @@ static void activateChildConstraintNestledInBottomRightCorner(
     ]];
 }
 
+static auto emptyTextField() -> NSTextField * {
+    return [NSTextField textFieldWithString:@""];
+}
+
+static auto label(const std::string &s) -> NSTextField * {
+    return [NSTextField labelWithString:asNsString(s)];
+}
+
+static void setPlaceholderAndFit(NSTextField *field, const std::string &s) {
+    [field setPlaceholderString:asNsString(s)];
+    [field sizeToFit];
+}
+
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
-    : view_{[[NSView alloc] initWithFrame:r]},
-      subjectIdLabel{[NSTextField labelWithString:@"subject:"]},
-      subjectIdField{[NSTextField textFieldWithString:@""]},
-      testerIdLabel{[NSTextField labelWithString:@"tester:"]},
-      testerIdField{[NSTextField textFieldWithString:@""]},
-      sessionLabel{[NSTextField labelWithString:@"session:"]},
-      sessionField{[NSTextField textFieldWithString:@""]},
-      rmeSettingLabel{[NSTextField labelWithString:@"RME setting:"]},
-      rmeSettingField{[NSTextField textFieldWithString:@""]},
-      transducerLabel{[NSTextField labelWithString:@"transducer:"]},
+    : view_{[[NSView alloc] initWithFrame:r]}, subjectIdField{emptyTextField()},
+      testerIdField{emptyTextField()}, sessionField{emptyTextField()},
+      rmeSettingField{emptyTextField()},
       transducerMenu{[[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                                 pullsDown:NO]},
-      testSettingsLabel{[NSTextField labelWithString:@"test settings:"]},
-      testSettingsField{[NSTextField textFieldWithString:@""]},
-      startingSnrLabel{[NSTextField labelWithString:@"starting SNR (dB):"]},
-      startingSnrField{[NSTextField textFieldWithString:@""]},
+      testSettingsField{emptyTextField()}, startingSnrField{emptyTextField()},
       actions{[[SetupViewActions alloc] init]} {
     actions->controller = this;
+    const auto subjectIdLabel{label("subject:")};
+    const auto testerIdLabel{label("tester:")};
+    const auto sessionLabel{label("session:")};
+    const auto rmeSettingLabel{label("RME setting:")};
+    const auto transducerLabel{label("transducer:")};
+    const auto testSettingsLabel{label("test settings:")};
+    const auto startingSnrLabel{label("starting SNR (dB):")};
     const auto browseForTestSettingsButton {
-        button("browse", actions, @selector(browseForTestSettings))
+        button("browse", actions,
+            @selector(notifyThatBrowseForTestSettingsButtonHasBeenClicked))
     };
 
     const auto confirmButton {
-        button("Confirm", actions, @selector(confirmTestSetup))
+        button("Confirm", actions,
+            @selector(notifyThatConfirmButtonHasBeenClicked))
     };
     const auto playCalibrationButton {
-        button("play calibration", actions, @selector(playCalibration))
+        button("play calibration", actions,
+            @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
     };
-    [subjectIdField setPlaceholderString:@"abc123"];
-    [subjectIdField sizeToFit];
-    [testerIdField setPlaceholderString:@"abc123"];
-    [testerIdField sizeToFit];
-    [sessionField setPlaceholderString:@"abc123"];
-    [sessionField sizeToFit];
-    [rmeSettingField setPlaceholderString:@"ihavenoideawhatgoeshere"];
-    [rmeSettingField sizeToFit];
-    [testSettingsField
-        setPlaceholderString:@"/Users/username/Desktop/file.txt"];
-    [testSettingsField sizeToFit];
-    [startingSnrField setPlaceholderString:@"15"];
-    [startingSnrField sizeToFit];
+    setPlaceholderAndFit(subjectIdField, "abc123");
+    setPlaceholderAndFit(testerIdField, "abc123");
+    setPlaceholderAndFit(sessionField, "abc123");
+    setPlaceholderAndFit(rmeSettingField, "ihavenoideawhatgoeshere");
+    setPlaceholderAndFit(testSettingsField, "/Users/username/Desktop/file.txt");
+    setPlaceholderAndFit(startingSnrField, "15");
     addAutolayoutEnabledSubview(view_, browseForTestSettingsButton);
     addAutolayoutEnabledSubview(view_, confirmButton);
     addAutolayoutEnabledSubview(view_, playCalibrationButton);
@@ -311,12 +317,12 @@ auto CocoaTestSetupView::session() -> std::string {
     return string(sessionField);
 }
 
-auto CocoaTestSetupView::transducer() -> std::string {
-    return transducerMenu.titleOfSelectedItem.UTF8String;
-}
-
 auto CocoaTestSetupView::rmeSetting() -> std::string {
     return string(rmeSettingField);
+}
+
+void CocoaTestSetupView::setTestSettingsFile(std::string s) {
+    set(testSettingsField, s);
 }
 
 void CocoaTestSetupView::populateTransducerMenu(
@@ -325,21 +331,25 @@ void CocoaTestSetupView::populateTransducerMenu(
         [transducerMenu addItemWithTitle:asNsString(item)];
 }
 
-void CocoaTestSetupView::setTestSettingsFile(std::string s) {
-    set(testSettingsField, s);
+auto CocoaTestSetupView::transducer() -> std::string {
+    return transducerMenu.titleOfSelectedItem.UTF8String;
 }
-
-void CocoaTestSetupView::confirm() { listener_->confirmTestSetup(); }
 
 void CocoaTestSetupView::subscribe(EventListener *listener) {
     listener_ = listener;
 }
 
-void CocoaTestSetupView::browseForTestSettings() {
-    listener_->browseForTestSettingsFile();
+void CocoaTestSetupView::notifyThatConfirmButtonHasBeenClicked() {
+    listener_->notifyThatConfirmButtonHasBeenClicked();
 }
 
-void CocoaTestSetupView::playCalibration() { listener_->playCalibration(); }
+void CocoaTestSetupView::notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
+    listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
+}
+
+void CocoaTestSetupView::notifyThatPlayCalibrationButtonHasBeenClicked() {
+    listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
+}
 
 static auto resourcePath(const std::string &stem, const std::string &extension)
     -> std::string {
@@ -690,9 +700,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
           initWithFrame:NSMakeRect(leadingSecondaryTextEdge,
                             lowerPrimaryTextEdge(r),
                             width(r) - leadingSecondaryTextEdge, labelHeight)]},
-      freeResponseField{[NSTextField textFieldWithString:@""]},
-      correctKeywordsField{[NSTextField textFieldWithString:@""]},
-      freeResponseFlaggedButton{[[NSButton alloc] init]},
+      freeResponseField{emptyTextField()},
+      correctKeywordsField{emptyTextField()}, freeResponseFlaggedButton{[
+                                                  [NSButton alloc] init]},
       actions{[[ExperimenterViewActions alloc] init]} {
     exitTestButton = button("exit test", actions, @selector(exitTest));
     setStaticLike(displayedText_);
@@ -720,10 +730,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     const auto submitCorrectKeywordsButton {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
-    [correctKeywordsField setPlaceholderString:@"2"];
-    [correctKeywordsField sizeToFit];
-    [freeResponseField setPlaceholderString:@"This is a sentence."];
-    [freeResponseField sizeToFit];
+    setPlaceholderAndFit(correctKeywordsField, "2");
+    setPlaceholderAndFit(freeResponseField, "This is a sentence.");
     addAutolayoutEnabledSubview(view_, exitTestButton);
     addSubview(view_, displayedText_);
     addSubview(view_, secondaryDisplayedText_);
@@ -921,7 +929,7 @@ CocoaView::CocoaView(NSRect r)
                                            backing:NSBackingStoreBuffered
                                              defer:NO]},
       view{[[NSView alloc] initWithFrame:embeddedFrame(r)]},
-      audioDeviceLabel{[NSTextField labelWithString:@"audio output:"]},
+      audioDeviceLabel{label("audio output:")},
       audioDeviceMenu{
           [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                      pullsDown:NO]} {

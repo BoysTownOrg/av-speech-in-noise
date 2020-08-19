@@ -15,7 +15,6 @@ class CocoaExperimenterView : public View::Experimenter {
   public:
     explicit CocoaExperimenterView(NSRect);
     auto view() -> NSView *;
-    void exitTest();
     void subscribe(EventListener *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;
@@ -23,13 +22,6 @@ class CocoaExperimenterView : public View::Experimenter {
     void hide() override;
     void display(std::string) override;
     void secondaryDisplay(std::string) override;
-    void playTrial();
-    void submitFreeResponse();
-    void submitPassedTrial();
-    void submitFailedTrial();
-    void submitCorrectKeywords();
-    void acceptContinuingTesting();
-    void declineContinuingTesting();
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
     void showEvaluationButtons() override;
@@ -45,6 +37,14 @@ class CocoaExperimenterView : public View::Experimenter {
     void hideContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &) override;
     void clearFreeResponse() override;
+    void exitTest();
+    void playTrial();
+    void submitFreeResponse();
+    void submitPassedTrial();
+    void submitFailedTrial();
+    void submitCorrectKeywords();
+    void acceptContinuingTesting();
+    void declineContinuingTesting();
 
   private:
     NSView *view_;
@@ -81,11 +81,11 @@ class CocoaTestSetupView : public View::TestSetup {
     void setTestSettingsFile(std::string) override;
     void subscribe(EventListener *) override;
     auto view() -> NSView *;
-    void confirm();
+    void notifyThatConfirmButtonHasBeenClicked();
     void browseForTargetList();
     void browseForMasker();
-    void browseForTestSettings();
-    void playCalibration();
+    void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
+    void notifyThatPlayCalibrationButtonHasBeenClicked();
     void setMaskerLevel_dB_SPL(std::string);
     void setStartingSnr_dB(std::string);
     void setCalibrationLevel_dB_SPL(std::string);
@@ -93,19 +93,12 @@ class CocoaTestSetupView : public View::TestSetup {
 
   private:
     NSView *view_;
-    NSTextField *subjectIdLabel;
     NSTextField *subjectIdField;
-    NSTextField *testerIdLabel;
     NSTextField *testerIdField;
-    NSTextField *sessionLabel;
     NSTextField *sessionField;
-    NSTextField *rmeSettingLabel;
     NSTextField *rmeSettingField;
-    NSTextField *transducerLabel;
     NSPopUpButton *transducerMenu;
-    NSTextField *testSettingsLabel;
     NSTextField *testSettingsField;
-    NSTextField *startingSnrLabel;
     NSTextField *startingSnrField;
     SetupViewActions *actions;
     EventListener *listener_{};

@@ -68,7 +68,7 @@ class ConsonantViewStub : public View::Consonant {
 
     [[nodiscard]] auto cursorHidden() const -> bool { return cursorHidden_; }
 
-    void hideCursor() { cursorHidden_ = true; }
+    void hideCursor() override { cursorHidden_ = true; }
 
   private:
     std::string consonant_;
@@ -170,7 +170,9 @@ class TestSetupViewStub : public View::TestSetup {
         testSettingsFile_ = std::move(s);
     }
 
-    void browseForTestSettingsFile() { listener_->browseForTestSettingsFile(); }
+    void browseForTestSettingsFile() {
+        listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
+    }
 
     [[nodiscard]] auto transducers() const -> std::vector<std::string> {
         return transducers_;
@@ -180,9 +182,13 @@ class TestSetupViewStub : public View::TestSetup {
         transducers_ = std::move(v);
     }
 
-    void confirmTestSetup() { listener_->confirmTestSetup(); }
+    void confirmTestSetup() {
+        listener_->notifyThatConfirmButtonHasBeenClicked();
+    }
 
-    void playCalibration() { listener_->playCalibration(); }
+    void playCalibration() {
+        listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
+    }
 
     auto session() -> std::string override { return session_; }
 
