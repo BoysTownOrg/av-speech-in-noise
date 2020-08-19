@@ -53,6 +53,14 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
         button("play calibration", actions,
             @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
     };
+    [browseForTestSettingsButton
+        setAttributedStringValue:
+            [[NSAttributedString alloc]
+                initWithString:@"Browse"
+                    attributes:[NSDictionary
+                                   dictionaryWithObjectsAndKeys:
+                                       [NSFont boldSystemFontOfSize:36],
+                                   NSFontAttributeName, nil]]];
     addAutolayoutEnabledSubview(controller.view, browseForTestSettingsButton);
     addAutolayoutEnabledSubview(controller.view, confirmButton);
     addAutolayoutEnabledSubview(controller.view, playCalibrationButton);
@@ -77,7 +85,17 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             constraintEqualToAnchor:testSettingsField.leadingAnchor
                            constant:-8],
         [testSettingsLabel.centerYAnchor
-            constraintEqualToAnchor:testSettingsField.centerYAnchor]
+            constraintEqualToAnchor:testSettingsField.centerYAnchor],
+        [browseForTestSettingsButton.centerXAnchor
+            constraintEqualToAnchor:controller.view.centerXAnchor],
+        [confirmButton.centerXAnchor
+            constraintEqualToAnchor:controller.view.centerXAnchor],
+        [instructionsLabel.centerXAnchor
+            constraintEqualToAnchor:controller.view.centerXAnchor],
+        [titleLabel.centerXAnchor
+            constraintEqualToAnchor:controller.view.centerXAnchor],
+        [testSettingsField.centerXAnchor
+            constraintEqualToAnchor:controller.view.centerXAnchor]
     ]];
 }
 
