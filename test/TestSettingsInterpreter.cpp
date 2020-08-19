@@ -377,6 +377,22 @@ TEST_SETTINGS_INTERPRETER_TEST(
         fixedLevelTestIdentity);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesTestIdentity) {
+    TestIdentity testIdentity;
+    setSubjectId(testIdentity, "a");
+    setTesterId(testIdentity, "b");
+    setSession(testIdentity, "c");
+    initialize(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::subjectId, "d"),
+            entryWithNewline(TestSetting::testerId, "e"),
+            entryWithNewline(TestSetting::session, "f")},
+        0, testIdentity);
+    assertSubjectIdEquals("d", adaptiveTestIdentity(model));
+    assertTesterIdEquals("e", adaptiveTestIdentity(model));
+    assertSessionIdEquals("f", adaptiveTestIdentity(model));
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
     assertPassesTestIdentity(
         interpreter, model, Method::adaptivePassFail, adaptiveTestIdentity);
