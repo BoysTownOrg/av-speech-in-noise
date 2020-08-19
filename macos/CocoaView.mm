@@ -192,16 +192,18 @@ static void activateChildConstraintNestledInBottomRightCorner(
     ]];
 }
 
+static auto emptyTextField() -> NSTextField * {
+    return [NSTextField textFieldWithString:@""];
+}
+
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]}, subjectIdField{[NSTextField
                                                    textFieldWithString:@""]},
-      testerIdField{[NSTextField textFieldWithString:@""]},
-      sessionField{[NSTextField textFieldWithString:@""]},
-      rmeSettingField{[NSTextField textFieldWithString:@""]},
+      testerIdField{emptyTextField()}, sessionField{emptyTextField()},
+      rmeSettingField{emptyTextField()},
       transducerMenu{[[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                                 pullsDown:NO]},
-      testSettingsField{[NSTextField textFieldWithString:@""]},
-      startingSnrField{[NSTextField textFieldWithString:@""]},
+      testSettingsField{emptyTextField()}, startingSnrField{emptyTextField()},
       actions{[[SetupViewActions alloc] init]} {
     const auto subjectIdLabel{[NSTextField labelWithString:@"subject:"]};
     const auto testerIdLabel{[NSTextField labelWithString:@"tester:"]};
@@ -699,9 +701,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
           initWithFrame:NSMakeRect(leadingSecondaryTextEdge,
                             lowerPrimaryTextEdge(r),
                             width(r) - leadingSecondaryTextEdge, labelHeight)]},
-      freeResponseField{[NSTextField textFieldWithString:@""]},
-      correctKeywordsField{[NSTextField textFieldWithString:@""]},
-      freeResponseFlaggedButton{[[NSButton alloc] init]},
+      freeResponseField{emptyTextField()},
+      correctKeywordsField{emptyTextField()}, freeResponseFlaggedButton{[
+                                                  [NSButton alloc] init]},
       actions{[[ExperimenterViewActions alloc] init]} {
     exitTestButton = button("exit test", actions, @selector(exitTest));
     setStaticLike(displayedText_);
