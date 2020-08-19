@@ -1,4 +1,5 @@
 #include "FacemaskStudySetupView.h"
+#include "common-objc.h"
 
 @interface FacemaskStudySetupViewActions : NSObject
 @end
@@ -22,19 +23,59 @@
 @end
 
 namespace av_speech_in_noise {
-FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *)
+static auto button(const std::string &s, id target, SEL action) -> NSButton * {
+    return [NSButton buttonWithTitle:asNsString(s) target:target action:action];
+}
+
+static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
+    child.translatesAutoresizingMaskIntoConstraints = NO;
+    [parent addSubview:child];
+}
+
+FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : testSettingsField{[NSTextField textFieldWithString:@""]},
-      actions{[[FacemaskStudySetupViewActions alloc] init]} {}
+      actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
+                                                                 controller} {
+    const auto testSettingsLabel{
+        [NSTextField labelWithString:@"Session file:"]};
+    const auto titleLabel{[NSTextField labelWithString:@"Facemask Study"]};
+    const auto instructionsLabel{[NSTextField
+        labelWithString:@"Click browse to choose the session file."]};
+    const auto browseForTestSettingsButton {
+        button("Browse", actions,
+            @selector(notifyThatBrowseForTestSettingsButtonHasBeenClicked))
+    };
+    const auto confirmButton {
+        button(
+            "START", actions, @selector(notifyThatConfirmButtonHasBeenClicked))
+    };
+    const auto playCalibrationButton {
+        button("play calibration", actions,
+            @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
+    };
+    addAutolayoutEnabledSubview(controller.view, browseForTestSettingsButton);
+    addAutolayoutEnabledSubview(controller.view, confirmButton);
+    addAutolayoutEnabledSubview(controller.view, playCalibrationButton);
+    addAutolayoutEnabledSubview(controller.view, testSettingsField);
+    addAutolayoutEnabledSubview(controller.view, testSettingsLabel);
+    addAutolayoutEnabledSubview(controller.view, titleLabel);
+    addAutolayoutEnabledSubview(controller.view, instructionsLabel);
+    [NSLayoutConstraint activateConstraints:@[
 
-void FacemaskStudySetupView::show() {}
+    ]];
+}
 
-void FacemaskStudySetupView::hide() {}
+void FacemaskStudySetupView::show() { [controller.view setHidden:NO]; }
+
+void FacemaskStudySetupView::hide() { [controller.view setHidden:YES]; }
 
 auto FacemaskStudySetupView::testSettingsFile() -> std::string {
     return testSettingsField.stringValue.UTF8String;
 }
 
-void FacemaskStudySetupView::setTestSettingsFile(std::string) {}
+void FacemaskStudySetupView::setTestSettingsFile(std::string s) {
+    [testSettingsField setStringValue:asNsString(s)];
+}
 
 void FacemaskStudySetupView::subscribe(EventListener *) {}
 

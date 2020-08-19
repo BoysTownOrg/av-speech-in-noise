@@ -24,6 +24,7 @@ class FacemaskStudySetupView {
     NSTextField *testSettingsField;
     FacemaskStudySetupViewActions *actions;
     EventListener *listener_{};
+    NSViewController *controller;
 };
 }
 
