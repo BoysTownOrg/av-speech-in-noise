@@ -61,7 +61,23 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     addAutolayoutEnabledSubview(controller.view, titleLabel);
     addAutolayoutEnabledSubview(controller.view, instructionsLabel);
     [NSLayoutConstraint activateConstraints:@[
-
+        [titleLabel.bottomAnchor
+            constraintEqualToAnchor:instructionsLabel.topAnchor
+                           constant:8],
+        [instructionsLabel.bottomAnchor
+            constraintEqualToAnchor:browseForTestSettingsButton.topAnchor
+                           constant:8],
+        [browseForTestSettingsButton.bottomAnchor
+            constraintEqualToAnchor:testSettingsField.topAnchor
+                           constant:8],
+        [testSettingsField.bottomAnchor
+            constraintEqualToAnchor:confirmButton.topAnchor
+                           constant:8],
+        [testSettingsLabel.trailingAnchor
+            constraintEqualToAnchor:testSettingsField.leadingAnchor
+                           constant:-8],
+        [testSettingsLabel.centerYAnchor
+            constraintEqualToAnchor:testSettingsField.centerYAnchor]
     ]];
 }
 
