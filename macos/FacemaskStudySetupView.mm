@@ -42,7 +42,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     const auto instructionsLabel{[NSTextField
         labelWithString:@"Click browse to choose the session file."]};
     const auto browseForTestSettingsButton {
-        button("Browse", actions,
+        button("", actions,
             @selector(notifyThatBrowseForTestSettingsButtonHasBeenClicked))
     };
     const auto confirmButton {
@@ -54,13 +54,14 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
     };
     [browseForTestSettingsButton
-        setAttributedStringValue:
+        setAttributedTitle:
             [[NSAttributedString alloc]
                 initWithString:@"Browse"
                     attributes:[NSDictionary
                                    dictionaryWithObjectsAndKeys:
                                        [NSFont boldSystemFontOfSize:36],
                                    NSFontAttributeName, nil]]];
+    [browseForTestSettingsButton setBezelStyle:NSBezelStyleRoundRect];
     addAutolayoutEnabledSubview(controller.view, browseForTestSettingsButton);
     addAutolayoutEnabledSubview(controller.view, confirmButton);
     addAutolayoutEnabledSubview(controller.view, playCalibrationButton);
@@ -69,18 +70,20 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     addAutolayoutEnabledSubview(controller.view, titleLabel);
     addAutolayoutEnabledSubview(controller.view, instructionsLabel);
     [NSLayoutConstraint activateConstraints:@[
+        [controller.view.topAnchor constraintEqualToAnchor:titleLabel.topAnchor
+                                                  constant:-8],
         [titleLabel.bottomAnchor
             constraintEqualToAnchor:instructionsLabel.topAnchor
-                           constant:8],
+                           constant:-8],
         [instructionsLabel.bottomAnchor
             constraintEqualToAnchor:browseForTestSettingsButton.topAnchor
-                           constant:8],
+                           constant:-8],
         [browseForTestSettingsButton.bottomAnchor
             constraintEqualToAnchor:testSettingsField.topAnchor
-                           constant:8],
+                           constant:-8],
         [testSettingsField.bottomAnchor
             constraintEqualToAnchor:confirmButton.topAnchor
-                           constant:8],
+                           constant:-8],
         [testSettingsLabel.trailingAnchor
             constraintEqualToAnchor:testSettingsField.leadingAnchor
                            constant:-8],
