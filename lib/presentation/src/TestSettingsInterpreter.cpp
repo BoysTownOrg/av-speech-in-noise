@@ -131,6 +131,8 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
         applyToEachTrackingRule(test, applyToStepSize, entry);
     else if (entryName == name(TestSetting::thresholdReversals))
         test.thresholdReversals = integer(entry);
+    else if (entryName == name(TestSetting::startingSnr))
+        test.startingSnr.dB = integer(entry);
     else
         assign(static_cast<Test &>(test), entryName, entry);
 }
@@ -170,10 +172,10 @@ static auto method(const std::string &s) -> Method {
 static void initialize(AdaptiveTest &test, const std::string &contents,
     Method method, const TestIdentity &identity, SNR startingSnr) {
     test.identity = identity;
+    test.startingSnr = startingSnr;
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
-    test.startingSnr = startingSnr;
     test.ceilingSnr = Presenter::ceilingSnr;
     test.floorSnr = Presenter::floorSnr;
     test.trackBumpLimit = Presenter::trackBumpLimit;

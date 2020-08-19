@@ -548,6 +548,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
     assertDefaultFixedLevelTestInitialized(model);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesStartingSnr) {
+    initialize(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::startingSnr, "6")},
+        5);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6, adaptiveTest(model).startingSnr.dB);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
         interpreter, model, Method::adaptivePassFail);

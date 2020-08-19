@@ -49,6 +49,7 @@ enum class TestSetting {
     targets,
     masker,
     maskerLevel,
+    startingSnr,
     condition,
     up,
     down,
@@ -73,6 +74,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "masker";
     case TestSetting::maskerLevel:
         return "masker level (dB SPL)";
+    case TestSetting::startingSnr:
+        return "starting SNR (dB)";
     case TestSetting::condition:
         return "condition";
     case TestSetting::up:
