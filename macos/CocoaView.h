@@ -15,7 +15,6 @@ class CocoaExperimenterView : public View::Experimenter {
   public:
     explicit CocoaExperimenterView(NSRect);
     auto view() -> NSView *;
-    void exitTest();
     void subscribe(EventListener *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;
@@ -23,13 +22,6 @@ class CocoaExperimenterView : public View::Experimenter {
     void hide() override;
     void display(std::string) override;
     void secondaryDisplay(std::string) override;
-    void playTrial();
-    void submitFreeResponse();
-    void submitPassedTrial();
-    void submitFailedTrial();
-    void submitCorrectKeywords();
-    void acceptContinuingTesting();
-    void declineContinuingTesting();
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
     void showEvaluationButtons() override;
@@ -45,6 +37,14 @@ class CocoaExperimenterView : public View::Experimenter {
     void hideContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &) override;
     void clearFreeResponse() override;
+    void exitTest();
+    void playTrial();
+    void submitFreeResponse();
+    void submitPassedTrial();
+    void submitFailedTrial();
+    void submitCorrectKeywords();
+    void acceptContinuingTesting();
+    void declineContinuingTesting();
 
   private:
     NSView *view_;
