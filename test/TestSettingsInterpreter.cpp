@@ -202,6 +202,24 @@ void assertPassesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     assertSessionIdEquals("c", f(model));
 }
 
+void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
+    ModelStub &model, Method m,
+    const std::function<TestIdentity(ModelStub &)> &f) {
+    TestIdentity testIdentity;
+    setSubjectId(testIdentity, "a");
+    setTesterId(testIdentity, "b");
+    setSession(testIdentity, "c");
+    initialize(interpreter, model,
+        {entryWithNewline(TestSetting::method, m),
+            entryWithNewline(TestSetting::subjectId, "d"),
+            entryWithNewline(TestSetting::testerId, "e"),
+            entryWithNewline(TestSetting::session, "f")},
+        0, testIdentity);
+    assertSubjectIdEquals("d", f(model));
+    assertTesterIdEquals("e", f(model));
+    assertSessionIdEquals("f", f(model));
+}
+
 void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
     ModelStub &model, Method m,
     const std::function<TestIdentity(ModelStub &)> &f) {
@@ -378,37 +396,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesTestIdentity) {
-    TestIdentity testIdentity;
-    setSubjectId(testIdentity, "a");
-    setTesterId(testIdentity, "b");
-    setSession(testIdentity, "c");
-    initialize(interpreter, model,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            entryWithNewline(TestSetting::subjectId, "d"),
-            entryWithNewline(TestSetting::testerId, "e"),
-            entryWithNewline(TestSetting::session, "f")},
-        0, testIdentity);
-    assertSubjectIdEquals("d", adaptiveTestIdentity(model));
-    assertTesterIdEquals("e", adaptiveTestIdentity(model));
-    assertSessionIdEquals("f", adaptiveTestIdentity(model));
+    assertOverridesTestIdentity(
+        interpreter, model, Method::adaptivePassFail, adaptiveTestIdentity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsOverridesTestIdentity) {
-    TestIdentity testIdentity;
-    setSubjectId(testIdentity, "a");
-    setTesterId(testIdentity, "b");
-    setSession(testIdentity, "c");
-    initialize(interpreter, model,
-        {entryWithNewline(
-             TestSetting::method, Method::fixedLevelFreeResponseWithAllTargets),
-            entryWithNewline(TestSetting::subjectId, "d"),
-            entryWithNewline(TestSetting::testerId, "e"),
-            entryWithNewline(TestSetting::session, "f")},
-        0, testIdentity);
-    assertSubjectIdEquals("d", fixedLevelTestIdentity(model));
-    assertTesterIdEquals("e", fixedLevelTestIdentity(model));
-    assertSessionIdEquals("f", fixedLevelTestIdentity(model));
+    assertOverridesTestIdentity(interpreter, model,
+        Method::fixedLevelFreeResponseWithAllTargets, fixedLevelTestIdentity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
