@@ -75,3 +75,8 @@ set_target_properties(
              XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS
              "${AV_SPEECH_IN_NOISE_MACOS_OTHER_CODE_SIGN_FLAGS}"
              XCODE_ATTRIBUTE_CODE_SIGN_INJECT_BASE_ENTITLEMENTS NO)
+
+if(${_AV_SPEECH_IN_NOISE_BUILD_FACEMASK_STUDY_VIEW_PREVIEW})
+  add_executable(AvSpeechInNoiseFaceMaskStudyViewPreview MACOSX_BUNDLE
+                 FacemaskStudySetupView.mm main-facemask-study-view-preview.mm)
+endif()
