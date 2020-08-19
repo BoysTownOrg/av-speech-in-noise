@@ -21,7 +21,7 @@
     av_speech_in_noise::CocoaTestSetupView *controller;
 }
 
-- (void)confirmTestSetup {
+- (void)notifyThatConfirmButtonHasBeenPressed {
     controller->confirm();
 }
 
@@ -217,7 +217,8 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     };
 
     const auto confirmButton {
-        button("Confirm", actions, @selector(confirmTestSetup))
+        button("Confirm", actions,
+            @selector(notifyThatConfirmButtonHasBeenPressed))
     };
     const auto playCalibrationButton {
         button("play calibration", actions, @selector(playCalibration))
