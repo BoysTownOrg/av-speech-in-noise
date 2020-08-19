@@ -348,11 +348,9 @@ static auto resourcePath(const std::string &stem, const std::string &extension)
         .UTF8String;
 }
 
-static void addConsonantImageButton(
-    std::unordered_map<id, std::string> &consonants, NSView *parent,
-    ConsonantViewActions *actions, const std::string &consonant, gsl::index row,
-    gsl::index column, gsl::index totalRows, gsl::index totalColumns) {
-    constexpr auto spacing{8};
+static auto consonantImageButton(
+    std::unordered_map<id, std::string> &consonants,
+    ConsonantViewActions *actions, const std::string &consonant) -> NSButton * {
     const auto image{[[NSImage alloc]
         initWithContentsOfFile:asNsString(resourcePath(consonant, "bmp"))]};
     const auto button {
@@ -362,17 +360,9 @@ static void addConsonantImageButton(
                      action:@selector(notifyThatResponseButtonHasBeenClicked:)]
     };
     consonants[button] = consonant;
-    const auto imageWidth{
-        (width(parent.frame) - (totalColumns + 1) * spacing) / totalColumns};
-    const auto imageHeight{
-        (height(parent.frame) - (totalRows + 1) * spacing) / totalRows};
-    [button setFrame:NSMakeRect(imageWidth * column + spacing * (column + 1),
-                         imageHeight * (totalRows - row - 1) +
-                             spacing * (totalRows - row),
-                         imageWidth, imageHeight)];
     button.bordered = NO;
     button.imageScaling = NSImageScaleProportionallyUpOrDown;
-    addSubview(parent, button);
+    return button;
 }
 
 static void addReadyButton(NSView *parent, ConsonantViewActions *actions) {
@@ -400,39 +390,85 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
                                          styleMask:NSWindowStyleMaskBorderless
                                            backing:NSBackingStoreBuffered
                                              defer:YES]},
-      responseButtons{
-          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       readyButton{
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       actions{[[ConsonantViewActions alloc] init]} {
     actions->controller = this;
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "b", 0, 0, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "c", 0, 1, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "d", 0, 2, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "h", 0, 3, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "k", 1, 0, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "m", 1, 1, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "n", 1, 2, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "p", 1, 3, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "s", 2, 0, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "t", 2, 1, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "v", 2, 2, 3, 4);
-    addConsonantImageButton(
-        consonants, responseButtons, actions, "z", 2, 3, 3, 4);
+    auto firstRow {
+        [NSStackView stackViewWithViews:@[
+            consonantImageButton(consonants, actions, "b"),
+            consonantImageButton(consonants, actions, "c"),
+            consonantImageButton(consonants, actions, "d"),
+            consonantImageButton(consonants, actions, "h")
+        ]]
+    };
+    auto secondRow {
+        [NSStackView stackViewWithViews:@[
+            consonantImageButton(consonants, actions, "k"),
+            consonantImageButton(consonants, actions, "m"),
+            consonantImageButton(consonants, actions, "n"),
+            consonantImageButton(consonants, actions, "p")
+        ]]
+    };
+    auto thirdRow {
+        [NSStackView stackViewWithViews:@[
+            consonantImageButton(consonants, actions, "s"),
+            consonantImageButton(consonants, actions, "t"),
+            consonantImageButton(consonants, actions, "v"),
+            consonantImageButton(consonants, actions, "z")
+        ]]
+    };
+    responseButtons =
+        [NSStackView stackViewWithViews:@[ firstRow, secondRow, thirdRow ]];
+    responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
+    responseButtons.distribution = NSStackViewDistributionFillEqually;
+    firstRow.distribution = NSStackViewDistributionFillEqually;
+    secondRow.distribution = NSStackViewDistributionFillEqually;
+    thirdRow.distribution = NSStackViewDistributionFillEqually;
     addReadyButton(readyButton, actions);
     addSubview(window.contentView, readyButton);
-    addSubview(window.contentView, responseButtons);
+    addAutolayoutEnabledSubview(window.contentView, responseButtons);
+    const auto contentView{window.contentView};
+    [NSLayoutConstraint activateConstraints:@[
+        [responseButtons.topAnchor
+            constraintEqualToAnchor:contentView.topAnchor],
+        [responseButtons.bottomAnchor
+            constraintEqualToAnchor:contentView.bottomAnchor],
+        [responseButtons.leadingAnchor
+            constraintEqualToAnchor:contentView.leadingAnchor],
+        [responseButtons.trailingAnchor
+            constraintEqualToAnchor:contentView.trailingAnchor],
+        [firstRow.leadingAnchor
+            constraintEqualToAnchor:responseButtons.leadingAnchor],
+        [firstRow.trailingAnchor
+            constraintEqualToAnchor:responseButtons.trailingAnchor],
+        [secondRow.leadingAnchor
+            constraintEqualToAnchor:responseButtons.leadingAnchor],
+        [secondRow.trailingAnchor
+            constraintEqualToAnchor:responseButtons.trailingAnchor],
+        [thirdRow.leadingAnchor
+            constraintEqualToAnchor:responseButtons.leadingAnchor],
+        [thirdRow.trailingAnchor
+            constraintEqualToAnchor:responseButtons.trailingAnchor]
+    ]];
+    for (NSView *view in firstRow.views) {
+        [NSLayoutConstraint activateConstraints:@[
+            [view.topAnchor constraintEqualToAnchor:firstRow.topAnchor],
+            [view.bottomAnchor constraintEqualToAnchor:firstRow.bottomAnchor]
+        ]];
+    }
+    for (NSView *view in secondRow.views) {
+        [NSLayoutConstraint activateConstraints:@[
+            [view.topAnchor constraintEqualToAnchor:secondRow.topAnchor],
+            [view.bottomAnchor constraintEqualToAnchor:secondRow.bottomAnchor]
+        ]];
+    }
+    for (NSView *view in thirdRow.views) {
+        [NSLayoutConstraint activateConstraints:@[
+            [view.topAnchor constraintEqualToAnchor:thirdRow.topAnchor],
+            [view.bottomAnchor constraintEqualToAnchor:thirdRow.bottomAnchor]
+        ]];
+    }
     hideResponseButtons();
     hideReadyButton();
 }
@@ -471,6 +507,8 @@ void CocoaConsonantView::hideResponseButtons() {
 auto CocoaConsonantView::consonant() -> std::string {
     return consonants.at(lastButtonPressed);
 }
+
+void CocoaConsonantView::hideCursor() { [NSCursor hide]; }
 
 static auto greenColor{NSColor.greenColor};
 static auto redColor{NSColor.redColor};
@@ -965,4 +1003,6 @@ void CocoaView::center() { [window center]; }
 auto CocoaView::testSetup() -> View::TestSetup & { return testSetup_; }
 
 auto CocoaView::experimenter() -> View::Experimenter & { return experimenter_; }
+
+void CocoaView::showCursor() { [NSCursor unhide]; }
 }

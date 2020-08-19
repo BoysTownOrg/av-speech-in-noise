@@ -66,6 +66,10 @@ class ConsonantViewStub : public View::Consonant {
 
     auto consonant() -> std::string override { return consonant_; }
 
+    [[nodiscard]] auto cursorHidden() const -> bool { return cursorHidden_; }
+
+    void hideCursor() { cursorHidden_ = true; }
+
   private:
     std::string consonant_;
     EventListener *listener_{};
@@ -75,6 +79,7 @@ class ConsonantViewStub : public View::Consonant {
     bool responseButtonsHidden_{};
     bool readyButtonShown_{};
     bool readyButtonHidden_{};
+    bool cursorHidden_{};
 };
 
 class CoordinateResponseMeasureViewStub
@@ -438,6 +443,10 @@ class ViewStub : public View {
 
     [[nodiscard]] auto audioDevices() const { return audioDevices_; }
 
+    [[nodiscard]] auto cursorShown() const -> bool { return cursorShown_; }
+
+    void showCursor() override { cursorShown_ = true; }
+
   private:
     std::vector<std::string> audioDevices_;
     std::string errorMessage_;
@@ -446,6 +455,7 @@ class ViewStub : public View {
     std::string audioDevice_;
     bool eventLoopCalled_{};
     bool browseCancelled_{};
+    bool cursorShown_{};
 };
 
 class TestSettingsInterpreterStub : public TestSettingsInterpreter {
@@ -1446,6 +1456,12 @@ class PresenterTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_TRUE(trialSubmission.responseViewShown());
     }
 
+    void assertCompleteTrialShowsCursor(ConfirmingTestSetup &useCase) {
+        run(useCase);
+        completeTrial(model);
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.cursorShown());
+    }
+
     void assertShowsTrialNumber(UseCase &useCase) {
         model.setTrialNumber(1);
         run(useCase);
@@ -1797,6 +1813,10 @@ PRESENTER_TEST(submittingPassedTrialHidesSubmissionEvenWhenTestComplete) {
 
 PRESENTER_TEST(submittingFailedTrialHidesSubmissionEvenWhenTestComplete) {
     assertCompleteTestHidesResponse(submittingFailedTrial);
+}
+
+PRESENTER_TEST(completingTrialShowsCursorForAdaptiveCorrectKeywordsTest) {
+    assertCompleteTrialShowsCursor(confirmingAdaptiveCorrectKeywordsTest);
 }
 
 PRESENTER_TEST(
@@ -2285,6 +2305,16 @@ PRESENTER_TEST(
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest,
         playingTrialFromExperimenter);
+}
+
+PRESENTER_TEST(playingConsonantTrialHidesCursor) {
+    run(playingConsonantTrial);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.cursorHidden());
+}
+
+PRESENTER_TEST(submittingConsonantTrialHidesCursor) {
+    run(submittingConsonant);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.cursorHidden());
 }
 
 PRESENTER_TEST(submittingCoordinateResponseMeasurePlaysTrial) {

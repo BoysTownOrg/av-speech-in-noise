@@ -202,6 +202,40 @@ void assertPassesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     assertSessionIdEquals("c", f(model));
 }
 
+void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
+    ModelStub &model, Method m,
+    const std::function<TestIdentity(ModelStub &)> &f) {
+    TestIdentity testIdentity;
+    setSubjectId(testIdentity, "a");
+    setTesterId(testIdentity, "b");
+    setSession(testIdentity, "c");
+    testIdentity.rmeSetting = "g";
+    testIdentity.transducer = "h";
+    initialize(interpreter, model,
+        {entryWithNewline(TestSetting::method, m),
+            entryWithNewline(TestSetting::subjectId, "d"),
+            entryWithNewline(TestSetting::testerId, "e"),
+            entryWithNewline(TestSetting::session, "f"),
+            entryWithNewline(TestSetting::rmeSetting, "i"),
+            entryWithNewline(TestSetting::transducer, "j")},
+        0, testIdentity);
+    assertSubjectIdEquals("d", f(model));
+    assertTesterIdEquals("e", f(model));
+    assertSessionIdEquals("f", f(model));
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"i"}, f(model).rmeSetting);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"j"}, f(model).transducer);
+}
+
+void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter,
+    ModelStub &model, Method m,
+    const std::function<FixedLevelTest(ModelStub &)> &f) {
+    initialize(interpreter, model,
+        {entryWithNewline(TestSetting::method, m),
+            entryWithNewline(TestSetting::startingSnr, "6")},
+        5);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6, f(model).snr.dB);
+}
+
 void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
     ModelStub &model, Method m,
     const std::function<TestIdentity(ModelStub &)> &f) {
@@ -377,6 +411,17 @@ TEST_SETTINGS_INTERPRETER_TEST(
         fixedLevelTestIdentity);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesTestIdentity) {
+    assertOverridesTestIdentity(
+        interpreter, model, Method::adaptivePassFail, adaptiveTestIdentity);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithAllTargetsOverridesTestIdentity) {
+    assertOverridesTestIdentity(interpreter, model,
+        Method::fixedLevelFreeResponseWithAllTargets, fixedLevelTestIdentity);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
     assertPassesTestIdentity(
         interpreter, model, Method::adaptivePassFail, adaptiveTestIdentity);
@@ -511,6 +556,26 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initialize(interpreter, model,
         Method::fixedLevelFreeResponseWithTargetReplacement);
     assertDefaultFixedLevelTestInitialized(model);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesStartingSnr) {
+    initialize(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::startingSnr, "6")},
+        5);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6, adaptiveTest(model).startingSnr.dB);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsOverridesStartingSnr) {
+    assertOverridesStartingSnr(interpreter, model, Method::fixedLevelConsonants,
+        fixedLevelTestWithEachTargetNTimes);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelCoordinateResponseMeasureWithTargetReplacementOverridesStartingSnr) {
+    assertOverridesStartingSnr(interpreter, model,
+        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+        fixedLevelFixedTrialsTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {

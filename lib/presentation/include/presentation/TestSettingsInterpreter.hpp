@@ -49,13 +49,19 @@ enum class TestSetting {
     targets,
     masker,
     maskerLevel,
+    startingSnr,
     condition,
     up,
     down,
     reversalsPerStepSize,
     stepSizes,
     thresholdReversals,
-    targetRepetitions
+    targetRepetitions,
+    subjectId,
+    testerId,
+    session,
+    rmeSetting,
+    transducer
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -68,6 +74,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "masker";
     case TestSetting::maskerLevel:
         return "masker level (dB SPL)";
+    case TestSetting::startingSnr:
+        return "starting SNR (dB)";
     case TestSetting::condition:
         return "condition";
     case TestSetting::up:
@@ -82,6 +90,16 @@ constexpr auto name(TestSetting p) -> const char * {
         return "threshold";
     case TestSetting::targetRepetitions:
         return "target repetitions";
+    case TestSetting::subjectId:
+        return "subject ID";
+    case TestSetting::testerId:
+        return "tester ID";
+    case TestSetting::session:
+        return "session";
+    case TestSetting::rmeSetting:
+        return "RME setting";
+    case TestSetting::transducer:
+        return "transducer";
     }
 }
 

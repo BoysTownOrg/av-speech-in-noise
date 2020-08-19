@@ -191,6 +191,7 @@ void Presenter::playTrial() {
 void Presenter::trialComplete() {
     trialCompletionHandler_->showResponseSubmission();
     experimenterPresenter.trialComplete();
+    view.showCursor();
 }
 
 static void show(Presenter::TestSetup &presenter) { presenter.show(); }
@@ -391,11 +392,13 @@ void Presenter::Consonant::stop() {
 }
 
 void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {
+    view->hideCursor();
     parent->playTrial();
     view->hideReadyButton();
 }
 
 void Presenter::Consonant::notifyThatResponseButtonHasBeenClicked() {
+    view->hideCursor();
     parent->submitConsonantResponse();
     view->hideResponseButtons();
 }

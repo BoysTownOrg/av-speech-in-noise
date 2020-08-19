@@ -75,6 +75,7 @@ class View {
         virtual void hideResponseButtons() = 0;
         virtual void showResponseButtons() = 0;
         virtual auto consonant() -> std::string = 0;
+        virtual void hideCursor() = 0;
     };
 
     class CoordinateResponseMeasure {
@@ -173,6 +174,7 @@ class View {
     virtual void populateAudioDeviceMenu(std::vector<std::string>) = 0;
     virtual auto browseCancelled() -> bool = 0;
     virtual void showErrorMessage(std::string) = 0;
+    virtual void showCursor() = 0;
 };
 
 class Presenter : public Model::EventListener {

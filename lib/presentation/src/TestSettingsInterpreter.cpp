@@ -87,10 +87,28 @@ static void assign(
         test.maskerFileUrl.path = entry;
     else if (entryName == name(TestSetting::maskerLevel))
         test.maskerLevel.dB_SPL = integer(entry);
+    else if (entryName == name(TestSetting::subjectId))
+        test.identity.subjectId = entry;
+    else if (entryName == name(TestSetting::testerId))
+        test.identity.testerId = entry;
+    else if (entryName == name(TestSetting::session))
+        test.identity.session = entry;
+    else if (entryName == name(TestSetting::rmeSetting))
+        test.identity.rmeSetting = entry;
+    else if (entryName == name(TestSetting::transducer))
+        test.identity.transducer = entry;
     else if (entryName == name(TestSetting::condition))
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
             if (entry == name(c))
                 test.condition = c;
+}
+
+static void assign(FixedLevelTest &test, const std::string &entryName,
+    const std::string &entry) {
+    if (entryName == name(TestSetting::startingSnr))
+        test.snr.dB = integer(entry);
+    else
+        assign(static_cast<Test &>(test), entryName, entry);
 }
 
 static void assign(FixedLevelTestWithEachTargetNTimes &test,
@@ -98,7 +116,7 @@ static void assign(FixedLevelTestWithEachTargetNTimes &test,
     if (entryName == name(TestSetting::targetRepetitions))
         test.timesEachTargetIsPlayed = integer(entry);
     else
-        assign(static_cast<Test &>(test), entryName, entry);
+        assign(static_cast<FixedLevelTest &>(test), entryName, entry);
 }
 
 static void assign(Calibration &calibration, const std::string &entryName,
@@ -121,6 +139,8 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
         applyToEachTrackingRule(test, applyToStepSize, entry);
     else if (entryName == name(TestSetting::thresholdReversals))
         test.thresholdReversals = integer(entry);
+    else if (entryName == name(TestSetting::startingSnr))
+        test.startingSnr.dB = integer(entry);
     else
         assign(static_cast<Test &>(test), entryName, entry);
 }
@@ -159,41 +179,39 @@ static auto method(const std::string &s) -> Method {
 
 static void initialize(AdaptiveTest &test, const std::string &contents,
     Method method, const TestIdentity &identity, SNR startingSnr) {
+    test.identity = identity;
+    test.startingSnr = startingSnr;
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
-    test.startingSnr = startingSnr;
     test.ceilingSnr = Presenter::ceilingSnr;
     test.floorSnr = Presenter::floorSnr;
     test.trackBumpLimit = Presenter::trackBumpLimit;
     test.fullScaleLevel = Presenter::fullScaleLevel;
-    test.identity = identity;
-    test.identity.method = name(method);
-}
-
-static void initialize(FixedLevelTest &test, Method method,
-    const TestIdentity &identity, SNR startingSnr) {
-    test.snr = startingSnr;
-    test.fullScaleLevel = Presenter::fullScaleLevel;
-    test.identity = identity;
     test.identity.method = name(method);
 }
 
 static void initialize(FixedLevelTest &test, const std::string &contents,
+    Method method, const TestIdentity &identity, SNR startingSnr,
+    const std::function<void(const std::string &, const std::string &)> &f) {
+    test.snr = startingSnr;
+    test.fullScaleLevel = Presenter::fullScaleLevel;
+    test.identity = identity;
+    test.identity.method = name(method);
+    applyToEachEntry(f, contents);
+}
+
+static void initialize(FixedLevelTest &test, const std::string &contents,
     Method method, const TestIdentity &identity, SNR startingSnr) {
-    applyToEachEntry(
-        [&](auto entryName, auto entry) { assign(test, entryName, entry); },
-        contents);
-    initialize(test, method, identity, startingSnr);
+    initialize(test, contents, method, identity, startingSnr,
+        [&](auto entryName, auto entry) { assign(test, entryName, entry); });
 }
 
 static void initialize(FixedLevelTestWithEachTargetNTimes &test,
     const std::string &contents, Method method, const TestIdentity &identity,
     SNR startingSnr) {
-    applyToEachEntry(
-        [&](auto entryName, auto entry) { assign(test, entryName, entry); },
-        contents);
-    initialize(test, method, identity, startingSnr);
+    initialize(test, contents, method, identity, startingSnr,
+        [&](auto entryName, auto entry) { assign(test, entryName, entry); });
 }
 
 void TestSettingsInterpreterImpl::initialize(Model &model,
