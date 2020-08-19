@@ -22,7 +22,7 @@
 }
 
 - (void)notifyThatConfirmButtonHasBeenClicked {
-    controller->confirm();
+    controller->notifyThatConfirmButtonHasBeenClicked();
 }
 
 - (void)notifyThatBrowseForTestSettingsButtonHasBeenClicked {
@@ -331,7 +331,9 @@ void CocoaTestSetupView::setTestSettingsFile(std::string s) {
     set(testSettingsField, s);
 }
 
-void CocoaTestSetupView::confirm() { listener_->confirmTestSetup(); }
+void CocoaTestSetupView::notifyThatConfirmButtonHasBeenClicked() {
+    listener_->confirmTestSetup();
+}
 
 void CocoaTestSetupView::subscribe(EventListener *listener) {
     listener_ = listener;

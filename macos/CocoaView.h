@@ -81,7 +81,7 @@ class CocoaTestSetupView : public View::TestSetup {
     void setTestSettingsFile(std::string) override;
     void subscribe(EventListener *) override;
     auto view() -> NSView *;
-    void confirm();
+    void notifyThatConfirmButtonHasBeenClicked();
     void browseForTargetList();
     void browseForMasker();
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
