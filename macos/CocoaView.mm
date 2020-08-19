@@ -200,6 +200,11 @@ static auto label(const std::string &s) -> NSTextField * {
     return [NSTextField labelWithString:asNsString(s)];
 }
 
+static void setPlaceholderAndFit(NSTextField *field, const std::string &s) {
+    [field setPlaceholderString:asNsString(s)];
+    [field sizeToFit];
+}
+
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]}, subjectIdField{[NSTextField
                                                    textFieldWithString:@""]},
@@ -230,19 +235,12 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
         button("play calibration", actions,
             @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
     };
-    [subjectIdField setPlaceholderString:@"abc123"];
-    [subjectIdField sizeToFit];
-    [testerIdField setPlaceholderString:@"abc123"];
-    [testerIdField sizeToFit];
-    [sessionField setPlaceholderString:@"abc123"];
-    [sessionField sizeToFit];
-    [rmeSettingField setPlaceholderString:@"ihavenoideawhatgoeshere"];
-    [rmeSettingField sizeToFit];
-    [testSettingsField
-        setPlaceholderString:@"/Users/username/Desktop/file.txt"];
-    [testSettingsField sizeToFit];
-    [startingSnrField setPlaceholderString:@"15"];
-    [startingSnrField sizeToFit];
+    setPlaceholderAndFit(subjectIdField, "abc123");
+    setPlaceholderAndFit(testerIdField, "abc123");
+    setPlaceholderAndFit(sessionField, "abc123");
+    setPlaceholderAndFit(rmeSettingField, "ihavenoideawhatgoeshere");
+    setPlaceholderAndFit(testSettingsField, "/Users/username/Desktop/file.txt");
+    setPlaceholderAndFit(startingSnrField, "15");
     addAutolayoutEnabledSubview(view_, browseForTestSettingsButton);
     addAutolayoutEnabledSubview(view_, confirmButton);
     addAutolayoutEnabledSubview(view_, playCalibrationButton);
@@ -733,10 +731,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     const auto submitCorrectKeywordsButton {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
-    [correctKeywordsField setPlaceholderString:@"2"];
-    [correctKeywordsField sizeToFit];
-    [freeResponseField setPlaceholderString:@"This is a sentence."];
-    [freeResponseField sizeToFit];
+    setPlaceholderAndFit(correctKeywordsField, "2");
+    setPlaceholderAndFit(freeResponseField, "This is a sentence.");
     addAutolayoutEnabledSubview(view_, exitTestButton);
     addSubview(view_, displayedText_);
     addSubview(view_, secondaryDisplayedText_);
