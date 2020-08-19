@@ -79,4 +79,7 @@ set_target_properties(
 if(${_AV_SPEECH_IN_NOISE_BUILD_FACEMASK_STUDY_VIEW_PREVIEW})
   add_executable(AvSpeechInNoiseFaceMaskStudyViewPreview MACOSX_BUNDLE
                  FacemaskStudySetupView.mm main-facemask-study-view-preview.mm)
+  target_compile_features(AvSpeechInNoiseFaceMaskStudyViewPreview
+                          PRIVATE cxx_std_17)
+  target_link_libraries(AvSpeechInNoiseFaceMaskStudyViewPreview ${COCOA})
 endif()
