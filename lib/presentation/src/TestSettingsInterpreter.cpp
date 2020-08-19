@@ -103,12 +103,20 @@ static void assign(
                 test.condition = c;
 }
 
+static void assign(FixedLevelTest &test, const std::string &entryName,
+    const std::string &entry) {
+    if (entryName == name(TestSetting::startingSnr))
+        test.snr.dB = integer(entry);
+    else
+        assign(static_cast<Test &>(test), entryName, entry);
+}
+
 static void assign(FixedLevelTestWithEachTargetNTimes &test,
     const std::string &entryName, const std::string &entry) {
     if (entryName == name(TestSetting::targetRepetitions))
         test.timesEachTargetIsPlayed = integer(entry);
     else
-        assign(static_cast<Test &>(test), entryName, entry);
+        assign(static_cast<FixedLevelTest &>(test), entryName, entry);
 }
 
 static void assign(Calibration &calibration, const std::string &entryName,

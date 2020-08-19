@@ -556,6 +556,15 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesStartingSnr) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6, adaptiveTest(model).startingSnr.dB);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsOverridesStartingSnr) {
+    initialize(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
+            entryWithNewline(TestSetting::startingSnr, "6")},
+        5);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        6, fixedLevelTestWithEachTargetNTimes(model).snr.dB);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
         interpreter, model, Method::adaptivePassFail);
