@@ -226,6 +226,16 @@ void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"j"}, f(model).transducer);
 }
 
+void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter,
+    ModelStub &model, Method m,
+    const std::function<FixedLevelTest(ModelStub &)> &f) {
+    initialize(interpreter, model,
+        {entryWithNewline(TestSetting::method, m),
+            entryWithNewline(TestSetting::startingSnr, "6")},
+        5);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6, f(model).snr.dB);
+}
+
 void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
     ModelStub &model, Method m,
     const std::function<TestIdentity(ModelStub &)> &f) {
@@ -557,22 +567,15 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesStartingSnr) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsOverridesStartingSnr) {
-    initialize(interpreter, model,
-        {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
-            entryWithNewline(TestSetting::startingSnr, "6")},
-        5);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        6, fixedLevelTestWithEachTargetNTimes(model).snr.dB);
+    assertOverridesStartingSnr(interpreter, model, Method::fixedLevelConsonants,
+        fixedLevelTestWithEachTargetNTimes);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementOverridesStartingSnr) {
-    initialize(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-             Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement),
-            entryWithNewline(TestSetting::startingSnr, "6")},
-        5);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6, fixedLevelFixedTrialsTest(model).snr.dB);
+    assertOverridesStartingSnr(interpreter, model,
+        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+        fixedLevelFixedTrialsTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
