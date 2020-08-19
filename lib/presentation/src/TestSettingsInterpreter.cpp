@@ -187,10 +187,10 @@ static void initialize(FixedLevelTest &test, Method method,
 
 static void initialize(FixedLevelTest &test, const std::string &contents,
     Method method, const TestIdentity &identity, SNR startingSnr) {
+    initialize(test, method, identity, startingSnr);
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
-    initialize(test, method, identity, startingSnr);
 }
 
 static void initialize(FixedLevelTestWithEachTargetNTimes &test,
