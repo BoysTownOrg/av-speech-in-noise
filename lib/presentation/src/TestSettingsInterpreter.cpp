@@ -186,20 +186,23 @@ static void initialize(FixedLevelTest &test, Method method,
 }
 
 static void initialize(FixedLevelTest &test, const std::string &contents,
-    Method method, const TestIdentity &identity, SNR startingSnr) {
+    Method method, const TestIdentity &identity, SNR startingSnr,
+    const std::function<void(const std::string &, const std::string &)> &f) {
     initialize(test, method, identity, startingSnr);
-    applyToEachEntry(
-        [&](auto entryName, auto entry) { assign(test, entryName, entry); },
-        contents);
+    applyToEachEntry(f, contents);
+}
+
+static void initialize(FixedLevelTest &test, const std::string &contents,
+    Method method, const TestIdentity &identity, SNR startingSnr) {
+    initialize(test, contents, method, identity, startingSnr,
+        [&](auto entryName, auto entry) { assign(test, entryName, entry); });
 }
 
 static void initialize(FixedLevelTestWithEachTargetNTimes &test,
     const std::string &contents, Method method, const TestIdentity &identity,
     SNR startingSnr) {
-    applyToEachEntry(
-        [&](auto entryName, auto entry) { assign(test, entryName, entry); },
-        contents);
-    initialize(test, method, identity, startingSnr);
+    initialize(test, contents, method, identity, startingSnr,
+        [&](auto entryName, auto entry) { assign(test, entryName, entry); });
 }
 
 void TestSettingsInterpreterImpl::initialize(Model &model,
