@@ -361,7 +361,8 @@ void Presenter::TestSetup::confirmTestSetup() { parent->confirmTestSetup(); }
 
 void Presenter::TestSetup::becomeChild(Presenter *p) { parent = p; }
 
-void Presenter::TestSetup::browseForTestSettingsFile() {
+void Presenter::TestSetup::
+    notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
     parent->browseForTestSettingsFile();
 }
 

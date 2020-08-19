@@ -108,7 +108,8 @@ class View {
             virtual ~EventListener() = default;
             virtual void confirmTestSetup() = 0;
             virtual void playCalibration() = 0;
-            virtual void browseForTestSettingsFile() = 0;
+            virtual void
+            notifyThatBrowseForTestSettingsButtonHasBeenClicked() = 0;
         };
 
         virtual ~TestSetup() = default;
@@ -184,7 +185,7 @@ class Presenter : public Model::EventListener {
         explicit TestSetup(View::TestSetup *);
         void playCalibration() override;
         void confirmTestSetup() override;
-        void browseForTestSettingsFile() override;
+        void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
         void show();
         void hide();
         void becomeChild(Presenter *parent);

@@ -25,8 +25,8 @@
     controller->confirm();
 }
 
-- (void)browseForTestSettings {
-    controller->browseForTestSettings();
+- (void)notifyThatBrowseForTestSettingsButtonHasBeenClicked {
+    controller->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
 }
 
 - (void)playCalibration {
@@ -212,7 +212,8 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       actions{[[SetupViewActions alloc] init]} {
     actions->controller = this;
     const auto browseForTestSettingsButton {
-        button("browse", actions, @selector(browseForTestSettings))
+        button("browse", actions,
+            @selector(notifyThatBrowseForTestSettingsButtonHasBeenClicked))
     };
 
     const auto confirmButton {
@@ -335,8 +336,8 @@ void CocoaTestSetupView::subscribe(EventListener *listener) {
     listener_ = listener;
 }
 
-void CocoaTestSetupView::browseForTestSettings() {
-    listener_->browseForTestSettingsFile();
+void CocoaTestSetupView::notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
+    listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
 }
 
 void CocoaTestSetupView::playCalibration() { listener_->playCalibration(); }
