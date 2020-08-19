@@ -29,7 +29,7 @@
     controller->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
 }
 
-- (void)playCalibration {
+- (void)notifyThatPlayCalibrationButtonHasBeenClicked {
     controller->playCalibration();
 }
 @end
@@ -221,7 +221,8 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
             @selector(notifyThatConfirmButtonHasBeenClicked))
     };
     const auto playCalibrationButton {
-        button("play calibration", actions, @selector(playCalibration))
+        button("play calibration", actions,
+            @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
     };
     [subjectIdField setPlaceholderString:@"abc123"];
     [subjectIdField sizeToFit];
