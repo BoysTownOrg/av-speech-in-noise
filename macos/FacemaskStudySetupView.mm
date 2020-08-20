@@ -68,7 +68,15 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
                                                                  controller} {
     const auto testSettingsLabel{labelWithAttributedString("Session file:")};
-    const auto titleLabel{[NSTextField labelWithString:@"Facemask Study"]};
+    const auto titleLabel{[NSTextField
+        labelWithAttributedString:
+            [[NSAttributedString alloc]
+                initWithString:@"Facemask Study"
+                    attributes:[NSDictionary
+                                   dictionaryWithObjectsAndKeys:
+                                       [NSFont systemFontOfSize:36],
+                                   NSFontAttributeName, [NSColor whiteColor],
+                                   NSForegroundColorAttributeName, nil]]]};
     const auto instructionsLabel{
         labelWithAttributedString("Click browse to choose the session file.")};
     const auto browseForTestSettingsButton {
