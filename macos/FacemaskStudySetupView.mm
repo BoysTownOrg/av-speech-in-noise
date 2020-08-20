@@ -92,6 +92,10 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     addAutolayoutEnabledSubview(controller.view, testSettingsLabel);
     addAutolayoutEnabledSubview(controller.view, titleLabel);
     addAutolayoutEnabledSubview(controller.view, instructionsLabel);
+    [testSettingsField
+        setPlaceholderString:
+            @"/Users/username/Documents/example-test-session-file.txt"];
+    [testSettingsField sizeToFit];
     [NSLayoutConstraint activateConstraints:@[
         [controller.view.topAnchor constraintEqualToAnchor:titleLabel.topAnchor
                                                   constant:-8],
@@ -121,8 +125,11 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
         [titleLabel.centerXAnchor
             constraintEqualToAnchor:controller.view.centerXAnchor],
         [testSettingsField.centerXAnchor
-            constraintEqualToAnchor:controller.view.centerXAnchor]
+            constraintEqualToAnchor:controller.view.centerXAnchor],
+        [testSettingsField.widthAnchor
+            constraintEqualToConstant:NSWidth(testSettingsField.frame)]
     ]];
+    [testSettingsField setPlaceholderString:@""];
 }
 
 void FacemaskStudySetupView::show() { [controller.view setHidden:NO]; }
