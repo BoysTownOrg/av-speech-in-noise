@@ -157,7 +157,7 @@ class CocoaCoordinateResponseMeasureView
 
 class CocoaView : public View {
   public:
-    explicit CocoaView(NSRect);
+    explicit CocoaView(NSViewController *, NSRect);
     void eventLoop() override;
     void showErrorMessage(std::string) override;
     auto browseForDirectory() -> std::string override;
@@ -166,8 +166,6 @@ class CocoaView : public View {
     auto audioDevice() -> std::string override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
     void showCursor() override;
-    void setDelegate(id<NSWindowDelegate>);
-    void center();
     auto testSetup() -> View::TestSetup &;
     auto experimenter() -> View::Experimenter &;
 
@@ -177,8 +175,6 @@ class CocoaView : public View {
     CocoaTestSetupView testSetup_;
     CocoaExperimenterView experimenter_;
     NSApplication *app;
-    NSTabViewController *viewController;
-    NSWindow *window;
     NSTextField *audioDeviceLabel;
     NSPopUpButton *audioDeviceMenu;
     bool browseCancelled_{};

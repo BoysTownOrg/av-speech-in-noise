@@ -264,10 +264,13 @@ void main(EyeTracker &eyeTracker) {
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
         allTargetsNTimes, recognitionTestModel, outputFile};
-    CocoaView view{NSMakeRect(0, 0, 900, 270)};
-    view.center();
-    const auto delegate{[[WindowDelegate alloc] init]};
-    view.setDelegate(delegate);
+    const auto viewController{[[NSTabViewController alloc] init]};
+    const auto window{
+        [NSWindow windowWithContentViewController:viewController]};
+    [window makeKeyAndOrderFront:nil];
+    CocoaView view{viewController, NSMakeRect(0, 0, 900, 270)};
+    [window center];
+    [window setDelegate:[[WindowDelegate alloc] init]];
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenOrigin{subjectScreenFrame.origin};
     const auto subjectScreenSize{subjectScreenFrame.size};

@@ -911,21 +911,14 @@ constexpr auto innerHeight(NSRect r) -> CGFloat {
     return height(r) - 2 * windowPerimeterSpace;
 }
 
-static auto embeddedFrame(NSRect r) -> NSRect {
-    return NSMakeRect(r.origin.x + windowPerimeterSpace,
-        r.origin.y + windowPerimeterSpace, innerWidth(r), innerHeight(r));
-}
-
 static auto innerFrame(NSRect r) -> NSRect {
     return NSMakeRect(0, 0, innerWidth(r), innerHeight(r));
 }
 
-CocoaView::CocoaView(NSRect r)
-    : testSetup_{innerFrame(r)},
-      experimenter_{innerFrame(r)}, app{[NSApplication sharedApplication]},
-      viewController{[[NSTabViewController alloc] init]},
-      window{[NSWindow windowWithContentViewController:viewController]},
-      audioDeviceLabel{label("audio output:")},
+CocoaView::CocoaView(NSViewController *viewController, NSRect r)
+    : testSetup_{innerFrame(r)}, experimenter_{innerFrame(r)},
+      app{[NSApplication sharedApplication]}, audioDeviceLabel{label(
+                                                  "audio output:")},
       audioDeviceMenu{
           [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                      pullsDown:NO]} {
@@ -949,7 +942,6 @@ CocoaView::CocoaView(NSRect r)
             constraintEqualToAnchor:viewController.view.bottomAnchor
                            constant:-8]
     ]];
-    [window makeKeyAndOrderFront:nil];
 }
 
 void CocoaView::eventLoop() { [app run]; }
@@ -997,12 +989,6 @@ void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (const auto &item : items)
         [audioDeviceMenu addItemWithTitle:asNsString(item)];
 }
-
-void CocoaView::setDelegate(id<NSWindowDelegate> delegate) {
-    [window setDelegate:delegate];
-}
-
-void CocoaView::center() { [window center]; }
 
 auto CocoaView::testSetup() -> View::TestSetup & { return testSetup_; }
 
