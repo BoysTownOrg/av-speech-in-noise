@@ -71,31 +71,20 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     setAttributedTitle(browseForTestSettingsButton, "Browse");
     setAttributedTitle(confirmButton, "START");
     confirmButton.bezelStyle = NSBezelStyleTexturedSquare;
-    [confirmButton setBezelColor:[NSColor colorWithRed:114. / 255
-                                                 green:172. / 255
-                                                  blue:77. / 255
-                                                 alpha:1]];
-
-    [browseForTestSettingsButton setBezelStyle:NSBezelStyleTexturedSquare];
+    confirmButton.wantsLayer = YES;
+    [confirmButton.layer setBackgroundColor:[NSColor colorWithRed:114. / 255
+                                                            green:172. / 255
+                                                             blue:77. / 255
+                                                            alpha:1]
+                                                .CGColor];
+    browseForTestSettingsButton.bezelStyle = NSBezelStyleTexturedSquare;
     browseForTestSettingsButton.wantsLayer = YES;
-    // [browseForTestSettingsButton setBezelColor:[NSColor colorWithRed:247. /
-    // 255
-    //                                                            green:191. /
-    //                                                            255
-    //                                                             blue:44. /
-    //                                                             255
-    //                                                            alpha:1]];
     [browseForTestSettingsButton.layer
         setBackgroundColor:[NSColor colorWithRed:247. / 255
                                            green:191. / 255
                                             blue:44. / 255
                                            alpha:1]
                                .CGColor];
-    // [browseForTestSettingsButton.cell
-    //     setBackgroundColor:[NSColor colorWithRed:247. / 255
-    //                                        green:191. / 255
-    //                                         blue:44. / 255
-    //                                        alpha:1]];
     addAutolayoutEnabledSubview(controller.view, browseForTestSettingsButton);
     addAutolayoutEnabledSubview(controller.view, confirmButton);
     addAutolayoutEnabledSubview(controller.view, playCalibrationButton);
