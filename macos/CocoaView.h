@@ -175,7 +175,6 @@ class CocoaView : public View {
     CocoaTestSetupView testSetup_;
     CocoaExperimenterView experimenter_;
     NSApplication *app;
-    NSTextField *audioDeviceLabel;
     NSPopUpButton *audioDeviceMenu;
     bool browseCancelled_{};
 };

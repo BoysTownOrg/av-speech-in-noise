@@ -918,7 +918,6 @@ static auto innerFrame(NSRect r) -> NSRect {
 CocoaView::CocoaView(
     NSApplication *app, NSViewController *viewController, NSRect r)
     : testSetup_{innerFrame(r)}, experimenter_{innerFrame(r)}, app{app},
-      audioDeviceLabel{label("audio output:")},
       audioDeviceMenu{
           [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                      pullsDown:NO]} {
@@ -932,6 +931,7 @@ CocoaView::CocoaView(
     [app.mainMenu addItem:appMenu];
     addSubview(viewController.view, testSetup_.view());
     addSubview(viewController.view, experimenter_.view());
+    const auto audioDeviceLabel{label("audio output:")};
     addAutolayoutEnabledSubview(viewController.view, audioDeviceLabel);
     addAutolayoutEnabledSubview(viewController.view, audioDeviceMenu);
     [NSLayoutConstraint activateConstraints:@[
