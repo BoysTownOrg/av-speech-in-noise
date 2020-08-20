@@ -82,14 +82,8 @@ class CocoaTestSetupView : public View::TestSetup {
     void subscribe(EventListener *) override;
     auto view() -> NSView *;
     void notifyThatConfirmButtonHasBeenClicked();
-    void browseForTargetList();
-    void browseForMasker();
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
     void notifyThatPlayCalibrationButtonHasBeenClicked();
-    void setMaskerLevel_dB_SPL(std::string);
-    void setStartingSnr_dB(std::string);
-    void setCalibrationLevel_dB_SPL(std::string);
-    void setCalibration(std::string);
 
   private:
     NSView *view_;
