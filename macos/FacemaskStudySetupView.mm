@@ -32,6 +32,21 @@ static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
     [parent addSubview:child];
 }
 
+static void setAttributedTitle(NSButton *button, const std::string &s) {
+    [button setAttributedTitle:
+                [[NSAttributedString alloc]
+                    initWithString:asNsString(s)
+                        attributes:[NSDictionary
+                                       dictionaryWithObjectsAndKeys:
+                                           [NSFont boldSystemFontOfSize:36],
+                                       NSFontAttributeName,
+                                       [NSColor colorWithRed:33. / 255
+                                                       green:57. / 255
+                                                        blue:98. / 255
+                                                       alpha:1],
+                                       NSForegroundColorAttributeName, nil]]];
+}
+
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : testSettingsField{[NSTextField textFieldWithString:@""]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
@@ -46,22 +61,41 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             @selector(notifyThatBrowseForTestSettingsButtonHasBeenClicked))
     };
     const auto confirmButton {
-        button(
-            "START", actions, @selector(notifyThatConfirmButtonHasBeenClicked))
+        button("", actions, @selector(notifyThatConfirmButtonHasBeenClicked))
     };
     const auto playCalibrationButton {
         button("play calibration", actions,
             @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
     };
-    [browseForTestSettingsButton
-        setAttributedTitle:
-            [[NSAttributedString alloc]
-                initWithString:@"Browse"
-                    attributes:[NSDictionary
-                                   dictionaryWithObjectsAndKeys:
-                                       [NSFont boldSystemFontOfSize:36],
-                                   NSFontAttributeName, nil]]];
-    [browseForTestSettingsButton setBezelStyle:NSBezelStyleRoundRect];
+
+    setAttributedTitle(browseForTestSettingsButton, "Browse");
+    setAttributedTitle(confirmButton, "START");
+    confirmButton.bezelStyle = NSBezelStyleTexturedSquare;
+    [confirmButton setBezelColor:[NSColor colorWithRed:114. / 255
+                                                 green:172. / 255
+                                                  blue:77. / 255
+                                                 alpha:1]];
+
+    [browseForTestSettingsButton setBezelStyle:NSBezelStyleTexturedSquare];
+    browseForTestSettingsButton.wantsLayer = YES;
+    // [browseForTestSettingsButton setBezelColor:[NSColor colorWithRed:247. /
+    // 255
+    //                                                            green:191. /
+    //                                                            255
+    //                                                             blue:44. /
+    //                                                             255
+    //                                                            alpha:1]];
+    [browseForTestSettingsButton.layer
+        setBackgroundColor:[NSColor colorWithRed:247. / 255
+                                           green:191. / 255
+                                            blue:44. / 255
+                                           alpha:1]
+                               .CGColor];
+    // [browseForTestSettingsButton.cell
+    //     setBackgroundColor:[NSColor colorWithRed:247. / 255
+    //                                        green:191. / 255
+    //                                         blue:44. / 255
+    //                                        alpha:1]];
     addAutolayoutEnabledSubview(controller.view, browseForTestSettingsButton);
     addAutolayoutEnabledSubview(controller.view, confirmButton);
     addAutolayoutEnabledSubview(controller.view, playCalibrationButton);
