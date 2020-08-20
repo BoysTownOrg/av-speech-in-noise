@@ -268,7 +268,9 @@ void main(EyeTracker &eyeTracker) {
     const auto window{
         [NSWindow windowWithContentViewController:viewController]};
     [window makeKeyAndOrderFront:nil];
-    CocoaView view{viewController, NSMakeRect(0, 0, 900, 270)};
+    CocoaView view{[NSApplication sharedApplication],
+        viewController,
+        NSMakeRect(0, 0, 900, 270)};
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
     const auto subjectScreenFrame{subjectScreen.frame};

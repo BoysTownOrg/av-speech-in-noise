@@ -915,15 +915,14 @@ static auto innerFrame(NSRect r) -> NSRect {
     return NSMakeRect(0, 0, innerWidth(r), innerHeight(r));
 }
 
-CocoaView::CocoaView(NSViewController *viewController, NSRect r)
-    : testSetup_{innerFrame(r)}, experimenter_{innerFrame(r)},
-      app{[NSApplication sharedApplication]}, audioDeviceLabel{label(
-                                                  "audio output:")},
+CocoaView::CocoaView(
+    NSApplication *app, NSViewController *viewController, NSRect r)
+    : testSetup_{innerFrame(r)}, experimenter_{innerFrame(r)}, app{app},
+      audioDeviceLabel{label("audio output:")},
       audioDeviceMenu{
           [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                      pullsDown:NO]} {
     app.mainMenu = [[NSMenu alloc] init];
-
     auto appMenu{[[NSMenuItem alloc] init]};
     auto appSubMenu{[[NSMenu alloc] init]};
     [appSubMenu addItemWithTitle:@"Quit"
