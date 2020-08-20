@@ -266,7 +266,7 @@ void main(EyeTracker &eyeTracker) {
         allTargetsNTimes, recognitionTestModel, outputFile};
     CocoaView view{NSMakeRect(0, 0, 900, 270)};
     view.center();
-    const auto delegate{[WindowDelegate alloc]};
+    const auto delegate{[[WindowDelegate alloc] init]};
     view.setDelegate(delegate);
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenOrigin{subjectScreenFrame.origin};
