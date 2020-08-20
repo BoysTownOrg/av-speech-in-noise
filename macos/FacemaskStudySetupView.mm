@@ -63,13 +63,6 @@ static auto labelWithAttributedString(const std::string &s) -> NSTextField * {
                                              nil]]];
 }
 
-static auto resourcePath(const std::string &stem, const std::string &extension)
-    -> std::string {
-    return [[NSBundle mainBundle] pathForResource:asNsString(stem)
-                                           ofType:asNsString(extension)]
-        .UTF8String;
-}
-
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : testSettingsField{[NSTextField textFieldWithString:@""]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
