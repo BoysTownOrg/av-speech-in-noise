@@ -77,9 +77,17 @@ set_target_properties(
              XCODE_ATTRIBUTE_CODE_SIGN_INJECT_BASE_ENTITLEMENTS NO)
 
 if(${_AV_SPEECH_IN_NOISE_BUILD_FACEMASK_STUDY_VIEW_PREVIEW})
-  add_executable(AvSpeechInNoiseFaceMaskStudyViewPreview MACOSX_BUNDLE
-                 FacemaskStudySetupView.mm main-facemask-study-view-preview.mm)
+  add_executable(
+    AvSpeechInNoiseFaceMaskStudyViewPreview MACOSX_BUNDLE
+    FacemaskStudySetupView.mm main-facemask-study-view-preview.mm
+    ${_AV_SPEECH_IN_NOISE_BUILD_FACEMASK_STUDY_VIEW_PREVIEW_MACOS_RESOURCES})
   target_compile_features(AvSpeechInNoiseFaceMaskStudyViewPreview
                           PRIVATE cxx_std_17)
   target_link_libraries(AvSpeechInNoiseFaceMaskStudyViewPreview ${COCOA})
+  set_target_properties(
+    AvSpeechInNoiseFaceMaskStudyViewPreview
+    PROPERTIES
+      RESOURCE
+      "${_AV_SPEECH_IN_NOISE_BUILD_FACEMASK_STUDY_VIEW_PREVIEW_MACOS_RESOURCES}"
+      CXX_EXTENSIONS OFF)
 endif()

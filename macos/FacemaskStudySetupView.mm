@@ -63,6 +63,13 @@ static auto labelWithAttributedString(const std::string &s) -> NSTextField * {
                                              nil]]];
 }
 
+static auto resourcePath(const std::string &stem, const std::string &extension)
+    -> std::string {
+    return [[NSBundle mainBundle] pathForResource:asNsString(stem)
+                                           ofType:asNsString(extension)]
+        .UTF8String;
+}
+
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : testSettingsField{[NSTextField textFieldWithString:@""]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
@@ -112,6 +119,9 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                                                                green:97. / 255
                                                                 blue:198. / 255
                                                                alpha:1]];
+
+    const auto logo{
+        [NSImageView imageViewWithImage:[NSImage imageNamed:@"b.bmp"]]};
     addAutolayoutEnabledSubview(controller.view, browseForTestSettingsButton);
     addAutolayoutEnabledSubview(controller.view, confirmButton);
     addAutolayoutEnabledSubview(controller.view, playCalibrationButton);
@@ -119,11 +129,17 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     addAutolayoutEnabledSubview(controller.view, testSettingsLabel);
     addAutolayoutEnabledSubview(controller.view, titleLabel);
     addAutolayoutEnabledSubview(controller.view, instructionsLabel);
+    addAutolayoutEnabledSubview(controller.view, logo);
     [testSettingsField
         setPlaceholderString:
             @"/Users/username/Documents/example-test-session-file.txt"];
     [testSettingsField sizeToFit];
     [NSLayoutConstraint activateConstraints:@[
+        [logo.leadingAnchor
+            constraintEqualToAnchor:controller.view.leadingAnchor
+                           constant:8],
+        [logo.topAnchor constraintEqualToAnchor:controller.view.topAnchor
+                                       constant:8],
         [controller.view.topAnchor constraintEqualToAnchor:titleLabel.topAnchor
                                                   constant:-8],
         [titleLabel.bottomAnchor

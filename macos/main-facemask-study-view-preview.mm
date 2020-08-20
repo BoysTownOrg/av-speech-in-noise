@@ -13,6 +13,7 @@ int main() {
     const auto viewController{[[NSTabViewController alloc] init]};
     [viewController setTabStyle:NSTabViewControllerTabStyleUnspecified];
     NSWindow *window{[NSWindow windowWithContentViewController:viewController]};
+    [window setFrame:NSMakeRect(400, 400, 700, 500) display:NO];
     av_speech_in_noise::FacemaskStudySetupView view{viewController};
     [window makeKeyAndOrderFront:nil];
     auto app{[NSApplication sharedApplication]};
