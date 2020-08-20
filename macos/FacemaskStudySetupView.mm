@@ -108,6 +108,10 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                                             blue:44. / 255
                                            alpha:1]
                                .CGColor];
+    [controller.view.window setBackgroundColor:[NSColor colorWithRed:43. / 255
+                                                               green:97. / 255
+                                                                blue:198. / 255
+                                                               alpha:1]];
     addAutolayoutEnabledSubview(controller.view, browseForTestSettingsButton);
     addAutolayoutEnabledSubview(controller.view, confirmButton);
     addAutolayoutEnabledSubview(controller.view, playCalibrationButton);
