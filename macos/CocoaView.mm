@@ -923,12 +923,8 @@ static auto innerFrame(NSRect r) -> NSRect {
 CocoaView::CocoaView(NSRect r)
     : testSetup_{innerFrame(r)},
       experimenter_{innerFrame(r)}, app{[NSApplication sharedApplication]},
-      window{[[NSWindow alloc] initWithContentRect:r
-                                         styleMask:NSWindowStyleMaskClosable |
-                                         NSWindowStyleMaskTitled
-                                           backing:NSBackingStoreBuffered
-                                             defer:NO]},
-      view{[[NSView alloc] initWithFrame:embeddedFrame(r)]},
+      viewController{[[NSTabViewController alloc] init]},
+      window{[NSWindow windowWithContentViewController:viewController]},
       audioDeviceLabel{label("audio output:")},
       audioDeviceMenu{
           [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
@@ -942,16 +938,16 @@ CocoaView::CocoaView(NSRect r)
                    keyEquivalent:@"q"];
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
-    addSubview(view, testSetup_.view());
-    addSubview(view, experimenter_.view());
-    addAutolayoutEnabledSubview(view, audioDeviceLabel);
-    addAutolayoutEnabledSubview(view, audioDeviceMenu);
-    addSubview(window.contentView, view);
+    addSubview(viewController.view, testSetup_.view());
+    addSubview(viewController.view, experimenter_.view());
+    addAutolayoutEnabledSubview(viewController.view, audioDeviceLabel);
+    addAutolayoutEnabledSubview(viewController.view, audioDeviceMenu);
     [NSLayoutConstraint activateConstraints:@[
         firstToTheRightOfSecondConstraint(audioDeviceMenu, audioDeviceLabel, 8),
         yCenterConstraint(audioDeviceMenu, audioDeviceLabel),
-        [audioDeviceMenu.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
-                                                     constant:-8]
+        [audioDeviceMenu.bottomAnchor
+            constraintEqualToAnchor:viewController.view.bottomAnchor
+                           constant:-8]
     ]];
     [window makeKeyAndOrderFront:nil];
 }
