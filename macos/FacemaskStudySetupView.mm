@@ -47,14 +47,11 @@ static void setAttributedTitle(NSButton *button, const std::string &s) {
                                        NSForegroundColorAttributeName, nil]]];
 }
 
-FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
-    : testSettingsField{[NSTextField textFieldWithString:@""]},
-      actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
-                                                                 controller} {
-    const auto testSettingsLabel{[NSTextField
+static auto labelWithAttributedString(const std::string &s) -> NSTextField * {
+    return [NSTextField
         labelWithAttributedString:
             [[NSAttributedString alloc]
-                initWithString:@"Session file:"
+                initWithString:asNsString(s)
                     attributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                                  [NSFont systemFontOfSize:36],
                                              NSFontAttributeName,
@@ -63,10 +60,17 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                                                               blue:111. / 255
                                                              alpha:1],
                                              NSForegroundColorAttributeName,
-                                             nil]]]};
+                                             nil]]];
+}
+
+FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
+    : testSettingsField{[NSTextField textFieldWithString:@""]},
+      actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
+                                                                 controller} {
+    const auto testSettingsLabel{labelWithAttributedString("Session file:")};
     const auto titleLabel{[NSTextField labelWithString:@"Facemask Study"]};
-    const auto instructionsLabel{[NSTextField
-        labelWithString:@"Click browse to choose the session file."]};
+    const auto instructionsLabel{
+        labelWithAttributedString("Click browse to choose the session file.")};
     const auto browseForTestSettingsButton {
         button("", actions,
             @selector(notifyThatBrowseForTestSettingsButtonHasBeenClicked))
