@@ -917,10 +917,9 @@ static auto innerFrame(NSRect r) -> NSRect {
 
 CocoaView::CocoaView(
     NSApplication *app, NSViewController *viewController, NSRect r)
-    : testSetup_{innerFrame(r)}, experimenter_{innerFrame(r)}, app{app},
-      audioDeviceMenu{
-          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
-                                     pullsDown:NO]} {
+    : app{app}, audioDeviceMenu{
+                    [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
+                                               pullsDown:NO]} {
     app.mainMenu = [[NSMenu alloc] init];
     auto appMenu{[[NSMenuItem alloc] init]};
     auto appSubMenu{[[NSMenu alloc] init]};
@@ -929,8 +928,6 @@ CocoaView::CocoaView(
                    keyEquivalent:@"q"];
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
-    addSubview(viewController.view, testSetup_.view());
-    addSubview(viewController.view, experimenter_.view());
     const auto audioDeviceLabel{label("audio output:")};
     addAutolayoutEnabledSubview(viewController.view, audioDeviceLabel);
     addAutolayoutEnabledSubview(viewController.view, audioDeviceMenu);
@@ -988,10 +985,6 @@ void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (const auto &item : items)
         [audioDeviceMenu addItemWithTitle:asNsString(item)];
 }
-
-auto CocoaView::testSetup() -> View::TestSetup & { return testSetup_; }
-
-auto CocoaView::experimenter() -> View::Experimenter & { return experimenter_; }
 
 void CocoaView::showCursor() { [NSCursor unhide]; }
 }

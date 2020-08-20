@@ -271,6 +271,10 @@ void main(EyeTracker &eyeTracker) {
     CocoaView view{[NSApplication sharedApplication],
         viewController,
         NSMakeRect(0, 0, 900, 270)};
+    CocoaTestSetupView testSetupView{NSMakeRect(0, 0, 900, 270)};
+    CocoaExperimenterView experimenterView{NSMakeRect(0, 0, 900, 270)};
+    [viewController.view addSubview:testSetupView.view()];
+    [viewController.view addSubview:experimenterView.view()];
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
     const auto subjectScreenFrame{subjectScreen.frame};
@@ -290,11 +294,12 @@ void main(EyeTracker &eyeTracker) {
             subjectViewWidth, subjectViewHeight)};
     Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
         &coordinateResponseMeasureView};
-    Presenter::TestSetup testSetup{&view.testSetup()};
-    Presenter::Experimenter experimenter{&view.experimenter()};
+    Presenter::TestSetup testSetupPresenter{&testSetupView};
+    Presenter::Experimenter experimenterPresenter{&experimenterView};
     TestSettingsInterpreterImpl testSettingsInterpreter;
-    Presenter presenter{model, view, testSetup, coordinateResponseMeasure,
-        consonant, experimenter, testSettingsInterpreter, textFileReader};
+    Presenter presenter{model, view, testSetupPresenter,
+        coordinateResponseMeasure, consonant, experimenterPresenter,
+        testSettingsInterpreter, textFileReader};
     presenter.run();
 }
 }

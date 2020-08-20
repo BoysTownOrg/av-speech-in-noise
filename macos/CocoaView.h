@@ -166,14 +166,10 @@ class CocoaView : public View {
     auto audioDevice() -> std::string override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
     void showCursor() override;
-    auto testSetup() -> View::TestSetup &;
-    auto experimenter() -> View::Experimenter &;
 
   private:
     auto browseModal(NSOpenPanel *panel) -> std::string;
 
-    CocoaTestSetupView testSetup_;
-    CocoaExperimenterView experimenter_;
     NSApplication *app;
     NSPopUpButton *audioDeviceMenu;
     bool browseCancelled_{};
