@@ -157,7 +157,7 @@ class CocoaCoordinateResponseMeasureView
 
 class CocoaView : public View {
   public:
-    explicit CocoaView(NSApplication *, NSViewController *, NSRect);
+    explicit CocoaView(NSApplication *, NSViewController *);
     void eventLoop() override;
     void showErrorMessage(std::string) override;
     auto browseForDirectory() -> std::string override;

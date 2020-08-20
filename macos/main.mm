@@ -268,9 +268,16 @@ void main(EyeTracker &eyeTracker) {
     const auto window{
         [NSWindow windowWithContentViewController:viewController]};
     [window makeKeyAndOrderFront:nil];
-    CocoaView view{[NSApplication sharedApplication],
-        viewController,
-        NSMakeRect(0, 0, 900, 270)};
+    const auto app{[NSApplication sharedApplication]};
+    app.mainMenu = [[NSMenu alloc] init];
+    auto appMenu{[[NSMenuItem alloc] init]};
+    auto appSubMenu{[[NSMenu alloc] init]};
+    [appSubMenu addItemWithTitle:@"Quit"
+                          action:@selector(stop:)
+                   keyEquivalent:@"q"];
+    [appMenu setSubmenu:appSubMenu];
+    [app.mainMenu addItem:appMenu];
+    CocoaView view{app, viewController};
     CocoaTestSetupView testSetupView{NSMakeRect(0, 0, 900, 270)};
     CocoaExperimenterView experimenterView{NSMakeRect(0, 0, 900, 270)};
     [viewController.view addSubview:testSetupView.view()];

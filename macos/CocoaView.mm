@@ -911,23 +911,10 @@ constexpr auto innerHeight(NSRect r) -> CGFloat {
     return height(r) - 2 * windowPerimeterSpace;
 }
 
-static auto innerFrame(NSRect r) -> NSRect {
-    return NSMakeRect(0, 0, innerWidth(r), innerHeight(r));
-}
-
-CocoaView::CocoaView(
-    NSApplication *app, NSViewController *viewController, NSRect r)
+CocoaView::CocoaView(NSApplication *app, NSViewController *viewController)
     : app{app}, audioDeviceMenu{
                     [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                                pullsDown:NO]} {
-    app.mainMenu = [[NSMenu alloc] init];
-    auto appMenu{[[NSMenuItem alloc] init]};
-    auto appSubMenu{[[NSMenu alloc] init]};
-    [appSubMenu addItemWithTitle:@"Quit"
-                          action:@selector(stop:)
-                   keyEquivalent:@"q"];
-    [appMenu setSubmenu:appSubMenu];
-    [app.mainMenu addItem:appMenu];
     const auto audioDeviceLabel{label("audio output:")};
     addAutolayoutEnabledSubview(viewController.view, audioDeviceLabel);
     addAutolayoutEnabledSubview(viewController.view, audioDeviceMenu);
