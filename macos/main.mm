@@ -179,6 +179,21 @@ void TimerImpl::scheduleCallbackAfterSeconds(double x) {
 void TimerImpl::timerCallback() { listener->callback(); }
 }
 
+static void addTabViewItem(
+    NSTabViewController *parent, NSTabViewController *child) {
+    // https://developer.apple.com/documentation/appkit/nstabviewcontroller?language=objc
+    // "When you call the addChildViewController:...the tab view
+    // controller automatically creates a default NSTabViewItem object for the
+    // specified view controller."
+    [parent addChildViewController:child];
+}
+
+static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
+    const auto controller{[[NSTabViewController alloc] init]};
+    [controller setTabStyle:NSTabViewControllerTabStyleUnspecified];
+    return controller;
+}
+
 void main(EyeTracker &eyeTracker) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
@@ -264,7 +279,7 @@ void main(EyeTracker &eyeTracker) {
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
         allTargetsNTimes, recognitionTestModel, outputFile};
-    const auto viewController{[[NSTabViewController alloc] init]};
+    const auto viewController{nsTabViewControllerWithoutTabControl()};
     const auto window{
         [NSWindow windowWithContentViewController:viewController]};
     [window makeKeyAndOrderFront:nil];
@@ -278,7 +293,10 @@ void main(EyeTracker &eyeTracker) {
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
     CocoaView view{app, viewController};
-    CocoaTestSetupView testSetupView{NSMakeRect(0, 0, 900, 270)};
+    const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
+    addTabViewItem(viewController, testSetupViewController);
+    CocoaTestSetupView testSetupView{
+        NSMakeRect(0, 0, 900, 270), testSetupViewController};
     CocoaExperimenterView experimenterView{NSMakeRect(0, 0, 900, 270)};
     [viewController.view addSubview:testSetupView.view()];
     [viewController.view addSubview:experimenterView.view()];

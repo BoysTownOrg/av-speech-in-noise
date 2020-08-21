@@ -67,7 +67,7 @@ class CocoaExperimenterView : public View::Experimenter {
 
 class CocoaTestSetupView : public View::TestSetup {
   public:
-    explicit CocoaTestSetupView(NSRect);
+    explicit CocoaTestSetupView(NSRect, NSViewController *);
     void show() override;
     void hide() override;
     auto testerId() -> std::string override;
@@ -86,7 +86,7 @@ class CocoaTestSetupView : public View::TestSetup {
     void notifyThatPlayCalibrationButtonHasBeenClicked();
 
   private:
-    NSView *view_;
+    NSViewController *viewController;
     NSTextField *subjectIdField;
     NSTextField *testerIdField;
     NSTextField *sessionField;

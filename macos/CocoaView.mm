@@ -213,8 +213,12 @@ static void activateConstraints(NSArray<NSLayoutConstraint *> *constraints) {
     [NSLayoutConstraint activateConstraints:constraints];
 }
 
-CocoaTestSetupView::CocoaTestSetupView(NSRect r)
-    : view_{[[NSView alloc] initWithFrame:r]}, subjectIdField{emptyTextField()},
+static auto view(NSViewController *viewController) -> NSView * {
+    return viewController.view;
+}
+
+CocoaTestSetupView::CocoaTestSetupView(NSRect, NSViewController *viewController)
+    : viewController{viewController}, subjectIdField{emptyTextField()},
       testerIdField{emptyTextField()}, sessionField{emptyTextField()},
       rmeSettingField{emptyTextField()},
       transducerMenu{[[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
@@ -252,15 +256,23 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     setPlaceholder(
         testSettingsField, "/Users/username/Documents/test-settings.txt");
     setPlaceholder(startingSnrField, "5");
-    addAutolayoutEnabledSubview(view_, confirmButton);
-    addAutolayoutEnabledSubview(view_, stack);
+    addAutolayoutEnabledSubview(
+        av_speech_in_noise::view(viewController), confirmButton);
+    addAutolayoutEnabledSubview(
+        av_speech_in_noise::view(viewController), stack);
     activateConstraints(@[
-        [stack.topAnchor constraintEqualToAnchor:view_.topAnchor
-                                        constant:defaultMarginPoints],
-        [stack.leadingAnchor constraintEqualToAnchor:view_.leadingAnchor
-                                            constant:defaultMarginPoints],
-        [stack.trailingAnchor constraintEqualToAnchor:view_.trailingAnchor
-                                             constant:-defaultMarginPoints],
+        [stack.topAnchor
+            constraintEqualToAnchor:av_speech_in_noise::view(viewController)
+                                        .topAnchor
+                           constant:defaultMarginPoints],
+        [stack.leadingAnchor
+            constraintEqualToAnchor:av_speech_in_noise::view(viewController)
+                                        .leadingAnchor
+                           constant:defaultMarginPoints],
+        [stack.trailingAnchor
+            constraintEqualToAnchor:av_speech_in_noise::view(viewController)
+                                        .trailingAnchor
+                           constant:-defaultMarginPoints],
         [subjectIdField.widthAnchor
             constraintEqualToAnchor:testerIdField.widthAnchor],
         [subjectIdField.widthAnchor
@@ -272,16 +284,22 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
         [subjectIdField.widthAnchor
             constraintEqualToAnchor:startingSnrField.widthAnchor]
     ]);
-    activateChildConstraintNestledInBottomRightCorner(
-        confirmButton, view_, defaultMarginPoints);
-    av_speech_in_noise::show(view_);
+    activateChildConstraintNestledInBottomRightCorner(confirmButton,
+        av_speech_in_noise::view(viewController), defaultMarginPoints);
+    av_speech_in_noise::show(av_speech_in_noise::view(viewController));
 }
 
-auto CocoaTestSetupView::view() -> NSView * { return view_; }
+auto CocoaTestSetupView::view() -> NSView * {
+    return av_speech_in_noise::view(viewController);
+}
 
-void CocoaTestSetupView::show() { av_speech_in_noise::show(view_); }
+void CocoaTestSetupView::show() {
+    av_speech_in_noise::show(av_speech_in_noise::view(viewController));
+}
 
-void CocoaTestSetupView::hide() { av_speech_in_noise::hide(view_); }
+void CocoaTestSetupView::hide() {
+    av_speech_in_noise::hide(av_speech_in_noise::view(viewController));
+}
 
 auto CocoaTestSetupView::testSettingsFile() -> std::string {
     return string(testSettingsField);
@@ -887,10 +905,6 @@ void CocoaExperimenterView::acceptContinuingTesting() {
 
 void CocoaExperimenterView::declineContinuingTesting() {
     listener_->declineContinuingTesting();
-}
-
-static auto view(NSViewController *viewController) -> NSView * {
-    return viewController.view;
 }
 
 CocoaView::CocoaView(NSApplication *app, NSViewController *viewController)
