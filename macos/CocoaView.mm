@@ -720,8 +720,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
             constraintEqualToAnchor:submitCorrectKeywordsButton.leadingAnchor],
         [correctKeywordsField.trailingAnchor
             constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor],
-        widthConstraint(freeResponseField),
-        widthConstraint(freeResponseFlaggedButton)
+        widthConstraint(freeResponseField)
     ]);
     activateChildConstraintNestledInBottomRightCorner(
         evaluationButtons, view(viewController), defaultMarginPoints);
