@@ -49,7 +49,7 @@ class CocoaExperimenterView : public View::Experimenter {
   private:
     NSView *view_;
     NSView *freeResponseView;
-    NSView *correctKeywordsView;
+    NSStackView *correctKeywordsView{};
     NSWindow *continueTestingDialog;
     NSTextField *continueTestingDialogField;
     NSTextField *primaryTextField;
