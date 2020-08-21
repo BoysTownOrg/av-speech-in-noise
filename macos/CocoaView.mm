@@ -913,21 +913,25 @@ static void activateConstraints(NSArray<NSLayoutConstraint *> *constraints) {
     [NSLayoutConstraint activateConstraints:constraints];
 }
 
+static auto view(NSViewController *viewController) -> NSView * {
+    return viewController.view;
+}
+
 CocoaView::CocoaView(NSApplication *app, NSViewController *viewController)
     : app{app}, audioDeviceMenu{
                     [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                                pullsDown:NO]} {
-    const auto audioDeviceLabel{label("audio output:")};
     const auto audioDeviceStack {
-        [NSStackView stackViewWithViews:@[ audioDeviceLabel, audioDeviceMenu ]]
+        [NSStackView
+            stackViewWithViews:@[ label("audio output:"), audioDeviceMenu ]]
     };
-    addAutolayoutEnabledSubview(viewController.view, audioDeviceStack);
+    addAutolayoutEnabledSubview(view(viewController), audioDeviceStack);
     activateConstraints(@[
         [audioDeviceStack.bottomAnchor
-            constraintEqualToAnchor:viewController.view.bottomAnchor
+            constraintEqualToAnchor:view(viewController).bottomAnchor
                            constant:-defaultMarginPoints],
         [audioDeviceStack.leadingAnchor
-            constraintEqualToAnchor:viewController.view.leadingAnchor
+            constraintEqualToAnchor:view(viewController).leadingAnchor
                            constant:defaultMarginPoints]
     ]);
 }
