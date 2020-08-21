@@ -268,16 +268,30 @@ CocoaTestSetupView::CocoaTestSetupView(NSViewController *viewController)
         [stack.trailingAnchor
             constraintEqualToAnchor:view(viewController).trailingAnchor
                            constant:-defaultMarginPoints],
-        [subjectIdField.widthAnchor
-            constraintEqualToAnchor:testerIdField.widthAnchor],
-        [subjectIdField.widthAnchor
-            constraintEqualToAnchor:sessionField.widthAnchor],
-        [subjectIdField.widthAnchor
-            constraintEqualToAnchor:rmeSettingField.widthAnchor],
-        [subjectIdField.widthAnchor
-            constraintEqualToAnchor:testSettingsField.widthAnchor],
-        [subjectIdField.widthAnchor
-            constraintEqualToAnchor:startingSnrField.widthAnchor]
+        [subjectIdField.leadingAnchor
+            constraintEqualToAnchor:testerIdField.leadingAnchor],
+        [subjectIdField.leadingAnchor
+            constraintEqualToAnchor:sessionField.leadingAnchor],
+        [subjectIdField.leadingAnchor
+            constraintEqualToAnchor:rmeSettingField.leadingAnchor],
+        [subjectIdField.leadingAnchor
+            constraintEqualToAnchor:testSettingsField.leadingAnchor],
+        [subjectIdField.leadingAnchor
+            constraintEqualToAnchor:startingSnrField.leadingAnchor],
+        [subjectIdField.leadingAnchor
+            constraintEqualToAnchor:transducerMenu.leadingAnchor],
+        [subjectIdField.trailingAnchor
+            constraintEqualToAnchor:testerIdField.trailingAnchor],
+        [subjectIdField.trailingAnchor
+            constraintEqualToAnchor:sessionField.trailingAnchor],
+        [subjectIdField.trailingAnchor
+            constraintEqualToAnchor:rmeSettingField.trailingAnchor],
+        [subjectIdField.trailingAnchor
+            constraintEqualToAnchor:testSettingsField.trailingAnchor],
+        [subjectIdField.trailingAnchor
+            constraintEqualToAnchor:startingSnrField.trailingAnchor],
+        [subjectIdField.trailingAnchor
+            constraintEqualToAnchor:transducerMenu.trailingAnchor]
     ]);
     activateChildConstraintNestledInBottomRightCorner(
         confirmButton, view(viewController), defaultMarginPoints);
