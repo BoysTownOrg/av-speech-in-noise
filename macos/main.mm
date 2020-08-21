@@ -188,6 +188,10 @@ static void addTabViewItem(
     [parent addChildViewController:child];
 }
 
+static void addChild(NSTabViewController *parent, NSTabViewController *child) {
+    [parent.view addSubview:child.view];
+}
+
 static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
     const auto controller{[[NSTabViewController alloc] init]};
     [controller setTabStyle:NSTabViewControllerTabStyleUnspecified];
@@ -294,10 +298,13 @@ void main(EyeTracker &eyeTracker) {
     [app.mainMenu addItem:appMenu];
     CocoaView view{app, viewController};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
-    addTabViewItem(viewController, testSetupViewController);
+    addChild(viewController, testSetupViewController);
     CocoaTestSetupView testSetupView{testSetupViewController};
-    CocoaExperimenterView experimenterView{NSMakeRect(0, 0, 900, 270)};
-    [viewController.view addSubview:experimenterView.view()];
+    const auto experimenterViewController{
+        nsTabViewControllerWithoutTabControl()};
+    addChild(viewController, experimenterViewController);
+    CocoaExperimenterView experimenterView{
+        NSMakeRect(0, 0, 900, 270), experimenterViewController};
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
     const auto subjectScreenFrame{subjectScreen.frame};

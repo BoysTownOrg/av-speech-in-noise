@@ -642,17 +642,14 @@ void CocoaCoordinateResponseMeasureView::hide() { [window orderOut:nil]; }
 
 constexpr auto continueTestingDialogHeight{2 * labelHeight};
 
-constexpr auto lowerPrimaryTextEdge(const NSRect &r) -> CGFloat {
-    return height(r) - labelHeight;
-}
-
 static auto trailingAnchorConstraint(NSView *a, NSView *b)
     -> NSLayoutConstraint * {
     return [a.trailingAnchor constraintEqualToAnchor:b.trailingAnchor];
 }
 
-CocoaExperimenterView::CocoaExperimenterView(NSRect r)
-    : view_{[[NSView alloc] initWithFrame:r]},
+CocoaExperimenterView::CocoaExperimenterView(
+    NSRect r, NSViewController *viewController)
+    : viewController{viewController},
       continueTestingDialog{[[NSWindow alloc]
           initWithContentRect:NSMakeRect(0, 0, width(r),
                                   buttonHeight + continueTestingDialogHeight)
@@ -697,8 +694,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         submitFreeResponseButton
     ]];
     freeResponseView.orientation = NSUserInterfaceLayoutOrientationVertical;
-    addAutolayoutEnabledSubview(view_, topRow);
-    addAutolayoutEnabledSubview(view_, evaluationButtons);
+    addAutolayoutEnabledSubview(view(viewController), topRow);
+    addAutolayoutEnabledSubview(view(viewController), evaluationButtons);
     const auto continueTestingDialogStack {
         [NSStackView stackViewWithViews:@[
             continueTestingDialogField, [NSStackView stackViewWithViews:@[
@@ -711,13 +708,14 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         NSUserInterfaceLayoutOrientationVertical;
     addAutolayoutEnabledSubview(
         continueTestingDialog.contentView, continueTestingDialogStack);
-    addAutolayoutEnabledSubview(view_, nextTrialButton);
-    addAutolayoutEnabledSubview(view_, freeResponseView);
-    addAutolayoutEnabledSubview(view_, correctKeywordsView);
+    addAutolayoutEnabledSubview(view(viewController), nextTrialButton);
+    addAutolayoutEnabledSubview(view(viewController), freeResponseView);
+    addAutolayoutEnabledSubview(view(viewController), correctKeywordsView);
     activateConstraints(@[
-        [topRow.leadingAnchor constraintEqualToAnchor:view_.leadingAnchor
-                                             constant:defaultMarginPoints],
-        [topRow.topAnchor constraintEqualToAnchor:view_.topAnchor
+        [topRow.leadingAnchor
+            constraintEqualToAnchor:view(viewController).leadingAnchor
+                           constant:defaultMarginPoints],
+        [topRow.topAnchor constraintEqualToAnchor:view(viewController).topAnchor
                                          constant:defaultMarginPoints],
         trailingAnchorConstraint(freeResponseField, submitFreeResponseButton),
         [correctKeywordsField.leadingAnchor
@@ -728,18 +726,18 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         widthConstraint(freeResponseFlaggedButton)
     ]);
     activateChildConstraintNestledInBottomRightCorner(
-        evaluationButtons, view_, defaultMarginPoints);
+        evaluationButtons, view(viewController), defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
-        correctKeywordsView, view_, defaultMarginPoints);
+        correctKeywordsView, view(viewController), defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
-        nextTrialButton, view_, defaultMarginPoints);
+        nextTrialButton, view(viewController), defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
-        freeResponseView, view_, defaultMarginPoints);
+        freeResponseView, view(viewController), defaultMarginPoints);
     av_speech_in_noise::hide(evaluationButtons);
     av_speech_in_noise::hide(nextTrialButton);
     av_speech_in_noise::hide(freeResponseView);
     av_speech_in_noise::hide(correctKeywordsView);
-    av_speech_in_noise::hide(view_);
+    av_speech_in_noise::hide(view(viewController));
     actions->controller = this;
 }
 
@@ -753,11 +751,13 @@ void CocoaExperimenterView::hideExitTestButton() {
     av_speech_in_noise::hide(exitTestButton);
 }
 
-void CocoaExperimenterView::show() { av_speech_in_noise::show(view_); }
+void CocoaExperimenterView::show() {
+    av_speech_in_noise::show(view(viewController));
+}
 
-void CocoaExperimenterView::hide() { av_speech_in_noise::hide(view_); }
-
-auto CocoaExperimenterView::view() -> NSView * { return view_; }
+void CocoaExperimenterView::hide() {
+    av_speech_in_noise::hide(view(viewController));
+}
 
 void CocoaExperimenterView::exitTest() { listener_->exitTest(); }
 
@@ -800,13 +800,13 @@ void CocoaExperimenterView::hideCorrectKeywordsSubmission() {
 }
 
 void CocoaExperimenterView::showContinueTestingDialog() {
-    [view_.window beginSheet:continueTestingDialog
-           completionHandler:^(NSModalResponse){
-           }];
+    [view(viewController).window beginSheet:continueTestingDialog
+                          completionHandler:^(NSModalResponse){
+                          }];
 }
 
 void CocoaExperimenterView::hideContinueTestingDialog() {
-    [view_.window endSheet:continueTestingDialog];
+    [view(viewController).window endSheet:continueTestingDialog];
 }
 
 void CocoaExperimenterView::setContinueTestingDialogMessage(
