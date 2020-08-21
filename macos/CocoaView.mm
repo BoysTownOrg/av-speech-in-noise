@@ -687,16 +687,6 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         button("incorrect", actions, @selector(submitFailedTrial)),
         button("correct", actions, @selector(submitPassedTrial))
     ]];
-    const auto continueButton {
-        button("continue", actions, @selector(acceptContinuingTesting))
-    };
-    const auto exitButton {
-        button("exit", actions, @selector(declineContinuingTesting))
-    };
-    [continueButton setFrame:NSMakeRect(width(r) - buttonWidth, 0, buttonWidth,
-                                 buttonHeight)];
-    [exitButton setFrame:NSMakeRect(width(r) - 3 * buttonWidth, 0, buttonWidth,
-                             buttonHeight)];
     const auto submitCorrectKeywordsButton {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
@@ -720,9 +710,18 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     freeResponseView.orientation = NSUserInterfaceLayoutOrientationVertical;
     addAutolayoutEnabledSubview(view_, topRow);
     addAutolayoutEnabledSubview(view_, evaluationButtons);
-    addSubview(continueTestingDialog.contentView, continueButton);
-    addSubview(continueTestingDialog.contentView, exitButton);
-    addSubview(continueTestingDialog.contentView, continueTestingDialogField);
+    const auto continueTestingDialogStack {
+        [NSStackView stackViewWithViews:@[
+            continueTestingDialogField, [NSStackView stackViewWithViews:@[
+                button("Exit", actions, @selector(declineContinuingTesting)),
+                button("Continue", actions, @selector(acceptContinuingTesting))
+            ]]
+        ]]
+    };
+    continueTestingDialogStack.orientation =
+        NSUserInterfaceLayoutOrientationVertical;
+    addAutolayoutEnabledSubview(
+        continueTestingDialog.contentView, continueTestingDialogStack);
     addAutolayoutEnabledSubview(view_, nextTrialButton);
     addAutolayoutEnabledSubview(view_, freeResponseView);
     addAutolayoutEnabledSubview(view_, correctKeywordsView);

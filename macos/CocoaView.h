@@ -48,8 +48,9 @@ class CocoaExperimenterView : public View::Experimenter {
 
   private:
     NSView *view_;
-    NSStackView *freeResponseView;
+    NSStackView *freeResponseView{};
     NSStackView *correctKeywordsView{};
+    NSStackView *evaluationButtons{};
     NSWindow *continueTestingDialog;
     NSTextField *continueTestingDialogField;
     NSTextField *primaryTextField;
@@ -59,7 +60,6 @@ class CocoaExperimenterView : public View::Experimenter {
     NSButton *freeResponseFlaggedButton;
     NSButton *exitTestButton;
     NSButton *nextTrialButton;
-    NSStackView *evaluationButtons{};
     ExperimenterViewActions *actions;
     EventListener *listener_{};
 };
