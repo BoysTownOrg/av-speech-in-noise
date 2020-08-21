@@ -122,10 +122,8 @@ static void set(NSTextField *field, const std::string &s) {
 }
 
 static constexpr auto labelHeight{22};
-static constexpr auto labelWidth{120};
 static constexpr auto buttonHeight{25};
 static constexpr auto buttonWidth{100};
-constexpr auto reasonableSpacing{15};
 
 constexpr auto width(const NSRect &r) -> CGFloat { return r.size.width; }
 
@@ -146,27 +144,6 @@ static void enableAutoLayout(NSView *view) {
 static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
     enableAutoLayout(child);
     [parent addSubview:child];
-}
-
-static auto constraint(NSLayoutYAxisAnchor *a, NSLayoutYAxisAnchor *b)
-    -> NSLayoutConstraint * {
-    return [a constraintEqualToAnchor:b];
-}
-
-static auto yCenterConstraint(NSView *a, NSView *b) -> NSLayoutConstraint * {
-    return constraint(a.centerYAnchor, b.centerYAnchor);
-}
-
-static auto firstToTheRightOfSecondConstraint(
-    NSView *first, NSView *second, CGFloat x) -> NSLayoutConstraint * {
-    return [first.leadingAnchor constraintEqualToAnchor:second.trailingAnchor
-                                               constant:x];
-}
-
-static auto firstAboveSecondConstraint(NSView *first, NSView *second, CGFloat x)
-    -> NSLayoutConstraint * {
-    return [first.bottomAnchor constraintEqualToAnchor:second.topAnchor
-                                              constant:-x];
 }
 
 static auto widthConstraint(NSView *a) -> NSLayoutConstraint * {
@@ -682,8 +659,7 @@ static auto trailingAnchorConstraint(NSView *a, NSView *b)
 }
 
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
-    : view_{[[NSView alloc] initWithFrame:r]}, freeResponseView{[[NSView alloc]
-                                                   initWithFrame:r]},
+    : view_{[[NSView alloc] initWithFrame:r]},
       continueTestingDialog{[[NSWindow alloc]
           initWithContentRect:NSMakeRect(0, 0, width(r),
                                   buttonHeight + continueTestingDialogHeight)
@@ -724,7 +700,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     const auto submitCorrectKeywordsButton {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
-    setPlaceholderAndFit(correctKeywordsField, "2");
+    setPlaceholder(correctKeywordsField, "2");
     setPlaceholderAndFit(freeResponseField, "This is a sentence.");
     const auto topRow {
         [NSStackView stackViewWithViews:@[
@@ -735,34 +711,33 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         correctKeywordsField, submitCorrectKeywordsButton
     ]];
     correctKeywordsView.orientation = NSUserInterfaceLayoutOrientationVertical;
+    freeResponseView = [NSStackView stackViewWithViews:@[
+        [NSStackView stackViewWithViews:@[
+            freeResponseFlaggedButton, freeResponseField
+        ]],
+        submitFreeResponseButton
+    ]];
+    freeResponseView.orientation = NSUserInterfaceLayoutOrientationVertical;
     addAutolayoutEnabledSubview(view_, topRow);
-    addAutolayoutEnabledSubview(freeResponseView, submitFreeResponseButton);
-    addAutolayoutEnabledSubview(freeResponseView, freeResponseField);
-    addAutolayoutEnabledSubview(freeResponseView, freeResponseFlaggedButton);
     addAutolayoutEnabledSubview(view_, evaluationButtons);
     addSubview(continueTestingDialog.contentView, continueButton);
     addSubview(continueTestingDialog.contentView, exitButton);
     addSubview(continueTestingDialog.contentView, continueTestingDialogField);
     addAutolayoutEnabledSubview(view_, nextTrialButton);
-    addSubview(view_, freeResponseView);
+    addAutolayoutEnabledSubview(view_, freeResponseView);
     addAutolayoutEnabledSubview(view_, correctKeywordsView);
     activateConstraints(@[
         [topRow.leadingAnchor constraintEqualToAnchor:view_.leadingAnchor
                                              constant:defaultMarginPoints],
         [topRow.topAnchor constraintEqualToAnchor:view_.topAnchor
                                          constant:defaultMarginPoints],
-        firstAboveSecondConstraint(
-            freeResponseField, submitFreeResponseButton, defaultMarginPoints),
         trailingAnchorConstraint(freeResponseField, submitFreeResponseButton),
         [correctKeywordsField.leadingAnchor
             constraintEqualToAnchor:submitCorrectKeywordsButton.leadingAnchor],
         [correctKeywordsField.trailingAnchor
             constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor],
         widthConstraint(freeResponseField),
-        widthConstraint(freeResponseFlaggedButton),
-        firstToTheRightOfSecondConstraint(
-            freeResponseField, freeResponseFlaggedButton, defaultMarginPoints),
-        yCenterConstraint(freeResponseField, freeResponseFlaggedButton)
+        widthConstraint(freeResponseFlaggedButton)
     ]);
     activateChildConstraintNestledInBottomRightCorner(
         evaluationButtons, view_, defaultMarginPoints);
@@ -771,7 +746,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     activateChildConstraintNestledInBottomRightCorner(
         nextTrialButton, view_, defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
-        submitFreeResponseButton, view_, defaultMarginPoints);
+        freeResponseView, view_, defaultMarginPoints);
     av_speech_in_noise::hide(evaluationButtons);
     av_speech_in_noise::hide(nextTrialButton);
     av_speech_in_noise::hide(freeResponseView);
