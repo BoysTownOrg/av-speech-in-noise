@@ -59,8 +59,7 @@ class CocoaExperimenterView : public View::Experimenter {
     NSButton *freeResponseFlaggedButton;
     NSButton *exitTestButton;
     NSButton *nextTrialButton;
-    NSButton *passButton;
-    NSButton *failButton;
+    NSStackView *evaluationButtons{};
     ExperimenterViewActions *actions;
     EventListener *listener_{};
 };

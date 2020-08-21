@@ -670,10 +670,6 @@ void CocoaCoordinateResponseMeasureView::show() {
 
 void CocoaCoordinateResponseMeasureView::hide() { [window orderOut:nil]; }
 
-constexpr auto leadingPrimaryTextEdge{buttonWidth + reasonableSpacing};
-constexpr auto primaryTextWidth{labelWidth};
-constexpr auto leadingSecondaryTextEdge{
-    leadingPrimaryTextEdge + primaryTextWidth + reasonableSpacing};
 constexpr auto continueTestingDialogHeight{2 * labelHeight};
 
 constexpr auto lowerPrimaryTextEdge(const NSRect &r) -> CGFloat {
@@ -712,8 +708,10 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     const auto submitFreeResponseButton {
         button("submit", actions, @selector(submitFreeResponse))
     };
-    passButton = button("correct", actions, @selector(submitPassedTrial));
-    failButton = button("incorrect", actions, @selector(submitFailedTrial));
+    evaluationButtons = [NSStackView stackViewWithViews:@[
+        button("incorrect", actions, @selector(submitFailedTrial)),
+        button("correct", actions, @selector(submitPassedTrial))
+    ]];
     const auto continueButton {
         button("continue", actions, @selector(acceptContinuingTesting))
     };
@@ -738,8 +736,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     addAutolayoutEnabledSubview(freeResponseView, submitFreeResponseButton);
     addAutolayoutEnabledSubview(freeResponseView, freeResponseField);
     addAutolayoutEnabledSubview(freeResponseView, freeResponseFlaggedButton);
-    addAutolayoutEnabledSubview(view_, passButton);
-    addAutolayoutEnabledSubview(view_, failButton);
+    addAutolayoutEnabledSubview(view_, evaluationButtons);
     addSubview(continueTestingDialog.contentView, continueButton);
     addSubview(continueTestingDialog.contentView, exitButton);
     addSubview(continueTestingDialog.contentView, continueTestingDialogField);
@@ -754,9 +751,6 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                                              constant:defaultMarginPoints],
         [topRow.topAnchor constraintEqualToAnchor:view_.topAnchor
                                          constant:defaultMarginPoints],
-        firstToTheRightOfSecondConstraint(
-            passButton, failButton, defaultMarginPoints),
-        yCenterConstraint(passButton, failButton),
         firstAboveSecondConstraint(correctKeywordsField,
             submitCorrectKeywordsButton, defaultMarginPoints),
         firstAboveSecondConstraint(
@@ -772,15 +766,14 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         yCenterConstraint(freeResponseField, freeResponseFlaggedButton)
     ]);
     activateChildConstraintNestledInBottomRightCorner(
-        passButton, view_, defaultMarginPoints);
+        evaluationButtons, view_, defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
         submitCorrectKeywordsButton, view_, defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
         nextTrialButton, view_, defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
         submitFreeResponseButton, view_, defaultMarginPoints);
-    av_speech_in_noise::hide(passButton);
-    av_speech_in_noise::hide(failButton);
+    av_speech_in_noise::hide(evaluationButtons);
     av_speech_in_noise::hide(nextTrialButton);
     av_speech_in_noise::hide(freeResponseView);
     av_speech_in_noise::hide(correctKeywordsView);
@@ -821,8 +814,7 @@ void CocoaExperimenterView::hideNextTrialButton() {
 }
 
 void CocoaExperimenterView::showEvaluationButtons() {
-    av_speech_in_noise::show(passButton);
-    av_speech_in_noise::show(failButton);
+    av_speech_in_noise::show(evaluationButtons);
 }
 
 void CocoaExperimenterView::showFreeResponseSubmission() {
@@ -834,8 +826,7 @@ void CocoaExperimenterView::hideFreeResponseSubmission() {
 }
 
 void CocoaExperimenterView::hideEvaluationButtons() {
-    av_speech_in_noise::hide(passButton);
-    av_speech_in_noise::hide(failButton);
+    av_speech_in_noise::hide(evaluationButtons);
 }
 
 void CocoaExperimenterView::showCorrectKeywordsSubmission() {
