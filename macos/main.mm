@@ -295,10 +295,8 @@ void main(EyeTracker &eyeTracker) {
     CocoaView view{app, viewController};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addTabViewItem(viewController, testSetupViewController);
-    CocoaTestSetupView testSetupView{
-        NSMakeRect(0, 0, 900, 270), testSetupViewController};
+    CocoaTestSetupView testSetupView{testSetupViewController};
     CocoaExperimenterView experimenterView{NSMakeRect(0, 0, 900, 270)};
-    [viewController.view addSubview:testSetupView.view()];
     [viewController.view addSubview:experimenterView.view()];
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];

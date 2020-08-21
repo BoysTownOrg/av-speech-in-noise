@@ -67,7 +67,7 @@ class CocoaExperimenterView : public View::Experimenter {
 
 class CocoaTestSetupView : public View::TestSetup {
   public:
-    explicit CocoaTestSetupView(NSRect, NSViewController *);
+    explicit CocoaTestSetupView(NSViewController *);
     void show() override;
     void hide() override;
     auto testerId() -> std::string override;
@@ -80,7 +80,6 @@ class CocoaTestSetupView : public View::TestSetup {
     void populateTransducerMenu(std::vector<std::string>) override;
     void setTestSettingsFile(std::string) override;
     void subscribe(EventListener *) override;
-    auto view() -> NSView *;
     void notifyThatConfirmButtonHasBeenClicked();
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
     void notifyThatPlayCalibrationButtonHasBeenClicked();
