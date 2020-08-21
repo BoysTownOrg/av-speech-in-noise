@@ -116,7 +116,7 @@ static void setStaticLike(NSTextField *f) {
 }
 
 static void set(NSTextField *field, const std::string &s) {
-    [field setStringValue:asNsString(s)];
+    [field setStringValue:nsString(s)];
 }
 
 static constexpr auto labelHeight{22};
@@ -130,7 +130,7 @@ constexpr auto width(const NSRect &r) -> CGFloat { return r.size.width; }
 constexpr auto height(const NSRect &r) -> CGFloat { return r.size.height; }
 
 static auto button(const std::string &s, id target, SEL action) -> NSButton * {
-    return [NSButton buttonWithTitle:asNsString(s) target:target action:action];
+    return [NSButton buttonWithTitle:nsString(s) target:target action:action];
 }
 
 static auto string(NSTextField *field) -> const char * {
@@ -197,11 +197,11 @@ static auto emptyTextField() -> NSTextField * {
 }
 
 static auto label(const std::string &s) -> NSTextField * {
-    return [NSTextField labelWithString:asNsString(s)];
+    return [NSTextField labelWithString:nsString(s)];
 }
 
 static void setPlaceholderAndFit(NSTextField *field, const std::string &s) {
-    [field setPlaceholderString:asNsString(s)];
+    [field setPlaceholderString:nsString(s)];
     [field sizeToFit];
 }
 
@@ -328,7 +328,7 @@ void CocoaTestSetupView::setTestSettingsFile(std::string s) {
 void CocoaTestSetupView::populateTransducerMenu(
     std::vector<std::string> items) {
     for (const auto &item : items)
-        [transducerMenu addItemWithTitle:asNsString(item)];
+        [transducerMenu addItemWithTitle:nsString(item)];
 }
 
 auto CocoaTestSetupView::transducer() -> std::string {
@@ -353,8 +353,8 @@ void CocoaTestSetupView::notifyThatPlayCalibrationButtonHasBeenClicked() {
 
 static auto resourcePath(const std::string &stem, const std::string &extension)
     -> std::string {
-    return [[NSBundle mainBundle] pathForResource:asNsString(stem)
-                                           ofType:asNsString(extension)]
+    return [[NSBundle mainBundle] pathForResource:nsString(stem)
+                                           ofType:nsString(extension)]
         .UTF8String;
 }
 
@@ -362,7 +362,7 @@ static auto consonantImageButton(
     std::unordered_map<id, std::string> &consonants,
     ConsonantViewActions *actions, const std::string &consonant) -> NSButton * {
     const auto image{[[NSImage alloc]
-        initWithContentsOfFile:asNsString(resourcePath(consonant, "bmp"))]};
+        initWithContentsOfFile:nsString(resourcePath(consonant, "bmp"))]};
     const auto button {
         [NSButton
             buttonWithImage:image
@@ -558,7 +558,7 @@ void CocoaCoordinateResponseMeasureView::addButtonRow(NSColor *color, int row) {
 
 void CocoaCoordinateResponseMeasureView::addNumberButton(
     NSColor *color, int number, int row, std::size_t col) {
-    auto title{asNsString(std::to_string(number))};
+    auto title{nsString(std::to_string(number))};
     const auto button {
         [NSButton
             buttonWithTitle:title
@@ -932,7 +932,7 @@ void CocoaView::eventLoop() { [app run]; }
 void CocoaView::showErrorMessage(std::string s) {
     auto alert{[[NSAlert alloc] init]};
     [alert setMessageText:@"Error."];
-    [alert setInformativeText:asNsString(s)];
+    [alert setInformativeText:nsString(s)];
     [alert addButtonWithTitle:@"Ok"];
     [alert runModal];
 }
@@ -970,7 +970,7 @@ auto CocoaView::audioDevice() -> std::string {
 
 void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (const auto &item : items)
-        [audioDeviceMenu addItemWithTitle:asNsString(item)];
+        [audioDeviceMenu addItemWithTitle:nsString(item)];
 }
 
 void CocoaView::showCursor() { [NSCursor unhide]; }

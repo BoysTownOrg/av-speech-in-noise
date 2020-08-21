@@ -80,7 +80,7 @@ auto contents(NSString *parent) -> NSArray<NSString *> * {
 auto collectContentsIf(const LocalUrl &directory,
     const std::function<bool(NSString *)> &predicate) -> std::vector<LocalUrl> {
     std::vector<LocalUrl> items{};
-    const auto parent{asNsString(directory.path).stringByExpandingTildeInPath};
+    const auto parent{nsString(directory.path).stringByExpandingTildeInPath};
     for (NSString *item in contents(parent)) {
         const auto path{[parent stringByAppendingPathComponent:item]};
         if (predicate(path))
