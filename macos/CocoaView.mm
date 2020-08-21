@@ -209,6 +209,14 @@ static void setPlaceholderAndFit(NSTextField *field, const std::string &s) {
     [field sizeToFit];
 }
 
+static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
+    const auto label_{label(s)};
+    [label_ setContentHuggingPriority:251
+                       forOrientation:NSLayoutConstraintOrientationHorizontal];
+    const auto stack { [NSStackView stackViewWithViews:@[ label_, field ]] };
+    return stack;
+}
+
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]}, subjectIdField{emptyTextField()},
       testerIdField{emptyTextField()}, sessionField{emptyTextField()},
@@ -218,13 +226,15 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       testSettingsField{emptyTextField()}, startingSnrField{emptyTextField()},
       actions{[[SetupViewActions alloc] init]} {
     actions->controller = this;
-    const auto subjectIdLabel{label("subject:")};
-    const auto testerIdLabel{label("tester:")};
-    const auto sessionLabel{label("session:")};
-    const auto rmeSettingLabel{label("RME setting:")};
-    const auto transducerLabel{label("transducer:")};
-    const auto testSettingsLabel{label("test settings:")};
-    const auto startingSnrLabel{label("starting SNR (dB):")};
+    const auto subjectIdStack{labeledView(subjectIdField, "subject:")};
+    const auto testerIdStack{labeledView(testerIdField, "tester:")};
+    const auto sessionStack{labeledView(sessionField, "session:")};
+    const auto rmeSettingStack{labeledView(rmeSettingField, "RME setting:")};
+    const auto transducerStack{labeledView(transducerMenu, "transducer:")};
+    const auto testSettingsStack{
+        labeledView(testSettingsField, "test settings:")};
+    const auto startingSnrStack{
+        labeledView(startingSnrField, "starting SNR (dB):")};
     const auto browseForTestSettingsButton {
         button("browse", actions,
             @selector(notifyThatBrowseForTestSettingsButtonHasBeenClicked))
@@ -238,60 +248,33 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
         button("play calibration", actions,
             @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
     };
+    const auto stack {
+        [NSStackView stackViewWithViews:@[
+            subjectIdStack, testerIdStack, sessionStack, rmeSettingStack,
+            transducerStack, [NSStackView stackViewWithViews:@[
+                testSettingsStack, browseForTestSettingsButton,
+                playCalibrationButton
+            ]],
+            startingSnrStack
+        ]]
+    };
+    stack.orientation = NSUserInterfaceLayoutOrientationVertical;
     setPlaceholderAndFit(subjectIdField, "abc123");
     setPlaceholderAndFit(testerIdField, "abc123");
     setPlaceholderAndFit(sessionField, "abc123");
     setPlaceholderAndFit(rmeSettingField, "ihavenoideawhatgoeshere");
     setPlaceholderAndFit(testSettingsField, "/Users/username/Desktop/file.txt");
     setPlaceholderAndFit(startingSnrField, "15");
-    addAutolayoutEnabledSubview(view_, browseForTestSettingsButton);
     addAutolayoutEnabledSubview(view_, confirmButton);
-    addAutolayoutEnabledSubview(view_, playCalibrationButton);
-    addAutolayoutEnabledSubview(view_, subjectIdLabel);
-    addAutolayoutEnabledSubview(view_, subjectIdField);
-    addAutolayoutEnabledSubview(view_, testerIdLabel);
-    addAutolayoutEnabledSubview(view_, testerIdField);
-    addAutolayoutEnabledSubview(view_, sessionLabel);
-    addAutolayoutEnabledSubview(view_, sessionField);
-    addAutolayoutEnabledSubview(view_, rmeSettingLabel);
-    addAutolayoutEnabledSubview(view_, rmeSettingField);
-    addAutolayoutEnabledSubview(view_, transducerLabel);
-    addAutolayoutEnabledSubview(view_, transducerMenu);
-    addAutolayoutEnabledSubview(view_, testSettingsLabel);
-    addAutolayoutEnabledSubview(view_, testSettingsField);
-    addAutolayoutEnabledSubview(view_, startingSnrLabel);
-    addAutolayoutEnabledSubview(view_, startingSnrField);
+    addAutolayoutEnabledSubview(view_, stack);
     [NSLayoutConstraint activateConstraints:@[
-        [subjectIdField.topAnchor constraintEqualToAnchor:view_.topAnchor
-                                                 constant:defaultMarginPoints],
-        firstToTheRightOfSecondConstraint(
-            subjectIdField, subjectIdLabel, defaultMarginPoints),
-        yCenterConstraint(subjectIdField, subjectIdLabel),
-        widthConstraint(subjectIdField),
-        [subjectIdField.centerXAnchor
-            constraintEqualToAnchor:view_.centerXAnchor],
-        firstToTheRightOfSecondConstraint(browseForTestSettingsButton,
-            testSettingsField, defaultMarginPoints),
-        yCenterConstraint(browseForTestSettingsButton, testSettingsField),
-        firstToTheRightOfSecondConstraint(playCalibrationButton,
-            browseForTestSettingsButton, defaultMarginPoints),
-        yCenterConstraint(playCalibrationButton, browseForTestSettingsButton),
-        widthConstraint(testerIdField), widthConstraint(sessionField),
-        widthConstraint(rmeSettingField), widthConstraint(testSettingsField),
-        widthConstraint(startingSnrField)
+        [stack.topAnchor constraintEqualToAnchor:view_.topAnchor
+                                        constant:defaultMarginPoints],
+        [stack.leadingAnchor constraintEqualToAnchor:view_.leadingAnchor
+                                            constant:defaultMarginPoints],
+        [stack.trailingAnchor constraintEqualToAnchor:view_.trailingAnchor
+                                             constant:-defaultMarginPoints]
     ]];
-    activateLabeledElementConstraintBelow(
-        subjectIdField, testerIdField, testerIdLabel);
-    activateLabeledElementConstraintBelow(
-        testerIdField, sessionField, sessionLabel);
-    activateLabeledElementConstraintBelow(
-        sessionField, rmeSettingField, rmeSettingLabel);
-    activateLabeledElementConstraintBelow(
-        rmeSettingField, transducerMenu, transducerLabel);
-    activateLabeledElementConstraintBelow(
-        transducerMenu, testSettingsField, testSettingsLabel);
-    activateLabeledElementConstraintBelow(
-        testSettingsField, startingSnrField, startingSnrLabel);
     activateChildConstraintNestledInBottomRightCorner(
         confirmButton, view_, defaultMarginPoints);
     av_speech_in_noise::show(view_);
