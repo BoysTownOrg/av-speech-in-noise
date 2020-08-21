@@ -647,20 +647,25 @@ static auto trailingAnchorConstraint(NSView *a, NSView *b)
     return [a.trailingAnchor constraintEqualToAnchor:b.trailingAnchor];
 }
 
+static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
+    const auto controller{[[NSTabViewController alloc] init]};
+    [controller setTabStyle:NSTabViewControllerTabStyleUnspecified];
+    return controller;
+}
+
 CocoaExperimenterView::CocoaExperimenterView(
     NSRect r, NSViewController *viewController)
-    : viewController{viewController},
-      continueTestingDialog{[[NSWindow alloc]
-          initWithContentRect:NSMakeRect(0, 0, width(r),
-                                  buttonHeight + continueTestingDialogHeight)
-                    styleMask:NSWindowStyleMaskBorderless
-                      backing:NSBackingStoreBuffered
-                        defer:YES]},
-      continueTestingDialogField{label("")}, primaryTextField{label("")},
-      secondaryTextField{label("")}, freeResponseField{emptyTextField()},
+    : viewController{viewController}, continueTestingDialogField{label("")},
+      primaryTextField{label("")}, secondaryTextField{label("")},
+      freeResponseField{emptyTextField()},
       correctKeywordsField{emptyTextField()}, freeResponseFlaggedButton{[
                                                   [NSButton alloc] init]},
       actions{[[ExperimenterViewActions alloc] init]} {
+    const auto continueTestingDialogController{
+        nsTabViewControllerWithoutTabControl()};
+    continueTestingDialog = [NSWindow
+        windowWithContentViewController:continueTestingDialogController];
+    continueTestingDialog.styleMask = NSWindowStyleMaskBorderless;
     exitTestButton = button("Exit Test", actions, @selector(exitTest));
     [freeResponseFlaggedButton setButtonType:NSButtonTypeSwitch];
     [freeResponseFlaggedButton setTitle:@"flagged"];
@@ -707,7 +712,7 @@ CocoaExperimenterView::CocoaExperimenterView(
     continueTestingDialogStack.orientation =
         NSUserInterfaceLayoutOrientationVertical;
     addAutolayoutEnabledSubview(
-        continueTestingDialog.contentView, continueTestingDialogStack);
+        view(continueTestingDialogController), continueTestingDialogStack);
     addAutolayoutEnabledSubview(view(viewController), nextTrialButton);
     addAutolayoutEnabledSubview(view(viewController), freeResponseView);
     addAutolayoutEnabledSubview(view(viewController), correctKeywordsView);
