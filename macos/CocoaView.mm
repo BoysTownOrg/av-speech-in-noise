@@ -901,14 +901,8 @@ void CocoaExperimenterView::declineContinuingTesting() {
     listener_->declineContinuingTesting();
 }
 
-constexpr auto windowPerimeterSpace{reasonableSpacing};
-
-constexpr auto innerWidth(NSRect r) -> CGFloat {
-    return width(r) - 2 * windowPerimeterSpace;
-}
-
-constexpr auto innerHeight(NSRect r) -> CGFloat {
-    return height(r) - 2 * windowPerimeterSpace;
+static void activateConstraints(NSArray<NSLayoutConstraint *> *constraints) {
+    [NSLayoutConstraint activateConstraints:constraints];
 }
 
 CocoaView::CocoaView(NSApplication *app, NSViewController *viewController)
@@ -918,19 +912,19 @@ CocoaView::CocoaView(NSApplication *app, NSViewController *viewController)
     const auto audioDeviceLabel{label("audio output:")};
     addAutolayoutEnabledSubview(viewController.view, audioDeviceLabel);
     addAutolayoutEnabledSubview(viewController.view, audioDeviceMenu);
-    [NSLayoutConstraint activateConstraints:@[
+    activateConstraints(@[
         firstToTheRightOfSecondConstraint(audioDeviceMenu, audioDeviceLabel, 8),
         yCenterConstraint(audioDeviceMenu, audioDeviceLabel),
         [audioDeviceMenu.bottomAnchor
             constraintEqualToAnchor:viewController.view.bottomAnchor
                            constant:-8]
-    ]];
+    ]);
 }
 
 void CocoaView::eventLoop() { [app run]; }
 
 void CocoaView::showErrorMessage(std::string s) {
-    auto alert{[[NSAlert alloc] init]};
+    const auto alert{[[NSAlert alloc] init]};
     [alert setMessageText:@"Error."];
     [alert setInformativeText:nsString(s)];
     [alert addButtonWithTitle:@"Ok"];
@@ -938,7 +932,7 @@ void CocoaView::showErrorMessage(std::string s) {
 }
 
 auto CocoaView::browseForDirectory() -> std::string {
-    auto panel{[NSOpenPanel openPanel]};
+    const auto panel{[NSOpenPanel openPanel]};
     panel.canChooseDirectories = YES;
     panel.canChooseFiles = NO;
     return browseModal(panel);
@@ -947,7 +941,7 @@ auto CocoaView::browseForDirectory() -> std::string {
 auto CocoaView::browseCancelled() -> bool { return browseCancelled_; }
 
 auto CocoaView::browseForOpeningFile() -> std::string {
-    auto panel{[NSOpenPanel openPanel]};
+    const auto panel{[NSOpenPanel openPanel]};
     panel.canChooseDirectories = NO;
     panel.canChooseFiles = YES;
     return browseModal(panel);
