@@ -910,15 +910,13 @@ CocoaView::CocoaView(NSApplication *app, NSViewController *viewController)
                     [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                                pullsDown:NO]} {
     const auto audioDeviceLabel{label("audio output:")};
-    addAutolayoutEnabledSubview(viewController.view, audioDeviceLabel);
-    addAutolayoutEnabledSubview(viewController.view, audioDeviceMenu);
-    activateConstraints(@[
-        firstToTheRightOfSecondConstraint(audioDeviceMenu, audioDeviceLabel, 8),
-        yCenterConstraint(audioDeviceMenu, audioDeviceLabel),
-        [audioDeviceMenu.bottomAnchor
-            constraintEqualToAnchor:viewController.view.bottomAnchor
-                           constant:-8]
-    ]);
+    const auto audioDeviceStack {
+        [NSStackView stackViewWithViews:@[ audioDeviceLabel, audioDeviceMenu ]]
+    };
+    addAutolayoutEnabledSubview(viewController.view, audioDeviceStack);
+    activateConstraints(@[ [audioDeviceStack.bottomAnchor
+        constraintEqualToAnchor:viewController.view.bottomAnchor
+                       constant:-8] ]);
 }
 
 void CocoaView::eventLoop() { [app run]; }
