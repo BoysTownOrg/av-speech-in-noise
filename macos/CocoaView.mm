@@ -173,18 +173,6 @@ static auto widthConstraint(NSView *a) -> NSLayoutConstraint * {
     return [a.widthAnchor constraintEqualToConstant:NSWidth(a.frame)];
 }
 
-static void activateLabeledElementConstraintBelow(
-    NSView *above, NSView *below, NSView *belowLabel) {
-    [NSLayoutConstraint activateConstraints:@[
-        [above.leadingAnchor constraintEqualToAnchor:below.leadingAnchor],
-        [below.topAnchor constraintEqualToAnchor:above.bottomAnchor
-                                        constant:defaultMarginPoints],
-        firstToTheRightOfSecondConstraint(
-            below, belowLabel, defaultMarginPoints),
-        yCenterConstraint(below, belowLabel)
-    ]];
-}
-
 static void activateChildConstraintNestledInBottomRightCorner(
     NSView *child, NSView *parent, CGFloat x) {
 
@@ -204,8 +192,12 @@ static auto label(const std::string &s) -> NSTextField * {
     return [NSTextField labelWithString:nsString(s)];
 }
 
-static void setPlaceholderAndFit(NSTextField *field, const std::string &s) {
+static void setPlaceholder(NSTextField *field, const std::string &s) {
     [field setPlaceholderString:nsString(s)];
+}
+
+static void setPlaceholderAndFit(NSTextField *field, const std::string &s) {
+    setPlaceholder(field, s);
     [field sizeToFit];
 }
 
@@ -217,6 +209,10 @@ static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
     return stack;
 }
 
+static void activateConstraints(NSArray<NSLayoutConstraint *> *constraints) {
+    [NSLayoutConstraint activateConstraints:constraints];
+}
+
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]}, subjectIdField{emptyTextField()},
       testerIdField{emptyTextField()}, sessionField{emptyTextField()},
@@ -226,55 +222,56 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       testSettingsField{emptyTextField()}, startingSnrField{emptyTextField()},
       actions{[[SetupViewActions alloc] init]} {
     actions->controller = this;
-    const auto subjectIdStack{labeledView(subjectIdField, "subject:")};
-    const auto testerIdStack{labeledView(testerIdField, "tester:")};
-    const auto sessionStack{labeledView(sessionField, "session:")};
-    const auto rmeSettingStack{labeledView(rmeSettingField, "RME setting:")};
-    const auto transducerStack{labeledView(transducerMenu, "transducer:")};
-    const auto testSettingsStack{
-        labeledView(testSettingsField, "test settings:")};
-    const auto startingSnrStack{
-        labeledView(startingSnrField, "starting SNR (dB):")};
-    const auto browseForTestSettingsButton {
-        button("browse", actions,
-            @selector(notifyThatBrowseForTestSettingsButtonHasBeenClicked))
-    };
-
     const auto confirmButton {
         button("Confirm", actions,
             @selector(notifyThatConfirmButtonHasBeenClicked))
     };
-    const auto playCalibrationButton {
-        button("play calibration", actions,
-            @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
-    };
     const auto stack {
         [NSStackView stackViewWithViews:@[
-            subjectIdStack, testerIdStack, sessionStack, rmeSettingStack,
-            transducerStack, [NSStackView stackViewWithViews:@[
-                testSettingsStack, browseForTestSettingsButton,
-                playCalibrationButton
+            labeledView(subjectIdField, "subject:"),
+            labeledView(testerIdField, "tester:"),
+            labeledView(sessionField, "session:"),
+            labeledView(rmeSettingField, "RME setting:"),
+            labeledView(transducerMenu, "transducer:"),
+            [NSStackView stackViewWithViews:@[
+                labeledView(testSettingsField, "test settings:"),
+                button("browse", actions,
+                    @selector
+                    (notifyThatBrowseForTestSettingsButtonHasBeenClicked)),
+                button("play calibration", actions,
+                    @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
             ]],
-            startingSnrStack
+            labeledView(startingSnrField, "starting SNR (dB):")
         ]]
     };
     stack.orientation = NSUserInterfaceLayoutOrientationVertical;
-    setPlaceholderAndFit(subjectIdField, "abc123");
-    setPlaceholderAndFit(testerIdField, "abc123");
-    setPlaceholderAndFit(sessionField, "abc123");
-    setPlaceholderAndFit(rmeSettingField, "ihavenoideawhatgoeshere");
-    setPlaceholderAndFit(testSettingsField, "/Users/username/Desktop/file.txt");
-    setPlaceholderAndFit(startingSnrField, "15");
+    setPlaceholder(subjectIdField, "abc123");
+    setPlaceholder(testerIdField, "abc123");
+    setPlaceholder(sessionField, "abc123");
+    setPlaceholder(rmeSettingField, "ihavenoideawhatgoeshere");
+    setPlaceholder(
+        testSettingsField, "/Users/username/Documents/test-settings.txt");
+    setPlaceholder(startingSnrField, "5");
     addAutolayoutEnabledSubview(view_, confirmButton);
     addAutolayoutEnabledSubview(view_, stack);
-    [NSLayoutConstraint activateConstraints:@[
+    activateConstraints(@[
         [stack.topAnchor constraintEqualToAnchor:view_.topAnchor
                                         constant:defaultMarginPoints],
         [stack.leadingAnchor constraintEqualToAnchor:view_.leadingAnchor
                                             constant:defaultMarginPoints],
         [stack.trailingAnchor constraintEqualToAnchor:view_.trailingAnchor
-                                             constant:-defaultMarginPoints]
-    ]];
+                                             constant:-defaultMarginPoints],
+        [subjectIdField.widthAnchor
+            constraintEqualToAnchor:testerIdField.widthAnchor],
+        [subjectIdField.widthAnchor
+            constraintEqualToAnchor:sessionField.widthAnchor],
+        [subjectIdField.widthAnchor
+            constraintEqualToAnchor:rmeSettingField.widthAnchor],
+        [subjectIdField.widthAnchor
+            constraintEqualToAnchor:testSettingsField.widthAnchor],
+        [subjectIdField.widthAnchor
+            constraintEqualToAnchor:startingSnrField.widthAnchor]
+    ]);
     activateChildConstraintNestledInBottomRightCorner(
         confirmButton, view_, defaultMarginPoints);
     av_speech_in_noise::show(view_);
@@ -890,10 +887,6 @@ void CocoaExperimenterView::acceptContinuingTesting() {
 
 void CocoaExperimenterView::declineContinuingTesting() {
     listener_->declineContinuingTesting();
-}
-
-static void activateConstraints(NSArray<NSLayoutConstraint *> *constraints) {
-    [NSLayoutConstraint activateConstraints:constraints];
 }
 
 static auto view(NSViewController *viewController) -> NSView * {
