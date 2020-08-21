@@ -230,6 +230,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSViewController *viewController)
         button("Confirm", actions,
             @selector(notifyThatConfirmButtonHasBeenClicked))
     };
+    [confirmButton setKeyEquivalent:@"\r"];
     const auto stack {
         [NSStackView stackViewWithViews:@[
             labeledView(subjectIdField, "subject:"),
@@ -239,10 +240,10 @@ CocoaTestSetupView::CocoaTestSetupView(NSViewController *viewController)
             labeledView(transducerMenu, "transducer:"),
             [NSStackView stackViewWithViews:@[
                 labeledView(testSettingsField, "test settings:"),
-                button("browse", actions,
+                button("Browse...", actions,
                     @selector
                     (notifyThatBrowseForTestSettingsButtonHasBeenClicked)),
-                button("play calibration", actions,
+                button("Play Calibration", actions,
                     @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
             ]],
             labeledView(startingSnrField, "starting SNR (dB):")
