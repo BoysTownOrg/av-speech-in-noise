@@ -115,9 +115,6 @@ static void set(NSTextField *field, const std::string &s) {
     [field setStringValue:nsString(s)];
 }
 
-static constexpr auto labelHeight{22};
-static constexpr auto buttonHeight{25};
-
 constexpr auto width(const NSRect &r) -> CGFloat { return r.size.width; }
 
 constexpr auto height(const NSRect &r) -> CGFloat { return r.size.height; }
@@ -640,8 +637,6 @@ void CocoaCoordinateResponseMeasureView::show() {
 
 void CocoaCoordinateResponseMeasureView::hide() { [window orderOut:nil]; }
 
-constexpr auto continueTestingDialogHeight{2 * labelHeight};
-
 static auto trailingAnchorConstraint(NSView *a, NSView *b)
     -> NSLayoutConstraint * {
     return [a.trailingAnchor constraintEqualToAnchor:b.trailingAnchor];
@@ -657,8 +652,10 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
     : viewController{viewController}, continueTestingDialogField{label("")},
       primaryTextField{label("")}, secondaryTextField{label("")},
       freeResponseField{emptyTextField()},
-      correctKeywordsField{emptyTextField()}, freeResponseFlaggedButton{[
-                                                  [NSButton alloc] init]},
+      correctKeywordsField{emptyTextField()},
+      freeResponseFlaggedButton{[NSButton checkboxWithTitle:@"flagged"
+                                                     target:nil
+                                                     action:nil]},
       actions{[[ExperimenterViewActions alloc] init]} {
     const auto continueTestingDialogController{
         nsTabViewControllerWithoutTabControl()};
@@ -666,9 +663,6 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
         windowWithContentViewController:continueTestingDialogController];
     continueTestingDialog.styleMask = NSWindowStyleMaskBorderless;
     exitTestButton = button("Exit Test", actions, @selector(exitTest));
-    [freeResponseFlaggedButton setButtonType:NSButtonTypeSwitch];
-    [freeResponseFlaggedButton setTitle:@"flagged"];
-    [freeResponseFlaggedButton sizeToFit];
     nextTrialButton = button("Play Trial", actions, @selector(playTrial));
     const auto submitFreeResponseButton {
         button("Submit", actions, @selector(submitFreeResponse))
