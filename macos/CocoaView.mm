@@ -111,19 +111,12 @@ static void hide(NSView *v) { [v setHidden:YES]; }
 
 static void show(NSView *v) { [v setHidden:NO]; }
 
-static void setStaticLike(NSTextField *f) {
-    [f setBezeled:NO];
-    [f setDrawsBackground:NO];
-    [f setEditable:NO];
-}
-
 static void set(NSTextField *field, const std::string &s) {
     [field setStringValue:nsString(s)];
 }
 
 static constexpr auto labelHeight{22};
 static constexpr auto buttonHeight{25};
-static constexpr auto buttonWidth{100};
 
 constexpr auto width(const NSRect &r) -> CGFloat { return r.size.width; }
 
@@ -666,29 +659,25 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                     styleMask:NSWindowStyleMaskBorderless
                       backing:NSBackingStoreBuffered
                         defer:YES]},
-      continueTestingDialogField{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(0, buttonHeight, width(r),
-                            continueTestingDialogHeight)]},
-      primaryTextField{label("")}, secondaryTextField{label("")},
-      freeResponseField{emptyTextField()},
+      continueTestingDialogField{label("")}, primaryTextField{label("")},
+      secondaryTextField{label("")}, freeResponseField{emptyTextField()},
       correctKeywordsField{emptyTextField()}, freeResponseFlaggedButton{[
                                                   [NSButton alloc] init]},
       actions{[[ExperimenterViewActions alloc] init]} {
-    exitTestButton = button("exit test", actions, @selector(exitTest));
-    setStaticLike(continueTestingDialogField);
+    exitTestButton = button("Exit Test", actions, @selector(exitTest));
     [freeResponseFlaggedButton setButtonType:NSButtonTypeSwitch];
     [freeResponseFlaggedButton setTitle:@"flagged"];
     [freeResponseFlaggedButton sizeToFit];
-    nextTrialButton = button("play trial", actions, @selector(playTrial));
+    nextTrialButton = button("Play Trial", actions, @selector(playTrial));
     const auto submitFreeResponseButton {
-        button("submit", actions, @selector(submitFreeResponse))
+        button("Submit", actions, @selector(submitFreeResponse))
     };
     evaluationButtons = [NSStackView stackViewWithViews:@[
-        button("incorrect", actions, @selector(submitFailedTrial)),
-        button("correct", actions, @selector(submitPassedTrial))
+        button("Incorrect", actions, @selector(submitFailedTrial)),
+        button("Correct", actions, @selector(submitPassedTrial))
     ]];
     const auto submitCorrectKeywordsButton {
-        button("submit", actions, @selector(submitCorrectKeywords))
+        button("Submit", actions, @selector(submitCorrectKeywords))
     };
     setPlaceholder(correctKeywordsField, "2");
     setPlaceholderAndFit(freeResponseField, "This is a sentence.");
