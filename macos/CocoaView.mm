@@ -265,9 +265,6 @@ CocoaTestSetupView::CocoaTestSetupView(NSViewController *viewController)
         [stack.leadingAnchor
             constraintEqualToAnchor:view(viewController).leadingAnchor
                            constant:defaultMarginPoints],
-        [stack.trailingAnchor
-            constraintEqualToAnchor:view(viewController).trailingAnchor
-                           constant:-defaultMarginPoints],
         [subjectIdField.leadingAnchor
             constraintEqualToAnchor:testerIdField.leadingAnchor],
         [subjectIdField.leadingAnchor
