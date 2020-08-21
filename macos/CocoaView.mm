@@ -695,25 +695,16 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                     styleMask:NSWindowStyleMaskBorderless
                       backing:NSBackingStoreBuffered
                         defer:YES]},
-      continueTestingDialogMessage_{[[NSTextField alloc]
+      continueTestingDialogField{[[NSTextField alloc]
           initWithFrame:NSMakeRect(0, buttonHeight, width(r),
                             continueTestingDialogHeight)]},
-      displayedText_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(leadingPrimaryTextEdge,
-                            lowerPrimaryTextEdge(r), primaryTextWidth,
-                            labelHeight)]},
-      secondaryDisplayedText_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(leadingSecondaryTextEdge,
-                            lowerPrimaryTextEdge(r),
-                            width(r) - leadingSecondaryTextEdge, labelHeight)]},
+      primaryTextField{label("")}, secondaryTextField{label("")},
       freeResponseField{emptyTextField()},
       correctKeywordsField{emptyTextField()}, freeResponseFlaggedButton{[
                                                   [NSButton alloc] init]},
       actions{[[ExperimenterViewActions alloc] init]} {
     exitTestButton = button("exit test", actions, @selector(exitTest));
-    setStaticLike(displayedText_);
-    setStaticLike(secondaryDisplayedText_);
-    setStaticLike(continueTestingDialogMessage_);
+    setStaticLike(continueTestingDialogField);
     [freeResponseFlaggedButton setButtonType:NSButtonTypeSwitch];
     [freeResponseFlaggedButton setTitle:@"flagged"];
     [freeResponseFlaggedButton sizeToFit];
@@ -738,9 +729,12 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     };
     setPlaceholderAndFit(correctKeywordsField, "2");
     setPlaceholderAndFit(freeResponseField, "This is a sentence.");
-    addAutolayoutEnabledSubview(view_, exitTestButton);
-    addSubview(view_, displayedText_);
-    addSubview(view_, secondaryDisplayedText_);
+    const auto topRow {
+        [NSStackView stackViewWithViews:@[
+            exitTestButton, primaryTextField, secondaryTextField
+        ]]
+    };
+    addAutolayoutEnabledSubview(view_, topRow);
     addAutolayoutEnabledSubview(freeResponseView, submitFreeResponseButton);
     addAutolayoutEnabledSubview(freeResponseView, freeResponseField);
     addAutolayoutEnabledSubview(freeResponseView, freeResponseFlaggedButton);
@@ -748,20 +742,18 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     addAutolayoutEnabledSubview(view_, failButton);
     addSubview(continueTestingDialog.contentView, continueButton);
     addSubview(continueTestingDialog.contentView, exitButton);
-    addSubview(
-        continueTestingDialog.contentView, continueTestingDialogMessage_);
+    addSubview(continueTestingDialog.contentView, continueTestingDialogField);
     addAutolayoutEnabledSubview(correctKeywordsView, correctKeywordsField);
     addAutolayoutEnabledSubview(
         correctKeywordsView, submitCorrectKeywordsButton);
     addAutolayoutEnabledSubview(view_, nextTrialButton);
     addSubview(view_, freeResponseView);
     addAutolayoutEnabledSubview(view_, correctKeywordsView);
-    [NSLayoutConstraint activateConstraints:@[
-        [exitTestButton.leadingAnchor
-            constraintEqualToAnchor:view_.leadingAnchor
-                           constant:defaultMarginPoints],
-        [exitTestButton.topAnchor constraintEqualToAnchor:view_.topAnchor
-                                                 constant:defaultMarginPoints],
+    activateConstraints(@[
+        [topRow.leadingAnchor constraintEqualToAnchor:view_.leadingAnchor
+                                             constant:defaultMarginPoints],
+        [topRow.topAnchor constraintEqualToAnchor:view_.topAnchor
+                                         constant:defaultMarginPoints],
         firstToTheRightOfSecondConstraint(
             passButton, failButton, defaultMarginPoints),
         yCenterConstraint(passButton, failButton),
@@ -778,7 +770,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         firstToTheRightOfSecondConstraint(
             freeResponseField, freeResponseFlaggedButton, defaultMarginPoints),
         yCenterConstraint(freeResponseField, freeResponseFlaggedButton)
-    ]];
+    ]);
     activateChildConstraintNestledInBottomRightCorner(
         passButton, view_, defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
@@ -814,10 +806,10 @@ auto CocoaExperimenterView::view() -> NSView * { return view_; }
 
 void CocoaExperimenterView::exitTest() { listener_->exitTest(); }
 
-void CocoaExperimenterView::display(std::string s) { set(displayedText_, s); }
+void CocoaExperimenterView::display(std::string s) { set(primaryTextField, s); }
 
 void CocoaExperimenterView::secondaryDisplay(std::string s) {
-    set(secondaryDisplayedText_, s);
+    set(secondaryTextField, s);
 }
 
 void CocoaExperimenterView::showNextTrialButton() {
@@ -866,7 +858,7 @@ void CocoaExperimenterView::hideContinueTestingDialog() {
 
 void CocoaExperimenterView::setContinueTestingDialogMessage(
     const std::string &s) {
-    set(continueTestingDialogMessage_, s);
+    set(continueTestingDialogField, s);
 }
 
 void CocoaExperimenterView::clearFreeResponse() { set(freeResponseField, ""); }

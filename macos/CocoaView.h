@@ -51,9 +51,9 @@ class CocoaExperimenterView : public View::Experimenter {
     NSView *freeResponseView;
     NSView *correctKeywordsView;
     NSWindow *continueTestingDialog;
-    NSTextField *continueTestingDialogMessage_;
-    NSTextField *displayedText_;
-    NSTextField *secondaryDisplayedText_;
+    NSTextField *continueTestingDialogField;
+    NSTextField *primaryTextField;
+    NSTextField *secondaryTextField;
     NSTextField *freeResponseField;
     NSTextField *correctKeywordsField;
     NSButton *freeResponseFlaggedButton;
