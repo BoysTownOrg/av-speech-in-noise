@@ -13,7 +13,7 @@
 namespace av_speech_in_noise {
 class CocoaExperimenterView : public View::Experimenter {
   public:
-    explicit CocoaExperimenterView(NSRect, NSViewController *);
+    explicit CocoaExperimenterView(NSViewController *);
     void subscribe(EventListener *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;

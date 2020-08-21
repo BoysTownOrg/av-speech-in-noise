@@ -179,15 +179,6 @@ void TimerImpl::scheduleCallbackAfterSeconds(double x) {
 void TimerImpl::timerCallback() { listener->callback(); }
 }
 
-static void addTabViewItem(
-    NSTabViewController *parent, NSTabViewController *child) {
-    // https://developer.apple.com/documentation/appkit/nstabviewcontroller?language=objc
-    // "When you call the addChildViewController:...the tab view
-    // controller automatically creates a default NSTabViewItem object for the
-    // specified view controller."
-    [parent addChildViewController:child];
-}
-
 static void addChild(NSTabViewController *parent, NSTabViewController *child) {
     [parent.view addSubview:child.view];
 }
@@ -303,8 +294,7 @@ void main(EyeTracker &eyeTracker) {
     const auto experimenterViewController{
         nsTabViewControllerWithoutTabControl()};
     addChild(viewController, experimenterViewController);
-    CocoaExperimenterView experimenterView{
-        NSMakeRect(0, 0, 900, 270), experimenterViewController};
+    CocoaExperimenterView experimenterView{experimenterViewController};
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
     const auto subjectScreenFrame{subjectScreen.frame};

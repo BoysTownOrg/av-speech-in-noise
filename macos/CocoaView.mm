@@ -653,8 +653,7 @@ static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
     return controller;
 }
 
-CocoaExperimenterView::CocoaExperimenterView(
-    NSRect r, NSViewController *viewController)
+CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
     : viewController{viewController}, continueTestingDialogField{label("")},
       primaryTextField{label("")}, secondaryTextField{label("")},
       freeResponseField{emptyTextField()},
