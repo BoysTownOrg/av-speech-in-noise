@@ -101,6 +101,8 @@
 @end
 
 namespace av_speech_in_noise {
+constexpr auto defaultMarginPoints{8};
+
 static void addSubview(NSView *parent, NSView *child) {
     [parent addSubview:child];
 }
@@ -175,8 +177,10 @@ static void activateLabeledElementConstraintBelow(
     NSView *above, NSView *below, NSView *belowLabel) {
     [NSLayoutConstraint activateConstraints:@[
         [above.leadingAnchor constraintEqualToAnchor:below.leadingAnchor],
-        [below.topAnchor constraintEqualToAnchor:above.bottomAnchor constant:8],
-        firstToTheRightOfSecondConstraint(below, belowLabel, 8),
+        [below.topAnchor constraintEqualToAnchor:above.bottomAnchor
+                                        constant:defaultMarginPoints],
+        firstToTheRightOfSecondConstraint(
+            below, belowLabel, defaultMarginPoints),
         yCenterConstraint(below, belowLabel)
     ]];
 }
@@ -259,17 +263,18 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     addAutolayoutEnabledSubview(view_, startingSnrField);
     [NSLayoutConstraint activateConstraints:@[
         [subjectIdField.topAnchor constraintEqualToAnchor:view_.topAnchor
-                                                 constant:8],
-        firstToTheRightOfSecondConstraint(subjectIdField, subjectIdLabel, 8),
+                                                 constant:defaultMarginPoints],
+        firstToTheRightOfSecondConstraint(
+            subjectIdField, subjectIdLabel, defaultMarginPoints),
         yCenterConstraint(subjectIdField, subjectIdLabel),
         widthConstraint(subjectIdField),
         [subjectIdField.centerXAnchor
             constraintEqualToAnchor:view_.centerXAnchor],
-        firstToTheRightOfSecondConstraint(
-            browseForTestSettingsButton, testSettingsField, 8),
+        firstToTheRightOfSecondConstraint(browseForTestSettingsButton,
+            testSettingsField, defaultMarginPoints),
         yCenterConstraint(browseForTestSettingsButton, testSettingsField),
-        firstToTheRightOfSecondConstraint(
-            playCalibrationButton, browseForTestSettingsButton, 8),
+        firstToTheRightOfSecondConstraint(playCalibrationButton,
+            browseForTestSettingsButton, defaultMarginPoints),
         yCenterConstraint(playCalibrationButton, browseForTestSettingsButton),
         widthConstraint(testerIdField), widthConstraint(sessionField),
         widthConstraint(rmeSettingField), widthConstraint(testSettingsField),
@@ -287,7 +292,8 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
         transducerMenu, testSettingsField, testSettingsLabel);
     activateLabeledElementConstraintBelow(
         testSettingsField, startingSnrField, startingSnrLabel);
-    activateChildConstraintNestledInBottomRightCorner(confirmButton, view_, 8);
+    activateChildConstraintNestledInBottomRightCorner(
+        confirmButton, view_, defaultMarginPoints);
     av_speech_in_noise::show(view_);
 }
 
@@ -753,15 +759,16 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [NSLayoutConstraint activateConstraints:@[
         [exitTestButton.leadingAnchor
             constraintEqualToAnchor:view_.leadingAnchor
-                           constant:8],
+                           constant:defaultMarginPoints],
         [exitTestButton.topAnchor constraintEqualToAnchor:view_.topAnchor
-                                                 constant:8],
-        firstToTheRightOfSecondConstraint(passButton, failButton, 8),
+                                                 constant:defaultMarginPoints],
+        firstToTheRightOfSecondConstraint(
+            passButton, failButton, defaultMarginPoints),
         yCenterConstraint(passButton, failButton),
+        firstAboveSecondConstraint(correctKeywordsField,
+            submitCorrectKeywordsButton, defaultMarginPoints),
         firstAboveSecondConstraint(
-            correctKeywordsField, submitCorrectKeywordsButton, 8),
-        firstAboveSecondConstraint(
-            freeResponseField, submitFreeResponseButton, 8),
+            freeResponseField, submitFreeResponseButton, defaultMarginPoints),
         trailingAnchorConstraint(
             correctKeywordsField, submitCorrectKeywordsButton),
         trailingAnchorConstraint(freeResponseField, submitFreeResponseButton),
@@ -769,16 +776,17 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         widthConstraint(freeResponseField),
         widthConstraint(freeResponseFlaggedButton),
         firstToTheRightOfSecondConstraint(
-            freeResponseField, freeResponseFlaggedButton, 8),
+            freeResponseField, freeResponseFlaggedButton, defaultMarginPoints),
         yCenterConstraint(freeResponseField, freeResponseFlaggedButton)
     ]];
-    activateChildConstraintNestledInBottomRightCorner(passButton, view_, 8);
     activateChildConstraintNestledInBottomRightCorner(
-        submitCorrectKeywordsButton, view_, 8);
+        passButton, view_, defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
-        nextTrialButton, view_, 8);
+        submitCorrectKeywordsButton, view_, defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
-        submitFreeResponseButton, view_, 8);
+        nextTrialButton, view_, defaultMarginPoints);
+    activateChildConstraintNestledInBottomRightCorner(
+        submitFreeResponseButton, view_, defaultMarginPoints);
     av_speech_in_noise::hide(passButton);
     av_speech_in_noise::hide(failButton);
     av_speech_in_noise::hide(nextTrialButton);
@@ -916,7 +924,7 @@ CocoaView::CocoaView(NSApplication *app, NSViewController *viewController)
     addAutolayoutEnabledSubview(viewController.view, audioDeviceStack);
     activateConstraints(@[ [audioDeviceStack.bottomAnchor
         constraintEqualToAnchor:viewController.view.bottomAnchor
-                       constant:-8] ]);
+                       constant:-defaultMarginPoints] ]);
 }
 
 void CocoaView::eventLoop() { [app run]; }
