@@ -675,7 +675,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
         button("Submit", actions, @selector(submitCorrectKeywords))
     };
     setPlaceholder(correctKeywordsField, "2");
-    setPlaceholderAndFit(freeResponseField, "This is a sentence.");
+    setPlaceholder(freeResponseField, "This is a sentence.");
     const auto topRow {
         [NSStackView stackViewWithViews:@[
             exitTestButton, primaryTextField, secondaryTextField
@@ -685,13 +685,26 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
         correctKeywordsField, submitCorrectKeywordsButton
     ]];
     correctKeywordsView.orientation = NSUserInterfaceLayoutOrientationVertical;
-    freeResponseView = [NSStackView stackViewWithViews:@[
+    const auto innerFreeResponseView {
         [NSStackView stackViewWithViews:@[
             freeResponseFlaggedButton, freeResponseField
-        ]],
-        submitFreeResponseButton
+        ]]
+    };
+    freeResponseView = [NSStackView stackViewWithViews:@[
+        innerFreeResponseView, submitFreeResponseButton
     ]];
     freeResponseView.orientation = NSUserInterfaceLayoutOrientationVertical;
+    innerFreeResponseView.distribution = NSStackViewDistributionFill;
+    [freeResponseFlaggedButton
+        setContentHuggingPriority:251
+                   forOrientation:NSLayoutConstraintOrientationHorizontal];
+    [freeResponseField
+        setContentHuggingPriority:48
+                   forOrientation:NSLayoutConstraintOrientationHorizontal];
+    [freeResponseField
+        setContentCompressionResistancePriority:749
+                                 forOrientation:
+                                     NSLayoutConstraintOrientationHorizontal];
     addAutolayoutEnabledSubview(view(viewController), topRow);
     addAutolayoutEnabledSubview(view(viewController), evaluationButtons);
     const auto continueTestingDialogStack {
@@ -715,12 +728,16 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
                            constant:defaultMarginPoints],
         [topRow.topAnchor constraintEqualToAnchor:view(viewController).topAnchor
                                          constant:defaultMarginPoints],
-        trailingAnchorConstraint(freeResponseField, submitFreeResponseButton),
         [correctKeywordsField.leadingAnchor
             constraintEqualToAnchor:submitCorrectKeywordsButton.leadingAnchor],
         [correctKeywordsField.trailingAnchor
             constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor],
-        widthConstraint(freeResponseField)
+        [freeResponseView.leadingAnchor
+            constraintEqualToAnchor:view(viewController).centerXAnchor],
+        [innerFreeResponseView.leadingAnchor
+            constraintEqualToAnchor:freeResponseView.leadingAnchor],
+        [innerFreeResponseView.trailingAnchor
+            constraintEqualToAnchor:freeResponseView.trailingAnchor]
     ]);
     activateChildConstraintNestledInBottomRightCorner(
         evaluationButtons, view(viewController), defaultMarginPoints);
