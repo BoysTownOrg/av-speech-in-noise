@@ -1,6 +1,7 @@
 #ifndef MACOS_MAIN_COCOAVIEW_H_
 #define MACOS_MAIN_COCOAVIEW_H_
 
+#include "MacOsTestSetupViewFactory.h"
 #include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>
 #include <unordered_map>
@@ -63,15 +64,6 @@ class CocoaExperimenterView : public View::Experimenter {
     EventListener *listener_{};
 };
 
-#include <memory>
-
-class NSTestSetupViewFactory {
-  public:
-    virtual ~NSTestSetupViewFactory() = default;
-    virtual auto make(NSViewController *)
-        -> std::unique_ptr<View::TestSetup> = 0;
-};
-
 class CocoaTestSetupView : public View::TestSetup {
   public:
     explicit CocoaTestSetupView(NSViewController *);
@@ -104,7 +96,7 @@ class CocoaTestSetupView : public View::TestSetup {
     EventListener *listener_{};
 };
 
-class CocoaTestSetupViewFactory : public NSTestSetupViewFactory {
+class CocoaTestSetupViewFactory : public MacOsTestSetupViewFactory {
   public:
     auto make(NSViewController *c)
         -> std::unique_ptr<View::TestSetup> override {
