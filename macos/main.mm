@@ -304,8 +304,11 @@ void main(EyeTracker &eyeTracker) {
     auto menuActions{[[MenuActions alloc] init]};
     const auto preferencesViewController{
         nsTabViewControllerWithoutTabControl()};
-    menuActions->preferencesWindow =
-        [NSWindow windowWithContentViewController:preferencesViewController];
+    const auto preferencesWindow{
+        [NSWindow windowWithContentViewController:preferencesViewController]};
+    preferencesWindow.styleMask =
+        NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
+    menuActions->preferencesWindow = preferencesWindow;
     preferencesMenuItem.target = menuActions;
     [appSubMenu addItemWithTitle:@"Quit"
                           action:@selector(stop:)
