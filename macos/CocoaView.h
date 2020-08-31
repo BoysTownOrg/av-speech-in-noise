@@ -63,6 +63,15 @@ class CocoaExperimenterView : public View::Experimenter {
     EventListener *listener_{};
 };
 
+#include <memory>
+
+class NSTestSetupViewFactory {
+  public:
+    virtual ~NSTestSetupViewFactory() = default;
+    virtual auto make(NSViewController *)
+        -> std::unique_ptr<View::TestSetup> = 0;
+};
+
 class CocoaTestSetupView : public View::TestSetup {
   public:
     explicit CocoaTestSetupView(NSViewController *);
@@ -93,6 +102,14 @@ class CocoaTestSetupView : public View::TestSetup {
     NSTextField *startingSnrField;
     SetupViewActions *actions;
     EventListener *listener_{};
+};
+
+class CocoaTestSetupViewFactory : public NSTestSetupViewFactory {
+  public:
+    auto make(NSViewController *c)
+        -> std::unique_ptr<View::TestSetup> override {
+        return std::make_unique<CocoaTestSetupView>(c);
+    }
 };
 
 class CocoaConsonantView : public View::Consonant {
