@@ -189,7 +189,8 @@ static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
     return controller;
 }
 
-void main(EyeTracker &eyeTracker, MacOsTestSetupViewFactory *) {
+void main(
+    EyeTracker &eyeTracker, MacOsTestSetupViewFactory *testSetupViewFactory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     CoreAudioBufferedReader bufferedReader;
@@ -290,7 +291,8 @@ void main(EyeTracker &eyeTracker, MacOsTestSetupViewFactory *) {
     CocoaView view{app, viewController};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);
-    CocoaTestSetupView testSetupView{testSetupViewController};
+    const auto testSetupView{
+        testSetupViewFactory->make(testSetupViewController)};
     const auto experimenterViewController{
         nsTabViewControllerWithoutTabControl()};
     addChild(viewController, experimenterViewController);
@@ -314,7 +316,7 @@ void main(EyeTracker &eyeTracker, MacOsTestSetupViewFactory *) {
             subjectViewWidth, subjectViewHeight)};
     Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
         &coordinateResponseMeasureView};
-    Presenter::TestSetup testSetupPresenter{&testSetupView};
+    Presenter::TestSetup testSetupPresenter{testSetupView.get()};
     Presenter::Experimenter experimenterPresenter{&experimenterView};
     TestSettingsInterpreterImpl testSettingsInterpreter;
     Presenter presenter{model, view, testSetupPresenter,
