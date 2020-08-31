@@ -190,9 +190,15 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     addAutolayoutEnabledSubview(controller.view, playCalibrationButton);
 }
 
-void FacemaskStudySetupView::show() { [controller.view setHidden:NO]; }
+void FacemaskStudySetupView::show() {
+    [controller.view.window makeKeyAndOrderFront:nil];
+    [controller.view setHidden:NO];
+}
 
-void FacemaskStudySetupView::hide() { [controller.view setHidden:YES]; }
+void FacemaskStudySetupView::hide() {
+    [controller.view setHidden:YES];
+    [controller.view.window orderOut:nil];
+}
 
 auto FacemaskStudySetupView::testSettingsFile() -> std::string {
     return testSettingsField.stringValue.UTF8String;
