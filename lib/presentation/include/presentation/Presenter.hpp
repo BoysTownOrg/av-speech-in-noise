@@ -208,8 +208,8 @@ class Presenter : public Model::EventListener {
 
     class Consonant : public View::ConsonantInput::EventListener {
       public:
-        explicit Consonant(View::Consonant *, View::ConsonantInput * = {},
-            View::ConsonantOutput * = {});
+        explicit Consonant(
+            View::Consonant *, View::ConsonantInput *, View::ConsonantOutput *);
         void notifyThatReadyButtonHasBeenClicked() override;
         void notifyThatResponseButtonHasBeenClicked() override;
         void start();
@@ -220,6 +220,8 @@ class Presenter : public Model::EventListener {
 
       private:
         View::Consonant *view;
+        View::ConsonantInput *inputView;
+        View::ConsonantOutput *outputView;
         Presenter *parent{};
     };
 
