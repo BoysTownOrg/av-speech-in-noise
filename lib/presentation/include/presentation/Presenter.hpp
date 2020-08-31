@@ -185,7 +185,11 @@ class View {
 
 class ConsonantResponder {
   public:
-    class EventListener {};
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void notifyThatTaskHasStarted() = 0;
+    };
     virtual ~ConsonantResponder() = default;
     virtual void subscribe(EventListener *) = 0;
 };
@@ -194,14 +198,25 @@ class ConsonantScreenResponder : public ConsonantResponder,
                                  public View::ConsonantInput::EventListener {
   public:
     explicit ConsonantScreenResponder(View::ConsonantInput *) {}
-    void subscribe(ConsonantResponder::EventListener *) override {}
-    void notifyThatReadyButtonHasBeenClicked() override {}
+    void subscribe(ConsonantResponder::EventListener *e) override {
+        listener = e;
+    }
+    void notifyThatReadyButtonHasBeenClicked() override {
+        listener->notifyThatTaskHasStarted();
+    }
     void notifyThatResponseButtonHasBeenClicked() override {}
+
+  private:
+    ConsonantResponder::EventListener *listener{};
 };
 
 class ConsonantPresenter : public ConsonantResponder::EventListener {
   public:
-    explicit ConsonantPresenter(View::ConsonantOutput *) {}
+    explicit ConsonantPresenter(View::ConsonantOutput *view) : view{view} {}
+    void notifyThatTaskHasStarted() override { view->hideReadyButton(); }
+
+  private:
+    View::ConsonantOutput *view;
 };
 
 class Presenter : public Model::EventListener {
