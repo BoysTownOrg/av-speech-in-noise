@@ -113,12 +113,25 @@ static auto labelWithAttributedString(const std::string &s) -> NSTextField * {
                                              nil]]];
 }
 
+static auto verticalStackView(NSArray<NSView *> *views) -> NSStackView * {
+    const auto view{[NSStackView stackViewWithViews:views]};
+    view.orientation = NSUserInterfaceLayoutOrientationVertical;
+    return view;
+}
+
+static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
+    const auto label_{labelWithAttributedString(s)};
+    [label_ setContentHuggingPriority:251
+                       forOrientation:NSLayoutConstraintOrientationHorizontal];
+    const auto stack { [NSStackView stackViewWithViews:@[ label_, field ]] };
+    return stack;
+}
+
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : testSettingsField{[NSTextField textFieldWithString:@""]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
                                                                  controller} {
     actions->controller = this;
-    const auto testSettingsLabel{labelWithAttributedString("Session file:")};
     const auto titleLabel{[NSTextField
         labelWithAttributedString:
             [[NSAttributedString alloc]
@@ -166,53 +179,20 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
 
     const auto logo{
         [NSImageView imageViewWithImage:[NSImage imageNamed:@"b.bmp"]]};
-    addAutolayoutEnabledSubview(controller.view, browseForTestSettingsButton);
-    addAutolayoutEnabledSubview(controller.view, confirmButton);
+    const auto layoutStack {
+        verticalStackView(@[
+            [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
+            instructionsLabel, browseForTestSettingsButton,
+            labeledView(testSettingsField, "Session file:"), confirmButton
+        ])
+    };
+    addAutolayoutEnabledSubview(controller.view, layoutStack);
     addAutolayoutEnabledSubview(controller.view, playCalibrationButton);
-    addAutolayoutEnabledSubview(controller.view, testSettingsField);
-    addAutolayoutEnabledSubview(controller.view, testSettingsLabel);
-    addAutolayoutEnabledSubview(controller.view, titleLabel);
-    addAutolayoutEnabledSubview(controller.view, instructionsLabel);
-    addAutolayoutEnabledSubview(controller.view, logo);
     [testSettingsField
         setPlaceholderString:
             @"/Users/username/Documents/example-test-session-file.txt"];
     [testSettingsField sizeToFit];
     [NSLayoutConstraint activateConstraints:@[
-        [logo.leadingAnchor
-            constraintEqualToAnchor:controller.view.leadingAnchor
-                           constant:8],
-        [logo.topAnchor constraintEqualToAnchor:controller.view.topAnchor
-                                       constant:8],
-        [controller.view.topAnchor constraintEqualToAnchor:titleLabel.topAnchor
-                                                  constant:-8],
-        [titleLabel.bottomAnchor
-            constraintEqualToAnchor:instructionsLabel.topAnchor
-                           constant:-8],
-        [instructionsLabel.bottomAnchor
-            constraintEqualToAnchor:browseForTestSettingsButton.topAnchor
-                           constant:-8],
-        [browseForTestSettingsButton.bottomAnchor
-            constraintEqualToAnchor:testSettingsField.topAnchor
-                           constant:-8],
-        [testSettingsField.bottomAnchor
-            constraintEqualToAnchor:confirmButton.topAnchor
-                           constant:-8],
-        [testSettingsLabel.trailingAnchor
-            constraintEqualToAnchor:testSettingsField.leadingAnchor
-                           constant:-8],
-        [testSettingsLabel.centerYAnchor
-            constraintEqualToAnchor:testSettingsField.centerYAnchor],
-        [browseForTestSettingsButton.centerXAnchor
-            constraintEqualToAnchor:controller.view.centerXAnchor],
-        [confirmButton.centerXAnchor
-            constraintEqualToAnchor:controller.view.centerXAnchor],
-        [instructionsLabel.centerXAnchor
-            constraintEqualToAnchor:controller.view.centerXAnchor],
-        [titleLabel.centerXAnchor
-            constraintEqualToAnchor:controller.view.centerXAnchor],
-        [testSettingsField.centerXAnchor
-            constraintEqualToAnchor:controller.view.centerXAnchor],
         [testSettingsField.widthAnchor
             constraintEqualToConstant:NSWidth(testSettingsField.frame)]
     ]];
