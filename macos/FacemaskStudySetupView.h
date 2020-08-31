@@ -1,6 +1,7 @@
 #ifndef MACOS_MAIN_FACEMASKSTUDYVIEW_H_
 #define MACOS_MAIN_FACEMASKSTUDYVIEW_H_
 
+#include "MacOsTestSetupViewFactory.h"
 #include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>
 #include <string>
@@ -32,6 +33,14 @@ class FacemaskStudySetupView : public View::TestSetup {
     FacemaskStudySetupViewActions *actions;
     EventListener *listener_{};
     NSViewController *controller;
+};
+
+class FacemaskStudySetupViewFactory : public MacOsTestSetupViewFactory {
+  public:
+    auto make(NSViewController *c)
+        -> std::unique_ptr<View::TestSetup> override {
+        return std::make_unique<FacemaskStudySetupView>(c);
+    }
 };
 }
 
