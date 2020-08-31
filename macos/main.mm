@@ -24,6 +24,23 @@
 #include <utility>
 #include <functional>
 
+@interface ResizesToContentsViewController : NSTabViewController
+@end
+
+@implementation ResizesToContentsViewController
+- (instancetype)init {
+    if ((self = [super init]) != nullptr) {
+        [self setTabStyle:NSTabViewControllerTabStyleUnspecified];
+    }
+    return self;
+}
+- (void)viewDidAppear {
+    //[self.view.window setContentSize:self.view.frame.size];
+    [super viewDidAppear];
+    self.preferredContentSize = self.view.fittingSize;
+}
+@end
+
 @interface WindowDelegate : NSObject <NSWindowDelegate>
 @end
 
@@ -303,7 +320,7 @@ void main(EyeTracker &eyeTracker) {
     };
     auto menuActions{[[MenuActions alloc] init]};
     const auto preferencesViewController{
-        nsTabViewControllerWithoutTabControl()};
+        [[ResizesToContentsViewController alloc] init]};
     const auto preferencesWindow{
         [NSWindow windowWithContentViewController:preferencesViewController]};
     preferencesWindow.styleMask =
