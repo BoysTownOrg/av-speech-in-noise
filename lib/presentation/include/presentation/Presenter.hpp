@@ -183,6 +183,27 @@ class View {
     virtual void showCursor() = 0;
 };
 
+class ConsonantResponder {
+  public:
+    class EventListener {};
+    virtual ~ConsonantResponder() = default;
+    virtual void subscribe(EventListener *) = 0;
+};
+
+class ConsonantScreenResponder : public ConsonantResponder,
+                                 public View::ConsonantInput::EventListener {
+  public:
+    explicit ConsonantScreenResponder(View::ConsonantInput *) {}
+    void subscribe(ConsonantResponder::EventListener *) override {}
+    void notifyThatReadyButtonHasBeenClicked() override {}
+    void notifyThatResponseButtonHasBeenClicked() override {}
+};
+
+class ConsonantPresenter : public ConsonantResponder::EventListener {
+  public:
+    explicit ConsonantPresenter(View::ConsonantOutput *) {}
+};
+
 class Presenter : public Model::EventListener {
   public:
     class TestSetup : public View::TestSetup::EventListener {
