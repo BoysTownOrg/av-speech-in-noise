@@ -117,6 +117,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : testSettingsField{[NSTextField textFieldWithString:@""]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
                                                                  controller} {
+    actions->controller = this;
     const auto testSettingsLabel{labelWithAttributedString("Session file:")};
     const auto titleLabel{[NSTextField
         labelWithAttributedString:
@@ -230,14 +231,20 @@ void FacemaskStudySetupView::setTestSettingsFile(std::string s) {
     [testSettingsField setStringValue:nsString(s)];
 }
 
-void FacemaskStudySetupView::subscribe(EventListener *) {}
+void FacemaskStudySetupView::subscribe(EventListener *e) { listener_ = e; }
 
-void FacemaskStudySetupView::notifyThatConfirmButtonHasBeenClicked() {}
+void FacemaskStudySetupView::notifyThatConfirmButtonHasBeenClicked() {
+    listener_->notifyThatConfirmButtonHasBeenClicked();
+}
 
 void FacemaskStudySetupView::
-    notifyThatBrowseForTestSettingsButtonHasBeenClicked() {}
+    notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
+    listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
+}
 
-void FacemaskStudySetupView::notifyThatPlayCalibrationButtonHasBeenClicked() {}
+void FacemaskStudySetupView::notifyThatPlayCalibrationButtonHasBeenClicked() {
+    listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
+}
 }
 
 int main() {
