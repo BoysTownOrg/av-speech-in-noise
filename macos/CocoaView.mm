@@ -136,10 +136,6 @@ static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
     [parent addSubview:child];
 }
 
-static auto widthConstraint(NSView *a) -> NSLayoutConstraint * {
-    return [a.widthAnchor constraintEqualToConstant:NSWidth(a.frame)];
-}
-
 static void activateChildConstraintNestledInBottomRightCorner(
     NSView *child, NSView *parent, CGFloat x) {
 
@@ -161,11 +157,6 @@ static auto label(const std::string &s) -> NSTextField * {
 
 static void setPlaceholder(NSTextField *field, const std::string &s) {
     [field setPlaceholderString:nsString(s)];
-}
-
-static void setPlaceholderAndFit(NSTextField *field, const std::string &s) {
-    setPlaceholder(field, s);
-    [field sizeToFit];
 }
 
 static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
@@ -636,11 +627,6 @@ void CocoaCoordinateResponseMeasureView::show() {
 }
 
 void CocoaCoordinateResponseMeasureView::hide() { [window orderOut:nil]; }
-
-static auto trailingAnchorConstraint(NSView *a, NSView *b)
-    -> NSLayoutConstraint * {
-    return [a.trailingAnchor constraintEqualToAnchor:b.trailingAnchor];
-}
 
 static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
     const auto controller{[[NSTabViewController alloc] init]};
