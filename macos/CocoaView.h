@@ -13,8 +13,7 @@
 namespace av_speech_in_noise {
 class CocoaExperimenterView : public View::Experimenter {
   public:
-    explicit CocoaExperimenterView(NSRect);
-    auto view() -> NSView *;
+    explicit CocoaExperimenterView(NSViewController *);
     void subscribe(EventListener *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;
@@ -47,27 +46,26 @@ class CocoaExperimenterView : public View::Experimenter {
     void declineContinuingTesting();
 
   private:
-    NSView *view_;
-    NSView *freeResponseView;
-    NSView *correctKeywordsView;
+    NSViewController *viewController;
+    NSStackView *freeResponseView{};
+    NSStackView *correctKeywordsView{};
+    NSStackView *evaluationButtons{};
     NSWindow *continueTestingDialog;
-    NSTextField *continueTestingDialogMessage_;
-    NSTextField *displayedText_;
-    NSTextField *secondaryDisplayedText_;
+    NSTextField *continueTestingDialogField;
+    NSTextField *primaryTextField;
+    NSTextField *secondaryTextField;
     NSTextField *freeResponseField;
     NSTextField *correctKeywordsField;
     NSButton *freeResponseFlaggedButton;
     NSButton *exitTestButton;
     NSButton *nextTrialButton;
-    NSButton *passButton;
-    NSButton *failButton;
     ExperimenterViewActions *actions;
     EventListener *listener_{};
 };
 
 class CocoaTestSetupView : public View::TestSetup {
   public:
-    explicit CocoaTestSetupView(NSRect);
+    explicit CocoaTestSetupView(NSViewController *);
     void show() override;
     void hide() override;
     auto testerId() -> std::string override;
@@ -80,19 +78,12 @@ class CocoaTestSetupView : public View::TestSetup {
     void populateTransducerMenu(std::vector<std::string>) override;
     void setTestSettingsFile(std::string) override;
     void subscribe(EventListener *) override;
-    auto view() -> NSView *;
     void notifyThatConfirmButtonHasBeenClicked();
-    void browseForTargetList();
-    void browseForMasker();
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
     void notifyThatPlayCalibrationButtonHasBeenClicked();
-    void setMaskerLevel_dB_SPL(std::string);
-    void setStartingSnr_dB(std::string);
-    void setCalibrationLevel_dB_SPL(std::string);
-    void setCalibration(std::string);
 
   private:
-    NSView *view_;
+    NSViewController *viewController;
     NSTextField *subjectIdField;
     NSTextField *testerIdField;
     NSTextField *sessionField;
@@ -163,7 +154,7 @@ class CocoaCoordinateResponseMeasureView
 
 class CocoaView : public View {
   public:
-    explicit CocoaView(NSRect);
+    explicit CocoaView(NSApplication *, NSViewController *);
     void eventLoop() override;
     void showErrorMessage(std::string) override;
     auto browseForDirectory() -> std::string override;
@@ -172,20 +163,11 @@ class CocoaView : public View {
     auto audioDevice() -> std::string override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
     void showCursor() override;
-    void setDelegate(id<NSWindowDelegate>);
-    void center();
-    auto testSetup() -> View::TestSetup &;
-    auto experimenter() -> View::Experimenter &;
 
   private:
     auto browseModal(NSOpenPanel *panel) -> std::string;
 
-    CocoaTestSetupView testSetup_;
-    CocoaExperimenterView experimenter_;
     NSApplication *app;
-    NSWindow *window;
-    NSView *view;
-    NSTextField *audioDeviceLabel;
     NSPopUpButton *audioDeviceMenu;
     bool browseCancelled_{};
 };

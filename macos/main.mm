@@ -80,7 +80,7 @@ auto contents(NSString *parent) -> NSArray<NSString *> * {
 auto collectContentsIf(const LocalUrl &directory,
     const std::function<bool(NSString *)> &predicate) -> std::vector<LocalUrl> {
     std::vector<LocalUrl> items{};
-    const auto parent{asNsString(directory.path).stringByExpandingTildeInPath};
+    const auto parent{nsString(directory.path).stringByExpandingTildeInPath};
     for (NSString *item in contents(parent)) {
         const auto path{[parent stringByAppendingPathComponent:item]};
         if (predicate(path))
@@ -179,6 +179,16 @@ void TimerImpl::scheduleCallbackAfterSeconds(double x) {
 void TimerImpl::timerCallback() { listener->callback(); }
 }
 
+static void addChild(NSTabViewController *parent, NSTabViewController *child) {
+    [parent.view addSubview:child.view];
+}
+
+static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
+    const auto controller{[[NSTabViewController alloc] init]};
+    [controller setTabStyle:NSTabViewControllerTabStyleUnspecified];
+    return controller;
+}
+
 void main(EyeTracker &eyeTracker) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
@@ -264,10 +274,29 @@ void main(EyeTracker &eyeTracker) {
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
         allTargetsNTimes, recognitionTestModel, outputFile};
-    CocoaView view{NSMakeRect(0, 0, 900, 270)};
-    view.center();
-    const auto delegate{[WindowDelegate alloc]};
-    view.setDelegate(delegate);
+    const auto viewController{nsTabViewControllerWithoutTabControl()};
+    const auto window{
+        [NSWindow windowWithContentViewController:viewController]};
+    [window makeKeyAndOrderFront:nil];
+    const auto app{[NSApplication sharedApplication]};
+    app.mainMenu = [[NSMenu alloc] init];
+    auto appMenu{[[NSMenuItem alloc] init]};
+    auto appSubMenu{[[NSMenu alloc] init]};
+    [appSubMenu addItemWithTitle:@"Quit"
+                          action:@selector(stop:)
+                   keyEquivalent:@"q"];
+    [appMenu setSubmenu:appSubMenu];
+    [app.mainMenu addItem:appMenu];
+    CocoaView view{app, viewController};
+    const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
+    addChild(viewController, testSetupViewController);
+    CocoaTestSetupView testSetupView{testSetupViewController};
+    const auto experimenterViewController{
+        nsTabViewControllerWithoutTabControl()};
+    addChild(viewController, experimenterViewController);
+    CocoaExperimenterView experimenterView{experimenterViewController};
+    [window center];
+    [window setDelegate:[[WindowDelegate alloc] init]];
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenOrigin{subjectScreenFrame.origin};
     const auto subjectScreenSize{subjectScreenFrame.size};
@@ -285,11 +314,12 @@ void main(EyeTracker &eyeTracker) {
             subjectViewWidth, subjectViewHeight)};
     Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
         &coordinateResponseMeasureView};
-    Presenter::TestSetup testSetup{&view.testSetup()};
-    Presenter::Experimenter experimenter{&view.experimenter()};
+    Presenter::TestSetup testSetupPresenter{&testSetupView};
+    Presenter::Experimenter experimenterPresenter{&experimenterView};
     TestSettingsInterpreterImpl testSettingsInterpreter;
-    Presenter presenter{model, view, testSetup, coordinateResponseMeasure,
-        consonant, experimenter, testSettingsInterpreter, textFileReader};
+    Presenter presenter{model, view, testSetupPresenter,
+        coordinateResponseMeasure, consonant, experimenterPresenter,
+        testSettingsInterpreter, textFileReader};
     presenter.run();
 }
 }
