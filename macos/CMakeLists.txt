@@ -28,7 +28,11 @@ option(AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING "Enables tobii eye tracking"
 if(${AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING})
   set(MAIN_IMPL_FILE main-tobii.mm)
 else()
-  set(MAIN_IMPL_FILE main-no-eyetracking.mm)
+  if(${AV_SPEECH_IN_NOISE_FACEMASK_STUDY})
+    set(MAIN_IMPL_FILE main-facemask-study.mm)
+  else()
+    set(MAIN_IMPL_FILE main-no-eyetracking.mm)
+  endif()
 endif()
 
 set(AV_SPEECH_IN_NOISE_MACOS_RESOURCES
@@ -75,20 +79,3 @@ set_target_properties(
              XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS
              "${AV_SPEECH_IN_NOISE_MACOS_OTHER_CODE_SIGN_FLAGS}"
              XCODE_ATTRIBUTE_CODE_SIGN_INJECT_BASE_ENTITLEMENTS NO)
-
-if(${_AV_SPEECH_IN_NOISE_BUILD_FACEMASK_STUDY_VIEW_PREVIEW})
-  add_executable(
-    AvSpeechInNoiseFaceMaskStudyViewPreview MACOSX_BUNDLE
-    FacemaskStudySetupView.mm main-facemask-study-view-preview.mm
-    ${_AV_SPEECH_IN_NOISE_BUILD_FACEMASK_STUDY_VIEW_PREVIEW_MACOS_RESOURCES})
-  target_compile_features(AvSpeechInNoiseFaceMaskStudyViewPreview
-                          PRIVATE cxx_std_17)
-  target_link_libraries(AvSpeechInNoiseFaceMaskStudyViewPreview presentation
-                        ${COCOA})
-  set_target_properties(
-    AvSpeechInNoiseFaceMaskStudyViewPreview
-    PROPERTIES
-      RESOURCE
-      "${_AV_SPEECH_IN_NOISE_BUILD_FACEMASK_STUDY_VIEW_PREVIEW_MACOS_RESOURCES}"
-      CXX_EXTENSIONS OFF)
-endif()
