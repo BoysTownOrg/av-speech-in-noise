@@ -34,9 +34,8 @@
     }
     return self;
 }
-- (void)viewDidAppear {
-    //[self.view.window setContentSize:self.view.frame.size];
-    [super viewDidAppear];
+- (void)viewWillAppear {
+    [super viewWillAppear];
     self.preferredContentSize = self.view.fittingSize;
 }
 @end
