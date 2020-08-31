@@ -864,12 +864,18 @@ CocoaView::CocoaView(NSApplication *app, NSViewController *viewController)
     };
     addAutolayoutEnabledSubview(view(viewController), audioDeviceStack);
     activateConstraints(@[
+        [audioDeviceStack.topAnchor
+            constraintEqualToAnchor:view(viewController).topAnchor
+                           constant:defaultMarginPoints],
         [audioDeviceStack.bottomAnchor
             constraintEqualToAnchor:view(viewController).bottomAnchor
                            constant:-defaultMarginPoints],
         [audioDeviceStack.leadingAnchor
             constraintEqualToAnchor:view(viewController).leadingAnchor
-                           constant:defaultMarginPoints]
+                           constant:defaultMarginPoints],
+        [audioDeviceStack.trailingAnchor
+            constraintEqualToAnchor:view(viewController).trailingAnchor
+                           constant:-defaultMarginPoints]
     ]);
 }
 
