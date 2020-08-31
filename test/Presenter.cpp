@@ -1102,8 +1102,7 @@ class PresenterConstructionTests : public ::testing::Test {
     Presenter::TestSetup testSetup{&setupView};
     Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
         &coordinateResponseMeasureView};
-    Presenter::Consonant consonant{
-        &consonantView, &consonantView, &consonantView};
+    Presenter::Consonant consonant{&consonantView, &consonantView};
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
@@ -1216,8 +1215,7 @@ class PresenterTests : public ::testing::Test {
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
         &coordinateResponseMeasureView};
-    Presenter::Consonant consonant{
-        &consonantView, &consonantView, &consonantView};
+    Presenter::Consonant consonant{&consonantView, &consonantView};
     Calibration interpretedCalibration;
     TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
     TextFileReaderStub textFileReader;
@@ -1633,8 +1631,7 @@ class PresenterFailureTests : public ::testing::Test {
     Presenter::TestSetup testSetup{&setupView};
     Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
         &coordinateResponseMeasureView};
-    Presenter::Consonant consonant{
-        &consonantView, &consonantView, &consonantView};
+    Presenter::Consonant consonant{&consonantView, &consonantView};
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
