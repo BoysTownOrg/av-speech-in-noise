@@ -58,7 +58,7 @@ class TextFileReader {
 
 class View {
   public:
-    class Consonant {
+    class ConsonantInput {
       public:
         class EventListener {
           public:
@@ -66,17 +66,24 @@ class View {
             virtual void notifyThatReadyButtonHasBeenClicked() = 0;
             virtual void notifyThatResponseButtonHasBeenClicked() = 0;
         };
-        virtual ~Consonant() = default;
+        virtual ~ConsonantInput() = default;
         virtual void subscribe(EventListener *) = 0;
+        virtual auto consonant() -> std::string = 0;
+    };
+
+    class ConsonantOutput {
+      public:
+        virtual ~ConsonantOutput() = default;
+        virtual void hideCursor() = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
         virtual void showReadyButton() = 0;
         virtual void hideReadyButton() = 0;
         virtual void hideResponseButtons() = 0;
         virtual void showResponseButtons() = 0;
-        virtual auto consonant() -> std::string = 0;
-        virtual void hideCursor() = 0;
     };
+
+    class Consonant : public ConsonantOutput, public ConsonantInput {};
 
     class CoordinateResponseMeasure {
       public:
