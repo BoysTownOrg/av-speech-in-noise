@@ -24,12 +24,41 @@
 #include <utility>
 #include <functional>
 
+@interface ResizesToContentsViewController : NSTabViewController
+@end
+
+@implementation ResizesToContentsViewController
+- (instancetype)init {
+    if ((self = [super init]) != nullptr) {
+        [self setTabStyle:NSTabViewControllerTabStyleUnspecified];
+    }
+    return self;
+}
+- (void)viewWillAppear {
+    [super viewWillAppear];
+    self.preferredContentSize = self.view.fittingSize;
+}
+@end
+
 @interface WindowDelegate : NSObject <NSWindowDelegate>
 @end
 
 @implementation WindowDelegate
 - (void)windowWillClose:(NSNotification *)__unused notification {
     [NSApp terminate:self];
+}
+@end
+
+@interface MenuActions : NSObject
+@end
+
+@implementation MenuActions {
+  @public
+    NSWindow *preferencesWindow;
+}
+
+- (void)notifyThatPreferencesHasBeenClicked {
+    [preferencesWindow makeKeyAndOrderFront:nil];
 }
 @end
 
@@ -283,12 +312,27 @@ void main(
     app.mainMenu = [[NSMenu alloc] init];
     auto appMenu{[[NSMenuItem alloc] init]};
     auto appSubMenu{[[NSMenu alloc] init]};
+    auto preferencesMenuItem {
+        [appSubMenu
+            addItemWithTitle:@"Preferences..."
+                      action:@selector(notifyThatPreferencesHasBeenClicked)
+               keyEquivalent:@","]
+    };
+    auto menuActions{[[MenuActions alloc] init]};
+    const auto preferencesViewController{
+        [[ResizesToContentsViewController alloc] init]};
+    const auto preferencesWindow{
+        [NSWindow windowWithContentViewController:preferencesViewController]};
+    preferencesWindow.styleMask =
+        NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
+    menuActions->preferencesWindow = preferencesWindow;
+    preferencesMenuItem.target = menuActions;
     [appSubMenu addItemWithTitle:@"Quit"
                           action:@selector(stop:)
                    keyEquivalent:@"q"];
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
-    CocoaView view{app, viewController};
+    CocoaView view{app, preferencesViewController};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);
     const auto testSetupView{
