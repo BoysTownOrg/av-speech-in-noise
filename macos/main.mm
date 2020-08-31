@@ -189,7 +189,7 @@ static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
     return controller;
 }
 
-void main(EyeTracker &eyeTracker) {
+void main(EyeTracker &eyeTracker, MacOsTestSetupViewFactory *) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     CoreAudioBufferedReader bufferedReader;
