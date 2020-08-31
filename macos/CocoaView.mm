@@ -101,6 +101,8 @@
 @end
 
 namespace av_speech_in_noise {
+constexpr auto defaultMarginPoints{8};
+
 static void addSubview(NSView *parent, NSView *child) {
     [parent addSubview:child];
 }
@@ -109,28 +111,16 @@ static void hide(NSView *v) { [v setHidden:YES]; }
 
 static void show(NSView *v) { [v setHidden:NO]; }
 
-static void setStaticLike(NSTextField *f) {
-    [f setBezeled:NO];
-    [f setDrawsBackground:NO];
-    [f setEditable:NO];
-}
-
 static void set(NSTextField *field, const std::string &s) {
-    [field setStringValue:asNsString(s)];
+    [field setStringValue:nsString(s)];
 }
-
-static constexpr auto labelHeight{22};
-static constexpr auto labelWidth{120};
-static constexpr auto buttonHeight{25};
-static constexpr auto buttonWidth{100};
-constexpr auto reasonableSpacing{15};
 
 constexpr auto width(const NSRect &r) -> CGFloat { return r.size.width; }
 
 constexpr auto height(const NSRect &r) -> CGFloat { return r.size.height; }
 
 static auto button(const std::string &s, id target, SEL action) -> NSButton * {
-    return [NSButton buttonWithTitle:asNsString(s) target:target action:action];
+    return [NSButton buttonWithTitle:nsString(s) target:target action:action];
 }
 
 static auto string(NSTextField *field) -> const char * {
@@ -144,41 +134,6 @@ static void enableAutoLayout(NSView *view) {
 static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
     enableAutoLayout(child);
     [parent addSubview:child];
-}
-
-static auto constraint(NSLayoutYAxisAnchor *a, NSLayoutYAxisAnchor *b)
-    -> NSLayoutConstraint * {
-    return [a constraintEqualToAnchor:b];
-}
-
-static auto yCenterConstraint(NSView *a, NSView *b) -> NSLayoutConstraint * {
-    return constraint(a.centerYAnchor, b.centerYAnchor);
-}
-
-static auto firstToTheRightOfSecondConstraint(
-    NSView *first, NSView *second, CGFloat x) -> NSLayoutConstraint * {
-    return [first.leadingAnchor constraintEqualToAnchor:second.trailingAnchor
-                                               constant:x];
-}
-
-static auto firstAboveSecondConstraint(NSView *first, NSView *second, CGFloat x)
-    -> NSLayoutConstraint * {
-    return [first.bottomAnchor constraintEqualToAnchor:second.topAnchor
-                                              constant:-x];
-}
-
-static auto widthConstraint(NSView *a) -> NSLayoutConstraint * {
-    return [a.widthAnchor constraintEqualToConstant:NSWidth(a.frame)];
-}
-
-static void activateLabeledElementConstraintBelow(
-    NSView *above, NSView *below, NSView *belowLabel) {
-    [NSLayoutConstraint activateConstraints:@[
-        [above.leadingAnchor constraintEqualToAnchor:below.leadingAnchor],
-        [below.topAnchor constraintEqualToAnchor:above.bottomAnchor constant:8],
-        firstToTheRightOfSecondConstraint(below, belowLabel, 8),
-        yCenterConstraint(below, belowLabel)
-    ]];
 }
 
 static void activateChildConstraintNestledInBottomRightCorner(
@@ -197,16 +152,31 @@ static auto emptyTextField() -> NSTextField * {
 }
 
 static auto label(const std::string &s) -> NSTextField * {
-    return [NSTextField labelWithString:asNsString(s)];
+    return [NSTextField labelWithString:nsString(s)];
 }
 
-static void setPlaceholderAndFit(NSTextField *field, const std::string &s) {
-    [field setPlaceholderString:asNsString(s)];
-    [field sizeToFit];
+static void setPlaceholder(NSTextField *field, const std::string &s) {
+    [field setPlaceholderString:nsString(s)];
 }
 
-CocoaTestSetupView::CocoaTestSetupView(NSRect r)
-    : view_{[[NSView alloc] initWithFrame:r]}, subjectIdField{emptyTextField()},
+static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
+    const auto label_{label(s)};
+    [label_ setContentHuggingPriority:251
+                       forOrientation:NSLayoutConstraintOrientationHorizontal];
+    const auto stack { [NSStackView stackViewWithViews:@[ label_, field ]] };
+    return stack;
+}
+
+static void activateConstraints(NSArray<NSLayoutConstraint *> *constraints) {
+    [NSLayoutConstraint activateConstraints:constraints];
+}
+
+static auto view(NSViewController *viewController) -> NSView * {
+    return viewController.view;
+}
+
+CocoaTestSetupView::CocoaTestSetupView(NSViewController *viewController)
+    : viewController{viewController}, subjectIdField{emptyTextField()},
       testerIdField{emptyTextField()}, sessionField{emptyTextField()},
       rmeSettingField{emptyTextField()},
       transducerMenu{[[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
@@ -214,88 +184,82 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       testSettingsField{emptyTextField()}, startingSnrField{emptyTextField()},
       actions{[[SetupViewActions alloc] init]} {
     actions->controller = this;
-    const auto subjectIdLabel{label("subject:")};
-    const auto testerIdLabel{label("tester:")};
-    const auto sessionLabel{label("session:")};
-    const auto rmeSettingLabel{label("RME setting:")};
-    const auto transducerLabel{label("transducer:")};
-    const auto testSettingsLabel{label("test settings:")};
-    const auto startingSnrLabel{label("starting SNR (dB):")};
-    const auto browseForTestSettingsButton {
-        button("browse", actions,
-            @selector(notifyThatBrowseForTestSettingsButtonHasBeenClicked))
-    };
-
     const auto confirmButton {
         button("Confirm", actions,
             @selector(notifyThatConfirmButtonHasBeenClicked))
     };
-    const auto playCalibrationButton {
-        button("play calibration", actions,
-            @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
+    [confirmButton setKeyEquivalent:@"\r"];
+    const auto stack {
+        [NSStackView stackViewWithViews:@[
+            labeledView(subjectIdField, "subject:"),
+            labeledView(testerIdField, "tester:"),
+            labeledView(sessionField, "session:"),
+            labeledView(rmeSettingField, "RME setting:"),
+            labeledView(transducerMenu, "transducer:"),
+            [NSStackView stackViewWithViews:@[
+                labeledView(testSettingsField, "test settings:"),
+                button("Browse...", actions,
+                    @selector
+                    (notifyThatBrowseForTestSettingsButtonHasBeenClicked)),
+                button("Play Calibration", actions,
+                    @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
+            ]],
+            labeledView(startingSnrField, "starting SNR (dB):")
+        ]]
     };
-    setPlaceholderAndFit(subjectIdField, "abc123");
-    setPlaceholderAndFit(testerIdField, "abc123");
-    setPlaceholderAndFit(sessionField, "abc123");
-    setPlaceholderAndFit(rmeSettingField, "ihavenoideawhatgoeshere");
-    setPlaceholderAndFit(testSettingsField, "/Users/username/Desktop/file.txt");
-    setPlaceholderAndFit(startingSnrField, "15");
-    addAutolayoutEnabledSubview(view_, browseForTestSettingsButton);
-    addAutolayoutEnabledSubview(view_, confirmButton);
-    addAutolayoutEnabledSubview(view_, playCalibrationButton);
-    addAutolayoutEnabledSubview(view_, subjectIdLabel);
-    addAutolayoutEnabledSubview(view_, subjectIdField);
-    addAutolayoutEnabledSubview(view_, testerIdLabel);
-    addAutolayoutEnabledSubview(view_, testerIdField);
-    addAutolayoutEnabledSubview(view_, sessionLabel);
-    addAutolayoutEnabledSubview(view_, sessionField);
-    addAutolayoutEnabledSubview(view_, rmeSettingLabel);
-    addAutolayoutEnabledSubview(view_, rmeSettingField);
-    addAutolayoutEnabledSubview(view_, transducerLabel);
-    addAutolayoutEnabledSubview(view_, transducerMenu);
-    addAutolayoutEnabledSubview(view_, testSettingsLabel);
-    addAutolayoutEnabledSubview(view_, testSettingsField);
-    addAutolayoutEnabledSubview(view_, startingSnrLabel);
-    addAutolayoutEnabledSubview(view_, startingSnrField);
-    [NSLayoutConstraint activateConstraints:@[
-        [subjectIdField.topAnchor constraintEqualToAnchor:view_.topAnchor
-                                                 constant:8],
-        firstToTheRightOfSecondConstraint(subjectIdField, subjectIdLabel, 8),
-        yCenterConstraint(subjectIdField, subjectIdLabel),
-        widthConstraint(subjectIdField),
-        [subjectIdField.centerXAnchor
-            constraintEqualToAnchor:view_.centerXAnchor],
-        firstToTheRightOfSecondConstraint(
-            browseForTestSettingsButton, testSettingsField, 8),
-        yCenterConstraint(browseForTestSettingsButton, testSettingsField),
-        firstToTheRightOfSecondConstraint(
-            playCalibrationButton, browseForTestSettingsButton, 8),
-        yCenterConstraint(playCalibrationButton, browseForTestSettingsButton),
-        widthConstraint(testerIdField), widthConstraint(sessionField),
-        widthConstraint(rmeSettingField), widthConstraint(testSettingsField),
-        widthConstraint(startingSnrField)
-    ]];
-    activateLabeledElementConstraintBelow(
-        subjectIdField, testerIdField, testerIdLabel);
-    activateLabeledElementConstraintBelow(
-        testerIdField, sessionField, sessionLabel);
-    activateLabeledElementConstraintBelow(
-        sessionField, rmeSettingField, rmeSettingLabel);
-    activateLabeledElementConstraintBelow(
-        rmeSettingField, transducerMenu, transducerLabel);
-    activateLabeledElementConstraintBelow(
-        transducerMenu, testSettingsField, testSettingsLabel);
-    activateLabeledElementConstraintBelow(
-        testSettingsField, startingSnrField, startingSnrLabel);
-    activateChildConstraintNestledInBottomRightCorner(confirmButton, view_, 8);
-    av_speech_in_noise::show(view_);
+    stack.orientation = NSUserInterfaceLayoutOrientationVertical;
+    setPlaceholder(subjectIdField, "abc123");
+    setPlaceholder(testerIdField, "abc123");
+    setPlaceholder(sessionField, "abc123");
+    setPlaceholder(rmeSettingField, "ihavenoideawhatgoeshere");
+    setPlaceholder(
+        testSettingsField, "/Users/username/Documents/test-settings.txt");
+    setPlaceholder(startingSnrField, "5");
+    addAutolayoutEnabledSubview(view(viewController), confirmButton);
+    addAutolayoutEnabledSubview(view(viewController), stack);
+    activateConstraints(@[
+        [stack.topAnchor constraintEqualToAnchor:view(viewController).topAnchor
+                                        constant:defaultMarginPoints],
+        [stack.leadingAnchor
+            constraintEqualToAnchor:view(viewController).leadingAnchor
+                           constant:defaultMarginPoints],
+        [subjectIdField.leadingAnchor
+            constraintEqualToAnchor:testerIdField.leadingAnchor],
+        [subjectIdField.leadingAnchor
+            constraintEqualToAnchor:sessionField.leadingAnchor],
+        [subjectIdField.leadingAnchor
+            constraintEqualToAnchor:rmeSettingField.leadingAnchor],
+        [subjectIdField.leadingAnchor
+            constraintEqualToAnchor:testSettingsField.leadingAnchor],
+        [subjectIdField.leadingAnchor
+            constraintEqualToAnchor:startingSnrField.leadingAnchor],
+        [subjectIdField.leadingAnchor
+            constraintEqualToAnchor:transducerMenu.leadingAnchor],
+        [subjectIdField.trailingAnchor
+            constraintEqualToAnchor:testerIdField.trailingAnchor],
+        [subjectIdField.trailingAnchor
+            constraintEqualToAnchor:sessionField.trailingAnchor],
+        [subjectIdField.trailingAnchor
+            constraintEqualToAnchor:rmeSettingField.trailingAnchor],
+        [subjectIdField.trailingAnchor
+            constraintEqualToAnchor:testSettingsField.trailingAnchor],
+        [subjectIdField.trailingAnchor
+            constraintEqualToAnchor:startingSnrField.trailingAnchor],
+        [subjectIdField.trailingAnchor
+            constraintEqualToAnchor:transducerMenu.trailingAnchor]
+    ]);
+    activateChildConstraintNestledInBottomRightCorner(
+        confirmButton, view(viewController), defaultMarginPoints);
+    av_speech_in_noise::show(view(viewController));
 }
 
-auto CocoaTestSetupView::view() -> NSView * { return view_; }
+void CocoaTestSetupView::show() {
+    av_speech_in_noise::show(view(viewController));
+}
 
-void CocoaTestSetupView::show() { av_speech_in_noise::show(view_); }
-
-void CocoaTestSetupView::hide() { av_speech_in_noise::hide(view_); }
+void CocoaTestSetupView::hide() {
+    av_speech_in_noise::hide(view(viewController));
+}
 
 auto CocoaTestSetupView::testSettingsFile() -> std::string {
     return string(testSettingsField);
@@ -328,7 +292,7 @@ void CocoaTestSetupView::setTestSettingsFile(std::string s) {
 void CocoaTestSetupView::populateTransducerMenu(
     std::vector<std::string> items) {
     for (const auto &item : items)
-        [transducerMenu addItemWithTitle:asNsString(item)];
+        [transducerMenu addItemWithTitle:nsString(item)];
 }
 
 auto CocoaTestSetupView::transducer() -> std::string {
@@ -353,8 +317,8 @@ void CocoaTestSetupView::notifyThatPlayCalibrationButtonHasBeenClicked() {
 
 static auto resourcePath(const std::string &stem, const std::string &extension)
     -> std::string {
-    return [[NSBundle mainBundle] pathForResource:asNsString(stem)
-                                           ofType:asNsString(extension)]
+    return [[NSBundle mainBundle] pathForResource:nsString(stem)
+                                           ofType:nsString(extension)]
         .UTF8String;
 }
 
@@ -362,7 +326,7 @@ static auto consonantImageButton(
     std::unordered_map<id, std::string> &consonants,
     ConsonantViewActions *actions, const std::string &consonant) -> NSButton * {
     const auto image{[[NSImage alloc]
-        initWithContentsOfFile:asNsString(resourcePath(consonant, "bmp"))]};
+        initWithContentsOfFile:nsString(resourcePath(consonant, "bmp"))]};
     const auto button {
         [NSButton
             buttonWithImage:image
@@ -558,7 +522,7 @@ void CocoaCoordinateResponseMeasureView::addButtonRow(NSColor *color, int row) {
 
 void CocoaCoordinateResponseMeasureView::addNumberButton(
     NSColor *color, int number, int row, std::size_t col) {
-    auto title{asNsString(std::to_string(number))};
+    auto title{nsString(std::to_string(number))};
     const auto button {
         [NSButton
             buttonWithTitle:title
@@ -664,127 +628,116 @@ void CocoaCoordinateResponseMeasureView::show() {
 
 void CocoaCoordinateResponseMeasureView::hide() { [window orderOut:nil]; }
 
-constexpr auto leadingPrimaryTextEdge{buttonWidth + reasonableSpacing};
-constexpr auto primaryTextWidth{labelWidth};
-constexpr auto leadingSecondaryTextEdge{
-    leadingPrimaryTextEdge + primaryTextWidth + reasonableSpacing};
-constexpr auto continueTestingDialogHeight{2 * labelHeight};
-
-constexpr auto lowerPrimaryTextEdge(const NSRect &r) -> CGFloat {
-    return height(r) - labelHeight;
+static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
+    const auto controller{[[NSTabViewController alloc] init]};
+    [controller setTabStyle:NSTabViewControllerTabStyleUnspecified];
+    return controller;
 }
 
-static auto trailingAnchorConstraint(NSView *a, NSView *b)
-    -> NSLayoutConstraint * {
-    return [a.trailingAnchor constraintEqualToAnchor:b.trailingAnchor];
-}
-
-CocoaExperimenterView::CocoaExperimenterView(NSRect r)
-    : view_{[[NSView alloc] initWithFrame:r]}, freeResponseView{[[NSView alloc]
-                                                   initWithFrame:r]},
-      correctKeywordsView{[[NSView alloc] initWithFrame:r]},
-      continueTestingDialog{[[NSWindow alloc]
-          initWithContentRect:NSMakeRect(0, 0, width(r),
-                                  buttonHeight + continueTestingDialogHeight)
-                    styleMask:NSWindowStyleMaskBorderless
-                      backing:NSBackingStoreBuffered
-                        defer:YES]},
-      continueTestingDialogMessage_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(0, buttonHeight, width(r),
-                            continueTestingDialogHeight)]},
-      displayedText_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(leadingPrimaryTextEdge,
-                            lowerPrimaryTextEdge(r), primaryTextWidth,
-                            labelHeight)]},
-      secondaryDisplayedText_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(leadingSecondaryTextEdge,
-                            lowerPrimaryTextEdge(r),
-                            width(r) - leadingSecondaryTextEdge, labelHeight)]},
+CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
+    : viewController{viewController}, continueTestingDialogField{label("")},
+      primaryTextField{label("")}, secondaryTextField{label("")},
       freeResponseField{emptyTextField()},
-      correctKeywordsField{emptyTextField()}, freeResponseFlaggedButton{[
-                                                  [NSButton alloc] init]},
+      correctKeywordsField{emptyTextField()},
+      freeResponseFlaggedButton{[NSButton checkboxWithTitle:@"flagged"
+                                                     target:nil
+                                                     action:nil]},
       actions{[[ExperimenterViewActions alloc] init]} {
-    exitTestButton = button("exit test", actions, @selector(exitTest));
-    setStaticLike(displayedText_);
-    setStaticLike(secondaryDisplayedText_);
-    setStaticLike(continueTestingDialogMessage_);
-    [freeResponseFlaggedButton setButtonType:NSButtonTypeSwitch];
-    [freeResponseFlaggedButton setTitle:@"flagged"];
-    [freeResponseFlaggedButton sizeToFit];
-    nextTrialButton = button("play trial", actions, @selector(playTrial));
+    const auto continueTestingDialogController{
+        nsTabViewControllerWithoutTabControl()};
+    continueTestingDialog = [NSWindow
+        windowWithContentViewController:continueTestingDialogController];
+    continueTestingDialog.styleMask = NSWindowStyleMaskBorderless;
+    exitTestButton = button("Exit Test", actions, @selector(exitTest));
+    nextTrialButton = button("Play Trial", actions, @selector(playTrial));
     const auto submitFreeResponseButton {
-        button("submit", actions, @selector(submitFreeResponse))
+        button("Submit", actions, @selector(submitFreeResponse))
     };
-    passButton = button("correct", actions, @selector(submitPassedTrial));
-    failButton = button("incorrect", actions, @selector(submitFailedTrial));
-    const auto continueButton {
-        button("continue", actions, @selector(acceptContinuingTesting))
-    };
-    const auto exitButton {
-        button("exit", actions, @selector(declineContinuingTesting))
-    };
-    [continueButton setFrame:NSMakeRect(width(r) - buttonWidth, 0, buttonWidth,
-                                 buttonHeight)];
-    [exitButton setFrame:NSMakeRect(width(r) - 3 * buttonWidth, 0, buttonWidth,
-                             buttonHeight)];
-    const auto submitCorrectKeywordsButton {
-        button("submit", actions, @selector(submitCorrectKeywords))
-    };
-    setPlaceholderAndFit(correctKeywordsField, "2");
-    setPlaceholderAndFit(freeResponseField, "This is a sentence.");
-    addAutolayoutEnabledSubview(view_, exitTestButton);
-    addSubview(view_, displayedText_);
-    addSubview(view_, secondaryDisplayedText_);
-    addAutolayoutEnabledSubview(freeResponseView, submitFreeResponseButton);
-    addAutolayoutEnabledSubview(freeResponseView, freeResponseField);
-    addAutolayoutEnabledSubview(freeResponseView, freeResponseFlaggedButton);
-    addAutolayoutEnabledSubview(view_, passButton);
-    addAutolayoutEnabledSubview(view_, failButton);
-    addSubview(continueTestingDialog.contentView, continueButton);
-    addSubview(continueTestingDialog.contentView, exitButton);
-    addSubview(
-        continueTestingDialog.contentView, continueTestingDialogMessage_);
-    addAutolayoutEnabledSubview(correctKeywordsView, correctKeywordsField);
-    addAutolayoutEnabledSubview(
-        correctKeywordsView, submitCorrectKeywordsButton);
-    addAutolayoutEnabledSubview(view_, nextTrialButton);
-    addSubview(view_, freeResponseView);
-    addAutolayoutEnabledSubview(view_, correctKeywordsView);
-    [NSLayoutConstraint activateConstraints:@[
-        [exitTestButton.leadingAnchor
-            constraintEqualToAnchor:view_.leadingAnchor
-                           constant:8],
-        [exitTestButton.topAnchor constraintEqualToAnchor:view_.topAnchor
-                                                 constant:8],
-        firstToTheRightOfSecondConstraint(passButton, failButton, 8),
-        yCenterConstraint(passButton, failButton),
-        firstAboveSecondConstraint(
-            correctKeywordsField, submitCorrectKeywordsButton, 8),
-        firstAboveSecondConstraint(
-            freeResponseField, submitFreeResponseButton, 8),
-        trailingAnchorConstraint(
-            correctKeywordsField, submitCorrectKeywordsButton),
-        trailingAnchorConstraint(freeResponseField, submitFreeResponseButton),
-        widthConstraint(correctKeywordsField),
-        widthConstraint(freeResponseField),
-        widthConstraint(freeResponseFlaggedButton),
-        firstToTheRightOfSecondConstraint(
-            freeResponseField, freeResponseFlaggedButton, 8),
-        yCenterConstraint(freeResponseField, freeResponseFlaggedButton)
+    evaluationButtons = [NSStackView stackViewWithViews:@[
+        button("Incorrect", actions, @selector(submitFailedTrial)),
+        button("Correct", actions, @selector(submitPassedTrial))
     ]];
-    activateChildConstraintNestledInBottomRightCorner(passButton, view_, 8);
+    const auto submitCorrectKeywordsButton {
+        button("Submit", actions, @selector(submitCorrectKeywords))
+    };
+    setPlaceholder(correctKeywordsField, "2");
+    setPlaceholder(freeResponseField, "This is a sentence.");
+    const auto topRow {
+        [NSStackView stackViewWithViews:@[
+            exitTestButton, primaryTextField, secondaryTextField
+        ]]
+    };
+    correctKeywordsView = [NSStackView stackViewWithViews:@[
+        correctKeywordsField, submitCorrectKeywordsButton
+    ]];
+    correctKeywordsView.orientation = NSUserInterfaceLayoutOrientationVertical;
+    const auto innerFreeResponseView {
+        [NSStackView stackViewWithViews:@[
+            freeResponseFlaggedButton, freeResponseField
+        ]]
+    };
+    freeResponseView = [NSStackView stackViewWithViews:@[
+        innerFreeResponseView, submitFreeResponseButton
+    ]];
+    freeResponseView.orientation = NSUserInterfaceLayoutOrientationVertical;
+    innerFreeResponseView.distribution = NSStackViewDistributionFill;
+    [freeResponseFlaggedButton
+        setContentHuggingPriority:251
+                   forOrientation:NSLayoutConstraintOrientationHorizontal];
+    [freeResponseField
+        setContentHuggingPriority:48
+                   forOrientation:NSLayoutConstraintOrientationHorizontal];
+    [freeResponseField
+        setContentCompressionResistancePriority:749
+                                 forOrientation:
+                                     NSLayoutConstraintOrientationHorizontal];
+    addAutolayoutEnabledSubview(view(viewController), topRow);
+    addAutolayoutEnabledSubview(view(viewController), evaluationButtons);
+    const auto continueTestingDialogStack {
+        [NSStackView stackViewWithViews:@[
+            continueTestingDialogField, [NSStackView stackViewWithViews:@[
+                button("Exit", actions, @selector(declineContinuingTesting)),
+                button("Continue", actions, @selector(acceptContinuingTesting))
+            ]]
+        ]]
+    };
+    continueTestingDialogStack.orientation =
+        NSUserInterfaceLayoutOrientationVertical;
+    addAutolayoutEnabledSubview(
+        view(continueTestingDialogController), continueTestingDialogStack);
+    addAutolayoutEnabledSubview(view(viewController), nextTrialButton);
+    addAutolayoutEnabledSubview(view(viewController), freeResponseView);
+    addAutolayoutEnabledSubview(view(viewController), correctKeywordsView);
+    activateConstraints(@[
+        [topRow.leadingAnchor
+            constraintEqualToAnchor:view(viewController).leadingAnchor
+                           constant:defaultMarginPoints],
+        [topRow.topAnchor constraintEqualToAnchor:view(viewController).topAnchor
+                                         constant:defaultMarginPoints],
+        [correctKeywordsField.leadingAnchor
+            constraintEqualToAnchor:submitCorrectKeywordsButton.leadingAnchor],
+        [correctKeywordsField.trailingAnchor
+            constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor],
+        [freeResponseView.leadingAnchor
+            constraintEqualToAnchor:view(viewController).centerXAnchor],
+        [innerFreeResponseView.leadingAnchor
+            constraintEqualToAnchor:freeResponseView.leadingAnchor],
+        [innerFreeResponseView.trailingAnchor
+            constraintEqualToAnchor:freeResponseView.trailingAnchor]
+    ]);
     activateChildConstraintNestledInBottomRightCorner(
-        submitCorrectKeywordsButton, view_, 8);
+        evaluationButtons, view(viewController), defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
-        nextTrialButton, view_, 8);
+        correctKeywordsView, view(viewController), defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
-        submitFreeResponseButton, view_, 8);
-    av_speech_in_noise::hide(passButton);
-    av_speech_in_noise::hide(failButton);
+        nextTrialButton, view(viewController), defaultMarginPoints);
+    activateChildConstraintNestledInBottomRightCorner(
+        freeResponseView, view(viewController), defaultMarginPoints);
+    av_speech_in_noise::hide(evaluationButtons);
     av_speech_in_noise::hide(nextTrialButton);
     av_speech_in_noise::hide(freeResponseView);
     av_speech_in_noise::hide(correctKeywordsView);
-    av_speech_in_noise::hide(view_);
+    av_speech_in_noise::hide(view(viewController));
     actions->controller = this;
 }
 
@@ -798,18 +751,20 @@ void CocoaExperimenterView::hideExitTestButton() {
     av_speech_in_noise::hide(exitTestButton);
 }
 
-void CocoaExperimenterView::show() { av_speech_in_noise::show(view_); }
+void CocoaExperimenterView::show() {
+    av_speech_in_noise::show(view(viewController));
+}
 
-void CocoaExperimenterView::hide() { av_speech_in_noise::hide(view_); }
-
-auto CocoaExperimenterView::view() -> NSView * { return view_; }
+void CocoaExperimenterView::hide() {
+    av_speech_in_noise::hide(view(viewController));
+}
 
 void CocoaExperimenterView::exitTest() { listener_->exitTest(); }
 
-void CocoaExperimenterView::display(std::string s) { set(displayedText_, s); }
+void CocoaExperimenterView::display(std::string s) { set(primaryTextField, s); }
 
 void CocoaExperimenterView::secondaryDisplay(std::string s) {
-    set(secondaryDisplayedText_, s);
+    set(secondaryTextField, s);
 }
 
 void CocoaExperimenterView::showNextTrialButton() {
@@ -821,8 +776,7 @@ void CocoaExperimenterView::hideNextTrialButton() {
 }
 
 void CocoaExperimenterView::showEvaluationButtons() {
-    av_speech_in_noise::show(passButton);
-    av_speech_in_noise::show(failButton);
+    av_speech_in_noise::show(evaluationButtons);
 }
 
 void CocoaExperimenterView::showFreeResponseSubmission() {
@@ -834,8 +788,7 @@ void CocoaExperimenterView::hideFreeResponseSubmission() {
 }
 
 void CocoaExperimenterView::hideEvaluationButtons() {
-    av_speech_in_noise::hide(passButton);
-    av_speech_in_noise::hide(failButton);
+    av_speech_in_noise::hide(evaluationButtons);
 }
 
 void CocoaExperimenterView::showCorrectKeywordsSubmission() {
@@ -847,18 +800,18 @@ void CocoaExperimenterView::hideCorrectKeywordsSubmission() {
 }
 
 void CocoaExperimenterView::showContinueTestingDialog() {
-    [view_.window beginSheet:continueTestingDialog
-           completionHandler:^(NSModalResponse){
-           }];
+    [view(viewController).window beginSheet:continueTestingDialog
+                          completionHandler:^(NSModalResponse){
+                          }];
 }
 
 void CocoaExperimenterView::hideContinueTestingDialog() {
-    [view_.window endSheet:continueTestingDialog];
+    [view(viewController).window endSheet:continueTestingDialog];
 }
 
 void CocoaExperimenterView::setContinueTestingDialogMessage(
     const std::string &s) {
-    set(continueTestingDialogMessage_, s);
+    set(continueTestingDialogField, s);
 }
 
 void CocoaExperimenterView::clearFreeResponse() { set(freeResponseField, ""); }
@@ -901,73 +854,37 @@ void CocoaExperimenterView::declineContinuingTesting() {
     listener_->declineContinuingTesting();
 }
 
-constexpr auto windowPerimeterSpace{reasonableSpacing};
-
-constexpr auto innerWidth(NSRect r) -> CGFloat {
-    return width(r) - 2 * windowPerimeterSpace;
-}
-
-constexpr auto innerHeight(NSRect r) -> CGFloat {
-    return height(r) - 2 * windowPerimeterSpace;
-}
-
-static auto embeddedFrame(NSRect r) -> NSRect {
-    return NSMakeRect(r.origin.x + windowPerimeterSpace,
-        r.origin.y + windowPerimeterSpace, innerWidth(r), innerHeight(r));
-}
-
-static auto innerFrame(NSRect r) -> NSRect {
-    return NSMakeRect(0, 0, innerWidth(r), innerHeight(r));
-}
-
-CocoaView::CocoaView(NSRect r)
-    : testSetup_{innerFrame(r)},
-      experimenter_{innerFrame(r)}, app{[NSApplication sharedApplication]},
-      window{[[NSWindow alloc] initWithContentRect:r
-                                         styleMask:NSWindowStyleMaskClosable |
-                                         NSWindowStyleMaskTitled
-                                           backing:NSBackingStoreBuffered
-                                             defer:NO]},
-      view{[[NSView alloc] initWithFrame:embeddedFrame(r)]},
-      audioDeviceLabel{label("audio output:")},
-      audioDeviceMenu{
-          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
-                                     pullsDown:NO]} {
-    app.mainMenu = [[NSMenu alloc] init];
-
-    auto appMenu{[[NSMenuItem alloc] init]};
-    auto appSubMenu{[[NSMenu alloc] init]};
-    [appSubMenu addItemWithTitle:@"Quit"
-                          action:@selector(stop:)
-                   keyEquivalent:@"q"];
-    [appMenu setSubmenu:appSubMenu];
-    [app.mainMenu addItem:appMenu];
-    addSubview(view, testSetup_.view());
-    addSubview(view, experimenter_.view());
-    addAutolayoutEnabledSubview(view, audioDeviceLabel);
-    addAutolayoutEnabledSubview(view, audioDeviceMenu);
-    addSubview(window.contentView, view);
-    [NSLayoutConstraint activateConstraints:@[
-        firstToTheRightOfSecondConstraint(audioDeviceMenu, audioDeviceLabel, 8),
-        yCenterConstraint(audioDeviceMenu, audioDeviceLabel),
-        [audioDeviceMenu.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
-                                                     constant:-8]
-    ]];
-    [window makeKeyAndOrderFront:nil];
+CocoaView::CocoaView(NSApplication *app, NSViewController *viewController)
+    : app{app}, audioDeviceMenu{
+                    [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
+                                               pullsDown:NO]} {
+    const auto audioDeviceStack {
+        [NSStackView
+            stackViewWithViews:@[ label("audio output:"), audioDeviceMenu ]]
+    };
+    addAutolayoutEnabledSubview(view(viewController), audioDeviceStack);
+    activateConstraints(@[
+        [audioDeviceStack.bottomAnchor
+            constraintEqualToAnchor:view(viewController).bottomAnchor
+                           constant:-defaultMarginPoints],
+        [audioDeviceStack.leadingAnchor
+            constraintEqualToAnchor:view(viewController).leadingAnchor
+                           constant:defaultMarginPoints]
+    ]);
 }
 
 void CocoaView::eventLoop() { [app run]; }
 
 void CocoaView::showErrorMessage(std::string s) {
-    auto alert{[[NSAlert alloc] init]};
+    const auto alert{[[NSAlert alloc] init]};
     [alert setMessageText:@"Error."];
-    [alert setInformativeText:asNsString(s)];
+    [alert setInformativeText:nsString(s)];
     [alert addButtonWithTitle:@"Ok"];
     [alert runModal];
 }
 
 auto CocoaView::browseForDirectory() -> std::string {
-    auto panel{[NSOpenPanel openPanel]};
+    const auto panel{[NSOpenPanel openPanel]};
     panel.canChooseDirectories = YES;
     panel.canChooseFiles = NO;
     return browseModal(panel);
@@ -976,7 +893,7 @@ auto CocoaView::browseForDirectory() -> std::string {
 auto CocoaView::browseCancelled() -> bool { return browseCancelled_; }
 
 auto CocoaView::browseForOpeningFile() -> std::string {
-    auto panel{[NSOpenPanel openPanel]};
+    const auto panel{[NSOpenPanel openPanel]};
     panel.canChooseDirectories = NO;
     panel.canChooseFiles = YES;
     return browseModal(panel);
@@ -999,18 +916,8 @@ auto CocoaView::audioDevice() -> std::string {
 
 void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (const auto &item : items)
-        [audioDeviceMenu addItemWithTitle:asNsString(item)];
+        [audioDeviceMenu addItemWithTitle:nsString(item)];
 }
-
-void CocoaView::setDelegate(id<NSWindowDelegate> delegate) {
-    [window setDelegate:delegate];
-}
-
-void CocoaView::center() { [window center]; }
-
-auto CocoaView::testSetup() -> View::TestSetup & { return testSetup_; }
-
-auto CocoaView::experimenter() -> View::Experimenter & { return experimenter_; }
 
 void CocoaView::showCursor() { [NSCursor unhide]; }
 }

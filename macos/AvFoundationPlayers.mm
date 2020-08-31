@@ -131,7 +131,7 @@ static auto videoTrack(AVAsset *asset) -> AVAssetTrack * {
 
 static auto makeAvAsset(const std::string &filePath) -> AVURLAsset * {
     const auto url = [NSURL
-        fileURLWithPath:[asNsString(filePath).stringByExpandingTildeInPath
+        fileURLWithPath:[nsString(filePath).stringByExpandingTildeInPath
                             stringByAddingPercentEncodingWithAllowedCharacters:
                                 NSCharacterSet.URLPathAllowedCharacterSet]];
     return [AVURLAsset URLAssetWithURL:url options:nil];
@@ -378,7 +378,7 @@ void AvFoundationVideoPlayer::playbackComplete() {
 }
 
 void AvFoundationVideoPlayer::setDevice(int index) {
-    player.audioOutputDeviceUniqueID = asNsString(uid(index));
+    player.audioOutputDeviceUniqueID = nsString(uid(index));
 }
 
 void AvFoundationVideoPlayer::hide() { [videoWindow setIsVisible:NO]; }
