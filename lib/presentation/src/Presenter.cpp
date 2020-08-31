@@ -135,7 +135,7 @@ void Presenter::confirmTestSetup_() {
     testSettingsInterpreter.initialize(model, testSettings,
         testIdentity(testSetup),
         SNR{readInteger(testSetup.startingSnr(), "starting SNR")});
-    if (!testComplete(model)) {
+    if (!av_speech_in_noise::testComplete(model)) {
         const auto method{testSettingsInterpreter.method(testSettings)};
         switchToTestView(method);
         trialCompletionHandler_ = trialCompletionHandler(method);
@@ -335,6 +335,10 @@ void Presenter::browseForTestSettingsFile() {
         browseForOpeningFile(view), &TestSetup::setTestSettingsFile);
 }
 
+auto Presenter::testComplete() -> bool {
+    return av_speech_in_noise::testComplete(model);
+}
+
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateTransducerMenu({name(Transducer::headphone),
         name(Transducer::oneSpeaker), name(Transducer::twoSpeakers)});
@@ -403,8 +407,9 @@ void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {
 }
 
 void Presenter::Consonant::notifyThatResponseButtonHasBeenClicked() {
-    view->hideCursor();
     parent->submitConsonantResponse();
+    if (!parent->testComplete())
+        view->hideCursor();
     view->hideResponseButtons();
 }
 
