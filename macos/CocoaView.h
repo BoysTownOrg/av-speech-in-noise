@@ -95,7 +95,8 @@ class CocoaTestSetupView : public View::TestSetup {
     EventListener *listener_{};
 };
 
-class CocoaConsonantView : public View::Consonant {
+class CocoaConsonantView : public View::ConsonantOutput,
+                           public View::ConsonantInput {
   public:
     explicit CocoaConsonantView(NSRect);
     void subscribe(EventListener *) override;
