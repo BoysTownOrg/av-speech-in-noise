@@ -219,7 +219,6 @@ class Presenter : public Model::EventListener {
         void showResponseButtons();
 
       private:
-        View::Consonant *view;
         View::ConsonantInput *inputView;
         View::ConsonantOutput *outputView;
         Presenter *parent{};
