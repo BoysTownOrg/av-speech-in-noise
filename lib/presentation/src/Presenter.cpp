@@ -385,39 +385,39 @@ auto Presenter::TestSetup::startingSnr() -> std::string {
 Presenter::Consonant::Consonant(View::Consonant *view,
     View::ConsonantInput *inputView, View::ConsonantOutput *outputView)
     : view{view}, inputView{inputView}, outputView{outputView} {
-    view->subscribe(this);
+    inputView->subscribe(this);
 }
 
 void Presenter::Consonant::start() {
-    view->show();
-    view->showReadyButton();
+    outputView->show();
+    outputView->showReadyButton();
 }
 
 void Presenter::Consonant::stop() {
-    view->hideResponseButtons();
-    view->hide();
+    outputView->hideResponseButtons();
+    outputView->hide();
 }
 
 void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {
-    view->hideCursor();
+    outputView->hideCursor();
     parent->playTrial();
-    view->hideReadyButton();
+    outputView->hideReadyButton();
 }
 
 void Presenter::Consonant::notifyThatResponseButtonHasBeenClicked() {
-    view->hideCursor();
+    outputView->hideCursor();
     parent->submitConsonantResponse();
-    view->hideResponseButtons();
+    outputView->hideResponseButtons();
 }
 
 void Presenter::Consonant::becomeChild(Presenter *p) { parent = p; }
 
 auto Presenter::Consonant::subjectResponse() -> ConsonantResponse {
-    return ConsonantResponse{view->consonant().front()};
+    return ConsonantResponse{inputView->consonant().front()};
 }
 
 void Presenter::Consonant::showResponseButtons() {
-    view->showResponseButtons();
+    outputView->showResponseButtons();
 }
 
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
