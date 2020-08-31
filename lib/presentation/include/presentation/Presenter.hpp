@@ -83,8 +83,6 @@ class View {
         virtual void showResponseButtons() = 0;
     };
 
-    class Consonant : public ConsonantOutput, public ConsonantInput {};
-
     class CoordinateResponseMeasure {
       public:
         class EventListener {
