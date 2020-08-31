@@ -33,6 +33,19 @@
 }
 @end
 
+@interface MenuActions : NSObject
+@end
+
+@implementation MenuActions {
+  @public
+    NSWindow *preferencesWindow;
+}
+
+- (void)notifyThatPreferencesHasBeenClicked {
+    [preferencesWindow makeKeyAndOrderFront:nil];
+}
+@end
+
 @interface CallbackScheduler : NSObject
 @end
 
@@ -282,12 +295,24 @@ void main(EyeTracker &eyeTracker) {
     app.mainMenu = [[NSMenu alloc] init];
     auto appMenu{[[NSMenuItem alloc] init]};
     auto appSubMenu{[[NSMenu alloc] init]};
+    auto preferencesMenuItem {
+        [appSubMenu
+            addItemWithTitle:@"Preferences..."
+                      action:@selector(notifyThatPreferencesHasBeenClicked)
+               keyEquivalent:@","]
+    };
+    auto menuActions{[[MenuActions alloc] init]};
+    const auto preferencesViewController{
+        nsTabViewControllerWithoutTabControl()};
+    menuActions->preferencesWindow =
+        [NSWindow windowWithContentViewController:preferencesViewController];
+    preferencesMenuItem.target = menuActions;
     [appSubMenu addItemWithTitle:@"Quit"
                           action:@selector(stop:)
                    keyEquivalent:@"q"];
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
-    CocoaView view{app, viewController};
+    CocoaView view{app, preferencesViewController};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);
     CocoaTestSetupView testSetupView{testSetupViewController};
