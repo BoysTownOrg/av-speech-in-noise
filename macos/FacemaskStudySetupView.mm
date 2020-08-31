@@ -24,7 +24,7 @@
 
 namespace av_speech_in_noise {
 static auto button(const std::string &s, id target, SEL action) -> NSButton * {
-    return [NSButton buttonWithTitle:asNsString(s) target:target action:action];
+    return [NSButton buttonWithTitle:nsString(s) target:target action:action];
 }
 
 static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
@@ -35,7 +35,7 @@ static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
 static void setAttributedTitle(NSButton *button, const std::string &s) {
     [button setAttributedTitle:
                 [[NSAttributedString alloc]
-                    initWithString:asNsString(s)
+                    initWithString:nsString(s)
                         attributes:[NSDictionary
                                        dictionaryWithObjectsAndKeys:
                                            [NSFont boldSystemFontOfSize:36],
@@ -51,7 +51,7 @@ static auto labelWithAttributedString(const std::string &s) -> NSTextField * {
     return [NSTextField
         labelWithAttributedString:
             [[NSAttributedString alloc]
-                initWithString:asNsString(s)
+                initWithString:nsString(s)
                     attributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                                  [NSFont systemFontOfSize:36],
                                              NSFontAttributeName,
@@ -177,7 +177,7 @@ auto FacemaskStudySetupView::testSettingsFile() -> std::string {
 }
 
 void FacemaskStudySetupView::setTestSettingsFile(std::string s) {
-    [testSettingsField setStringValue:asNsString(s)];
+    [testSettingsField setStringValue:nsString(s)];
 }
 
 void FacemaskStudySetupView::subscribe(EventListener *) {}

@@ -83,7 +83,8 @@ if(${_AV_SPEECH_IN_NOISE_BUILD_FACEMASK_STUDY_VIEW_PREVIEW})
     ${_AV_SPEECH_IN_NOISE_BUILD_FACEMASK_STUDY_VIEW_PREVIEW_MACOS_RESOURCES})
   target_compile_features(AvSpeechInNoiseFaceMaskStudyViewPreview
                           PRIVATE cxx_std_17)
-  target_link_libraries(AvSpeechInNoiseFaceMaskStudyViewPreview ${COCOA})
+  target_link_libraries(AvSpeechInNoiseFaceMaskStudyViewPreview presentation
+                        ${COCOA})
   set_target_properties(
     AvSpeechInNoiseFaceMaskStudyViewPreview
     PROPERTIES
