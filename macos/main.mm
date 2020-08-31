@@ -308,7 +308,8 @@ void main(EyeTracker &eyeTracker) {
     CocoaConsonantView consonantView{NSMakeRect(
         subjectScreenOrigin.x + subjectScreenWidth / 4, subjectScreenOrigin.y,
         subjectScreenWidth / 2, subjectScreenSize.height / 2)};
-    Presenter::Consonant consonant{&consonantView};
+    Presenter::Consonant consonant{
+        &consonantView, &consonantView, &consonantView};
     CocoaCoordinateResponseMeasureView coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};

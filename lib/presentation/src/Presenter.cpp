@@ -382,7 +382,9 @@ auto Presenter::TestSetup::startingSnr() -> std::string {
     return view->startingSnr();
 }
 
-Presenter::Consonant::Consonant(View::Consonant *view) : view{view} {
+Presenter::Consonant::Consonant(
+    View::Consonant *view, View::ConsonantInput *, View::ConsonantOutput *)
+    : view{view} {
     view->subscribe(this);
 }
 
