@@ -188,6 +188,25 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     };
     addAutolayoutEnabledSubview(controller.view, layoutStack);
     addAutolayoutEnabledSubview(controller.view, playCalibrationButton);
+    [NSLayoutConstraint activateConstraints:@[
+        [layoutStack.topAnchor constraintEqualToAnchor:controller.view.topAnchor
+                                              constant:8],
+        [layoutStack.bottomAnchor
+            constraintEqualToAnchor:playCalibrationButton.topAnchor
+                           constant:-8],
+        [layoutStack.leadingAnchor
+            constraintEqualToAnchor:controller.view.leadingAnchor
+                           constant:8],
+        [layoutStack.trailingAnchor
+            constraintEqualToAnchor:controller.view.trailingAnchor
+                           constant:-8],
+        [playCalibrationButton.trailingAnchor
+            constraintEqualToAnchor:controller.view.trailingAnchor
+                           constant:-8],
+        [playCalibrationButton.bottomAnchor
+            constraintEqualToAnchor:controller.view.bottomAnchor
+                           constant:-8]
+    ]];
 }
 
 void FacemaskStudySetupView::show() {
