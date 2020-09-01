@@ -335,6 +335,7 @@ void main(
     CocoaView view{app, preferencesViewController};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);
+    testSetupViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     const auto testSetupView{
         testSetupViewFactory->make(testSetupViewController)};
     const auto experimenterViewController{
