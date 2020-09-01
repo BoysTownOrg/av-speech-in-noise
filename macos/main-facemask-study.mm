@@ -146,7 +146,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                 initWithString:@"Facemask Study"
                     attributes:[NSDictionary
                                    dictionaryWithObjectsAndKeys:
-                                       [NSFont systemFontOfSize:36],
+                                       [NSFont systemFontOfSize:40],
                                    NSFontAttributeName, [NSColor whiteColor],
                                    NSForegroundColorAttributeName, nil]]]};
     const auto instructionsLabel{
@@ -187,6 +187,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
 
     const auto logo{
         [NSImageView imageViewWithImage:[NSImage imageNamed:@"btnrh.png"]]};
+    logo.imageScaling = NSImageScaleProportionallyDown;
     logo.wantsLayer = YES;
     logo.layer.backgroundColor = NSColor.whiteColor.CGColor;
     const auto layoutStack {
