@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(
   AvSpeechInNoise
-  VERSION 3.7.0
+  VERSION 3.8.0
   LANGUAGES CXX OBJCXX)
 
 include(FetchContent)
