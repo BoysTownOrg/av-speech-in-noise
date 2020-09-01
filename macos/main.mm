@@ -304,7 +304,7 @@ void main(
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
         allTargetsNTimes, recognitionTestModel, outputFile};
-    const auto viewController{[[ResizesToContentsViewController alloc] init]};
+    const auto viewController{nsTabViewControllerWithoutTabControl()};
     const auto window{
         [NSWindow windowWithContentViewController:viewController]};
     [window makeKeyAndOrderFront:nil];
@@ -333,8 +333,7 @@ void main(
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
     CocoaView view{app, preferencesViewController};
-    const auto testSetupViewController{
-        [[ResizesToContentsViewController alloc] init]};
+    const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);
     testSetupViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint activateConstraints:@[
