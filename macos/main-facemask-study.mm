@@ -135,6 +135,20 @@ static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
     return stack;
 }
 
+// https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CocoaDrawingGuide/Images/Images.html#//apple_ref/doc/uid/TP40003290-CH208-BCIBBFGJ
+static auto simpleRoundedRectImage(NSColor *color) -> NSImage * {
+    const auto rect{CGRectMake(0, 0, 128, 128)};
+    const auto image{[[NSImage alloc] initWithSize:rect.size]};
+    [image lockFocus];
+    auto path{[NSBezierPath bezierPathWithRoundedRect:rect
+                                              xRadius:2
+                                              yRadius:2]};
+    [color setFill];
+    [path fill];
+    [image unlockFocus];
+    return image;
+}
+
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : testSettingsField{[NSTextField textFieldWithString:@""]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
@@ -165,15 +179,17 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
 
     setAttributedTitle(browseForTestSettingsButton, "Browse");
     setAttributedTitle(confirmButton, "START");
-    confirmButton.bezelStyle = NSBezelStyleTexturedSquare;
     confirmButton.wantsLayer = YES;
+    confirmButton.bordered = NO;
+    confirmButton.layer.cornerRadius = 8.0;
     [confirmButton.layer setBackgroundColor:[NSColor colorWithRed:114. / 255
                                                             green:172. / 255
                                                              blue:77. / 255
                                                             alpha:1]
                                                 .CGColor];
-    browseForTestSettingsButton.bezelStyle = NSBezelStyleTexturedSquare;
     browseForTestSettingsButton.wantsLayer = YES;
+    browseForTestSettingsButton.bordered = NO;
+    browseForTestSettingsButton.layer.cornerRadius = 8.0;
     [browseForTestSettingsButton.layer
         setBackgroundColor:[NSColor colorWithRed:247. / 255
                                            green:191. / 255
