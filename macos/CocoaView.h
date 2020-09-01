@@ -1,6 +1,7 @@
 #ifndef MACOS_MAIN_COCOAVIEW_H_
 #define MACOS_MAIN_COCOAVIEW_H_
 
+#include "MacOsTestSetupViewFactory.h"
 #include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>
 #include <unordered_map>
@@ -93,6 +94,14 @@ class CocoaTestSetupView : public View::TestSetup {
     NSTextField *startingSnrField;
     SetupViewActions *actions;
     EventListener *listener_{};
+};
+
+class CocoaTestSetupViewFactory : public MacOsTestSetupViewFactory {
+  public:
+    auto make(NSViewController *c)
+        -> std::unique_ptr<View::TestSetup> override {
+        return std::make_unique<CocoaTestSetupView>(c);
+    }
 };
 
 class CocoaConsonantView : public View::Consonant {

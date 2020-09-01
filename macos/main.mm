@@ -218,7 +218,8 @@ static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
     return controller;
 }
 
-void main(EyeTracker &eyeTracker) {
+void main(
+    EyeTracker &eyeTracker, MacOsTestSetupViewFactory *testSetupViewFactory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     CoreAudioBufferedReader bufferedReader;
@@ -334,7 +335,23 @@ void main(EyeTracker &eyeTracker) {
     CocoaView view{app, preferencesViewController};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);
-    CocoaTestSetupView testSetupView{testSetupViewController};
+    testSetupViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [NSLayoutConstraint activateConstraints:@[
+        [testSetupViewController.view.topAnchor
+            constraintEqualToAnchor:viewController.view.topAnchor
+                           constant:8],
+        [testSetupViewController.view.bottomAnchor
+            constraintEqualToAnchor:viewController.view.bottomAnchor
+                           constant:-8],
+        [testSetupViewController.view.leadingAnchor
+            constraintEqualToAnchor:viewController.view.leadingAnchor
+                           constant:8],
+        [testSetupViewController.view.trailingAnchor
+            constraintEqualToAnchor:viewController.view.trailingAnchor
+                           constant:-8]
+    ]];
+    const auto testSetupView{
+        testSetupViewFactory->make(testSetupViewController)};
     const auto experimenterViewController{
         nsTabViewControllerWithoutTabControl()};
     addChild(viewController, experimenterViewController);
@@ -358,7 +375,7 @@ void main(EyeTracker &eyeTracker) {
             subjectViewWidth, subjectViewHeight)};
     Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
         &coordinateResponseMeasureView};
-    Presenter::TestSetup testSetupPresenter{&testSetupView};
+    Presenter::TestSetup testSetupPresenter{testSetupView.get()};
     Presenter::Experimenter experimenterPresenter{&experimenterView};
     TestSettingsInterpreterImpl testSettingsInterpreter;
     Presenter presenter{model, view, testSetupPresenter,

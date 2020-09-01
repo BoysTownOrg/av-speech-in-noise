@@ -1521,6 +1521,12 @@ class PresenterTests : public ::testing::Test {
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_TRUE(useCase.responseViewHidden());
     }
+
+    void assertCompleteTestDoesNotHideCursor(TrialSubmission &useCase) {
+        setTestComplete(model);
+        run(useCase);
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(consonantView.cursorHidden());
+    }
 };
 
 class RequestFailingModel : public Model {
@@ -1819,6 +1825,10 @@ PRESENTER_TEST(submittingPassedTrialHidesSubmissionEvenWhenTestComplete) {
 
 PRESENTER_TEST(submittingFailedTrialHidesSubmissionEvenWhenTestComplete) {
     assertCompleteTestHidesResponse(submittingFailedTrial);
+}
+
+PRESENTER_TEST(submittingConsonantDoesNotHideCursorWhenTestComplete) {
+    assertCompleteTestDoesNotHideCursor(submittingConsonant);
 }
 
 PRESENTER_TEST(completingTrialShowsCursorForAdaptiveCorrectKeywordsTest) {
