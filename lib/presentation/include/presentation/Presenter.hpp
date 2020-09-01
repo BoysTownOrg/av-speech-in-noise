@@ -402,6 +402,7 @@ class Presenter : public Model::EventListener {
     void browseForTestSettingsFile();
     void submitCoordinateResponse();
     void submitConsonantResponse();
+    auto testComplete() -> bool;
     void playNextTrialIfNeeded();
     void submitFreeResponse();
     void submitPassedTrial();

@@ -23,3 +23,7 @@ jobs:
         run: cmake --build build --target AvSpeechInNoise --config Release
       - name: build app Debug
         run: cmake --build build --target AvSpeechInNoise --config Debug
+      - name: build facemask study Release
+        run: cmake --build build --target av-speech-in-noise-facemask-study --config Release
+      - name: build facemask study Debug
+        run: cmake --build build --target av-speech-in-noise-facemask-study --config Debug

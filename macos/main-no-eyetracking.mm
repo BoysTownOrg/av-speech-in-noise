@@ -1,4 +1,5 @@
 #include "main.h"
+#include "CocoaView.h"
 
 namespace av_speech_in_noise {
 class EyeTrackerStub : public EyeTracker {
@@ -12,5 +13,6 @@ class EyeTrackerStub : public EyeTracker {
 
 int main() {
     av_speech_in_noise::EyeTrackerStub eyeTracker;
-    av_speech_in_noise::main(eyeTracker);
+    av_speech_in_noise::CocoaTestSetupViewFactory testSetupViewFactory;
+    av_speech_in_noise::main(eyeTracker, &testSetupViewFactory);
 }
