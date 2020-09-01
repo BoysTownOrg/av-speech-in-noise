@@ -96,7 +96,8 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
     Consonant &consonantPresenter, Experimenter &experimenterPresenter,
     TestSettingsInterpreter &testSettingsInterpreter,
-    TextFileReader &textFileReader, ConsonantResponder *, TaskPresenter *)
+    TextFileReader &textFileReader, ConsonantResponder *consonantResponder,
+    TaskPresenter *consonantPresenterRefactored)
     : freeResponseTrialCompletionHandler{experimenterPresenter},
       passFailTrialCompletionHandler{experimenterPresenter},
       correctKeywordsTrialCompletionHandler{experimenterPresenter},
@@ -109,13 +110,15 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       experimenterPresenter{experimenterPresenter},
       testSettingsInterpreter{testSettingsInterpreter},
       textFileReader{textFileReader},
-      trialCompletionHandler_{
-          &coordinateResponseMeasureTrialCompletionHandler} {
+      trialCompletionHandler_{&coordinateResponseMeasureTrialCompletionHandler},
+      consonantPresenterRefactored{consonantPresenterRefactored} {
     model.subscribe(this);
     testSetup.becomeChild(this);
     coordinateResponseMeasurePresenter.becomeChild(this);
     consonantPresenter.becomeChild(this);
     experimenterPresenter.becomeChild(this);
+    if (consonantResponder != nullptr)
+        consonantResponder->becomeChild(this);
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 
@@ -153,7 +156,7 @@ void Presenter::showTest(Method m) {
     if (coordinateResponseMeasure(m))
         coordinateResponseMeasurePresenter.start();
     else if (consonant(m))
-        consonantPresenter.start();
+        consonantPresenterRefactored->start();
     else
         experimenterPresenter.start();
 }
@@ -199,11 +202,11 @@ static void show(Presenter::TestSetup &presenter) { presenter.show(); }
 static void switchToTestSetupView(Presenter::TestSetup &testSetup,
     Presenter::Experimenter &experimenter,
     Presenter::CoordinateResponseMeasure &coordinateResponseMeasure,
-    Presenter::Consonant &consonant) {
+    TaskPresenter *consonant) {
     show(testSetup);
     experimenter.stop();
     coordinateResponseMeasure.stop();
-    consonant.stop();
+    consonant->stop();
 }
 
 static void updateTrialInformationAndPlayNext(
@@ -215,7 +218,7 @@ static void updateTrialInformationAndPlayNext(
 static void switchToTestSetupViewIfCompleteElse(Model &model,
     Presenter::TestSetup &testSetup, Presenter::Experimenter &experimenter,
     Presenter::CoordinateResponseMeasure &coordinateResponseMeasure,
-    Presenter::Consonant &consonant, const std::function<void()> &f) {
+    TaskPresenter *consonant, const std::function<void()> &f) {
     if (testComplete(model))
         switchToTestSetupView(
             testSetup, experimenter, coordinateResponseMeasure, consonant);
@@ -225,7 +228,8 @@ static void switchToTestSetupViewIfCompleteElse(Model &model,
 
 void Presenter::playNextTrialIfNeeded() {
     switchToTestSetupViewIfCompleteElse(model, testSetup, experimenterPresenter,
-        coordinateResponseMeasurePresenter, consonantPresenter, [&]() {
+        coordinateResponseMeasurePresenter, consonantPresenterRefactored,
+        [&]() {
             updateTrialInformationAndPlayNext(
                 model, view, experimenterPresenter);
         });
@@ -233,7 +237,7 @@ void Presenter::playNextTrialIfNeeded() {
 
 void Presenter::readyNextTrialIfNeeded() {
     switchToTestSetupViewIfCompleteElse(model, testSetup, experimenterPresenter,
-        coordinateResponseMeasurePresenter, consonantPresenter,
+        coordinateResponseMeasurePresenter, consonantPresenterRefactored,
         [&]() { readyNextTrial(experimenterPresenter, model); });
 }
 
@@ -287,7 +291,7 @@ void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
 
 void Presenter::declineContinuingTesting() {
     av_speech_in_noise::switchToTestSetupView(testSetup, experimenterPresenter,
-        coordinateResponseMeasurePresenter, consonantPresenter);
+        coordinateResponseMeasurePresenter, consonantPresenterRefactored);
 }
 
 void Presenter::acceptContinuingTesting() {
@@ -302,7 +306,7 @@ void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
 
 void Presenter::exitTest() {
     av_speech_in_noise::switchToTestSetupView(testSetup, experimenterPresenter,
-        coordinateResponseMeasurePresenter, consonantPresenter);
+        coordinateResponseMeasurePresenter, consonantPresenterRefactored);
 }
 
 void Presenter::playCalibration() {

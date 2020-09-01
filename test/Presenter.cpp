@@ -1218,7 +1218,7 @@ class PresenterTests : public ::testing::Test {
         &coordinateResponseMeasureView};
     Presenter::Consonant consonant{&consonantView, &consonantView};
     ConsonantScreenResponder consonantScreenResponder{model, consonantView};
-    ConsonantPresenter consonantPresenterRefactored{consonantView};
+    ConsonantPresenter consonantPresenterRefactored{model, consonantView};
     Calibration interpretedCalibration;
     TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
     TextFileReaderStub textFileReader;
@@ -1286,6 +1286,10 @@ class PresenterTests : public ::testing::Test {
     DecliningContinuingTesting decliningContinuingTesting{experimenterView};
     AcceptingContinuingTesting acceptingContinuingTesting{experimenterView};
     ExitingTest exitingTest{&experimenterView};
+
+    PresenterTests() {
+        consonantScreenResponder.subscribe(&consonantPresenterRefactored);
+    }
 
     void assertBrowseResultPassedToEntry(BrowsingEnteredPathUseCase &useCase) {
         setBrowsingResult(useCase, "a");
