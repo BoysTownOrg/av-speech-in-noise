@@ -211,7 +211,12 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                            constant:-8],
         [playCalibrationButton.bottomAnchor
             constraintEqualToAnchor:controller.view.bottomAnchor
-                           constant:-8]
+                           constant:-8],
+        [browseForTestSettingsButton.widthAnchor
+            constraintEqualToConstant:1.5 *
+            browseForTestSettingsButton.attributedTitle.size.width],
+        [confirmButton.widthAnchor constraintEqualToConstant:1.5 *
+                                   confirmButton.attributedTitle.size.width]
     ]];
 }
 
