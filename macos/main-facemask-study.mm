@@ -178,7 +178,9 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                                                                alpha:1]];
 
     const auto logo{
-        [NSImageView imageViewWithImage:[NSImage imageNamed:@"b.bmp"]]};
+        [NSImageView imageViewWithImage:[NSImage imageNamed:@"btnrh.png"]]};
+    logo.wantsLayer = YES;
+    logo.layer.backgroundColor = NSColor.whiteColor.CGColor;
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
