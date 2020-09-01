@@ -96,7 +96,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
     Consonant &consonantPresenter, Experimenter &experimenterPresenter,
     TestSettingsInterpreter &testSettingsInterpreter,
-    TextFileReader &textFileReader)
+    TextFileReader &textFileReader, ConsonantResponder *, TaskPresenter *)
     : freeResponseTrialCompletionHandler{experimenterPresenter},
       passFailTrialCompletionHandler{experimenterPresenter},
       correctKeywordsTrialCompletionHandler{experimenterPresenter},

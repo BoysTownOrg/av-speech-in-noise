@@ -195,22 +195,12 @@ class ConsonantResponder {
     virtual void subscribe(EventListener *) = 0;
 };
 
-class IPresenter {
+class TaskPresenter {
   public:
-    virtual ~IPresenter() = default;
+    virtual ~TaskPresenter() = default;
     virtual void start() = 0;
     virtual void stop() = 0;
-};
-
-class Trial {
-  public:
-    class EventListener {
-      public:
-        virtual ~EventListener() = default;
-        virtual void notifyThatUserIsReadyToRespond() = 0;
-    };
-    virtual ~Trial() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void notifyThatUserIsReadyToRespond() = 0;
 };
 
 class ConsonantScreenResponder : public ConsonantResponder,
@@ -236,28 +226,27 @@ class ConsonantScreenResponder : public ConsonantResponder,
 };
 
 class ConsonantPresenter : public ConsonantResponder::EventListener,
-                           public Trial::EventListener,
-                           public IPresenter {
+                           public TaskPresenter {
   public:
-    explicit ConsonantPresenter(View::ConsonantOutput *view) : view{view} {}
+    explicit ConsonantPresenter(View::ConsonantOutput &view) : view{view} {}
     void start() override {
-        view->show();
-        view->showReadyButton();
+        view.show();
+        view.showReadyButton();
     }
     void stop() override {
-        view->hideResponseButtons();
-        view->hide();
+        view.hideResponseButtons();
+        view.hide();
     }
-    void notifyThatTaskHasStarted() override { view->hideReadyButton(); }
+    void notifyThatTaskHasStarted() override { view.hideReadyButton(); }
     void notifyThatUserIsDoneResponding() override {
-        view->hideResponseButtons();
+        view.hideResponseButtons();
     }
     void notifyThatUserIsReadyToRespond() override {
-        view->showResponseButtons();
+        view.showResponseButtons();
     }
 
   private:
-    View::ConsonantOutput *view;
+    View::ConsonantOutput &view;
 };
 
 class Presenter : public Model::EventListener {
@@ -434,7 +423,7 @@ class Presenter : public Model::EventListener {
 
     Presenter(Model &, View &, TestSetup &, CoordinateResponseMeasure &,
         Consonant &, Experimenter &, TestSettingsInterpreter &,
-        TextFileReader &);
+        TextFileReader &, ConsonantResponder * = {}, TaskPresenter * = {});
     void trialComplete() override;
     void run();
     void confirmTestSetup();

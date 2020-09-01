@@ -1217,11 +1217,14 @@ class PresenterTests : public ::testing::Test {
     Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
         &coordinateResponseMeasureView};
     Presenter::Consonant consonant{&consonantView, &consonantView};
+    ConsonantScreenResponder consonantScreenResponder{model, consonantView};
+    ConsonantPresenter consonantPresenterRefactored{consonantView};
     Calibration interpretedCalibration;
     TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
     TextFileReaderStub textFileReader;
     Presenter presenter{model, view, testSetup, coordinateResponseMeasure,
-        consonant, experimenter, testSettingsInterpreter, textFileReader};
+        consonant, experimenter, testSettingsInterpreter, textFileReader,
+        &consonantScreenResponder, &consonantPresenterRefactored};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTest
         confirmingAdaptiveCoordinateResponseMeasureTest{
