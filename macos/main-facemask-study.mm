@@ -189,6 +189,9 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
         ])
     };
     [testSettingsField setFont:[NSFont systemFontOfSize:36]];
+    [testSettingsField setTextColor:NSColor.blackColor];
+    testSettingsField.wantsLayer = YES;
+    testSettingsField.layer.backgroundColor = NSColor.whiteColor.CGColor;
     [instructionsLabel
         setContentCompressionResistancePriority:751
                                  forOrientation:
