@@ -216,7 +216,12 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             constraintEqualToConstant:1.5 *
             browseForTestSettingsButton.attributedTitle.size.width],
         [confirmButton.widthAnchor constraintEqualToConstant:1.5 *
-                                   confirmButton.attributedTitle.size.width]
+                                   confirmButton.attributedTitle.size.width],
+        [browseForTestSettingsButton.heightAnchor
+            constraintEqualToConstant:1.5 *
+            browseForTestSettingsButton.attributedTitle.size.height],
+        [confirmButton.heightAnchor constraintEqualToConstant:1.5 *
+                                    confirmButton.attributedTitle.size.height]
     ]];
 }
 
