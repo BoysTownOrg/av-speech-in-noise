@@ -88,7 +88,7 @@ static void setAttributedTitle(NSButton *button, const std::string &s) {
                     initWithString:nsString(s)
                         attributes:[NSDictionary
                                        dictionaryWithObjectsAndKeys:
-                                           [NSFont boldSystemFontOfSize:36],
+                                           [NSFont boldSystemFontOfSize:30],
                                        NSFontAttributeName,
                                        [NSColor colorWithRed:33. / 255
                                                        green:57. / 255
@@ -128,7 +128,7 @@ static auto verticalStackView(NSArray<NSView *> *views) -> NSStackView * {
 }
 
 static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
-    const auto label_{labelWithAttributedString(s, yellowColor(), 30)};
+    const auto label_{labelWithAttributedString(s, yellowColor(), 28)};
     [label_ setContentHuggingPriority:251
                        forOrientation:NSLayoutConstraintOrientationHorizontal];
     const auto stack { [NSStackView stackViewWithViews:@[ label_, field ]] };
@@ -226,9 +226,9 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             constraintEqualToAnchor:controller.view.bottomAnchor
                            constant:-8],
         [browseForTestSettingsButton.widthAnchor
-            constraintEqualToConstant:1.5 *
+            constraintEqualToConstant:1.4 *
             browseForTestSettingsButton.attributedTitle.size.width],
-        [confirmButton.widthAnchor constraintEqualToConstant:1.5 *
+        [confirmButton.widthAnchor constraintEqualToConstant:1.4 *
                                    confirmButton.attributedTitle.size.width],
         [browseForTestSettingsButton.heightAnchor
             constraintEqualToConstant:1.5 *
