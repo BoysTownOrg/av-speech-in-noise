@@ -195,6 +195,24 @@ class ConsonantResponder {
     virtual void subscribe(EventListener *) = 0;
 };
 
+class IPresenter {
+  public:
+    virtual ~IPresenter() = default;
+    virtual void start() = 0;
+    virtual void stop() = 0;
+};
+
+class Trial {
+  public:
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void notifyThatUserIsReadyToRespond() = 0;
+    };
+    virtual ~Trial() = default;
+    virtual void subscribe(EventListener *) = 0;
+};
+
 class ConsonantScreenResponder : public ConsonantResponder,
                                  public View::ConsonantInput::EventListener {
   public:
@@ -208,6 +226,7 @@ class ConsonantScreenResponder : public ConsonantResponder,
     }
     void notifyThatResponseButtonHasBeenClicked() override {
         model.submit(ConsonantResponse{view.consonant().front()});
+        listener->notifyThatUserIsDoneResponding();
     }
 
   private:
@@ -216,14 +235,26 @@ class ConsonantScreenResponder : public ConsonantResponder,
     ConsonantResponder::EventListener *listener{};
 };
 
-class ConsonantPresenter : public ConsonantResponder::EventListener {
+class ConsonantPresenter : public ConsonantResponder::EventListener,
+                           public Trial::EventListener,
+                           public IPresenter {
   public:
     explicit ConsonantPresenter(View::ConsonantOutput *view) : view{view} {}
+    void start() override {
+        view->show();
+        view->showReadyButton();
+    }
+    void stop() override {
+        view->hideResponseButtons();
+        view->hide();
+    }
     void notifyThatTaskHasStarted() override { view->hideReadyButton(); }
     void notifyThatUserIsDoneResponding() override {
         view->hideResponseButtons();
     }
-    void notifyThatUserIsReadyToRespond() { view->showResponseButtons(); }
+    void notifyThatUserIsReadyToRespond() override {
+        view->showResponseButtons();
+    }
 
   private:
     View::ConsonantOutput *view;
