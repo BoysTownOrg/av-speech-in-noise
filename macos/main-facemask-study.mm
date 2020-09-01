@@ -188,6 +188,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             labeledView(testSettingsField, "Session file:"), confirmButton
         ])
     };
+    [testSettingsField setFont:[NSFont systemFontOfSize:36]];
     [instructionsLabel
         setContentCompressionResistancePriority:751
                                  forOrientation:
