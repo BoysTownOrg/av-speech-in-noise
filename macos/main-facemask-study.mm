@@ -186,6 +186,13 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             labeledView(testSettingsField, "Session file:"), confirmButton
         ])
     };
+    [instructionsLabel
+        setContentHuggingPriority:999
+                   forOrientation:NSLayoutConstraintOrientationHorizontal];
+    [instructionsLabel
+        setContentCompressionResistancePriority:999
+                                 forOrientation:
+                                     NSLayoutConstraintOrientationHorizontal];
     addAutolayoutEnabledSubview(controller.view, layoutStack);
     addAutolayoutEnabledSubview(controller.view, playCalibrationButton);
     [NSLayoutConstraint activateConstraints:@[

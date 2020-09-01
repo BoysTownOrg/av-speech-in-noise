@@ -304,7 +304,7 @@ void main(
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
         allTargetsNTimes, recognitionTestModel, outputFile};
-    const auto viewController{nsTabViewControllerWithoutTabControl()};
+    const auto viewController{[[ResizesToContentsViewController alloc] init]};
     const auto window{
         [NSWindow windowWithContentViewController:viewController]};
     [window makeKeyAndOrderFront:nil];
@@ -333,9 +333,24 @@ void main(
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
     CocoaView view{app, preferencesViewController};
-    const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
+    const auto testSetupViewController{
+        [[ResizesToContentsViewController alloc] init]};
     addChild(viewController, testSetupViewController);
     testSetupViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [NSLayoutConstraint activateConstraints:@[
+        [testSetupViewController.view.topAnchor
+            constraintEqualToAnchor:viewController.view.topAnchor
+                           constant:8],
+        [testSetupViewController.view.bottomAnchor
+            constraintEqualToAnchor:viewController.view.bottomAnchor
+                           constant:-8],
+        [testSetupViewController.view.leadingAnchor
+            constraintEqualToAnchor:viewController.view.leadingAnchor
+                           constant:8],
+        [testSetupViewController.view.trailingAnchor
+            constraintEqualToAnchor:viewController.view.trailingAnchor
+                           constant:-8]
+    ]];
     const auto testSetupView{
         testSetupViewFactory->make(testSetupViewController)};
     const auto experimenterViewController{
