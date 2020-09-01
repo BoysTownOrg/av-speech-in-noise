@@ -97,20 +97,28 @@ static void setAttributedTitle(NSButton *button, const std::string &s) {
                                        NSForegroundColorAttributeName, nil]]];
 }
 
-static auto labelWithAttributedString(const std::string &s) -> NSTextField * {
+static auto yellowColor() -> NSColor * {
+    return [NSColor colorWithRed:250. / 255
+                           green:216. / 255
+                            blue:111. / 255
+                           alpha:1];
+}
+
+static auto labelWithAttributedString(
+    const std::string &s, NSColor *color, CGFloat size) -> NSTextField * {
     return [NSTextField
         labelWithAttributedString:
             [[NSAttributedString alloc]
                 initWithString:nsString(s)
                     attributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                 [NSFont systemFontOfSize:36],
-                                             NSFontAttributeName,
-                                             [NSColor colorWithRed:250. / 255
-                                                             green:216. / 255
-                                                              blue:111. / 255
-                                                             alpha:1],
+                                                 [NSFont systemFontOfSize:size],
+                                             NSFontAttributeName, color,
                                              NSForegroundColorAttributeName,
                                              nil]]];
+}
+
+static auto labelWithAttributedString(const std::string &s) -> NSTextField * {
+    return labelWithAttributedString(s, yellowColor(), 36);
 }
 
 static auto verticalStackView(NSArray<NSView *> *views) -> NSStackView * {
@@ -120,7 +128,7 @@ static auto verticalStackView(NSArray<NSView *> *views) -> NSStackView * {
 }
 
 static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
-    const auto label_{labelWithAttributedString(s)};
+    const auto label_{labelWithAttributedString(s, yellowColor(), 30)};
     [label_ setContentHuggingPriority:251
                        forOrientation:NSLayoutConstraintOrientationHorizontal];
     const auto stack { [NSStackView stackViewWithViews:@[ label_, field ]] };
@@ -188,7 +196,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             labeledView(testSettingsField, "Session file:"), confirmButton
         ])
     };
-    [testSettingsField setFont:[NSFont systemFontOfSize:36]];
+    [testSettingsField setFont:[NSFont systemFontOfSize:30]];
     [testSettingsField setTextColor:NSColor.blackColor];
     testSettingsField.wantsLayer = YES;
     testSettingsField.layer.backgroundColor = NSColor.whiteColor.CGColor;
