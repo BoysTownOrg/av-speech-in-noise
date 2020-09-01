@@ -187,10 +187,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
         ])
     };
     [instructionsLabel
-        setContentHuggingPriority:999
-                   forOrientation:NSLayoutConstraintOrientationHorizontal];
-    [instructionsLabel
-        setContentCompressionResistancePriority:999
+        setContentCompressionResistancePriority:751
                                  forOrientation:
                                      NSLayoutConstraintOrientationHorizontal];
     addAutolayoutEnabledSubview(controller.view, layoutStack);
