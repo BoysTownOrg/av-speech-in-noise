@@ -238,7 +238,9 @@ class TestSetupViewStub : public View::TestSetup {
     bool hidden_{};
 };
 
-class ExperimenterViewStub : public View::Experimenter {
+class ExperimenterViewStub : public View::Experimenter,
+                             public View::FreeResponseInput,
+                             public View::FreeResponseOutput {
   public:
     void declineContinuingTesting() { listener_->declineContinuingTesting(); }
 

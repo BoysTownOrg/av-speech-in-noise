@@ -176,6 +176,13 @@ class View {
         virtual void secondaryDisplay(std::string) = 0;
     };
 
+    class FreeResponseInput {
+      public:
+        virtual ~FreeResponseInput() = default;
+    };
+
+    class FreeResponseOutput {};
+
     virtual ~View() = default;
     virtual void eventLoop() = 0;
     virtual auto browseForDirectory() -> std::string = 0;
@@ -232,7 +239,8 @@ class Presenter : public Model::EventListener {
 
     class Experimenter : public View::Experimenter::EventListener {
       public:
-        explicit Experimenter(View::Experimenter *);
+        explicit Experimenter(View::Experimenter *,
+            View::FreeResponseInput * = {}, View::FreeResponseOutput * = {});
         void exitTest() override;
         void playTrial() override;
         void submitPassedTrial() override;
