@@ -300,8 +300,10 @@ class Presenter : public Model::EventListener {
         : public TrialCompletionHandler {
       public:
         explicit CoordinateResponseMeasureTestTrialCompletionHandler(
-            CoordinateResponseMeasure &coordinateResponseMeasure)
-            : coordinateResponseMeasure{coordinateResponseMeasure} {}
+            CoordinateResponseMeasure &coordinateResponseMeasure,
+            TaskPresenter *presenter = {})
+            : coordinateResponseMeasure{coordinateResponseMeasure},
+              presenter{presenter} {}
 
         void showResponseSubmission() override {
             coordinateResponseMeasure.showResponseButtons();
@@ -309,6 +311,7 @@ class Presenter : public Model::EventListener {
 
       private:
         CoordinateResponseMeasure &coordinateResponseMeasure;
+        TaskPresenter *presenter;
     };
 
     class ConsonantTrialCompletionHandler : public TrialCompletionHandler {
