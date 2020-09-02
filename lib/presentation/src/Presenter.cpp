@@ -391,20 +391,6 @@ static void hideResponseButtons(View::CoordinateResponseMeasureOutput *view) {
     view->hideResponseButtons();
 }
 
-static void showNextTrialButton(View::CoordinateResponseMeasureOutput *view) {
-    view->showNextTrialButton();
-}
-
-void Presenter::CoordinateResponseMeasure::start() {
-    outputView->show();
-    showNextTrialButton(outputView);
-}
-
-void Presenter::CoordinateResponseMeasure::stop() {
-    hideResponseButtons(outputView);
-    outputView->hide();
-}
-
 void Presenter::CoordinateResponseMeasure::
     notifyThatReadyButtonHasBeenClicked() {
     parent->playTrial();
