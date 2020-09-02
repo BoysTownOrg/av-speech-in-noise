@@ -16,6 +16,9 @@
 @interface ExperimenterViewActions : NSObject
 @end
 
+@interface FreeResponseViewActions : NSObject
+@end
+
 @implementation SetupViewActions {
   @public
     av_speech_in_noise::CocoaTestSetupView *controller;
@@ -75,10 +78,6 @@
     controller->playTrial();
 }
 
-- (void)submitFreeResponse {
-    controller->submitFreeResponse();
-}
-
 - (void)submitPassedTrial {
     controller->submitPassedTrial();
 }
@@ -97,6 +96,16 @@
 
 - (void)declineContinuingTesting {
     controller->declineContinuingTesting();
+}
+@end
+
+@implementation FreeResponseViewActions {
+  @public
+    av_speech_in_noise::CocoaExperimenterView *controller;
+}
+
+- (void)submitFreeResponse {
+    controller->submitFreeResponse();
 }
 @end
 
@@ -642,7 +651,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
       freeResponseFlaggedButton{[NSButton checkboxWithTitle:@"flagged"
                                                      target:nil
                                                      action:nil]},
-      actions{[[ExperimenterViewActions alloc] init]} {
+      actions{[[ExperimenterViewActions alloc] init]},
+      freeResponseActions{[[FreeResponseViewActions alloc] init]} {
     const auto continueTestingDialogController{
         nsTabViewControllerWithoutTabControl()};
     continueTestingDialog = [NSWindow
@@ -651,7 +661,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
     exitTestButton = button("Exit Test", actions, @selector(exitTest));
     nextTrialButton = button("Play Trial", actions, @selector(playTrial));
     const auto submitFreeResponseButton {
-        button("Submit", actions, @selector(submitFreeResponse))
+        button("Submit", freeResponseActions, @selector(submitFreeResponse))
     };
     evaluationButtons = [NSStackView stackViewWithViews:@[
         button("Incorrect", actions, @selector(submitFailedTrial)),
@@ -739,10 +749,16 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
     av_speech_in_noise::hide(correctKeywordsView);
     av_speech_in_noise::hide(view(viewController));
     actions->controller = this;
+    freeResponseActions->controller = this;
 }
 
 void CocoaExperimenterView::subscribe(Experimenter::EventListener *e) {
     listener_ = e;
+}
+
+void CocoaExperimenterView::subscribe(
+    View::FreeResponseInput::EventListener *e) {
+    freeResponseListener = e;
 }
 
 void CocoaExperimenterView::showExitTestButton() {
@@ -833,7 +849,7 @@ auto CocoaExperimenterView::flagged() -> bool {
 void CocoaExperimenterView::playTrial() { listener_->playTrial(); }
 
 void CocoaExperimenterView::submitFreeResponse() {
-    listener_->submitFreeResponse();
+    freeResponseListener->notifyThatSubmitButtonHasBeenClicked();
 }
 
 void CocoaExperimenterView::submitPassedTrial() {

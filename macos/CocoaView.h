@@ -10,6 +10,7 @@
 @class CoordinateResponseMeasureViewActions;
 @class ConsonantViewActions;
 @class ExperimenterViewActions;
+@class FreeResponseViewActions;
 
 namespace av_speech_in_noise {
 class CocoaExperimenterView : public View::Experimenter,
@@ -18,7 +19,7 @@ class CocoaExperimenterView : public View::Experimenter,
   public:
     explicit CocoaExperimenterView(NSViewController *);
     void subscribe(Experimenter::EventListener *) override;
-    void subscribe(View::FreeResponseInput::EventListener *) override {}
+    void subscribe(View::FreeResponseInput::EventListener *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;
     void show() override;
@@ -64,7 +65,9 @@ class CocoaExperimenterView : public View::Experimenter,
     NSButton *exitTestButton;
     NSButton *nextTrialButton;
     ExperimenterViewActions *actions;
+    FreeResponseViewActions *freeResponseActions;
     Experimenter::EventListener *listener_{};
+    View::FreeResponseInput::EventListener *freeResponseListener{};
 };
 
 class CocoaTestSetupView : public View::TestSetup {
