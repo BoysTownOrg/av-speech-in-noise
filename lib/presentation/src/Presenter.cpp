@@ -103,8 +103,9 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       correctKeywordsTrialCompletionHandler{experimenterPresenter},
       coordinateResponseMeasureTrialCompletionHandler{
           coordinateResponseMeasurePresenter},
-      consonantTrialCompletionHandler{consonantPresenter}, model{model},
-      view{view}, testSetup{testSetup},
+      consonantTrialCompletionHandler{
+          consonantPresenter, consonantPresenterRefactored},
+      model{model}, view{view}, testSetup{testSetup},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       experimenterPresenter{experimenterPresenter},
       testSettingsInterpreter{testSettingsInterpreter},
