@@ -369,7 +369,6 @@ void main(
     CocoaConsonantView consonantView{NSMakeRect(
         subjectScreenOrigin.x + subjectScreenWidth / 4, subjectScreenOrigin.y,
         subjectScreenWidth / 2, subjectScreenSize.height / 2)};
-    Presenter::Consonant consonant{&consonantView, &consonantView};
     CocoaCoordinateResponseMeasureView coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};

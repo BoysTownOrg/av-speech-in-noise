@@ -383,14 +383,6 @@ auto Presenter::TestSetup::startingSnr() -> std::string {
     return view->startingSnr();
 }
 
-Presenter::Consonant::Consonant(
-    View::ConsonantInput *, View::ConsonantOutput *outputView)
-    : outputView{outputView} {}
-
-void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {}
-
-void Presenter::Consonant::notifyThatResponseButtonHasBeenClicked() {}
-
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
     View::CoordinateResponseMeasure *view)
     : view{view} {
