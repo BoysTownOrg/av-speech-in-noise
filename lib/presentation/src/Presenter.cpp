@@ -451,10 +451,6 @@ void Presenter::Experimenter::showPassFailSubmission() {
     view->showEvaluationButtons();
 }
 
-void Presenter::Experimenter::showCorrectKeywordsSubmission() {
-    correctKeywordsOutput->showCorrectKeywordsSubmission();
-}
-
 void Presenter::Experimenter::submitPassedTrial() {
     parent->submitPassedTrial();
 }
@@ -462,8 +458,6 @@ void Presenter::Experimenter::submitPassedTrial() {
 void Presenter::Experimenter::submitFailedTrial() {
     parent->submitFailedTrial();
 }
-
-void Presenter::Experimenter::submitCorrectKeywords() {}
 
 void Presenter::Experimenter::declineContinuingTesting() {
     parent->declineContinuingTesting();
