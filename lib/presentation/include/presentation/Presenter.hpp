@@ -267,7 +267,6 @@ class Presenter : public Model::EventListener {
 
       private:
         View::ConsonantOutput *outputView;
-        Presenter *parent{};
     };
 
     class CoordinateResponseMeasure
