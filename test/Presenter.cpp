@@ -328,7 +328,9 @@ class ExperimenterViewStub : public View::Experimenter,
 
     [[nodiscard]] auto hidden() const { return hidden_; }
 
-    void subscribe(EventListener *e) override { listener_ = e; }
+    void subscribe(Experimenter::EventListener *e) override { listener_ = e; }
+
+    void subscribe(FreeResponseInput::EventListener *e) override {}
 
     void setResponse(std::string s) { response_ = std::move(s); }
 
@@ -396,7 +398,7 @@ class ExperimenterViewStub : public View::Experimenter,
     std::string continueTestingDialogMessage_;
     std::string response_;
     std::string correctKeywords_{"0"};
-    EventListener *listener_{};
+    Experimenter::EventListener *listener_{};
     bool freeResponseCleared_{};
     bool exitTestButtonHidden_{};
     bool exitTestButtonShown_{};

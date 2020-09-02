@@ -173,7 +173,13 @@ class View {
 
     class FreeResponseInput {
       public:
+        class EventListener {
+          public:
+            virtual ~EventListener() = default;
+            virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
+        };
         virtual ~FreeResponseInput() = default;
+        virtual void subscribe(EventListener *) = 0;
         virtual auto flagged() -> bool = 0;
         virtual auto freeResponse() -> std::string = 0;
     };
@@ -540,6 +546,27 @@ class CoordinateResponseMeasurePresenter : public TaskPresenter {
 
   private:
     View::CoordinateResponseMeasureOutput &view;
+};
+
+class FreeResponseResponder : public TaskResponder,
+                              public View::FreeResponseInput::EventListener {
+  public:
+    explicit FreeResponseResponder(Model &model, View::FreeResponseInput &view)
+        : model{model}, view{view} {
+        view.subscribe(this);
+    }
+    void subscribe(TaskResponder::EventListener *e) override { listener = e; }
+    void notifyThatSubmitButtonHasBeenClicked() override {
+        model.submit(FreeResponse{view.freeResponse(), view.flagged()});
+        listener->notifyThatUserIsDoneResponding();
+    }
+    void becomeChild(Presenter *p) override { parent = p; }
+
+  private:
+    Model &model;
+    View::FreeResponseInput &view;
+    TaskResponder::EventListener *listener{};
+    Presenter *parent{};
 };
 }
 
