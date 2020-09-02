@@ -453,6 +453,7 @@ class Presenter : public Model::EventListener {
     TaskPresenter *consonantPresenter;
     TaskPresenter *coordinateResponseMeasurePresenter;
     TaskPresenter *freeResponsePresenter;
+    TaskPresenter *correctKeywordsPresenter;
 };
 
 class ConsonantPresenter : public TaskPresenter {

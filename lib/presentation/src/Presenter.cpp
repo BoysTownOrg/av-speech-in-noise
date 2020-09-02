@@ -57,6 +57,11 @@ static auto freeResponse(Method m) -> bool {
         m == Method::fixedLevelFreeResponseWithTargetReplacement;
 }
 
+static auto correctKeywords(Method m) -> bool {
+    return m == Method::adaptiveCorrectKeywords ||
+        m == Method::adaptiveCorrectKeywordsWithEyeTracking;
+}
+
 static auto consonant(Method m) -> bool { return fixedLevelConsonant(m); }
 
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
@@ -101,7 +106,8 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       trialCompletionHandler_{&coordinateResponseMeasureTrialCompletionHandler},
       consonantPresenter{consonantPresenter},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
-      freeResponsePresenter{freeResponsePresenter} {
+      freeResponsePresenter{freeResponsePresenter},
+      correctKeywordsPresenter{correctKeywordsPresenter} {
     model.subscribe(this);
     testSetup.becomeChild(this);
     experimenterPresenter.becomeChild(this);
@@ -162,6 +168,8 @@ void Presenter::showTest(Method m) {
         consonantPresenter->start();
     else if (freeResponse(m))
         freeResponsePresenter->start();
+    else if (correctKeywords(m))
+        correctKeywordsPresenter->start();
     else
         experimenterPresenter.start();
 }
@@ -174,8 +182,7 @@ auto Presenter::trialCompletionHandler(Method m) -> TrialCompletionHandler * {
     if (m == Method::adaptivePassFail ||
         m == Method::adaptivePassFailWithEyeTracking)
         return &passFailTrialCompletionHandler;
-    if (m == Method::adaptiveCorrectKeywords ||
-        m == Method::adaptiveCorrectKeywordsWithEyeTracking)
+    if (correctKeywords(m))
         return &correctKeywordsTrialCompletionHandler;
     return &freeResponseTrialCompletionHandler;
 }
