@@ -375,7 +375,7 @@ class Presenter : public Model::EventListener {
                                                                 presenter} {}
 
         void showResponseSubmission() override {
-            experimenterPresenter.showCorrectKeywordsSubmission();
+            presenter->showResponseSubmission();
         }
 
       private:
