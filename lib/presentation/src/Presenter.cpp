@@ -389,27 +389,13 @@ Presenter::Consonant::Consonant(
     inputView->subscribe(this);
 }
 
-void Presenter::Consonant::start() {
-    outputView->show();
-    outputView->showReadyButton();
-}
+void Presenter::Consonant::start() {}
 
-void Presenter::Consonant::stop() {
-    outputView->hideResponseButtons();
-    outputView->hide();
-}
+void Presenter::Consonant::stop() {}
 
-void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {
-    outputView->hideCursor();
-    parent->playTrial();
-    outputView->hideReadyButton();
-}
+void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {}
 
-void Presenter::Consonant::notifyThatResponseButtonHasBeenClicked() {
-    if (!parent->testComplete())
-        outputView->hideCursor();
-    outputView->hideResponseButtons();
-}
+void Presenter::Consonant::notifyThatResponseButtonHasBeenClicked() {}
 
 void Presenter::Consonant::becomeChild(Presenter *p) { parent = p; }
 
