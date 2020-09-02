@@ -93,7 +93,7 @@ static void showContinueTestingDialogWithResultsWhenComplete(
 }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
-    CoordinateResponseMeasure &coordinateResponseMeasurePresenter, Consonant &,
+    CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
     Experimenter &experimenterPresenter,
     TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader, ConsonantResponder *consonantResponder,

@@ -405,8 +405,8 @@ class Presenter : public Model::EventListener {
     };
 
     Presenter(Model &, View &, TestSetup &, CoordinateResponseMeasure &,
-        Consonant &, Experimenter &, TestSettingsInterpreter &,
-        TextFileReader &, ConsonantResponder * = {}, TaskPresenter * = {});
+        Experimenter &, TestSettingsInterpreter &, TextFileReader &,
+        ConsonantResponder * = {}, TaskPresenter * = {});
     void trialComplete() override;
     void run();
     void confirmTestSetup();

@@ -378,9 +378,12 @@ void main(
     Presenter::TestSetup testSetupPresenter{testSetupView.get()};
     Presenter::Experimenter experimenterPresenter{&experimenterView};
     TestSettingsInterpreterImpl testSettingsInterpreter;
+    ConsonantScreenResponder consonantScreenResponder{model, consonantView};
+    ConsonantPresenter consonantPresenter{model, consonantView};
     Presenter presenter{model, view, testSetupPresenter,
-        coordinateResponseMeasure, consonant, experimenterPresenter,
-        testSettingsInterpreter, textFileReader};
+        coordinateResponseMeasure, experimenterPresenter,
+        testSettingsInterpreter, textFileReader, &consonantScreenResponder,
+        &consonantPresenter};
     presenter.run();
 }
 }
