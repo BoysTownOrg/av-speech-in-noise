@@ -381,6 +381,9 @@ void main(
     FreeResponseResponder freeResponseResponder{model, experimenterView};
     FreeResponsePresenter freeResponsePresenter{
         experimenterView, experimenterView};
+    CorrectKeywordsResponder correctKeywordsResponder{model, experimenterView};
+    CorrectKeywordsPresenter correctKeywordsPresenter{
+        experimenterView, experimenterView};
     CoordinateResponseMeasureResponder coordinateResponseMeasureResponder{
         model, coordinateResponseMeasureView};
     CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
@@ -389,7 +392,8 @@ void main(
         testSettingsInterpreter, textFileReader, &consonantScreenResponder,
         &consonantPresenter, &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenter, &freeResponseResponder,
-        &freeResponsePresenter};
+        &freeResponsePresenter, &correctKeywordsResponder,
+        &correctKeywordsPresenter};
     presenter.run();
 }
 }
