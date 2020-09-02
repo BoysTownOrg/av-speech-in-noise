@@ -398,7 +398,9 @@ auto Presenter::TestSetup::startingSnr() -> std::string {
     return view->startingSnr();
 }
 
-Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {
+Presenter::Experimenter::Experimenter(View::Experimenter *view,
+    View::CorrectKeywordsInput *, View::CorrectKeywordsOutput *)
+    : view{view} {
     view->subscribe(this);
 }
 

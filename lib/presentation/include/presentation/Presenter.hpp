@@ -191,6 +191,16 @@ class View {
         virtual void clearFreeResponse() = 0;
     };
 
+    class CorrectKeywordsInput {
+      public:
+        virtual ~CorrectKeywordsInput() = default;
+    };
+
+    class CorrectKeywordsOutput {
+      public:
+        virtual ~CorrectKeywordsOutput() = default;
+    };
+
     virtual ~View() = default;
     virtual void eventLoop() = 0;
     virtual auto browseForDirectory() -> std::string = 0;
@@ -247,7 +257,9 @@ class Presenter : public Model::EventListener {
 
     class Experimenter : public View::Experimenter::EventListener {
       public:
-        explicit Experimenter(View::Experimenter *);
+        explicit Experimenter(View::Experimenter *,
+            View::CorrectKeywordsInput * = {},
+            View::CorrectKeywordsOutput * = {});
         void exitTest() override;
         void playTrial() override;
         void submitPassedTrial() override;
