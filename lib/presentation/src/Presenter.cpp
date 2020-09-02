@@ -261,9 +261,7 @@ void Presenter::readyNextTrialIfNeeded() {
 
 void Presenter::submitCoordinateResponse() { playNextTrialIfNeeded(); }
 
-void Presenter::submitFreeResponse() {
-    readyNextTrialAfter(&Presenter::submitFreeResponse_);
-}
+void Presenter::submitFreeResponse() {}
 
 void Presenter::submitPassedTrial() {
     submitPassedTrial_();
@@ -291,9 +289,7 @@ void Presenter::submitCorrectKeywords_() {
     model.submit(experimenterPresenter.correctKeywords());
 }
 
-void Presenter::submitFreeResponse_() {
-    model.submit(experimenterPresenter.freeResponse());
-}
+void Presenter::submitFreeResponse_() {}
 
 void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
 
