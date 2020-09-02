@@ -352,21 +352,23 @@ class Presenter : public Model::EventListener {
     class FreeResponseTrialCompletionHandler : public TrialCompletionHandler {
       public:
         explicit FreeResponseTrialCompletionHandler(
-            Experimenter &experimenterPresenter)
-            : experimenterPresenter{experimenterPresenter} {}
+            Experimenter &experimenterPresenter, TaskPresenter *presenter = {})
+            : experimenterPresenter{experimenterPresenter}, presenter{
+                                                                presenter} {}
 
         void showResponseSubmission() override {
-            experimenterPresenter.clearFreeResponse();
-            experimenterPresenter.showFreeResponseSubmission();
+            presenter->showResponseSubmission();
         }
 
       private:
         Experimenter &experimenterPresenter;
+        TaskPresenter *presenter;
     };
 
     Presenter(Model &, View &, TestSetup &, Experimenter &,
         TestSettingsInterpreter &, TextFileReader &, TaskResponder * = {},
-        TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {});
+        TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {},
+        TaskResponder * = {}, TaskPresenter * = {});
     void trialComplete() override;
     void run();
     void confirmTestSetup();
@@ -589,6 +591,7 @@ class FreeResponsePresenter : public TaskPresenter {
         view.hideFreeResponseSubmission();
     }
     void showResponseSubmission() override {
+        view.clearFreeResponse();
         view.showFreeResponseSubmission();
     }
 

@@ -98,8 +98,10 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     TextFileReader &textFileReader, TaskResponder *consonantResponder,
     TaskPresenter *consonantPresenter,
     TaskResponder *coordinateResponseMeasureResponder,
-    TaskPresenter *coordinateResponseMeasurePresenter)
-    : freeResponseTrialCompletionHandler{experimenterPresenter},
+    TaskPresenter *coordinateResponseMeasurePresenter,
+    TaskResponder *freeResponseResponder, TaskPresenter *freeResponsePresenter)
+    : freeResponseTrialCompletionHandler{experimenterPresenter,
+          freeResponsePresenter},
       passFailTrialCompletionHandler{experimenterPresenter},
       correctKeywordsTrialCompletionHandler{experimenterPresenter},
       coordinateResponseMeasureTrialCompletionHandler{

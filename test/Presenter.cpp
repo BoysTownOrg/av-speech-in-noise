@@ -1220,6 +1220,9 @@ class PresenterTests : public ::testing::Test {
         &experimenterView, &experimenterView, &experimenterView};
     ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenterRefactored{model, consonantView};
+    FreeResponseResponder freeResponseResponder{model, experimenterView};
+    FreeResponsePresenter freeResponsePresenter{
+        experimenterView, experimenterView};
     CoordinateResponseMeasureResponder coordinateResponseMeasureResponder{
         model, coordinateResponseMeasureView};
     CoordinateResponseMeasurePresenter
@@ -1231,7 +1234,8 @@ class PresenterTests : public ::testing::Test {
     Presenter presenter{model, view, testSetup, experimenter,
         testSettingsInterpreter, textFileReader, &consonantScreenResponder,
         &consonantPresenterRefactored, &coordinateResponseMeasureResponder,
-        &coordinateResponseMeasurePresenterRefactored};
+        &coordinateResponseMeasurePresenterRefactored, &freeResponseResponder,
+        &freeResponsePresenter};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTest
         confirmingAdaptiveCoordinateResponseMeasureTest{
