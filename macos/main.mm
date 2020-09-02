@@ -381,7 +381,8 @@ void main(
     FreeResponseResponder freeResponseResponder{model, experimenterView};
     FreeResponsePresenter freeResponsePresenter{
         experimenterView, experimenterView};
-    CorrectKeywordsResponder correctKeywordsResponder{model, experimenterView};
+    CorrectKeywordsResponder correctKeywordsResponder{
+        model, view, experimenterView};
     CorrectKeywordsPresenter correctKeywordsPresenter{
         experimenterView, experimenterView};
     CoordinateResponseMeasureResponder coordinateResponseMeasureResponder{

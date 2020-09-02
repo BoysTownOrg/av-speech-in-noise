@@ -416,6 +416,7 @@ class Presenter : public Model::EventListener {
     void acceptContinuingTesting();
     void exitTest();
     void readyNextTrialIfNeeded();
+    void showContinueTestingDialogWithResultsWhenComplete();
 
     static constexpr RealLevel fullScaleLevel{119};
     static constexpr SNR ceilingSnr{20};
@@ -637,22 +638,27 @@ class CorrectKeywordsResponder
       public View::CorrectKeywordsInput::EventListener {
   public:
     explicit CorrectKeywordsResponder(
-        Model &model, View::CorrectKeywordsInput &view)
-        : model{model}, view{view} {
+        Model &model, View &mainView, View::CorrectKeywordsInput &view)
+        : model{model}, mainView{mainView}, view{view} {
         view.subscribe(this);
     }
     void subscribe(TaskResponder::EventListener *e) override { listener = e; }
     void notifyThatSubmitButtonHasBeenClicked() override {
-        CorrectKeywords p{};
-        p.count = readInteger(view.correctKeywords(), "number");
-        model.submit(p);
-        listener->notifyThatUserIsDoneResponding();
-        parent->readyNextTrialIfNeeded();
+        try {
+            CorrectKeywords p{};
+            p.count = readInteger(view.correctKeywords(), "number");
+            model.submit(p);
+            listener->notifyThatUserIsDoneResponding();
+            parent->showContinueTestingDialogWithResultsWhenComplete();
+        } catch (const std::runtime_error &e) {
+            mainView.showErrorMessage(e.what());
+        }
     }
     void becomeChild(Presenter *p) override { parent = p; }
 
   private:
     Model &model;
+    View &mainView;
     View::CorrectKeywordsInput &view;
     TaskResponder::EventListener *listener{};
     Presenter *parent{};

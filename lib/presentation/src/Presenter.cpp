@@ -131,6 +131,11 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 
+void Presenter::showContinueTestingDialogWithResultsWhenComplete() {
+    av_speech_in_noise::showContinueTestingDialogWithResultsWhenComplete(
+        experimenterPresenter, model);
+}
+
 void Presenter::run() { view.eventLoop(); }
 
 void Presenter::confirmTestSetup() {
@@ -259,20 +264,20 @@ void Presenter::submitCoordinateResponse() { playNextTrialIfNeeded(); }
 
 void Presenter::submitPassedTrial() {
     submitPassedTrial_();
-    showContinueTestingDialogWithResultsWhenComplete(
+    av_speech_in_noise::showContinueTestingDialogWithResultsWhenComplete(
         experimenterPresenter, model);
 }
 
 void Presenter::submitFailedTrial() {
     submitFailedTrial_();
-    showContinueTestingDialogWithResultsWhenComplete(
+    av_speech_in_noise::showContinueTestingDialogWithResultsWhenComplete(
         experimenterPresenter, model);
 }
 
 void Presenter::submitCorrectKeywords() {
     try {
         submitCorrectKeywords_();
-        showContinueTestingDialogWithResultsWhenComplete(
+        av_speech_in_noise::showContinueTestingDialogWithResultsWhenComplete(
             experimenterPresenter, model);
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());

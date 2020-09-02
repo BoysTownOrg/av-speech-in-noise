@@ -336,7 +336,9 @@ class ExperimenterViewStub : public View::Experimenter,
         freeResponseListener = e;
     }
 
-    void subscribe(CorrectKeywordsInput::EventListener *e) override {}
+    void subscribe(CorrectKeywordsInput::EventListener *e) override {
+        correctKeywordsListener = e;
+    }
 
     void setResponse(std::string s) { response_ = std::move(s); }
 
@@ -348,7 +350,9 @@ class ExperimenterViewStub : public View::Experimenter,
         freeResponseListener->notifyThatSubmitButtonHasBeenClicked();
     }
 
-    void submitCorrectKeywords() { listener_->submitCorrectKeywords(); }
+    void submitCorrectKeywords() {
+        correctKeywordsListener->notifyThatSubmitButtonHasBeenClicked();
+    }
 
     void exitTest() { listener_->exitTest(); }
 
@@ -408,6 +412,7 @@ class ExperimenterViewStub : public View::Experimenter,
     std::string correctKeywords_{"0"};
     Experimenter::EventListener *listener_{};
     View::FreeResponseInput::EventListener *freeResponseListener{};
+    View::CorrectKeywordsInput::EventListener *correctKeywordsListener{};
     bool freeResponseCleared_{};
     bool exitTestButtonHidden_{};
     bool exitTestButtonShown_{};
@@ -1231,7 +1236,8 @@ class PresenterTests : public ::testing::Test {
     FreeResponseResponder freeResponseResponder{model, experimenterView};
     FreeResponsePresenter freeResponsePresenter{
         experimenterView, experimenterView};
-    CorrectKeywordsResponder correctKeywordsResponder{model, experimenterView};
+    CorrectKeywordsResponder correctKeywordsResponder{
+        model, view, experimenterView};
     CorrectKeywordsPresenter correctKeywordsPresenter{
         experimenterView, experimenterView};
     CoordinateResponseMeasureResponder coordinateResponseMeasureResponder{
