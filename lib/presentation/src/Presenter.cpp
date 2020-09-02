@@ -98,12 +98,12 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     TextFileReader &textFileReader, TaskResponder *consonantResponder,
     TaskPresenter *consonantPresenter,
     TaskResponder *coordinateResponseMeasureResponder,
-    TaskPresenter *coordinateResponseMeasurePresenterRefactored)
+    TaskPresenter *coordinateResponseMeasurePresenter)
     : freeResponseTrialCompletionHandler{experimenterPresenter},
       passFailTrialCompletionHandler{experimenterPresenter},
       correctKeywordsTrialCompletionHandler{experimenterPresenter},
       coordinateResponseMeasureTrialCompletionHandler{
-          coordinateResponseMeasurePresenterRefactored},
+          coordinateResponseMeasurePresenter},
       consonantTrialCompletionHandler{consonantPresenter}, model{model},
       view{view}, testSetup{testSetup},
       experimenterPresenter{experimenterPresenter},
@@ -111,8 +111,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       textFileReader{textFileReader},
       trialCompletionHandler_{&coordinateResponseMeasureTrialCompletionHandler},
       consonantPresenter{consonantPresenter},
-      coordinateResponseMeasurePresenter{
-          coordinateResponseMeasurePresenterRefactored} {
+      coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter} {
     model.subscribe(this);
     testSetup.becomeChild(this);
     experimenterPresenter.becomeChild(this);
