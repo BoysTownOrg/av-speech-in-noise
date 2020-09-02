@@ -300,7 +300,7 @@ class Presenter : public Model::EventListener {
         : public TrialCompletionHandler {
       public:
         explicit CoordinateResponseMeasureTestTrialCompletionHandler(
-            CoordinateResponseMeasure &, TaskPresenter *presenter = {})
+            TaskPresenter *presenter)
             : presenter{presenter} {}
 
         void showResponseSubmission() override {
