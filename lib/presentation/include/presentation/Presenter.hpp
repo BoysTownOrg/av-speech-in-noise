@@ -202,9 +202,8 @@ class TaskResponder {
     virtual void subscribe(EventListener *) = 0;
 };
 
-class TaskPresenter {
+class TaskPresenter : virtual public TaskResponder::EventListener {
   public:
-    virtual ~TaskPresenter() = default;
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void showResponseSubmission() = 0;
@@ -405,8 +404,7 @@ class Presenter : public Model::EventListener {
     TaskPresenter *coordinateResponseMeasurePresenter;
 };
 
-class ConsonantPresenter : public TaskResponder::EventListener,
-                           public TaskPresenter {
+class ConsonantPresenter : public TaskPresenter {
   public:
     explicit ConsonantPresenter(Model &model, View::ConsonantOutput &view)
         : model{model}, view{view} {}
@@ -508,8 +506,7 @@ class CoordinateResponseMeasureResponder
     Presenter *parent{};
 };
 
-class CoordinateResponseMeasurePresenter : public TaskResponder::EventListener,
-                                           public TaskPresenter {
+class CoordinateResponseMeasurePresenter : public TaskPresenter {
   public:
     explicit CoordinateResponseMeasurePresenter(
         View::CoordinateResponseMeasureOutput &view)

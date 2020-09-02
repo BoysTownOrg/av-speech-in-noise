@@ -115,10 +115,15 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     model.subscribe(this);
     testSetup.becomeChild(this);
     experimenterPresenter.becomeChild(this);
-    if (consonantResponder != nullptr)
+    if (consonantResponder != nullptr) {
         consonantResponder->becomeChild(this);
-    if (coordinateResponseMeasureResponder != nullptr)
+        consonantResponder->subscribe(consonantPresenter);
+    }
+    if (coordinateResponseMeasureResponder != nullptr) {
         coordinateResponseMeasureResponder->becomeChild(this);
+        coordinateResponseMeasureResponder->subscribe(
+            coordinateResponseMeasurePresenter);
+    }
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 
