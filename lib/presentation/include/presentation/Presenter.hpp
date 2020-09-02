@@ -568,6 +568,31 @@ class FreeResponseResponder : public TaskResponder,
     TaskResponder::EventListener *listener{};
     Presenter *parent{};
 };
+
+class FreeResponsePresenter : public TaskPresenter {
+  public:
+    explicit FreeResponsePresenter(
+        View::Experimenter &experimenterView, View::FreeResponseOutput &view)
+        : experimenterView{experimenterView}, view{view} {}
+    void start() override {
+        experimenterView.show();
+        experimenterView.showNextTrialButton();
+    }
+    void stop() override { experimenterView.hide(); }
+    void notifyThatTaskHasStarted() override {
+        experimenterView.hideNextTrialButton();
+    }
+    void notifyThatUserIsDoneResponding() override {
+        view.hideFreeResponseSubmission();
+    }
+    void showResponseSubmission() override {
+        view.showFreeResponseSubmission();
+    }
+
+  private:
+    View::Experimenter &experimenterView;
+    View::FreeResponseOutput &view;
+};
 }
 
 #endif
