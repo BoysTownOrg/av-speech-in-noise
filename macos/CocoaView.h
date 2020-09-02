@@ -22,7 +22,7 @@ class CocoaExperimenterView : public View::Experimenter,
     explicit CocoaExperimenterView(NSViewController *);
     void subscribe(Experimenter::EventListener *) override;
     void subscribe(FreeResponseInput::EventListener *) override;
-    void subscribe(CorrectKeywordsInput::EventListener *) override {}
+    void subscribe(CorrectKeywordsInput::EventListener *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;
     void show() override;
@@ -71,6 +71,7 @@ class CocoaExperimenterView : public View::Experimenter,
     FreeResponseViewActions *freeResponseActions;
     Experimenter::EventListener *listener_{};
     View::FreeResponseInput::EventListener *freeResponseListener{};
+    View::CorrectKeywordsInput::EventListener *correctKeywordsListener{};
 };
 
 class CocoaTestSetupView : public View::TestSetup {
