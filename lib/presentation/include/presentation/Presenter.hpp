@@ -306,7 +306,7 @@ class Presenter : public Model::EventListener {
               presenter{presenter} {}
 
         void showResponseSubmission() override {
-            coordinateResponseMeasure.showResponseButtons();
+            presenter->showResponseSubmission();
         }
 
       private:
