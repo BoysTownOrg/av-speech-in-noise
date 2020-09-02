@@ -261,8 +261,6 @@ void Presenter::readyNextTrialIfNeeded() {
 
 void Presenter::submitCoordinateResponse() { playNextTrialIfNeeded(); }
 
-void Presenter::submitFreeResponse() {}
-
 void Presenter::submitPassedTrial() {
     submitPassedTrial_();
     showContinueTestingDialogWithResultsWhenComplete(
@@ -288,8 +286,6 @@ void Presenter::submitCorrectKeywords() {
 void Presenter::submitCorrectKeywords_() {
     model.submit(experimenterPresenter.correctKeywords());
 }
-
-void Presenter::submitFreeResponse_() {}
 
 void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
 
@@ -491,9 +487,7 @@ void Presenter::Experimenter::submitCorrectKeywords() {
     parent->submitCorrectKeywords();
 }
 
-void Presenter::Experimenter::submitFreeResponse() {
-    parent->submitFreeResponse();
-}
+void Presenter::Experimenter::submitFreeResponse() {}
 
 void Presenter::Experimenter::declineContinuingTesting() {
     parent->declineContinuingTesting();
