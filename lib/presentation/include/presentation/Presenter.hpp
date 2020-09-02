@@ -102,11 +102,14 @@ class View {
         virtual void hideResponseButtons() = 0;
         virtual void showNextTrialButton() = 0;
         virtual void hideNextTrialButton() = 0;
-        virtual void show() = 0;
         virtual void hide() = 0;
     };
 
-    class CoordinateResponseMeasureOutput {};
+    class CoordinateResponseMeasureOutput {
+      public:
+        virtual ~CoordinateResponseMeasureOutput() = default;
+        virtual void show() = 0;
+    };
 
     class TestSetup {
       public:
@@ -246,6 +249,7 @@ class Presenter : public Model::EventListener {
         auto colorResponse() -> coordinate_response_measure::Color;
 
         View::CoordinateResponseMeasure *view;
+        View::CoordinateResponseMeasureOutput *outputView;
         Presenter *parent{};
     };
 
