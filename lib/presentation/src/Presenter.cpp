@@ -399,10 +399,8 @@ auto Presenter::TestSetup::startingSnr() -> std::string {
 }
 
 Presenter::Experimenter::Experimenter(View::Experimenter *view,
-    View::FreeResponseInput *freeResponseInputView,
-    View::FreeResponseOutput *freeResponseOutputView)
-    : view{view}, freeResponseInputView{freeResponseInputView},
-      freeResponseOutputView{freeResponseOutputView} {
+    View::FreeResponseInput *, View::FreeResponseOutput *)
+    : view{view} {
     view->subscribe(this);
 }
 
