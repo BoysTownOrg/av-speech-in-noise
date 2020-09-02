@@ -460,7 +460,7 @@ void Presenter::Experimenter::showCorrectKeywordsSubmission() {
 }
 
 void Presenter::Experimenter::showFreeResponseSubmission() {
-    view->showFreeResponseSubmission();
+    freeResponseOutputView->showFreeResponseSubmission();
 }
 
 void Presenter::Experimenter::clearFreeResponse() { view->clearFreeResponse(); }

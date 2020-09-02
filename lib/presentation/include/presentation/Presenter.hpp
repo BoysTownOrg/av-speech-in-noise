@@ -160,7 +160,6 @@ class View {
         virtual void setContinueTestingDialogMessage(const std::string &) = 0;
         virtual void showEvaluationButtons() = 0;
         virtual void hideEvaluationButtons() = 0;
-        virtual void showFreeResponseSubmission() = 0;
         virtual void clearFreeResponse() = 0;
         virtual void hideFreeResponseSubmission() = 0;
         virtual void showCorrectKeywordsSubmission() = 0;
@@ -181,7 +180,11 @@ class View {
         virtual ~FreeResponseInput() = default;
     };
 
-    class FreeResponseOutput {};
+    class FreeResponseOutput {
+      public:
+        virtual ~FreeResponseOutput() = default;
+        virtual void showFreeResponseSubmission() = 0;
+    };
 
     virtual ~View() = default;
     virtual void eventLoop() = 0;
