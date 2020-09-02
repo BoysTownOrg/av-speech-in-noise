@@ -98,17 +98,17 @@ class View {
         virtual auto greenResponse() -> bool = 0;
         virtual auto blueResponse() -> bool = 0;
         virtual auto whiteResponse() -> bool = 0;
-        virtual void showResponseButtons() = 0;
-        virtual void hideResponseButtons() = 0;
-        virtual void showNextTrialButton() = 0;
-        virtual void hideNextTrialButton() = 0;
-        virtual void hide() = 0;
     };
 
     class CoordinateResponseMeasureOutput {
       public:
         virtual ~CoordinateResponseMeasureOutput() = default;
         virtual void show() = 0;
+        virtual void hide() = 0;
+        virtual void showResponseButtons() = 0;
+        virtual void hideResponseButtons() = 0;
+        virtual void showNextTrialButton() = 0;
+        virtual void hideNextTrialButton() = 0;
     };
 
     class TestSetup {

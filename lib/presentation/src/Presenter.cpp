@@ -390,34 +390,34 @@ Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
     view->subscribe(this);
 }
 
-static void hideResponseButtons(View::CoordinateResponseMeasure *view) {
+static void hideResponseButtons(View::CoordinateResponseMeasureOutput *view) {
     view->hideResponseButtons();
 }
 
-static void showNextTrialButton(View::CoordinateResponseMeasure *view) {
+static void showNextTrialButton(View::CoordinateResponseMeasureOutput *view) {
     view->showNextTrialButton();
 }
 
 void Presenter::CoordinateResponseMeasure::start() {
     outputView->show();
-    showNextTrialButton(view);
+    showNextTrialButton(outputView);
 }
 
 void Presenter::CoordinateResponseMeasure::stop() {
-    hideResponseButtons(view);
-    view->hide();
+    hideResponseButtons(outputView);
+    outputView->hide();
 }
 
 void Presenter::CoordinateResponseMeasure::
     notifyThatReadyButtonHasBeenClicked() {
     parent->playTrial();
-    view->hideNextTrialButton();
+    outputView->hideNextTrialButton();
 }
 
 void Presenter::CoordinateResponseMeasure::
     notifyThatResponseButtonHasBeenClicked() {
     parent->submitCoordinateResponse();
-    hideResponseButtons(view);
+    hideResponseButtons(outputView);
 }
 
 void Presenter::CoordinateResponseMeasure::becomeChild(Presenter *p) {
@@ -425,7 +425,7 @@ void Presenter::CoordinateResponseMeasure::becomeChild(Presenter *p) {
 }
 
 void Presenter::CoordinateResponseMeasure::showResponseButtons() {
-    view->showResponseButtons();
+    outputView->showResponseButtons();
 }
 
 auto Presenter::CoordinateResponseMeasure::subjectResponse()
