@@ -373,8 +373,7 @@ void main(
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
     Presenter::TestSetup testSetupPresenter{testSetupView.get()};
-    Presenter::Experimenter experimenterPresenter{
-        &experimenterView, &experimenterView, &experimenterView};
+    Presenter::Experimenter experimenterPresenter{&experimenterView};
     TestSettingsInterpreterImpl testSettingsInterpreter;
     ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenter{model, consonantView};

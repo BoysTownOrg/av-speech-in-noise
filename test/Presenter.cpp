@@ -1111,8 +1111,7 @@ class PresenterConstructionTests : public ::testing::Test {
     ExperimenterViewStub experimenterView;
     ViewStub view;
     Presenter::TestSetup testSetup{&setupView};
-    Presenter::Experimenter experimenter{
-        &experimenterView, &experimenterView, &experimenterView};
+    Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
 
@@ -1221,8 +1220,7 @@ class PresenterTests : public ::testing::Test {
     ConsonantViewStub consonantView;
     ExperimenterViewStub experimenterView;
     Presenter::TestSetup testSetup{&setupView};
-    Presenter::Experimenter experimenter{
-        &experimenterView, &experimenterView, &experimenterView};
+    Presenter::Experimenter experimenter{&experimenterView};
     ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenterRefactored{model, consonantView};
     FreeResponseResponder freeResponseResponder{model, experimenterView};
@@ -1655,8 +1653,7 @@ class PresenterFailureTests : public ::testing::Test {
     ConsonantViewStub consonantView;
     ExperimenterViewStub experimenterView;
     Presenter::TestSetup testSetup{&setupView};
-    Presenter::Experimenter experimenter{
-        &experimenterView, &experimenterView, &experimenterView};
+    Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
 
