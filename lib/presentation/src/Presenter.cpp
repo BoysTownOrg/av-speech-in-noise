@@ -57,6 +57,13 @@ static auto coordinateResponseMeasure(Method m) -> bool {
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
 }
 
+static auto freeResponse(Method m) -> bool {
+    return m == Method::fixedLevelFreeResponseWithAllTargets ||
+        m == Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking ||
+        m == Method::fixedLevelFreeResponseWithSilentIntervalTargets ||
+        m == Method::fixedLevelFreeResponseWithTargetReplacement;
+}
+
 static auto consonant(Method m) -> bool { return fixedLevelConsonant(m); }
 
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
@@ -168,6 +175,8 @@ void Presenter::showTest(Method m) {
         coordinateResponseMeasurePresenter->start();
     else if (consonant(m))
         consonantPresenter->start();
+    else if (freeResponse(m))
+        freeResponsePresenter->start();
     else
         experimenterPresenter.start();
 }
