@@ -88,7 +88,7 @@ static void setAttributedTitle(NSButton *button, const std::string &s) {
                     initWithString:nsString(s)
                         attributes:[NSDictionary
                                        dictionaryWithObjectsAndKeys:
-                                           [NSFont boldSystemFontOfSize:36],
+                                           [NSFont boldSystemFontOfSize:30],
                                        NSFontAttributeName,
                                        [NSColor colorWithRed:33. / 255
                                                        green:57. / 255
@@ -97,20 +97,28 @@ static void setAttributedTitle(NSButton *button, const std::string &s) {
                                        NSForegroundColorAttributeName, nil]]];
 }
 
-static auto labelWithAttributedString(const std::string &s) -> NSTextField * {
+static auto yellowColor() -> NSColor * {
+    return [NSColor colorWithRed:250. / 255
+                           green:216. / 255
+                            blue:111. / 255
+                           alpha:1];
+}
+
+static auto labelWithAttributedString(
+    const std::string &s, NSColor *color, CGFloat size) -> NSTextField * {
     return [NSTextField
         labelWithAttributedString:
             [[NSAttributedString alloc]
                 initWithString:nsString(s)
                     attributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                 [NSFont systemFontOfSize:36],
-                                             NSFontAttributeName,
-                                             [NSColor colorWithRed:250. / 255
-                                                             green:216. / 255
-                                                              blue:111. / 255
-                                                             alpha:1],
+                                                 [NSFont systemFontOfSize:size],
+                                             NSFontAttributeName, color,
                                              NSForegroundColorAttributeName,
                                              nil]]];
+}
+
+static auto labelWithAttributedString(const std::string &s) -> NSTextField * {
+    return labelWithAttributedString(s, yellowColor(), 36);
 }
 
 static auto verticalStackView(NSArray<NSView *> *views) -> NSStackView * {
@@ -120,11 +128,25 @@ static auto verticalStackView(NSArray<NSView *> *views) -> NSStackView * {
 }
 
 static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
-    const auto label_{labelWithAttributedString(s)};
+    const auto label_{labelWithAttributedString(s, yellowColor(), 28)};
     [label_ setContentHuggingPriority:251
                        forOrientation:NSLayoutConstraintOrientationHorizontal];
     const auto stack { [NSStackView stackViewWithViews:@[ label_, field ]] };
     return stack;
+}
+
+// https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CocoaDrawingGuide/Images/Images.html#//apple_ref/doc/uid/TP40003290-CH208-BCIBBFGJ
+static auto simpleRoundedRectImage(NSColor *color) -> NSImage * {
+    const auto rect{CGRectMake(0, 0, 128, 128)};
+    const auto image{[[NSImage alloc] initWithSize:rect.size]};
+    [image lockFocus];
+    auto path{[NSBezierPath bezierPathWithRoundedRect:rect
+                                              xRadius:2
+                                              yRadius:2]};
+    [color setFill];
+    [path fill];
+    [image unlockFocus];
+    return image;
 }
 
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
@@ -138,7 +160,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                 initWithString:@"Facemask Study"
                     attributes:[NSDictionary
                                    dictionaryWithObjectsAndKeys:
-                                       [NSFont systemFontOfSize:36],
+                                       [NSFont systemFontOfSize:40],
                                    NSFontAttributeName, [NSColor whiteColor],
                                    NSForegroundColorAttributeName, nil]]]};
     const auto instructionsLabel{
@@ -157,15 +179,17 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
 
     setAttributedTitle(browseForTestSettingsButton, "Browse");
     setAttributedTitle(confirmButton, "START");
-    confirmButton.bezelStyle = NSBezelStyleTexturedSquare;
     confirmButton.wantsLayer = YES;
+    confirmButton.bordered = NO;
+    confirmButton.layer.cornerRadius = 8.0;
     [confirmButton.layer setBackgroundColor:[NSColor colorWithRed:114. / 255
                                                             green:172. / 255
                                                              blue:77. / 255
                                                             alpha:1]
                                                 .CGColor];
-    browseForTestSettingsButton.bezelStyle = NSBezelStyleTexturedSquare;
     browseForTestSettingsButton.wantsLayer = YES;
+    browseForTestSettingsButton.bordered = NO;
+    browseForTestSettingsButton.layer.cornerRadius = 8.0;
     [browseForTestSettingsButton.layer
         setBackgroundColor:[NSColor colorWithRed:247. / 255
                                            green:191. / 255
@@ -178,7 +202,10 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                                                                alpha:1]];
 
     const auto logo{
-        [NSImageView imageViewWithImage:[NSImage imageNamed:@"b.bmp"]]};
+        [NSImageView imageViewWithImage:[NSImage imageNamed:@"btnrh.png"]]};
+    logo.imageScaling = NSImageScaleProportionallyDown;
+    logo.wantsLayer = YES;
+    logo.layer.backgroundColor = NSColor.whiteColor.CGColor;
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
@@ -186,6 +213,10 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             labeledView(testSettingsField, "Session file:"), confirmButton
         ])
     };
+    [testSettingsField setFont:[NSFont systemFontOfSize:30]];
+    [testSettingsField setTextColor:NSColor.blackColor];
+    testSettingsField.wantsLayer = YES;
+    testSettingsField.layer.backgroundColor = NSColor.whiteColor.CGColor;
     [instructionsLabel
         setContentCompressionResistancePriority:751
                                  forOrientation:
@@ -209,7 +240,17 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                            constant:-8],
         [playCalibrationButton.bottomAnchor
             constraintEqualToAnchor:controller.view.bottomAnchor
-                           constant:-8]
+                           constant:-8],
+        [browseForTestSettingsButton.widthAnchor
+            constraintEqualToConstant:1.4 *
+            browseForTestSettingsButton.attributedTitle.size.width],
+        [confirmButton.widthAnchor constraintEqualToConstant:1.4 *
+                                   confirmButton.attributedTitle.size.width],
+        [browseForTestSettingsButton.heightAnchor
+            constraintEqualToConstant:1.5 *
+            browseForTestSettingsButton.attributedTitle.size.height],
+        [confirmButton.heightAnchor constraintEqualToConstant:1.5 *
+                                    confirmButton.attributedTitle.size.height]
     ]];
 }
 
