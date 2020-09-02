@@ -106,6 +106,8 @@ class View {
         virtual void hide() = 0;
     };
 
+    class CoordinateResponseMeasureOutput {};
+
     class TestSetup {
       public:
         class EventListener {
@@ -230,7 +232,8 @@ class Presenter : public Model::EventListener {
     class CoordinateResponseMeasure
         : public View::CoordinateResponseMeasure::EventListener {
       public:
-        explicit CoordinateResponseMeasure(View::CoordinateResponseMeasure *);
+        explicit CoordinateResponseMeasure(View::CoordinateResponseMeasure *,
+            View::CoordinateResponseMeasureOutput * = {});
         void notifyThatReadyButtonHasBeenClicked() override;
         void notifyThatResponseButtonHasBeenClicked() override;
         void start();

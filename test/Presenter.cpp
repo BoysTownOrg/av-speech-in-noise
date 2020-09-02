@@ -84,7 +84,8 @@ class ConsonantViewStub : public View::ConsonantOutput,
 };
 
 class CoordinateResponseMeasureViewStub
-    : public View::CoordinateResponseMeasure {
+    : public View::CoordinateResponseMeasure,
+      public View::CoordinateResponseMeasureOutput {
   public:
     void show() override { shown_ = true; }
 
