@@ -244,10 +244,7 @@ void Presenter::readyNextTrialIfNeeded() {
         [&]() { readyNextTrial(experimenterPresenter, model); });
 }
 
-void Presenter::submitCoordinateResponse() {
-    model.submit(coordinateResponseMeasurePresenter.subjectResponse());
-    playNextTrialIfNeeded();
-}
+void Presenter::submitCoordinateResponse() { playNextTrialIfNeeded(); }
 
 void Presenter::submitFreeResponse() {
     readyNextTrialAfter(&Presenter::submitFreeResponse_);
