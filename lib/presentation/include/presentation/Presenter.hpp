@@ -370,8 +370,9 @@ class Presenter : public Model::EventListener {
         : public TrialCompletionHandler {
       public:
         explicit CorrectKeywordsTrialCompletionHandler(
-            Experimenter &experimenterPresenter)
-            : experimenterPresenter{experimenterPresenter} {}
+            Experimenter &experimenterPresenter, TaskPresenter *presenter = {})
+            : experimenterPresenter{experimenterPresenter}, presenter{
+                                                                presenter} {}
 
         void showResponseSubmission() override {
             experimenterPresenter.showCorrectKeywordsSubmission();
@@ -379,6 +380,7 @@ class Presenter : public Model::EventListener {
 
       private:
         Experimenter &experimenterPresenter;
+        TaskPresenter *presenter;
     };
 
     class FreeResponseTrialCompletionHandler : public TrialCompletionHandler {
