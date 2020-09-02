@@ -471,12 +471,6 @@ void Presenter::Experimenter::playTrial() { parent->playTrial(); }
 
 void Presenter::Experimenter::exitTest() { parent->exitTest(); }
 
-auto Presenter::Experimenter::correctKeywords() -> CorrectKeywords {
-    CorrectKeywords p{};
-    p.count = readInteger(correctKeywordsInput->correctKeywords(), "number");
-    return p;
-}
-
 void Presenter::Experimenter::display(std::string s) {
     view->display(std::move(s));
 }
