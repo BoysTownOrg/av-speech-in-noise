@@ -113,6 +113,10 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
         freeResponseResponder->becomeChild(this);
         freeResponseResponder->subscribe(freeResponsePresenter);
     }
+    if (correctKeywordsResponder != nullptr) {
+        correctKeywordsResponder->becomeChild(this);
+        correctKeywordsResponder->subscribe(correctKeywordsPresenter);
+    }
     if (coordinateResponseMeasureResponder != nullptr) {
         coordinateResponseMeasureResponder->becomeChild(this);
         coordinateResponseMeasureResponder->subscribe(
