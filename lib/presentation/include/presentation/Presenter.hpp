@@ -370,7 +370,8 @@ class Presenter : public Model::EventListener {
 
     Presenter(Model &, View &, TestSetup &, CoordinateResponseMeasure &,
         Experimenter &, TestSettingsInterpreter &, TextFileReader &,
-        TaskResponder * = {}, TaskPresenter * = {});
+        TaskResponder * = {}, TaskPresenter * = {}, TaskResponder * = {},
+        TaskPresenter * = {});
     void trialComplete() override;
     void run();
     void confirmTestSetup();
