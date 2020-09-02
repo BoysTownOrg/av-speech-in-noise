@@ -1109,8 +1109,8 @@ class PresenterConstructionTests : public ::testing::Test {
     TextFileReaderStub textFileReader;
 
     auto construct() -> Presenter {
-        return {model, view, testSetup, coordinateResponseMeasure, experimenter,
-            testSettingsInterpreter, textFileReader};
+        return {model, view, testSetup, experimenter, testSettingsInterpreter,
+            textFileReader};
     }
 };
 
@@ -1226,10 +1226,9 @@ class PresenterTests : public ::testing::Test {
     Calibration interpretedCalibration;
     TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
     TextFileReaderStub textFileReader;
-    Presenter presenter{model, view, testSetup, coordinateResponseMeasure,
-        experimenter, testSettingsInterpreter, textFileReader,
-        &consonantScreenResponder, &consonantPresenterRefactored,
-        &coordinateResponseMeasureResponder,
+    Presenter presenter{model, view, testSetup, experimenter,
+        testSettingsInterpreter, textFileReader, &consonantScreenResponder,
+        &consonantPresenterRefactored, &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenterRefactored};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTest
@@ -1664,8 +1663,8 @@ class PresenterFailureTests : public ::testing::Test {
     }
 
     void confirmTestSetup() {
-        Presenter presenter{*model, view, testSetup, coordinateResponseMeasure,
-            experimenter, testSettingsInterpreter, textFileReader};
+        Presenter presenter{*model, view, testSetup, experimenter,
+            testSettingsInterpreter, textFileReader};
         setupView.confirmTestSetup();
     }
 

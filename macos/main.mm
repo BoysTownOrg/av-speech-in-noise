@@ -379,8 +379,7 @@ void main(
     TestSettingsInterpreterImpl testSettingsInterpreter;
     ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenter{model, consonantView};
-    Presenter presenter{model, view, testSetupPresenter,
-        coordinateResponseMeasure, experimenterPresenter,
+    Presenter presenter{model, view, testSetupPresenter, experimenterPresenter,
         testSettingsInterpreter, textFileReader, &consonantScreenResponder,
         &consonantPresenter};
     presenter.run();
