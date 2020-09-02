@@ -289,7 +289,6 @@ class Presenter : public Model::EventListener {
         void submitFailedTrial() override;
         void declineContinuingTesting() override;
         void acceptContinuingTesting() override;
-        void hideCorrectKeywordsSubmission();
         void becomeChild(Presenter *parent);
         void show();
         void start();
@@ -304,8 +303,6 @@ class Presenter : public Model::EventListener {
         void display(std::string);
         void secondaryDisplay(std::string);
         void showPassFailSubmission();
-        void showCorrectKeywordsSubmission();
-        auto correctKeywords() -> CorrectKeywords;
 
       private:
         Presenter *parent{};
