@@ -425,26 +425,6 @@ void Presenter::CoordinateResponseMeasure::showResponseButtons() {
     outputView->showResponseButtons();
 }
 
-auto Presenter::CoordinateResponseMeasure::subjectResponse()
-    -> coordinate_response_measure::Response {
-    coordinate_response_measure::Response p{};
-    p.color = colorResponse();
-    p.number = std::stoi(inputView->numberResponse());
-    return p;
-}
-
-auto Presenter::CoordinateResponseMeasure::colorResponse()
-    -> coordinate_response_measure::Color {
-    if (inputView->greenResponse())
-        return coordinate_response_measure::Color::green;
-    if (inputView->blueResponse())
-        return coordinate_response_measure::Color::blue;
-    if (inputView->whiteResponse())
-        return coordinate_response_measure::Color::white;
-
-    return coordinate_response_measure::Color::red;
-}
-
 Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {
     view->subscribe(this);
 }
