@@ -282,9 +282,7 @@ class Presenter : public Model::EventListener {
 
     class Experimenter : public View::Experimenter::EventListener {
       public:
-        explicit Experimenter(View::Experimenter *,
-            View::CorrectKeywordsInput * = {},
-            View::CorrectKeywordsOutput * = {});
+        explicit Experimenter(View::Experimenter *);
         void exitTest() override;
         void playTrial() override;
         void submitPassedTrial() override;
