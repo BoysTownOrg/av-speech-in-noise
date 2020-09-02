@@ -420,7 +420,6 @@ class Presenter : public Model::EventListener {
     Model &model;
     View &view;
     TestSetup &testSetup;
-    CoordinateResponseMeasure &coordinateResponseMeasurePresenter;
     Experimenter &experimenterPresenter;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
