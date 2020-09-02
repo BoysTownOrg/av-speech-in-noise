@@ -274,20 +274,6 @@ void Presenter::submitFailedTrial() {
         experimenterPresenter, model);
 }
 
-void Presenter::submitCorrectKeywords() {
-    try {
-        submitCorrectKeywords_();
-        av_speech_in_noise::showContinueTestingDialogWithResultsWhenComplete(
-            experimenterPresenter, model);
-    } catch (const std::runtime_error &e) {
-        showErrorMessage(e.what());
-    }
-}
-
-void Presenter::submitCorrectKeywords_() {
-    model.submit(experimenterPresenter.correctKeywords());
-}
-
 void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
 
 void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
@@ -477,9 +463,7 @@ void Presenter::Experimenter::submitFailedTrial() {
     parent->submitFailedTrial();
 }
 
-void Presenter::Experimenter::submitCorrectKeywords() {
-    parent->submitCorrectKeywords();
-}
+void Presenter::Experimenter::submitCorrectKeywords() {}
 
 void Presenter::Experimenter::declineContinuingTesting() {
     parent->declineContinuingTesting();
