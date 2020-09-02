@@ -160,13 +160,9 @@ class View {
         virtual void setContinueTestingDialogMessage(const std::string &) = 0;
         virtual void showEvaluationButtons() = 0;
         virtual void hideEvaluationButtons() = 0;
-        virtual void clearFreeResponse() = 0;
-        virtual void hideFreeResponseSubmission() = 0;
         virtual void showCorrectKeywordsSubmission() = 0;
         virtual void hideCorrectKeywordsSubmission() = 0;
-        virtual auto freeResponse() -> std::string = 0;
         virtual auto correctKeywords() -> std::string = 0;
-        virtual auto flagged() -> bool = 0;
         virtual void hideExitTestButton() = 0;
         virtual void showExitTestButton() = 0;
         virtual void showNextTrialButton() = 0;
@@ -178,12 +174,16 @@ class View {
     class FreeResponseInput {
       public:
         virtual ~FreeResponseInput() = default;
+        virtual auto flagged() -> bool = 0;
+        virtual auto freeResponse() -> std::string = 0;
     };
 
     class FreeResponseOutput {
       public:
         virtual ~FreeResponseOutput() = default;
         virtual void showFreeResponseSubmission() = 0;
+        virtual void hideFreeResponseSubmission() = 0;
+        virtual void clearFreeResponse() = 0;
     };
 
     virtual ~View() = default;

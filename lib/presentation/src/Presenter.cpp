@@ -406,8 +406,9 @@ void Presenter::Experimenter::start() {
     showNextTrialButton(view);
 }
 
-static void hideSubmissions(View::Experimenter *view) {
-    view->hideFreeResponseSubmission();
+static void hideSubmissions(View::Experimenter *view,
+    View::FreeResponseOutput *freeResponseOutputView) {
+    freeResponseOutputView->hideFreeResponseSubmission();
     view->hideEvaluationButtons();
     view->hideCorrectKeywordsSubmission();
     view->hideContinueTestingDialog();
@@ -418,7 +419,7 @@ void Presenter::Experimenter::hideCorrectKeywordsSubmission() {
 }
 
 void Presenter::Experimenter::stop() {
-    av_speech_in_noise::hideSubmissions(view);
+    av_speech_in_noise::hideSubmissions(view, freeResponseOutputView);
     view->hide();
 }
 
@@ -430,7 +431,7 @@ void Presenter::Experimenter::trialPlayed() {
 void Presenter::Experimenter::trialComplete() { view->showExitTestButton(); }
 
 void Presenter::Experimenter::readyNextTrial() {
-    av_speech_in_noise::hideSubmissions(view);
+    av_speech_in_noise::hideSubmissions(view, freeResponseOutputView);
     showNextTrialButton(view);
 }
 
@@ -443,7 +444,7 @@ void Presenter::Experimenter::hideEvaluationButtons() {
 }
 
 void Presenter::Experimenter::hideSubmissions() {
-    av_speech_in_noise::hideSubmissions(view);
+    av_speech_in_noise::hideSubmissions(view, freeResponseOutputView);
 }
 
 void Presenter::Experimenter::setContinueTestingDialogMessage(
@@ -463,7 +464,9 @@ void Presenter::Experimenter::showFreeResponseSubmission() {
     freeResponseOutputView->showFreeResponseSubmission();
 }
 
-void Presenter::Experimenter::clearFreeResponse() { view->clearFreeResponse(); }
+void Presenter::Experimenter::clearFreeResponse() {
+    freeResponseOutputView->clearFreeResponse();
+}
 
 void Presenter::Experimenter::submitPassedTrial() {
     parent->submitPassedTrial();
@@ -494,7 +497,8 @@ void Presenter::Experimenter::playTrial() { parent->playTrial(); }
 void Presenter::Experimenter::exitTest() { parent->exitTest(); }
 
 auto Presenter::Experimenter::freeResponse() -> FreeResponse {
-    return {view->freeResponse(), view->flagged()};
+    return {freeResponseInputView->freeResponse(),
+        freeResponseInputView->flagged()};
 }
 
 auto Presenter::Experimenter::correctKeywords() -> CorrectKeywords {
