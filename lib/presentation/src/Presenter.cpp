@@ -112,7 +112,9 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       testSettingsInterpreter{testSettingsInterpreter},
       textFileReader{textFileReader},
       trialCompletionHandler_{&coordinateResponseMeasureTrialCompletionHandler},
-      consonantPresenter{consonantPresenter} {
+      consonantPresenter{consonantPresenter},
+      coordinateResponseMeasurePresenterRefactored{
+          coordinateResponseMeasurePresenterRefactored} {
     model.subscribe(this);
     testSetup.becomeChild(this);
     coordinateResponseMeasurePresenter.becomeChild(this);

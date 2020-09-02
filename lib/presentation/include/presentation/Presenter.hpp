@@ -426,6 +426,7 @@ class Presenter : public Model::EventListener {
     TextFileReader &textFileReader;
     TrialCompletionHandler *trialCompletionHandler_{};
     TaskPresenter *consonantPresenter;
+    TaskPresenter *coordinateResponseMeasurePresenterRefactored;
 };
 
 class ConsonantPresenter : public TaskResponder::EventListener,
