@@ -273,6 +273,8 @@ class Presenter : public Model::EventListener {
       private:
         Presenter *parent{};
         View::Experimenter *view;
+        View::FreeResponseInput *freeResponseInputView;
+        View::FreeResponseOutput *freeResponseOutputView;
     };
 
     class TrialCompletionHandler {
