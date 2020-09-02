@@ -231,28 +231,6 @@ class Presenter : public Model::EventListener {
         Presenter *parent{};
     };
 
-    class CoordinateResponseMeasure
-        : public View::CoordinateResponseMeasureInput::EventListener {
-      public:
-        explicit CoordinateResponseMeasure(
-            View::CoordinateResponseMeasureInput *,
-            View::CoordinateResponseMeasureOutput * = {});
-        void notifyThatReadyButtonHasBeenClicked() override;
-        void notifyThatResponseButtonHasBeenClicked() override;
-        void start();
-        void stop();
-        void becomeChild(Presenter *parent);
-        void showResponseButtons();
-        auto subjectResponse() -> coordinate_response_measure::Response;
-
-      private:
-        auto colorResponse() -> coordinate_response_measure::Color;
-
-        View::CoordinateResponseMeasureInput *inputView;
-        View::CoordinateResponseMeasureOutput *outputView;
-        Presenter *parent{};
-    };
-
     class Experimenter : public View::Experimenter::EventListener {
       public:
         explicit Experimenter(View::Experimenter *);

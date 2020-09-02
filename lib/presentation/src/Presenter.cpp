@@ -380,37 +380,6 @@ auto Presenter::TestSetup::startingSnr() -> std::string {
     return view->startingSnr();
 }
 
-Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
-    View::CoordinateResponseMeasureInput *inputView,
-    View::CoordinateResponseMeasureOutput *outputView)
-    : inputView{inputView}, outputView{outputView} {
-    inputView->subscribe(this);
-}
-
-static void hideResponseButtons(View::CoordinateResponseMeasureOutput *view) {
-    view->hideResponseButtons();
-}
-
-void Presenter::CoordinateResponseMeasure::
-    notifyThatReadyButtonHasBeenClicked() {
-    parent->playTrial();
-    outputView->hideNextTrialButton();
-}
-
-void Presenter::CoordinateResponseMeasure::
-    notifyThatResponseButtonHasBeenClicked() {
-    parent->submitCoordinateResponse();
-    hideResponseButtons(outputView);
-}
-
-void Presenter::CoordinateResponseMeasure::becomeChild(Presenter *p) {
-    parent = p;
-}
-
-void Presenter::CoordinateResponseMeasure::showResponseButtons() {
-    outputView->showResponseButtons();
-}
-
 Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {
     view->subscribe(this);
 }
