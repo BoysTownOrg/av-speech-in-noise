@@ -351,17 +351,14 @@ class Presenter : public Model::EventListener {
 
     class FreeResponseTrialCompletionHandler : public TrialCompletionHandler {
       public:
-        explicit FreeResponseTrialCompletionHandler(
-            Experimenter &experimenterPresenter, TaskPresenter *presenter = {})
-            : experimenterPresenter{experimenterPresenter}, presenter{
-                                                                presenter} {}
+        explicit FreeResponseTrialCompletionHandler(TaskPresenter *presenter)
+            : presenter{presenter} {}
 
         void showResponseSubmission() override {
             presenter->showResponseSubmission();
         }
 
       private:
-        Experimenter &experimenterPresenter;
         TaskPresenter *presenter;
     };
 

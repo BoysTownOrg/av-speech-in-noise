@@ -100,8 +100,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     TaskResponder *coordinateResponseMeasureResponder,
     TaskPresenter *coordinateResponseMeasurePresenter,
     TaskResponder *freeResponseResponder, TaskPresenter *freeResponsePresenter)
-    : freeResponseTrialCompletionHandler{experimenterPresenter,
-          freeResponsePresenter},
+    : freeResponseTrialCompletionHandler{freeResponsePresenter},
       passFailTrialCompletionHandler{experimenterPresenter},
       correctKeywordsTrialCompletionHandler{experimenterPresenter},
       coordinateResponseMeasureTrialCompletionHandler{
