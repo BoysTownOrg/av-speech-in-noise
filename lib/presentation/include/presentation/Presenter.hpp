@@ -146,7 +146,6 @@ class View {
             virtual void submitPassedTrial() = 0;
             virtual void submitCorrectKeywords() = 0;
             virtual void submitFailedTrial() = 0;
-            virtual void submitFreeResponse() = 0;
             virtual void declineContinuingTesting() = 0;
             virtual void acceptContinuingTesting() = 0;
         };
@@ -253,7 +252,6 @@ class Presenter : public Model::EventListener {
         void exitTest() override;
         void playTrial() override;
         void submitPassedTrial() override;
-        void submitFreeResponse() override;
         void submitFailedTrial() override;
         void submitCorrectKeywords() override;
         void declineContinuingTesting() override;

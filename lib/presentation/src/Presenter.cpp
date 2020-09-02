@@ -485,8 +485,6 @@ void Presenter::Experimenter::submitCorrectKeywords() {
     parent->submitCorrectKeywords();
 }
 
-void Presenter::Experimenter::submitFreeResponse() {}
-
 void Presenter::Experimenter::declineContinuingTesting() {
     parent->declineContinuingTesting();
 }
