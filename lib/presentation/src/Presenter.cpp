@@ -419,18 +419,19 @@ void Presenter::Experimenter::start() {
     showNextTrialButton(view);
 }
 
-static void hideSubmissions(View::Experimenter *view) {
+static void hideSubmissions(
+    View::Experimenter *view, View::CorrectKeywordsOutput *correctKeywords) {
     view->hideEvaluationButtons();
-    view->hideCorrectKeywordsSubmission();
+    correctKeywords->hideCorrectKeywordsSubmission();
     view->hideContinueTestingDialog();
 }
 
 void Presenter::Experimenter::hideCorrectKeywordsSubmission() {
-    view->hideCorrectKeywordsSubmission();
+    correctKeywordsOutput->hideCorrectKeywordsSubmission();
 }
 
 void Presenter::Experimenter::stop() {
-    av_speech_in_noise::hideSubmissions(view);
+    av_speech_in_noise::hideSubmissions(view, correctKeywordsOutput);
     view->hide();
 }
 
@@ -442,7 +443,7 @@ void Presenter::Experimenter::trialPlayed() {
 void Presenter::Experimenter::trialComplete() { view->showExitTestButton(); }
 
 void Presenter::Experimenter::readyNextTrial() {
-    av_speech_in_noise::hideSubmissions(view);
+    av_speech_in_noise::hideSubmissions(view, correctKeywordsOutput);
     showNextTrialButton(view);
 }
 
@@ -455,7 +456,7 @@ void Presenter::Experimenter::hideEvaluationButtons() {
 }
 
 void Presenter::Experimenter::hideSubmissions() {
-    av_speech_in_noise::hideSubmissions(view);
+    av_speech_in_noise::hideSubmissions(view, correctKeywordsOutput);
 }
 
 void Presenter::Experimenter::setContinueTestingDialogMessage(
@@ -468,7 +469,7 @@ void Presenter::Experimenter::showPassFailSubmission() {
 }
 
 void Presenter::Experimenter::showCorrectKeywordsSubmission() {
-    view->showCorrectKeywordsSubmission();
+    correctKeywordsOutput->showCorrectKeywordsSubmission();
 }
 
 void Presenter::Experimenter::submitPassedTrial() {

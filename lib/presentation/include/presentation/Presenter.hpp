@@ -159,8 +159,6 @@ class View {
         virtual void setContinueTestingDialogMessage(const std::string &) = 0;
         virtual void showEvaluationButtons() = 0;
         virtual void hideEvaluationButtons() = 0;
-        virtual void showCorrectKeywordsSubmission() = 0;
-        virtual void hideCorrectKeywordsSubmission() = 0;
         virtual auto correctKeywords() -> std::string = 0;
         virtual void hideExitTestButton() = 0;
         virtual void showExitTestButton() = 0;
@@ -199,6 +197,8 @@ class View {
     class CorrectKeywordsOutput {
       public:
         virtual ~CorrectKeywordsOutput() = default;
+        virtual void showCorrectKeywordsSubmission() = 0;
+        virtual void hideCorrectKeywordsSubmission() = 0;
     };
 
     virtual ~View() = default;
