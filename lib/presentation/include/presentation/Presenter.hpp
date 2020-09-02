@@ -190,6 +190,11 @@ class View {
 
     class CorrectKeywordsInput {
       public:
+        class EventListener {
+          public:
+            virtual ~EventListener() = default;
+            virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
+        };
         virtual ~CorrectKeywordsInput() = default;
         virtual auto correctKeywords() -> std::string = 0;
     };
