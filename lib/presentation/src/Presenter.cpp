@@ -158,7 +158,7 @@ void Presenter::showTest(Method m) {
     experimenterPresenter.show();
     displayTrialInformation(experimenterPresenter, model);
     if (coordinateResponseMeasure(m))
-        coordinateResponseMeasurePresenter.start();
+        coordinateResponseMeasurePresenterRefactored->start();
     else if (consonant(m))
         consonantPresenter->start();
     else
