@@ -372,8 +372,6 @@ void main(
     CocoaCoordinateResponseMeasureView coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
-    Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
-        &coordinateResponseMeasureView, &coordinateResponseMeasureView};
     Presenter::TestSetup testSetupPresenter{testSetupView.get()};
     Presenter::Experimenter experimenterPresenter{&experimenterView};
     TestSettingsInterpreterImpl testSettingsInterpreter;
