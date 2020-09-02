@@ -1215,7 +1215,7 @@ class PresenterTests : public ::testing::Test {
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
-        &coordinateResponseMeasureView};
+        &coordinateResponseMeasureView, &coordinateResponseMeasureView};
     ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenterRefactored{model, consonantView};
     Calibration interpretedCalibration;
@@ -1643,7 +1643,7 @@ class PresenterFailureTests : public ::testing::Test {
     ExperimenterViewStub experimenterView;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
-        &coordinateResponseMeasureView};
+        &coordinateResponseMeasureView, &coordinateResponseMeasureView};
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
