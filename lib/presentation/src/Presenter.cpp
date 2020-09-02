@@ -93,8 +93,7 @@ static void showContinueTestingDialogWithResultsWhenComplete(
 }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
-    CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
-    Experimenter &experimenterPresenter,
+    CoordinateResponseMeasure &, Experimenter &experimenterPresenter,
     TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader, TaskResponder *consonantResponder,
     TaskPresenter *consonantPresenter,
@@ -116,7 +115,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
           coordinateResponseMeasurePresenterRefactored} {
     model.subscribe(this);
     testSetup.becomeChild(this);
-    coordinateResponseMeasurePresenter.becomeChild(this);
+
     experimenterPresenter.becomeChild(this);
     if (consonantResponder != nullptr)
         consonantResponder->becomeChild(this);
