@@ -420,6 +420,7 @@ class Presenter : public Model::EventListener {
     TrialCompletionHandler *trialCompletionHandler_{};
     TaskPresenter *consonantPresenter;
     TaskPresenter *coordinateResponseMeasurePresenter;
+    TaskPresenter *freeResponsePresenter;
 };
 
 class ConsonantPresenter : public TaskPresenter {

@@ -112,13 +112,18 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       textFileReader{textFileReader},
       trialCompletionHandler_{&coordinateResponseMeasureTrialCompletionHandler},
       consonantPresenter{consonantPresenter},
-      coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter} {
+      coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
+      freeResponsePresenter{freeResponsePresenter} {
     model.subscribe(this);
     testSetup.becomeChild(this);
     experimenterPresenter.becomeChild(this);
     if (consonantResponder != nullptr) {
         consonantResponder->becomeChild(this);
         consonantResponder->subscribe(consonantPresenter);
+    }
+    if (freeResponseResponder != nullptr) {
+        freeResponseResponder->becomeChild(this);
+        freeResponseResponder->subscribe(freeResponsePresenter);
     }
     if (coordinateResponseMeasureResponder != nullptr) {
         coordinateResponseMeasureResponder->becomeChild(this);
