@@ -391,10 +391,6 @@ void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {}
 
 void Presenter::Consonant::notifyThatResponseButtonHasBeenClicked() {}
 
-void Presenter::Consonant::showResponseButtons() {
-    outputView->showResponseButtons();
-}
-
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
     View::CoordinateResponseMeasure *view)
     : view{view} {
