@@ -4,6 +4,7 @@
 #include <av-speech-in-noise/Model.hpp>
 #include <vector>
 #include <string>
+#include <sstream>
 
 namespace av_speech_in_noise {
 enum class Method {
@@ -196,6 +197,7 @@ class View {
             virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
         };
         virtual ~CorrectKeywordsInput() = default;
+        virtual void subscribe(EventListener *) = 0;
         virtual auto correctKeywords() -> std::string = 0;
     };
 
@@ -238,6 +240,25 @@ class TaskPresenter : virtual public TaskResponder::EventListener {
     virtual void stop() = 0;
     virtual void showResponseSubmission() = 0;
 };
+
+class BadInput : public std::runtime_error {
+  public:
+    explicit BadInput(const std::string &s) : std::runtime_error{s} {}
+};
+
+static auto readInteger(const std::string &x, const std::string &identifier)
+    -> int {
+    try {
+        return std::stoi(x);
+    } catch (const std::invalid_argument &) {
+        std::stringstream stream;
+        stream << '"' << x << '"';
+        stream << " is not a valid ";
+        stream << identifier;
+        stream << '.';
+        throw BadInput{stream.str()};
+    }
+}
 
 class Presenter : public Model::EventListener {
   public:
@@ -608,6 +629,32 @@ class FreeResponsePresenter : public TaskPresenter {
   private:
     View::Experimenter &experimenterView;
     View::FreeResponseOutput &view;
+};
+
+class CorrectKeywordsResponder
+    : public TaskResponder,
+      public View::CorrectKeywordsInput::EventListener {
+  public:
+    explicit CorrectKeywordsResponder(
+        Model &model, View::CorrectKeywordsInput &view)
+        : model{model}, view{view} {
+        view.subscribe(this);
+    }
+    void subscribe(TaskResponder::EventListener *e) override { listener = e; }
+    void notifyThatSubmitButtonHasBeenClicked() override {
+        CorrectKeywords p{};
+        p.count = readInteger(view.correctKeywords(), "number");
+        model.submit(p);
+        listener->notifyThatUserIsDoneResponding();
+        parent->readyNextTrialIfNeeded();
+    }
+    void becomeChild(Presenter *p) override { parent = p; }
+
+  private:
+    Model &model;
+    View::CorrectKeywordsInput &view;
+    TaskResponder::EventListener *listener{};
+    Presenter *parent{};
 };
 }
 

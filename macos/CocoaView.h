@@ -21,7 +21,8 @@ class CocoaExperimenterView : public View::Experimenter,
   public:
     explicit CocoaExperimenterView(NSViewController *);
     void subscribe(Experimenter::EventListener *) override;
-    void subscribe(View::FreeResponseInput::EventListener *) override;
+    void subscribe(FreeResponseInput::EventListener *) override;
+    void subscribe(CorrectKeywordsInput::EventListener *) override {}
     void showExitTestButton() override;
     void hideExitTestButton() override;
     void show() override;

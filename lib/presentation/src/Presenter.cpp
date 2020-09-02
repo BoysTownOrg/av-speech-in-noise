@@ -6,13 +6,6 @@
 #include <functional>
 
 namespace av_speech_in_noise {
-namespace {
-class BadInput : public std::runtime_error {
-  public:
-    explicit BadInput(const std::string &s) : std::runtime_error{s} {}
-};
-}
-
 static auto testIdentity(Presenter::TestSetup &testSetup) -> TestIdentity {
     return testSetup.testIdentity();
 }
@@ -69,20 +62,6 @@ static auto consonant(Method m) -> bool { return fixedLevelConsonant(m); }
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
 static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
-
-static auto readInteger(const std::string &x, const std::string &identifier)
-    -> int {
-    try {
-        return std::stoi(x);
-    } catch (const std::invalid_argument &) {
-        std::stringstream stream;
-        stream << '"' << x << '"';
-        stream << " is not a valid ";
-        stream << identifier;
-        stream << '.';
-        throw BadInput{stream.str()};
-    }
-}
 
 static void showContinueTestingDialogWithResultsWhenComplete(
     Presenter::Experimenter &experimenterPresenter, Model &model) {
