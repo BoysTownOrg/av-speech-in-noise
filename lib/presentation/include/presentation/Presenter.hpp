@@ -203,7 +203,7 @@ class TaskPresenter {
     virtual ~TaskPresenter() = default;
     virtual void start() = 0;
     virtual void stop() = 0;
-    virtual void notifyThatUserIsReadyToRespond() = 0;
+    virtual void showResponseSubmission() = 0;
 };
 
 class Presenter : public Model::EventListener {
@@ -310,7 +310,7 @@ class Presenter : public Model::EventListener {
             : presenter{presenter} {}
 
         void showResponseSubmission() override {
-            presenter->notifyThatUserIsReadyToRespond();
+            presenter->showResponseSubmission();
         }
 
       private:
@@ -442,9 +442,7 @@ class ConsonantPresenter : public TaskResponder::EventListener,
         if (!model.testComplete())
             view.hideCursor();
     }
-    void notifyThatUserIsReadyToRespond() override {
-        view.showResponseButtons();
-    }
+    void showResponseSubmission() override { view.showResponseButtons(); }
 
   private:
     Model &model;
