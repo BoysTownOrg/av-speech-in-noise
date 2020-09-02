@@ -248,7 +248,7 @@ class Presenter : public Model::EventListener {
       private:
         auto colorResponse() -> coordinate_response_measure::Color;
 
-        View::CoordinateResponseMeasureInput *view;
+        View::CoordinateResponseMeasureInput *inputView;
         View::CoordinateResponseMeasureOutput *outputView;
         Presenter *parent{};
     };

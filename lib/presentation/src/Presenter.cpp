@@ -384,10 +384,10 @@ auto Presenter::TestSetup::startingSnr() -> std::string {
 }
 
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
-    View::CoordinateResponseMeasureInput *view,
+    View::CoordinateResponseMeasureInput *inputView,
     View::CoordinateResponseMeasureOutput *outputView)
-    : view{view}, outputView{outputView} {
-    view->subscribe(this);
+    : inputView{inputView}, outputView{outputView} {
+    inputView->subscribe(this);
 }
 
 static void hideResponseButtons(View::CoordinateResponseMeasureOutput *view) {
@@ -432,17 +432,17 @@ auto Presenter::CoordinateResponseMeasure::subjectResponse()
     -> coordinate_response_measure::Response {
     coordinate_response_measure::Response p{};
     p.color = colorResponse();
-    p.number = std::stoi(view->numberResponse());
+    p.number = std::stoi(inputView->numberResponse());
     return p;
 }
 
 auto Presenter::CoordinateResponseMeasure::colorResponse()
     -> coordinate_response_measure::Color {
-    if (view->greenResponse())
+    if (inputView->greenResponse())
         return coordinate_response_measure::Color::green;
-    if (view->blueResponse())
+    if (inputView->blueResponse())
         return coordinate_response_measure::Color::blue;
-    if (view->whiteResponse())
+    if (inputView->whiteResponse())
         return coordinate_response_measure::Color::white;
 
     return coordinate_response_measure::Color::red;
