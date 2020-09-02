@@ -409,10 +409,6 @@ static void hideSubmissions(
     view->hideContinueTestingDialog();
 }
 
-void Presenter::Experimenter::hideCorrectKeywordsSubmission() {
-    correctKeywordsOutput->hideCorrectKeywordsSubmission();
-}
-
 void Presenter::Experimenter::stop() {
     av_speech_in_noise::hideSubmissions(view, correctKeywordsOutput);
     view->hide();
