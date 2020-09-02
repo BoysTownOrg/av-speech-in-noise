@@ -467,13 +467,9 @@ void Presenter::Experimenter::showCorrectKeywordsSubmission() {
     view->showCorrectKeywordsSubmission();
 }
 
-void Presenter::Experimenter::showFreeResponseSubmission() {
-    freeResponseOutputView->showFreeResponseSubmission();
-}
+void Presenter::Experimenter::showFreeResponseSubmission() {}
 
-void Presenter::Experimenter::clearFreeResponse() {
-    freeResponseOutputView->clearFreeResponse();
-}
+void Presenter::Experimenter::clearFreeResponse() {}
 
 void Presenter::Experimenter::submitPassedTrial() {
     parent->submitPassedTrial();
