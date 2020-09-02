@@ -449,10 +449,10 @@ class ConsonantPresenter : public TaskResponder::EventListener,
     View::ConsonantOutput &view;
 };
 
-class ConsonantScreenResponder : public TaskResponder,
-                                 public View::ConsonantInput::EventListener {
+class ConsonantResponder : public TaskResponder,
+                           public View::ConsonantInput::EventListener {
   public:
-    explicit ConsonantScreenResponder(Model &model, View::ConsonantInput &view)
+    explicit ConsonantResponder(Model &model, View::ConsonantInput &view)
         : model{model}, view{view} {
         view.subscribe(this);
     }

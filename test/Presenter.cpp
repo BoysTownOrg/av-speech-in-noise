@@ -1215,7 +1215,7 @@ class PresenterTests : public ::testing::Test {
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
         &coordinateResponseMeasureView};
-    ConsonantScreenResponder consonantScreenResponder{model, consonantView};
+    ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenterRefactored{model, consonantView};
     Calibration interpretedCalibration;
     TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
