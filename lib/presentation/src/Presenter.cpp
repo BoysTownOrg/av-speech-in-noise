@@ -384,24 +384,12 @@ auto Presenter::TestSetup::startingSnr() -> std::string {
 }
 
 Presenter::Consonant::Consonant(
-    View::ConsonantInput *inputView, View::ConsonantOutput *outputView)
-    : inputView{inputView}, outputView{outputView} {
-    inputView->subscribe(this);
-}
-
-void Presenter::Consonant::start() {}
-
-void Presenter::Consonant::stop() {}
+    View::ConsonantInput *, View::ConsonantOutput *outputView)
+    : outputView{outputView} {}
 
 void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {}
 
 void Presenter::Consonant::notifyThatResponseButtonHasBeenClicked() {}
-
-void Presenter::Consonant::becomeChild(Presenter *p) { parent = p; }
-
-auto Presenter::Consonant::subjectResponse() -> ConsonantResponse {
-    return ConsonantResponse{inputView->consonant().front()};
-}
 
 void Presenter::Consonant::showResponseButtons() {
     outputView->showResponseButtons();

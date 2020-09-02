@@ -263,14 +263,9 @@ class Presenter : public Model::EventListener {
         explicit Consonant(View::ConsonantInput *, View::ConsonantOutput *);
         void notifyThatReadyButtonHasBeenClicked() override;
         void notifyThatResponseButtonHasBeenClicked() override;
-        void start();
-        void stop();
-        void becomeChild(Presenter *parent);
-        auto subjectResponse() -> ConsonantResponse;
         void showResponseButtons();
 
       private:
-        View::ConsonantInput *inputView;
         View::ConsonantOutput *outputView;
         Presenter *parent{};
     };
