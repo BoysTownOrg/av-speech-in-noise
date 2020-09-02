@@ -529,6 +529,30 @@ class CoordinateResponseMeasureResponder
     TaskResponder::EventListener *listener{};
     Presenter *parent{};
 };
+
+class CoordinateResponseMeasurePresenter : public TaskResponder::EventListener,
+                                           public TaskPresenter {
+  public:
+    explicit CoordinateResponseMeasurePresenter(
+        View::CoordinateResponseMeasureOutput &view)
+        : view{view} {}
+    void start() override {
+        view.show();
+        view.showNextTrialButton();
+    }
+    void stop() override {
+        view.hideResponseButtons();
+        view.hide();
+    }
+    void notifyThatTaskHasStarted() override { view.hideNextTrialButton(); }
+    void notifyThatUserIsDoneResponding() override {
+        view.hideResponseButtons();
+    }
+    void showResponseSubmission() override { view.showResponseButtons(); }
+
+  private:
+    View::CoordinateResponseMeasureOutput &view;
+};
 }
 
 #endif
