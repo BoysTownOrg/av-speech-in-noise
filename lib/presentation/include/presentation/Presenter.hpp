@@ -425,7 +425,7 @@ class Presenter : public Model::EventListener {
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
     TrialCompletionHandler *trialCompletionHandler_{};
-    TaskPresenter *consonantPresenterRefactored;
+    TaskPresenter *consonantPresenter;
 };
 
 class ConsonantPresenter : public TaskResponder::EventListener,
