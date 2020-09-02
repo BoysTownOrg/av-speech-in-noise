@@ -288,6 +288,8 @@ class Presenter : public Model::EventListener {
       private:
         Presenter *parent{};
         View::Experimenter *view;
+        View::CorrectKeywordsInput *correctKeywordsInput;
+        View::CorrectKeywordsOutput *correctKeywordsOutput;
     };
 
     class TrialCompletionHandler {
