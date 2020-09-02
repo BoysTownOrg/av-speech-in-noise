@@ -384,7 +384,7 @@ auto Presenter::TestSetup::startingSnr() -> std::string {
 }
 
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
-    View::CoordinateResponseMeasure *view,
+    View::CoordinateResponseMeasureInput *view,
     View::CoordinateResponseMeasureOutput *outputView)
     : view{view}, outputView{outputView} {
     view->subscribe(this);

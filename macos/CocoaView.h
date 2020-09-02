@@ -131,7 +131,7 @@ class CocoaConsonantView : public View::ConsonantOutput,
 };
 
 class CocoaCoordinateResponseMeasureView
-    : public View::CoordinateResponseMeasure,
+    : public View::CoordinateResponseMeasureInput,
       public View::CoordinateResponseMeasureOutput {
   public:
     CocoaCoordinateResponseMeasureView(NSRect);

@@ -83,7 +83,7 @@ class View {
         virtual void showResponseButtons() = 0;
     };
 
-    class CoordinateResponseMeasure {
+    class CoordinateResponseMeasureInput {
       public:
         class EventListener {
           public:
@@ -91,8 +91,7 @@ class View {
             virtual void notifyThatReadyButtonHasBeenClicked() = 0;
             virtual void notifyThatResponseButtonHasBeenClicked() = 0;
         };
-
-        virtual ~CoordinateResponseMeasure() = default;
+        virtual ~CoordinateResponseMeasureInput() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual auto numberResponse() -> std::string = 0;
         virtual auto greenResponse() -> bool = 0;
@@ -233,9 +232,10 @@ class Presenter : public Model::EventListener {
     };
 
     class CoordinateResponseMeasure
-        : public View::CoordinateResponseMeasure::EventListener {
+        : public View::CoordinateResponseMeasureInput::EventListener {
       public:
-        explicit CoordinateResponseMeasure(View::CoordinateResponseMeasure *,
+        explicit CoordinateResponseMeasure(
+            View::CoordinateResponseMeasureInput *,
             View::CoordinateResponseMeasureOutput * = {});
         void notifyThatReadyButtonHasBeenClicked() override;
         void notifyThatResponseButtonHasBeenClicked() override;
@@ -248,7 +248,7 @@ class Presenter : public Model::EventListener {
       private:
         auto colorResponse() -> coordinate_response_measure::Color;
 
-        View::CoordinateResponseMeasure *view;
+        View::CoordinateResponseMeasureInput *view;
         View::CoordinateResponseMeasureOutput *outputView;
         Presenter *parent{};
     };
