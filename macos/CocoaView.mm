@@ -741,7 +741,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
     actions->controller = this;
 }
 
-void CocoaExperimenterView::subscribe(EventListener *e) { listener_ = e; }
+void CocoaExperimenterView::subscribe(Experimenter::EventListener *e) {
+    listener_ = e;
+}
 
 void CocoaExperimenterView::showExitTestButton() {
     av_speech_in_noise::show(exitTestButton);

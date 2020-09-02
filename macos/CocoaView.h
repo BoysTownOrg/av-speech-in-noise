@@ -17,7 +17,8 @@ class CocoaExperimenterView : public View::Experimenter,
                               public View::FreeResponseOutput {
   public:
     explicit CocoaExperimenterView(NSViewController *);
-    void subscribe(EventListener *) override;
+    void subscribe(Experimenter::EventListener *) override;
+    void subscribe(View::FreeResponseInput::EventListener *) override {}
     void showExitTestButton() override;
     void hideExitTestButton() override;
     void show() override;
@@ -63,7 +64,7 @@ class CocoaExperimenterView : public View::Experimenter,
     NSButton *exitTestButton;
     NSButton *nextTrialButton;
     ExperimenterViewActions *actions;
-    EventListener *listener_{};
+    Experimenter::EventListener *listener_{};
 };
 
 class CocoaTestSetupView : public View::TestSetup {

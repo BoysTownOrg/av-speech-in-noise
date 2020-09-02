@@ -378,6 +378,9 @@ void main(
     TestSettingsInterpreterImpl testSettingsInterpreter;
     ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenter{model, consonantView};
+    FreeResponseResponder freeResponseResponder{model, experimenterView};
+    FreeResponsePresenter freeResponsePresenter{
+        experimenterView, experimenterView};
     CoordinateResponseMeasureResponder coordinateResponseMeasureResponder{
         model, coordinateResponseMeasureView};
     CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
@@ -385,7 +388,8 @@ void main(
     Presenter presenter{model, view, testSetupPresenter, experimenterPresenter,
         testSettingsInterpreter, textFileReader, &consonantScreenResponder,
         &consonantPresenter, &coordinateResponseMeasureResponder,
-        &coordinateResponseMeasurePresenter};
+        &coordinateResponseMeasurePresenter, &freeResponseResponder,
+        &freeResponsePresenter};
     presenter.run();
 }
 }
