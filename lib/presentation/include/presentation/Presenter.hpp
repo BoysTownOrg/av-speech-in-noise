@@ -258,17 +258,6 @@ class Presenter : public Model::EventListener {
         Presenter *parent{};
     };
 
-    class Consonant : public View::ConsonantInput::EventListener {
-      public:
-        explicit Consonant(View::ConsonantInput *, View::ConsonantOutput *);
-        void notifyThatReadyButtonHasBeenClicked() override;
-        void notifyThatResponseButtonHasBeenClicked() override;
-        void showResponseButtons();
-
-      private:
-        View::ConsonantOutput *outputView;
-    };
-
     class CoordinateResponseMeasure
         : public View::CoordinateResponseMeasure::EventListener {
       public:
