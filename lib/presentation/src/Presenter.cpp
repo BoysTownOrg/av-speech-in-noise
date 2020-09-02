@@ -119,6 +119,8 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     experimenterPresenter.becomeChild(this);
     if (consonantResponder != nullptr)
         consonantResponder->becomeChild(this);
+    if (coordinateResponseMeasureResponder != nullptr)
+        coordinateResponseMeasureResponder->becomeChild(this);
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 

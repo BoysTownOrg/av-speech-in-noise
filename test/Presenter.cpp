@@ -1218,12 +1218,19 @@ class PresenterTests : public ::testing::Test {
         &coordinateResponseMeasureView, &coordinateResponseMeasureView};
     ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenterRefactored{model, consonantView};
+    CoordinateResponseMeasureResponder coordinateResponseMeasureResponder{
+        model, coordinateResponseMeasureView};
+    CoordinateResponseMeasurePresenter
+        coordinateResponseMeasurePresenterRefactored{
+            coordinateResponseMeasureView};
     Calibration interpretedCalibration;
     TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
     TextFileReaderStub textFileReader;
     Presenter presenter{model, view, testSetup, coordinateResponseMeasure,
         experimenter, testSettingsInterpreter, textFileReader,
-        &consonantScreenResponder, &consonantPresenterRefactored};
+        &consonantScreenResponder, &consonantPresenterRefactored,
+        &coordinateResponseMeasureResponder,
+        &coordinateResponseMeasurePresenterRefactored};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTest
         confirmingAdaptiveCoordinateResponseMeasureTest{
@@ -1288,6 +1295,8 @@ class PresenterTests : public ::testing::Test {
 
     PresenterTests() {
         consonantScreenResponder.subscribe(&consonantPresenterRefactored);
+        coordinateResponseMeasureResponder.subscribe(
+            &coordinateResponseMeasurePresenterRefactored);
     }
 
     void assertBrowseResultPassedToEntry(BrowsingEnteredPathUseCase &useCase) {
