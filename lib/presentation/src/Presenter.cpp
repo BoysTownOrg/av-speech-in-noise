@@ -93,8 +93,8 @@ static void showContinueTestingDialogWithResultsWhenComplete(
 }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
-    CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
-    Consonant &consonantPresenter, Experimenter &experimenterPresenter,
+    CoordinateResponseMeasure &coordinateResponseMeasurePresenter, Consonant &,
+    Experimenter &experimenterPresenter,
     TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader, ConsonantResponder *consonantResponder,
     TaskPresenter *consonantPresenterRefactored)
@@ -103,8 +103,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       correctKeywordsTrialCompletionHandler{experimenterPresenter},
       coordinateResponseMeasureTrialCompletionHandler{
           coordinateResponseMeasurePresenter},
-      consonantTrialCompletionHandler{
-          consonantPresenter, consonantPresenterRefactored},
+      consonantTrialCompletionHandler{consonantPresenterRefactored},
       model{model}, view{view}, testSetup{testSetup},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       experimenterPresenter{experimenterPresenter},

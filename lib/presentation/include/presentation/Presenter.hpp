@@ -348,17 +348,15 @@ class Presenter : public Model::EventListener {
 
     class ConsonantTrialCompletionHandler : public TrialCompletionHandler {
       public:
-        explicit ConsonantTrialCompletionHandler(Consonant &consonant,
+        explicit ConsonantTrialCompletionHandler(
             TaskPresenter *consonantPresenterRefactored = {})
-            : consonant{consonant}, consonantPresenterRefactored{
-                                        consonantPresenterRefactored} {}
+            : consonantPresenterRefactored{consonantPresenterRefactored} {}
 
         void showResponseSubmission() override {
             consonantPresenterRefactored->notifyThatUserIsReadyToRespond();
         }
 
       private:
-        Consonant &consonant;
         TaskPresenter *consonantPresenterRefactored;
     };
 
