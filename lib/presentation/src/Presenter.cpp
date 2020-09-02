@@ -498,7 +498,7 @@ void Presenter::Experimenter::exitTest() { parent->exitTest(); }
 
 auto Presenter::Experimenter::correctKeywords() -> CorrectKeywords {
     CorrectKeywords p{};
-    p.count = readInteger(view->correctKeywords(), "number");
+    p.count = readInteger(correctKeywordsInput->correctKeywords(), "number");
     return p;
 }
 
