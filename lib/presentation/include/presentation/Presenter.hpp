@@ -481,6 +481,54 @@ class ConsonantResponder : public TaskResponder,
     TaskResponder::EventListener *listener{};
     Presenter *parent{};
 };
+
+static auto colorResponse(View::CoordinateResponseMeasureInput *inputView)
+    -> coordinate_response_measure::Color {
+    if (inputView->greenResponse())
+        return coordinate_response_measure::Color::green;
+    if (inputView->blueResponse())
+        return coordinate_response_measure::Color::blue;
+    if (inputView->whiteResponse())
+        return coordinate_response_measure::Color::white;
+
+    return coordinate_response_measure::Color::red;
+}
+
+static auto subjectResponse(View::CoordinateResponseMeasureInput *inputView)
+    -> coordinate_response_measure::Response {
+    coordinate_response_measure::Response p{};
+    p.color = colorResponse(inputView);
+    p.number = std::stoi(inputView->numberResponse());
+    return p;
+}
+
+class CoordinateResponseMeasureResponder
+    : public TaskResponder,
+      public View::CoordinateResponseMeasureInput::EventListener {
+  public:
+    explicit CoordinateResponseMeasureResponder(
+        Model &model, View::CoordinateResponseMeasureInput &view)
+        : model{model}, view{view} {
+        view.subscribe(this);
+    }
+    void subscribe(TaskResponder::EventListener *e) override { listener = e; }
+    void notifyThatReadyButtonHasBeenClicked() override {
+        parent->playTrial();
+        listener->notifyThatTaskHasStarted();
+    }
+    void notifyThatResponseButtonHasBeenClicked() override {
+        model.submit(subjectResponse(&view));
+        parent->playNextTrialIfNeeded();
+        listener->notifyThatUserIsDoneResponding();
+    }
+    void becomeChild(Presenter *p) override { parent = p; }
+
+  private:
+    Model &model;
+    View::CoordinateResponseMeasureInput &view;
+    TaskResponder::EventListener *listener{};
+    Presenter *parent{};
+};
 }
 
 #endif
