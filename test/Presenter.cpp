@@ -240,7 +240,9 @@ class TestSetupViewStub : public View::TestSetup {
 
 class ExperimenterViewStub : public View::Experimenter,
                              public View::FreeResponseInput,
-                             public View::FreeResponseOutput {
+                             public View::FreeResponseOutput,
+                             public View::CorrectKeywordsInput,
+                             public View::CorrectKeywordsOutput {
   public:
     void declineContinuingTesting() { listener_->declineContinuingTesting(); }
 

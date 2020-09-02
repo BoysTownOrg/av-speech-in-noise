@@ -15,7 +15,9 @@
 namespace av_speech_in_noise {
 class CocoaExperimenterView : public View::Experimenter,
                               public View::FreeResponseInput,
-                              public View::FreeResponseOutput {
+                              public View::FreeResponseOutput,
+                              public View::CorrectKeywordsInput,
+                              public View::CorrectKeywordsOutput {
   public:
     explicit CocoaExperimenterView(NSViewController *);
     void subscribe(Experimenter::EventListener *) override;
