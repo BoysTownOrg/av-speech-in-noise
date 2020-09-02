@@ -272,10 +272,7 @@ class Presenter : public Model::EventListener {
         void secondaryDisplay(std::string);
         void showPassFailSubmission();
         void showCorrectKeywordsSubmission();
-        void showFreeResponseSubmission();
-        void clearFreeResponse();
         auto correctKeywords() -> CorrectKeywords;
-        auto freeResponse() -> FreeResponse;
 
       private:
         Presenter *parent{};
