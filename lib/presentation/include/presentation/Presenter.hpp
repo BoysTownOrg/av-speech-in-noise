@@ -383,6 +383,7 @@ class Presenter : public Model::EventListener {
     void declineContinuingTesting();
     void acceptContinuingTesting();
     void exitTest();
+    void readyNextTrialIfNeeded();
 
     static constexpr RealLevel fullScaleLevel{119};
     static constexpr SNR ceilingSnr{20};
@@ -397,7 +398,6 @@ class Presenter : public Model::EventListener {
     void submitCorrectKeywords_();
     void showErrorMessage(std::string);
     void playCalibration_();
-    void readyNextTrialIfNeeded();
     void showTest(Method);
     void switchToTestView(Method);
     void confirmTestSetup_();
@@ -559,6 +559,7 @@ class FreeResponseResponder : public TaskResponder,
     void notifyThatSubmitButtonHasBeenClicked() override {
         model.submit(FreeResponse{view.freeResponse(), view.flagged()});
         listener->notifyThatUserIsDoneResponding();
+        parent->readyNextTrialIfNeeded();
     }
     void becomeChild(Presenter *p) override { parent = p; }
 

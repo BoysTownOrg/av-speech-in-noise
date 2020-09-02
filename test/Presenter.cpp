@@ -330,7 +330,9 @@ class ExperimenterViewStub : public View::Experimenter,
 
     void subscribe(Experimenter::EventListener *e) override { listener_ = e; }
 
-    void subscribe(FreeResponseInput::EventListener *e) override {}
+    void subscribe(FreeResponseInput::EventListener *e) override {
+        freeResponseListener = e;
+    }
 
     void setResponse(std::string s) { response_ = std::move(s); }
 
@@ -338,7 +340,9 @@ class ExperimenterViewStub : public View::Experimenter,
 
     void submitPassedTrial() { listener_->submitPassedTrial(); }
 
-    void submitFreeResponse() { listener_->submitFreeResponse(); }
+    void submitFreeResponse() {
+        freeResponseListener->notifyThatSubmitButtonHasBeenClicked();
+    }
 
     void submitCorrectKeywords() { listener_->submitCorrectKeywords(); }
 
@@ -399,6 +403,7 @@ class ExperimenterViewStub : public View::Experimenter,
     std::string response_;
     std::string correctKeywords_{"0"};
     Experimenter::EventListener *listener_{};
+    View::FreeResponseInput::EventListener *freeResponseListener{};
     bool freeResponseCleared_{};
     bool exitTestButtonHidden_{};
     bool exitTestButtonShown_{};
