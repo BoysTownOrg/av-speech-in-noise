@@ -656,6 +656,34 @@ class CorrectKeywordsResponder
     TaskResponder::EventListener *listener{};
     Presenter *parent{};
 };
+
+class CorrectKeywordsPresenter : public TaskPresenter {
+  public:
+    explicit CorrectKeywordsPresenter(
+        View::Experimenter &experimenterView, View::CorrectKeywordsOutput &view)
+        : experimenterView{experimenterView}, view{view} {}
+    void start() override {
+        experimenterView.show();
+        experimenterView.showNextTrialButton();
+    }
+    void stop() override {
+        experimenterView.hide();
+        view.hideCorrectKeywordsSubmission();
+    }
+    void notifyThatTaskHasStarted() override {
+        experimenterView.hideNextTrialButton();
+    }
+    void notifyThatUserIsDoneResponding() override {
+        view.hideCorrectKeywordsSubmission();
+    }
+    void showResponseSubmission() override {
+        view.showCorrectKeywordsSubmission();
+    }
+
+  private:
+    View::Experimenter &experimenterView;
+    View::CorrectKeywordsOutput &view;
+};
 }
 
 #endif
