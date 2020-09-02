@@ -578,7 +578,10 @@ class FreeResponsePresenter : public TaskPresenter {
         experimenterView.show();
         experimenterView.showNextTrialButton();
     }
-    void stop() override { experimenterView.hide(); }
+    void stop() override {
+        experimenterView.hide();
+        view.hideFreeResponseSubmission();
+    }
     void notifyThatTaskHasStarted() override {
         experimenterView.hideNextTrialButton();
     }
