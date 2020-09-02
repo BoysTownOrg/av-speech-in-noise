@@ -461,7 +461,6 @@ class Presenter : public Model::EventListener {
     View &view;
     TestSetup &testSetup;
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter;
-    Consonant &consonantPresenter;
     Experimenter &experimenterPresenter;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
@@ -484,7 +483,8 @@ class ConsonantScreenResponder : public ConsonantResponder,
         listener->notifyThatTaskHasStarted();
     }
     void notifyThatResponseButtonHasBeenClicked() override {
-        parent->submitConsonantResponse();
+        model.submit(ConsonantResponse{view.consonant().front()});
+        parent->playNextTrialIfNeeded();
         listener->notifyThatUserIsDoneResponding();
     }
     void becomeChild(Presenter *p) override { parent = p; }

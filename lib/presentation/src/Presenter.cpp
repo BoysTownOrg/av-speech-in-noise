@@ -106,7 +106,6 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       consonantTrialCompletionHandler{consonantPresenter}, model{model},
       view{view}, testSetup{testSetup},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
-      consonantPresenter{consonantPresenter},
       experimenterPresenter{experimenterPresenter},
       testSettingsInterpreter{testSettingsInterpreter},
       textFileReader{textFileReader},
@@ -115,7 +114,6 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     model.subscribe(this);
     testSetup.becomeChild(this);
     coordinateResponseMeasurePresenter.becomeChild(this);
-    consonantPresenter.becomeChild(this);
     experimenterPresenter.becomeChild(this);
     if (consonantResponder != nullptr)
         consonantResponder->becomeChild(this);
@@ -243,11 +241,6 @@ void Presenter::readyNextTrialIfNeeded() {
 
 void Presenter::submitCoordinateResponse() {
     model.submit(coordinateResponseMeasurePresenter.subjectResponse());
-    playNextTrialIfNeeded();
-}
-
-void Presenter::submitConsonantResponse() {
-    model.submit(consonantPresenter.subjectResponse());
     playNextTrialIfNeeded();
 }
 
@@ -413,7 +406,6 @@ void Presenter::Consonant::notifyThatReadyButtonHasBeenClicked() {
 }
 
 void Presenter::Consonant::notifyThatResponseButtonHasBeenClicked() {
-    parent->submitConsonantResponse();
     if (!parent->testComplete())
         outputView->hideCursor();
     outputView->hideResponseButtons();
