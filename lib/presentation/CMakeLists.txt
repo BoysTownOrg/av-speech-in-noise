@@ -1,6 +1,8 @@
 add_library(
-  presentation src/Presenter.cpp src/TestSettingsInterpreter.cpp
-               src/Consonant.cpp src/FreeResponse.cpp src/CorrectKeywords.cpp)
+  presentation
+  src/Presenter.cpp src/TestSettingsInterpreter.cpp src/Consonant.cpp
+  src/FreeResponse.cpp src/CorrectKeywords.cpp
+  src/CoordinateResponseMeasure.cpp)
 target_include_directories(
   presentation
   PUBLIC include

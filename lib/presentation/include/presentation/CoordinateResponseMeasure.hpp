@@ -33,46 +33,16 @@ class CoordinateResponseMeasureOutputView {
     virtual void hideNextTrialButton() = 0;
 };
 
-static auto colorResponse(CoordinateResponseMeasureInputView *inputView)
-    -> coordinate_response_measure::Color {
-    if (inputView->greenResponse())
-        return coordinate_response_measure::Color::green;
-    if (inputView->blueResponse())
-        return coordinate_response_measure::Color::blue;
-    if (inputView->whiteResponse())
-        return coordinate_response_measure::Color::white;
-
-    return coordinate_response_measure::Color::red;
-}
-
-static auto subjectResponse(CoordinateResponseMeasureInputView *inputView)
-    -> coordinate_response_measure::Response {
-    coordinate_response_measure::Response p{};
-    p.color = colorResponse(inputView);
-    p.number = std::stoi(inputView->numberResponse());
-    return p;
-}
-
 class CoordinateResponseMeasureResponder
     : public TaskResponder,
       public CoordinateResponseMeasureInputView::EventListener {
   public:
     explicit CoordinateResponseMeasureResponder(
-        Model &model, CoordinateResponseMeasureInputView &view)
-        : model{model}, view{view} {
-        view.subscribe(this);
-    }
-    void subscribe(TaskResponder::EventListener *e) override { listener = e; }
-    void notifyThatReadyButtonHasBeenClicked() override {
-        parent->playTrial();
-        listener->notifyThatTaskHasStarted();
-    }
-    void notifyThatResponseButtonHasBeenClicked() override {
-        model.submit(subjectResponse(&view));
-        parent->playNextTrialIfNeeded();
-        listener->notifyThatUserIsDoneResponding();
-    }
-    void becomeChild(ParentPresenter *p) override { parent = p; }
+        Model &, CoordinateResponseMeasureInputView &);
+    void subscribe(TaskResponder::EventListener *e) override;
+    void notifyThatReadyButtonHasBeenClicked() override;
+    void notifyThatResponseButtonHasBeenClicked() override;
+    void becomeChild(ParentPresenter *p) override;
 
   private:
     Model &model;
@@ -84,21 +54,12 @@ class CoordinateResponseMeasureResponder
 class CoordinateResponseMeasurePresenter : public TaskPresenter {
   public:
     explicit CoordinateResponseMeasurePresenter(
-        CoordinateResponseMeasureOutputView &view)
-        : view{view} {}
-    void start() override {
-        view.show();
-        view.showNextTrialButton();
-    }
-    void stop() override {
-        view.hideResponseButtons();
-        view.hide();
-    }
-    void notifyThatTaskHasStarted() override { view.hideNextTrialButton(); }
-    void notifyThatUserIsDoneResponding() override {
-        view.hideResponseButtons();
-    }
-    void showResponseSubmission() override { view.showResponseButtons(); }
+        CoordinateResponseMeasureOutputView &);
+    void start() override;
+    void stop() override;
+    void notifyThatTaskHasStarted() override;
+    void notifyThatUserIsDoneResponding() override;
+    void showResponseSubmission() override;
 
   private:
     CoordinateResponseMeasureOutputView &view;
