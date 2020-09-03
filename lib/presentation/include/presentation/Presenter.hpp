@@ -702,6 +702,32 @@ class CorrectKeywordsPresenter : public TaskPresenter {
     View::Experimenter &experimenterView;
     View::CorrectKeywordsOutput &view;
 };
+
+class PassFailResponder : public TaskResponder,
+                          public View::PassFailInput::EventListener {
+  public:
+    explicit PassFailResponder(Model &model, View::PassFailInput &view)
+        : model{model} {
+        view.subscribe(this);
+    }
+    void subscribe(TaskResponder::EventListener *e) override { listener = e; }
+    void notifyThatCorrectButtonHasBeenClicked() override {
+        model.submitCorrectResponse();
+        listener->notifyThatUserIsDoneResponding();
+        parent->showContinueTestingDialogWithResultsWhenComplete();
+    }
+    void notifyThatIncorrectButtonHasBeenClicked() override {
+        model.submitCorrectResponse();
+        listener->notifyThatUserIsDoneResponding();
+        parent->showContinueTestingDialogWithResultsWhenComplete();
+    }
+    void becomeChild(Presenter *p) override { parent = p; }
+
+  private:
+    Model &model;
+    TaskResponder::EventListener *listener{};
+    Presenter *parent{};
+};
 }
 
 #endif
