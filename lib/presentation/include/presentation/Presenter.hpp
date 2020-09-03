@@ -5,6 +5,7 @@
 #include "Experimenter.hpp"
 #include "View.hpp"
 #include "Input.hpp"
+#include "PresenterSimple.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <vector>
 #include <string>
@@ -234,11 +235,12 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
     TestSetupResponder::EventListener *listener;
 };
 
-class TestSetupPresenter : public TestSetupResponder::EventListener {
+class TestSetupPresenter : public TestSetupResponder::EventListener,
+                           public PresenterSimple {
   public:
     explicit TestSetupPresenter(TestSetupOutputView &view) : view{view} {}
-    void start() { view.show(); }
-    void stop() { view.hide(); }
+    void start() override { view.show(); }
+    void stop() override { view.hide(); }
     void notifyThatUserHasSelectedTestSettingsFile(
         const std::string &s) override {
         view.setTestSettingsFile(s);

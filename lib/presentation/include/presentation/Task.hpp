@@ -1,6 +1,8 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TASK_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TASK_HPP_
 
+#include "PresenterSimple.hpp"
+
 namespace av_speech_in_noise {
 class ParentPresenter {
   public:
@@ -24,10 +26,9 @@ class TaskResponder {
     virtual void subscribe(EventListener *) = 0;
 };
 
-class TaskPresenter : virtual public TaskResponder::EventListener {
+class TaskPresenter : virtual public TaskResponder::EventListener,
+                      virtual public PresenterSimple {
   public:
-    virtual void start() = 0;
-    virtual void stop() = 0;
     virtual void showResponseSubmission() = 0;
 };
 }
