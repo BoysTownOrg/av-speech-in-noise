@@ -297,8 +297,7 @@ class Presenter : public Model::EventListener {
 
     class Experimenter : public View::Experimenter::EventListener {
       public:
-        explicit Experimenter(View::Experimenter *, View::PassFailInput * = {},
-            View::PassFailOutput * = {});
+        explicit Experimenter(View::Experimenter *);
         void exitTest() override;
         void playTrial() override;
         void declineContinuingTesting() override;
