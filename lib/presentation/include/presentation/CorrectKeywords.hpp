@@ -4,10 +4,8 @@
 #include "Task.hpp"
 #include "Experimenter.hpp"
 #include "View.hpp"
-#include "Input.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
-#include <sstream>
 
 namespace av_speech_in_noise {
 class CorrectKeywordsInputView {
@@ -34,23 +32,10 @@ class CorrectKeywordsResponder
       public CorrectKeywordsInputView::EventListener {
   public:
     explicit CorrectKeywordsResponder(
-        Model &model, View &mainView, CorrectKeywordsInputView &view)
-        : model{model}, mainView{mainView}, view{view} {
-        view.subscribe(this);
-    }
-    void subscribe(TaskResponder::EventListener *e) override { listener = e; }
-    void notifyThatSubmitButtonHasBeenClicked() override {
-        try {
-            CorrectKeywords p{};
-            p.count = readInteger(view.correctKeywords(), "number");
-            model.submit(p);
-            listener->notifyThatUserIsDoneResponding();
-            parent->showContinueTestingDialogWithResultsWhenComplete();
-        } catch (const std::runtime_error &e) {
-            mainView.showErrorMessage(e.what());
-        }
-    }
-    void becomeChild(ParentPresenter *p) override { parent = p; }
+        Model &, View &, CorrectKeywordsInputView &);
+    void subscribe(TaskResponder::EventListener *e) override;
+    void notifyThatSubmitButtonHasBeenClicked() override;
+    void becomeChild(ParentPresenter *p) override;
 
   private:
     Model &model;
@@ -63,25 +48,12 @@ class CorrectKeywordsResponder
 class CorrectKeywordsPresenter : public TaskPresenter {
   public:
     explicit CorrectKeywordsPresenter(
-        ExperimenterView &experimenterView, CorrectKeywordsOutputView &view)
-        : experimenterView{experimenterView}, view{view} {}
-    void start() override {
-        experimenterView.show();
-        experimenterView.showNextTrialButton();
-    }
-    void stop() override {
-        experimenterView.hide();
-        view.hideCorrectKeywordsSubmission();
-    }
-    void notifyThatTaskHasStarted() override {
-        experimenterView.hideNextTrialButton();
-    }
-    void notifyThatUserIsDoneResponding() override {
-        view.hideCorrectKeywordsSubmission();
-    }
-    void showResponseSubmission() override {
-        view.showCorrectKeywordsSubmission();
-    }
+        ExperimenterView &, CorrectKeywordsOutputView &);
+    void start() override;
+    void stop() override;
+    void notifyThatTaskHasStarted() override;
+    void notifyThatUserIsDoneResponding() override;
+    void showResponseSubmission() override;
 
   private:
     ExperimenterView &experimenterView;
