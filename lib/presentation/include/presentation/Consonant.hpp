@@ -33,26 +33,12 @@ class ConsonantOutputView {
 
 class ConsonantPresenter : public TaskPresenter {
   public:
-    explicit ConsonantPresenter(Model &model, ConsonantOutputView &view)
-        : model{model}, view{view} {}
-    void start() override {
-        view.show();
-        view.showReadyButton();
-    }
-    void stop() override {
-        view.hideResponseButtons();
-        view.hide();
-    }
-    void notifyThatTaskHasStarted() override {
-        view.hideReadyButton();
-        view.hideCursor();
-    }
-    void notifyThatUserIsDoneResponding() override {
-        view.hideResponseButtons();
-        if (!model.testComplete())
-            view.hideCursor();
-    }
-    void showResponseSubmission() override { view.showResponseButtons(); }
+    explicit ConsonantPresenter(Model &, ConsonantOutputView &);
+    void start() override;
+    void stop() override;
+    void notifyThatTaskHasStarted() override;
+    void notifyThatUserIsDoneResponding() override;
+    void showResponseSubmission() override;
 
   private:
     Model &model;
@@ -62,21 +48,11 @@ class ConsonantPresenter : public TaskPresenter {
 class ConsonantResponder : public TaskResponder,
                            public ConsonantInputView::EventListener {
   public:
-    explicit ConsonantResponder(Model &model, ConsonantInputView &view)
-        : model{model}, view{view} {
-        view.subscribe(this);
-    }
-    void subscribe(TaskResponder::EventListener *e) override { listener = e; }
-    void notifyThatReadyButtonHasBeenClicked() override {
-        parent->playTrial();
-        listener->notifyThatTaskHasStarted();
-    }
-    void notifyThatResponseButtonHasBeenClicked() override {
-        model.submit(ConsonantResponse{view.consonant().front()});
-        parent->playNextTrialIfNeeded();
-        listener->notifyThatUserIsDoneResponding();
-    }
-    void becomeChild(ParentPresenter *p) override { parent = p; }
+    explicit ConsonantResponder(Model &, ConsonantInputView &);
+    void subscribe(TaskResponder::EventListener *e) override;
+    void notifyThatReadyButtonHasBeenClicked() override;
+    void notifyThatResponseButtonHasBeenClicked() override;
+    void becomeChild(ParentPresenter *p) override;
 
   private:
     Model &model;

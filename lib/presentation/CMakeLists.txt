@@ -1,4 +1,5 @@
-add_library(presentation src/Presenter.cpp src/TestSettingsInterpreter.cpp)
+add_library(presentation src/Presenter.cpp src/TestSettingsInterpreter.cpp
+                         src/Consonant.cpp)
 target_include_directories(
   presentation
   PUBLIC include
