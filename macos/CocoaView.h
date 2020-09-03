@@ -2,6 +2,7 @@
 #define MACOS_MAIN_COCOAVIEW_H_
 
 #include "MacOsTestSetupViewFactory.h"
+#include <presentation/Consonant.hpp>
 #include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>
 #include <unordered_map>
