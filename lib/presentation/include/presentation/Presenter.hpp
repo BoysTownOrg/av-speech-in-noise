@@ -728,6 +728,32 @@ class PassFailResponder : public TaskResponder,
     TaskResponder::EventListener *listener{};
     Presenter *parent{};
 };
+
+class PassFailPresenter : public TaskPresenter {
+  public:
+    explicit PassFailPresenter(
+        View::Experimenter &experimenterView, View::PassFailOutput &view)
+        : experimenterView{experimenterView}, view{view} {}
+    void start() override {
+        experimenterView.show();
+        experimenterView.showNextTrialButton();
+    }
+    void stop() override {
+        experimenterView.hide();
+        view.hideEvaluationButtons();
+    }
+    void notifyThatTaskHasStarted() override {
+        experimenterView.hideNextTrialButton();
+    }
+    void notifyThatUserIsDoneResponding() override {
+        view.hideEvaluationButtons();
+    }
+    void showResponseSubmission() override { view.showEvaluationButtons(); }
+
+  private:
+    View::Experimenter &experimenterView;
+    View::PassFailOutput &view;
+};
 }
 
 #endif
