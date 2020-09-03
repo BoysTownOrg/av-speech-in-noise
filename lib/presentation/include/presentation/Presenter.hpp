@@ -718,7 +718,7 @@ class PassFailResponder : public TaskResponder,
         parent->showContinueTestingDialogWithResultsWhenComplete();
     }
     void notifyThatIncorrectButtonHasBeenClicked() override {
-        model.submitCorrectResponse();
+        model.submitIncorrectResponse();
         listener->notifyThatUserIsDoneResponding();
         parent->showContinueTestingDialogWithResultsWhenComplete();
     }

@@ -274,8 +274,6 @@ class ExperimenterViewStub : public View::Experimenter,
         return continueTestingDialogHidden_;
     }
 
-    void submitFailedTrial() { listener_->submitFailedTrial(); }
-
     void hideFreeResponseSubmission() override {
         responseSubmissionHidden_ = true;
     }
@@ -342,13 +340,21 @@ class ExperimenterViewStub : public View::Experimenter,
         correctKeywordsListener = e;
     }
 
-    void subscribe(PassFailInput::EventListener *) override {}
+    void subscribe(PassFailInput::EventListener *e) override {
+        passFailListener = e;
+    }
 
     void setResponse(std::string s) { response_ = std::move(s); }
 
     auto freeResponse() -> std::string override { return response_; }
 
-    void submitPassedTrial() { listener_->submitPassedTrial(); }
+    void submitPassedTrial() {
+        passFailListener->notifyThatCorrectButtonHasBeenClicked();
+    }
+
+    void submitFailedTrial() {
+        passFailListener->notifyThatIncorrectButtonHasBeenClicked();
+    }
 
     void submitFreeResponse() {
         freeResponseListener->notifyThatSubmitButtonHasBeenClicked();
@@ -417,6 +423,7 @@ class ExperimenterViewStub : public View::Experimenter,
     Experimenter::EventListener *listener_{};
     View::FreeResponseInput::EventListener *freeResponseListener{};
     View::CorrectKeywordsInput::EventListener *correctKeywordsListener{};
+    View::PassFailInput::EventListener *passFailListener{};
     bool freeResponseCleared_{};
     bool exitTestButtonHidden_{};
     bool exitTestButtonShown_{};
