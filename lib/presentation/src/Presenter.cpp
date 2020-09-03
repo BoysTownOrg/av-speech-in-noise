@@ -103,9 +103,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       view{view}, testSetup{testSetup},
       experimenterPresenter{experimenterPresenter},
       testSettingsInterpreter{testSettingsInterpreter},
-      textFileReader{textFileReader},
-      trialCompletionHandler_{&coordinateResponseMeasureTrialCompletionHandler},
-      consonantPresenter{consonantPresenter},
+      textFileReader{textFileReader}, consonantPresenter{consonantPresenter},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       freeResponsePresenter{freeResponsePresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
@@ -161,7 +159,6 @@ void Presenter::confirmTestSetup_() {
     if (!av_speech_in_noise::testComplete(model)) {
         const auto method{testSettingsInterpreter.method(testSettings)};
         switchToTestView(method);
-        trialCompletionHandler_ = trialCompletionHandler(method);
         taskPresenter_ = taskPresenter(method);
     }
 }
