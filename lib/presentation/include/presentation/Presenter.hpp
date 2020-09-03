@@ -129,12 +129,12 @@ class Presenter : public Model::EventListener, public ParentPresenter {
         ExperimenterView *view;
     };
 
-    Presenter(Model &, View &, TestSetup &, Experimenter &,
-        TestSettingsInterpreter &, TextFileReader &, TaskResponder * = {},
-        TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {},
+    Presenter(Model &, View &, Experimenter &, TestSettingsInterpreter &,
+        TextFileReader &, TaskResponder * = {}, TaskPresenter * = {},
         TaskResponder * = {}, TaskPresenter * = {}, TaskResponder * = {},
         TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {},
-        TestSetupResponder * = {}, TestSetupPresenter * = {});
+        TaskResponder * = {}, TaskPresenter * = {}, TestSetupResponder * = {},
+        TestSetupPresenter * = {});
     void trialComplete() override;
     void playTrial() override;
     void playNextTrialIfNeeded() override;
@@ -241,7 +241,10 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
 
 class TestSetupPresenterImpl : public TestSetupPresenter {
   public:
-    explicit TestSetupPresenterImpl(TestSetupOutputView &view) : view{view} {}
+    explicit TestSetupPresenterImpl(TestSetupOutputView &view) : view{view} {
+        view.populateTransducerMenu({name(Transducer::headphone),
+            name(Transducer::oneSpeaker), name(Transducer::twoSpeakers)});
+    }
     void start() override { view.show(); }
     void stop() override { view.hide(); }
     void notifyThatUserHasSelectedTestSettingsFile(

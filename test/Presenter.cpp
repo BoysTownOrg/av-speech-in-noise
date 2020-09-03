@@ -1137,14 +1137,18 @@ class PresenterConstructionTests : public ::testing::Test {
     ConsonantViewStub consonantView;
     ExperimenterViewStub experimenterView;
     ViewStub view;
-    Presenter::TestSetup testSetup{&setupView, &setupView, &setupView};
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
+    TestSetupResponderImpl testSetupResponderImpl{
+        model, view, setupView, testSettingsInterpreter, textFileReader};
+    TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
 
     auto construct() -> Presenter {
-        return {model, view, testSetup, experimenter, testSettingsInterpreter,
-            textFileReader};
+        return {model, view, experimenter, testSettingsInterpreter,
+            textFileReader, nullptr, nullptr, nullptr, nullptr, nullptr,
+            nullptr, nullptr, nullptr, nullptr, nullptr,
+            &testSetupResponderImpl, &testSetupPresenterRefactored};
     }
 };
 
@@ -1246,7 +1250,6 @@ class PresenterTests : public ::testing::Test {
     CoordinateResponseMeasureViewStub coordinateResponseMeasureView;
     ConsonantViewStub consonantView;
     ExperimenterViewStub experimenterView;
-    Presenter::TestSetup testSetup{&setupView, &setupView, &setupView};
     Presenter::Experimenter experimenter{&experimenterView};
     ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenterRefactored{model, consonantView};
@@ -1270,8 +1273,8 @@ class PresenterTests : public ::testing::Test {
     TestSetupResponderImpl testSetupResponderImpl{
         model, view, setupView, testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
-    Presenter presenter{model, view, testSetup, experimenter,
-        testSettingsInterpreter, textFileReader, &consonantScreenResponder,
+    Presenter presenter{model, view, experimenter, testSettingsInterpreter,
+        textFileReader, &consonantScreenResponder,
         &consonantPresenterRefactored, &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenterRefactored, &freeResponseResponder,
         &freeResponsePresenter, &correctKeywordsResponder,
@@ -1690,7 +1693,6 @@ class PresenterFailureTests : public ::testing::Test {
     CoordinateResponseMeasureViewStub coordinateResponseMeasureView;
     ConsonantViewStub consonantView;
     ExperimenterViewStub experimenterView;
-    Presenter::TestSetup testSetup{&setupView, &setupView, &setupView};
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
@@ -1705,9 +1707,9 @@ class PresenterFailureTests : public ::testing::Test {
     void confirmTestSetup() {
         TestSetupResponderImpl testSetupResponderImpl{
             *model, view, setupView, testSettingsInterpreter, textFileReader};
-        Presenter presenter{*model, view, testSetup, experimenter,
-            testSettingsInterpreter, textFileReader, nullptr, nullptr, nullptr,
-            nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+        Presenter presenter{*model, view, experimenter, testSettingsInterpreter,
+            textFileReader, nullptr, nullptr, nullptr, nullptr, nullptr,
+            nullptr, nullptr, nullptr, nullptr, nullptr,
             &testSetupResponderImpl, &testSetupPresenterRefactored};
         setupView.confirmTestSetup();
     }

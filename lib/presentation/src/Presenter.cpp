@@ -76,7 +76,7 @@ static void showContinueTestingDialogWithResultsWhenComplete(
         readyNextTrial(experimenterPresenter, model);
 }
 
-Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
+Presenter::Presenter(Model &model, View &view,
     Experimenter &experimenterPresenter,
     TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader, TaskResponder *consonantResponder,
