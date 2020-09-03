@@ -157,8 +157,6 @@ class View {
         virtual void showContinueTestingDialog() = 0;
         virtual void hideContinueTestingDialog() = 0;
         virtual void setContinueTestingDialogMessage(const std::string &) = 0;
-        virtual void showEvaluationButtons() = 0;
-        virtual void hideEvaluationButtons() = 0;
         virtual void hideExitTestButton() = 0;
         virtual void showExitTestButton() = 0;
         virtual void showNextTrialButton() = 0;
@@ -215,6 +213,8 @@ class View {
     class PassFailOutput {
       public:
         virtual ~PassFailOutput() = default;
+        virtual void showEvaluationButtons() = 0;
+        virtual void hideEvaluationButtons() = 0;
     };
 
     virtual ~View() = default;
