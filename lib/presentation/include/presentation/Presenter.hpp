@@ -65,15 +65,8 @@ class Presenter;
 
 class TestSetupResponder {
   public:
-    class EventListener {
-      public:
-        virtual ~EventListener() = default;
-        virtual void notifyThatTaskHasStarted() = 0;
-        virtual void notifyThatUserIsDoneResponding() = 0;
-    };
     virtual ~TestSetupResponder() = default;
     virtual void becomeChild(Presenter *) = 0;
-    virtual void subscribe(EventListener *) = 0;
 };
 
 class Presenter : public Model::EventListener, public ParentPresenter {
@@ -188,7 +181,6 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
         : model{model}, mainView{mainView}, view{view},
           testSettingsInterpreter{testSettingsInterpreter},
           textFileReader{textFileReader} {}
-    void subscribe(TestSetupResponder::EventListener *e) override {}
     void notifyThatConfirmButtonHasBeenClicked() override {
         try {
             const auto testSettings{
@@ -217,15 +209,14 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
     TestSetupInputView &view;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
-    TaskResponder::EventListener *listener{};
     Presenter *parent{};
 };
 
 class TestSetupPresenter {
   public:
     explicit TestSetupPresenter(TestSetupOutputView &view) : view{view} {}
-    // void start() override;
-    // void stop() override;
+    void start() { view.show(); }
+    void stop() { view.hide(); }
 
   private:
     TestSetupOutputView &view;
