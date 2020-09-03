@@ -5,7 +5,6 @@
 #include <string>
 
 namespace av_speech_in_noise {
-
 class TestSetupInputView {
   public:
     class EventListener {
@@ -36,10 +35,7 @@ class TestSetupOutputView {
 };
 
 class TestSetupView : public virtual TestSetupOutputView,
-                      public virtual TestSetupInputView {
-  public:
-    // virtual ~TestSetupView() = default;
-};
+                      public virtual TestSetupInputView {};
 
 class View {
   public:

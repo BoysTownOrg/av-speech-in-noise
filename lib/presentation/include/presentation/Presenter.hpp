@@ -157,6 +157,33 @@ class Presenter : public Model::EventListener, public ParentPresenter {
     TaskPresenter *passFailPresenter;
     TaskPresenter *taskPresenter_;
 };
+
+class TestSetupResponder : public TestSetupInputView::EventListener {
+  public:
+    explicit TestSetupResponder(Model &model, TestSetupInputView &view)
+        : model{model}, view{view} {}
+    // void subscribe(TaskResponder::EventListener *e) override;
+    void notifyThatConfirmButtonHasBeenClicked() override {}
+    void notifyThatPlayCalibrationButtonHasBeenClicked() override {}
+    void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override {}
+    // void becomeChild(ParentPresenter *p) override;
+
+  private:
+    Model &model;
+    TestSetupInputView &view;
+    TaskResponder::EventListener *listener{};
+    ParentPresenter *parent{};
+};
+
+class TestSetupPresenter {
+  public:
+    explicit TestSetupPresenter(TestSetupOutputView &view) : view{view} {}
+    // void start() override;
+    // void stop() override;
+
+  private:
+    TestSetupOutputView &view;
+};
 }
 
 #endif
