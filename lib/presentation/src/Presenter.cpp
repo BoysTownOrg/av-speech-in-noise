@@ -307,7 +307,7 @@ Presenter::TestSetup::TestSetup(TestSetupView *view,
     : view{view}, inputView{inputView}, outputView{outputView} {
     outputView->populateTransducerMenu({name(Transducer::headphone),
         name(Transducer::oneSpeaker), name(Transducer::twoSpeakers)});
-    view->subscribe(this);
+    inputView->subscribe(this);
 }
 
 void Presenter::TestSetup::show() { outputView->show(); }

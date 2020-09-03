@@ -8,6 +8,14 @@ namespace av_speech_in_noise {
 
 class TestSetupInputView {
   public:
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void notifyThatConfirmButtonHasBeenClicked() = 0;
+        virtual void notifyThatPlayCalibrationButtonHasBeenClicked() = 0;
+        virtual void notifyThatBrowseForTestSettingsButtonHasBeenClicked() = 0;
+    };
+    virtual void subscribe(EventListener *) = 0;
     virtual ~TestSetupInputView() = default;
     virtual auto testSettingsFile() -> std::string = 0;
     virtual auto startingSnr() -> std::string = 0;
@@ -30,16 +38,7 @@ class TestSetupOutputView {
 class TestSetupView : public virtual TestSetupOutputView,
                       public virtual TestSetupInputView {
   public:
-    class EventListener {
-      public:
-        virtual ~EventListener() = default;
-        virtual void notifyThatConfirmButtonHasBeenClicked() = 0;
-        virtual void notifyThatPlayCalibrationButtonHasBeenClicked() = 0;
-        virtual void notifyThatBrowseForTestSettingsButtonHasBeenClicked() = 0;
-    };
-
     // virtual ~TestSetupView() = default;
-    virtual void subscribe(EventListener *) = 0;
 };
 
 class View {
