@@ -438,6 +438,7 @@ class Presenter : public Model::EventListener {
     void applyIfBrowseNotCancelled(
         std::string s, void (TestSetup::*f)(std::string));
     auto trialCompletionHandler(Method) -> TrialCompletionHandler *;
+    auto taskPresenter(Method) -> TaskPresenter *;
 
     FreeResponseTrialCompletionHandler freeResponseTrialCompletionHandler;
     PassFailTrialCompletionHandler passFailTrialCompletionHandler;
@@ -457,6 +458,7 @@ class Presenter : public Model::EventListener {
     TaskPresenter *freeResponsePresenter;
     TaskPresenter *correctKeywordsPresenter;
     TaskPresenter *passFailPresenter;
+    TaskPresenter *taskPresenter_;
 };
 
 class ConsonantPresenter : public TaskPresenter {

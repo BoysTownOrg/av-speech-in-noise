@@ -162,6 +162,7 @@ void Presenter::confirmTestSetup_() {
         const auto method{testSettingsInterpreter.method(testSettings)};
         switchToTestView(method);
         trialCompletionHandler_ = trialCompletionHandler(method);
+        taskPresenter_ = taskPresenter(method);
     }
 }
 
@@ -195,6 +196,18 @@ auto Presenter::trialCompletionHandler(Method m) -> TrialCompletionHandler * {
     if (correctKeywords(m))
         return &correctKeywordsTrialCompletionHandler;
     return &passFailTrialCompletionHandler;
+}
+
+auto Presenter::taskPresenter(Method m) -> TaskPresenter * {
+    if (coordinateResponseMeasure(m))
+        return coordinateResponseMeasurePresenter;
+    if (consonant(m))
+        return consonantPresenter;
+    if (freeResponse(m))
+        return freeResponsePresenter;
+    if (correctKeywords(m))
+        return correctKeywordsPresenter;
+    return passFailPresenter;
 }
 
 void Presenter::showErrorMessage(std::string e) {
