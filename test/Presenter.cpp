@@ -2632,6 +2632,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(submittingConsonantHidesConsonantViewWhenTestComplete) {
+    run(confirmingFixedLevelConsonantTest);
     setTestComplete(model);
     run(submittingConsonant);
     assertHidden(consonantView);
@@ -2644,6 +2645,7 @@ PRESENTER_TEST(exitTestHidesCoordinateView) {
 }
 
 PRESENTER_TEST(exitTestHidesConsonantView) {
+    run(confirmingFixedLevelConsonantTest);
     exitTest(experimenterView);
     assertHidden(consonantView);
 }
