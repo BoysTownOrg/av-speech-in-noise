@@ -348,13 +348,13 @@ auto Presenter::TestSetup::startingSnr() -> std::string {
     return view->startingSnr();
 }
 
-Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {
+Presenter::Experimenter::Experimenter(ExperimenterView *view) : view{view} {
     view->subscribe(this);
 }
 
 void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }
 
-static void showNextTrialButton(View::Experimenter *view) {
+static void showNextTrialButton(ExperimenterView *view) {
     view->showNextTrialButton();
 }
 
@@ -365,7 +365,7 @@ void Presenter::Experimenter::start() {
     showNextTrialButton(view);
 }
 
-static void hideSubmissions(View::Experimenter *view) {
+static void hideSubmissions(ExperimenterView *view) {
     view->hideContinueTestingDialog();
 }
 

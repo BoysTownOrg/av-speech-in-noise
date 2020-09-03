@@ -240,7 +240,7 @@ class TestSetupViewStub : public View::TestSetup {
     bool hidden_{};
 };
 
-class ExperimenterViewStub : public View::Experimenter,
+class ExperimenterViewStub : public ExperimenterView,
                              public FreeResponseInputView,
                              public FreeResponseOutputView,
                              public View::CorrectKeywordsInput,
@@ -332,7 +332,9 @@ class ExperimenterViewStub : public View::Experimenter,
 
     [[nodiscard]] auto hidden() const { return hidden_; }
 
-    void subscribe(Experimenter::EventListener *e) override { listener_ = e; }
+    void subscribe(ExperimenterView::EventListener *e) override {
+        listener_ = e;
+    }
 
     void subscribe(FreeResponseInputView::EventListener *e) override {
         freeResponseListener = e;
@@ -422,7 +424,7 @@ class ExperimenterViewStub : public View::Experimenter,
     std::string continueTestingDialogMessage_;
     std::string response_;
     std::string correctKeywords_{"0"};
-    Experimenter::EventListener *listener_{};
+    ExperimenterView::EventListener *listener_{};
     FreeResponseInputView::EventListener *freeResponseListener{};
     View::CorrectKeywordsInput::EventListener *correctKeywordsListener{};
     View::PassFailInput::EventListener *passFailListener{};

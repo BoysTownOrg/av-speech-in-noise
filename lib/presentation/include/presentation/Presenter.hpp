@@ -86,32 +86,6 @@ class View {
         virtual void setTestSettingsFile(std::string) = 0;
     };
 
-    class Experimenter {
-      public:
-        class EventListener {
-          public:
-            virtual ~EventListener() = default;
-            virtual void exitTest() = 0;
-            virtual void playTrial() = 0;
-            virtual void declineContinuingTesting() = 0;
-            virtual void acceptContinuingTesting() = 0;
-        };
-
-        virtual ~Experimenter() = default;
-        virtual void subscribe(EventListener *) = 0;
-        virtual void show() = 0;
-        virtual void hide() = 0;
-        virtual void showContinueTestingDialog() = 0;
-        virtual void hideContinueTestingDialog() = 0;
-        virtual void setContinueTestingDialogMessage(const std::string &) = 0;
-        virtual void hideExitTestButton() = 0;
-        virtual void showExitTestButton() = 0;
-        virtual void showNextTrialButton() = 0;
-        virtual void hideNextTrialButton() = 0;
-        virtual void display(std::string) = 0;
-        virtual void secondaryDisplay(std::string) = 0;
-    };
-
     class CorrectKeywordsInput {
       public:
         class EventListener {
@@ -180,6 +154,32 @@ static auto readInteger(const std::string &x, const std::string &identifier)
     }
 }
 
+class ExperimenterView {
+  public:
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void exitTest() = 0;
+        virtual void playTrial() = 0;
+        virtual void declineContinuingTesting() = 0;
+        virtual void acceptContinuingTesting() = 0;
+    };
+
+    virtual ~ExperimenterView() = default;
+    virtual void subscribe(EventListener *) = 0;
+    virtual void show() = 0;
+    virtual void hide() = 0;
+    virtual void showContinueTestingDialog() = 0;
+    virtual void hideContinueTestingDialog() = 0;
+    virtual void setContinueTestingDialogMessage(const std::string &) = 0;
+    virtual void hideExitTestButton() = 0;
+    virtual void showExitTestButton() = 0;
+    virtual void showNextTrialButton() = 0;
+    virtual void hideNextTrialButton() = 0;
+    virtual void display(std::string) = 0;
+    virtual void secondaryDisplay(std::string) = 0;
+};
+
 class Presenter : public Model::EventListener, public ParentPresenter {
   public:
     class TestSetup : public View::TestSetup::EventListener {
@@ -201,9 +201,9 @@ class Presenter : public Model::EventListener, public ParentPresenter {
         Presenter *parent{};
     };
 
-    class Experimenter : public View::Experimenter::EventListener {
+    class Experimenter : public ExperimenterView::EventListener {
       public:
-        explicit Experimenter(View::Experimenter *);
+        explicit Experimenter(ExperimenterView *);
         void exitTest() override;
         void playTrial() override;
         void declineContinuingTesting() override;
@@ -223,7 +223,7 @@ class Presenter : public Model::EventListener, public ParentPresenter {
 
       private:
         Presenter *parent{};
-        View::Experimenter *view;
+        ExperimenterView *view;
     };
 
     Presenter(Model &, View &, TestSetup &, Experimenter &,
@@ -321,7 +321,7 @@ class FreeResponseResponder : public TaskResponder,
 class FreeResponsePresenter : public TaskPresenter {
   public:
     explicit FreeResponsePresenter(
-        View::Experimenter &experimenterView, FreeResponseOutputView &view)
+        ExperimenterView &experimenterView, FreeResponseOutputView &view)
         : experimenterView{experimenterView}, view{view} {}
     void start() override {
         experimenterView.show();
@@ -343,7 +343,7 @@ class FreeResponsePresenter : public TaskPresenter {
     }
 
   private:
-    View::Experimenter &experimenterView;
+    ExperimenterView &experimenterView;
     FreeResponseOutputView &view;
 };
 
@@ -381,7 +381,7 @@ class CorrectKeywordsResponder
 class CorrectKeywordsPresenter : public TaskPresenter {
   public:
     explicit CorrectKeywordsPresenter(
-        View::Experimenter &experimenterView, View::CorrectKeywordsOutput &view)
+        ExperimenterView &experimenterView, View::CorrectKeywordsOutput &view)
         : experimenterView{experimenterView}, view{view} {}
     void start() override {
         experimenterView.show();
@@ -402,7 +402,7 @@ class CorrectKeywordsPresenter : public TaskPresenter {
     }
 
   private:
-    View::Experimenter &experimenterView;
+    ExperimenterView &experimenterView;
     View::CorrectKeywordsOutput &view;
 };
 
@@ -435,7 +435,7 @@ class PassFailResponder : public TaskResponder,
 class PassFailPresenter : public TaskPresenter {
   public:
     explicit PassFailPresenter(
-        View::Experimenter &experimenterView, View::PassFailOutput &view)
+        ExperimenterView &experimenterView, View::PassFailOutput &view)
         : experimenterView{experimenterView}, view{view} {}
     void start() override {
         experimenterView.show();
@@ -454,7 +454,7 @@ class PassFailPresenter : public TaskPresenter {
     void showResponseSubmission() override { view.showEvaluationButtons(); }
 
   private:
-    View::Experimenter &experimenterView;
+    ExperimenterView &experimenterView;
     View::PassFailOutput &view;
 };
 }
