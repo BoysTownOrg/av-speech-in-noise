@@ -33,10 +33,6 @@ static void readyNextTrial(
     experimenterPresenter.readyNextTrial();
 }
 
-static auto fixedLevelConsonant(Method m) -> bool {
-    return m == Method::fixedLevelConsonants;
-}
-
 static auto coordinateResponseMeasure(Method m) -> bool {
     return m == Method::adaptiveCoordinateResponseMeasure ||
         m == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||
@@ -62,7 +58,9 @@ static auto correctKeywords(Method m) -> bool {
         m == Method::adaptiveCorrectKeywordsWithEyeTracking;
 }
 
-static auto consonant(Method m) -> bool { return fixedLevelConsonant(m); }
+static auto consonant(Method m) -> bool {
+    return m == Method::fixedLevelConsonants;
+}
 
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
