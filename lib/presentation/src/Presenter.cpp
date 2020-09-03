@@ -199,9 +199,8 @@ void Presenter::trialComplete() {
 
 static void show(Presenter::TestSetup &presenter) { presenter.show(); }
 
-static void switchToTestSetupView(Presenter::TestSetup &testSetup,
-    Presenter::Experimenter &experimenter, TaskPresenter *taskPresenter,
-    PresenterSimple *testSetupPresenter) {
+static void switchToTestSetupView(Presenter::Experimenter &experimenter,
+    TaskPresenter *taskPresenter, PresenterSimple *testSetupPresenter) {
     testSetupPresenter->start();
     experimenter.stop();
     taskPresenter->stop();
@@ -214,18 +213,16 @@ static void updateTrialInformationAndPlayNext(
 }
 
 static void switchToTestSetupViewIfCompleteElse(Model &model,
-    Presenter::TestSetup &testSetup, Presenter::Experimenter &experimenter,
-    TaskPresenter *taskPresenter, PresenterSimple *testSetupPresenter,
-    const std::function<void()> &f) {
+    Presenter::Experimenter &experimenter, TaskPresenter *taskPresenter,
+    PresenterSimple *testSetupPresenter, const std::function<void()> &f) {
     if (testComplete(model))
-        switchToTestSetupView(
-            testSetup, experimenter, taskPresenter, testSetupPresenter);
+        switchToTestSetupView(experimenter, taskPresenter, testSetupPresenter);
     else
         f();
 }
 
 void Presenter::playNextTrialIfNeeded() {
-    switchToTestSetupViewIfCompleteElse(model, testSetup, experimenterPresenter,
+    switchToTestSetupViewIfCompleteElse(model, experimenterPresenter,
         taskPresenter_, testSetupPresenter, [&]() {
             updateTrialInformationAndPlayNext(
                 model, view, experimenterPresenter);
@@ -233,14 +230,14 @@ void Presenter::playNextTrialIfNeeded() {
 }
 
 void Presenter::readyNextTrialIfNeeded() {
-    switchToTestSetupViewIfCompleteElse(model, testSetup, experimenterPresenter,
+    switchToTestSetupViewIfCompleteElse(model, experimenterPresenter,
         taskPresenter_, testSetupPresenter,
         [&]() { readyNextTrial(experimenterPresenter, model); });
 }
 
 void Presenter::declineContinuingTesting() {
     av_speech_in_noise::switchToTestSetupView(
-        testSetup, experimenterPresenter, taskPresenter_, testSetupPresenter);
+        experimenterPresenter, taskPresenter_, testSetupPresenter);
 }
 
 void Presenter::acceptContinuingTesting() {
@@ -255,7 +252,7 @@ void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
 
 void Presenter::exitTest() {
     av_speech_in_noise::switchToTestSetupView(
-        testSetup, experimenterPresenter, taskPresenter_, testSetupPresenter);
+        experimenterPresenter, taskPresenter_, testSetupPresenter);
 }
 
 void Presenter::playCalibration() {
