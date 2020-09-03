@@ -301,8 +301,6 @@ class Presenter : public Model::EventListener {
             View::PassFailOutput * = {});
         void exitTest() override;
         void playTrial() override;
-        void submitPassedTrial();
-        void submitFailedTrial();
         void declineContinuingTesting() override;
         void acceptContinuingTesting() override;
         void becomeChild(Presenter *parent);
@@ -313,18 +311,14 @@ class Presenter : public Model::EventListener {
         void trialComplete();
         void readyNextTrial();
         void showContinueTestingDialog();
-        void hideEvaluationButtons();
         void hideSubmissions();
         void setContinueTestingDialogMessage(const std::string &);
         void display(std::string);
         void secondaryDisplay(std::string);
-        void showPassFailSubmission();
 
       private:
         Presenter *parent{};
         View::Experimenter *view;
-        View::PassFailInput *passFailInputView;
-        View::PassFailOutput *passFailOutputView;
     };
 
     class TrialCompletionHandler {
