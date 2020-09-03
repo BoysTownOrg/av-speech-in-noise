@@ -41,11 +41,10 @@ class Presenter : public Model::EventListener,
         ExperimenterView *view;
     };
 
-    Presenter(Model &, View &, Experimenter &, TaskResponder * = {},
-        TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {},
-        TaskResponder * = {}, TaskPresenter * = {}, TaskResponder * = {},
-        TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {},
-        TestSetupResponder * = {}, TestSetupPresenter * = {});
+    Presenter(Model &, View &, Experimenter &, TaskResponder *, TaskPresenter *,
+        TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
+        TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
+        TestSetupResponder *, TestSetupPresenter *);
     void trialComplete() override;
     void playTrial() override;
     void playNextTrialIfNeeded() override;
