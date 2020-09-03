@@ -118,8 +118,8 @@ class CocoaTestSetupViewFactory : public MacOsTestSetupViewFactory {
     }
 };
 
-class CocoaConsonantView : public View::ConsonantOutput,
-                           public View::ConsonantInput {
+class CocoaConsonantView : public ConsonantOutputView,
+                           public ConsonantInputView {
   public:
     explicit CocoaConsonantView(NSRect);
     void subscribe(EventListener *) override;

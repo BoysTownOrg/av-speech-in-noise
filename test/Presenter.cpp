@@ -20,8 +20,8 @@ template <typename T> class Collection {
     std::vector<T> items{};
 };
 
-class ConsonantViewStub : public View::ConsonantOutput,
-                          public View::ConsonantInput {
+class ConsonantViewStub : public ConsonantOutputView,
+                          public ConsonantInputView {
   public:
     void show() override { shown_ = true; }
 

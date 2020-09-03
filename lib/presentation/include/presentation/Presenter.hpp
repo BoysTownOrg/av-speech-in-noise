@@ -59,31 +59,6 @@ class TextFileReader {
 
 class View {
   public:
-    class ConsonantInput {
-      public:
-        class EventListener {
-          public:
-            virtual ~EventListener() = default;
-            virtual void notifyThatReadyButtonHasBeenClicked() = 0;
-            virtual void notifyThatResponseButtonHasBeenClicked() = 0;
-        };
-        virtual ~ConsonantInput() = default;
-        virtual void subscribe(EventListener *) = 0;
-        virtual auto consonant() -> std::string = 0;
-    };
-
-    class ConsonantOutput {
-      public:
-        virtual ~ConsonantOutput() = default;
-        virtual void hideCursor() = 0;
-        virtual void show() = 0;
-        virtual void hide() = 0;
-        virtual void showReadyButton() = 0;
-        virtual void hideReadyButton() = 0;
-        virtual void hideResponseButtons() = 0;
-        virtual void showResponseButtons() = 0;
-    };
-
     class CoordinateResponseMeasureInput {
       public:
         class EventListener {
@@ -376,9 +351,34 @@ class Presenter : public Model::EventListener, public ParentPresenter {
     TaskPresenter *taskPresenter_;
 };
 
+class ConsonantInputView {
+  public:
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void notifyThatReadyButtonHasBeenClicked() = 0;
+        virtual void notifyThatResponseButtonHasBeenClicked() = 0;
+    };
+    virtual ~ConsonantInputView() = default;
+    virtual void subscribe(EventListener *) = 0;
+    virtual auto consonant() -> std::string = 0;
+};
+
+class ConsonantOutputView {
+  public:
+    virtual ~ConsonantOutputView() = default;
+    virtual void hideCursor() = 0;
+    virtual void show() = 0;
+    virtual void hide() = 0;
+    virtual void showReadyButton() = 0;
+    virtual void hideReadyButton() = 0;
+    virtual void hideResponseButtons() = 0;
+    virtual void showResponseButtons() = 0;
+};
+
 class ConsonantPresenter : public TaskPresenter {
   public:
-    explicit ConsonantPresenter(Model &model, View::ConsonantOutput &view)
+    explicit ConsonantPresenter(Model &model, ConsonantOutputView &view)
         : model{model}, view{view} {}
     void start() override {
         view.show();
@@ -401,13 +401,13 @@ class ConsonantPresenter : public TaskPresenter {
 
   private:
     Model &model;
-    View::ConsonantOutput &view;
+    ConsonantOutputView &view;
 };
 
 class ConsonantResponder : public TaskResponder,
-                           public View::ConsonantInput::EventListener {
+                           public ConsonantInputView::EventListener {
   public:
-    explicit ConsonantResponder(Model &model, View::ConsonantInput &view)
+    explicit ConsonantResponder(Model &model, ConsonantInputView &view)
         : model{model}, view{view} {
         view.subscribe(this);
     }
@@ -425,7 +425,7 @@ class ConsonantResponder : public TaskResponder,
 
   private:
     Model &model;
-    View::ConsonantInput &view;
+    ConsonantInputView &view;
     TaskResponder::EventListener *listener{};
     ParentPresenter *parent{};
 };
