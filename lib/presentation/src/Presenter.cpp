@@ -92,7 +92,8 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     TaskResponder *freeResponseResponder, TaskPresenter *freeResponsePresenter,
     TaskResponder *correctKeywordsResponder,
     TaskPresenter *correctKeywordsPresenter, TaskResponder *passFailResponder,
-    TaskPresenter *passFailPresenter, TestSetupResponder *, PresenterSimple *)
+    TaskPresenter *passFailPresenter, TestSetupResponder *testSetupResponder,
+    TestSetupPresenter *testSetupPresenter)
     : model{model}, view{view}, testSetup{testSetup},
       experimenterPresenter{experimenterPresenter},
       testSettingsInterpreter{testSettingsInterpreter},
@@ -100,7 +101,8 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       freeResponsePresenter{freeResponsePresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
-      passFailPresenter{passFailPresenter}, taskPresenter_{passFailPresenter} {
+      passFailPresenter{passFailPresenter}, taskPresenter_{passFailPresenter},
+      testSetupPresenter{testSetupPresenter} {
     model.subscribe(this);
     testSetup.becomeChild(this);
     experimenterPresenter.becomeChild(this);
@@ -124,6 +126,10 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
         coordinateResponseMeasureResponder->becomeChild(this);
         coordinateResponseMeasureResponder->subscribe(
             coordinateResponseMeasurePresenter);
+    }
+    if (testSetupResponder != nullptr) {
+        testSetupResponder->becomeChild(this);
+        testSetupResponder->subscribe(testSetupPresenter);
     }
     view.populateAudioDeviceMenu(model.audioDevices());
 }

@@ -77,6 +77,9 @@ class TestSetupResponder {
     virtual void subscribe(EventListener *) = 0;
 };
 
+class TestSetupPresenter : public virtual TestSetupResponder::EventListener,
+                           public virtual PresenterSimple {};
+
 class Presenter : public Model::EventListener, public ParentPresenter {
   public:
     class TestSetup : public TestSetupView::EventListener {
@@ -131,7 +134,7 @@ class Presenter : public Model::EventListener, public ParentPresenter {
         TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {},
         TaskResponder * = {}, TaskPresenter * = {}, TaskResponder * = {},
         TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {},
-        TestSetupResponder * = {}, PresenterSimple * = {});
+        TestSetupResponder * = {}, TestSetupPresenter * = {});
     void trialComplete() override;
     void playTrial() override;
     void playNextTrialIfNeeded() override;
@@ -178,6 +181,7 @@ class Presenter : public Model::EventListener, public ParentPresenter {
     TaskPresenter *correctKeywordsPresenter;
     TaskPresenter *passFailPresenter;
     TaskPresenter *taskPresenter_;
+    PresenterSimple *testSetupPresenter;
 };
 
 class TestSetupResponderImpl : public TestSetupInputView::EventListener,
@@ -236,10 +240,9 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
     TestSetupResponder::EventListener *listener;
 };
 
-class TestSetupPresenter : public TestSetupResponder::EventListener,
-                           public PresenterSimple {
+class TestSetupPresenterImpl : public TestSetupPresenter {
   public:
-    explicit TestSetupPresenter(TestSetupOutputView &view) : view{view} {}
+    explicit TestSetupPresenterImpl(TestSetupOutputView &view) : view{view} {}
     void start() override { view.show(); }
     void stop() override { view.hide(); }
     void notifyThatUserHasSelectedTestSettingsFile(

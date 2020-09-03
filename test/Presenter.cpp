@@ -1269,7 +1269,7 @@ class PresenterTests : public ::testing::Test {
     TextFileReaderStub textFileReader;
     TestSetupResponderImpl testSetupResponderImpl{
         model, view, setupView, testSettingsInterpreter, textFileReader};
-    TestSetupPresenter testSetupPresenterRefactored{setupView};
+    TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
     Presenter presenter{model, view, testSetup, experimenter,
         testSettingsInterpreter, textFileReader, &consonantScreenResponder,
         &consonantPresenterRefactored, &coordinateResponseMeasureResponder,

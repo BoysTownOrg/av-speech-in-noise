@@ -394,7 +394,7 @@ void main(
         coordinateResponseMeasureView};
     TestSetupResponderImpl testSetupResponderImpl{model, view,
         *(testSetupView.get()), testSettingsInterpreter, textFileReader};
-    TestSetupPresenter testSetupPresenterRefactored{*(testSetupView.get())};
+    TestSetupPresenterImpl testSetupPresenterRefactored{*(testSetupView.get())};
     Presenter presenter{model, view, testSetupPresenter, experimenterPresenter,
         testSettingsInterpreter, textFileReader, &consonantScreenResponder,
         &consonantPresenter, &coordinateResponseMeasureResponder,
