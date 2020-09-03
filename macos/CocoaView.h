@@ -146,8 +146,8 @@ class CocoaConsonantView : public ConsonantOutputView,
 };
 
 class CocoaCoordinateResponseMeasureView
-    : public View::CoordinateResponseMeasureInput,
-      public View::CoordinateResponseMeasureOutput {
+    : public CoordinateResponseMeasureInputView,
+      public CoordinateResponseMeasureOutputView {
   public:
     CocoaCoordinateResponseMeasureView(NSRect);
     auto numberResponse() -> std::string override;

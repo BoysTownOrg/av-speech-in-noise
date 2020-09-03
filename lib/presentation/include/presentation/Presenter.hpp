@@ -60,33 +60,6 @@ class TextFileReader {
 
 class View {
   public:
-    class CoordinateResponseMeasureInput {
-      public:
-        class EventListener {
-          public:
-            virtual ~EventListener() = default;
-            virtual void notifyThatReadyButtonHasBeenClicked() = 0;
-            virtual void notifyThatResponseButtonHasBeenClicked() = 0;
-        };
-        virtual ~CoordinateResponseMeasureInput() = default;
-        virtual void subscribe(EventListener *) = 0;
-        virtual auto numberResponse() -> std::string = 0;
-        virtual auto greenResponse() -> bool = 0;
-        virtual auto blueResponse() -> bool = 0;
-        virtual auto whiteResponse() -> bool = 0;
-    };
-
-    class CoordinateResponseMeasureOutput {
-      public:
-        virtual ~CoordinateResponseMeasureOutput() = default;
-        virtual void show() = 0;
-        virtual void hide() = 0;
-        virtual void showResponseButtons() = 0;
-        virtual void hideResponseButtons() = 0;
-        virtual void showNextTrialButton() = 0;
-        virtual void hideNextTrialButton() = 0;
-    };
-
     class TestSetup {
       public:
         class EventListener {
@@ -323,7 +296,34 @@ class Presenter : public Model::EventListener, public ParentPresenter {
     TaskPresenter *taskPresenter_;
 };
 
-static auto colorResponse(View::CoordinateResponseMeasureInput *inputView)
+class CoordinateResponseMeasureInputView {
+  public:
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void notifyThatReadyButtonHasBeenClicked() = 0;
+        virtual void notifyThatResponseButtonHasBeenClicked() = 0;
+    };
+    virtual ~CoordinateResponseMeasureInputView() = default;
+    virtual void subscribe(EventListener *) = 0;
+    virtual auto numberResponse() -> std::string = 0;
+    virtual auto greenResponse() -> bool = 0;
+    virtual auto blueResponse() -> bool = 0;
+    virtual auto whiteResponse() -> bool = 0;
+};
+
+class CoordinateResponseMeasureOutputView {
+  public:
+    virtual ~CoordinateResponseMeasureOutputView() = default;
+    virtual void show() = 0;
+    virtual void hide() = 0;
+    virtual void showResponseButtons() = 0;
+    virtual void hideResponseButtons() = 0;
+    virtual void showNextTrialButton() = 0;
+    virtual void hideNextTrialButton() = 0;
+};
+
+static auto colorResponse(CoordinateResponseMeasureInputView *inputView)
     -> coordinate_response_measure::Color {
     if (inputView->greenResponse())
         return coordinate_response_measure::Color::green;
@@ -335,7 +335,7 @@ static auto colorResponse(View::CoordinateResponseMeasureInput *inputView)
     return coordinate_response_measure::Color::red;
 }
 
-static auto subjectResponse(View::CoordinateResponseMeasureInput *inputView)
+static auto subjectResponse(CoordinateResponseMeasureInputView *inputView)
     -> coordinate_response_measure::Response {
     coordinate_response_measure::Response p{};
     p.color = colorResponse(inputView);
@@ -345,10 +345,10 @@ static auto subjectResponse(View::CoordinateResponseMeasureInput *inputView)
 
 class CoordinateResponseMeasureResponder
     : public TaskResponder,
-      public View::CoordinateResponseMeasureInput::EventListener {
+      public CoordinateResponseMeasureInputView::EventListener {
   public:
     explicit CoordinateResponseMeasureResponder(
-        Model &model, View::CoordinateResponseMeasureInput &view)
+        Model &model, CoordinateResponseMeasureInputView &view)
         : model{model}, view{view} {
         view.subscribe(this);
     }
@@ -366,7 +366,7 @@ class CoordinateResponseMeasureResponder
 
   private:
     Model &model;
-    View::CoordinateResponseMeasureInput &view;
+    CoordinateResponseMeasureInputView &view;
     TaskResponder::EventListener *listener{};
     ParentPresenter *parent{};
 };
@@ -374,7 +374,7 @@ class CoordinateResponseMeasureResponder
 class CoordinateResponseMeasurePresenter : public TaskPresenter {
   public:
     explicit CoordinateResponseMeasurePresenter(
-        View::CoordinateResponseMeasureOutput &view)
+        CoordinateResponseMeasureOutputView &view)
         : view{view} {}
     void start() override {
         view.show();
@@ -391,7 +391,7 @@ class CoordinateResponseMeasurePresenter : public TaskPresenter {
     void showResponseSubmission() override { view.showResponseButtons(); }
 
   private:
-    View::CoordinateResponseMeasureOutput &view;
+    CoordinateResponseMeasureOutputView &view;
 };
 
 class FreeResponseResponder : public TaskResponder,
