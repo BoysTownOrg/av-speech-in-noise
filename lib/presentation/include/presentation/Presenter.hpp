@@ -233,8 +233,6 @@ class View {
     virtual void showCursor() = 0;
 };
 
-class Presenter;
-
 class ParentPresenter {
   public:
     virtual ~ParentPresenter() = default;
@@ -253,7 +251,7 @@ class TaskResponder {
         virtual void notifyThatUserIsDoneResponding() = 0;
     };
     virtual ~TaskResponder() = default;
-    virtual void becomeChild(Presenter *) = 0;
+    virtual void becomeChild(ParentPresenter *) = 0;
     virtual void subscribe(EventListener *) = 0;
 };
 
@@ -423,13 +421,13 @@ class ConsonantResponder : public TaskResponder,
         parent->playNextTrialIfNeeded();
         listener->notifyThatUserIsDoneResponding();
     }
-    void becomeChild(Presenter *p) override { parent = p; }
+    void becomeChild(ParentPresenter *p) override { parent = p; }
 
   private:
     Model &model;
     View::ConsonantInput &view;
     TaskResponder::EventListener *listener{};
-    Presenter *parent{};
+    ParentPresenter *parent{};
 };
 
 static auto colorResponse(View::CoordinateResponseMeasureInput *inputView)
@@ -471,13 +469,13 @@ class CoordinateResponseMeasureResponder
         parent->playNextTrialIfNeeded();
         listener->notifyThatUserIsDoneResponding();
     }
-    void becomeChild(Presenter *p) override { parent = p; }
+    void becomeChild(ParentPresenter *p) override { parent = p; }
 
   private:
     Model &model;
     View::CoordinateResponseMeasureInput &view;
     TaskResponder::EventListener *listener{};
-    Presenter *parent{};
+    ParentPresenter *parent{};
 };
 
 class CoordinateResponseMeasurePresenter : public TaskPresenter {
@@ -516,13 +514,13 @@ class FreeResponseResponder : public TaskResponder,
         listener->notifyThatUserIsDoneResponding();
         parent->readyNextTrialIfNeeded();
     }
-    void becomeChild(Presenter *p) override { parent = p; }
+    void becomeChild(ParentPresenter *p) override { parent = p; }
 
   private:
     Model &model;
     View::FreeResponseInput &view;
     TaskResponder::EventListener *listener{};
-    Presenter *parent{};
+    ParentPresenter *parent{};
 };
 
 class FreeResponsePresenter : public TaskPresenter {
@@ -575,14 +573,14 @@ class CorrectKeywordsResponder
             mainView.showErrorMessage(e.what());
         }
     }
-    void becomeChild(Presenter *p) override { parent = p; }
+    void becomeChild(ParentPresenter *p) override { parent = p; }
 
   private:
     Model &model;
     View &mainView;
     View::CorrectKeywordsInput &view;
     TaskResponder::EventListener *listener{};
-    Presenter *parent{};
+    ParentPresenter *parent{};
 };
 
 class CorrectKeywordsPresenter : public TaskPresenter {
@@ -631,12 +629,12 @@ class PassFailResponder : public TaskResponder,
         listener->notifyThatUserIsDoneResponding();
         parent->showContinueTestingDialogWithResultsWhenComplete();
     }
-    void becomeChild(Presenter *p) override { parent = p; }
+    void becomeChild(ParentPresenter *p) override { parent = p; }
 
   private:
     Model &model;
     TaskResponder::EventListener *listener{};
-    Presenter *parent{};
+    ParentPresenter *parent{};
 };
 
 class PassFailPresenter : public TaskPresenter {
