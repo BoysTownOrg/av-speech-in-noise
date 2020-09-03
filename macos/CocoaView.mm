@@ -766,6 +766,10 @@ void CocoaExperimenterView::subscribe(
     correctKeywordsListener = e;
 }
 
+void CocoaExperimenterView::subscribe(View::PassFailInput::EventListener *e) {
+    passFailListener = e;
+}
+
 void CocoaExperimenterView::showExitTestButton() {
     av_speech_in_noise::show(exitTestButton);
 }
@@ -858,11 +862,11 @@ void CocoaExperimenterView::submitFreeResponse() {
 }
 
 void CocoaExperimenterView::submitPassedTrial() {
-    listener_->submitPassedTrial();
+    passFailListener->notifyThatCorrectButtonHasBeenClicked();
 }
 
 void CocoaExperimenterView::submitFailedTrial() {
-    listener_->submitFailedTrial();
+    passFailListener->notifyThatIncorrectButtonHasBeenClicked();
 }
 
 void CocoaExperimenterView::submitCorrectKeywords() {
