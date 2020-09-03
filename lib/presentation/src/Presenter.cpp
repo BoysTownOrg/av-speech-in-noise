@@ -215,14 +215,13 @@ static void switchToTestSetupView(Presenter::TestSetup &testSetup,
     Presenter::Experimenter &experimenter,
     TaskPresenter *coordinateResponseMeasure, TaskPresenter *consonant,
     TaskPresenter *freeResponse, TaskPresenter *correctKeywords,
-    TaskPresenter *passFail) {
+    TaskPresenter *passFail, TaskPresenter *taskPresenter) {
     show(testSetup);
     experimenter.stop();
     coordinateResponseMeasure->stop();
     consonant->stop();
-    freeResponse->stop();
     correctKeywords->stop();
-    passFail->stop();
+    taskPresenter->stop();
 }
 
 static void updateTrialInformationAndPlayNext(
@@ -235,11 +234,12 @@ static void switchToTestSetupViewIfCompleteElse(Model &model,
     Presenter::TestSetup &testSetup, Presenter::Experimenter &experimenter,
     TaskPresenter *coordinateResponseMeasure, TaskPresenter *consonant,
     TaskPresenter *freeResponse, TaskPresenter *correctKeywords,
-    TaskPresenter *passFail, const std::function<void()> &f) {
+    TaskPresenter *passFail, TaskPresenter *taskPresenter,
+    const std::function<void()> &f) {
     if (testComplete(model))
         switchToTestSetupView(testSetup, experimenter,
             coordinateResponseMeasure, consonant, freeResponse, correctKeywords,
-            passFail);
+            passFail, taskPresenter);
     else
         f();
 }
@@ -248,7 +248,7 @@ void Presenter::playNextTrialIfNeeded() {
     switchToTestSetupViewIfCompleteElse(model, testSetup, experimenterPresenter,
         coordinateResponseMeasurePresenter, consonantPresenter,
         freeResponsePresenter, correctKeywordsPresenter, passFailPresenter,
-        [&]() {
+        taskPresenter_, [&]() {
             updateTrialInformationAndPlayNext(
                 model, view, experimenterPresenter);
         });
@@ -258,13 +258,15 @@ void Presenter::readyNextTrialIfNeeded() {
     switchToTestSetupViewIfCompleteElse(model, testSetup, experimenterPresenter,
         coordinateResponseMeasurePresenter, consonantPresenter,
         freeResponsePresenter, correctKeywordsPresenter, passFailPresenter,
+        taskPresenter_,
         [&]() { readyNextTrial(experimenterPresenter, model); });
 }
 
 void Presenter::declineContinuingTesting() {
     av_speech_in_noise::switchToTestSetupView(testSetup, experimenterPresenter,
         coordinateResponseMeasurePresenter, consonantPresenter,
-        freeResponsePresenter, correctKeywordsPresenter, passFailPresenter);
+        freeResponsePresenter, correctKeywordsPresenter, passFailPresenter,
+        taskPresenter_);
 }
 
 void Presenter::acceptContinuingTesting() {
@@ -280,7 +282,8 @@ void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
 void Presenter::exitTest() {
     av_speech_in_noise::switchToTestSetupView(testSetup, experimenterPresenter,
         coordinateResponseMeasurePresenter, consonantPresenter,
-        freeResponsePresenter, correctKeywordsPresenter, passFailPresenter);
+        freeResponsePresenter, correctKeywordsPresenter, passFailPresenter,
+        taskPresenter_);
 }
 
 void Presenter::playCalibration() {
