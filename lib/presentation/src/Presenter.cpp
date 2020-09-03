@@ -271,23 +271,9 @@ void Presenter::readyNextTrialIfNeeded() {
         [&]() { readyNextTrial(experimenterPresenter, model); });
 }
 
-void Presenter::submitCoordinateResponse() { playNextTrialIfNeeded(); }
+void Presenter::submitPassedTrial() {}
 
-void Presenter::submitPassedTrial() {
-    submitPassedTrial_();
-    av_speech_in_noise::showContinueTestingDialogWithResultsWhenComplete(
-        experimenterPresenter, model);
-}
-
-void Presenter::submitFailedTrial() {
-    submitFailedTrial_();
-    av_speech_in_noise::showContinueTestingDialogWithResultsWhenComplete(
-        experimenterPresenter, model);
-}
-
-void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
-
-void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
+void Presenter::submitFailedTrial() {}
 
 void Presenter::declineContinuingTesting() {
     av_speech_in_noise::switchToTestSetupView(testSetup, experimenterPresenter,
