@@ -245,64 +245,8 @@ void Presenter::exitTest() {
         experimenterPresenter, taskPresenter_, testSetupPresenter);
 }
 
-void Presenter::playCalibration() {}
-
-void Presenter::applyIfBrowseNotCancelled(
-    std::string s, void (TestSetup::*f)(std::string)) {}
-
-void Presenter::browseForTestSettingsFile() {}
-
 auto Presenter::testComplete() -> bool {
     return av_speech_in_noise::testComplete(model);
-}
-
-Presenter::TestSetup::TestSetup(TestSetupView *view,
-    TestSetupInputView *inputView, TestSetupOutputView *outputView)
-    : view{view}, inputView{inputView}, outputView{outputView} {
-    outputView->populateTransducerMenu({name(Transducer::headphone),
-        name(Transducer::oneSpeaker), name(Transducer::twoSpeakers)});
-    inputView->subscribe(this);
-}
-
-void Presenter::TestSetup::show() { outputView->show(); }
-
-void Presenter::TestSetup::hide() { outputView->hide(); }
-
-auto Presenter::TestSetup::testIdentity() -> TestIdentity {
-    TestIdentity p;
-    p.subjectId = inputView->subjectId();
-    p.testerId = inputView->testerId();
-    p.session = inputView->session();
-    p.rmeSetting = inputView->rmeSetting();
-    p.transducer = inputView->transducer();
-    return p;
-}
-
-void Presenter::TestSetup::becomeChild(Presenter *p) { parent = p; }
-
-void Presenter::TestSetup::notifyThatPlayCalibrationButtonHasBeenClicked() {
-    parent->playCalibration();
-}
-
-void Presenter::TestSetup::notifyThatConfirmButtonHasBeenClicked() {
-    parent->confirmTestSetup();
-}
-
-void Presenter::TestSetup::
-    notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
-    parent->browseForTestSettingsFile();
-}
-
-void Presenter::TestSetup::setTestSettingsFile(std::string s) {
-    outputView->setTestSettingsFile(std::move(s));
-}
-
-auto Presenter::TestSetup::testSettingsFile() -> std::string {
-    return inputView->testSettingsFile();
-}
-
-auto Presenter::TestSetup::startingSnr() -> std::string {
-    return inputView->startingSnr();
 }
 
 Presenter::Experimenter::Experimenter(ExperimenterView *view) : view{view} {

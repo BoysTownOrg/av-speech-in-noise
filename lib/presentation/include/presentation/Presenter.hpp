@@ -82,28 +82,6 @@ class TestSetupPresenter : public virtual TestSetupResponder::EventListener,
 
 class Presenter : public Model::EventListener, public ParentPresenter {
   public:
-    class TestSetup : public TestSetupView::EventListener {
-      public:
-        explicit TestSetup(TestSetupView *, TestSetupInputView * = {},
-            TestSetupOutputView * = {});
-        void notifyThatPlayCalibrationButtonHasBeenClicked() override;
-        void notifyThatConfirmButtonHasBeenClicked() override;
-        void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
-        void show();
-        void hide();
-        void becomeChild(Presenter *parent);
-        void setTestSettingsFile(std::string);
-        auto testSettingsFile() -> std::string;
-        auto testIdentity() -> TestIdentity;
-        auto startingSnr() -> std::string;
-
-      private:
-        TestSetupView *view;
-        TestSetupInputView *inputView;
-        TestSetupOutputView *outputView;
-        Presenter *parent{};
-    };
-
     class Experimenter : public ExperimenterView::EventListener {
       public:
         explicit Experimenter(ExperimenterView *);
@@ -161,12 +139,8 @@ class Presenter : public Model::EventListener, public ParentPresenter {
   private:
     void readyNextTrialAfter(void (Presenter::*f)());
     void showErrorMessage(std::string);
-    void playCalibration_();
     void showTest(Method);
     void switchToTestView(Method);
-    void confirmTestSetup_();
-    void applyIfBrowseNotCancelled(
-        std::string s, void (TestSetup::*f)(std::string));
     auto taskPresenter(Method) -> TaskPresenter *;
 
     Model &model;
