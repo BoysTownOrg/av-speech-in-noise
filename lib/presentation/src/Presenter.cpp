@@ -316,11 +316,11 @@ void Presenter::TestSetup::hide() { outputView->hide(); }
 
 auto Presenter::TestSetup::testIdentity() -> TestIdentity {
     TestIdentity p;
-    p.subjectId = view->subjectId();
-    p.testerId = view->testerId();
-    p.session = view->session();
-    p.rmeSetting = view->rmeSetting();
-    p.transducer = view->transducer();
+    p.subjectId = inputView->subjectId();
+    p.testerId = inputView->testerId();
+    p.session = inputView->session();
+    p.rmeSetting = inputView->rmeSetting();
+    p.transducer = inputView->transducer();
     return p;
 }
 
@@ -344,11 +344,11 @@ void Presenter::TestSetup::setTestSettingsFile(std::string s) {
 }
 
 auto Presenter::TestSetup::testSettingsFile() -> std::string {
-    return view->testSettingsFile();
+    return inputView->testSettingsFile();
 }
 
 auto Presenter::TestSetup::startingSnr() -> std::string {
-    return view->startingSnr();
+    return inputView->startingSnr();
 }
 
 Presenter::Experimenter::Experimenter(ExperimenterView *view) : view{view} {

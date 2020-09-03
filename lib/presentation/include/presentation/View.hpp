@@ -6,7 +6,17 @@
 
 namespace av_speech_in_noise {
 
-class TestSetupInputView {};
+class TestSetupInputView {
+  public:
+    virtual ~TestSetupInputView() = default;
+    virtual auto testSettingsFile() -> std::string = 0;
+    virtual auto startingSnr() -> std::string = 0;
+    virtual auto testerId() -> std::string = 0;
+    virtual auto subjectId() -> std::string = 0;
+    virtual auto session() -> std::string = 0;
+    virtual auto rmeSetting() -> std::string = 0;
+    virtual auto transducer() -> std::string = 0;
+};
 
 class TestSetupOutputView {
   public:
@@ -30,13 +40,6 @@ class TestSetupView : public virtual TestSetupOutputView,
     // virtual ~TestSetupView() = default;
     virtual void subscribe(EventListener *) = 0;
     virtual void setTestSettingsFile(std::string) = 0;
-    virtual auto testSettingsFile() -> std::string = 0;
-    virtual auto startingSnr() -> std::string = 0;
-    virtual auto testerId() -> std::string = 0;
-    virtual auto subjectId() -> std::string = 0;
-    virtual auto session() -> std::string = 0;
-    virtual auto rmeSetting() -> std::string = 0;
-    virtual auto transducer() -> std::string = 0;
 };
 
 class View {
