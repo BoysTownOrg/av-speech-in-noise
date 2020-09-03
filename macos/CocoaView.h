@@ -25,6 +25,7 @@ class CocoaExperimenterView : public View::Experimenter,
     void subscribe(Experimenter::EventListener *) override;
     void subscribe(FreeResponseInput::EventListener *) override;
     void subscribe(CorrectKeywordsInput::EventListener *) override;
+    void subscribe(PassFailInput::EventListener *) override {}
     void showExitTestButton() override;
     void hideExitTestButton() override;
     void show() override;

@@ -1244,6 +1244,8 @@ class PresenterTests : public ::testing::Test {
         model, view, experimenterView};
     CorrectKeywordsPresenter correctKeywordsPresenter{
         experimenterView, experimenterView};
+    PassFailResponder passFailResponder{model, experimenterView};
+    PassFailPresenter passFailPresenter{experimenterView, experimenterView};
     CoordinateResponseMeasureResponder coordinateResponseMeasureResponder{
         model, coordinateResponseMeasureView};
     CoordinateResponseMeasurePresenter
@@ -1257,7 +1259,7 @@ class PresenterTests : public ::testing::Test {
         &consonantPresenterRefactored, &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenterRefactored, &freeResponseResponder,
         &freeResponsePresenter, &correctKeywordsResponder,
-        &correctKeywordsPresenter};
+        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTest
         confirmingAdaptiveCoordinateResponseMeasureTest{

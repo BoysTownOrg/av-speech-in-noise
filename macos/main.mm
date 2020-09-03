@@ -385,6 +385,8 @@ void main(
         model, view, experimenterView};
     CorrectKeywordsPresenter correctKeywordsPresenter{
         experimenterView, experimenterView};
+    PassFailResponder passFailResponder{model, experimenterView};
+    PassFailPresenter passFailPresenter{experimenterView, experimenterView};
     CoordinateResponseMeasureResponder coordinateResponseMeasureResponder{
         model, coordinateResponseMeasureView};
     CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
@@ -394,7 +396,7 @@ void main(
         &consonantPresenter, &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenter, &freeResponseResponder,
         &freeResponsePresenter, &correctKeywordsResponder,
-        &correctKeywordsPresenter};
+        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter};
     presenter.run();
 }
 }
