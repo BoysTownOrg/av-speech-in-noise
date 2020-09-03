@@ -422,10 +422,6 @@ void Presenter::Experimenter::showContinueTestingDialog() {
     view->showContinueTestingDialog();
 }
 
-void Presenter::Experimenter::hideEvaluationButtons() {
-    passFailOutputView->hideEvaluationButtons();
-}
-
 void Presenter::Experimenter::hideSubmissions() {
     av_speech_in_noise::hideSubmissions(view, passFailOutputView);
 }
@@ -433,10 +429,6 @@ void Presenter::Experimenter::hideSubmissions() {
 void Presenter::Experimenter::setContinueTestingDialogMessage(
     const std::string &s) {
     view->setContinueTestingDialogMessage(s);
-}
-
-void Presenter::Experimenter::showPassFailSubmission() {
-    passFailOutputView->showEvaluationButtons();
 }
 
 void Presenter::Experimenter::declineContinuingTesting() {
