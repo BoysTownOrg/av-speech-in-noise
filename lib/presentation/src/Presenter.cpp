@@ -439,10 +439,6 @@ void Presenter::Experimenter::showPassFailSubmission() {
     passFailOutputView->showEvaluationButtons();
 }
 
-void Presenter::Experimenter::submitPassedTrial() {}
-
-void Presenter::Experimenter::submitFailedTrial() {}
-
 void Presenter::Experimenter::declineContinuingTesting() {
     parent->declineContinuingTesting();
 }
