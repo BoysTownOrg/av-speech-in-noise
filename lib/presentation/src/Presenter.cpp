@@ -141,26 +141,7 @@ void Presenter::showContinueTestingDialogWithResultsWhenComplete() {
 
 void Presenter::run() { view.eventLoop(); }
 
-void Presenter::confirmTestSetup() {
-    try {
-        confirmTestSetup_();
-    } catch (const std::runtime_error &e) {
-        showErrorMessage(e.what());
-    }
-}
-
-void Presenter::confirmTestSetup_() {
-    const auto testSettings{
-        textFileReader.read({testSetup.testSettingsFile()})};
-    testSettingsInterpreter.initialize(model, testSettings,
-        testIdentity(testSetup),
-        SNR{readInteger(testSetup.startingSnr(), "starting SNR")});
-    if (!av_speech_in_noise::testComplete(model)) {
-        const auto method{testSettingsInterpreter.method(testSettings)};
-
-        taskPresenter_ = taskPresenter(method);
-    }
-}
+void Presenter::confirmTestSetup() {}
 
 void Presenter::switchToTestView(Method m) {
     hide(testSetup);
