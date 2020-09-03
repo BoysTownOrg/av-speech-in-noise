@@ -394,8 +394,8 @@ void main(
         *(testSetupView.get()), testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{*(testSetupView.get())};
     Presenter presenter{model, view, experimenterPresenter,
-        testSettingsInterpreter, textFileReader, &consonantScreenResponder,
-        &consonantPresenter, &coordinateResponseMeasureResponder,
+        &consonantScreenResponder, &consonantPresenter,
+        &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenter, &freeResponseResponder,
         &freeResponsePresenter, &correctKeywordsResponder,
         &correctKeywordsPresenter, &passFailResponder, &passFailPresenter,

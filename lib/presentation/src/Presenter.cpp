@@ -77,9 +77,7 @@ static void showContinueTestingDialogWithResultsWhenComplete(
 }
 
 Presenter::Presenter(Model &model, View &view,
-    Experimenter &experimenterPresenter,
-    TestSettingsInterpreter &testSettingsInterpreter,
-    TextFileReader &textFileReader, TaskResponder *consonantResponder,
+    Experimenter &experimenterPresenter, TaskResponder *consonantResponder,
     TaskPresenter *consonantPresenter,
     TaskResponder *coordinateResponseMeasureResponder,
     TaskPresenter *coordinateResponseMeasurePresenter,
@@ -89,8 +87,7 @@ Presenter::Presenter(Model &model, View &view,
     TaskPresenter *passFailPresenter, TestSetupResponder *testSetupResponder,
     TestSetupPresenter *testSetupPresenter)
     : model{model}, view{view}, experimenterPresenter{experimenterPresenter},
-      testSettingsInterpreter{testSettingsInterpreter},
-      textFileReader{textFileReader}, consonantPresenter{consonantPresenter},
+      consonantPresenter{consonantPresenter},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       freeResponsePresenter{freeResponsePresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},

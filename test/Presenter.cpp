@@ -1145,9 +1145,8 @@ class PresenterConstructionTests : public ::testing::Test {
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
 
     auto construct() -> Presenter {
-        return {model, view, experimenter, testSettingsInterpreter,
-            textFileReader, nullptr, nullptr, nullptr, nullptr, nullptr,
-            nullptr, nullptr, nullptr, nullptr, nullptr,
+        return {model, view, experimenter, nullptr, nullptr, nullptr, nullptr,
+            nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
             &testSetupResponderImpl, &testSetupPresenterRefactored};
     }
 };
@@ -1273,8 +1272,7 @@ class PresenterTests : public ::testing::Test {
     TestSetupResponderImpl testSetupResponderImpl{
         model, view, setupView, testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
-    Presenter presenter{model, view, experimenter, testSettingsInterpreter,
-        textFileReader, &consonantScreenResponder,
+    Presenter presenter{model, view, experimenter, &consonantScreenResponder,
         &consonantPresenterRefactored, &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenterRefactored, &freeResponseResponder,
         &freeResponsePresenter, &correctKeywordsResponder,
@@ -1707,10 +1705,9 @@ class PresenterFailureTests : public ::testing::Test {
     void confirmTestSetup() {
         TestSetupResponderImpl testSetupResponderImpl{
             *model, view, setupView, testSettingsInterpreter, textFileReader};
-        Presenter presenter{*model, view, experimenter, testSettingsInterpreter,
-            textFileReader, nullptr, nullptr, nullptr, nullptr, nullptr,
-            nullptr, nullptr, nullptr, nullptr, nullptr,
-            &testSetupResponderImpl, &testSetupPresenterRefactored};
+        Presenter presenter{*model, view, experimenter, nullptr, nullptr,
+            nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+            nullptr, &testSetupResponderImpl, &testSetupPresenterRefactored};
         setupView.confirmTestSetup();
     }
 

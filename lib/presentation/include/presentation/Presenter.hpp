@@ -107,12 +107,11 @@ class Presenter : public Model::EventListener, public ParentPresenter {
         ExperimenterView *view;
     };
 
-    Presenter(Model &, View &, Experimenter &, TestSettingsInterpreter &,
-        TextFileReader &, TaskResponder * = {}, TaskPresenter * = {},
+    Presenter(Model &, View &, Experimenter &, TaskResponder * = {},
+        TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {},
         TaskResponder * = {}, TaskPresenter * = {}, TaskResponder * = {},
         TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {},
-        TaskResponder * = {}, TaskPresenter * = {}, TestSetupResponder * = {},
-        TestSetupPresenter * = {});
+        TestSetupResponder * = {}, TestSetupPresenter * = {});
     void trialComplete() override;
     void playTrial() override;
     void playNextTrialIfNeeded() override;
@@ -143,8 +142,6 @@ class Presenter : public Model::EventListener, public ParentPresenter {
     Model &model;
     View &view;
     Experimenter &experimenterPresenter;
-    TestSettingsInterpreter &testSettingsInterpreter;
-    TextFileReader &textFileReader;
     TaskPresenter *consonantPresenter;
     TaskPresenter *coordinateResponseMeasurePresenter;
     TaskPresenter *freeResponsePresenter;
