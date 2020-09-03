@@ -133,8 +133,6 @@ void Presenter::showContinueTestingDialogWithResultsWhenComplete() {
 
 void Presenter::run() { view.eventLoop(); }
 
-void Presenter::confirmTestSetup() {}
-
 void Presenter::switchToTestView(Method m) {
     testSetupPresenter->stop();
     showTest(m);

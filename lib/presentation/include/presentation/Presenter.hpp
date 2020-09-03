@@ -119,9 +119,6 @@ class Presenter : public Model::EventListener, public ParentPresenter {
     void readyNextTrialIfNeeded() override;
     void showContinueTestingDialogWithResultsWhenComplete() override;
     void run();
-    void confirmTestSetup();
-    void playCalibration();
-    void browseForTestSettingsFile();
     auto testComplete() -> bool;
     void declineContinuingTesting();
     void acceptContinuingTesting();
@@ -210,7 +207,7 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
     Presenter *parent{};
-    TestSetupResponder::EventListener *listener;
+    TestSetupResponder::EventListener *listener{};
 };
 
 class TestSetupPresenterImpl : public TestSetupPresenter {
