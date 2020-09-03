@@ -271,10 +271,6 @@ void Presenter::readyNextTrialIfNeeded() {
         [&]() { readyNextTrial(experimenterPresenter, model); });
 }
 
-void Presenter::submitPassedTrial() {}
-
-void Presenter::submitFailedTrial() {}
-
 void Presenter::declineContinuingTesting() {
     av_speech_in_noise::switchToTestSetupView(testSetup, experimenterPresenter,
         coordinateResponseMeasurePresenter, consonantPresenter,
@@ -443,13 +439,9 @@ void Presenter::Experimenter::showPassFailSubmission() {
     passFailOutputView->showEvaluationButtons();
 }
 
-void Presenter::Experimenter::submitPassedTrial() {
-    parent->submitPassedTrial();
-}
+void Presenter::Experimenter::submitPassedTrial() {}
 
-void Presenter::Experimenter::submitFailedTrial() {
-    parent->submitFailedTrial();
-}
+void Presenter::Experimenter::submitFailedTrial() {}
 
 void Presenter::Experimenter::declineContinuingTesting() {
     parent->declineContinuingTesting();
