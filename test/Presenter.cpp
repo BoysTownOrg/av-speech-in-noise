@@ -246,8 +246,8 @@ class ExperimenterViewStub : public ExperimenterView,
                              public FreeResponseOutputView,
                              public CorrectKeywordsInputView,
                              public CorrectKeywordsOutputView,
-                             public View::PassFailInput,
-                             public View::PassFailOutput {
+                             public PassFailInputView,
+                             public PassFailOutputView {
   public:
     void declineContinuingTesting() { listener_->declineContinuingTesting(); }
 
@@ -345,7 +345,7 @@ class ExperimenterViewStub : public ExperimenterView,
         correctKeywordsListener = e;
     }
 
-    void subscribe(PassFailInput::EventListener *e) override {
+    void subscribe(PassFailInputView::EventListener *e) override {
         passFailListener = e;
     }
 
@@ -428,7 +428,7 @@ class ExperimenterViewStub : public ExperimenterView,
     ExperimenterView::EventListener *listener_{};
     FreeResponseInputView::EventListener *freeResponseListener{};
     CorrectKeywordsInputView::EventListener *correctKeywordsListener{};
-    View::PassFailInput::EventListener *passFailListener{};
+    PassFailInputView::EventListener *passFailListener{};
     bool freeResponseCleared_{};
     bool exitTestButtonHidden_{};
     bool exitTestButtonShown_{};

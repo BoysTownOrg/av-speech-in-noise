@@ -87,25 +87,6 @@ class View {
         virtual void setTestSettingsFile(std::string) = 0;
     };
 
-    class PassFailInput {
-      public:
-        class EventListener {
-          public:
-            virtual ~EventListener() = default;
-            virtual void notifyThatCorrectButtonHasBeenClicked() = 0;
-            virtual void notifyThatIncorrectButtonHasBeenClicked() = 0;
-        };
-        virtual ~PassFailInput() = default;
-        virtual void subscribe(EventListener *) = 0;
-    };
-
-    class PassFailOutput {
-      public:
-        virtual ~PassFailOutput() = default;
-        virtual void showEvaluationButtons() = 0;
-        virtual void hideEvaluationButtons() = 0;
-    };
-
     virtual ~View() = default;
     virtual void eventLoop() = 0;
     virtual auto browseForDirectory() -> std::string = 0;
@@ -309,10 +290,29 @@ class CorrectKeywordsPresenter : public TaskPresenter {
     CorrectKeywordsOutputView &view;
 };
 
-class PassFailResponder : public TaskResponder,
-                          public View::PassFailInput::EventListener {
+class PassFailInputView {
   public:
-    explicit PassFailResponder(Model &model, View::PassFailInput &view)
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void notifyThatCorrectButtonHasBeenClicked() = 0;
+        virtual void notifyThatIncorrectButtonHasBeenClicked() = 0;
+    };
+    virtual ~PassFailInputView() = default;
+    virtual void subscribe(EventListener *) = 0;
+};
+
+class PassFailOutputView {
+  public:
+    virtual ~PassFailOutputView() = default;
+    virtual void showEvaluationButtons() = 0;
+    virtual void hideEvaluationButtons() = 0;
+};
+
+class PassFailResponder : public TaskResponder,
+                          public PassFailInputView::EventListener {
+  public:
+    explicit PassFailResponder(Model &model, PassFailInputView &view)
         : model{model} {
         view.subscribe(this);
     }
@@ -338,7 +338,7 @@ class PassFailResponder : public TaskResponder,
 class PassFailPresenter : public TaskPresenter {
   public:
     explicit PassFailPresenter(
-        ExperimenterView &experimenterView, View::PassFailOutput &view)
+        ExperimenterView &experimenterView, PassFailOutputView &view)
         : experimenterView{experimenterView}, view{view} {}
     void start() override {
         experimenterView.show();
@@ -358,7 +358,7 @@ class PassFailPresenter : public TaskPresenter {
 
   private:
     ExperimenterView &experimenterView;
-    View::PassFailOutput &view;
+    PassFailOutputView &view;
 };
 }
 

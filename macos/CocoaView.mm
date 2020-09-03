@@ -765,7 +765,7 @@ void CocoaExperimenterView::subscribe(
     correctKeywordsListener = e;
 }
 
-void CocoaExperimenterView::subscribe(View::PassFailInput::EventListener *e) {
+void CocoaExperimenterView::subscribe(PassFailInputView::EventListener *e) {
     passFailListener = e;
 }
 

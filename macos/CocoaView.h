@@ -21,14 +21,14 @@ class CocoaExperimenterView : public ExperimenterView,
                               public FreeResponseOutputView,
                               public CorrectKeywordsInputView,
                               public CorrectKeywordsOutputView,
-                              public View::PassFailInput,
-                              public View::PassFailOutput {
+                              public PassFailInputView,
+                              public PassFailOutputView {
   public:
     explicit CocoaExperimenterView(NSViewController *);
     void subscribe(ExperimenterView::EventListener *) override;
     void subscribe(FreeResponseInputView::EventListener *) override;
     void subscribe(CorrectKeywordsInputView::EventListener *) override;
-    void subscribe(PassFailInput::EventListener *) override;
+    void subscribe(PassFailInputView::EventListener *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;
     void show() override;
@@ -78,7 +78,7 @@ class CocoaExperimenterView : public ExperimenterView,
     ExperimenterView::EventListener *listener_{};
     FreeResponseInputView::EventListener *freeResponseListener{};
     CorrectKeywordsInputView::EventListener *correctKeywordsListener{};
-    PassFailInput::EventListener *passFailListener{};
+    PassFailInputView::EventListener *passFailListener{};
 };
 
 class CocoaTestSetupView : public View::TestSetup {
