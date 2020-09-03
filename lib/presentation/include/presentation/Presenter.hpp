@@ -47,21 +47,6 @@ constexpr auto name(Transducer c) -> const char * {
     }
 }
 
-class TestSettingsInterpreter {
-  public:
-    virtual ~TestSettingsInterpreter() = default;
-    virtual void initialize(
-        Model &, const std::string &, const TestIdentity &, SNR) = 0;
-    virtual auto method(const std::string &) -> Method = 0;
-    virtual auto calibration(const std::string &) -> Calibration = 0;
-};
-
-class TextFileReader {
-  public:
-    virtual ~TextFileReader() = default;
-    virtual auto read(const LocalUrl &) -> std::string = 0;
-};
-
 class Presenter;
 
 class TestSetupResponder {
@@ -149,6 +134,21 @@ class Presenter : public Model::EventListener, public ParentPresenter {
     TaskPresenter *passFailPresenter;
     TaskPresenter *taskPresenter_;
     PresenterSimple *testSetupPresenter;
+};
+
+class TestSettingsInterpreter {
+  public:
+    virtual ~TestSettingsInterpreter() = default;
+    virtual void initialize(
+        Model &, const std::string &, const TestIdentity &, SNR) = 0;
+    virtual auto method(const std::string &) -> Method = 0;
+    virtual auto calibration(const std::string &) -> Calibration = 0;
+};
+
+class TextFileReader {
+  public:
+    virtual ~TextFileReader() = default;
+    virtual auto read(const LocalUrl &) -> std::string = 0;
 };
 
 class TestSetupResponderImpl : public TestSetupInputView::EventListener,
