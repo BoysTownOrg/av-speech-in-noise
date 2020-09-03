@@ -47,7 +47,11 @@ constexpr auto name(Transducer c) -> const char * {
     }
 }
 
-class Presenter;
+class SomethingIDK {
+  public:
+    virtual ~SomethingIDK() = default;
+    virtual void prepare(Method) = 0;
+};
 
 class TestSetupResponder {
   public:
@@ -58,14 +62,16 @@ class TestSetupResponder {
             const std::string &) = 0;
     };
     virtual ~TestSetupResponder() = default;
-    virtual void becomeChild(Presenter *) = 0;
+    virtual void becomeChild(SomethingIDK *) = 0;
     virtual void subscribe(EventListener *) = 0;
 };
 
 class TestSetupPresenter : public virtual TestSetupResponder::EventListener,
                            public virtual PresenterSimple {};
 
-class Presenter : public Model::EventListener, public ParentPresenter {
+class Presenter : public Model::EventListener,
+                  public ParentPresenter,
+                  public SomethingIDK {
   public:
     class Experimenter : public ExperimenterView::EventListener {
       public:
@@ -107,7 +113,7 @@ class Presenter : public Model::EventListener, public ParentPresenter {
     void declineContinuingTesting();
     void acceptContinuingTesting();
     void exitTest();
-    void prepare(Method m) {
+    void prepare(Method m) override {
         switchToTestView(m);
         taskPresenter_ = taskPresenter(m);
     }
@@ -192,7 +198,7 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
         if (!mainView.browseCancelled())
             listener->notifyThatUserHasSelectedTestSettingsFile(file);
     }
-    void becomeChild(Presenter *p) override { parent = p; }
+    void becomeChild(SomethingIDK *p) override { parent = p; }
     void subscribe(TestSetupResponder::EventListener *e) override {
         listener = e;
     }
@@ -203,7 +209,7 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
     TestSetupInputView &view;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
-    Presenter *parent{};
+    SomethingIDK *parent{};
     TestSetupResponder::EventListener *listener{};
 };
 
