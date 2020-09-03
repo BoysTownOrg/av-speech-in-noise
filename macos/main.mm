@@ -242,7 +242,8 @@ void main(
     AdaptiveMethodImpl adaptiveMethod{
         snrTrackFactory, responseEvaluator, randomizer};
     MacOsDirectoryReader directoryReader;
-    FileExtensionFilter targetFileExtensionFilter{{".mov", ".avi", ".wav"}};
+    FileExtensionFilter targetFileExtensionFilter{
+        {".mov", ".avi", ".wav", ".mp4"}};
     FileFilterDecorator onlyIncludesTargetFileExtensions{
         &directoryReader, &targetFileExtensionFilter};
     RandomizedTargetPlaylistWithReplacement targetsWithReplacement{
