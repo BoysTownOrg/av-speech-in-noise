@@ -392,12 +392,16 @@ void main(
         model, coordinateResponseMeasureView};
     CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
         coordinateResponseMeasureView};
+    TestSetupResponderImpl testSetupResponderImpl{model, view,
+        *(testSetupView.get()), testSettingsInterpreter, textFileReader};
+    TestSetupPresenter testSetupPresenterRefactored{*(testSetupView.get())};
     Presenter presenter{model, view, testSetupPresenter, experimenterPresenter,
         testSettingsInterpreter, textFileReader, &consonantScreenResponder,
         &consonantPresenter, &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenter, &freeResponseResponder,
         &freeResponsePresenter, &correctKeywordsResponder,
-        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter};
+        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter,
+        &testSetupResponderImpl, &testSetupPresenterRefactored};
     presenter.run();
 }
 }

@@ -1267,12 +1267,16 @@ class PresenterTests : public ::testing::Test {
     Calibration interpretedCalibration;
     TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
     TextFileReaderStub textFileReader;
+    TestSetupResponderImpl testSetupResponderImpl{
+        model, view, setupView, testSettingsInterpreter, textFileReader};
+    TestSetupPresenter testSetupPresenterRefactored{setupView};
     Presenter presenter{model, view, testSetup, experimenter,
         testSettingsInterpreter, textFileReader, &consonantScreenResponder,
         &consonantPresenterRefactored, &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenterRefactored, &freeResponseResponder,
         &freeResponsePresenter, &correctKeywordsResponder,
-        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter};
+        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter,
+        &testSetupResponderImpl, &testSetupPresenterRefactored};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTest
         confirmingAdaptiveCoordinateResponseMeasureTest{
