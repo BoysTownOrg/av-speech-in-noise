@@ -87,25 +87,6 @@ class View {
         virtual void setTestSettingsFile(std::string) = 0;
     };
 
-    class CorrectKeywordsInput {
-      public:
-        class EventListener {
-          public:
-            virtual ~EventListener() = default;
-            virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
-        };
-        virtual ~CorrectKeywordsInput() = default;
-        virtual void subscribe(EventListener *) = 0;
-        virtual auto correctKeywords() -> std::string = 0;
-    };
-
-    class CorrectKeywordsOutput {
-      public:
-        virtual ~CorrectKeywordsOutput() = default;
-        virtual void showCorrectKeywordsSubmission() = 0;
-        virtual void hideCorrectKeywordsSubmission() = 0;
-    };
-
     class PassFailInput {
       public:
         class EventListener {
@@ -250,12 +231,31 @@ class Presenter : public Model::EventListener, public ParentPresenter {
     TaskPresenter *taskPresenter_;
 };
 
+class CorrectKeywordsInputView {
+  public:
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
+    };
+    virtual ~CorrectKeywordsInputView() = default;
+    virtual void subscribe(EventListener *) = 0;
+    virtual auto correctKeywords() -> std::string = 0;
+};
+
+class CorrectKeywordsOutputView {
+  public:
+    virtual ~CorrectKeywordsOutputView() = default;
+    virtual void showCorrectKeywordsSubmission() = 0;
+    virtual void hideCorrectKeywordsSubmission() = 0;
+};
+
 class CorrectKeywordsResponder
     : public TaskResponder,
-      public View::CorrectKeywordsInput::EventListener {
+      public CorrectKeywordsInputView::EventListener {
   public:
     explicit CorrectKeywordsResponder(
-        Model &model, View &mainView, View::CorrectKeywordsInput &view)
+        Model &model, View &mainView, CorrectKeywordsInputView &view)
         : model{model}, mainView{mainView}, view{view} {
         view.subscribe(this);
     }
@@ -276,7 +276,7 @@ class CorrectKeywordsResponder
   private:
     Model &model;
     View &mainView;
-    View::CorrectKeywordsInput &view;
+    CorrectKeywordsInputView &view;
     TaskResponder::EventListener *listener{};
     ParentPresenter *parent{};
 };
@@ -284,7 +284,7 @@ class CorrectKeywordsResponder
 class CorrectKeywordsPresenter : public TaskPresenter {
   public:
     explicit CorrectKeywordsPresenter(
-        ExperimenterView &experimenterView, View::CorrectKeywordsOutput &view)
+        ExperimenterView &experimenterView, CorrectKeywordsOutputView &view)
         : experimenterView{experimenterView}, view{view} {}
     void start() override {
         experimenterView.show();
@@ -306,7 +306,7 @@ class CorrectKeywordsPresenter : public TaskPresenter {
 
   private:
     ExperimenterView &experimenterView;
-    View::CorrectKeywordsOutput &view;
+    CorrectKeywordsOutputView &view;
 };
 
 class PassFailResponder : public TaskResponder,

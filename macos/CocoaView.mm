@@ -761,7 +761,7 @@ void CocoaExperimenterView::subscribe(FreeResponseInputView::EventListener *e) {
 }
 
 void CocoaExperimenterView::subscribe(
-    View::CorrectKeywordsInput::EventListener *e) {
+    CorrectKeywordsInputView::EventListener *e) {
     correctKeywordsListener = e;
 }
 
