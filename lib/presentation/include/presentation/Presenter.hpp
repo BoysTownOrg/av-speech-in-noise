@@ -331,8 +331,6 @@ class Presenter : public Model::EventListener {
     void playTrial();
     void playCalibration();
     void browseForTestSettingsFile();
-    void submitCoordinateResponse();
-    void submitConsonantResponse();
     auto testComplete() -> bool;
     void playNextTrialIfNeeded();
     void declineContinuingTesting();
@@ -348,10 +346,6 @@ class Presenter : public Model::EventListener {
 
   private:
     void readyNextTrialAfter(void (Presenter::*f)());
-    void submitFailedTrial_();
-    void submitPassedTrial_();
-    void submitFreeResponse_();
-    void submitCorrectKeywords_();
     void showErrorMessage(std::string);
     void playCalibration_();
     void showTest(Method);

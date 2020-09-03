@@ -101,7 +101,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       freeResponsePresenter{freeResponsePresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
-      passFailPresenter{passFailPresenter} {
+      passFailPresenter{passFailPresenter}, taskPresenter_{passFailPresenter} {
     model.subscribe(this);
     testSetup.becomeChild(this);
     experimenterPresenter.becomeChild(this);
