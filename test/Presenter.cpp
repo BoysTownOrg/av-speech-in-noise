@@ -1240,8 +1240,7 @@ class PresenterTests : public ::testing::Test {
     ConsonantViewStub consonantView;
     ExperimenterViewStub experimenterView;
     Presenter::TestSetup testSetup{&setupView};
-    Presenter::Experimenter experimenter{
-        &experimenterView, &experimenterView, &experimenterView};
+    Presenter::Experimenter experimenter{&experimenterView};
     ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenterRefactored{model, consonantView};
     FreeResponseResponder freeResponseResponder{model, experimenterView};
