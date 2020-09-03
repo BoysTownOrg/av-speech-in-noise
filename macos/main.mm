@@ -373,7 +373,8 @@ void main(
     CocoaCoordinateResponseMeasureView coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
-    Presenter::TestSetup testSetupPresenter{testSetupView.get()};
+    Presenter::TestSetup testSetupPresenter{
+        testSetupView.get(), testSetupView.get(), testSetupView.get()};
     Presenter::Experimenter experimenterPresenter{&experimenterView};
     TestSettingsInterpreterImpl testSettingsInterpreter;
     ConsonantResponder consonantScreenResponder{model, consonantView};

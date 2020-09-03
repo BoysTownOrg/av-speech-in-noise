@@ -1246,7 +1246,7 @@ class PresenterTests : public ::testing::Test {
     CoordinateResponseMeasureViewStub coordinateResponseMeasureView;
     ConsonantViewStub consonantView;
     ExperimenterViewStub experimenterView;
-    Presenter::TestSetup testSetup{&setupView};
+    Presenter::TestSetup testSetup{&setupView, &setupView, &setupView};
     Presenter::Experimenter experimenter{&experimenterView};
     ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenterRefactored{model, consonantView};

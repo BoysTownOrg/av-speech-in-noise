@@ -5,7 +5,13 @@
 #include <string>
 
 namespace av_speech_in_noise {
-class TestSetupView {
+
+class TestSetupInputView {};
+
+class TestSetupOutputView {};
+
+class TestSetupView : public virtual TestSetupOutputView,
+                      public virtual TestSetupInputView {
   public:
     class EventListener {
       public:
@@ -29,10 +35,6 @@ class TestSetupView {
     virtual auto transducer() -> std::string = 0;
     virtual void setTestSettingsFile(std::string) = 0;
 };
-
-class TestSetupInputView {};
-
-class TestSetupOutputView {};
 
 class View {
   public:
