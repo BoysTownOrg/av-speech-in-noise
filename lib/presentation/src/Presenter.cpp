@@ -92,7 +92,8 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     TaskPresenter *coordinateResponseMeasurePresenter,
     TaskResponder *freeResponseResponder, TaskPresenter *freeResponsePresenter,
     TaskResponder *correctKeywordsResponder,
-    TaskPresenter *correctKeywordsPresenter)
+    TaskPresenter *correctKeywordsPresenter, TaskResponder *passFailResponder,
+    TaskPresenter *passFailPresenter)
     : freeResponseTrialCompletionHandler{freeResponsePresenter},
       passFailTrialCompletionHandler{experimenterPresenter},
       correctKeywordsTrialCompletionHandler{correctKeywordsPresenter},
@@ -107,7 +108,8 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       consonantPresenter{consonantPresenter},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       freeResponsePresenter{freeResponsePresenter},
-      correctKeywordsPresenter{correctKeywordsPresenter} {
+      correctKeywordsPresenter{correctKeywordsPresenter},
+      passFailPresenter{passFailPresenter} {
     model.subscribe(this);
     testSetup.becomeChild(this);
     experimenterPresenter.becomeChild(this);
@@ -122,6 +124,10 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     if (correctKeywordsResponder != nullptr) {
         correctKeywordsResponder->becomeChild(this);
         correctKeywordsResponder->subscribe(correctKeywordsPresenter);
+    }
+    if (passFailResponder != nullptr) {
+        passFailResponder->becomeChild(this);
+        passFailResponder->subscribe(passFailPresenter);
     }
     if (coordinateResponseMeasureResponder != nullptr) {
         coordinateResponseMeasureResponder->becomeChild(this);

@@ -408,7 +408,7 @@ class Presenter : public Model::EventListener {
         TestSettingsInterpreter &, TextFileReader &, TaskResponder * = {},
         TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {},
         TaskResponder * = {}, TaskPresenter * = {}, TaskResponder * = {},
-        TaskPresenter * = {});
+        TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {});
     void trialComplete() override;
     void run();
     void confirmTestSetup();
@@ -466,6 +466,7 @@ class Presenter : public Model::EventListener {
     TaskPresenter *coordinateResponseMeasurePresenter;
     TaskPresenter *freeResponsePresenter;
     TaskPresenter *correctKeywordsPresenter;
+    TaskPresenter *passFailPresenter;
 };
 
 class ConsonantPresenter : public TaskPresenter {
