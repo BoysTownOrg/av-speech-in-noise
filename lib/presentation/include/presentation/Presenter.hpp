@@ -144,8 +144,6 @@ class View {
             virtual ~EventListener() = default;
             virtual void exitTest() = 0;
             virtual void playTrial() = 0;
-            virtual void submitPassedTrial() = 0;
-            virtual void submitFailedTrial() = 0;
             virtual void declineContinuingTesting() = 0;
             virtual void acceptContinuingTesting() = 0;
         };
@@ -303,8 +301,8 @@ class Presenter : public Model::EventListener {
             View::PassFailOutput * = {});
         void exitTest() override;
         void playTrial() override;
-        void submitPassedTrial() override;
-        void submitFailedTrial() override;
+        void submitPassedTrial();
+        void submitFailedTrial();
         void declineContinuingTesting() override;
         void acceptContinuingTesting() override;
         void becomeChild(Presenter *parent);
