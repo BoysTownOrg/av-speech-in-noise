@@ -255,35 +255,12 @@ void Presenter::exitTest() {
         experimenterPresenter, taskPresenter_, testSetupPresenter);
 }
 
-void Presenter::playCalibration() {
-    try {
-        playCalibration_();
-    } catch (const std::runtime_error &e) {
-        showErrorMessage(e.what());
-    }
-}
-
-void Presenter::playCalibration_() {
-    auto p{testSettingsInterpreter.calibration(
-        textFileReader.read({testSetup.testSettingsFile()}))};
-    p.audioDevice = view.audioDevice();
-    model.playCalibration(p);
-}
+void Presenter::playCalibration() {}
 
 void Presenter::applyIfBrowseNotCancelled(
-    std::string s, void (TestSetup::*f)(std::string)) {
-    if (!view.browseCancelled())
-        (testSetup.*f)(std::move(s));
-}
+    std::string s, void (TestSetup::*f)(std::string)) {}
 
-static auto browseForOpeningFile(View &view) -> std::string {
-    return view.browseForOpeningFile();
-}
-
-void Presenter::browseForTestSettingsFile() {
-    applyIfBrowseNotCancelled(
-        browseForOpeningFile(view), &TestSetup::setTestSettingsFile);
-}
+void Presenter::browseForTestSettingsFile() {}
 
 auto Presenter::testComplete() -> bool {
     return av_speech_in_noise::testComplete(model);
