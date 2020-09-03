@@ -235,6 +235,15 @@ class View {
 
 class Presenter;
 
+class ParentPresenter {
+  public:
+    virtual ~ParentPresenter() = default;
+    virtual void playTrial() = 0;
+    virtual void playNextTrialIfNeeded() = 0;
+    virtual void readyNextTrialIfNeeded() = 0;
+    virtual void showContinueTestingDialogWithResultsWhenComplete() = 0;
+};
+
 class TaskResponder {
   public:
     class EventListener {
@@ -274,7 +283,7 @@ static auto readInteger(const std::string &x, const std::string &identifier)
     }
 }
 
-class Presenter : public Model::EventListener {
+class Presenter : public Model::EventListener, public ParentPresenter {
   public:
     class TestSetup : public View::TestSetup::EventListener {
       public:
@@ -326,18 +335,18 @@ class Presenter : public Model::EventListener {
         TaskResponder * = {}, TaskPresenter * = {}, TaskResponder * = {},
         TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {});
     void trialComplete() override;
+    void playTrial() override;
+    void playNextTrialIfNeeded() override;
+    void readyNextTrialIfNeeded() override;
+    void showContinueTestingDialogWithResultsWhenComplete() override;
     void run();
     void confirmTestSetup();
-    void playTrial();
     void playCalibration();
     void browseForTestSettingsFile();
     auto testComplete() -> bool;
-    void playNextTrialIfNeeded();
     void declineContinuingTesting();
     void acceptContinuingTesting();
     void exitTest();
-    void readyNextTrialIfNeeded();
-    void showContinueTestingDialogWithResultsWhenComplete();
 
     static constexpr RealLevel fullScaleLevel{119};
     static constexpr SNR ceilingSnr{20};
