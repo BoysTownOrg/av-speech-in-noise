@@ -61,6 +61,21 @@ class TextFileReader {
     virtual auto read(const LocalUrl &) -> std::string = 0;
 };
 
+class Presenter;
+
+class TestSetupResponder {
+  public:
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void notifyThatTaskHasStarted() = 0;
+        virtual void notifyThatUserIsDoneResponding() = 0;
+    };
+    virtual ~TestSetupResponder() = default;
+    virtual void becomeChild(Presenter *) = 0;
+    virtual void subscribe(EventListener *) = 0;
+};
+
 class Presenter : public Model::EventListener, public ParentPresenter {
   public:
     class TestSetup : public TestSetupView::EventListener {
@@ -128,6 +143,10 @@ class Presenter : public Model::EventListener, public ParentPresenter {
     void declineContinuingTesting();
     void acceptContinuingTesting();
     void exitTest();
+    void prepare(Method m) {
+        switchToTestView(m);
+        taskPresenter_ = taskPresenter(m);
+    }
 
     static constexpr RealLevel fullScaleLevel{119};
     static constexpr SNR ceilingSnr{20};
@@ -159,16 +178,17 @@ class Presenter : public Model::EventListener, public ParentPresenter {
     TaskPresenter *taskPresenter_;
 };
 
-class TestSetupResponder : public TestSetupInputView::EventListener {
+class TestSetupResponderImpl : public TestSetupInputView::EventListener,
+                               public TestSetupResponder {
   public:
-    explicit TestSetupResponder(Model &model, View &mainView,
+    explicit TestSetupResponderImpl(Model &model, View &mainView,
         TestSetupInputView &view,
         TestSettingsInterpreter &testSettingsInterpreter,
         TextFileReader &textFileReader)
         : model{model}, mainView{mainView}, view{view},
           testSettingsInterpreter{testSettingsInterpreter},
           textFileReader{textFileReader} {}
-    // void subscribe(TaskResponder::EventListener *e) override;
+    void subscribe(TestSetupResponder::EventListener *e) override {}
     void notifyThatConfirmButtonHasBeenClicked() override {
         try {
             const auto testSettings{
@@ -181,18 +201,15 @@ class TestSetupResponder : public TestSetupInputView::EventListener {
             p.transducer = view.transducer();
             testSettingsInterpreter.initialize(model, testSettings, p,
                 SNR{readInteger(view.startingSnr(), "starting SNR")});
-            if (!model.testComplete()) {
-                const auto method{testSettingsInterpreter.method(testSettings)};
-                // switchToTestView(method);
-                // taskPresenter_ = taskPresenter(method);
-            }
+            if (!model.testComplete())
+                parent->prepare(testSettingsInterpreter.method(testSettings));
         } catch (const std::runtime_error &e) {
             mainView.showErrorMessage(e.what());
         }
     }
     void notifyThatPlayCalibrationButtonHasBeenClicked() override {}
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override {}
-    // void becomeChild(ParentPresenter *p) override;
+    void becomeChild(Presenter *p) override { parent = p; }
 
   private:
     Model &model;
@@ -201,7 +218,7 @@ class TestSetupResponder : public TestSetupInputView::EventListener {
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
     TaskResponder::EventListener *listener{};
-    ParentPresenter *parent{};
+    Presenter *parent{};
 };
 
 class TestSetupPresenter {
