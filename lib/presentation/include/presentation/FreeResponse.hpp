@@ -31,17 +31,10 @@ class FreeResponseOutputView {
 class FreeResponseResponder : public TaskResponder,
                               public FreeResponseInputView::EventListener {
   public:
-    explicit FreeResponseResponder(Model &model, FreeResponseInputView &view)
-        : model{model}, view{view} {
-        view.subscribe(this);
-    }
-    void subscribe(TaskResponder::EventListener *e) override { listener = e; }
-    void notifyThatSubmitButtonHasBeenClicked() override {
-        model.submit(FreeResponse{view.freeResponse(), view.flagged()});
-        listener->notifyThatUserIsDoneResponding();
-        parent->readyNextTrialIfNeeded();
-    }
-    void becomeChild(ParentPresenter *p) override { parent = p; }
+    explicit FreeResponseResponder(Model &, FreeResponseInputView &);
+    void subscribe(TaskResponder::EventListener *e) override;
+    void notifyThatSubmitButtonHasBeenClicked() override;
+    void becomeChild(ParentPresenter *p) override;
 
   private:
     Model &model;
@@ -53,26 +46,12 @@ class FreeResponseResponder : public TaskResponder,
 class FreeResponsePresenter : public TaskPresenter {
   public:
     explicit FreeResponsePresenter(
-        ExperimenterView &experimenterView, FreeResponseOutputView &view)
-        : experimenterView{experimenterView}, view{view} {}
-    void start() override {
-        experimenterView.show();
-        experimenterView.showNextTrialButton();
-    }
-    void stop() override {
-        experimenterView.hide();
-        view.hideFreeResponseSubmission();
-    }
-    void notifyThatTaskHasStarted() override {
-        experimenterView.hideNextTrialButton();
-    }
-    void notifyThatUserIsDoneResponding() override {
-        view.hideFreeResponseSubmission();
-    }
-    void showResponseSubmission() override {
-        view.clearFreeResponse();
-        view.showFreeResponseSubmission();
-    }
+        ExperimenterView &, FreeResponseOutputView &);
+    void start() override;
+    void stop() override;
+    void notifyThatTaskHasStarted() override;
+    void notifyThatUserIsDoneResponding() override;
+    void showResponseSubmission() override;
 
   private:
     ExperimenterView &experimenterView;

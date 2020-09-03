@@ -1,5 +1,5 @@
 add_library(presentation src/Presenter.cpp src/TestSettingsInterpreter.cpp
-                         src/Consonant.cpp)
+                         src/Consonant.cpp src/FreeResponse.cpp)
 target_include_directories(
   presentation
   PUBLIC include
