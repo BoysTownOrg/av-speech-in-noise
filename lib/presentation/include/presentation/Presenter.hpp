@@ -4,6 +4,7 @@
 #include "Task.hpp"
 #include "Experimenter.hpp"
 #include "View.hpp"
+#include "Input.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <vector>
 #include <string>
@@ -160,17 +161,45 @@ class Presenter : public Model::EventListener, public ParentPresenter {
 
 class TestSetupResponder : public TestSetupInputView::EventListener {
   public:
-    explicit TestSetupResponder(Model &model, TestSetupInputView &view)
-        : model{model}, view{view} {}
+    explicit TestSetupResponder(Model &model, View &mainView,
+        TestSetupInputView &view,
+        TestSettingsInterpreter &testSettingsInterpreter,
+        TextFileReader &textFileReader)
+        : model{model}, mainView{mainView}, view{view},
+          testSettingsInterpreter{testSettingsInterpreter},
+          textFileReader{textFileReader} {}
     // void subscribe(TaskResponder::EventListener *e) override;
-    void notifyThatConfirmButtonHasBeenClicked() override {}
+    void notifyThatConfirmButtonHasBeenClicked() override {
+        try {
+            const auto testSettings{
+                textFileReader.read({view.testSettingsFile()})};
+            TestIdentity p;
+            p.subjectId = view.subjectId();
+            p.testerId = view.testerId();
+            p.session = view.session();
+            p.rmeSetting = view.rmeSetting();
+            p.transducer = view.transducer();
+            testSettingsInterpreter.initialize(model, testSettings, p,
+                SNR{readInteger(view.startingSnr(), "starting SNR")});
+            if (!model.testComplete()) {
+                const auto method{testSettingsInterpreter.method(testSettings)};
+                // switchToTestView(method);
+                // taskPresenter_ = taskPresenter(method);
+            }
+        } catch (const std::runtime_error &e) {
+            mainView.showErrorMessage(e.what());
+        }
+    }
     void notifyThatPlayCalibrationButtonHasBeenClicked() override {}
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override {}
     // void becomeChild(ParentPresenter *p) override;
 
   private:
     Model &model;
+    View &mainView;
     TestSetupInputView &view;
+    TestSettingsInterpreter &testSettingsInterpreter;
+    TextFileReader &textFileReader;
     TaskResponder::EventListener *listener{};
     ParentPresenter *parent{};
 };
