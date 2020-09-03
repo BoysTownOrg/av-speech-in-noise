@@ -171,7 +171,6 @@ class Presenter : public Model::EventListener, public ParentPresenter {
 
     Model &model;
     View &view;
-    TestSetup &testSetup;
     Experimenter &experimenterPresenter;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;

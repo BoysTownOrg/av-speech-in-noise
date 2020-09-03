@@ -7,10 +7,6 @@
 #include <functional>
 
 namespace av_speech_in_noise {
-static auto testIdentity(Presenter::TestSetup &testSetup) -> TestIdentity {
-    return testSetup.testIdentity();
-}
-
 static void displayTrialNumber(
     Presenter::Experimenter &experimenterPresenter, Model &model) {
     experimenterPresenter.display(
@@ -65,8 +61,6 @@ static auto consonant(Method m) -> bool {
 
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
-static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
-
 static void showContinueTestingDialogWithResultsWhenComplete(
     Presenter::Experimenter &experimenterPresenter, Model &model) {
     if (testComplete(model)) {
@@ -94,8 +88,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     TaskPresenter *correctKeywordsPresenter, TaskResponder *passFailResponder,
     TaskPresenter *passFailPresenter, TestSetupResponder *testSetupResponder,
     TestSetupPresenter *testSetupPresenter)
-    : model{model}, view{view}, testSetup{testSetup},
-      experimenterPresenter{experimenterPresenter},
+    : model{model}, view{view}, experimenterPresenter{experimenterPresenter},
       testSettingsInterpreter{testSettingsInterpreter},
       textFileReader{textFileReader}, consonantPresenter{consonantPresenter},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
@@ -104,7 +97,6 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       passFailPresenter{passFailPresenter}, taskPresenter_{passFailPresenter},
       testSetupPresenter{testSetupPresenter} {
     model.subscribe(this);
-    testSetup.becomeChild(this);
     experimenterPresenter.becomeChild(this);
     if (consonantResponder != nullptr) {
         consonantResponder->becomeChild(this);
@@ -196,8 +188,6 @@ void Presenter::trialComplete() {
     experimenterPresenter.trialComplete();
     view.showCursor();
 }
-
-static void show(Presenter::TestSetup &presenter) { presenter.show(); }
 
 static void switchToTestSetupView(Presenter::Experimenter &experimenter,
     TaskPresenter *taskPresenter, PresenterSimple *testSetupPresenter) {
