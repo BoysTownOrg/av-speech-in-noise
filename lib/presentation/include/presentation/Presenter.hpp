@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_PRESENTER_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_PRESENTER_HPP_
 
+#include "TestSetup.hpp"
 #include "Task.hpp"
 #include "Experimenter.hpp"
 #include "View.hpp"
@@ -12,26 +13,6 @@
 #include <sstream>
 
 namespace av_speech_in_noise {
-enum class Method {
-    adaptivePassFail,
-    adaptivePassFailWithEyeTracking,
-    adaptiveCorrectKeywords,
-    adaptiveCorrectKeywordsWithEyeTracking,
-    adaptiveCoordinateResponseMeasure,
-    adaptiveCoordinateResponseMeasureWithSingleSpeaker,
-    adaptiveCoordinateResponseMeasureWithDelayedMasker,
-    adaptiveCoordinateResponseMeasureWithEyeTracking,
-    fixedLevelFreeResponseWithTargetReplacement,
-    fixedLevelFreeResponseWithSilentIntervalTargets,
-    fixedLevelFreeResponseWithAllTargets,
-    fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
-    fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
-    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-    fixedLevelConsonants,
-    unknown
-};
-
 enum class Transducer { headphone, oneSpeaker, twoSpeakers, unknown };
 
 constexpr auto name(Transducer c) -> const char * {
@@ -46,28 +27,6 @@ constexpr auto name(Transducer c) -> const char * {
         return "unknown";
     }
 }
-
-class SomethingIDK {
-  public:
-    virtual ~SomethingIDK() = default;
-    virtual void prepare(Method) = 0;
-};
-
-class TestSetupResponder {
-  public:
-    class EventListener {
-      public:
-        virtual ~EventListener() = default;
-        virtual void notifyThatUserHasSelectedTestSettingsFile(
-            const std::string &) = 0;
-    };
-    virtual ~TestSetupResponder() = default;
-    virtual void becomeChild(SomethingIDK *) = 0;
-    virtual void subscribe(EventListener *) = 0;
-};
-
-class TestSetupPresenter : public virtual TestSetupResponder::EventListener,
-                           public virtual PresenterSimple {};
 
 class Presenter : public Model::EventListener,
                   public ParentPresenter,
