@@ -83,7 +83,7 @@ class CocoaExperimenterView : public ExperimenterView,
     PassFailInputView::EventListener *passFailListener{};
 };
 
-class CocoaTestSetupView : public View::TestSetup {
+class CocoaTestSetupView : public TestSetupView {
   public:
     explicit CocoaTestSetupView(NSViewController *);
     void show() override;
@@ -117,8 +117,7 @@ class CocoaTestSetupView : public View::TestSetup {
 
 class CocoaTestSetupViewFactory : public MacOsTestSetupViewFactory {
   public:
-    auto make(NSViewController *c)
-        -> std::unique_ptr<View::TestSetup> override {
+    auto make(NSViewController *c) -> std::unique_ptr<TestSetupView> override {
         return std::make_unique<CocoaTestSetupView>(c);
     }
 };

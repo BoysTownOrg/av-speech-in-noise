@@ -8,7 +8,7 @@
 @class FacemaskStudySetupViewActions;
 
 namespace av_speech_in_noise {
-class FacemaskStudySetupView : public View::TestSetup {
+class FacemaskStudySetupView : public TestSetupView {
   public:
     explicit FacemaskStudySetupView(NSViewController *);
     void show() override;
@@ -36,8 +36,7 @@ class FacemaskStudySetupView : public View::TestSetup {
 
 class FacemaskStudySetupViewFactory : public MacOsTestSetupViewFactory {
   public:
-    auto make(NSViewController *c)
-        -> std::unique_ptr<View::TestSetup> override {
+    auto make(NSViewController *c) -> std::unique_ptr<TestSetupView> override {
         return std::make_unique<FacemaskStudySetupView>(c);
     }
 };

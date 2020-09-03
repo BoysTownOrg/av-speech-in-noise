@@ -62,9 +62,9 @@ class TextFileReader {
 
 class Presenter : public Model::EventListener, public ParentPresenter {
   public:
-    class TestSetup : public View::TestSetup::EventListener {
+    class TestSetup : public TestSetupView::EventListener {
       public:
-        explicit TestSetup(View::TestSetup *);
+        explicit TestSetup(TestSetupView *);
         void notifyThatPlayCalibrationButtonHasBeenClicked() override;
         void notifyThatConfirmButtonHasBeenClicked() override;
         void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
@@ -77,7 +77,7 @@ class Presenter : public Model::EventListener, public ParentPresenter {
         auto startingSnr() -> std::string;
 
       private:
-        View::TestSetup *view;
+        TestSetupView *view;
         Presenter *parent{};
     };
 

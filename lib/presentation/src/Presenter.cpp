@@ -302,7 +302,7 @@ auto Presenter::testComplete() -> bool {
     return av_speech_in_noise::testComplete(model);
 }
 
-Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
+Presenter::TestSetup::TestSetup(TestSetupView *view) : view{view} {
     view->populateTransducerMenu({name(Transducer::headphone),
         name(Transducer::oneSpeaker), name(Transducer::twoSpeakers)});
     view->subscribe(this);

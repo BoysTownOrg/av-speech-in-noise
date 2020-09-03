@@ -165,7 +165,7 @@ class CoordinateResponseMeasureViewStub
     bool nextTrialButtonShown_{};
 };
 
-class TestSetupViewStub : public View::TestSetup {
+class TestSetupViewStub : public TestSetupView {
   public:
     auto testSettingsFile() -> std::string override {
         return testSettingsFile_;
