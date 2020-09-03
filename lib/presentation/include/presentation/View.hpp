@@ -22,6 +22,7 @@ class TestSetupOutputView {
   public:
     virtual ~TestSetupOutputView() = default;
     virtual void populateTransducerMenu(std::vector<std::string>) = 0;
+    virtual void setTestSettingsFile(std::string) = 0;
     virtual void show() = 0;
     virtual void hide() = 0;
 };
@@ -39,7 +40,6 @@ class TestSetupView : public virtual TestSetupOutputView,
 
     // virtual ~TestSetupView() = default;
     virtual void subscribe(EventListener *) = 0;
-    virtual void setTestSettingsFile(std::string) = 0;
 };
 
 class View {

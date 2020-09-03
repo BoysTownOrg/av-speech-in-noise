@@ -340,7 +340,7 @@ void Presenter::TestSetup::
 }
 
 void Presenter::TestSetup::setTestSettingsFile(std::string s) {
-    view->setTestSettingsFile(std::move(s));
+    outputView->setTestSettingsFile(std::move(s));
 }
 
 auto Presenter::TestSetup::testSettingsFile() -> std::string {
