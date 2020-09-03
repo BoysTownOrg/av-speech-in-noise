@@ -182,7 +182,7 @@ void Presenter::showTest(Method m) {
     else if (correctKeywords(m))
         correctKeywordsPresenter->start();
     else
-        experimenterPresenter.start();
+        passFailPresenter->start();
 }
 
 auto Presenter::trialCompletionHandler(Method m) -> TrialCompletionHandler * {
