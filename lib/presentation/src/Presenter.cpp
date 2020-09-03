@@ -92,7 +92,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     TaskResponder *freeResponseResponder, TaskPresenter *freeResponsePresenter,
     TaskResponder *correctKeywordsResponder,
     TaskPresenter *correctKeywordsPresenter, TaskResponder *passFailResponder,
-    TaskPresenter *passFailPresenter)
+    TaskPresenter *passFailPresenter, TestSetupResponder *, PresenterSimple *)
     : model{model}, view{view}, testSetup{testSetup},
       experimenterPresenter{experimenterPresenter},
       testSettingsInterpreter{testSettingsInterpreter},

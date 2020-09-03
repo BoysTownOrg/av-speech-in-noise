@@ -130,7 +130,8 @@ class Presenter : public Model::EventListener, public ParentPresenter {
         TestSettingsInterpreter &, TextFileReader &, TaskResponder * = {},
         TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {},
         TaskResponder * = {}, TaskPresenter * = {}, TaskResponder * = {},
-        TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {});
+        TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {},
+        TestSetupResponder * = {}, PresenterSimple * = {});
     void trialComplete() override;
     void playTrial() override;
     void playNextTrialIfNeeded() override;
