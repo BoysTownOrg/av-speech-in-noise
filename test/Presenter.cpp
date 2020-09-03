@@ -2625,6 +2625,7 @@ PRESENTER_TEST(submittingConsonantHidesResponseButtons) {
 
 PRESENTER_TEST(
     submittingCoordinateResponseHidesCoordinateViewWhenTestComplete) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     setTestComplete(model);
     run(submittingCoordinateResponseMeasure);
     assertHidden(coordinateResponseMeasureView);
@@ -2637,6 +2638,7 @@ PRESENTER_TEST(submittingConsonantHidesConsonantViewWhenTestComplete) {
 }
 
 PRESENTER_TEST(exitTestHidesCoordinateView) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     exitTest(experimenterView);
     assertHidden(coordinateResponseMeasureView);
 }
@@ -2654,10 +2656,16 @@ PRESENTER_TEST(exitTestHidesExperimenterView) {
     assertHidesExperimenterView(exitingTest);
 }
 
-PRESENTER_TEST(exitTestHidesResponseButtons) {
+PRESENTER_TEST(exitTestHidesCoordinateResponseMeasureResponseButtons) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     run(exitingTest);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         submittingCoordinateResponseMeasure.responseViewHidden());
+}
+
+PRESENTER_TEST(exitTestHidesConsonantResponseButtons) {
+    run(confirmingFixedLevelConsonantTest);
+    run(exitingTest);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(submittingConsonant.responseViewHidden());
 }
 

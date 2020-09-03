@@ -218,7 +218,7 @@ static void switchToTestSetupView(Presenter::TestSetup &testSetup,
     TaskPresenter *passFail, TaskPresenter *taskPresenter) {
     show(testSetup);
     experimenter.stop();
-    coordinateResponseMeasure->stop();
+
     consonant->stop();
     correctKeywords->stop();
     taskPresenter->stop();
