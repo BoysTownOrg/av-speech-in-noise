@@ -318,6 +318,8 @@ class Presenter : public Model::EventListener {
       private:
         Presenter *parent{};
         View::Experimenter *view;
+        View::PassFailInput *passFailInputView;
+        View::PassFailOutput *passFailOutputView;
     };
 
     class TrialCompletionHandler {
