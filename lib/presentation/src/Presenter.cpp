@@ -227,7 +227,7 @@ void Presenter::playTrial() {
 }
 
 void Presenter::trialComplete() {
-    trialCompletionHandler_->showResponseSubmission();
+    taskPresenter_->showResponseSubmission();
     experimenterPresenter.trialComplete();
     view.showCursor();
 }
