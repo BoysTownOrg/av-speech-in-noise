@@ -157,7 +157,7 @@ void Presenter::confirmTestSetup_() {
         SNR{readInteger(testSetup.startingSnr(), "starting SNR")});
     if (!av_speech_in_noise::testComplete(model)) {
         const auto method{testSettingsInterpreter.method(testSettings)};
-        switchToTestView(method);
+
         taskPresenter_ = taskPresenter(method);
     }
 }

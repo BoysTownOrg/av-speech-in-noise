@@ -1693,6 +1693,7 @@ class PresenterFailureTests : public ::testing::Test {
     Presenter::TestSetup testSetup{&setupView, &setupView, &setupView};
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
+    TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
     TextFileReaderStub textFileReader;
 
     void useFailingModel(std::string s = {}) {
@@ -1702,8 +1703,12 @@ class PresenterFailureTests : public ::testing::Test {
     }
 
     void confirmTestSetup() {
+        TestSetupResponderImpl testSetupResponderImpl{
+            *model, view, setupView, testSettingsInterpreter, textFileReader};
         Presenter presenter{*model, view, testSetup, experimenter,
-            testSettingsInterpreter, textFileReader};
+            testSettingsInterpreter, textFileReader, nullptr, nullptr, nullptr,
+            nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+            &testSetupResponderImpl, &testSetupPresenterRefactored};
         setupView.confirmTestSetup();
     }
 
