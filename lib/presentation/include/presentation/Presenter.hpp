@@ -335,10 +335,6 @@ class Presenter : public Model::EventListener {
     void submitConsonantResponse();
     auto testComplete() -> bool;
     void playNextTrialIfNeeded();
-    void submitFreeResponse();
-    void submitPassedTrial();
-    void submitFailedTrial();
-    void submitCorrectKeywords();
     void declineContinuingTesting();
     void acceptContinuingTesting();
     void exitTest();
