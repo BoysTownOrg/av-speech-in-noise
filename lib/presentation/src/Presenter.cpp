@@ -190,12 +190,11 @@ auto Presenter::trialCompletionHandler(Method m) -> TrialCompletionHandler * {
         return &coordinateResponseMeasureTrialCompletionHandler;
     if (consonant(m))
         return &consonantTrialCompletionHandler;
-    if (m == Method::adaptivePassFail ||
-        m == Method::adaptivePassFailWithEyeTracking)
-        return &passFailTrialCompletionHandler;
+    if (freeResponse(m))
+        return &freeResponseTrialCompletionHandler;
     if (correctKeywords(m))
         return &correctKeywordsTrialCompletionHandler;
-    return &freeResponseTrialCompletionHandler;
+    return &passFailTrialCompletionHandler;
 }
 
 void Presenter::showErrorMessage(std::string e) {
