@@ -395,14 +395,12 @@ void Presenter::Experimenter::start() {
     showNextTrialButton(view);
 }
 
-static void hideSubmissions(
-    View::Experimenter *view, View::PassFailOutput *passFailOutput) {
-    passFailOutput->hideEvaluationButtons();
+static void hideSubmissions(View::Experimenter *view) {
     view->hideContinueTestingDialog();
 }
 
 void Presenter::Experimenter::stop() {
-    av_speech_in_noise::hideSubmissions(view, passFailOutputView);
+    av_speech_in_noise::hideSubmissions(view);
     view->hide();
 }
 
@@ -414,7 +412,7 @@ void Presenter::Experimenter::trialPlayed() {
 void Presenter::Experimenter::trialComplete() { view->showExitTestButton(); }
 
 void Presenter::Experimenter::readyNextTrial() {
-    av_speech_in_noise::hideSubmissions(view, passFailOutputView);
+    av_speech_in_noise::hideSubmissions(view);
     showNextTrialButton(view);
 }
 
@@ -423,7 +421,7 @@ void Presenter::Experimenter::showContinueTestingDialog() {
 }
 
 void Presenter::Experimenter::hideSubmissions() {
-    av_speech_in_noise::hideSubmissions(view, passFailOutputView);
+    av_speech_in_noise::hideSubmissions(view);
 }
 
 void Presenter::Experimenter::setContinueTestingDialogMessage(
