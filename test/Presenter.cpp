@@ -2,6 +2,7 @@
 #include "ModelStub.hpp"
 #include <presentation/Consonant.hpp>
 #include <presentation/CoordinateResponseMeasure.hpp>
+#include <presentation/FreeResponse.hpp>
 #include <presentation/Presenter.hpp>
 #include <av-speech-in-noise/name.hpp>
 #include <gtest/gtest.h>

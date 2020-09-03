@@ -4,6 +4,7 @@
 #include "MacOsTestSetupViewFactory.h"
 #include <presentation/Consonant.hpp>
 #include <presentation/CoordinateResponseMeasure.hpp>
+#include <presentation/FreeResponse.hpp>
 #include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>
 #include <unordered_map>
