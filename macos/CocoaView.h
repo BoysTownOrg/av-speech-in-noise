@@ -7,6 +7,7 @@
 #include <presentation/FreeResponse.hpp>
 #include <presentation/PassFail.hpp>
 #include <presentation/CorrectKeywords.hpp>
+#include <presentation/TestSetupImpl.hpp>
 #include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>
 #include <unordered_map>
