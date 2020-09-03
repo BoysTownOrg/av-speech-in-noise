@@ -320,80 +320,6 @@ class Presenter : public Model::EventListener {
         View::Experimenter *view;
     };
 
-    class TrialCompletionHandler {
-      public:
-        virtual ~TrialCompletionHandler() = default;
-        virtual void showResponseSubmission() = 0;
-    };
-
-    class CoordinateResponseMeasureTestTrialCompletionHandler
-        : public TrialCompletionHandler {
-      public:
-        explicit CoordinateResponseMeasureTestTrialCompletionHandler(
-            TaskPresenter *presenter)
-            : presenter{presenter} {}
-
-        void showResponseSubmission() override {
-            presenter->showResponseSubmission();
-        }
-
-      private:
-        TaskPresenter *presenter;
-    };
-
-    class ConsonantTrialCompletionHandler : public TrialCompletionHandler {
-      public:
-        explicit ConsonantTrialCompletionHandler(TaskPresenter *presenter)
-            : presenter{presenter} {}
-
-        void showResponseSubmission() override {
-            presenter->showResponseSubmission();
-        }
-
-      private:
-        TaskPresenter *presenter;
-    };
-
-    class PassFailTrialCompletionHandler : public TrialCompletionHandler {
-      public:
-        explicit PassFailTrialCompletionHandler(TaskPresenter *presenter)
-            : presenter{presenter} {}
-
-        void showResponseSubmission() override {
-            presenter->showResponseSubmission();
-        }
-
-      private:
-        TaskPresenter *presenter;
-    };
-
-    class CorrectKeywordsTrialCompletionHandler
-        : public TrialCompletionHandler {
-      public:
-        explicit CorrectKeywordsTrialCompletionHandler(TaskPresenter *presenter)
-            : presenter{presenter} {}
-
-        void showResponseSubmission() override {
-            presenter->showResponseSubmission();
-        }
-
-      private:
-        TaskPresenter *presenter;
-    };
-
-    class FreeResponseTrialCompletionHandler : public TrialCompletionHandler {
-      public:
-        explicit FreeResponseTrialCompletionHandler(TaskPresenter *presenter)
-            : presenter{presenter} {}
-
-        void showResponseSubmission() override {
-            presenter->showResponseSubmission();
-        }
-
-      private:
-        TaskPresenter *presenter;
-    };
-
     Presenter(Model &, View &, TestSetup &, Experimenter &,
         TestSettingsInterpreter &, TextFileReader &, TaskResponder * = {},
         TaskPresenter * = {}, TaskResponder * = {}, TaskPresenter * = {},
@@ -437,7 +363,6 @@ class Presenter : public Model::EventListener {
     void confirmTestSetup_();
     void applyIfBrowseNotCancelled(
         std::string s, void (TestSetup::*f)(std::string));
-    auto trialCompletionHandler(Method) -> TrialCompletionHandler *;
     auto taskPresenter(Method) -> TaskPresenter *;
 
     Model &model;
@@ -446,7 +371,6 @@ class Presenter : public Model::EventListener {
     Experimenter &experimenterPresenter;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
-    TrialCompletionHandler *trialCompletionHandler_{};
     TaskPresenter *consonantPresenter;
     TaskPresenter *coordinateResponseMeasurePresenter;
     TaskPresenter *freeResponsePresenter;
