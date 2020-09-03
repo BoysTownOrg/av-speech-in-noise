@@ -30,6 +30,10 @@ class TestSetupView {
     virtual void setTestSettingsFile(std::string) = 0;
 };
 
+class TestSetupInputView {};
+
+class TestSetupOutputView {};
+
 class View {
   public:
     virtual ~View() = default;

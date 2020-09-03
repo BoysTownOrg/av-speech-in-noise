@@ -64,7 +64,8 @@ class Presenter : public Model::EventListener, public ParentPresenter {
   public:
     class TestSetup : public TestSetupView::EventListener {
       public:
-        explicit TestSetup(TestSetupView *);
+        explicit TestSetup(TestSetupView *, TestSetupInputView * = {},
+            TestSetupOutputView * = {});
         void notifyThatPlayCalibrationButtonHasBeenClicked() override;
         void notifyThatConfirmButtonHasBeenClicked() override;
         void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
