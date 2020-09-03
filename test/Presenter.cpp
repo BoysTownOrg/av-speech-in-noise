@@ -242,7 +242,9 @@ class ExperimenterViewStub : public View::Experimenter,
                              public View::FreeResponseInput,
                              public View::FreeResponseOutput,
                              public View::CorrectKeywordsInput,
-                             public View::CorrectKeywordsOutput {
+                             public View::CorrectKeywordsOutput,
+                             public View::PassFailInput,
+                             public View::PassFailOutput {
   public:
     void declineContinuingTesting() { listener_->declineContinuingTesting(); }
 

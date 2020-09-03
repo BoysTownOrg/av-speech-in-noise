@@ -207,6 +207,16 @@ class View {
         virtual void hideCorrectKeywordsSubmission() = 0;
     };
 
+    class PassFailInput {
+      public:
+        virtual ~PassFailInput() = default;
+    };
+
+    class PassFailOutput {
+      public:
+        virtual ~PassFailOutput() = default;
+    };
+
     virtual ~View() = default;
     virtual void eventLoop() = 0;
     virtual auto browseForDirectory() -> std::string = 0;
@@ -282,7 +292,8 @@ class Presenter : public Model::EventListener {
 
     class Experimenter : public View::Experimenter::EventListener {
       public:
-        explicit Experimenter(View::Experimenter *);
+        explicit Experimenter(View::Experimenter *, View::PassFailInput * = {},
+            View::PassFailOutput * = {});
         void exitTest() override;
         void playTrial() override;
         void submitPassedTrial() override;
