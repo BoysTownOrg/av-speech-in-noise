@@ -79,6 +79,8 @@ class Presenter : public Model::EventListener, public ParentPresenter {
 
       private:
         TestSetupView *view;
+        TestSetupInputView *inputView;
+        TestSetupOutputView *outputView;
         Presenter *parent{};
     };
 
