@@ -363,17 +363,14 @@ class Presenter : public Model::EventListener {
 
     class PassFailTrialCompletionHandler : public TrialCompletionHandler {
       public:
-        explicit PassFailTrialCompletionHandler(
-            Experimenter &experimenterPresenter, TaskPresenter *presenter = {})
-            : experimenterPresenter{experimenterPresenter}, presenter{
-                                                                presenter} {}
+        explicit PassFailTrialCompletionHandler(TaskPresenter *presenter)
+            : presenter{presenter} {}
 
         void showResponseSubmission() override {
             presenter->showResponseSubmission();
         }
 
       private:
-        Experimenter &experimenterPresenter;
         TaskPresenter *presenter;
     };
 
