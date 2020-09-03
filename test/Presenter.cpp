@@ -342,6 +342,8 @@ class ExperimenterViewStub : public View::Experimenter,
         correctKeywordsListener = e;
     }
 
+    void subscribe(PassFailInput::EventListener *) override {}
+
     void setResponse(std::string s) { response_ = std::move(s); }
 
     auto freeResponse() -> std::string override { return response_; }

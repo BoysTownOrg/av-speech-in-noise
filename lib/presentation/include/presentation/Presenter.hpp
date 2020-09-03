@@ -207,7 +207,14 @@ class View {
 
     class PassFailInput {
       public:
+        class EventListener {
+          public:
+            virtual ~EventListener() = default;
+            virtual void notifyThatCorrectButtonHasBeenClicked() = 0;
+            virtual void notifyThatIncorrectButtonHasBeenClicked() = 0;
+        };
         virtual ~PassFailInput() = default;
+        virtual void subscribe(EventListener *) = 0;
     };
 
     class PassFailOutput {
