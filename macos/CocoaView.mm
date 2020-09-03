@@ -756,8 +756,7 @@ void CocoaExperimenterView::subscribe(Experimenter::EventListener *e) {
     listener_ = e;
 }
 
-void CocoaExperimenterView::subscribe(
-    View::FreeResponseInput::EventListener *e) {
+void CocoaExperimenterView::subscribe(FreeResponseInputView::EventListener *e) {
     freeResponseListener = e;
 }
 

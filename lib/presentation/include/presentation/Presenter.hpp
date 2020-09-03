@@ -112,27 +112,6 @@ class View {
         virtual void secondaryDisplay(std::string) = 0;
     };
 
-    class FreeResponseInput {
-      public:
-        class EventListener {
-          public:
-            virtual ~EventListener() = default;
-            virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
-        };
-        virtual ~FreeResponseInput() = default;
-        virtual void subscribe(EventListener *) = 0;
-        virtual auto flagged() -> bool = 0;
-        virtual auto freeResponse() -> std::string = 0;
-    };
-
-    class FreeResponseOutput {
-      public:
-        virtual ~FreeResponseOutput() = default;
-        virtual void showFreeResponseSubmission() = 0;
-        virtual void hideFreeResponseSubmission() = 0;
-        virtual void clearFreeResponse() = 0;
-    };
-
     class CorrectKeywordsInput {
       public:
         class EventListener {
@@ -296,10 +275,31 @@ class Presenter : public Model::EventListener, public ParentPresenter {
     TaskPresenter *taskPresenter_;
 };
 
-class FreeResponseResponder : public TaskResponder,
-                              public View::FreeResponseInput::EventListener {
+class FreeResponseInputView {
   public:
-    explicit FreeResponseResponder(Model &model, View::FreeResponseInput &view)
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
+    };
+    virtual ~FreeResponseInputView() = default;
+    virtual void subscribe(EventListener *) = 0;
+    virtual auto flagged() -> bool = 0;
+    virtual auto freeResponse() -> std::string = 0;
+};
+
+class FreeResponseOutputView {
+  public:
+    virtual ~FreeResponseOutputView() = default;
+    virtual void showFreeResponseSubmission() = 0;
+    virtual void hideFreeResponseSubmission() = 0;
+    virtual void clearFreeResponse() = 0;
+};
+
+class FreeResponseResponder : public TaskResponder,
+                              public FreeResponseInputView::EventListener {
+  public:
+    explicit FreeResponseResponder(Model &model, FreeResponseInputView &view)
         : model{model}, view{view} {
         view.subscribe(this);
     }
@@ -313,7 +313,7 @@ class FreeResponseResponder : public TaskResponder,
 
   private:
     Model &model;
-    View::FreeResponseInput &view;
+    FreeResponseInputView &view;
     TaskResponder::EventListener *listener{};
     ParentPresenter *parent{};
 };
@@ -321,7 +321,7 @@ class FreeResponseResponder : public TaskResponder,
 class FreeResponsePresenter : public TaskPresenter {
   public:
     explicit FreeResponsePresenter(
-        View::Experimenter &experimenterView, View::FreeResponseOutput &view)
+        View::Experimenter &experimenterView, FreeResponseOutputView &view)
         : experimenterView{experimenterView}, view{view} {}
     void start() override {
         experimenterView.show();
@@ -344,7 +344,7 @@ class FreeResponsePresenter : public TaskPresenter {
 
   private:
     View::Experimenter &experimenterView;
-    View::FreeResponseOutput &view;
+    FreeResponseOutputView &view;
 };
 
 class CorrectKeywordsResponder

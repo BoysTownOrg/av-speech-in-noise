@@ -241,8 +241,8 @@ class TestSetupViewStub : public View::TestSetup {
 };
 
 class ExperimenterViewStub : public View::Experimenter,
-                             public View::FreeResponseInput,
-                             public View::FreeResponseOutput,
+                             public FreeResponseInputView,
+                             public FreeResponseOutputView,
                              public View::CorrectKeywordsInput,
                              public View::CorrectKeywordsOutput,
                              public View::PassFailInput,
@@ -334,7 +334,7 @@ class ExperimenterViewStub : public View::Experimenter,
 
     void subscribe(Experimenter::EventListener *e) override { listener_ = e; }
 
-    void subscribe(FreeResponseInput::EventListener *e) override {
+    void subscribe(FreeResponseInputView::EventListener *e) override {
         freeResponseListener = e;
     }
 
@@ -423,7 +423,7 @@ class ExperimenterViewStub : public View::Experimenter,
     std::string response_;
     std::string correctKeywords_{"0"};
     Experimenter::EventListener *listener_{};
-    View::FreeResponseInput::EventListener *freeResponseListener{};
+    FreeResponseInputView::EventListener *freeResponseListener{};
     View::CorrectKeywordsInput::EventListener *correctKeywordsListener{};
     View::PassFailInput::EventListener *passFailListener{};
     bool freeResponseCleared_{};
