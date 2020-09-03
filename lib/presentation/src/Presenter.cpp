@@ -94,13 +94,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     TaskResponder *correctKeywordsResponder,
     TaskPresenter *correctKeywordsPresenter, TaskResponder *passFailResponder,
     TaskPresenter *passFailPresenter)
-    : freeResponseTrialCompletionHandler{freeResponsePresenter},
-      passFailTrialCompletionHandler{passFailPresenter},
-      correctKeywordsTrialCompletionHandler{correctKeywordsPresenter},
-      coordinateResponseMeasureTrialCompletionHandler{
-          coordinateResponseMeasurePresenter},
-      consonantTrialCompletionHandler{consonantPresenter}, model{model},
-      view{view}, testSetup{testSetup},
+    : model{model}, view{view}, testSetup{testSetup},
       experimenterPresenter{experimenterPresenter},
       testSettingsInterpreter{testSettingsInterpreter},
       textFileReader{textFileReader}, consonantPresenter{consonantPresenter},
@@ -181,18 +175,6 @@ void Presenter::showTest(Method m) {
         correctKeywordsPresenter->start();
     else
         passFailPresenter->start();
-}
-
-auto Presenter::trialCompletionHandler(Method m) -> TrialCompletionHandler * {
-    if (coordinateResponseMeasure(m))
-        return &coordinateResponseMeasureTrialCompletionHandler;
-    if (consonant(m))
-        return &consonantTrialCompletionHandler;
-    if (freeResponse(m))
-        return &freeResponseTrialCompletionHandler;
-    if (correctKeywords(m))
-        return &correctKeywordsTrialCompletionHandler;
-    return &passFailTrialCompletionHandler;
 }
 
 auto Presenter::taskPresenter(Method m) -> TaskPresenter * {

@@ -440,12 +440,6 @@ class Presenter : public Model::EventListener {
     auto trialCompletionHandler(Method) -> TrialCompletionHandler *;
     auto taskPresenter(Method) -> TaskPresenter *;
 
-    FreeResponseTrialCompletionHandler freeResponseTrialCompletionHandler;
-    PassFailTrialCompletionHandler passFailTrialCompletionHandler;
-    CorrectKeywordsTrialCompletionHandler correctKeywordsTrialCompletionHandler;
-    CoordinateResponseMeasureTestTrialCompletionHandler
-        coordinateResponseMeasureTrialCompletionHandler;
-    ConsonantTrialCompletionHandler consonantTrialCompletionHandler;
     Model &model;
     View &view;
     TestSetup &testSetup;
