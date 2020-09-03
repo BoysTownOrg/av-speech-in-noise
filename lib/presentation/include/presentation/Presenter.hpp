@@ -65,8 +65,15 @@ class Presenter;
 
 class TestSetupResponder {
   public:
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void notifyThatUserHasSelectedTestSettingsFile(
+            const std::string &) = 0;
+    };
     virtual ~TestSetupResponder() = default;
     virtual void becomeChild(Presenter *) = 0;
+    virtual void subscribe(EventListener *) = 0;
 };
 
 class Presenter : public Model::EventListener, public ParentPresenter {
@@ -180,7 +187,9 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
         TextFileReader &textFileReader)
         : model{model}, mainView{mainView}, view{view},
           testSettingsInterpreter{testSettingsInterpreter},
-          textFileReader{textFileReader} {}
+          textFileReader{textFileReader} {
+        view.subscribe(this);
+    }
     void notifyThatConfirmButtonHasBeenClicked() override {
         try {
             const auto testSettings{
@@ -199,9 +208,21 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
             mainView.showErrorMessage(e.what());
         }
     }
-    void notifyThatPlayCalibrationButtonHasBeenClicked() override {}
-    void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override {}
+    void notifyThatPlayCalibrationButtonHasBeenClicked() override {
+        auto p{testSettingsInterpreter.calibration(
+            textFileReader.read({view.testSettingsFile()}))};
+        p.audioDevice = mainView.audioDevice();
+        model.playCalibration(p);
+    }
+    void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override {
+        auto file{mainView.browseForOpeningFile()};
+        if (!mainView.browseCancelled())
+            listener->notifyThatUserHasSelectedTestSettingsFile(file);
+    }
     void becomeChild(Presenter *p) override { parent = p; }
+    void subscribe(TestSetupResponder::EventListener *e) override {
+        listener = e;
+    }
 
   private:
     Model &model;
@@ -210,13 +231,18 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
     Presenter *parent{};
+    TestSetupResponder::EventListener *listener;
 };
 
-class TestSetupPresenter {
+class TestSetupPresenter : public TestSetupResponder::EventListener {
   public:
     explicit TestSetupPresenter(TestSetupOutputView &view) : view{view} {}
     void start() { view.show(); }
     void stop() { view.hide(); }
+    void notifyThatUserHasSelectedTestSettingsFile(
+        const std::string &s) override {
+        view.setTestSettingsFile(s);
+    }
 
   private:
     TestSetupOutputView &view;
