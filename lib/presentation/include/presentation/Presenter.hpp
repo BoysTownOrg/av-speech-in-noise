@@ -87,24 +87,67 @@ class Presenter : public Model::EventListener,
     PresenterSimple *testSetupPresenter;
 };
 
-class ExperimenterResponder : public ExperimenterInputView::EventListener {
+class IExperimenterResponder {
   public:
-    explicit ExperimenterResponder(Model &model) : model{model} {}
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void notifyThatTrialHasStarted() = 0;
+    };
+    virtual ~IExperimenterResponder() = default;
+    virtual void subscribe(EventListener *) = 0;
+};
+
+class ExperimenterResponder : public ExperimenterInputView::EventListener,
+                              public IExperimenterResponder {
+  public:
+    explicit ExperimenterResponder(Model &model, View &mainView)
+        : model{model}, mainView{mainView} {}
+    void subscribe(IExperimenterResponder::EventListener *e) override {
+        listener = e;
+    }
     void exitTest() override {}
-    void playTrial() override {}
+    void playTrial() override {
+        AudioSettings p;
+        p.audioDevice = mainView.audioDevice();
+        model.playTrial(p);
+        listener->notifyThatTrialHasStarted();
+    }
     void declineContinuingTesting() override {}
     void acceptContinuingTesting() override {}
     // void becomeChild(ParentPresenter *p) override;
 
   private:
     Model &model;
+    View &mainView;
+    IExperimenterResponder::EventListener *listener{};
 };
 
-class ExperimenterPresenter {
+class ExperimenterPresenter : public IExperimenterResponder::EventListener {
   public:
     explicit ExperimenterPresenter(ExperimenterOutputView &view) : view{view} {}
-    void start() { view.show(); }
-    void stop() { view.hide(); }
+
+    void start() {
+        view.show();
+        view.showNextTrialButton();
+    }
+
+    void stop() {
+        view.hideContinueTestingDialog();
+        view.hide();
+    }
+
+    void notifyThatTrialHasStarted() override {
+        view.hideExitTestButton();
+        view.hideNextTrialButton();
+    }
+
+    void notifyThatTrialHasCompleted() { view.showExitTestButton(); }
+
+    void notifyThatNextTrialIsReady() {
+        view.hideContinueTestingDialog();
+        view.showNextTrialButton();
+    }
 
   private:
     ExperimenterOutputView &view;
