@@ -60,7 +60,6 @@ class ExperimenterPresenter
     virtual void display(const std::string &) = 0;
     virtual void secondaryDisplay(const std::string &) = 0;
     virtual void showContinueTestingDialog() = 0;
-    virtual void hideContinueTestingDialog() = 0;
     virtual void setContinueTestingDialogMessage(const std::string &) = 0;
 };
 }

@@ -75,10 +75,6 @@ class ExperimenterPresenterImpl : public ExperimenterPresenter {
         view.showContinueTestingDialog();
     }
 
-    void hideContinueTestingDialog() override {
-        view.hideContinueTestingDialog();
-    }
-
     void setContinueTestingDialogMessage(const std::string &s) override {
         view.setContinueTestingDialogMessage(s);
     }
