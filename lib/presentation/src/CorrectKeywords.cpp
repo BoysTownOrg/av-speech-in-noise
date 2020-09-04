@@ -33,14 +33,10 @@ CorrectKeywordsPresenter::CorrectKeywordsPresenter(
     : experimenterView{experimenterView}, view{view} {}
 
 void CorrectKeywordsPresenter::start() {
-    experimenterView.show();
     experimenterView.showNextTrialButton();
 }
 
-void CorrectKeywordsPresenter::stop() {
-    experimenterView.hide();
-    view.hideCorrectKeywordsSubmission();
-}
+void CorrectKeywordsPresenter::stop() { view.hideCorrectKeywordsSubmission(); }
 
 void CorrectKeywordsPresenter::notifyThatTaskHasStarted() {
     experimenterView.hideNextTrialButton();
