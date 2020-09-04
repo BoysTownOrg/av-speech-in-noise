@@ -169,16 +169,17 @@ void Presenter::showErrorMessage(std::string e) {
     view.showErrorMessage(std::move(e));
 }
 
-static void playTrial(
-    Model &model, View &view, Presenter::Experimenter &presenter) {
+static void playTrial(Model &model, View &view,
+    Presenter::Experimenter &presenter, IExperimenterPresenter *refactored) {
     AudioSettings p;
     p.audioDevice = view.audioDevice();
     model.playTrial(p);
-    presenter.trialPlayed();
+    refactored->notifyThatTrialHasStarted();
 }
 
 void Presenter::playTrial() {
-    av_speech_in_noise::playTrial(model, view, experimenterPresenter);
+    av_speech_in_noise::playTrial(
+        model, view, experimenterPresenter, experimenterPresenterRefactored);
 }
 
 void Presenter::trialComplete() {
@@ -195,10 +196,12 @@ static void switchToTestSetupView(TaskPresenter *taskPresenter,
     taskPresenter->stop();
 }
 
-static void updateTrialInformationAndPlayNext(
-    Model &model, View &view, Presenter::Experimenter &experimenter) {
+static void updateTrialInformationAndPlayNext(Model &model, View &view,
+    Presenter::Experimenter &experimenter,
+    IExperimenterPresenter *experimenterPresenterRefactored) {
     displayTrialInformation(experimenter, model);
-    av_speech_in_noise::playTrial(model, view, experimenter);
+    av_speech_in_noise::playTrial(
+        model, view, experimenter, experimenterPresenterRefactored);
 }
 
 static void switchToTestSetupViewIfCompleteElse(Model &model,
@@ -214,8 +217,8 @@ static void switchToTestSetupViewIfCompleteElse(Model &model,
 void Presenter::playNextTrialIfNeeded() {
     switchToTestSetupViewIfCompleteElse(model, taskPresenter_,
         testSetupPresenter, experimenterPresenterRefactored, [&]() {
-            updateTrialInformationAndPlayNext(
-                model, view, experimenterPresenter);
+            updateTrialInformationAndPlayNext(model, view,
+                experimenterPresenter, experimenterPresenterRefactored);
         });
 }
 
