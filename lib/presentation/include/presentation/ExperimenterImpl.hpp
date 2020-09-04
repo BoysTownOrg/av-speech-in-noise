@@ -31,7 +31,9 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
     }
     void acceptContinuingTesting() override {
         model.restartAdaptiveTestWhilePreservingTargets();
-        parent->readyNextTrial();
+        listener->display("Trial " + std::to_string(model.trialNumber()));
+        listener->secondaryDisplay(model.targetFileName());
+        listener->notifyThatNextTrialIsReady();
     }
     void showContinueTestingDialogWithResultsWhenComplete() override {
         if (model.testComplete()) {
@@ -49,8 +51,11 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
     void readyNextTrialIfNeeded() override {
         if (model.testComplete())
             parent->switchToTestSetupView();
-        else
-            parent->readyNextTrial();
+        else {
+            listener->display("Trial " + std::to_string(model.trialNumber()));
+            listener->secondaryDisplay(model.targetFileName());
+            listener->notifyThatNextTrialIsReady();
+        }
     }
 
     void playNextTrialIfNeeded() override {
