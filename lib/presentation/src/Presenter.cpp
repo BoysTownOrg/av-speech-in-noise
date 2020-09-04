@@ -244,7 +244,9 @@ auto Presenter::testComplete() -> bool {
     return av_speech_in_noise::testComplete(model);
 }
 
-Presenter::Experimenter::Experimenter(ExperimenterView *view) : view{view} {
+Presenter::Experimenter::Experimenter(ExperimenterView *view,
+    ExperimenterInputView *inputView, ExperimenterOutputView *outputView)
+    : view{view} {
     view->subscribe(this);
 }
 

@@ -16,9 +16,10 @@ class Presenter : public Model::EventListener,
                   public ParentPresenter,
                   public SomethingIDK {
   public:
-    class Experimenter : public ExperimenterView::EventListener {
+    class Experimenter : public ExperimenterInputView::EventListener {
       public:
-        explicit Experimenter(ExperimenterView *);
+        explicit Experimenter(ExperimenterView *, ExperimenterInputView * = {},
+            ExperimenterOutputView * = {});
         void exitTest() override;
         void playTrial() override;
         void declineContinuingTesting() override;
@@ -39,6 +40,8 @@ class Presenter : public Model::EventListener,
       private:
         Presenter *parent{};
         ExperimenterView *view;
+        ExperimenterInputView *inputView;
+        ExperimenterOutputView *outputView;
     };
 
     Presenter(Model &, View &, Experimenter &, TaskResponder *, TaskPresenter *,
