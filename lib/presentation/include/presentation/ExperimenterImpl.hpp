@@ -31,7 +31,7 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
     }
     void acceptContinuingTesting() override {
         model.restartAdaptiveTestWhilePreservingTargets();
-        parent->readyNextTrialIfNeeded();
+        parent->readyNextTrial();
     }
     void showContinueTestingDialogWithResultsWhenComplete() override {
         if (model.testComplete()) {
@@ -46,7 +46,7 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
         } else
             parent->readyNextTrial();
     }
-    void readyNextTrialIfNeeded() {
+    void readyNextTrialIfNeeded() override {
         if (model.testComplete())
             parent->switchToTestSetupView();
         else
