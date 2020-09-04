@@ -12,23 +12,20 @@ static void displayTrialNumber(
         "Trial " + std::to_string(model.trialNumber()));
 }
 
-static void displayTarget(Presenter::Experimenter &experimenterPresenter,
+static void displayTarget(
     Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
     experimenterPresenterRefactored->secondaryDisplay(model.targetFileName());
 }
 
 static void displayTrialInformation(
-    Presenter::Experimenter &experimenterPresenter, Model &model,
-    ExperimenterPresenter *experimenterPresenterRefactored) {
+    Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
     displayTrialNumber(model, experimenterPresenterRefactored);
-    displayTarget(
-        experimenterPresenter, model, experimenterPresenterRefactored);
+    displayTarget(model, experimenterPresenterRefactored);
 }
 
-static void readyNextTrial(Presenter::Experimenter &experimenterPresenter,
+static void readyNextTrial(
     Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
-    displayTrialInformation(
-        experimenterPresenter, model, experimenterPresenterRefactored);
+    displayTrialInformation(model, experimenterPresenterRefactored);
     experimenterPresenterRefactored->notifyThatNextTrialIsReady();
 }
 
@@ -76,8 +73,7 @@ static void showContinueTestingDialogWithResultsWhenComplete(
                        << result.targetsUrl.path << ": " << result.threshold;
         experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
     } else
-        readyNextTrial(
-            experimenterPresenter, model, experimenterPresenterRefactored);
+        readyNextTrial(model, experimenterPresenterRefactored);
 }
 
 Presenter::Presenter(Model &model, View &view,
@@ -143,8 +139,7 @@ void Presenter::run() { view.eventLoop(); }
 void Presenter::switchToTestView(Method m) {
     testSetupPresenter->stop();
     experimenterPresenterRefactored->start();
-    displayTrialInformation(
-        experimenterPresenter, model, experimenterPresenterRefactored);
+    displayTrialInformation(model, experimenterPresenterRefactored);
     if (coordinateResponseMeasure(m))
         coordinateResponseMeasurePresenter->start();
     else if (consonant(m))
@@ -198,8 +193,7 @@ static void switchToTestSetupView(TaskPresenter *taskPresenter,
 static void updateTrialInformationAndPlayNext(Model &model, View &view,
     Presenter::Experimenter &experimenter,
     ExperimenterPresenter *experimenterPresenterRefactored) {
-    displayTrialInformation(
-        experimenter, model, experimenterPresenterRefactored);
+    displayTrialInformation(model, experimenterPresenterRefactored);
     av_speech_in_noise::playTrial(model, view, experimenterPresenterRefactored);
 }
 
@@ -223,10 +217,8 @@ void Presenter::playNextTrialIfNeeded() {
 
 void Presenter::readyNextTrialIfNeeded() {
     switchToTestSetupViewIfCompleteElse(model, taskPresenter_,
-        testSetupPresenter, experimenterPresenterRefactored, [&]() {
-            readyNextTrial(
-                experimenterPresenter, model, experimenterPresenterRefactored);
-        });
+        testSetupPresenter, experimenterPresenterRefactored,
+        [&]() { readyNextTrial(model, experimenterPresenterRefactored); });
 }
 
 void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
