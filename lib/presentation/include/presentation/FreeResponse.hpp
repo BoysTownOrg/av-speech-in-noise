@@ -32,17 +32,15 @@ class FreeResponseResponder : public TaskResponder,
                               public FreeResponseInputView::EventListener {
   public:
     explicit FreeResponseResponder(Model &, FreeResponseInputView &);
-    void subscribe(TaskResponder::EventListener *e) override;
-    void subscribe(ExperimenterResponder *e) override { responder = e; }
+    void subscribe(TaskResponder::EventListener *) override;
+    void subscribe(ExperimenterResponder *) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
-    void becomeChild(ParentPresenter *p) override;
 
   private:
     Model &model;
     FreeResponseInputView &view;
     TaskResponder::EventListener *listener{};
-    ExperimenterResponder *responder;
-    ParentPresenter *parent{};
+    ExperimenterResponder *responder{};
 };
 
 class FreeResponsePresenter : public TaskPresenter {

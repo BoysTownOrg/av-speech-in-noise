@@ -11,13 +11,15 @@ void FreeResponseResponder::subscribe(TaskResponder::EventListener *e) {
     listener = e;
 }
 
+void FreeResponseResponder::subscribe(ExperimenterResponder *e) {
+    responder = e;
+}
+
 void FreeResponseResponder::notifyThatSubmitButtonHasBeenClicked() {
     model.submit(FreeResponse{view.freeResponse(), view.flagged()});
     listener->notifyThatUserIsDoneResponding();
     responder->readyNextTrialIfNeeded();
 }
-
-void FreeResponseResponder::becomeChild(ParentPresenter *p) { parent = p; }
 
 FreeResponsePresenter::FreeResponsePresenter(
     ExperimenterOutputView &experimenterView, FreeResponseOutputView &view)
