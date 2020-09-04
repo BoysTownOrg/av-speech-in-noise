@@ -157,7 +157,7 @@ class ExperimenterPresenter : public IExperimenterPresenter {
 
     void notifyThatTrialHasCompleted() override { view.showExitTestButton(); }
 
-    void notifyThatNextTrialIsReady() {
+    void notifyThatNextTrialIsReady() override {
         view.hideContinueTestingDialog();
         view.showNextTrialButton();
     }

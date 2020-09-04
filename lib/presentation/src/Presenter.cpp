@@ -170,8 +170,8 @@ void Presenter::showErrorMessage(std::string e) {
     view.showErrorMessage(std::move(e));
 }
 
-static void playTrial(Model &model, View &view,
-    Presenter::Experimenter &presenter, IExperimenterPresenter *refactored) {
+static void playTrial(
+    Model &model, View &view, IExperimenterPresenter *refactored) {
     AudioSettings p;
     p.audioDevice = view.audioDevice();
     model.playTrial(p);
@@ -179,8 +179,7 @@ static void playTrial(Model &model, View &view,
 }
 
 void Presenter::playTrial() {
-    av_speech_in_noise::playTrial(
-        model, view, experimenterPresenter, experimenterPresenterRefactored);
+    av_speech_in_noise::playTrial(model, view, experimenterPresenterRefactored);
 }
 
 void Presenter::trialComplete() {
@@ -201,8 +200,7 @@ static void updateTrialInformationAndPlayNext(Model &model, View &view,
     Presenter::Experimenter &experimenter,
     IExperimenterPresenter *experimenterPresenterRefactored) {
     displayTrialInformation(experimenter, model);
-    av_speech_in_noise::playTrial(
-        model, view, experimenter, experimenterPresenterRefactored);
+    av_speech_in_noise::playTrial(model, view, experimenterPresenterRefactored);
 }
 
 static void switchToTestSetupViewIfCompleteElse(Model &model,
@@ -245,20 +243,11 @@ Presenter::Experimenter::Experimenter(
     ExperimenterView *view, ExperimenterInputView *, ExperimenterOutputView *)
     : view{view} {}
 
-void Presenter::Experimenter::becomeChild(Presenter *p) {}
-
-static void showNextTrialButton(ExperimenterView *view) {
-    view->showNextTrialButton();
-}
-
 static void hideSubmissions(ExperimenterView *view) {
     view->hideContinueTestingDialog();
 }
 
-void Presenter::Experimenter::readyNextTrial() {
-    av_speech_in_noise::hideSubmissions(view);
-    showNextTrialButton(view);
-}
+void Presenter::Experimenter::readyNextTrial() {}
 
 void Presenter::Experimenter::showContinueTestingDialog() {
     view->showContinueTestingDialog();
