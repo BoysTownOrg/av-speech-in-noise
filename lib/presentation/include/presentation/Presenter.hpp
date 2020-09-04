@@ -16,11 +16,19 @@ class Presenter : public Model::EventListener,
                   public ParentPresenter,
                   public SomethingIDK {
   public:
-    Presenter(Model &, View &, TaskResponder *, TaskPresenter *,
-        TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
-        TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
-        TestSetupResponder *, TestSetupPresenter *, ExperimenterResponder *,
-        ExperimenterPresenter *);
+    Presenter(Model &, View &, TaskResponder *consonantResponder,
+        TaskPresenter *consonantPresenter,
+        TaskResponder *coordinateResponseMeasureResponder,
+        TaskPresenter *coordinateResponseMeasurePresenter,
+        TaskResponder *freeResponseResponder,
+        TaskPresenter *freeResponsePresenter,
+        TaskResponder *correctKeywordsResponder,
+        TaskPresenter *correctKeywordsPresenter,
+        TaskResponder *passFailResponder, TaskPresenter *passFailPresenter,
+        TestSetupResponder *testSetupResponder,
+        TestSetupPresenter *testSetupPresenter,
+        ExperimenterResponder *experimenterResponder,
+        ExperimenterPresenter *experimenterPresenter);
     void trialComplete() override;
     void playTrial() override;
     void playNextTrialIfNeeded() override;
