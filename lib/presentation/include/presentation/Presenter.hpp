@@ -54,7 +54,7 @@ class Presenter : public Model::EventListener,
     TaskPresenter *passFailPresenter;
     TaskPresenter *taskPresenter_;
     PresenterSimple *testSetupPresenter;
-    ExperimenterPresenter *experimenterPresenterRefactored;
+    ExperimenterPresenter *experimenterPresenter;
 };
 }
 

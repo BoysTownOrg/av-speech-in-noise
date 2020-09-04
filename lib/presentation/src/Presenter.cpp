@@ -82,14 +82,14 @@ Presenter::Presenter(Model &model, View &view,
     TaskPresenter *passFailPresenter, TestSetupResponder *testSetupResponder,
     TestSetupPresenter *testSetupPresenter,
     ExperimenterResponder *experimenterResponder,
-    ExperimenterPresenter *experimenterPresenterRefactored)
+    ExperimenterPresenter *experimenterPresenter)
     : model{model}, view{view}, consonantPresenter{consonantPresenter},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       freeResponsePresenter{freeResponsePresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
       passFailPresenter{passFailPresenter}, taskPresenter_{passFailPresenter},
-      testSetupPresenter{testSetupPresenter},
-      experimenterPresenterRefactored{experimenterPresenterRefactored} {
+      testSetupPresenter{testSetupPresenter}, experimenterPresenter{
+                                                  experimenterPresenter} {
     model.subscribe(this);
     if (consonantResponder != nullptr) {
         consonantResponder->becomeChild(this);
@@ -118,22 +118,22 @@ Presenter::Presenter(Model &model, View &view,
     }
     if (experimenterResponder != nullptr) {
         experimenterResponder->becomeChild(this);
-        experimenterResponder->subscribe(experimenterPresenterRefactored);
+        experimenterResponder->subscribe(experimenterPresenter);
     }
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 
 void Presenter::showContinueTestingDialogWithResultsWhenComplete() {
     av_speech_in_noise::showContinueTestingDialogWithResultsWhenComplete(
-        model, experimenterPresenterRefactored);
+        model, experimenterPresenter);
 }
 
 void Presenter::run() { view.eventLoop(); }
 
 void Presenter::switchToTestView(Method m) {
     testSetupPresenter->stop();
-    experimenterPresenterRefactored->start();
-    displayTrialInformation(model, experimenterPresenterRefactored);
+    experimenterPresenter->start();
+    displayTrialInformation(model, experimenterPresenter);
     if (coordinateResponseMeasure(m))
         coordinateResponseMeasurePresenter->start();
     else if (consonant(m))
@@ -167,12 +167,12 @@ static void playTrial(
 }
 
 void Presenter::playTrial() {
-    av_speech_in_noise::playTrial(model, view, experimenterPresenterRefactored);
+    av_speech_in_noise::playTrial(model, view, experimenterPresenter);
 }
 
 void Presenter::trialComplete() {
     taskPresenter_->showResponseSubmission();
-    experimenterPresenterRefactored->notifyThatTrialHasCompleted();
+    experimenterPresenter->notifyThatTrialHasCompleted();
     view.showCursor();
 }
 
@@ -202,16 +202,16 @@ static void switchToTestSetupViewIfCompleteElse(Model &model,
 
 void Presenter::playNextTrialIfNeeded() {
     switchToTestSetupViewIfCompleteElse(model, taskPresenter_,
-        testSetupPresenter, experimenterPresenterRefactored, [&]() {
+        testSetupPresenter, experimenterPresenter, [&]() {
             updateTrialInformationAndPlayNext(
-                model, view, experimenterPresenterRefactored);
+                model, view, experimenterPresenter);
         });
 }
 
 void Presenter::readyNextTrialIfNeeded() {
     switchToTestSetupViewIfCompleteElse(model, taskPresenter_,
-        testSetupPresenter, experimenterPresenterRefactored,
-        [&]() { readyNextTrial(model, experimenterPresenterRefactored); });
+        testSetupPresenter, experimenterPresenter,
+        [&]() { readyNextTrial(model, experimenterPresenter); });
 }
 
 void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
@@ -221,6 +221,6 @@ void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
 
 void Presenter::switchToTestSetupView() {
     av_speech_in_noise::switchToTestSetupView(
-        taskPresenter_, testSetupPresenter, experimenterPresenterRefactored);
+        taskPresenter_, testSetupPresenter, experimenterPresenter);
 }
 }
