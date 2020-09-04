@@ -22,8 +22,6 @@ class Presenter : public Model::EventListener,
         explicit Experimenter(ExperimenterView *, ExperimenterInputView * = {},
             ExperimenterOutputView * = {});
         void becomeChild(Presenter *parent);
-        void trialPlayed();
-        void trialComplete();
         void readyNextTrial();
         void showContinueTestingDialog();
         void hideSubmissions();
@@ -49,10 +47,6 @@ class Presenter : public Model::EventListener,
     void readyNextTrialIfNeeded() override;
     void showContinueTestingDialogWithResultsWhenComplete() override;
     void run();
-    auto testComplete() -> bool;
-    void declineContinuingTesting();
-    void acceptContinuingTesting();
-    void exitTest();
     void switchToTestSetupView();
     void prepare(Method m) override {
         switchToTestView(m);
