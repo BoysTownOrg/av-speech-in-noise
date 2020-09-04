@@ -31,6 +31,7 @@ class IExperimenterPresenter
       public virtual PresenterSimple {
   public:
     virtual void notifyThatTrialHasCompleted() = 0;
+    virtual void notifyThatNextTrialIsReady() = 0;
 };
 
 class Presenter : public Model::EventListener,

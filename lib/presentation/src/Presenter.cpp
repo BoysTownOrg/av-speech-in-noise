@@ -24,10 +24,10 @@ static void displayTrialInformation(
     displayTarget(experimenterPresenter, model);
 }
 
-static void readyNextTrial(
-    Presenter::Experimenter &experimenterPresenter, Model &model) {
+static void readyNextTrial(Presenter::Experimenter &experimenterPresenter,
+    Model &model, IExperimenterPresenter *experimenterPresenterRefactored) {
     displayTrialInformation(experimenterPresenter, model);
-    experimenterPresenter.readyNextTrial();
+    experimenterPresenterRefactored->notifyThatNextTrialIsReady();
 }
 
 static auto coordinateResponseMeasure(Method m) -> bool {
@@ -62,7 +62,8 @@ static auto consonant(Method m) -> bool {
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
 static void showContinueTestingDialogWithResultsWhenComplete(
-    Presenter::Experimenter &experimenterPresenter, Model &model) {
+    Presenter::Experimenter &experimenterPresenter, Model &model,
+    IExperimenterPresenter *experimenterPresenterRefactored) {
     if (testComplete(model)) {
         experimenterPresenter.hideSubmissions();
         experimenterPresenter.showContinueTestingDialog();
@@ -73,7 +74,8 @@ static void showContinueTestingDialogWithResultsWhenComplete(
                        << result.targetsUrl.path << ": " << result.threshold;
         experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
     } else
-        readyNextTrial(experimenterPresenter, model);
+        readyNextTrial(
+            experimenterPresenter, model, experimenterPresenterRefactored);
 }
 
 Presenter::Presenter(Model &model, View &view,
@@ -97,7 +99,6 @@ Presenter::Presenter(Model &model, View &view,
       testSetupPresenter{testSetupPresenter},
       experimenterPresenterRefactored{experimenterPresenterRefactored} {
     model.subscribe(this);
-    experimenterPresenter.becomeChild(this);
     if (consonantResponder != nullptr) {
         consonantResponder->becomeChild(this);
         consonantResponder->subscribe(consonantPresenter);
@@ -132,7 +133,7 @@ Presenter::Presenter(Model &model, View &view,
 
 void Presenter::showContinueTestingDialogWithResultsWhenComplete() {
     av_speech_in_noise::showContinueTestingDialogWithResultsWhenComplete(
-        experimenterPresenter, model);
+        experimenterPresenter, model, experimenterPresenterRefactored);
 }
 
 void Presenter::run() { view.eventLoop(); }
@@ -224,8 +225,10 @@ void Presenter::playNextTrialIfNeeded() {
 
 void Presenter::readyNextTrialIfNeeded() {
     switchToTestSetupViewIfCompleteElse(model, taskPresenter_,
-        testSetupPresenter, experimenterPresenterRefactored,
-        [&]() { readyNextTrial(experimenterPresenter, model); });
+        testSetupPresenter, experimenterPresenterRefactored, [&]() {
+            readyNextTrial(
+                experimenterPresenter, model, experimenterPresenterRefactored);
+        });
 }
 
 void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
@@ -242,7 +245,7 @@ Presenter::Experimenter::Experimenter(
     ExperimenterView *view, ExperimenterInputView *, ExperimenterOutputView *)
     : view{view} {}
 
-void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }
+void Presenter::Experimenter::becomeChild(Presenter *p) {}
 
 static void showNextTrialButton(ExperimenterView *view) {
     view->showNextTrialButton();
@@ -250,11 +253,6 @@ static void showNextTrialButton(ExperimenterView *view) {
 
 static void hideSubmissions(ExperimenterView *view) {
     view->hideContinueTestingDialog();
-}
-
-void Presenter::Experimenter::trialPlayed() {
-    view->hideExitTestButton();
-    view->hideNextTrialButton();
 }
 
 void Presenter::Experimenter::readyNextTrial() {
