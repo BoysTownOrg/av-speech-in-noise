@@ -28,15 +28,9 @@ PassFailPresenter::PassFailPresenter(
     ExperimenterOutputView &experimenterView, PassFailOutputView &view)
     : experimenterView{experimenterView}, view{view} {}
 
-void PassFailPresenter::start() {
-    experimenterView.show();
-    experimenterView.showNextTrialButton();
-}
+void PassFailPresenter::start() { experimenterView.showNextTrialButton(); }
 
-void PassFailPresenter::stop() {
-    experimenterView.hide();
-    view.hideEvaluationButtons();
-}
+void PassFailPresenter::stop() { view.hideEvaluationButtons(); }
 
 void PassFailPresenter::notifyThatTaskHasStarted() {
     experimenterView.hideNextTrialButton();

@@ -28,11 +28,11 @@ class PassFailOutputView {
 class PassFailResponder : public TaskResponder,
                           public PassFailInputView::EventListener {
   public:
-    explicit PassFailResponder(Model &, PassFailInputView &);
-    void subscribe(TaskResponder::EventListener *e) override;
+    PassFailResponder(Model &, PassFailInputView &);
+    void subscribe(TaskResponder::EventListener *) override;
+    void subscribe(ExperimenterResponder *) override;
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
-    void subscribe(ExperimenterResponder *p) override;
 
   private:
     Model &model;
@@ -42,7 +42,7 @@ class PassFailResponder : public TaskResponder,
 
 class PassFailPresenter : public TaskPresenter {
   public:
-    explicit PassFailPresenter(ExperimenterOutputView &, PassFailOutputView &);
+    PassFailPresenter(ExperimenterOutputView &, PassFailOutputView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
