@@ -88,7 +88,6 @@ Presenter::Presenter(Model &model, View &view,
         correctKeywordsResponder->subscribe(experimenterResponder);
     }
     if (passFailResponder != nullptr) {
-        passFailResponder->becomeChild(this);
         passFailResponder->subscribe(passFailPresenter);
         passFailResponder->subscribe(experimenterResponder);
     }
