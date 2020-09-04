@@ -1274,8 +1274,9 @@ class PresenterTests : public ::testing::Test {
     TestSetupResponderImpl testSetupResponderImpl{
         model, view, setupView, testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
-    ExperimenterResponder experimenterResponder{model, view, experimenterView};
-    ExperimenterPresenter experimenterPresenterRefactored{experimenterView};
+    ExperimenterResponderImpl experimenterResponder{
+        model, view, experimenterView};
+    ExperimenterPresenterImpl experimenterPresenterRefactored{experimenterView};
     Presenter presenter{model, view, experimenter, &consonantScreenResponder,
         &consonantPresenterRefactored, &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenterRefactored, &freeResponseResponder,

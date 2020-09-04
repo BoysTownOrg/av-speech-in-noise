@@ -14,20 +14,20 @@
 namespace av_speech_in_noise {
 class Presenter;
 
-class IExperimenterResponder {
+class ExperimenterResponder {
   public:
     class EventListener {
       public:
         virtual ~EventListener() = default;
         virtual void notifyThatTrialHasStarted() = 0;
     };
-    virtual ~IExperimenterResponder() = default;
+    virtual ~ExperimenterResponder() = default;
     virtual void subscribe(EventListener *) = 0;
     virtual void becomeChild(Presenter *) = 0;
 };
 
-class IExperimenterPresenter
-    : public virtual IExperimenterResponder::EventListener,
+class ExperimenterPresenter
+    : public virtual ExperimenterResponder::EventListener,
       public virtual PresenterSimple {
   public:
     virtual void notifyThatTrialHasCompleted() = 0;
@@ -63,7 +63,7 @@ class Presenter : public Model::EventListener,
         TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
         TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
         TestSetupResponder *, TestSetupPresenter *,
-        IExperimenterResponder * = {}, IExperimenterPresenter * = {});
+        ExperimenterResponder * = {}, ExperimenterPresenter * = {});
     void trialComplete() override;
     void playTrial() override;
     void playNextTrialIfNeeded() override;
@@ -102,18 +102,18 @@ class Presenter : public Model::EventListener,
     TaskPresenter *passFailPresenter;
     TaskPresenter *taskPresenter_;
     PresenterSimple *testSetupPresenter;
-    IExperimenterPresenter *experimenterPresenterRefactored;
+    ExperimenterPresenter *experimenterPresenterRefactored;
 };
 
-class ExperimenterResponder : public ExperimenterInputView::EventListener,
-                              public IExperimenterResponder {
+class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
+                                  public ExperimenterResponder {
   public:
-    explicit ExperimenterResponder(
+    explicit ExperimenterResponderImpl(
         Model &model, View &mainView, ExperimenterInputView &view)
         : model{model}, mainView{mainView} {
         view.subscribe(this);
     }
-    void subscribe(IExperimenterResponder::EventListener *e) override {
+    void subscribe(ExperimenterResponder::EventListener *e) override {
         listener = e;
     }
     void exitTest() override { parent->switchToTestSetupView(); }
@@ -135,13 +135,14 @@ class ExperimenterResponder : public ExperimenterInputView::EventListener,
   private:
     Model &model;
     View &mainView;
-    IExperimenterResponder::EventListener *listener{};
+    ExperimenterResponder::EventListener *listener{};
     Presenter *parent{};
 };
 
-class ExperimenterPresenter : public IExperimenterPresenter {
+class ExperimenterPresenterImpl : public ExperimenterPresenter {
   public:
-    explicit ExperimenterPresenter(ExperimenterOutputView &view) : view{view} {}
+    explicit ExperimenterPresenterImpl(ExperimenterOutputView &view)
+        : view{view} {}
 
     void start() override { view.show(); }
 

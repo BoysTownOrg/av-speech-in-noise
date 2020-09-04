@@ -24,7 +24,7 @@ static void displayTrialInformation(
 }
 
 static void readyNextTrial(Presenter::Experimenter &experimenterPresenter,
-    Model &model, IExperimenterPresenter *experimenterPresenterRefactored) {
+    Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
     displayTrialInformation(experimenterPresenter, model);
     experimenterPresenterRefactored->notifyThatNextTrialIsReady();
 }
@@ -62,7 +62,7 @@ static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
 static void showContinueTestingDialogWithResultsWhenComplete(
     Presenter::Experimenter &experimenterPresenter, Model &model,
-    IExperimenterPresenter *experimenterPresenterRefactored) {
+    ExperimenterPresenter *experimenterPresenterRefactored) {
     if (testComplete(model)) {
         experimenterPresenter.hideSubmissions();
         experimenterPresenter.showContinueTestingDialog();
@@ -87,8 +87,8 @@ Presenter::Presenter(Model &model, View &view,
     TaskPresenter *correctKeywordsPresenter, TaskResponder *passFailResponder,
     TaskPresenter *passFailPresenter, TestSetupResponder *testSetupResponder,
     TestSetupPresenter *testSetupPresenter,
-    IExperimenterResponder *experimenterResponder,
-    IExperimenterPresenter *experimenterPresenterRefactored)
+    ExperimenterResponder *experimenterResponder,
+    ExperimenterPresenter *experimenterPresenterRefactored)
     : model{model}, view{view}, experimenterPresenter{experimenterPresenter},
       consonantPresenter{consonantPresenter},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
@@ -166,7 +166,7 @@ auto Presenter::taskPresenter(Method m) -> TaskPresenter * {
 }
 
 static void playTrial(
-    Model &model, View &view, IExperimenterPresenter *refactored) {
+    Model &model, View &view, ExperimenterPresenter *refactored) {
     AudioSettings p;
     p.audioDevice = view.audioDevice();
     model.playTrial(p);
@@ -193,7 +193,7 @@ static void switchToTestSetupView(TaskPresenter *taskPresenter,
 
 static void updateTrialInformationAndPlayNext(Model &model, View &view,
     Presenter::Experimenter &experimenter,
-    IExperimenterPresenter *experimenterPresenterRefactored) {
+    ExperimenterPresenter *experimenterPresenterRefactored) {
     displayTrialInformation(experimenter, model);
     av_speech_in_noise::playTrial(model, view, experimenterPresenterRefactored);
 }

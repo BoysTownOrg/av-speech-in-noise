@@ -33,6 +33,7 @@ ConsonantResponder::ConsonantResponder(Model &model, ConsonantInputView &view)
     : model{model}, view{view} {
     view.subscribe(this);
 }
+
 void ConsonantResponder::subscribe(TaskResponder::EventListener *e) {
     listener = e;
 }
