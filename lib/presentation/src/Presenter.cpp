@@ -223,8 +223,4 @@ void Presenter::switchToTestSetupView() {
     av_speech_in_noise::switchToTestSetupView(
         taskPresenter_, testSetupPresenter, experimenterPresenterRefactored);
 }
-
-Presenter::Experimenter::Experimenter(
-    ExperimenterView *view, ExperimenterInputView *, ExperimenterOutputView *)
-    : view{view} {}
 }

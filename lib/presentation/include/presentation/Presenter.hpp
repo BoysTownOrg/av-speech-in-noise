@@ -16,25 +16,6 @@ class Presenter : public Model::EventListener,
                   public ParentPresenter,
                   public SomethingIDK {
   public:
-    class Experimenter {
-      public:
-        explicit Experimenter(ExperimenterView *, ExperimenterInputView * = {},
-            ExperimenterOutputView * = {});
-        void becomeChild(Presenter *parent);
-        void readyNextTrial();
-        void showContinueTestingDialog();
-        void hideSubmissions();
-        void setContinueTestingDialogMessage(const std::string &);
-        void display(std::string);
-        void secondaryDisplay(std::string);
-
-      private:
-        Presenter *parent{};
-        ExperimenterView *view;
-        ExperimenterInputView *inputView;
-        ExperimenterOutputView *outputView;
-    };
-
     Presenter(Model &, View &, TaskResponder *, TaskPresenter *,
         TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
         TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
