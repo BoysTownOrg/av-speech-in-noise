@@ -76,12 +76,10 @@ Presenter::Presenter(Model &model, View &view,
                                                   experimenterPresenter} {
     model.subscribe(this);
     if (consonantResponder != nullptr) {
-        consonantResponder->becomeChild(this);
         consonantResponder->subscribe(consonantPresenter);
         consonantResponder->subscribe(experimenterResponder);
     }
     if (freeResponseResponder != nullptr) {
-        freeResponseResponder->becomeChild(this);
         freeResponseResponder->subscribe(experimenterResponder);
         freeResponseResponder->subscribe(freeResponsePresenter);
     }
@@ -94,7 +92,7 @@ Presenter::Presenter(Model &model, View &view,
         passFailResponder->subscribe(experimenterResponder);
     }
     if (coordinateResponseMeasureResponder != nullptr) {
-        coordinateResponseMeasureResponder->becomeChild(this);
+        coordinateResponseMeasureResponder->subscribe(experimenterResponder);
         coordinateResponseMeasureResponder->subscribe(
             coordinateResponseMeasurePresenter);
     }

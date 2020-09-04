@@ -33,15 +33,15 @@ void CoordinateResponseMeasureResponder::subscribe(
 }
 
 void CoordinateResponseMeasureResponder::notifyThatReadyButtonHasBeenClicked() {
-    parent->playTrial();
     listener->notifyThatTaskHasStarted();
+    responder->playTrial();
 }
 
 void CoordinateResponseMeasureResponder::
     notifyThatResponseButtonHasBeenClicked() {
     model.submit(subjectResponse(&view));
-    parent->playNextTrialIfNeeded();
     listener->notifyThatUserIsDoneResponding();
+    responder->playNextTrialIfNeeded();
 }
 
 void CoordinateResponseMeasureResponder::becomeChild(ParentPresenter *p) {
