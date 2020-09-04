@@ -58,6 +58,7 @@ class Presenter : public Model::EventListener,
     void declineContinuingTesting();
     void acceptContinuingTesting();
     void exitTest();
+    void switchToTestSetupView();
     void prepare(Method m) override {
         switchToTestView(m);
         taskPresenter_ = taskPresenter(m);
@@ -106,21 +107,27 @@ class ExperimenterResponder : public ExperimenterInputView::EventListener,
     void subscribe(IExperimenterResponder::EventListener *e) override {
         listener = e;
     }
-    void exitTest() override {}
+    void exitTest() override { parent->switchToTestSetupView(); }
     void playTrial() override {
         AudioSettings p;
         p.audioDevice = mainView.audioDevice();
         model.playTrial(p);
         listener->notifyThatTrialHasStarted();
     }
-    void declineContinuingTesting() override {}
-    void acceptContinuingTesting() override {}
-    // void becomeChild(ParentPresenter *p) override;
+    void declineContinuingTesting() override {
+        parent->switchToTestSetupView();
+    }
+    void acceptContinuingTesting() override {
+        model.restartAdaptiveTestWhilePreservingTargets();
+        parent->readyNextTrialIfNeeded();
+    }
+    void becomeChild(Presenter *p) { parent = p; }
 
   private:
     Model &model;
     View &mainView;
     IExperimenterResponder::EventListener *listener{};
+    Presenter *parent{};
 };
 
 class ExperimenterPresenter : public IExperimenterResponder::EventListener {

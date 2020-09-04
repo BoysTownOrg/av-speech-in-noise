@@ -240,6 +240,11 @@ void Presenter::exitTest() {
         experimenterPresenter, taskPresenter_, testSetupPresenter);
 }
 
+void Presenter::switchToTestSetupView() {
+    av_speech_in_noise::switchToTestSetupView(
+        experimenterPresenter, taskPresenter_, testSetupPresenter);
+}
+
 auto Presenter::testComplete() -> bool {
     return av_speech_in_noise::testComplete(model);
 }
