@@ -57,8 +57,7 @@ static auto consonant(Method m) -> bool {
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
 static void showContinueTestingDialogWithResultsWhenComplete(
-    Presenter::Experimenter &experimenterPresenter, Model &model,
-    ExperimenterPresenter *experimenterPresenterRefactored) {
+    Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
     if (testComplete(model)) {
         experimenterPresenterRefactored->hideContinueTestingDialog();
         experimenterPresenterRefactored->showContinueTestingDialog();
@@ -128,7 +127,7 @@ Presenter::Presenter(Model &model, View &view,
 
 void Presenter::showContinueTestingDialogWithResultsWhenComplete() {
     av_speech_in_noise::showContinueTestingDialogWithResultsWhenComplete(
-        experimenterPresenter, model, experimenterPresenterRefactored);
+        model, experimenterPresenterRefactored);
 }
 
 void Presenter::run() { view.eventLoop(); }
@@ -230,17 +229,4 @@ void Presenter::switchToTestSetupView() {
 Presenter::Experimenter::Experimenter(
     ExperimenterView *view, ExperimenterInputView *, ExperimenterOutputView *)
     : view{view} {}
-
-void Presenter::Experimenter::showContinueTestingDialog() {
-    view->showContinueTestingDialog();
-}
-
-void Presenter::Experimenter::hideSubmissions() {
-    view->hideContinueTestingDialog();
-}
-
-void Presenter::Experimenter::setContinueTestingDialogMessage(
-    const std::string &s) {
-    view->setContinueTestingDialogMessage(s);
-}
 }
