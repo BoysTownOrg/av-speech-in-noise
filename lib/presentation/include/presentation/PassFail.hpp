@@ -28,22 +28,11 @@ class PassFailOutputView {
 class PassFailResponder : public TaskResponder,
                           public PassFailInputView::EventListener {
   public:
-    explicit PassFailResponder(Model &model, PassFailInputView &view)
-        : model{model} {
-        view.subscribe(this);
-    }
-    void subscribe(TaskResponder::EventListener *e) override { listener = e; }
-    void notifyThatCorrectButtonHasBeenClicked() override {
-        model.submitCorrectResponse();
-        listener->notifyThatUserIsDoneResponding();
-        parent->showContinueTestingDialogWithResultsWhenComplete();
-    }
-    void notifyThatIncorrectButtonHasBeenClicked() override {
-        model.submitIncorrectResponse();
-        listener->notifyThatUserIsDoneResponding();
-        parent->showContinueTestingDialogWithResultsWhenComplete();
-    }
-    void becomeChild(ParentPresenter *p) override { parent = p; }
+    explicit PassFailResponder(Model &, PassFailInputView &);
+    void subscribe(TaskResponder::EventListener *e) override;
+    void notifyThatCorrectButtonHasBeenClicked() override;
+    void notifyThatIncorrectButtonHasBeenClicked() override;
+    void becomeChild(ParentPresenter *p) override;
 
   private:
     Model &model;
@@ -53,24 +42,12 @@ class PassFailResponder : public TaskResponder,
 
 class PassFailPresenter : public TaskPresenter {
   public:
-    explicit PassFailPresenter(
-        ExperimenterOutputView &experimenterView, PassFailOutputView &view)
-        : experimenterView{experimenterView}, view{view} {}
-    void start() override {
-        experimenterView.show();
-        experimenterView.showNextTrialButton();
-    }
-    void stop() override {
-        experimenterView.hide();
-        view.hideEvaluationButtons();
-    }
-    void notifyThatTaskHasStarted() override {
-        experimenterView.hideNextTrialButton();
-    }
-    void notifyThatUserIsDoneResponding() override {
-        view.hideEvaluationButtons();
-    }
-    void showResponseSubmission() override { view.showEvaluationButtons(); }
+    explicit PassFailPresenter(ExperimenterOutputView &, PassFailOutputView &);
+    void start() override;
+    void stop() override;
+    void notifyThatTaskHasStarted() override;
+    void notifyThatUserIsDoneResponding() override;
+    void showResponseSubmission() override;
 
   private:
     ExperimenterOutputView &experimenterView;
