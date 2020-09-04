@@ -109,8 +109,11 @@ class Presenter : public Model::EventListener,
 class ExperimenterResponder : public ExperimenterInputView::EventListener,
                               public IExperimenterResponder {
   public:
-    explicit ExperimenterResponder(Model &model, View &mainView)
-        : model{model}, mainView{mainView} {}
+    explicit ExperimenterResponder(
+        Model &model, View &mainView, ExperimenterInputView &view)
+        : model{model}, mainView{mainView} {
+        view.subscribe(this);
+    }
     void subscribe(IExperimenterResponder::EventListener *e) override {
         listener = e;
     }
