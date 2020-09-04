@@ -5,10 +5,7 @@
 #include "Task.hpp"
 #include "Experimenter.hpp"
 #include "View.hpp"
-#include "Input.hpp"
-#include "PresenterSimple.hpp"
 #include <av-speech-in-noise/Model.hpp>
-#include <vector>
 #include <string>
 
 namespace av_speech_in_noise {
