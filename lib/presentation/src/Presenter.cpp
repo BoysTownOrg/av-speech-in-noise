@@ -56,21 +56,6 @@ static auto consonant(Method m) -> bool {
 
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
-static void showContinueTestingDialogWithResultsWhenComplete(
-    Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
-    if (testComplete(model)) {
-        experimenterPresenterRefactored->showContinueTestingDialog();
-        std::stringstream thresholds;
-        thresholds << "thresholds (targets: dB SNR)";
-        for (const auto &result : model.adaptiveTestResults())
-            thresholds << '\n'
-                       << result.targetsUrl.path << ": " << result.threshold;
-        experimenterPresenterRefactored->setContinueTestingDialogMessage(
-            thresholds.str());
-    } else
-        readyNextTrial(model, experimenterPresenterRefactored);
-}
-
 Presenter::Presenter(Model &model, View &view,
     TaskResponder *consonantResponder, TaskPresenter *consonantPresenter,
     TaskResponder *coordinateResponseMeasureResponder,
@@ -99,7 +84,6 @@ Presenter::Presenter(Model &model, View &view,
         freeResponseResponder->subscribe(freeResponsePresenter);
     }
     if (correctKeywordsResponder != nullptr) {
-        correctKeywordsResponder->becomeChild(this);
         correctKeywordsResponder->subscribe(correctKeywordsPresenter);
         correctKeywordsResponder->subscribe(experimenterResponder);
     }

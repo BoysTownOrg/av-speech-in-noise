@@ -34,17 +34,15 @@ class CorrectKeywordsResponder
     explicit CorrectKeywordsResponder(
         Model &, View &, CorrectKeywordsInputView &);
     void subscribe(TaskResponder::EventListener *e) override;
+    void subscribe(ExperimenterResponder *r) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
-    void becomeChild(ParentPresenter *p) override;
-    void subscribe(ExperimenterResponder *r) { responder = r; }
 
   private:
     Model &model;
     View &view;
     CorrectKeywordsInputView &keywordsView;
     TaskResponder::EventListener *listener{};
-    ParentPresenter *parent{};
-    ExperimenterResponder *responder;
+    ExperimenterResponder *responder{};
 };
 
 class CorrectKeywordsPresenter : public TaskPresenter {

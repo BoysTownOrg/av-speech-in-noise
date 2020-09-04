@@ -22,7 +22,7 @@ class TaskResponder {
         virtual void notifyThatUserIsDoneResponding() = 0;
     };
     virtual ~TaskResponder() = default;
-    virtual void becomeChild(ParentPresenter *) = 0;
+    virtual void becomeChild(ParentPresenter *) {}
     virtual void subscribe(EventListener *) = 0;
     virtual void subscribe(ExperimenterResponder *) {}
 };

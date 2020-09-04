@@ -12,6 +12,10 @@ void CorrectKeywordsResponder::subscribe(TaskResponder::EventListener *e) {
     listener = e;
 }
 
+void CorrectKeywordsResponder::subscribe(ExperimenterResponder *r) {
+    responder = r;
+}
+
 void CorrectKeywordsResponder::notifyThatSubmitButtonHasBeenClicked() {
     try {
         CorrectKeywords p{};
@@ -23,8 +27,6 @@ void CorrectKeywordsResponder::notifyThatSubmitButtonHasBeenClicked() {
         view.showErrorMessage(e.what());
     }
 }
-
-void CorrectKeywordsResponder::becomeChild(ParentPresenter *p) { parent = p; }
 
 CorrectKeywordsPresenter::CorrectKeywordsPresenter(
     ExperimenterOutputView &experimenterView, CorrectKeywordsOutputView &view)
