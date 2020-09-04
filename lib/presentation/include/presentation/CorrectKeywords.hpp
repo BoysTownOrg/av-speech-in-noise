@@ -39,8 +39,8 @@ class CorrectKeywordsResponder
 
   private:
     Model &model;
-    View &mainView;
-    CorrectKeywordsInputView &view;
+    View &view;
+    CorrectKeywordsInputView &keywordsView;
     TaskResponder::EventListener *listener{};
     ParentPresenter *parent{};
 };

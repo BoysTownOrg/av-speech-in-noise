@@ -3,9 +3,9 @@
 
 namespace av_speech_in_noise {
 CorrectKeywordsResponder::CorrectKeywordsResponder(
-    Model &model, View &mainView, CorrectKeywordsInputView &view)
-    : model{model}, mainView{mainView}, view{view} {
-    view.subscribe(this);
+    Model &model, View &view, CorrectKeywordsInputView &keywordsView)
+    : model{model}, view{view}, keywordsView{keywordsView} {
+    keywordsView.subscribe(this);
 }
 
 void CorrectKeywordsResponder::subscribe(TaskResponder::EventListener *e) {
@@ -15,12 +15,12 @@ void CorrectKeywordsResponder::subscribe(TaskResponder::EventListener *e) {
 void CorrectKeywordsResponder::notifyThatSubmitButtonHasBeenClicked() {
     try {
         CorrectKeywords p{};
-        p.count = readInteger(view.correctKeywords(), "number");
+        p.count = readInteger(keywordsView.correctKeywords(), "number");
         model.submit(p);
         listener->notifyThatUserIsDoneResponding();
         parent->showContinueTestingDialogWithResultsWhenComplete();
     } catch (const std::runtime_error &e) {
-        mainView.showErrorMessage(e.what());
+        view.showErrorMessage(e.what());
     }
 }
 
