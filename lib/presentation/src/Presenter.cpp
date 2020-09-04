@@ -94,7 +94,8 @@ Presenter::Presenter(Model &model, View &view,
       freeResponsePresenter{freeResponsePresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
       passFailPresenter{passFailPresenter}, taskPresenter_{passFailPresenter},
-      testSetupPresenter{testSetupPresenter} {
+      testSetupPresenter{testSetupPresenter},
+      experimenterPresenterRefactored{experimenterPresenterRefactored} {
     model.subscribe(this);
     experimenterPresenter.becomeChild(this);
     if (consonantResponder != nullptr) {
@@ -142,7 +143,7 @@ void Presenter::switchToTestView(Method m) {
 }
 
 void Presenter::showTest(Method m) {
-    experimenterPresenter.show();
+    experimenterPresenterRefactored->start();
     displayTrialInformation(experimenterPresenter, model);
     if (coordinateResponseMeasure(m))
         coordinateResponseMeasurePresenter->start();
