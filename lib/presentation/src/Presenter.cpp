@@ -187,8 +187,8 @@ void Presenter::trialComplete() {
     view.showCursor();
 }
 
-static void switchToTestSetupView(Presenter::Experimenter &experimenter,
-    TaskPresenter *taskPresenter, PresenterSimple *testSetupPresenter,
+static void switchToTestSetupView(TaskPresenter *taskPresenter,
+    PresenterSimple *testSetupPresenter,
     PresenterSimple *experimenterPresenter) {
     testSetupPresenter->start();
     experimenterPresenter->stop();
@@ -202,28 +202,26 @@ static void updateTrialInformationAndPlayNext(
 }
 
 static void switchToTestSetupViewIfCompleteElse(Model &model,
-    Presenter::Experimenter &experimenter, TaskPresenter *taskPresenter,
-    PresenterSimple *testSetupPresenter, PresenterSimple *experimenterPresenter,
-    const std::function<void()> &f) {
+    TaskPresenter *taskPresenter, PresenterSimple *testSetupPresenter,
+    PresenterSimple *experimenterPresenter, const std::function<void()> &f) {
     if (testComplete(model))
-        switchToTestSetupView(experimenter, taskPresenter, testSetupPresenter,
-            experimenterPresenter);
+        switchToTestSetupView(
+            taskPresenter, testSetupPresenter, experimenterPresenter);
     else
         f();
 }
 
 void Presenter::playNextTrialIfNeeded() {
-    switchToTestSetupViewIfCompleteElse(model, experimenterPresenter,
-        taskPresenter_, testSetupPresenter, experimenterPresenterRefactored,
-        [&]() {
+    switchToTestSetupViewIfCompleteElse(model, taskPresenter_,
+        testSetupPresenter, experimenterPresenterRefactored, [&]() {
             updateTrialInformationAndPlayNext(
                 model, view, experimenterPresenter);
         });
 }
 
 void Presenter::readyNextTrialIfNeeded() {
-    switchToTestSetupViewIfCompleteElse(model, experimenterPresenter,
-        taskPresenter_, testSetupPresenter, experimenterPresenterRefactored,
+    switchToTestSetupViewIfCompleteElse(model, taskPresenter_,
+        testSetupPresenter, experimenterPresenterRefactored,
         [&]() { readyNextTrial(experimenterPresenter, model); });
 }
 
@@ -233,7 +231,7 @@ void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
 }
 
 void Presenter::switchToTestSetupView() {
-    av_speech_in_noise::switchToTestSetupView(experimenterPresenter,
+    av_speech_in_noise::switchToTestSetupView(
         taskPresenter_, testSetupPresenter, experimenterPresenterRefactored);
 }
 
@@ -255,8 +253,6 @@ void Presenter::Experimenter::trialPlayed() {
     view->hideExitTestButton();
     view->hideNextTrialButton();
 }
-
-void Presenter::Experimenter::trialComplete() { view->showExitTestButton(); }
 
 void Presenter::Experimenter::readyNextTrial() {
     av_speech_in_noise::hideSubmissions(view);
