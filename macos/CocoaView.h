@@ -8,6 +8,7 @@
 #include <presentation/PassFail.hpp>
 #include <presentation/CorrectKeywords.hpp>
 #include <presentation/TestSetupImpl.hpp>
+#include <presentation/ExperimenterImpl.hpp>
 #include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>
 #include <unordered_map>
