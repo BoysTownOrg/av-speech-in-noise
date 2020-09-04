@@ -35,7 +35,7 @@ class Presenter : public Model::EventListener,
         ExperimenterOutputView *outputView;
     };
 
-    Presenter(Model &, View &, Experimenter &, TaskResponder *, TaskPresenter *,
+    Presenter(Model &, View &, TaskResponder *, TaskPresenter *,
         TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
         TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
         TestSetupResponder *, TestSetupPresenter *,

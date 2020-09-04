@@ -373,7 +373,6 @@ void main(
     CocoaCoordinateResponseMeasureView coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
-    Presenter::Experimenter experimenterPresenter{&experimenterView};
     TestSettingsInterpreterImpl testSettingsInterpreter;
     ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenter{model, consonantView};
@@ -393,9 +392,8 @@ void main(
     TestSetupResponderImpl testSetupResponderImpl{model, view,
         *(testSetupView.get()), testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{*(testSetupView.get())};
-    Presenter presenter{model, view, experimenterPresenter,
-        &consonantScreenResponder, &consonantPresenter,
-        &coordinateResponseMeasureResponder,
+    Presenter presenter{model, view, &consonantScreenResponder,
+        &consonantPresenter, &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenter, &freeResponseResponder,
         &freeResponsePresenter, &correctKeywordsResponder,
         &correctKeywordsPresenter, &passFailResponder, &passFailPresenter,
