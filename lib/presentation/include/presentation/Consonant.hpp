@@ -53,11 +53,13 @@ class ConsonantResponder : public TaskResponder,
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
     void becomeChild(ParentPresenter *p) override;
+    void subscribe(ExperimenterResponder *p) override { responder = p; }
 
   private:
     Model &model;
     ConsonantInputView &view;
     TaskResponder::EventListener *listener{};
+    ExperimenterResponder *responder;
     ParentPresenter *parent{};
 };
 }

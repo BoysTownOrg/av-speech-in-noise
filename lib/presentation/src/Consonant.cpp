@@ -45,8 +45,8 @@ void ConsonantResponder::notifyThatReadyButtonHasBeenClicked() {
 
 void ConsonantResponder::notifyThatResponseButtonHasBeenClicked() {
     model.submit(ConsonantResponse{view.consonant().front()});
-    parent->playNextTrialIfNeeded();
     listener->notifyThatUserIsDoneResponding();
+    parent->playNextTrialIfNeeded();
 }
 
 void ConsonantResponder::becomeChild(ParentPresenter *p) { parent = p; }
