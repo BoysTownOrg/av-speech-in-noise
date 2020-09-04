@@ -226,25 +226,16 @@ void Presenter::readyNextTrialIfNeeded() {
         [&]() { readyNextTrial(experimenterPresenter, model); });
 }
 
-void Presenter::declineContinuingTesting() {
-    av_speech_in_noise::switchToTestSetupView(
-        experimenterPresenter, taskPresenter_, testSetupPresenter);
-}
+void Presenter::declineContinuingTesting() {}
 
-void Presenter::acceptContinuingTesting() {
-    model.restartAdaptiveTestWhilePreservingTargets();
-    readyNextTrial(experimenterPresenter, model);
-}
+void Presenter::acceptContinuingTesting() {}
 
 void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
     (this->*f)();
     readyNextTrialIfNeeded();
 }
 
-void Presenter::exitTest() {
-    av_speech_in_noise::switchToTestSetupView(
-        experimenterPresenter, taskPresenter_, testSetupPresenter);
-}
+void Presenter::exitTest() {}
 
 void Presenter::switchToTestSetupView() {
     av_speech_in_noise::switchToTestSetupView(
@@ -308,17 +299,13 @@ void Presenter::Experimenter::setContinueTestingDialogMessage(
     view->setContinueTestingDialogMessage(s);
 }
 
-void Presenter::Experimenter::declineContinuingTesting() {
-    parent->declineContinuingTesting();
-}
+void Presenter::Experimenter::declineContinuingTesting() {}
 
-void Presenter::Experimenter::acceptContinuingTesting() {
-    parent->acceptContinuingTesting();
-}
+void Presenter::Experimenter::acceptContinuingTesting() {}
 
-void Presenter::Experimenter::playTrial() { parent->playTrial(); }
+void Presenter::Experimenter::playTrial() {}
 
-void Presenter::Experimenter::exitTest() { parent->exitTest(); }
+void Presenter::Experimenter::exitTest() {}
 
 void Presenter::Experimenter::display(std::string s) {
     view->display(std::move(s));
