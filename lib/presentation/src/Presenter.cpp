@@ -78,6 +78,7 @@ Presenter::Presenter(Model &model, View &view,
     if (consonantResponder != nullptr) {
         consonantResponder->becomeChild(this);
         consonantResponder->subscribe(consonantPresenter);
+        consonantResponder->subscribe(experimenterResponder);
     }
     if (freeResponseResponder != nullptr) {
         freeResponseResponder->becomeChild(this);

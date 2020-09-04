@@ -53,6 +53,19 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
             parent->readyNextTrial();
     }
 
+    void playNextTrialIfNeeded() override {
+        if (model.testComplete())
+            parent->switchToTestSetupView();
+        else {
+            listener->display("Trial " + std::to_string(model.trialNumber()));
+            listener->secondaryDisplay(model.targetFileName());
+            AudioSettings p;
+            p.audioDevice = mainView.audioDevice();
+            model.playTrial(p);
+            listener->notifyThatTrialHasStarted();
+        }
+    }
+
     void becomeChild(Presenter *p) override { parent = p; }
 
   private:

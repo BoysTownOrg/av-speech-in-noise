@@ -47,12 +47,15 @@ class ExperimenterResponder {
         virtual void notifyThatTrialHasStarted() = 0;
         virtual void setContinueTestingDialogMessage(const std::string &) = 0;
         virtual void showContinueTestingDialog() = 0;
+        virtual void display(const std::string &) = 0;
+        virtual void secondaryDisplay(const std::string &) = 0;
     };
     virtual ~ExperimenterResponder() = default;
     virtual void subscribe(EventListener *) = 0;
     virtual void becomeChild(Presenter *) = 0;
     virtual void showContinueTestingDialogWithResultsWhenComplete() = 0;
     virtual void readyNextTrialIfNeeded() = 0;
+    virtual void playNextTrialIfNeeded() = 0;
 };
 
 class ExperimenterPresenter
@@ -61,8 +64,6 @@ class ExperimenterPresenter
   public:
     virtual void notifyThatTrialHasCompleted() = 0;
     virtual void notifyThatNextTrialIsReady() = 0;
-    virtual void display(const std::string &) = 0;
-    virtual void secondaryDisplay(const std::string &) = 0;
 };
 }
 
