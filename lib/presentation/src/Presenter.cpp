@@ -54,8 +54,6 @@ static auto consonant(Method m) -> bool {
     return m == Method::fixedLevelConsonants;
 }
 
-static auto testComplete(Model &model) -> bool { return model.testComplete(); }
-
 Presenter::Presenter(Model &model, View &view,
     TaskResponder *consonantResponder, TaskPresenter *consonantPresenter,
     TaskResponder *coordinateResponseMeasureResponder,
@@ -137,18 +135,6 @@ auto Presenter::taskPresenter(Method m) -> TaskPresenter * {
     return passFailPresenter;
 }
 
-static void playTrial(
-    Model &model, View &view, ExperimenterPresenter *refactored) {
-    AudioSettings p;
-    p.audioDevice = view.audioDevice();
-    model.playTrial(p);
-    refactored->notifyThatTrialHasStarted();
-}
-
-void Presenter::playTrial() {
-    av_speech_in_noise::playTrial(model, view, experimenterPresenter);
-}
-
 void Presenter::trialComplete() {
     taskPresenter_->showResponseSubmission();
     experimenterPresenter->notifyThatTrialHasCompleted();
@@ -161,30 +147,6 @@ static void switchToTestSetupView(TaskPresenter *taskPresenter,
     testSetupPresenter->start();
     experimenterPresenter->stop();
     taskPresenter->stop();
-}
-
-static void updateTrialInformationAndPlayNext(Model &model, View &view,
-    ExperimenterPresenter *experimenterPresenterRefactored) {
-    displayTrialInformation(model, experimenterPresenterRefactored);
-    av_speech_in_noise::playTrial(model, view, experimenterPresenterRefactored);
-}
-
-static void switchToTestSetupViewIfCompleteElse(Model &model,
-    TaskPresenter *taskPresenter, PresenterSimple *testSetupPresenter,
-    PresenterSimple *experimenterPresenter, const std::function<void()> &f) {
-    if (testComplete(model))
-        switchToTestSetupView(
-            taskPresenter, testSetupPresenter, experimenterPresenter);
-    else
-        f();
-}
-
-void Presenter::playNextTrialIfNeeded() {
-    switchToTestSetupViewIfCompleteElse(model, taskPresenter_,
-        testSetupPresenter, experimenterPresenter, [&]() {
-            updateTrialInformationAndPlayNext(
-                model, view, experimenterPresenter);
-        });
 }
 
 void Presenter::readyNextTrial() {

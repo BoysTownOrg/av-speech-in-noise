@@ -49,7 +49,6 @@ class CoordinateResponseMeasureResponder
     CoordinateResponseMeasureInputView &view;
     TaskResponder::EventListener *listener{};
     ExperimenterResponder *responder{};
-    ParentPresenter *parent{};
 };
 
 class CoordinateResponseMeasurePresenter : public TaskPresenter {

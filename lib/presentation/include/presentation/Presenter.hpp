@@ -9,9 +9,7 @@
 #include <string>
 
 namespace av_speech_in_noise {
-class Presenter : public Model::EventListener,
-                  public ParentPresenter,
-                  public SomethingIDK {
+class Presenter : public Model::EventListener, public SomethingIDK {
   public:
     Presenter(Model &, View &, TaskResponder *consonantResponder,
         TaskPresenter *consonantPresenter,
@@ -27,8 +25,6 @@ class Presenter : public Model::EventListener,
         ExperimenterResponder *experimenterResponder,
         ExperimenterPresenter *experimenterPresenter);
     void trialComplete() override;
-    void playTrial() override;
-    void playNextTrialIfNeeded() override;
     void readyNextTrial();
     void run();
     void switchToTestSetupView();
