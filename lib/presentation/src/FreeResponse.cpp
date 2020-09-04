@@ -25,15 +25,9 @@ FreeResponsePresenter::FreeResponsePresenter(
     ExperimenterOutputView &experimenterView, FreeResponseOutputView &view)
     : experimenterView{experimenterView}, view{view} {}
 
-void FreeResponsePresenter::start() {
-    experimenterView.show();
-    experimenterView.showNextTrialButton();
-}
+void FreeResponsePresenter::start() { experimenterView.showNextTrialButton(); }
 
-void FreeResponsePresenter::stop() {
-    experimenterView.hide();
-    view.hideFreeResponseSubmission();
-}
+void FreeResponsePresenter::stop() { view.hideFreeResponseSubmission(); }
 
 void FreeResponsePresenter::notifyThatTaskHasStarted() {
     experimenterView.hideNextTrialButton();

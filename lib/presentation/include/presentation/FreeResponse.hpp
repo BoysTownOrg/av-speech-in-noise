@@ -31,7 +31,7 @@ class FreeResponseOutputView {
 class FreeResponseResponder : public TaskResponder,
                               public FreeResponseInputView::EventListener {
   public:
-    explicit FreeResponseResponder(Model &, FreeResponseInputView &);
+    FreeResponseResponder(Model &, FreeResponseInputView &);
     void subscribe(TaskResponder::EventListener *) override;
     void subscribe(ExperimenterResponder *) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
@@ -45,8 +45,7 @@ class FreeResponseResponder : public TaskResponder,
 
 class FreeResponsePresenter : public TaskPresenter {
   public:
-    explicit FreeResponsePresenter(
-        ExperimenterOutputView &, FreeResponseOutputView &);
+    FreeResponsePresenter(ExperimenterOutputView &, FreeResponseOutputView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
