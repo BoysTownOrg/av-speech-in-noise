@@ -223,31 +223,19 @@ void Presenter::readyNextTrialIfNeeded() {
         [&]() { readyNextTrial(experimenterPresenter, model); });
 }
 
-void Presenter::declineContinuingTesting() {}
-
-void Presenter::acceptContinuingTesting() {}
-
 void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
     (this->*f)();
     readyNextTrialIfNeeded();
 }
-
-void Presenter::exitTest() {}
 
 void Presenter::switchToTestSetupView() {
     av_speech_in_noise::switchToTestSetupView(
         experimenterPresenter, taskPresenter_, testSetupPresenter);
 }
 
-auto Presenter::testComplete() -> bool {
-    return av_speech_in_noise::testComplete(model);
-}
-
-Presenter::Experimenter::Experimenter(ExperimenterView *view,
-    ExperimenterInputView *inputView, ExperimenterOutputView *outputView)
-    : view{view} {
-    view->subscribe(this);
-}
+Presenter::Experimenter::Experimenter(
+    ExperimenterView *view, ExperimenterInputView *, ExperimenterOutputView *)
+    : view{view} {}
 
 void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }
 
