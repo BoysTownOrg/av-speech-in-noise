@@ -18,9 +18,8 @@ void CorrectKeywordsResponder::subscribe(ExperimenterResponder *r) {
 
 void CorrectKeywordsResponder::notifyThatSubmitButtonHasBeenClicked() {
     try {
-        CorrectKeywords p{};
-        p.count = readInteger(keywordsView.correctKeywords(), "number");
-        model.submit(p);
+        model.submit(CorrectKeywords{
+            readInteger(keywordsView.correctKeywords(), "number")});
         listener->notifyThatUserIsDoneResponding();
         responder->showContinueTestingDialogWithResultsWhenComplete();
     } catch (const std::runtime_error &e) {
