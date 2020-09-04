@@ -65,6 +65,12 @@ class ExperimenterPresenterImpl : public ExperimenterPresenter {
         view.showNextTrialButton();
     }
 
+    void display(const std::string &s) override { view.display(s); }
+
+    void secondaryDisplay(const std::string &s) override {
+        view.secondaryDisplay(s);
+    }
+
   private:
     ExperimenterOutputView &view;
 };

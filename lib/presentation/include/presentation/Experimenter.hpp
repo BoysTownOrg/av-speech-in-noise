@@ -57,6 +57,8 @@ class ExperimenterPresenter
   public:
     virtual void notifyThatTrialHasCompleted() = 0;
     virtual void notifyThatNextTrialIsReady() = 0;
+    virtual void display(const std::string &) = 0;
+    virtual void secondaryDisplay(const std::string &) = 0;
 };
 }
 

@@ -6,9 +6,9 @@
 #include <functional>
 
 namespace av_speech_in_noise {
-static void displayTrialNumber(
-    Presenter::Experimenter &experimenterPresenter, Model &model) {
-    experimenterPresenter.display(
+static void displayTrialNumber(Presenter::Experimenter &experimenterPresenter,
+    Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
+    experimenterPresenterRefactored->display(
         "Trial " + std::to_string(model.trialNumber()));
 }
 
@@ -18,14 +18,17 @@ static void displayTarget(
 }
 
 static void displayTrialInformation(
-    Presenter::Experimenter &experimenterPresenter, Model &model) {
-    displayTrialNumber(experimenterPresenter, model);
+    Presenter::Experimenter &experimenterPresenter, Model &model,
+    ExperimenterPresenter *experimenterPresenterRefactored) {
+    displayTrialNumber(
+        experimenterPresenter, model, experimenterPresenterRefactored);
     displayTarget(experimenterPresenter, model);
 }
 
 static void readyNextTrial(Presenter::Experimenter &experimenterPresenter,
     Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
-    displayTrialInformation(experimenterPresenter, model);
+    displayTrialInformation(
+        experimenterPresenter, model, experimenterPresenterRefactored);
     experimenterPresenterRefactored->notifyThatNextTrialIsReady();
 }
 
@@ -140,7 +143,8 @@ void Presenter::run() { view.eventLoop(); }
 void Presenter::switchToTestView(Method m) {
     testSetupPresenter->stop();
     experimenterPresenterRefactored->start();
-    displayTrialInformation(experimenterPresenter, model);
+    displayTrialInformation(
+        experimenterPresenter, model, experimenterPresenterRefactored);
     if (coordinateResponseMeasure(m))
         coordinateResponseMeasurePresenter->start();
     else if (consonant(m))
@@ -194,7 +198,8 @@ static void switchToTestSetupView(TaskPresenter *taskPresenter,
 static void updateTrialInformationAndPlayNext(Model &model, View &view,
     Presenter::Experimenter &experimenter,
     ExperimenterPresenter *experimenterPresenterRefactored) {
-    displayTrialInformation(experimenter, model);
+    displayTrialInformation(
+        experimenter, model, experimenterPresenterRefactored);
     av_speech_in_noise::playTrial(model, view, experimenterPresenterRefactored);
 }
 
