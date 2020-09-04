@@ -139,10 +139,6 @@ void Presenter::run() { view.eventLoop(); }
 
 void Presenter::switchToTestView(Method m) {
     testSetupPresenter->stop();
-    showTest(m);
-}
-
-void Presenter::showTest(Method m) {
     experimenterPresenterRefactored->start();
     displayTrialInformation(experimenterPresenter, model);
     if (coordinateResponseMeasure(m))
@@ -187,7 +183,7 @@ void Presenter::playTrial() {
 
 void Presenter::trialComplete() {
     taskPresenter_->showResponseSubmission();
-    experimenterPresenter.trialComplete();
+    experimenterPresenterRefactored->notifyThatTrialHasCompleted();
     view.showCursor();
 }
 

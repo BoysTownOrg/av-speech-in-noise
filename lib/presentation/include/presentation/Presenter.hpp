@@ -28,7 +28,10 @@ class IExperimenterResponder {
 
 class IExperimenterPresenter
     : public virtual IExperimenterResponder::EventListener,
-      public virtual PresenterSimple {};
+      public virtual PresenterSimple {
+  public:
+    virtual void notifyThatTrialHasCompleted() = 0;
+};
 
 class Presenter : public Model::EventListener,
                   public ParentPresenter,
@@ -105,7 +108,7 @@ class Presenter : public Model::EventListener,
     TaskPresenter *passFailPresenter;
     TaskPresenter *taskPresenter_;
     PresenterSimple *testSetupPresenter;
-    PresenterSimple *experimenterPresenterRefactored;
+    IExperimenterPresenter *experimenterPresenterRefactored;
 };
 
 class ExperimenterResponder : public ExperimenterInputView::EventListener,
@@ -158,7 +161,7 @@ class ExperimenterPresenter : public IExperimenterPresenter {
         view.hideNextTrialButton();
     }
 
-    void notifyThatTrialHasCompleted() { view.showExitTestButton(); }
+    void notifyThatTrialHasCompleted() override { view.showExitTestButton(); }
 
     void notifyThatNextTrialIsReady() {
         view.hideContinueTestingDialog();
