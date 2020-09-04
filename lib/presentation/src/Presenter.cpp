@@ -59,7 +59,6 @@ static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 static void showContinueTestingDialogWithResultsWhenComplete(
     Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
     if (testComplete(model)) {
-        experimenterPresenterRefactored->hideContinueTestingDialog();
         experimenterPresenterRefactored->showContinueTestingDialog();
         std::stringstream thresholds;
         thresholds << "thresholds (targets: dB SNR)";
