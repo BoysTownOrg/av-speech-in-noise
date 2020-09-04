@@ -19,8 +19,8 @@ class Presenter : public Model::EventListener,
     Presenter(Model &, View &, TaskResponder *, TaskPresenter *,
         TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
         TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
-        TestSetupResponder *, TestSetupPresenter *,
-        ExperimenterResponder * = {}, ExperimenterPresenter * = {});
+        TestSetupResponder *, TestSetupPresenter *, ExperimenterResponder *,
+        ExperimenterPresenter *);
     void trialComplete() override;
     void playTrial() override;
     void playNextTrialIfNeeded() override;

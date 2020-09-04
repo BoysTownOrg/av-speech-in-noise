@@ -1144,11 +1144,15 @@ class PresenterConstructionTests : public ::testing::Test {
     TestSetupResponderImpl testSetupResponderImpl{
         model, view, setupView, testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
+    ExperimenterResponderImpl experimenterResponder{
+        model, view, experimenterView};
+    ExperimenterPresenterImpl experimenterPresenterRefactored{experimenterView};
 
     auto construct() -> Presenter {
         return {model, view, nullptr, nullptr, nullptr, nullptr, nullptr,
             nullptr, nullptr, nullptr, nullptr, nullptr,
-            &testSetupResponderImpl, &testSetupPresenterRefactored};
+            &testSetupResponderImpl, &testSetupPresenterRefactored,
+            &experimenterResponder, &experimenterPresenterRefactored};
     }
 };
 
@@ -1697,6 +1701,7 @@ class PresenterFailureTests : public ::testing::Test {
     ExperimenterViewStub experimenterView;
     TestSettingsInterpreterStub testSettingsInterpreter;
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
+    ExperimenterPresenterImpl experimenterPresenterRefactored{experimenterView};
     TextFileReaderStub textFileReader;
 
     void useFailingModel(std::string s = {}) {
@@ -1708,9 +1713,12 @@ class PresenterFailureTests : public ::testing::Test {
     void confirmTestSetup() {
         TestSetupResponderImpl testSetupResponderImpl{
             *model, view, setupView, testSettingsInterpreter, textFileReader};
+        ExperimenterResponderImpl experimenterResponder{
+            *model, view, experimenterView};
         Presenter presenter{*model, view, nullptr, nullptr, nullptr, nullptr,
             nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
-            &testSetupResponderImpl, &testSetupPresenterRefactored};
+            &testSetupResponderImpl, &testSetupPresenterRefactored,
+            &experimenterResponder, &experimenterPresenterRefactored};
         setupView.confirmTestSetup();
     }
 
