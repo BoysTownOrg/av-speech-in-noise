@@ -44,8 +44,8 @@ void CoordinateResponseMeasureResponder::
     responder->playNextTrialIfNeeded();
 }
 
-void CoordinateResponseMeasureResponder::becomeChild(ParentPresenter *p) {
-    parent = p;
+void CoordinateResponseMeasureResponder::subscribe(ExperimenterResponder *e) {
+    responder = e;
 }
 
 CoordinateResponseMeasurePresenter::CoordinateResponseMeasurePresenter(

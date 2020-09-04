@@ -42,8 +42,7 @@ class CoordinateResponseMeasureResponder
     void subscribe(TaskResponder::EventListener *e) override;
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
-    void becomeChild(ParentPresenter *p) override;
-    void subscribe(ExperimenterResponder *e) override { responder = e; }
+    void subscribe(ExperimenterResponder *e) override;
 
   private:
     Model &model;
