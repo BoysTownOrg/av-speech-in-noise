@@ -4,7 +4,7 @@
 #include <string>
 
 namespace av_speech_in_noise {
-class ExperimenterView {
+class ExperimenterInputView {
   public:
     class EventListener {
       public:
@@ -14,9 +14,13 @@ class ExperimenterView {
         virtual void declineContinuingTesting() = 0;
         virtual void acceptContinuingTesting() = 0;
     };
-
-    virtual ~ExperimenterView() = default;
     virtual void subscribe(EventListener *) = 0;
+    virtual ~ExperimenterInputView() = default;
+};
+
+class ExperimenterOutputView {
+  public:
+    virtual ~ExperimenterOutputView() = default;
     virtual void show() = 0;
     virtual void hide() = 0;
     virtual void showContinueTestingDialog() = 0;
@@ -29,6 +33,9 @@ class ExperimenterView {
     virtual void display(std::string) = 0;
     virtual void secondaryDisplay(std::string) = 0;
 };
+
+class ExperimenterView : public virtual ExperimenterInputView,
+                         public virtual ExperimenterOutputView {};
 }
 
 #endif
