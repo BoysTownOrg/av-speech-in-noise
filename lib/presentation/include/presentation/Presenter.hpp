@@ -86,6 +86,29 @@ class Presenter : public Model::EventListener,
     TaskPresenter *taskPresenter_;
     PresenterSimple *testSetupPresenter;
 };
+
+class ExperimenterResponder : public ExperimenterInputView::EventListener {
+  public:
+    explicit ExperimenterResponder(Model &model) : model{model} {}
+    void exitTest() override {}
+    void playTrial() override {}
+    void declineContinuingTesting() override {}
+    void acceptContinuingTesting() override {}
+    // void becomeChild(ParentPresenter *p) override;
+
+  private:
+    Model &model;
+};
+
+class ExperimenterPresenter {
+  public:
+    explicit ExperimenterPresenter(ExperimenterOutputView &view) : view{view} {}
+    void start() { view.show(); }
+    void stop() { view.hide(); }
+
+  private:
+    ExperimenterOutputView &view;
+};
 }
 
 #endif
