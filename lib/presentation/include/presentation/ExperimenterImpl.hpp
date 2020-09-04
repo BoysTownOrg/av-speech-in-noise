@@ -44,8 +44,15 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
                            << result.threshold;
             listener->setContinueTestingDialogMessage(thresholds.str());
         } else
-            parent->readyNextTrialIfNeeded();
+            parent->readyNextTrial();
     }
+    void readyNextTrialIfNeeded() {
+        if (model.testComplete())
+            parent->switchToTestSetupView();
+        else
+            parent->readyNextTrial();
+    }
+
     void becomeChild(Presenter *p) override { parent = p; }
 
   private:

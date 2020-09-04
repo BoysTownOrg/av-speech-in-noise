@@ -14,7 +14,7 @@ void FreeResponseResponder::subscribe(TaskResponder::EventListener *e) {
 void FreeResponseResponder::notifyThatSubmitButtonHasBeenClicked() {
     model.submit(FreeResponse{view.freeResponse(), view.flagged()});
     listener->notifyThatUserIsDoneResponding();
-    parent->readyNextTrialIfNeeded();
+    responder->readyNextTrialIfNeeded();
 }
 
 void FreeResponseResponder::becomeChild(ParentPresenter *p) { parent = p; }

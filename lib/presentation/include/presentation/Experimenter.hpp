@@ -52,6 +52,7 @@ class ExperimenterResponder {
     virtual void subscribe(EventListener *) = 0;
     virtual void becomeChild(Presenter *) = 0;
     virtual void showContinueTestingDialogWithResultsWhenComplete() = 0;
+    virtual void readyNextTrialIfNeeded() = 0;
 };
 
 class ExperimenterPresenter

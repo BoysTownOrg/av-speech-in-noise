@@ -81,6 +81,7 @@ Presenter::Presenter(Model &model, View &view,
     }
     if (freeResponseResponder != nullptr) {
         freeResponseResponder->becomeChild(this);
+        freeResponseResponder->subscribe(experimenterResponder);
         freeResponseResponder->subscribe(freeResponsePresenter);
     }
     if (correctKeywordsResponder != nullptr) {
@@ -187,10 +188,15 @@ void Presenter::playNextTrialIfNeeded() {
         });
 }
 
+void Presenter::readyNextTrial() {
+    av_speech_in_noise::readyNextTrial(model, experimenterPresenter);
+}
+
 void Presenter::readyNextTrialIfNeeded() {
     switchToTestSetupViewIfCompleteElse(model, taskPresenter_,
-        testSetupPresenter, experimenterPresenter,
-        [&]() { readyNextTrial(model, experimenterPresenter); });
+        testSetupPresenter, experimenterPresenter, [&]() {
+            av_speech_in_noise::readyNextTrial(model, experimenterPresenter);
+        });
 }
 
 void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {

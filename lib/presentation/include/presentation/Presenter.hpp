@@ -30,6 +30,7 @@ class Presenter : public Model::EventListener,
     void playTrial() override;
     void playNextTrialIfNeeded() override;
     void readyNextTrialIfNeeded() override;
+    void readyNextTrial();
     void run();
     void switchToTestSetupView();
     void prepare(Method m) override {
