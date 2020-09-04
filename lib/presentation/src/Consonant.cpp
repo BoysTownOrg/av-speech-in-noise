@@ -37,6 +37,7 @@ ConsonantResponder::ConsonantResponder(Model &model, ConsonantInputView &view)
 void ConsonantResponder::subscribe(TaskResponder::EventListener *e) {
     listener = e;
 }
+void ConsonantResponder::subscribe(ExperimenterResponder *p) { responder = p; }
 
 void ConsonantResponder::notifyThatReadyButtonHasBeenClicked() {
     listener->notifyThatTaskHasStarted();
