@@ -39,8 +39,8 @@ void ConsonantResponder::subscribe(TaskResponder::EventListener *e) {
 }
 
 void ConsonantResponder::notifyThatReadyButtonHasBeenClicked() {
-    parent->playTrial();
     listener->notifyThatTaskHasStarted();
+    responder->playTrial();
 }
 
 void ConsonantResponder::notifyThatResponseButtonHasBeenClicked() {

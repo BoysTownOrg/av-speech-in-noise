@@ -56,6 +56,7 @@ class ExperimenterResponder {
     virtual void showContinueTestingDialogWithResultsWhenComplete() = 0;
     virtual void readyNextTrialIfNeeded() = 0;
     virtual void playNextTrialIfNeeded() = 0;
+    virtual void playTrial() = 0;
 };
 
 class ExperimenterPresenter
