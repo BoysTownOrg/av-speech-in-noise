@@ -22,7 +22,7 @@ void PassFailResponder::notifyThatIncorrectButtonHasBeenClicked() {
     responder->showContinueTestingDialogWithResultsWhenComplete();
 }
 
-void PassFailResponder::becomeChild(ParentPresenter *p) { parent = p; }
+void PassFailResponder::subscribe(ExperimenterResponder *p) { responder = p; }
 
 PassFailPresenter::PassFailPresenter(
     ExperimenterOutputView &experimenterView, PassFailOutputView &view)

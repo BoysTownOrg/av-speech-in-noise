@@ -32,14 +32,12 @@ class PassFailResponder : public TaskResponder,
     void subscribe(TaskResponder::EventListener *e) override;
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
-    void becomeChild(ParentPresenter *p) override;
-    void subscribe(ExperimenterResponder *p) override { responder = p; }
+    void subscribe(ExperimenterResponder *p) override;
 
   private:
     Model &model;
     TaskResponder::EventListener *listener{};
-    ParentPresenter *parent{};
-    ExperimenterResponder *responder;
+    ExperimenterResponder *responder{};
 };
 
 class PassFailPresenter : public TaskPresenter {
