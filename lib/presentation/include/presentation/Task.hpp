@@ -10,7 +10,6 @@ class ParentPresenter {
     virtual ~ParentPresenter() = default;
     virtual void playTrial() = 0;
     virtual void playNextTrialIfNeeded() = 0;
-    virtual void readyNextTrialIfNeeded() {}
 };
 
 class TaskResponder {
