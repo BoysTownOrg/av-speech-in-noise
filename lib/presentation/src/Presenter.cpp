@@ -6,27 +6,23 @@
 #include <functional>
 
 namespace av_speech_in_noise {
-static void displayTrialNumber(
-    Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
-    experimenterPresenterRefactored->display(
-        "Trial " + std::to_string(model.trialNumber()));
+static void displayTrialNumber(Model &model, ExperimenterPresenter *presenter) {
+    presenter->display("Trial " + std::to_string(model.trialNumber()));
 }
 
-static void displayTarget(
-    Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
-    experimenterPresenterRefactored->secondaryDisplay(model.targetFileName());
+static void displayTarget(Model &model, ExperimenterPresenter *presenter) {
+    presenter->secondaryDisplay(model.targetFileName());
 }
 
 static void displayTrialInformation(
-    Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
-    displayTrialNumber(model, experimenterPresenterRefactored);
-    displayTarget(model, experimenterPresenterRefactored);
+    Model &model, ExperimenterPresenter *presenter) {
+    displayTrialNumber(model, presenter);
+    displayTarget(model, presenter);
 }
 
-static void readyNextTrial(
-    Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
-    displayTrialInformation(model, experimenterPresenterRefactored);
-    experimenterPresenterRefactored->notifyThatNextTrialIsReady();
+static void readyNextTrial(Model &model, ExperimenterPresenter *presenter) {
+    displayTrialInformation(model, presenter);
+    presenter->notifyThatNextTrialIsReady();
 }
 
 static auto coordinateResponseMeasure(Method m) -> bool {
@@ -64,14 +60,15 @@ static void showContinueTestingDialogWithResultsWhenComplete(
     Presenter::Experimenter &experimenterPresenter, Model &model,
     ExperimenterPresenter *experimenterPresenterRefactored) {
     if (testComplete(model)) {
-        experimenterPresenter.hideSubmissions();
-        experimenterPresenter.showContinueTestingDialog();
+        experimenterPresenterRefactored->hideContinueTestingDialog();
+        experimenterPresenterRefactored->showContinueTestingDialog();
         std::stringstream thresholds;
         thresholds << "thresholds (targets: dB SNR)";
         for (const auto &result : model.adaptiveTestResults())
             thresholds << '\n'
                        << result.targetsUrl.path << ": " << result.threshold;
-        experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
+        experimenterPresenterRefactored->setContinueTestingDialogMessage(
+            thresholds.str());
     } else
         readyNextTrial(model, experimenterPresenterRefactored);
 }
