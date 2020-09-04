@@ -192,12 +192,7 @@ void Presenter::readyNextTrial() {
     av_speech_in_noise::readyNextTrial(model, experimenterPresenter);
 }
 
-void Presenter::readyNextTrialIfNeeded() {
-    switchToTestSetupViewIfCompleteElse(model, taskPresenter_,
-        testSetupPresenter, experimenterPresenter, [&]() {
-            av_speech_in_noise::readyNextTrial(model, experimenterPresenter);
-        });
-}
+void Presenter::readyNextTrialIfNeeded() {}
 
 void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
     (this->*f)();
