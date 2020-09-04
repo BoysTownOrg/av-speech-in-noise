@@ -46,7 +46,7 @@ class FreeResponseResponder : public TaskResponder,
 class FreeResponsePresenter : public TaskPresenter {
   public:
     explicit FreeResponsePresenter(
-        ExperimenterView &, FreeResponseOutputView &);
+        ExperimenterOutputView &, FreeResponseOutputView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
@@ -54,7 +54,7 @@ class FreeResponsePresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    ExperimenterView &experimenterView;
+    ExperimenterOutputView &experimenterView;
     FreeResponseOutputView &view;
 };
 }

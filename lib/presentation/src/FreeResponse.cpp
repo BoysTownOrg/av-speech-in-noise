@@ -20,7 +20,7 @@ void FreeResponseResponder::notifyThatSubmitButtonHasBeenClicked() {
 void FreeResponseResponder::becomeChild(ParentPresenter *p) { parent = p; }
 
 FreeResponsePresenter::FreeResponsePresenter(
-    ExperimenterView &experimenterView, FreeResponseOutputView &view)
+    ExperimenterOutputView &experimenterView, FreeResponseOutputView &view)
     : experimenterView{experimenterView}, view{view} {}
 
 void FreeResponsePresenter::start() {

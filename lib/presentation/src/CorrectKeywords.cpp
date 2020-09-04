@@ -27,7 +27,7 @@ void CorrectKeywordsResponder::notifyThatSubmitButtonHasBeenClicked() {
 void CorrectKeywordsResponder::becomeChild(ParentPresenter *p) { parent = p; }
 
 CorrectKeywordsPresenter::CorrectKeywordsPresenter(
-    ExperimenterView &experimenterView, CorrectKeywordsOutputView &view)
+    ExperimenterOutputView &experimenterView, CorrectKeywordsOutputView &view)
     : experimenterView{experimenterView}, view{view} {}
 
 void CorrectKeywordsPresenter::start() {

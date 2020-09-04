@@ -54,7 +54,7 @@ class PassFailResponder : public TaskResponder,
 class PassFailPresenter : public TaskPresenter {
   public:
     explicit PassFailPresenter(
-        ExperimenterView &experimenterView, PassFailOutputView &view)
+        ExperimenterOutputView &experimenterView, PassFailOutputView &view)
         : experimenterView{experimenterView}, view{view} {}
     void start() override {
         experimenterView.show();
@@ -73,7 +73,7 @@ class PassFailPresenter : public TaskPresenter {
     void showResponseSubmission() override { view.showEvaluationButtons(); }
 
   private:
-    ExperimenterView &experimenterView;
+    ExperimenterOutputView &experimenterView;
     PassFailOutputView &view;
 };
 }

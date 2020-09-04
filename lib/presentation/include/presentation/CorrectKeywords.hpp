@@ -48,7 +48,7 @@ class CorrectKeywordsResponder
 class CorrectKeywordsPresenter : public TaskPresenter {
   public:
     explicit CorrectKeywordsPresenter(
-        ExperimenterView &, CorrectKeywordsOutputView &);
+        ExperimenterOutputView &, CorrectKeywordsOutputView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
@@ -56,7 +56,7 @@ class CorrectKeywordsPresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    ExperimenterView &experimenterView;
+    ExperimenterOutputView &experimenterView;
     CorrectKeywordsOutputView &view;
 };
 }
