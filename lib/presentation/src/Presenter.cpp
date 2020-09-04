@@ -166,10 +166,6 @@ auto Presenter::taskPresenter(Method m) -> TaskPresenter * {
     return passFailPresenter;
 }
 
-void Presenter::showErrorMessage(std::string e) {
-    view.showErrorMessage(std::move(e));
-}
-
 static void playTrial(
     Model &model, View &view, IExperimenterPresenter *refactored) {
     AudioSettings p;
@@ -243,18 +239,12 @@ Presenter::Experimenter::Experimenter(
     ExperimenterView *view, ExperimenterInputView *, ExperimenterOutputView *)
     : view{view} {}
 
-static void hideSubmissions(ExperimenterView *view) {
-    view->hideContinueTestingDialog();
-}
-
-void Presenter::Experimenter::readyNextTrial() {}
-
 void Presenter::Experimenter::showContinueTestingDialog() {
     view->showContinueTestingDialog();
 }
 
 void Presenter::Experimenter::hideSubmissions() {
-    av_speech_in_noise::hideSubmissions(view);
+    view->hideContinueTestingDialog();
 }
 
 void Presenter::Experimenter::setContinueTestingDialogMessage(
