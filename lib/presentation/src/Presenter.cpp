@@ -243,13 +243,6 @@ static void showNextTrialButton(ExperimenterView *view) {
     view->showNextTrialButton();
 }
 
-void Presenter::Experimenter::show() { view->show(); }
-
-void Presenter::Experimenter::start() {
-    view->show();
-    showNextTrialButton(view);
-}
-
 static void hideSubmissions(ExperimenterView *view) {
     view->hideContinueTestingDialog();
 }
