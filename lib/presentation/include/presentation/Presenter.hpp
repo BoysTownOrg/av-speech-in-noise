@@ -66,7 +66,6 @@ class Presenter : public Model::EventListener,
 
     Model &model;
     View &view;
-    Experimenter &experimenterPresenter;
     TaskPresenter *consonantPresenter;
     TaskPresenter *coordinateResponseMeasurePresenter;
     TaskPresenter *freeResponsePresenter;
