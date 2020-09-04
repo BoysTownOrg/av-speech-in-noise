@@ -5,6 +5,7 @@
 #include "View.hpp"
 #include "Presenter.hpp"
 #include <av-speech-in-noise/Model.hpp>
+#include <sstream>
 
 namespace av_speech_in_noise {
 class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
@@ -31,6 +32,19 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
     void acceptContinuingTesting() override {
         model.restartAdaptiveTestWhilePreservingTargets();
         parent->readyNextTrialIfNeeded();
+    }
+    void showContinueTestingDialogWithResultsWhenComplete() override {
+        if (model.testComplete()) {
+            listener->showContinueTestingDialog();
+            std::stringstream thresholds;
+            thresholds << "thresholds (targets: dB SNR)";
+            for (const auto &result : model.adaptiveTestResults())
+                thresholds << '\n'
+                           << result.targetsUrl.path << ": "
+                           << result.threshold;
+            listener->setContinueTestingDialogMessage(thresholds.str());
+        } else
+            parent->readyNextTrialIfNeeded();
     }
     void becomeChild(Presenter *p) override { parent = p; }
 

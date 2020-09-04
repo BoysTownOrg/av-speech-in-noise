@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TASK_HPP_
 
 #include "PresenterSimple.hpp"
+#include "Experimenter.hpp"
 
 namespace av_speech_in_noise {
 class ParentPresenter {
@@ -10,7 +11,6 @@ class ParentPresenter {
     virtual void playTrial() = 0;
     virtual void playNextTrialIfNeeded() = 0;
     virtual void readyNextTrialIfNeeded() = 0;
-    virtual void showContinueTestingDialogWithResultsWhenComplete() = 0;
 };
 
 class TaskResponder {
@@ -24,6 +24,7 @@ class TaskResponder {
     virtual ~TaskResponder() = default;
     virtual void becomeChild(ParentPresenter *) = 0;
     virtual void subscribe(EventListener *) = 0;
+    virtual void subscribe(ExperimenterResponder *) {}
 };
 
 class TaskPresenter : virtual public TaskResponder::EventListener,

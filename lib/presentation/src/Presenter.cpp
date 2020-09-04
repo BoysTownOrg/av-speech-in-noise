@@ -101,10 +101,12 @@ Presenter::Presenter(Model &model, View &view,
     if (correctKeywordsResponder != nullptr) {
         correctKeywordsResponder->becomeChild(this);
         correctKeywordsResponder->subscribe(correctKeywordsPresenter);
+        correctKeywordsResponder->subscribe(experimenterResponder);
     }
     if (passFailResponder != nullptr) {
         passFailResponder->becomeChild(this);
         passFailResponder->subscribe(passFailPresenter);
+        passFailResponder->subscribe(experimenterResponder);
     }
     if (coordinateResponseMeasureResponder != nullptr) {
         coordinateResponseMeasureResponder->becomeChild(this);
@@ -120,11 +122,6 @@ Presenter::Presenter(Model &model, View &view,
         experimenterResponder->subscribe(experimenterPresenter);
     }
     view.populateAudioDeviceMenu(model.audioDevices());
-}
-
-void Presenter::showContinueTestingDialogWithResultsWhenComplete() {
-    av_speech_in_noise::showContinueTestingDialogWithResultsWhenComplete(
-        model, experimenterPresenter);
 }
 
 void Presenter::run() { view.eventLoop(); }

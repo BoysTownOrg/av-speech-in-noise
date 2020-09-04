@@ -13,13 +13,13 @@ void PassFailResponder::subscribe(TaskResponder::EventListener *e) {
 void PassFailResponder::notifyThatCorrectButtonHasBeenClicked() {
     model.submitCorrectResponse();
     listener->notifyThatUserIsDoneResponding();
-    parent->showContinueTestingDialogWithResultsWhenComplete();
+    responder->showContinueTestingDialogWithResultsWhenComplete();
 }
 
 void PassFailResponder::notifyThatIncorrectButtonHasBeenClicked() {
     model.submitIncorrectResponse();
     listener->notifyThatUserIsDoneResponding();
-    parent->showContinueTestingDialogWithResultsWhenComplete();
+    responder->showContinueTestingDialogWithResultsWhenComplete();
 }
 
 void PassFailResponder::becomeChild(ParentPresenter *p) { parent = p; }
