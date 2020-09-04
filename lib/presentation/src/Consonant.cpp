@@ -48,6 +48,4 @@ void ConsonantResponder::notifyThatResponseButtonHasBeenClicked() {
     listener->notifyThatUserIsDoneResponding();
     responder->playNextTrialIfNeeded();
 }
-
-void ConsonantResponder::becomeChild(ParentPresenter *p) { parent = p; }
 }

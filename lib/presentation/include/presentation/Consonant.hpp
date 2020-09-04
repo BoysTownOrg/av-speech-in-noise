@@ -50,17 +50,15 @@ class ConsonantResponder : public TaskResponder,
   public:
     explicit ConsonantResponder(Model &, ConsonantInputView &);
     void subscribe(TaskResponder::EventListener *e) override;
+    void subscribe(ExperimenterResponder *p) override { responder = p; }
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
-    void becomeChild(ParentPresenter *p) override;
-    void subscribe(ExperimenterResponder *p) override { responder = p; }
 
   private:
     Model &model;
     ConsonantInputView &view;
     TaskResponder::EventListener *listener{};
-    ExperimenterResponder *responder;
-    ParentPresenter *parent{};
+    ExperimenterResponder *responder{};
 };
 }
 
