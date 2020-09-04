@@ -188,9 +188,10 @@ void Presenter::trialComplete() {
 }
 
 static void switchToTestSetupView(Presenter::Experimenter &experimenter,
-    TaskPresenter *taskPresenter, PresenterSimple *testSetupPresenter) {
+    TaskPresenter *taskPresenter, PresenterSimple *testSetupPresenter,
+    PresenterSimple *experimenterPresenter) {
     testSetupPresenter->start();
-    experimenter.stop();
+    experimenterPresenter->stop();
     taskPresenter->stop();
 }
 
@@ -202,16 +203,19 @@ static void updateTrialInformationAndPlayNext(
 
 static void switchToTestSetupViewIfCompleteElse(Model &model,
     Presenter::Experimenter &experimenter, TaskPresenter *taskPresenter,
-    PresenterSimple *testSetupPresenter, const std::function<void()> &f) {
+    PresenterSimple *testSetupPresenter, PresenterSimple *experimenterPresenter,
+    const std::function<void()> &f) {
     if (testComplete(model))
-        switchToTestSetupView(experimenter, taskPresenter, testSetupPresenter);
+        switchToTestSetupView(experimenter, taskPresenter, testSetupPresenter,
+            experimenterPresenter);
     else
         f();
 }
 
 void Presenter::playNextTrialIfNeeded() {
     switchToTestSetupViewIfCompleteElse(model, experimenterPresenter,
-        taskPresenter_, testSetupPresenter, [&]() {
+        taskPresenter_, testSetupPresenter, experimenterPresenterRefactored,
+        [&]() {
             updateTrialInformationAndPlayNext(
                 model, view, experimenterPresenter);
         });
@@ -219,7 +223,7 @@ void Presenter::playNextTrialIfNeeded() {
 
 void Presenter::readyNextTrialIfNeeded() {
     switchToTestSetupViewIfCompleteElse(model, experimenterPresenter,
-        taskPresenter_, testSetupPresenter,
+        taskPresenter_, testSetupPresenter, experimenterPresenterRefactored,
         [&]() { readyNextTrial(experimenterPresenter, model); });
 }
 
@@ -229,8 +233,8 @@ void Presenter::readyNextTrialAfter(void (Presenter::*f)()) {
 }
 
 void Presenter::switchToTestSetupView() {
-    av_speech_in_noise::switchToTestSetupView(
-        experimenterPresenter, taskPresenter_, testSetupPresenter);
+    av_speech_in_noise::switchToTestSetupView(experimenterPresenter,
+        taskPresenter_, testSetupPresenter, experimenterPresenterRefactored);
 }
 
 Presenter::Experimenter::Experimenter(
@@ -245,11 +249,6 @@ static void showNextTrialButton(ExperimenterView *view) {
 
 static void hideSubmissions(ExperimenterView *view) {
     view->hideContinueTestingDialog();
-}
-
-void Presenter::Experimenter::stop() {
-    av_speech_in_noise::hideSubmissions(view);
-    view->hide();
 }
 
 void Presenter::Experimenter::trialPlayed() {
@@ -276,14 +275,6 @@ void Presenter::Experimenter::setContinueTestingDialogMessage(
     const std::string &s) {
     view->setContinueTestingDialogMessage(s);
 }
-
-void Presenter::Experimenter::declineContinuingTesting() {}
-
-void Presenter::Experimenter::acceptContinuingTesting() {}
-
-void Presenter::Experimenter::playTrial() {}
-
-void Presenter::Experimenter::exitTest() {}
 
 void Presenter::Experimenter::display(std::string s) {
     view->display(std::move(s));

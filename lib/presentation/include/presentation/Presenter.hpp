@@ -37,18 +37,11 @@ class Presenter : public Model::EventListener,
                   public ParentPresenter,
                   public SomethingIDK {
   public:
-    class Experimenter : public ExperimenterInputView::EventListener {
+    class Experimenter {
       public:
         explicit Experimenter(ExperimenterView *, ExperimenterInputView * = {},
             ExperimenterOutputView * = {});
-        void exitTest() override;
-        void playTrial() override;
-        void declineContinuingTesting() override;
-        void acceptContinuingTesting() override;
         void becomeChild(Presenter *parent);
-        void show();
-        void start();
-        void stop();
         void trialPlayed();
         void trialComplete();
         void readyNextTrial();
