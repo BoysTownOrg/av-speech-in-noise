@@ -6,23 +6,23 @@
 #include <functional>
 
 namespace av_speech_in_noise {
-static void displayTrialNumber(Presenter::Experimenter &experimenterPresenter,
+static void displayTrialNumber(
     Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
     experimenterPresenterRefactored->display(
         "Trial " + std::to_string(model.trialNumber()));
 }
 
-static void displayTarget(
-    Presenter::Experimenter &experimenterPresenter, Model &model) {
-    experimenterPresenter.secondaryDisplay(model.targetFileName());
+static void displayTarget(Presenter::Experimenter &experimenterPresenter,
+    Model &model, ExperimenterPresenter *experimenterPresenterRefactored) {
+    experimenterPresenterRefactored->secondaryDisplay(model.targetFileName());
 }
 
 static void displayTrialInformation(
     Presenter::Experimenter &experimenterPresenter, Model &model,
     ExperimenterPresenter *experimenterPresenterRefactored) {
-    displayTrialNumber(
+    displayTrialNumber(model, experimenterPresenterRefactored);
+    displayTarget(
         experimenterPresenter, model, experimenterPresenterRefactored);
-    displayTarget(experimenterPresenter, model);
 }
 
 static void readyNextTrial(Presenter::Experimenter &experimenterPresenter,
