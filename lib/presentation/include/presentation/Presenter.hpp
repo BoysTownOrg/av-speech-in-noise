@@ -128,7 +128,7 @@ class ExperimenterResponder : public ExperimenterInputView::EventListener,
         model.restartAdaptiveTestWhilePreservingTargets();
         parent->readyNextTrialIfNeeded();
     }
-    void becomeChild(Presenter *p) { parent = p; }
+    void becomeChild(Presenter *p) override { parent = p; }
 
   private:
     Model &model;

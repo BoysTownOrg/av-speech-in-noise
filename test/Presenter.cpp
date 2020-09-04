@@ -1274,12 +1274,15 @@ class PresenterTests : public ::testing::Test {
     TestSetupResponderImpl testSetupResponderImpl{
         model, view, setupView, testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
+    ExperimenterResponder experimenterResponder{model, view};
+    ExperimenterPresenter experimenterPresenterRefactored{experimenterView};
     Presenter presenter{model, view, experimenter, &consonantScreenResponder,
         &consonantPresenterRefactored, &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenterRefactored, &freeResponseResponder,
         &freeResponsePresenter, &correctKeywordsResponder,
         &correctKeywordsPresenter, &passFailResponder, &passFailPresenter,
-        &testSetupResponderImpl, &testSetupPresenterRefactored};
+        &testSetupResponderImpl, &testSetupPresenterRefactored,
+        &experimenterResponder, &experimenterPresenterRefactored};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTest
         confirmingAdaptiveCoordinateResponseMeasureTest{
