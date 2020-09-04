@@ -12,27 +12,6 @@
 #include <string>
 
 namespace av_speech_in_noise {
-class Presenter;
-
-class ExperimenterResponder {
-  public:
-    class EventListener {
-      public:
-        virtual ~EventListener() = default;
-        virtual void notifyThatTrialHasStarted() = 0;
-    };
-    virtual ~ExperimenterResponder() = default;
-    virtual void subscribe(EventListener *) = 0;
-    virtual void becomeChild(Presenter *) = 0;
-};
-
-class ExperimenterPresenter
-    : public virtual ExperimenterResponder::EventListener,
-      public virtual PresenterSimple {
-  public:
-    virtual void notifyThatTrialHasCompleted() = 0;
-    virtual void notifyThatNextTrialIsReady() = 0;
-};
 
 class Presenter : public Model::EventListener,
                   public ParentPresenter,

@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_EXPERIMENTER_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_EXPERIMENTER_HPP_
 
+#include "PresenterSimple.hpp"
 #include <string>
 
 namespace av_speech_in_noise {
@@ -36,6 +37,27 @@ class ExperimenterOutputView {
 
 class ExperimenterView : public virtual ExperimenterInputView,
                          public virtual ExperimenterOutputView {};
+class Presenter;
+
+class ExperimenterResponder {
+  public:
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void notifyThatTrialHasStarted() = 0;
+    };
+    virtual ~ExperimenterResponder() = default;
+    virtual void subscribe(EventListener *) = 0;
+    virtual void becomeChild(Presenter *) = 0;
+};
+
+class ExperimenterPresenter
+    : public virtual ExperimenterResponder::EventListener,
+      public virtual PresenterSimple {
+  public:
+    virtual void notifyThatTrialHasCompleted() = 0;
+    virtual void notifyThatNextTrialIsReady() = 0;
+};
 }
 
 #endif
