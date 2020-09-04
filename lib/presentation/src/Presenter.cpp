@@ -85,7 +85,9 @@ Presenter::Presenter(Model &model, View &view,
     TaskResponder *correctKeywordsResponder,
     TaskPresenter *correctKeywordsPresenter, TaskResponder *passFailResponder,
     TaskPresenter *passFailPresenter, TestSetupResponder *testSetupResponder,
-    TestSetupPresenter *testSetupPresenter)
+    TestSetupPresenter *testSetupPresenter,
+    IExperimenterResponder *experimenterResponder,
+    IExperimenterPresenter *experimenterPresenterRefactored)
     : model{model}, view{view}, experimenterPresenter{experimenterPresenter},
       consonantPresenter{consonantPresenter},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
@@ -119,6 +121,10 @@ Presenter::Presenter(Model &model, View &view,
     if (testSetupResponder != nullptr) {
         testSetupResponder->becomeChild(this);
         testSetupResponder->subscribe(testSetupPresenter);
+    }
+    if (experimenterResponder != nullptr) {
+        experimenterResponder->becomeChild(this);
+        experimenterResponder->subscribe(experimenterPresenterRefactored);
     }
     view.populateAudioDeviceMenu(model.audioDevices());
 }

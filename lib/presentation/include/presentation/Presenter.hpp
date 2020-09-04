@@ -12,6 +12,23 @@
 #include <string>
 
 namespace av_speech_in_noise {
+class Presenter;
+
+class IExperimenterResponder {
+  public:
+    class EventListener {
+      public:
+        virtual ~EventListener() = default;
+        virtual void notifyThatTrialHasStarted() = 0;
+    };
+    virtual ~IExperimenterResponder() = default;
+    virtual void subscribe(EventListener *) = 0;
+    virtual void becomeChild(Presenter *) = 0;
+};
+
+class IExperimenterPresenter
+    : public virtual IExperimenterResponder::EventListener {};
+
 class Presenter : public Model::EventListener,
                   public ParentPresenter,
                   public SomethingIDK {
@@ -47,7 +64,8 @@ class Presenter : public Model::EventListener,
     Presenter(Model &, View &, Experimenter &, TaskResponder *, TaskPresenter *,
         TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
         TaskResponder *, TaskPresenter *, TaskResponder *, TaskPresenter *,
-        TestSetupResponder *, TestSetupPresenter *);
+        TestSetupResponder *, TestSetupPresenter *,
+        IExperimenterResponder * = {}, IExperimenterPresenter * = {});
     void trialComplete() override;
     void playTrial() override;
     void playNextTrialIfNeeded() override;
@@ -88,17 +106,6 @@ class Presenter : public Model::EventListener,
     PresenterSimple *testSetupPresenter;
 };
 
-class IExperimenterResponder {
-  public:
-    class EventListener {
-      public:
-        virtual ~EventListener() = default;
-        virtual void notifyThatTrialHasStarted() = 0;
-    };
-    virtual ~IExperimenterResponder() = default;
-    virtual void subscribe(EventListener *) = 0;
-};
-
 class ExperimenterResponder : public ExperimenterInputView::EventListener,
                               public IExperimenterResponder {
   public:
@@ -130,7 +137,7 @@ class ExperimenterResponder : public ExperimenterInputView::EventListener,
     Presenter *parent{};
 };
 
-class ExperimenterPresenter : public IExperimenterResponder::EventListener {
+class ExperimenterPresenter : public IExperimenterPresenter {
   public:
     explicit ExperimenterPresenter(ExperimenterOutputView &view) : view{view} {}
 
