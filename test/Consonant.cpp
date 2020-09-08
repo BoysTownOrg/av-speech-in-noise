@@ -239,7 +239,7 @@ void setTestComplete(ModelStub &model) { model.setTestComplete(); }
 
 auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
 
-class PresenterTests : public ::testing::Test {
+class ConsonantTests : public ::testing::Test {
   protected:
     ModelStub model;
     ConsonantViewStub consonantView;
@@ -288,172 +288,88 @@ class PresenterTests : public ::testing::Test {
     }
 };
 
-class RequestFailingModel : public Model {
-    std::string errorMessage{};
+#define CONSONANT_TEST(a) TEST_F(ConsonantTests, a)
 
-  public:
-    auto trialNumber() -> int override { return 0; }
-
-    auto targetFileName() -> std::string override { return {}; }
-
-    void setErrorMessage(std::string s) { errorMessage = std::move(s); }
-
-    void initialize(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initialize(const FixedLevelTestWithEachTargetNTimes &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithTargetReplacement(
-        const FixedLevelFixedTrialsTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelFixedTrialsTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithSilentIntervalTargets(const FixedLevelTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithAllTargets(const FixedLevelTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithAllTargetsAndEyeTracking(
-        const FixedLevelTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithSingleSpeaker(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithDelayedMasker(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithCyclicTargets(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithCyclicTargetsAndEyeTracking(
-        const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithEyeTracking(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void playTrial(const AudioSettings &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void submit(const coordinate_response_measure::Response &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void submit(const FreeResponse &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void submit(const CorrectKeywords &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void submit(const ConsonantResponse &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void playCalibration(const Calibration &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    auto testComplete() -> bool override { return {}; }
-    auto audioDevices() -> AudioDevices override { return {}; }
-    auto adaptiveTestResults() -> AdaptiveTestResults override { return {}; }
-    void subscribe(EventListener *) override {}
-    void submitCorrectResponse() override {}
-    void submitIncorrectResponse() override {}
-    void restartAdaptiveTestWhilePreservingTargets() override {}
-};
-
-#define PRESENTER_TEST(a) TEST_F(PresenterTests, a)
-
-PRESENTER_TEST(submittingConsonantDoesNotHideCursorWhenTestComplete) {
+CONSONANT_TEST(submittingConsonantDoesNotHideCursorWhenTestComplete) {
     assertCompleteTestDoesNotHideCursor(submittingConsonant);
 }
 
-PRESENTER_TEST(playingConsonantTrialHidesCursor) {
+CONSONANT_TEST(playingConsonantTrialHidesCursor) {
     run(playingConsonantTrial);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.cursorHidden());
 }
 
-PRESENTER_TEST(submittingConsonantTrialHidesCursor) {
+CONSONANT_TEST(submittingConsonantTrialHidesCursor) {
     run(submittingConsonant);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.cursorHidden());
 }
 
-PRESENTER_TEST(submittingConsonantPlaysTrial) {
+CONSONANT_TEST(submittingConsonantPlaysTrial) {
     assertPlaysTrial(submittingConsonant);
 }
 
-PRESENTER_TEST(playingConsonantTrialPlaysTrial) {
+CONSONANT_TEST(playingConsonantTrialPlaysTrial) {
     assertPlaysTrial(playingConsonantTrial);
 }
 
-PRESENTER_TEST(consonantResponsePassesConsonant) {
+CONSONANT_TEST(consonantResponsePassesConsonant) {
     consonantView.setConsonant("b");
     run(submittingConsonant);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL('b', model.consonantResponse().consonant);
 }
 
-PRESENTER_TEST(submittingConsonantDoesNotShowSetupViewWhenTestIncomplete) {
-    assertIncompleteTestDoesNotShowSetupView(submittingConsonant);
+class ExperimenterResponderStub : public ExperimenterResponder {
+  public:
+    void subscribe(EventListener *) override {}
+    void becomeChild(Presenter *) override {}
+    void showContinueTestingDialogWithResultsWhenComplete() override {}
+    void readyNextTrialIfNeeded() override {}
+    void playNextTrialIfNeeded() override { nextTrialPlayedIfNeeded_ = true; }
+    void playTrial() override {}
+    [[nodiscard]] auto nextTrialPlayedIfNeeded() const -> bool {
+        return nextTrialPlayedIfNeeded_;
+    }
+
+  private:
+    bool nextTrialPlayedIfNeeded_{};
+};
+
+CONSONANT_TEST(submittingConsonantDoesNotShowSetupViewWhenTestIncomplete) {
+    ExperimenterResponderStub experimenterResponder;
+    consonantScreenResponder.subscribe(&experimenterResponder);
+    consonantScreenResponder.notifyThatReadyButtonHasBeenClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        experimenterResponder.nextTrialPlayedIfNeeded());
 }
 
-PRESENTER_TEST(submittingConsonantHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(submittingConsonant);
-}
-
-PRESENTER_TEST(submittingConsonantDoesNotPlayTrialWhenTestComplete) {
+CONSONANT_TEST(submittingConsonantDoesNotPlayTrialWhenTestComplete) {
     assertCompleteTestDoesNotPlayTrial(submittingConsonant);
 }
 
-PRESENTER_TEST(
-    submittingConsonantMeasureDoesNotHideExperimenterViewWhenTestIncomplete) {
-    assertDoesNotHideExperimenterView(submittingConsonant);
-}
-
-PRESENTER_TEST(submittingConsonantHidesResponseButtons) {
+CONSONANT_TEST(submittingConsonantHidesResponseButtons) {
     assertResponseViewHidden(submittingConsonant);
 }
 
-PRESENTER_TEST(submittingConsonantHidesConsonantViewWhenTestComplete) {
+CONSONANT_TEST(submittingConsonantHidesConsonantViewWhenTestComplete) {
     run(confirmingFixedLevelConsonantTest);
     setTestComplete(model);
     run(submittingConsonant);
     assertHidden(consonantView);
 }
 
-PRESENTER_TEST(exitTestHidesConsonantView) {
+CONSONANT_TEST(exitTestHidesConsonantView) {
     run(confirmingFixedLevelConsonantTest);
     exitTest(experimenterView);
     assertHidden(consonantView);
 }
 
-PRESENTER_TEST(exitTestHidesConsonantResponseButtons) {
+CONSONANT_TEST(exitTestHidesConsonantResponseButtons) {
     run(confirmingFixedLevelConsonantTest);
     run(exitingTest);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(submittingConsonant.responseViewHidden());
 }
 
-PRESENTER_TEST(submittingConsonantResponseShowsTargetFileName) {
+CONSONANT_TEST(submittingConsonantResponseShowsTargetFileName) {
     assertShowsTargetFileName(submittingConsonant);
 }
 }
