@@ -38,7 +38,9 @@ class ConsonantViewStub : public ConsonantOutputView,
 
     [[nodiscard]] auto hidden() const -> bool { return hidden_; }
 
-    void playTrial() { listener_->notifyThatReadyButtonHasBeenClicked(); }
+    void notifyThatReadyButtonHasBeenClicked() {
+        listener_->notifyThatReadyButtonHasBeenClicked();
+    }
 
     void subscribe(EventListener *e) override { listener_ = e; }
 
@@ -143,7 +145,7 @@ class PlayingConsonantTrial : public PlayingTrial {
   public:
     explicit PlayingConsonantTrial(ConsonantViewStub *view) : view{view} {}
 
-    void run() override { view->playTrial(); }
+    void run() override { view->notifyThatReadyButtonHasBeenClicked(); }
 
     auto nextTrialButtonHidden() -> bool override {
         return view->readyButtonHidden();
@@ -158,6 +160,26 @@ void setTestComplete(ModelStub &model) { model.setTestComplete(); }
 
 auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
 
+class ExperimenterResponderStub : public ExperimenterResponder {
+  public:
+    void subscribe(EventListener *) override {}
+    void becomeChild(Presenter *) override {}
+    void showContinueTestingDialogWithResultsWhenComplete() override {}
+    void readyNextTrialIfNeeded() override {}
+    void playNextTrialIfNeeded() override { nextTrialPlayedIfNeeded_ = true; }
+    void playTrial() override { nextTrialPlayed_ = true; }
+    [[nodiscard]] auto nextTrialPlayedIfNeeded() const -> bool {
+        return nextTrialPlayedIfNeeded_;
+    }
+    [[nodiscard]] auto nextTrialPlayed() const -> bool {
+        return nextTrialPlayed_;
+    }
+
+  private:
+    bool nextTrialPlayedIfNeeded_{};
+    bool nextTrialPlayed_{};
+};
+
 class ConsonantTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -166,6 +188,12 @@ class ConsonantTests : public ::testing::Test {
     ConsonantPresenter consonantPresenterRefactored{model, consonantView};
     PlayingConsonantTrial playingConsonantTrial{&consonantView};
     SubmittingConsonant submittingConsonant{&consonantView};
+    ExperimenterResponderStub experimenterResponder;
+
+    ConsonantTests() {
+        consonantScreenResponder.subscribe(&consonantPresenterRefactored);
+        consonantScreenResponder.subscribe(&experimenterResponder);
+    }
 
     void assertPlaysTrial(UseCase &useCase) {
         run(useCase);
@@ -201,12 +229,9 @@ CONSONANT_TEST(submittingConsonantTrialHidesCursor) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.cursorHidden());
 }
 
-CONSONANT_TEST(submittingConsonantPlaysTrial) {
-    assertPlaysTrial(submittingConsonant);
-}
-
-CONSONANT_TEST(playingConsonantTrialPlaysTrial) {
-    assertPlaysTrial(playingConsonantTrial);
+CONSONANT_TEST(clickingReadyPlaysNextTrial) {
+    consonantScreenResponder.notifyThatReadyButtonHasBeenClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterResponder.nextTrialPlayed());
 }
 
 CONSONANT_TEST(consonantResponsePassesConsonant) {
@@ -215,25 +240,7 @@ CONSONANT_TEST(consonantResponsePassesConsonant) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL('b', model.consonantResponse().consonant);
 }
 
-class ExperimenterResponderStub : public ExperimenterResponder {
-  public:
-    void subscribe(EventListener *) override {}
-    void becomeChild(Presenter *) override {}
-    void showContinueTestingDialogWithResultsWhenComplete() override {}
-    void readyNextTrialIfNeeded() override {}
-    void playNextTrialIfNeeded() override { nextTrialPlayedIfNeeded_ = true; }
-    void playTrial() override {}
-    [[nodiscard]] auto nextTrialPlayedIfNeeded() const -> bool {
-        return nextTrialPlayedIfNeeded_;
-    }
-
-  private:
-    bool nextTrialPlayedIfNeeded_{};
-};
-
 CONSONANT_TEST(submittingConsonantDoesNotShowSetupViewWhenTestIncomplete) {
-    ExperimenterResponderStub experimenterResponder;
-    consonantScreenResponder.subscribe(&experimenterResponder);
     consonantScreenResponder.notifyThatResponseButtonHasBeenClicked();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponder.nextTrialPlayedIfNeeded());
