@@ -368,6 +368,11 @@ CONSONANT_TEST(submittingConsonantHidesResponseButtons) {
         taskResponder.notifiedThatUserIsDoneResponding());
 }
 
+CONSONANT_TEST(presenterHidesResponseButtonsWhenUserIsDoneResponding) {
+    consonantPresenterRefactored.notifyThatUserIsDoneResponding();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.responseButtonsHidden());
+}
+
 CONSONANT_TEST(submittingConsonantHidesConsonantViewWhenTestComplete) {
     run(confirmingFixedLevelConsonantTest);
     setTestComplete(model);
