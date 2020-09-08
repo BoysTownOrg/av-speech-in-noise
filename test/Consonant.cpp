@@ -337,7 +337,7 @@ class ExperimenterResponderStub : public ExperimenterResponder {
 CONSONANT_TEST(submittingConsonantDoesNotShowSetupViewWhenTestIncomplete) {
     ExperimenterResponderStub experimenterResponder;
     consonantScreenResponder.subscribe(&experimenterResponder);
-    consonantScreenResponder.notifyThatReadyButtonHasBeenClicked();
+    consonantScreenResponder.notifyThatResponseButtonHasBeenClicked();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponder.nextTrialPlayedIfNeeded());
 }
@@ -346,8 +346,26 @@ CONSONANT_TEST(submittingConsonantDoesNotPlayTrialWhenTestComplete) {
     assertCompleteTestDoesNotPlayTrial(submittingConsonant);
 }
 
+class TaskResponderListenerStub : public TaskResponder::EventListener {
+  public:
+    void notifyThatTaskHasStarted() override {}
+    void notifyThatUserIsDoneResponding() override {
+        notifiedThatUserIsDoneResponding_ = true;
+    }
+    [[nodiscard]] auto notifiedThatUserIsDoneResponding() const -> bool {
+        return notifiedThatUserIsDoneResponding_;
+    }
+
+  private:
+    bool notifiedThatUserIsDoneResponding_{};
+};
+
 CONSONANT_TEST(submittingConsonantHidesResponseButtons) {
-    assertResponseViewHidden(submittingConsonant);
+    TaskResponderListenerStub taskResponder;
+    consonantScreenResponder.subscribe(&taskResponder);
+    consonantScreenResponder.notifyThatResponseButtonHasBeenClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        taskResponder.notifiedThatUserIsDoneResponding());
 }
 
 CONSONANT_TEST(submittingConsonantHidesConsonantViewWhenTestComplete) {
