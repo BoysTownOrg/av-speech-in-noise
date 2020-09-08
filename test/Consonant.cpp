@@ -168,15 +168,15 @@ class ConsonantTests : public ::testing::Test {
   protected:
     ModelStub model;
     ConsonantViewStub consonantView;
-    ConsonantResponder consonantScreenResponder{model, consonantView};
-    ConsonantPresenter consonantPresenterRefactored{model, consonantView};
+    ConsonantResponder responder{model, consonantView};
+    ConsonantPresenter presenter{model, consonantView};
     SubmittingConsonant submittingConsonant{&consonantView};
     ExperimenterResponderStub experimenterResponder;
     TaskResponderListenerStub taskResponder;
 
     ConsonantTests() {
-        consonantScreenResponder.subscribe(&experimenterResponder);
-        consonantScreenResponder.subscribe(&taskResponder);
+        responder.subscribe(&experimenterResponder);
+        responder.subscribe(&taskResponder);
     }
 
     void assertCompleteTestDoesNotPlayTrial(UseCase &useCase) {
@@ -202,17 +202,17 @@ CONSONANT_TEST(
 }
 
 CONSONANT_TEST(presenterHidesCursorWhenTaskStarts) {
-    consonantPresenterRefactored.notifyThatTaskHasStarted();
+    presenter.notifyThatTaskHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(consonantView);
 }
 
 CONSONANT_TEST(submittingConsonantTrialHidesCursor) {
-    consonantPresenterRefactored.notifyThatUserIsDoneResponding();
+    presenter.notifyThatUserIsDoneResponding();
     AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(consonantView);
 }
 
 CONSONANT_TEST(clickingReadyPlaysNextTrial) {
-    consonantScreenResponder.notifyThatReadyButtonHasBeenClicked();
+    responder.notifyThatReadyButtonHasBeenClicked();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterResponder.nextTrialPlayed());
 }
 
@@ -223,7 +223,7 @@ CONSONANT_TEST(consonantResponsePassesConsonant) {
 }
 
 CONSONANT_TEST(submittingConsonantDoesNotShowSetupViewWhenTestIncomplete) {
-    consonantScreenResponder.notifyThatResponseButtonHasBeenClicked();
+    responder.notifyThatResponseButtonHasBeenClicked();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponder.nextTrialPlayedIfNeeded());
 }
@@ -234,8 +234,8 @@ CONSONANT_TEST(submittingConsonantDoesNotPlayTrialWhenTestComplete) {
 
 CONSONANT_TEST(submittingConsonantHidesResponseButtons) {
     TaskResponderListenerStub taskResponder;
-    consonantScreenResponder.subscribe(&taskResponder);
-    consonantScreenResponder.notifyThatResponseButtonHasBeenClicked();
+    responder.subscribe(&taskResponder);
+    responder.notifyThatResponseButtonHasBeenClicked();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskResponder.notifiedThatUserIsDoneResponding());
 }
@@ -243,23 +243,23 @@ CONSONANT_TEST(submittingConsonantHidesResponseButtons) {
 CONSONANT_TEST(
     responderNotifiesThatTaskHasStartedWhenReadyButtonHasBeenClicked) {
     TaskResponderListenerStub taskResponder;
-    consonantScreenResponder.subscribe(&taskResponder);
-    consonantScreenResponder.notifyThatReadyButtonHasBeenClicked();
+    responder.subscribe(&taskResponder);
+    responder.notifyThatReadyButtonHasBeenClicked();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskResponder.notifiedThatTaskHasStarted());
 }
 
 CONSONANT_TEST(presenterHidesResponseButtonsWhenUserIsDoneResponding) {
-    consonantPresenterRefactored.notifyThatUserIsDoneResponding();
+    presenter.notifyThatUserIsDoneResponding();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(consonantView);
 }
 
 CONSONANT_TEST(submittingConsonantHidesConsonantViewWhenTestComplete) {
-    consonantPresenterRefactored.stop();
+    presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.hidden());
 }
 
 CONSONANT_TEST(exitTestHidesConsonantResponseButtons) {
-    consonantPresenterRefactored.stop();
+    presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(consonantView);
 }
 }
