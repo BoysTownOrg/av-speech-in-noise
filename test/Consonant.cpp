@@ -120,23 +120,6 @@ class PlayingTrial : public virtual UseCase {
     virtual auto nextTrialButtonShown() -> bool = 0;
 };
 
-class PlayingConsonantTrial : public PlayingTrial {
-    ConsonantViewStub *view;
-
-  public:
-    explicit PlayingConsonantTrial(ConsonantViewStub *view) : view{view} {}
-
-    void run() override { view->notifyThatReadyButtonHasBeenClicked(); }
-
-    auto nextTrialButtonHidden() -> bool override {
-        return view->readyButtonHidden();
-    }
-
-    auto nextTrialButtonShown() -> bool override {
-        return view->readyButtonShown();
-    }
-};
-
 void setTestComplete(ModelStub &model) { model.setTestComplete(); }
 
 auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
@@ -187,7 +170,6 @@ class ConsonantTests : public ::testing::Test {
     ConsonantViewStub consonantView;
     ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenterRefactored{model, consonantView};
-    PlayingConsonantTrial playingConsonantTrial{&consonantView};
     SubmittingConsonant submittingConsonant{&consonantView};
     ExperimenterResponderStub experimenterResponder;
     TaskResponderListenerStub taskResponder;
@@ -209,6 +191,9 @@ class ConsonantTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(a.responseButtonsHidden())
 
+#define AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(a)                             \
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(a.cursorHidden())
+
 CONSONANT_TEST(
     presenterDoesNotHideCursorAfterUserIsDoneRespondingWhenTestIsComplete) {
     setTestComplete(model);
@@ -218,12 +203,12 @@ CONSONANT_TEST(
 
 CONSONANT_TEST(presenterHidesCursorWhenTaskStarts) {
     consonantPresenterRefactored.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.cursorHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(consonantView);
 }
 
 CONSONANT_TEST(submittingConsonantTrialHidesCursor) {
     consonantPresenterRefactored.notifyThatUserIsDoneResponding();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.cursorHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(consonantView);
 }
 
 CONSONANT_TEST(clickingReadyPlaysNextTrial) {
