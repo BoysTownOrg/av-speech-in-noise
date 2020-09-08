@@ -194,21 +194,21 @@ class ConsonantTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(a)                             \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(a.cursorHidden())
 
-CONSONANT_TEST(
-    presenterDoesNotHideCursorAfterUserIsDoneRespondingWhenTestIsComplete) {
-    setTestComplete(model);
-    run(submittingConsonant);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(consonantView.cursorHidden());
-}
-
 CONSONANT_TEST(presenterHidesCursorWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(consonantView);
 }
 
-CONSONANT_TEST(submittingConsonantTrialHidesCursor) {
+CONSONANT_TEST(presenterHidesCursorAfterUserIsDoneResponding) {
     presenter.notifyThatUserIsDoneResponding();
     AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(consonantView);
+}
+
+CONSONANT_TEST(
+    presenterDoesNotHideCursorAfterUserIsDoneRespondingWhenTestIsComplete) {
+    setTestComplete(model);
+    run(submittingConsonant);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(consonantView.cursorHidden());
 }
 
 CONSONANT_TEST(clickingReadyPlaysNextTrial) {
