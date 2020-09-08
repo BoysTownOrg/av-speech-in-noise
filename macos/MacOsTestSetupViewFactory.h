@@ -9,8 +9,7 @@ namespace av_speech_in_noise {
 class MacOsTestSetupViewFactory {
   public:
     virtual ~MacOsTestSetupViewFactory() = default;
-    virtual auto make(NSViewController *)
-        -> std::unique_ptr<View::TestSetup> = 0;
+    virtual auto make(NSViewController *) -> std::unique_ptr<TestSetupView> = 0;
 };
 }
 

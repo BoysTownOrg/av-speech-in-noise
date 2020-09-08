@@ -370,18 +370,38 @@ void main(
     CocoaConsonantView consonantView{NSMakeRect(
         subjectScreenOrigin.x + subjectScreenWidth / 4, subjectScreenOrigin.y,
         subjectScreenWidth / 2, subjectScreenSize.height / 2)};
-    Presenter::Consonant consonant{&consonantView};
     CocoaCoordinateResponseMeasureView coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
-    Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
-        &coordinateResponseMeasureView};
-    Presenter::TestSetup testSetupPresenter{testSetupView.get()};
-    Presenter::Experimenter experimenterPresenter{&experimenterView};
     TestSettingsInterpreterImpl testSettingsInterpreter;
-    Presenter presenter{model, view, testSetupPresenter,
-        coordinateResponseMeasure, consonant, experimenterPresenter,
-        testSettingsInterpreter, textFileReader};
+    ConsonantResponder consonantScreenResponder{model, consonantView};
+    ConsonantPresenter consonantPresenter{model, consonantView};
+    FreeResponseResponder freeResponseResponder{model, experimenterView};
+    FreeResponsePresenter freeResponsePresenter{
+        experimenterView, experimenterView};
+    CorrectKeywordsResponder correctKeywordsResponder{
+        model, view, experimenterView};
+    CorrectKeywordsPresenter correctKeywordsPresenter{
+        experimenterView, experimenterView};
+    PassFailResponder passFailResponder{model, experimenterView};
+    PassFailPresenter passFailPresenter{experimenterView, experimenterView};
+    CoordinateResponseMeasureResponder coordinateResponseMeasureResponder{
+        model, coordinateResponseMeasureView};
+    CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
+        coordinateResponseMeasureView};
+    TestSetupResponderImpl testSetupResponderImpl{model, view,
+        *(testSetupView.get()), testSettingsInterpreter, textFileReader};
+    TestSetupPresenterImpl testSetupPresenterRefactored{*(testSetupView.get())};
+    ExperimenterResponderImpl experimenterResponder{
+        model, view, experimenterView};
+    ExperimenterPresenterImpl experimenterPresenter{experimenterView};
+    Presenter presenter{model, view, &consonantScreenResponder,
+        &consonantPresenter, &coordinateResponseMeasureResponder,
+        &coordinateResponseMeasurePresenter, &freeResponseResponder,
+        &freeResponsePresenter, &correctKeywordsResponder,
+        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter,
+        &testSetupResponderImpl, &testSetupPresenterRefactored,
+        &experimenterResponder, &experimenterPresenter};
     presenter.run();
 }
 }

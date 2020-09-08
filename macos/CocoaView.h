@@ -2,6 +2,13 @@
 #define MACOS_MAIN_COCOAVIEW_H_
 
 #include "MacOsTestSetupViewFactory.h"
+#include <presentation/Consonant.hpp>
+#include <presentation/CoordinateResponseMeasure.hpp>
+#include <presentation/FreeResponse.hpp>
+#include <presentation/PassFail.hpp>
+#include <presentation/CorrectKeywords.hpp>
+#include <presentation/TestSetupImpl.hpp>
+#include <presentation/ExperimenterImpl.hpp>
 #include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>
 #include <unordered_map>
@@ -10,12 +17,22 @@
 @class CoordinateResponseMeasureViewActions;
 @class ConsonantViewActions;
 @class ExperimenterViewActions;
+@class FreeResponseViewActions;
 
 namespace av_speech_in_noise {
-class CocoaExperimenterView : public View::Experimenter {
+class CocoaExperimenterView : public ExperimenterView,
+                              public FreeResponseInputView,
+                              public FreeResponseOutputView,
+                              public CorrectKeywordsInputView,
+                              public CorrectKeywordsOutputView,
+                              public PassFailInputView,
+                              public PassFailOutputView {
   public:
     explicit CocoaExperimenterView(NSViewController *);
-    void subscribe(EventListener *) override;
+    void subscribe(ExperimenterView::EventListener *) override;
+    void subscribe(FreeResponseInputView::EventListener *) override;
+    void subscribe(CorrectKeywordsInputView::EventListener *) override;
+    void subscribe(PassFailInputView::EventListener *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;
     void show() override;
@@ -61,10 +78,14 @@ class CocoaExperimenterView : public View::Experimenter {
     NSButton *exitTestButton;
     NSButton *nextTrialButton;
     ExperimenterViewActions *actions;
-    EventListener *listener_{};
+    FreeResponseViewActions *freeResponseActions;
+    ExperimenterView::EventListener *listener_{};
+    FreeResponseInputView::EventListener *freeResponseListener{};
+    CorrectKeywordsInputView::EventListener *correctKeywordsListener{};
+    PassFailInputView::EventListener *passFailListener{};
 };
 
-class CocoaTestSetupView : public View::TestSetup {
+class CocoaTestSetupView : public TestSetupView {
   public:
     explicit CocoaTestSetupView(NSViewController *);
     void show() override;
@@ -98,13 +119,13 @@ class CocoaTestSetupView : public View::TestSetup {
 
 class CocoaTestSetupViewFactory : public MacOsTestSetupViewFactory {
   public:
-    auto make(NSViewController *c)
-        -> std::unique_ptr<View::TestSetup> override {
+    auto make(NSViewController *c) -> std::unique_ptr<TestSetupView> override {
         return std::make_unique<CocoaTestSetupView>(c);
     }
 };
 
-class CocoaConsonantView : public View::Consonant {
+class CocoaConsonantView : public ConsonantOutputView,
+                           public ConsonantInputView {
   public:
     explicit CocoaConsonantView(NSRect);
     void subscribe(EventListener *) override;
@@ -130,7 +151,8 @@ class CocoaConsonantView : public View::Consonant {
 };
 
 class CocoaCoordinateResponseMeasureView
-    : public View::CoordinateResponseMeasure {
+    : public CoordinateResponseMeasureInputView,
+      public CoordinateResponseMeasureOutputView {
   public:
     CocoaCoordinateResponseMeasureView(NSRect);
     auto numberResponse() -> std::string override;

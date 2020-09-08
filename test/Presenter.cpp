@@ -1,5 +1,12 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
+#include <presentation/Consonant.hpp>
+#include <presentation/CoordinateResponseMeasure.hpp>
+#include <presentation/FreeResponse.hpp>
+#include <presentation/PassFail.hpp>
+#include <presentation/CorrectKeywords.hpp>
+#include <presentation/TestSetupImpl.hpp>
+#include <presentation/ExperimenterImpl.hpp>
 #include <presentation/Presenter.hpp>
 #include <av-speech-in-noise/name.hpp>
 #include <gtest/gtest.h>
@@ -20,7 +27,8 @@ template <typename T> class Collection {
     std::vector<T> items{};
 };
 
-class ConsonantViewStub : public View::Consonant {
+class ConsonantViewStub : public ConsonantOutputView,
+                          public ConsonantInputView {
   public:
     void show() override { shown_ = true; }
 
@@ -83,7 +91,8 @@ class ConsonantViewStub : public View::Consonant {
 };
 
 class CoordinateResponseMeasureViewStub
-    : public View::CoordinateResponseMeasure {
+    : public CoordinateResponseMeasureInputView,
+      public CoordinateResponseMeasureOutputView {
   public:
     void show() override { shown_ = true; }
 
@@ -158,7 +167,7 @@ class CoordinateResponseMeasureViewStub
     bool nextTrialButtonShown_{};
 };
 
-class TestSetupViewStub : public View::TestSetup {
+class TestSetupViewStub : public TestSetupView {
   public:
     auto testSettingsFile() -> std::string override {
         return testSettingsFile_;
@@ -236,7 +245,13 @@ class TestSetupViewStub : public View::TestSetup {
     bool hidden_{};
 };
 
-class ExperimenterViewStub : public View::Experimenter {
+class ExperimenterViewStub : public ExperimenterView,
+                             public FreeResponseInputView,
+                             public FreeResponseOutputView,
+                             public CorrectKeywordsInputView,
+                             public CorrectKeywordsOutputView,
+                             public PassFailInputView,
+                             public PassFailOutputView {
   public:
     void declineContinuingTesting() { listener_->declineContinuingTesting(); }
 
@@ -265,8 +280,6 @@ class ExperimenterViewStub : public View::Experimenter {
     [[nodiscard]] auto continueTestingDialogHidden() const -> bool {
         return continueTestingDialogHidden_;
     }
-
-    void submitFailedTrial() { listener_->submitFailedTrial(); }
 
     void hideFreeResponseSubmission() override {
         responseSubmissionHidden_ = true;
@@ -324,17 +337,41 @@ class ExperimenterViewStub : public View::Experimenter {
 
     [[nodiscard]] auto hidden() const { return hidden_; }
 
-    void subscribe(EventListener *e) override { listener_ = e; }
+    void subscribe(ExperimenterView::EventListener *e) override {
+        listener_ = e;
+    }
+
+    void subscribe(FreeResponseInputView::EventListener *e) override {
+        freeResponseListener = e;
+    }
+
+    void subscribe(CorrectKeywordsInputView::EventListener *e) override {
+        correctKeywordsListener = e;
+    }
+
+    void subscribe(PassFailInputView::EventListener *e) override {
+        passFailListener = e;
+    }
 
     void setResponse(std::string s) { response_ = std::move(s); }
 
     auto freeResponse() -> std::string override { return response_; }
 
-    void submitPassedTrial() { listener_->submitPassedTrial(); }
+    void submitPassedTrial() {
+        passFailListener->notifyThatCorrectButtonHasBeenClicked();
+    }
 
-    void submitFreeResponse() { listener_->submitFreeResponse(); }
+    void submitFailedTrial() {
+        passFailListener->notifyThatIncorrectButtonHasBeenClicked();
+    }
 
-    void submitCorrectKeywords() { listener_->submitCorrectKeywords(); }
+    void submitFreeResponse() {
+        freeResponseListener->notifyThatSubmitButtonHasBeenClicked();
+    }
+
+    void submitCorrectKeywords() {
+        correctKeywordsListener->notifyThatSubmitButtonHasBeenClicked();
+    }
 
     void exitTest() { listener_->exitTest(); }
 
@@ -392,7 +429,10 @@ class ExperimenterViewStub : public View::Experimenter {
     std::string continueTestingDialogMessage_;
     std::string response_;
     std::string correctKeywords_{"0"};
-    EventListener *listener_{};
+    ExperimenterView::EventListener *listener_{};
+    FreeResponseInputView::EventListener *freeResponseListener{};
+    CorrectKeywordsInputView::EventListener *correctKeywordsListener{};
+    PassFailInputView::EventListener *passFailListener{};
     bool freeResponseCleared_{};
     bool exitTestButtonHidden_{};
     bool exitTestButtonShown_{};
@@ -1099,17 +1139,20 @@ class PresenterConstructionTests : public ::testing::Test {
     ConsonantViewStub consonantView;
     ExperimenterViewStub experimenterView;
     ViewStub view;
-    Presenter::TestSetup testSetup{&setupView};
-    Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
-        &coordinateResponseMeasureView};
-    Presenter::Consonant consonant{&consonantView};
-    Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
+    TestSetupResponderImpl testSetupResponderImpl{
+        model, view, setupView, testSettingsInterpreter, textFileReader};
+    TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
+    ExperimenterResponderImpl experimenterResponder{
+        model, view, experimenterView};
+    ExperimenterPresenterImpl experimenterPresenterRefactored{experimenterView};
 
     auto construct() -> Presenter {
-        return {model, view, testSetup, coordinateResponseMeasure, consonant,
-            experimenter, testSettingsInterpreter, textFileReader};
+        return {model, view, nullptr, nullptr, nullptr, nullptr, nullptr,
+            nullptr, nullptr, nullptr, nullptr, nullptr,
+            &testSetupResponderImpl, &testSetupPresenterRefactored,
+            &experimenterResponder, &experimenterPresenterRefactored};
     }
 };
 
@@ -1211,16 +1254,38 @@ class PresenterTests : public ::testing::Test {
     CoordinateResponseMeasureViewStub coordinateResponseMeasureView;
     ConsonantViewStub consonantView;
     ExperimenterViewStub experimenterView;
-    Presenter::TestSetup testSetup{&setupView};
-    Presenter::Experimenter experimenter{&experimenterView};
-    Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
-        &coordinateResponseMeasureView};
-    Presenter::Consonant consonant{&consonantView};
+    ConsonantResponder consonantScreenResponder{model, consonantView};
+    ConsonantPresenter consonantPresenterRefactored{model, consonantView};
+    FreeResponseResponder freeResponseResponder{model, experimenterView};
+    FreeResponsePresenter freeResponsePresenter{
+        experimenterView, experimenterView};
+    CorrectKeywordsResponder correctKeywordsResponder{
+        model, view, experimenterView};
+    CorrectKeywordsPresenter correctKeywordsPresenter{
+        experimenterView, experimenterView};
+    PassFailResponder passFailResponder{model, experimenterView};
+    PassFailPresenter passFailPresenter{experimenterView, experimenterView};
+    CoordinateResponseMeasureResponder coordinateResponseMeasureResponder{
+        model, coordinateResponseMeasureView};
+    CoordinateResponseMeasurePresenter
+        coordinateResponseMeasurePresenterRefactored{
+            coordinateResponseMeasureView};
     Calibration interpretedCalibration;
     TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
     TextFileReaderStub textFileReader;
-    Presenter presenter{model, view, testSetup, coordinateResponseMeasure,
-        consonant, experimenter, testSettingsInterpreter, textFileReader};
+    TestSetupResponderImpl testSetupResponderImpl{
+        model, view, setupView, testSettingsInterpreter, textFileReader};
+    TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
+    ExperimenterResponderImpl experimenterResponder{
+        model, view, experimenterView};
+    ExperimenterPresenterImpl experimenterPresenterRefactored{experimenterView};
+    Presenter presenter{model, view, &consonantScreenResponder,
+        &consonantPresenterRefactored, &coordinateResponseMeasureResponder,
+        &coordinateResponseMeasurePresenterRefactored, &freeResponseResponder,
+        &freeResponsePresenter, &correctKeywordsResponder,
+        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter,
+        &testSetupResponderImpl, &testSetupPresenterRefactored,
+        &experimenterResponder, &experimenterPresenterRefactored};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTest
         confirmingAdaptiveCoordinateResponseMeasureTest{
@@ -1634,12 +1699,9 @@ class PresenterFailureTests : public ::testing::Test {
     CoordinateResponseMeasureViewStub coordinateResponseMeasureView;
     ConsonantViewStub consonantView;
     ExperimenterViewStub experimenterView;
-    Presenter::TestSetup testSetup{&setupView};
-    Presenter::CoordinateResponseMeasure coordinateResponseMeasure{
-        &coordinateResponseMeasureView};
-    Presenter::Consonant consonant{&consonantView};
-    Presenter::Experimenter experimenter{&experimenterView};
     TestSettingsInterpreterStub testSettingsInterpreter;
+    TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
+    ExperimenterPresenterImpl experimenterPresenterRefactored{experimenterView};
     TextFileReaderStub textFileReader;
 
     void useFailingModel(std::string s = {}) {
@@ -1649,8 +1711,14 @@ class PresenterFailureTests : public ::testing::Test {
     }
 
     void confirmTestSetup() {
-        Presenter presenter{*model, view, testSetup, coordinateResponseMeasure,
-            consonant, experimenter, testSettingsInterpreter, textFileReader};
+        TestSetupResponderImpl testSetupResponderImpl{
+            *model, view, setupView, testSettingsInterpreter, textFileReader};
+        ExperimenterResponderImpl experimenterResponder{
+            *model, view, experimenterView};
+        Presenter presenter{*model, view, nullptr, nullptr, nullptr, nullptr,
+            nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+            &testSetupResponderImpl, &testSetupPresenterRefactored,
+            &experimenterResponder, &experimenterPresenterRefactored};
         setupView.confirmTestSetup();
     }
 
@@ -2583,23 +2651,27 @@ PRESENTER_TEST(submittingConsonantHidesResponseButtons) {
 
 PRESENTER_TEST(
     submittingCoordinateResponseHidesCoordinateViewWhenTestComplete) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     setTestComplete(model);
     run(submittingCoordinateResponseMeasure);
     assertHidden(coordinateResponseMeasureView);
 }
 
 PRESENTER_TEST(submittingConsonantHidesConsonantViewWhenTestComplete) {
+    run(confirmingFixedLevelConsonantTest);
     setTestComplete(model);
     run(submittingConsonant);
     assertHidden(consonantView);
 }
 
 PRESENTER_TEST(exitTestHidesCoordinateView) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     exitTest(experimenterView);
     assertHidden(coordinateResponseMeasureView);
 }
 
 PRESENTER_TEST(exitTestHidesConsonantView) {
+    run(confirmingFixedLevelConsonantTest);
     exitTest(experimenterView);
     assertHidden(consonantView);
 }
@@ -2612,10 +2684,16 @@ PRESENTER_TEST(exitTestHidesExperimenterView) {
     assertHidesExperimenterView(exitingTest);
 }
 
-PRESENTER_TEST(exitTestHidesResponseButtons) {
+PRESENTER_TEST(exitTestHidesCoordinateResponseMeasureResponseButtons) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     run(exitingTest);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         submittingCoordinateResponseMeasure.responseViewHidden());
+}
+
+PRESENTER_TEST(exitTestHidesConsonantResponseButtons) {
+    run(confirmingFixedLevelConsonantTest);
+    run(exitingTest);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(submittingConsonant.responseViewHidden());
 }
 
