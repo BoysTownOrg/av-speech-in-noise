@@ -90,70 +90,6 @@ class ConsonantViewStub : public ConsonantOutputView,
     bool cursorHidden_{};
 };
 
-class TestSettingsInterpreterStub : public TestSettingsInterpreter {
-  public:
-    explicit TestSettingsInterpreterStub(const Calibration &calibration_ = {})
-        : calibration_{calibration_} {}
-
-    auto calibration(const std::string &t) -> Calibration override {
-        text_ = t;
-        return calibration_;
-    }
-
-    void initialize(Model &m, const std::string &t, const TestIdentity &id,
-        SNR snr) override {
-        startingSnr_ = snr.dB;
-        text_ = t;
-        identity_ = id;
-        if (initializeAnyTestOnApply_)
-            m.initialize(AdaptiveTest{});
-    }
-
-    [[nodiscard]] auto text() const -> std::string { return text_; }
-
-    [[nodiscard]] auto identity() const -> TestIdentity { return identity_; }
-
-    [[nodiscard]] auto textForMethodQuery() const -> std::string {
-        return textForMethodQuery_;
-    }
-
-    [[nodiscard]] auto startingSnr() const -> int { return startingSnr_; }
-
-    void setMethod(Method m) { method_ = m; }
-
-    auto method(const std::string &t) -> Method override {
-        textForMethodQuery_ = t;
-        return method_;
-    }
-
-    void initializeAnyTestOnApply() { initializeAnyTestOnApply_ = true; }
-
-  private:
-    std::string text_;
-    std::string textForMethodQuery_;
-    TestIdentity identity_{};
-    int startingSnr_{};
-    const Calibration &calibration_;
-    Method method_{};
-    bool initializeAnyTestOnApply_{};
-};
-
-class TextFileReaderStub : public TextFileReader {
-  public:
-    [[nodiscard]] auto filePath() const -> std::string { return filePath_; }
-
-    auto read(const LocalUrl &s) -> std::string override {
-        filePath_ = s.path;
-        return read_;
-    }
-
-    void setRead(std::string s) { read_ = std::move(s); }
-
-  private:
-    std::string filePath_;
-    std::string read_;
-};
-
 class UseCase {
   public:
     virtual ~UseCase() = default;
@@ -166,15 +102,6 @@ class ConditionUseCase : public virtual UseCase {
   public:
     virtual auto condition(ModelStub &) -> Condition = 0;
 };
-
-class LevelUseCase : public virtual UseCase {
-  public:
-    virtual auto fullScaleLevel(ModelStub &) -> int = 0;
-};
-
-void setMethod(TestSettingsInterpreterStub &interpeter, Method m) {
-    interpeter.setMethod(m);
-}
 
 class TrialSubmission : public virtual UseCase {
   public:
@@ -227,14 +154,6 @@ class PlayingConsonantTrial : public PlayingTrial {
     }
 };
 
-auto shown(ConsonantViewStub &view) -> bool { return view.shown(); }
-
-void completeTrial(ModelStub &model) { model.completeTrial(); }
-
-auto calibration(ModelStub &model) -> const Calibration & {
-    return model.calibration();
-}
-
 void setTestComplete(ModelStub &model) { model.setTestComplete(); }
 
 auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
@@ -245,9 +164,6 @@ class ConsonantTests : public ::testing::Test {
     ConsonantViewStub consonantView;
     ConsonantResponder consonantScreenResponder{model, consonantView};
     ConsonantPresenter consonantPresenterRefactored{model, consonantView};
-    Calibration interpretedCalibration;
-    TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
-    TextFileReaderStub textFileReader;
     PlayingConsonantTrial playingConsonantTrial{&consonantView};
     SubmittingConsonant submittingConsonant{&consonantView};
 
@@ -260,25 +176,6 @@ class ConsonantTests : public ::testing::Test {
         setTestComplete(model);
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_FALSE(trialPlayed(model));
-    }
-
-    void assertPassesTestSettingsTextToTestSettingsInterpreter(
-        UseCase &useCase) {
-        textFileReader.setRead("a");
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"a"}, testSettingsInterpreter.text());
-    }
-
-    void assertShowsConsonantView(UseCase &useCase) {
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(shown(consonantView));
-    }
-
-    void assertCompleteTestHidesResponse(TrialSubmission &useCase) {
-        setTestComplete(model);
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(useCase.responseViewHidden());
     }
 
     void assertCompleteTestDoesNotHideCursor(TrialSubmission &useCase) {
@@ -374,26 +271,13 @@ CONSONANT_TEST(presenterHidesResponseButtonsWhenUserIsDoneResponding) {
 }
 
 CONSONANT_TEST(submittingConsonantHidesConsonantViewWhenTestComplete) {
-    run(confirmingFixedLevelConsonantTest);
-    setTestComplete(model);
-    run(submittingConsonant);
-    assertHidden(consonantView);
-}
-
-CONSONANT_TEST(exitTestHidesConsonantView) {
-    run(confirmingFixedLevelConsonantTest);
-    exitTest(experimenterView);
-    assertHidden(consonantView);
+    consonantPresenterRefactored.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.hidden());
 }
 
 CONSONANT_TEST(exitTestHidesConsonantResponseButtons) {
-    run(confirmingFixedLevelConsonantTest);
-    run(exitingTest);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(submittingConsonant.responseViewHidden());
-}
-
-CONSONANT_TEST(submittingConsonantResponseShowsTargetFileName) {
-    assertShowsTargetFileName(submittingConsonant);
+    consonantPresenterRefactored.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.responseButtonsHidden());
 }
 }
 }
