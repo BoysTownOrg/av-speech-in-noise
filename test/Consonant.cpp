@@ -233,17 +233,13 @@ CONSONANT_TEST(submittingConsonantDoesNotPlayTrialWhenTestComplete) {
 }
 
 CONSONANT_TEST(submittingConsonantHidesResponseButtons) {
-    TaskResponderListenerStub taskResponder;
-    responder.subscribe(&taskResponder);
-    responder.notifyThatResponseButtonHasBeenClicked();
+    run(submittingConsonant);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskResponder.notifiedThatUserIsDoneResponding());
 }
 
 CONSONANT_TEST(
     responderNotifiesThatTaskHasStartedWhenReadyButtonHasBeenClicked) {
-    TaskResponderListenerStub taskResponder;
-    responder.subscribe(&taskResponder);
     responder.notifyThatReadyButtonHasBeenClicked();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskResponder.notifiedThatTaskHasStarted());
 }
