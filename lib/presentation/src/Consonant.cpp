@@ -14,16 +14,18 @@ void ConsonantPresenter::stop() {
     view.hide();
 }
 
+static void hideCursor(ConsonantOutputView &view) { view.hideCursor(); }
+
 void ConsonantPresenter::notifyThatTaskHasStarted() {
     view.hideReadyButton();
-    view.hideCursor();
+    hideCursor(view);
 }
 
 void ConsonantPresenter::notifyThatUserIsDoneResponding() {
     view.hideResponseButtons();
 }
 
-void ConsonantPresenter::notifyThatTrialHasStarted() { view.hideCursor(); }
+void ConsonantPresenter::notifyThatTrialHasStarted() { hideCursor(view); }
 
 void ConsonantPresenter::showResponseSubmission() {
     view.showResponseButtons();
