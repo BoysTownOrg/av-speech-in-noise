@@ -20,10 +20,7 @@ void ConsonantPresenter::stop() {
     view.hide();
 }
 
-void ConsonantPresenter::notifyThatTaskHasStarted() {
-    view.hideReadyButton();
-    hideCursor(view);
-}
+void ConsonantPresenter::notifyThatTaskHasStarted() { view.hideReadyButton(); }
 
 void ConsonantPresenter::notifyThatUserIsDoneResponding() {
     hideResponseButtons(view);

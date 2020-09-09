@@ -198,11 +198,6 @@ class ConsonantTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(a)                             \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(cursorHidden(a))
 
-CONSONANT_TEST(presenterHidesCursorWhenTaskStarts) {
-    presenter.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(view);
-}
-
 CONSONANT_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.readyButtonHidden());
