@@ -34,7 +34,7 @@ class ConsonantOutputView {
 
 class ConsonantPresenter : public TaskPresenter {
   public:
-    explicit ConsonantPresenter(Model &, ConsonantOutputView &);
+    explicit ConsonantPresenter(ConsonantOutputView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
@@ -43,7 +43,6 @@ class ConsonantPresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    Model &model;
     ConsonantOutputView &view;
 };
 

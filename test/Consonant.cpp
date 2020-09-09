@@ -184,7 +184,7 @@ class ConsonantTests : public ::testing::Test {
     ModelStub model;
     ConsonantViewStub view;
     ConsonantResponder responder{model, view};
-    ConsonantPresenter presenter{model, view};
+    ConsonantPresenter presenter{view};
     SubmittingConsonant submittingConsonant{&view};
     ExperimenterResponderStub experimenterResponder;
     TaskResponderListenerStub taskResponder;

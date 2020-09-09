@@ -1261,7 +1261,7 @@ class PresenterTests : public ::testing::Test {
     ConsonantViewStub consonantView;
     ExperimenterViewStub experimenterView;
     ConsonantResponder consonantScreenResponder{model, consonantView};
-    ConsonantPresenter consonantPresenterRefactored{model, consonantView};
+    ConsonantPresenter consonantPresenterRefactored{consonantView};
     FreeResponseResponder freeResponseResponder{model, experimenterView};
     FreeResponsePresenter freeResponsePresenter{
         experimenterView, experimenterView};

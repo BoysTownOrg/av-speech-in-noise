@@ -1,8 +1,8 @@
 #include "Consonant.hpp"
 
 namespace av_speech_in_noise {
-ConsonantPresenter::ConsonantPresenter(Model &model, ConsonantOutputView &view)
-    : model{model}, view{view} {}
+ConsonantPresenter::ConsonantPresenter(ConsonantOutputView &view)
+    : view{view} {}
 
 void ConsonantPresenter::start() {
     view.show();
