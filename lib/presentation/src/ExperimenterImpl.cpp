@@ -207,17 +207,8 @@ static auto consonant(Method m) -> bool {
 
 void ExperimenterPresenterImpl::initialize(Method m) {
     displayTrialInformation(model, this);
-    if (coordinateResponseMeasure(m))
-        coordinateResponseMeasurePresenter->start();
-    else if (consonant(m))
-        consonantPresenter->start();
-    else if (freeResponse(m))
-        freeResponsePresenter->start();
-    else if (correctKeywords(m))
-        correctKeywordsPresenter->start();
-    else
-        passFailPresenter->start();
     taskPresenter_ = taskPresenter(m);
+    taskPresenter_->start();
 }
 
 auto ExperimenterPresenterImpl::taskPresenter(Method m) -> TaskPresenter * {
