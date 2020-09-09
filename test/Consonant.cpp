@@ -171,6 +171,10 @@ void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
     presenter.notifyThatUserIsDoneResponding();
 }
 
+void notifyThatTrialHasStarted(TaskPresenter &presenter) {
+    presenter.notifyThatTrialHasStarted();
+}
+
 void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
@@ -209,21 +213,21 @@ CONSONANT_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.readyButtonHidden());
 }
 
-CONSONANT_TEST(presenterHidesCursorAfterUserIsDoneResponding) {
-    notifyThatUserIsDoneResponding(presenter);
+CONSONANT_TEST(presenterHidesCursorAfterTrialHasStarted) {
+    notifyThatTrialHasStarted(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(view);
+}
+
+CONSONANT_TEST(
+    presenterDoesNotHideCursorAfterTrialHasStartedWhenTestIsComplete) {
+    setTestComplete(model);
+    notifyThatTrialHasStarted(presenter);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(cursorHidden(view));
 }
 
 CONSONANT_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
     notifyThatUserIsDoneResponding(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
-}
-
-CONSONANT_TEST(
-    presenterDoesNotHideCursorAfterUserIsDoneRespondingWhenTestIsComplete) {
-    setTestComplete(model);
-    notifyThatUserIsDoneResponding(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(cursorHidden(view));
 }
 
 CONSONANT_TEST(presenterHidesViewWhenStopped) {

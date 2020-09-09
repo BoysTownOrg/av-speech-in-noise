@@ -2407,6 +2407,7 @@ PRESENTER_TEST(playingConsonantTrialHidesCursor) {
 }
 
 PRESENTER_TEST(submittingConsonantTrialHidesCursor) {
+    run(confirmingFixedLevelConsonantTest);
     run(submittingConsonant);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.cursorHidden());
 }

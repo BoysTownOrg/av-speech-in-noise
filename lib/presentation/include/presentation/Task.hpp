@@ -12,6 +12,7 @@ class TaskResponder {
         virtual ~EventListener() = default;
         virtual void notifyThatTaskHasStarted() = 0;
         virtual void notifyThatUserIsDoneResponding() = 0;
+        virtual void notifyThatTrialHasStarted() {}
     };
     virtual ~TaskResponder() = default;
     virtual void subscribe(EventListener *) = 0;

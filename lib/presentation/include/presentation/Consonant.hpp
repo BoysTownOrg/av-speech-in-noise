@@ -39,6 +39,7 @@ class ConsonantPresenter : public TaskPresenter {
     void stop() override;
     void notifyThatTaskHasStarted() override;
     void notifyThatUserIsDoneResponding() override;
+    void notifyThatTrialHasStarted() override;
     void showResponseSubmission() override;
 
   private:

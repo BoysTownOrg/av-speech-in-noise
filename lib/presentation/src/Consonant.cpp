@@ -21,6 +21,9 @@ void ConsonantPresenter::notifyThatTaskHasStarted() {
 
 void ConsonantPresenter::notifyThatUserIsDoneResponding() {
     view.hideResponseButtons();
+}
+
+void ConsonantPresenter::notifyThatTrialHasStarted() {
     if (!model.testComplete())
         view.hideCursor();
 }
