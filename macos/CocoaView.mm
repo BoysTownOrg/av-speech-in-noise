@@ -493,6 +493,8 @@ auto CocoaConsonantView::consonant() -> std::string {
 
 void CocoaConsonantView::hideCursor() { [NSCursor hide]; }
 
+void CocoaConsonantView::showCursor() { [NSCursor unhide]; }
+
 static auto greenColor{NSColor.greenColor};
 static auto redColor{NSColor.redColor};
 static auto blueColor{NSColor.blueColor};
@@ -950,6 +952,4 @@ void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (const auto &item : items)
         [audioDeviceMenu addItemWithTitle:nsString(item)];
 }
-
-void CocoaView::showCursor() { [NSCursor unhide]; }
 }

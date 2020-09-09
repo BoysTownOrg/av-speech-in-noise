@@ -139,6 +139,7 @@ class CocoaConsonantView : public ConsonantOutputView,
     void hideCursor() override;
     void notifyThatResponseButtonHasBeenClicked(id sender);
     void notifyThatReadyButtonHasBeenClicked();
+    void showCursor() override;
 
   private:
     std::unordered_map<id, std::string> consonants;
@@ -193,7 +194,6 @@ class CocoaView : public View {
     auto browseForOpeningFile() -> std::string override;
     auto audioDevice() -> std::string override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
-    void showCursor() override;
 
   private:
     auto browseModal(NSOpenPanel *panel) -> std::string;

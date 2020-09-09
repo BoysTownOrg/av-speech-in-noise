@@ -375,7 +375,7 @@ void main(
             subjectViewWidth, subjectViewHeight)};
     TestSettingsInterpreterImpl testSettingsInterpreter;
     ConsonantResponder consonantScreenResponder{model, consonantView};
-    ConsonantPresenter consonantPresenter{model, consonantView};
+    ConsonantPresenter consonantPresenter{consonantView};
     FreeResponseResponder freeResponseResponder{model, experimenterView};
     FreeResponsePresenter freeResponsePresenter{
         experimenterView, experimenterView};

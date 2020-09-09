@@ -494,10 +494,6 @@ class ViewStub : public View {
 
     [[nodiscard]] auto audioDevices() const { return audioDevices_; }
 
-    [[nodiscard]] auto cursorShown() const -> bool { return cursorShown_; }
-
-    void showCursor() override { cursorShown_ = true; }
-
   private:
     std::vector<std::string> audioDevices_;
     std::string errorMessage_;
@@ -506,7 +502,6 @@ class ViewStub : public View {
     std::string audioDevice_;
     bool eventLoopCalled_{};
     bool browseCancelled_{};
-    bool cursorShown_{};
 };
 
 class TestSettingsInterpreterStub : public TestSettingsInterpreter {
