@@ -197,6 +197,11 @@ CONSONANT_TEST(presenterHidesCursorWhenTaskStarts) {
     AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(consonantView);
 }
 
+CONSONANT_TEST(presenterHidesReadyButtonWhenTaskStarts) {
+    presenter.notifyThatTaskHasStarted();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.readyButtonHidden());
+}
+
 void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
     presenter.notifyThatUserIsDoneResponding();
 }
