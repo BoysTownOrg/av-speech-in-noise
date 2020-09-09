@@ -219,7 +219,7 @@ CONSONANT_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
 CONSONANT_TEST(
     presenterDoesNotHideCursorAfterUserIsDoneRespondingWhenTestIsComplete) {
     setTestComplete(model);
-    run(submittingConsonant);
+    notifyThatUserIsDoneResponding(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(cursorHidden(view));
 }
 
