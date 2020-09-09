@@ -112,15 +112,6 @@ void ExperimenterResponderImpl::readyNextTrialIfNeeded() {
     }
 }
 
-void ExperimenterResponderImpl::playNextTrialIfNeeded() {
-    if (model.testComplete())
-        switchToTestSetupView(parent);
-    else {
-        displayTrialInformation(model, listener);
-        av_speech_in_noise::playTrial(model, mainView, listener);
-    }
-}
-
 void ExperimenterResponderImpl::nextTrial() {
     if (model.testComplete())
         switchToTestSetupView(parent);
