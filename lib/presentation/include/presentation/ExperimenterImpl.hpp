@@ -3,14 +3,22 @@
 
 #include "Experimenter.hpp"
 #include "View.hpp"
+#include "Task.hpp"
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
 class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
                                   public ExperimenterResponder {
   public:
-    explicit ExperimenterResponderImpl(
-        Model &, View &, ExperimenterInputView &);
+    explicit ExperimenterResponderImpl(Model &, View &, ExperimenterInputView &,
+        TaskResponder *consonantResponder, TaskPresenter *consonantPresenter,
+        TaskResponder *coordinateResponseMeasureResponder,
+        TaskPresenter *coordinateResponseMeasurePresenter,
+        TaskResponder *freeResponseResponder,
+        TaskPresenter *freeResponsePresenter,
+        TaskResponder *correctKeywordsResponder,
+        TaskPresenter *correctKeywordsPresenter,
+        TaskResponder *passFailResponder, TaskPresenter *passFailPresenter);
     void subscribe(ExperimenterResponder::EventListener *e) override;
     void exitTest() override;
     void playTrial() override;
@@ -30,7 +38,12 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
 
 class ExperimenterPresenterImpl : public ExperimenterPresenter {
   public:
-    explicit ExperimenterPresenterImpl(ExperimenterOutputView &);
+    explicit ExperimenterPresenterImpl(Model &, ExperimenterOutputView &,
+        TaskPresenter *consonantPresenter,
+        TaskPresenter *coordinateResponseMeasurePresenter,
+        TaskPresenter *freeResponsePresenter,
+        TaskPresenter *correctKeywordsPresenter,
+        TaskPresenter *passFailPresenter);
     void start() override;
     void stop() override;
     void notifyThatTrialHasStarted() override;
@@ -43,7 +56,16 @@ class ExperimenterPresenterImpl : public ExperimenterPresenter {
     void initialize(Method) override;
 
   private:
+    auto taskPresenter(Method m) -> TaskPresenter *;
+
+    Model &model;
     ExperimenterOutputView &view;
+    TaskPresenter *consonantPresenter;
+    TaskPresenter *coordinateResponseMeasurePresenter;
+    TaskPresenter *freeResponsePresenter;
+    TaskPresenter *correctKeywordsPresenter;
+    TaskPresenter *passFailPresenter;
+    TaskPresenter *taskPresenter_;
 };
 }
 

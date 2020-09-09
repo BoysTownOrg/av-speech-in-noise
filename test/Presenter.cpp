@@ -1144,15 +1144,16 @@ class PresenterConstructionTests : public ::testing::Test {
     TestSetupResponderImpl testSetupResponderImpl{
         model, view, setupView, testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
-    ExperimenterResponderImpl experimenterResponder{
-        model, view, experimenterView};
-    ExperimenterPresenterImpl experimenterPresenterRefactored{experimenterView};
+    ExperimenterResponderImpl experimenterResponder{model, view,
+        experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+        nullptr, nullptr, nullptr, nullptr};
+    ExperimenterPresenterImpl experimenterPresenterRefactored{
+        model, experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr};
 
     auto construct() -> Presenter {
-        return {model, view, nullptr, nullptr, nullptr, nullptr, nullptr,
-            nullptr, nullptr, nullptr, nullptr, nullptr,
-            &testSetupResponderImpl, &testSetupPresenterRefactored,
-            &experimenterResponder, &experimenterPresenterRefactored};
+        return {model, view, &testSetupResponderImpl,
+            &testSetupPresenterRefactored, &experimenterResponder,
+            &experimenterPresenterRefactored};
     }
 };
 
@@ -1276,16 +1277,19 @@ class PresenterTests : public ::testing::Test {
     TestSetupResponderImpl testSetupResponderImpl{
         model, view, setupView, testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
-    ExperimenterResponderImpl experimenterResponder{
-        model, view, experimenterView};
-    ExperimenterPresenterImpl experimenterPresenterRefactored{experimenterView};
-    Presenter presenter{model, view, &consonantScreenResponder,
+    ExperimenterResponderImpl experimenterResponder{model, view,
+        experimenterView, &consonantScreenResponder,
         &consonantPresenterRefactored, &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenterRefactored, &freeResponseResponder,
         &freeResponsePresenter, &correctKeywordsResponder,
-        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter,
-        &testSetupResponderImpl, &testSetupPresenterRefactored,
-        &experimenterResponder, &experimenterPresenterRefactored};
+        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter};
+    ExperimenterPresenterImpl experimenterPresenterRefactored{model,
+        experimenterView, &consonantPresenterRefactored,
+        &coordinateResponseMeasurePresenterRefactored, &freeResponsePresenter,
+        &correctKeywordsPresenter, &passFailPresenter};
+    Presenter presenter{model, view, &testSetupResponderImpl,
+        &testSetupPresenterRefactored, &experimenterResponder,
+        &experimenterPresenterRefactored};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTest
         confirmingAdaptiveCoordinateResponseMeasureTest{
@@ -1701,7 +1705,6 @@ class PresenterFailureTests : public ::testing::Test {
     ExperimenterViewStub experimenterView;
     TestSettingsInterpreterStub testSettingsInterpreter;
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
-    ExperimenterPresenterImpl experimenterPresenterRefactored{experimenterView};
     TextFileReaderStub textFileReader;
 
     void useFailingModel(std::string s = {}) {
@@ -1713,12 +1716,14 @@ class PresenterFailureTests : public ::testing::Test {
     void confirmTestSetup() {
         TestSetupResponderImpl testSetupResponderImpl{
             *model, view, setupView, testSettingsInterpreter, textFileReader};
-        ExperimenterResponderImpl experimenterResponder{
-            *model, view, experimenterView};
-        Presenter presenter{*model, view, nullptr, nullptr, nullptr, nullptr,
-            nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
-            &testSetupResponderImpl, &testSetupPresenterRefactored,
-            &experimenterResponder, &experimenterPresenterRefactored};
+        ExperimenterResponderImpl experimenterResponder{*model, view,
+            experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr,
+            nullptr, nullptr, nullptr, nullptr, nullptr};
+        ExperimenterPresenterImpl experimenterPresenterRefactored{*model,
+            experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr};
+        Presenter presenter{*model, view, &testSetupResponderImpl,
+            &testSetupPresenterRefactored, &experimenterResponder,
+            &experimenterPresenterRefactored};
         setupView.confirmTestSetup();
     }
 

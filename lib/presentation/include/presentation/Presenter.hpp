@@ -13,16 +13,7 @@ class Presenter : public Model::EventListener,
                   public SomethingIDK,
                   public IPresenter {
   public:
-    Presenter(Model &, View &, TaskResponder *consonantResponder,
-        TaskPresenter *consonantPresenter,
-        TaskResponder *coordinateResponseMeasureResponder,
-        TaskPresenter *coordinateResponseMeasurePresenter,
-        TaskResponder *freeResponseResponder,
-        TaskPresenter *freeResponsePresenter,
-        TaskResponder *correctKeywordsResponder,
-        TaskPresenter *correctKeywordsPresenter,
-        TaskResponder *passFailResponder, TaskPresenter *passFailPresenter,
-        TestSetupResponder *testSetupResponder,
+    Presenter(Model &, View &, TestSetupResponder *testSetupResponder,
         TestSetupPresenter *testSetupPresenter,
         ExperimenterResponder *experimenterResponder,
         ExperimenterPresenter *experimenterPresenter);
@@ -46,12 +37,6 @@ class Presenter : public Model::EventListener,
 
     Model &model;
     View &view;
-    TaskPresenter *consonantPresenter;
-    TaskPresenter *coordinateResponseMeasurePresenter;
-    TaskPresenter *freeResponsePresenter;
-    TaskPresenter *correctKeywordsPresenter;
-    TaskPresenter *passFailPresenter;
-    TaskPresenter *taskPresenter_;
     PresenterSimple *testSetupPresenter;
     ExperimenterPresenter *experimenterPresenter;
 };
