@@ -27,6 +27,7 @@ void ConsonantPresenter::notifyThatUserIsDoneResponding() {
 
 void ConsonantPresenter::showResponseSubmission() {
     view.showResponseButtons();
+    view.showCursor();
 }
 
 ConsonantResponder::ConsonantResponder(Model &model, ConsonantInputView &view)

@@ -61,6 +61,8 @@ class ConsonantViewStub : public ConsonantOutputView,
 
     void hideCursor() override { cursorHidden_ = true; }
 
+    void showCursor() override { cursorShown_ = true; }
+
   private:
     std::string consonant_;
     EventListener *listener_{};
@@ -71,6 +73,7 @@ class ConsonantViewStub : public ConsonantOutputView,
     bool readyButtonShown_{};
     bool readyButtonHidden_{};
     bool cursorHidden_{};
+    bool cursorShown_{};
 };
 
 void notifyThatReadyButtonHasBeenClicked(ConsonantViewStub &view) {

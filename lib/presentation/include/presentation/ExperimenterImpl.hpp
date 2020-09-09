@@ -36,7 +36,8 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
     IPresenter *parent{};
 };
 
-class ExperimenterPresenterImpl : public ExperimenterPresenter {
+class ExperimenterPresenterImpl : public Model::EventListener,
+                                  public ExperimenterPresenter {
   public:
     explicit ExperimenterPresenterImpl(Model &, ExperimenterOutputView &,
         TaskPresenter *consonantPresenter,
@@ -44,10 +45,10 @@ class ExperimenterPresenterImpl : public ExperimenterPresenter {
         TaskPresenter *freeResponsePresenter,
         TaskPresenter *correctKeywordsPresenter,
         TaskPresenter *passFailPresenter);
+    void trialComplete() override;
     void start() override;
     void stop() override;
     void notifyThatTrialHasStarted() override;
-    void notifyThatTrialHasCompleted() override;
     void notifyThatNextTrialIsReady() override;
     void display(const std::string &s) override;
     void secondaryDisplay(const std::string &s) override;

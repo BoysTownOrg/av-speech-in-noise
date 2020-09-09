@@ -71,7 +71,6 @@ class ExperimenterPresenter
       public virtual PresenterSimple {
   public:
     virtual void initialize(Method) = 0;
-    virtual void notifyThatTrialHasCompleted() = 0;
 };
 }
 

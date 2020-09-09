@@ -8,7 +8,6 @@ Presenter::Presenter(Model &model, View &view,
     ExperimenterPresenter *experimenterPresenter)
     : view{view}, testSetupPresenter{testSetupPresenter},
       experimenterPresenter{experimenterPresenter} {
-    model.subscribe(this);
     if (testSetupResponder != nullptr) {
         testSetupResponder->becomeChild(this);
         testSetupResponder->subscribe(testSetupPresenter);
@@ -26,11 +25,6 @@ void Presenter::prepare(Method m) {
     testSetupPresenter->stop();
     experimenterPresenter->initialize(m);
     experimenterPresenter->start();
-}
-
-void Presenter::trialComplete() {
-    experimenterPresenter->notifyThatTrialHasCompleted();
-    view.showCursor();
 }
 
 void Presenter::switchToTestSetupView() {

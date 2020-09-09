@@ -128,7 +128,9 @@ ExperimenterPresenterImpl::ExperimenterPresenterImpl(Model &model,
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       freeResponsePresenter{freeResponsePresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
-      passFailPresenter{passFailPresenter}, taskPresenter_{passFailPresenter} {}
+      passFailPresenter{passFailPresenter}, taskPresenter_{passFailPresenter} {
+    model.subscribe(this);
+}
 
 void ExperimenterPresenterImpl::start() { view.show(); }
 
@@ -143,7 +145,7 @@ void ExperimenterPresenterImpl::notifyThatTrialHasStarted() {
     view.hideNextTrialButton();
 }
 
-void ExperimenterPresenterImpl::notifyThatTrialHasCompleted() {
+void ExperimenterPresenterImpl::trialComplete() {
     view.showExitTestButton();
     taskPresenter_->showResponseSubmission();
 }

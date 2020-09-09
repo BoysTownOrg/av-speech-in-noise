@@ -7,15 +7,12 @@
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
-class Presenter : public Model::EventListener,
-                  public SomethingIDK,
-                  public IPresenter {
+class Presenter : public SomethingIDK, public IPresenter {
   public:
     Presenter(Model &, View &, TestSetupResponder *testSetupResponder,
         TestSetupPresenter *testSetupPresenter,
         ExperimenterResponder *experimenterResponder,
         ExperimenterPresenter *experimenterPresenter);
-    void trialComplete() override;
     void switchToTestSetupView() override;
     void prepare(Method m) override;
     void run();

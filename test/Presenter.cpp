@@ -78,6 +78,10 @@ class ConsonantViewStub : public ConsonantOutputView,
 
     void hideCursor() override { cursorHidden_ = true; }
 
+    void showCursor() override { cursorShown_ = true; }
+
+    auto cursorShown() -> bool { return cursorShown_; }
+
   private:
     std::string consonant_;
     EventListener *listener_{};
@@ -88,6 +92,7 @@ class ConsonantViewStub : public ConsonantOutputView,
     bool readyButtonShown_{};
     bool readyButtonHidden_{};
     bool cursorHidden_{};
+    bool cursorShown_{};
 };
 
 class CoordinateResponseMeasureViewStub
@@ -1534,7 +1539,7 @@ class PresenterTests : public ::testing::Test {
     void assertCompleteTrialShowsCursor(ConfirmingTestSetup &useCase) {
         run(useCase);
         completeTrial(model);
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.cursorShown());
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.cursorShown());
     }
 
     void assertShowsTrialNumber(UseCase &useCase) {
@@ -1904,8 +1909,8 @@ PRESENTER_TEST(submittingConsonantDoesNotHideCursorWhenTestComplete) {
     assertCompleteTestDoesNotHideCursor(submittingConsonant);
 }
 
-PRESENTER_TEST(completingTrialShowsCursorForAdaptiveCorrectKeywordsTest) {
-    assertCompleteTrialShowsCursor(confirmingAdaptiveCorrectKeywordsTest);
+PRESENTER_TEST(completingTrialShowsCursorForFixedLevelConsonantTest) {
+    assertCompleteTrialShowsCursor(confirmingFixedLevelConsonantTest);
 }
 
 PRESENTER_TEST(

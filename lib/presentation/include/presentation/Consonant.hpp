@@ -22,6 +22,7 @@ class ConsonantInputView {
 class ConsonantOutputView {
   public:
     virtual ~ConsonantOutputView() = default;
+    virtual void showCursor() = 0;
     virtual void hideCursor() = 0;
     virtual void show() = 0;
     virtual void hide() = 0;
