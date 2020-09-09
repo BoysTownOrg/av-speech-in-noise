@@ -65,11 +65,14 @@ void ExperimenterResponderImpl::subscribe(
 
 void ExperimenterResponderImpl::exitTest() { parent->switchToTestSetupView(); }
 
-void ExperimenterResponderImpl::playTrial() {
-    AudioSettings p;
-    p.audioDevice = mainView.audioDevice();
-    model.playTrial(p);
+static void playTrial(
+    Model &model, View &view, ExperimenterResponder::EventListener *listener) {
+    model.playTrial(AudioSettings{view.audioDevice()});
     listener->notifyThatTrialHasStarted();
+}
+
+void ExperimenterResponderImpl::playTrial() {
+    av_speech_in_noise::playTrial(model, mainView, listener);
 }
 
 void ExperimenterResponderImpl::declineContinuingTesting() {
@@ -110,10 +113,7 @@ void ExperimenterResponderImpl::playNextTrialIfNeeded() {
         parent->switchToTestSetupView();
     else {
         displayTrialInformation(model, listener);
-        AudioSettings p;
-        p.audioDevice = mainView.audioDevice();
-        model.playTrial(p);
-        listener->notifyThatTrialHasStarted();
+        av_speech_in_noise::playTrial(model, mainView, listener);
     }
 }
 
