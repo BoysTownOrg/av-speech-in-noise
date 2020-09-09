@@ -3,75 +3,23 @@
 
 #include "Experimenter.hpp"
 #include "View.hpp"
-#include "Presenter.hpp"
 #include <av-speech-in-noise/Model.hpp>
-#include <sstream>
 
 namespace av_speech_in_noise {
 class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
                                   public ExperimenterResponder {
   public:
     explicit ExperimenterResponderImpl(
-        Model &model, View &mainView, ExperimenterInputView &view)
-        : model{model}, mainView{mainView} {
-        view.subscribe(this);
-    }
-    void subscribe(ExperimenterResponder::EventListener *e) override {
-        listener = e;
-    }
-    void exitTest() override { parent->switchToTestSetupView(); }
-    void playTrial() override {
-        AudioSettings p;
-        p.audioDevice = mainView.audioDevice();
-        model.playTrial(p);
-        listener->notifyThatTrialHasStarted();
-    }
-    void declineContinuingTesting() override {
-        parent->switchToTestSetupView();
-    }
-    void acceptContinuingTesting() override {
-        model.restartAdaptiveTestWhilePreservingTargets();
-        listener->display("Trial " + std::to_string(model.trialNumber()));
-        listener->secondaryDisplay(model.targetFileName());
-        listener->notifyThatNextTrialIsReady();
-    }
-    void showContinueTestingDialogWithResultsWhenComplete() override {
-        if (model.testComplete()) {
-            listener->showContinueTestingDialog();
-            std::stringstream thresholds;
-            thresholds << "thresholds (targets: dB SNR)";
-            for (const auto &result : model.adaptiveTestResults())
-                thresholds << '\n'
-                           << result.targetsUrl.path << ": "
-                           << result.threshold;
-            listener->setContinueTestingDialogMessage(thresholds.str());
-        } else
-            parent->readyNextTrial();
-    }
-    void readyNextTrialIfNeeded() override {
-        if (model.testComplete())
-            parent->switchToTestSetupView();
-        else {
-            listener->display("Trial " + std::to_string(model.trialNumber()));
-            listener->secondaryDisplay(model.targetFileName());
-            listener->notifyThatNextTrialIsReady();
-        }
-    }
-
-    void playNextTrialIfNeeded() override {
-        if (model.testComplete())
-            parent->switchToTestSetupView();
-        else {
-            listener->display("Trial " + std::to_string(model.trialNumber()));
-            listener->secondaryDisplay(model.targetFileName());
-            AudioSettings p;
-            p.audioDevice = mainView.audioDevice();
-            model.playTrial(p);
-            listener->notifyThatTrialHasStarted();
-        }
-    }
-
-    void becomeChild(Presenter *p) override { parent = p; }
+        Model &, View &, ExperimenterInputView &);
+    void subscribe(ExperimenterResponder::EventListener *e) override;
+    void exitTest() override;
+    void playTrial() override;
+    void declineContinuingTesting() override;
+    void acceptContinuingTesting() override;
+    void showContinueTestingDialogWithResultsWhenComplete() override;
+    void readyNextTrialIfNeeded() override;
+    void playNextTrialIfNeeded() override;
+    void becomeChild(Presenter *p) override;
 
   private:
     Model &model;
@@ -82,41 +30,16 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
 
 class ExperimenterPresenterImpl : public ExperimenterPresenter {
   public:
-    explicit ExperimenterPresenterImpl(ExperimenterOutputView &view)
-        : view{view} {}
-
-    void start() override { view.show(); }
-
-    void stop() override {
-        view.hideContinueTestingDialog();
-        view.hide();
-    }
-
-    void notifyThatTrialHasStarted() override {
-        view.hideExitTestButton();
-        view.hideNextTrialButton();
-    }
-
-    void notifyThatTrialHasCompleted() override { view.showExitTestButton(); }
-
-    void notifyThatNextTrialIsReady() override {
-        view.hideContinueTestingDialog();
-        view.showNextTrialButton();
-    }
-
-    void display(const std::string &s) override { view.display(s); }
-
-    void secondaryDisplay(const std::string &s) override {
-        view.secondaryDisplay(s);
-    }
-
-    void showContinueTestingDialog() override {
-        view.showContinueTestingDialog();
-    }
-
-    void setContinueTestingDialogMessage(const std::string &s) override {
-        view.setContinueTestingDialogMessage(s);
-    }
+    explicit ExperimenterPresenterImpl(ExperimenterOutputView &);
+    void start() override;
+    void stop() override;
+    void notifyThatTrialHasStarted() override;
+    void notifyThatTrialHasCompleted() override;
+    void notifyThatNextTrialIsReady() override;
+    void display(const std::string &s) override;
+    void secondaryDisplay(const std::string &s) override;
+    void showContinueTestingDialog() override;
+    void setContinueTestingDialogMessage(const std::string &s) override;
 
   private:
     ExperimenterOutputView &view;

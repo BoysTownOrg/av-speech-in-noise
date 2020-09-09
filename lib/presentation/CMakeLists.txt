@@ -6,7 +6,8 @@ add_library(
   src/FreeResponse.cpp
   src/CorrectKeywords.cpp
   src/CoordinateResponseMeasure.cpp
-  src/PassFail.cpp)
+  src/PassFail.cpp
+  src/ExperimenterImpl.cpp)
 target_include_directories(
   presentation
   PUBLIC include
