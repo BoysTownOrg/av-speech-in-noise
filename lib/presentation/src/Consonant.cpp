@@ -42,12 +42,12 @@ void ConsonantResponder::subscribe(ExperimenterResponder *p) { responder = p; }
 
 void ConsonantResponder::notifyThatReadyButtonHasBeenClicked() {
     listener->notifyThatTaskHasStarted();
-    responder->playTrial();
+    responder->nextTrial();
 }
 
 void ConsonantResponder::notifyThatResponseButtonHasBeenClicked() {
     model.submit(ConsonantResponse{view.consonant().front()});
     listener->notifyThatUserIsDoneResponding();
-    responder->playNextTrialIfNeeded();
+    responder->nextTrial();
 }
 }

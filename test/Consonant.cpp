@@ -121,8 +121,6 @@ class SubmittingConsonant : public TrialSubmission {
     }
 };
 
-void setTestComplete(ModelStub &model) { model.setTestComplete(); }
-
 class ExperimenterResponderStub : public ExperimenterResponder {
   public:
     void subscribe(EventListener *) override {}
@@ -137,10 +135,13 @@ class ExperimenterResponderStub : public ExperimenterResponder {
     [[nodiscard]] auto nextTrialPlayed() const -> bool {
         return nextTrialPlayed_;
     }
+    void nextTrial() override { nextTrialCalled_ = true; }
+    auto nextTrialCalled() -> bool { return nextTrialCalled_; }
 
   private:
     bool nextTrialPlayedIfNeeded_{};
     bool nextTrialPlayed_{};
+    bool nextTrialCalled_{};
 };
 
 class TaskResponderListenerStub : public TaskResponder::EventListener {
@@ -250,7 +251,7 @@ CONSONANT_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {
 
 CONSONANT_TEST(responderPlaysTrialAfterReadyButtonIsClicked) {
     notifyThatReadyButtonHasBeenClicked(view);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterResponder.nextTrialPlayed());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterResponder.nextTrialCalled());
 }
 
 CONSONANT_TEST(responderNotifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
@@ -266,8 +267,7 @@ CONSONANT_TEST(responderSubmitsConsonantAfterResponseButtonIsClicked) {
 
 CONSONANT_TEST(responderPlaysNextTrialIfNeededAfterResponseButtonIsClicked) {
     run(submittingConsonant);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterResponder.nextTrialPlayedIfNeeded());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterResponder.nextTrialCalled());
 }
 
 CONSONANT_TEST(

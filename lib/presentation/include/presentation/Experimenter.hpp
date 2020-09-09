@@ -64,6 +64,7 @@ class ExperimenterResponder {
     virtual void readyNextTrialIfNeeded() = 0;
     virtual void playNextTrialIfNeeded() = 0;
     virtual void playTrial() = 0;
+    virtual void nextTrial() = 0;
 };
 
 class ExperimenterPresenter
