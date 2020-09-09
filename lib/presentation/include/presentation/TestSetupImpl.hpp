@@ -79,7 +79,7 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
         if (!mainView.browseCancelled())
             listener->notifyThatUserHasSelectedTestSettingsFile(file);
     }
-    void becomeChild(SomethingIDK *p) override { parent = p; }
+    void subscribe(SomethingIDK *p) override { parent = p; }
     void subscribe(TestSetupResponder::EventListener *e) override {
         listener = e;
     }

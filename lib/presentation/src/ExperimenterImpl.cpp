@@ -117,7 +117,7 @@ void ExperimenterResponderImpl::playNextTrialIfNeeded() {
     }
 }
 
-void ExperimenterResponderImpl::becomeChild(IPresenter *p) { parent = p; }
+void ExperimenterResponderImpl::subscribe(IPresenter *p) { parent = p; }
 
 ExperimenterPresenterImpl::ExperimenterPresenterImpl(Model &model,
     ExperimenterOutputView &view, TaskPresenter *consonantPresenter,

@@ -9,11 +9,11 @@ Presenter::Presenter(Model &model, View &view,
     : view{view}, testSetupPresenter{testSetupPresenter},
       experimenterPresenter{experimenterPresenter} {
     if (testSetupResponder != nullptr) {
-        testSetupResponder->becomeChild(this);
+        testSetupResponder->subscribe(this);
         testSetupResponder->subscribe(testSetupPresenter);
     }
     if (experimenterResponder != nullptr) {
-        experimenterResponder->becomeChild(this);
+        experimenterResponder->subscribe(this);
         experimenterResponder->subscribe(experimenterPresenter);
     }
     view.populateAudioDeviceMenu(model.audioDevices());

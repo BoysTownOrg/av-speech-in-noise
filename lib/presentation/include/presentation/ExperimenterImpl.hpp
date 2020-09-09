@@ -20,6 +20,7 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
         TaskPresenter *correctKeywordsPresenter,
         TaskResponder *passFailResponder, TaskPresenter *passFailPresenter);
     void subscribe(ExperimenterResponder::EventListener *e) override;
+    void subscribe(IPresenter *p) override;
     void exitTest() override;
     void playTrial() override;
     void declineContinuingTesting() override;
@@ -27,7 +28,6 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
     void showContinueTestingDialogWithResultsWhenComplete() override;
     void readyNextTrialIfNeeded() override;
     void playNextTrialIfNeeded() override;
-    void becomeChild(IPresenter *p) override;
 
   private:
     Model &model;

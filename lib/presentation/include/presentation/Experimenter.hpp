@@ -59,7 +59,7 @@ class ExperimenterResponder {
     };
     virtual ~ExperimenterResponder() = default;
     virtual void subscribe(EventListener *) = 0;
-    virtual void becomeChild(IPresenter *) = 0;
+    virtual void subscribe(IPresenter *) = 0;
     virtual void showContinueTestingDialogWithResultsWhenComplete() = 0;
     virtual void readyNextTrialIfNeeded() = 0;
     virtual void playNextTrialIfNeeded() = 0;

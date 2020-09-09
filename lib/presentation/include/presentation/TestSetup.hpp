@@ -54,7 +54,7 @@ class TestSetupResponder {
             const std::string &) = 0;
     };
     virtual ~TestSetupResponder() = default;
-    virtual void becomeChild(SomethingIDK *) = 0;
+    virtual void subscribe(SomethingIDK *) = 0;
     virtual void subscribe(EventListener *) = 0;
 };
 
