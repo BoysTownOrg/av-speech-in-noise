@@ -180,13 +180,17 @@ class ConsonantTests : public ::testing::Test {
     }
 };
 
+auto cursorHidden(ConsonantViewStub &view) -> bool {
+    return view.cursorHidden();
+}
+
 #define CONSONANT_TEST(a) TEST_F(ConsonantTests, a)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).responseButtonsHidden())
 
 #define AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(a)                             \
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).cursorHidden())
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(cursorHidden(a))
 
 CONSONANT_TEST(presenterHidesCursorWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
@@ -211,7 +215,7 @@ CONSONANT_TEST(
     presenterDoesNotHideCursorAfterUserIsDoneRespondingWhenTestIsComplete) {
     setTestComplete(model);
     run(submittingConsonant);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(consonantView.cursorHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(cursorHidden(consonantView));
 }
 
 void stop(TaskPresenter &presenter) { presenter.stop(); }
