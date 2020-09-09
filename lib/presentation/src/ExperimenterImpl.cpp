@@ -63,7 +63,11 @@ void ExperimenterResponderImpl::subscribe(
     listener = e;
 }
 
-void ExperimenterResponderImpl::exitTest() { parent->switchToTestSetupView(); }
+static void switchToTestSetupView(IPresenter *presenter) {
+    presenter->switchToTestSetupView();
+}
+
+void ExperimenterResponderImpl::exitTest() { switchToTestSetupView(parent); }
 
 static void playTrial(
     Model &model, View &view, ExperimenterResponder::EventListener *listener) {
@@ -76,7 +80,7 @@ void ExperimenterResponderImpl::playTrial() {
 }
 
 void ExperimenterResponderImpl::declineContinuingTesting() {
-    parent->switchToTestSetupView();
+    switchToTestSetupView(parent);
 }
 
 void ExperimenterResponderImpl::acceptContinuingTesting() {
@@ -101,7 +105,7 @@ void ExperimenterResponderImpl::
 
 void ExperimenterResponderImpl::readyNextTrialIfNeeded() {
     if (model.testComplete())
-        parent->switchToTestSetupView();
+        switchToTestSetupView(parent);
     else {
         displayTrialInformation(model, listener);
         listener->notifyThatNextTrialIsReady();
@@ -110,7 +114,7 @@ void ExperimenterResponderImpl::readyNextTrialIfNeeded() {
 
 void ExperimenterResponderImpl::playNextTrialIfNeeded() {
     if (model.testComplete())
-        parent->switchToTestSetupView();
+        switchToTestSetupView(parent);
     else {
         displayTrialInformation(model, listener);
         av_speech_in_noise::playTrial(model, mainView, listener);
