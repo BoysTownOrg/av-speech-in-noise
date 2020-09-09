@@ -23,10 +23,7 @@ void ConsonantPresenter::notifyThatUserIsDoneResponding() {
     view.hideResponseButtons();
 }
 
-void ConsonantPresenter::notifyThatTrialHasStarted() {
-    if (!model.testComplete())
-        view.hideCursor();
-}
+void ConsonantPresenter::notifyThatTrialHasStarted() { view.hideCursor(); }
 
 void ConsonantPresenter::showResponseSubmission() {
     view.showResponseButtons();
