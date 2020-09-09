@@ -34,14 +34,14 @@ void CoordinateResponseMeasureResponder::subscribe(
 
 void CoordinateResponseMeasureResponder::notifyThatReadyButtonHasBeenClicked() {
     listener->notifyThatTaskHasStarted();
-    responder->nextTrial();
+    responder->notifyThatUserIsReadyForNextTrial();
 }
 
 void CoordinateResponseMeasureResponder::
     notifyThatResponseButtonHasBeenClicked() {
     model.submit(subjectResponse(&view));
     listener->notifyThatUserIsDoneResponding();
-    responder->nextTrial();
+    responder->notifyThatUserIsReadyForNextTrial();
 }
 
 void CoordinateResponseMeasureResponder::subscribe(ExperimenterResponder *e) {

@@ -127,7 +127,9 @@ class ExperimenterResponderStub : public ExperimenterResponder {
     void subscribe(IPresenter *) override {}
     void showContinueTestingDialogWithResultsWhenComplete() override {}
     void readyNextTrialIfNeeded() override {}
-    void nextTrial() override { nextTrialCalled_ = true; }
+    void notifyThatUserIsReadyForNextTrial() override {
+        nextTrialCalled_ = true;
+    }
     [[nodiscard]] auto nextTrialCalled() const -> bool {
         return nextTrialCalled_;
     }

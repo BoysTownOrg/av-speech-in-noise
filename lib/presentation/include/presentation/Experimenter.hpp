@@ -62,7 +62,7 @@ class ExperimenterResponder {
     virtual void subscribe(IPresenter *) = 0;
     virtual void showContinueTestingDialogWithResultsWhenComplete() = 0;
     virtual void readyNextTrialIfNeeded() = 0;
-    virtual void nextTrial() = 0;
+    virtual void notifyThatUserIsReadyForNextTrial() = 0;
 };
 
 class ExperimenterPresenter

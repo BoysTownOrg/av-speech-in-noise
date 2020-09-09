@@ -112,7 +112,7 @@ void ExperimenterResponderImpl::readyNextTrialIfNeeded() {
     }
 }
 
-void ExperimenterResponderImpl::nextTrial() {
+void ExperimenterResponderImpl::notifyThatUserIsReadyForNextTrial() {
     if (model.testComplete())
         switchToTestSetupView(parent);
     else {

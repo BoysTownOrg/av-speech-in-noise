@@ -44,16 +44,17 @@ ConsonantResponder::ConsonantResponder(Model &model, ConsonantInputView &view)
 void ConsonantResponder::subscribe(TaskResponder::EventListener *e) {
     listener = e;
 }
+
 void ConsonantResponder::subscribe(ExperimenterResponder *p) { responder = p; }
 
 void ConsonantResponder::notifyThatReadyButtonHasBeenClicked() {
     listener->notifyThatTaskHasStarted();
-    responder->nextTrial();
+    responder->notifyThatUserIsReadyForNextTrial();
 }
 
 void ConsonantResponder::notifyThatResponseButtonHasBeenClicked() {
     model.submit(ConsonantResponse{view.consonant().front()});
     listener->notifyThatUserIsDoneResponding();
-    responder->nextTrial();
+    responder->notifyThatUserIsReadyForNextTrial();
 }
 }
