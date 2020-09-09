@@ -128,14 +128,14 @@ class ExperimenterResponderStub : public ExperimenterResponder {
     void showContinueTestingDialogWithResultsWhenComplete() override {}
     void readyNextTrialIfNeeded() override {}
     void notifyThatUserIsReadyForNextTrial() override {
-        nextTrialCalled_ = true;
+        notifiedThatUserIsReadyForNextTrial_ = true;
     }
-    [[nodiscard]] auto nextTrialCalled() const -> bool {
-        return nextTrialCalled_;
+    [[nodiscard]] auto notifiedThatUserIsReadyForNextTrial() const -> bool {
+        return notifiedThatUserIsReadyForNextTrial_;
     }
 
   private:
-    bool nextTrialCalled_{};
+    bool notifiedThatUserIsReadyForNextTrial_{};
 };
 
 class TaskResponderListenerStub : public TaskResponder::EventListener {
@@ -243,9 +243,11 @@ CONSONANT_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseButtonsShown());
 }
 
-CONSONANT_TEST(responderPlaysTrialAfterReadyButtonIsClicked) {
+CONSONANT_TEST(
+    responderNotifiesThatUserIsReadyForNextTrialAfterReadyButtonIsClicked) {
     notifyThatReadyButtonHasBeenClicked(view);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterResponder.nextTrialCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        experimenterResponder.notifiedThatUserIsReadyForNextTrial());
 }
 
 CONSONANT_TEST(responderNotifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
@@ -259,9 +261,11 @@ CONSONANT_TEST(responderSubmitsConsonantAfterResponseButtonIsClicked) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL('b', model.consonantResponse().consonant);
 }
 
-CONSONANT_TEST(responderPlaysNextTrialIfNeededAfterResponseButtonIsClicked) {
+CONSONANT_TEST(
+    responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
     run(submittingConsonant);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterResponder.nextTrialCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        experimenterResponder.notifiedThatUserIsReadyForNextTrial());
 }
 
 CONSONANT_TEST(
