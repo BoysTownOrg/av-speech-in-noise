@@ -392,16 +392,18 @@ void main(
     TestSetupResponderImpl testSetupResponderImpl{model, view,
         *(testSetupView.get()), testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{*(testSetupView.get())};
-    ExperimenterResponderImpl experimenterResponder{
-        model, view, experimenterView};
-    ExperimenterPresenterImpl experimenterPresenter{experimenterView};
-    Presenter presenter{model, view, &consonantScreenResponder,
-        &consonantPresenter, &coordinateResponseMeasureResponder,
+    ExperimenterResponderImpl experimenterResponder{model, view,
+        experimenterView, &consonantScreenResponder, &consonantPresenter,
+        &coordinateResponseMeasureResponder,
         &coordinateResponseMeasurePresenter, &freeResponseResponder,
         &freeResponsePresenter, &correctKeywordsResponder,
-        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter,
-        &testSetupResponderImpl, &testSetupPresenterRefactored,
-        &experimenterResponder, &experimenterPresenter};
+        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter};
+    ExperimenterPresenterImpl experimenterPresenter{model, experimenterView,
+        &consonantPresenter, &coordinateResponseMeasurePresenter,
+        &freeResponsePresenter, &correctKeywordsPresenter, &passFailPresenter};
+    Presenter presenter{model, view, &testSetupResponderImpl,
+        &testSetupPresenterRefactored, &experimenterResponder,
+        &experimenterPresenter};
     presenter.run();
 }
 }
