@@ -107,6 +107,11 @@ Presenter::Presenter(Model &model, View &view,
 
 void Presenter::run() { view.eventLoop(); }
 
+void Presenter::prepare(Method m) {
+    switchToTestView(m);
+    taskPresenter_ = taskPresenter(m);
+}
+
 void Presenter::switchToTestView(Method m) {
     testSetupPresenter->stop();
     experimenterPresenter->start();

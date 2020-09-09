@@ -29,11 +29,8 @@ class Presenter : public Model::EventListener,
     void trialComplete() override;
     void readyNextTrial() override;
     void switchToTestSetupView() override;
+    void prepare(Method m) override;
     void run();
-    void prepare(Method m) override {
-        switchToTestView(m);
-        taskPresenter_ = taskPresenter(m);
-    }
 
     static constexpr RealLevel fullScaleLevel{119};
     static constexpr SNR ceilingSnr{20};
