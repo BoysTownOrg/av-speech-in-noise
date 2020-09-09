@@ -220,6 +220,8 @@ CONSONANT_TEST(
 
 void stop(TaskPresenter &presenter) { presenter.stop(); }
 
+void start(TaskPresenter &presenter) { presenter.start(); }
+
 CONSONANT_TEST(presenterHidesViewWhenStopped) {
     stop(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.hidden());
@@ -228,6 +230,16 @@ CONSONANT_TEST(presenterHidesViewWhenStopped) {
 CONSONANT_TEST(presenterHidesResponseButtonsWhenStopped) {
     stop(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(consonantView);
+}
+
+CONSONANT_TEST(presenterShowsViewWhenStarted) {
+    start(presenter);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.shown());
+}
+
+CONSONANT_TEST(presenterShowsReadyButtonWhenStarted) {
+    start(presenter);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantView.readyButtonShown());
 }
 
 CONSONANT_TEST(responderPlaysTrialAfterReadyButtonIsClicked) {
