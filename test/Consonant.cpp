@@ -247,6 +247,11 @@ CONSONANT_TEST(presenterShowsReadyButtonWhenStarted) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.readyButtonShown());
 }
 
+CONSONANT_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseButtonsShown());
+}
+
 CONSONANT_TEST(responderPlaysTrialAfterReadyButtonIsClicked) {
     responder.notifyThatReadyButtonHasBeenClicked();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterResponder.nextTrialPlayed());
