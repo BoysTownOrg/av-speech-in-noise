@@ -42,7 +42,6 @@ class ExperimenterView : public virtual ExperimenterInputView,
 class IPresenter {
   public:
     virtual ~IPresenter() = default;
-    virtual void readyNextTrial() = 0;
     virtual void switchToTestSetupView() = 0;
 };
 
