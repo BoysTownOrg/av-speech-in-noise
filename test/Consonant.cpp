@@ -73,6 +73,10 @@ class ConsonantViewStub : public ConsonantOutputView,
     bool cursorHidden_{};
 };
 
+void notifyThatReadyButtonHasBeenClicked(ConsonantViewStub &view) {
+    view.notifyThatReadyButtonHasBeenClicked();
+}
+
 class UseCase {
   public:
     virtual ~UseCase() = default;
@@ -121,8 +125,6 @@ class PlayingTrial : public virtual UseCase {
 };
 
 void setTestComplete(ModelStub &model) { model.setTestComplete(); }
-
-auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
 
 class ExperimenterResponderStub : public ExperimenterResponder {
   public:
@@ -253,7 +255,7 @@ CONSONANT_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {
 }
 
 CONSONANT_TEST(responderPlaysTrialAfterReadyButtonIsClicked) {
-    responder.notifyThatReadyButtonHasBeenClicked();
+    notifyThatReadyButtonHasBeenClicked(view);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterResponder.nextTrialPlayed());
 }
 
@@ -277,7 +279,7 @@ CONSONANT_TEST(
 }
 
 CONSONANT_TEST(responderNotifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
-    responder.notifyThatReadyButtonHasBeenClicked();
+    notifyThatReadyButtonHasBeenClicked(view);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskResponder.notifiedThatTaskHasStarted());
 }
 }
