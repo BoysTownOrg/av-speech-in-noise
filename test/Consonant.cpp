@@ -118,12 +118,6 @@ class SubmittingConsonant : public TrialSubmission {
     }
 };
 
-class PlayingTrial : public virtual UseCase {
-  public:
-    virtual auto nextTrialButtonHidden() -> bool = 0;
-    virtual auto nextTrialButtonShown() -> bool = 0;
-};
-
 void setTestComplete(ModelStub &model) { model.setTestComplete(); }
 
 class ExperimenterResponderStub : public ExperimenterResponder {
@@ -166,6 +160,18 @@ class TaskResponderListenerStub : public TaskResponder::EventListener {
     bool notifiedThatTaskHasStarted_{};
 };
 
+auto cursorHidden(ConsonantViewStub &view) -> bool {
+    return view.cursorHidden();
+}
+
+void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
+    presenter.notifyThatUserIsDoneResponding();
+}
+
+void stop(TaskPresenter &presenter) { presenter.stop(); }
+
+void start(TaskPresenter &presenter) { presenter.start(); }
+
 class ConsonantTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -181,10 +187,6 @@ class ConsonantTests : public ::testing::Test {
         responder.subscribe(&taskResponder);
     }
 };
-
-auto cursorHidden(ConsonantViewStub &view) -> bool {
-    return view.cursorHidden();
-}
 
 #define CONSONANT_TEST(a) TEST_F(ConsonantTests, a)
 
@@ -204,10 +206,6 @@ CONSONANT_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.readyButtonHidden());
 }
 
-void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
-    presenter.notifyThatUserIsDoneResponding();
-}
-
 CONSONANT_TEST(presenterHidesCursorAfterUserIsDoneResponding) {
     notifyThatUserIsDoneResponding(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(view);
@@ -224,10 +222,6 @@ CONSONANT_TEST(
     notifyThatUserIsDoneResponding(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(cursorHidden(view));
 }
-
-void stop(TaskPresenter &presenter) { presenter.stop(); }
-
-void start(TaskPresenter &presenter) { presenter.start(); }
 
 CONSONANT_TEST(presenterHidesViewWhenStopped) {
     stop(presenter);
@@ -259,6 +253,11 @@ CONSONANT_TEST(responderPlaysTrialAfterReadyButtonIsClicked) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterResponder.nextTrialPlayed());
 }
 
+CONSONANT_TEST(responderNotifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
+    notifyThatReadyButtonHasBeenClicked(view);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskResponder.notifiedThatTaskHasStarted());
+}
+
 CONSONANT_TEST(responderSubmitsConsonantAfterResponseButtonIsClicked) {
     view.setConsonant("b");
     run(submittingConsonant);
@@ -276,11 +275,6 @@ CONSONANT_TEST(
     run(submittingConsonant);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskResponder.notifiedThatUserIsDoneResponding());
-}
-
-CONSONANT_TEST(responderNotifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
-    notifyThatReadyButtonHasBeenClicked(view);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskResponder.notifiedThatTaskHasStarted());
 }
 }
 }
