@@ -127,20 +127,14 @@ class ExperimenterResponderStub : public ExperimenterResponder {
     void subscribe(IPresenter *) override {}
     void showContinueTestingDialogWithResultsWhenComplete() override {}
     void readyNextTrialIfNeeded() override {}
-    void playNextTrialIfNeeded() override { nextTrialPlayedIfNeeded_ = true; }
-    void playTrial() override { nextTrialPlayed_ = true; }
-    [[nodiscard]] auto nextTrialPlayedIfNeeded() const -> bool {
-        return nextTrialPlayedIfNeeded_;
-    }
-    [[nodiscard]] auto nextTrialPlayed() const -> bool {
-        return nextTrialPlayed_;
-    }
+    void playNextTrialIfNeeded() override {}
+    void playTrial() override {}
     void nextTrial() override { nextTrialCalled_ = true; }
-    auto nextTrialCalled() -> bool { return nextTrialCalled_; }
+    [[nodiscard]] auto nextTrialCalled() const -> bool {
+        return nextTrialCalled_;
+    }
 
   private:
-    bool nextTrialPlayedIfNeeded_{};
-    bool nextTrialPlayed_{};
     bool nextTrialCalled_{};
 };
 
