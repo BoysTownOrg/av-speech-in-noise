@@ -1,23 +1,24 @@
 #include "CoordinateResponseMeasure.hpp"
 
 namespace av_speech_in_noise {
-static auto colorResponse(CoordinateResponseMeasureInputView *inputView)
-    -> coordinate_response_measure::Color {
-    if (inputView->greenResponse())
-        return coordinate_response_measure::Color::green;
-    if (inputView->blueResponse())
-        return coordinate_response_measure::Color::blue;
-    if (inputView->whiteResponse())
-        return coordinate_response_measure::Color::white;
+using coordinate_response_measure::Color;
 
-    return coordinate_response_measure::Color::red;
+static auto colorResponse(CoordinateResponseMeasureInputView &inputView)
+    -> Color {
+    if (inputView.greenResponse())
+        return Color::green;
+    if (inputView.blueResponse())
+        return Color::blue;
+    if (inputView.whiteResponse())
+        return Color::white;
+    return Color::red;
 }
 
-static auto subjectResponse(CoordinateResponseMeasureInputView *inputView)
+static auto subjectResponse(CoordinateResponseMeasureInputView &inputView)
     -> coordinate_response_measure::Response {
     coordinate_response_measure::Response p{};
     p.color = colorResponse(inputView);
-    p.number = std::stoi(inputView->numberResponse());
+    p.number = std::stoi(inputView.numberResponse());
     return p;
 }
 
@@ -39,7 +40,7 @@ void CoordinateResponseMeasureResponder::notifyThatReadyButtonHasBeenClicked() {
 
 void CoordinateResponseMeasureResponder::
     notifyThatResponseButtonHasBeenClicked() {
-    model.submit(subjectResponse(&view));
+    model.submit(subjectResponse(view));
     listener->notifyThatUserIsDoneResponding();
     responder->notifyThatUserIsReadyForNextTrial();
 }

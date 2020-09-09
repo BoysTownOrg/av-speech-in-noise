@@ -47,14 +47,18 @@ void ConsonantResponder::subscribe(TaskResponder::EventListener *e) {
 
 void ConsonantResponder::subscribe(ExperimenterResponder *p) { responder = p; }
 
+static void notifyThatUserIsReadyForNextTrial(ExperimenterResponder *r) {
+    r->notifyThatUserIsReadyForNextTrial();
+}
+
 void ConsonantResponder::notifyThatReadyButtonHasBeenClicked() {
     listener->notifyThatTaskHasStarted();
-    responder->notifyThatUserIsReadyForNextTrial();
+    notifyThatUserIsReadyForNextTrial(responder);
 }
 
 void ConsonantResponder::notifyThatResponseButtonHasBeenClicked() {
     model.submit(ConsonantResponse{view.consonant().front()});
     listener->notifyThatUserIsDoneResponding();
-    responder->notifyThatUserIsReadyForNextTrial();
+    notifyThatUserIsReadyForNextTrial(responder);
 }
 }
