@@ -113,4 +113,6 @@ void ExperimenterPresenterImpl::setContinueTestingDialogMessage(
     const std::string &s) {
     view.setContinueTestingDialogMessage(s);
 }
+
+void ExperimenterPresenterImpl::initialize(Method) {}
 }

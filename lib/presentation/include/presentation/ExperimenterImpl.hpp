@@ -40,7 +40,7 @@ class ExperimenterPresenterImpl : public ExperimenterPresenter {
     void secondaryDisplay(const std::string &s) override;
     void showContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &s) override;
-    void initialize(Method) {}
+    void initialize(Method) override;
 
   private:
     ExperimenterOutputView &view;
