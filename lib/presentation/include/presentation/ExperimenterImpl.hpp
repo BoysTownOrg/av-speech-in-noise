@@ -19,13 +19,13 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
     void showContinueTestingDialogWithResultsWhenComplete() override;
     void readyNextTrialIfNeeded() override;
     void playNextTrialIfNeeded() override;
-    void becomeChild(Presenter *p) override;
+    void becomeChild(IPresenter *p) override;
 
   private:
     Model &model;
     View &mainView;
     ExperimenterResponder::EventListener *listener{};
-    Presenter *parent{};
+    IPresenter *parent{};
 };
 
 class ExperimenterPresenterImpl : public ExperimenterPresenter {

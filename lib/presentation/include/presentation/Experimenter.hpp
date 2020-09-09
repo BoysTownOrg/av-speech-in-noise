@@ -37,7 +37,13 @@ class ExperimenterOutputView {
 
 class ExperimenterView : public virtual ExperimenterInputView,
                          public virtual ExperimenterOutputView {};
-class Presenter;
+
+class IPresenter {
+  public:
+    virtual ~IPresenter() = default;
+    virtual void readyNextTrial() = 0;
+    virtual void switchToTestSetupView() = 0;
+};
 
 class ExperimenterResponder {
   public:
@@ -53,7 +59,7 @@ class ExperimenterResponder {
     };
     virtual ~ExperimenterResponder() = default;
     virtual void subscribe(EventListener *) = 0;
-    virtual void becomeChild(Presenter *) = 0;
+    virtual void becomeChild(IPresenter *) = 0;
     virtual void showContinueTestingDialogWithResultsWhenComplete() = 0;
     virtual void readyNextTrialIfNeeded() = 0;
     virtual void playNextTrialIfNeeded() = 0;

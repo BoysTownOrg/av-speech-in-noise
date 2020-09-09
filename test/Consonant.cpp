@@ -123,7 +123,7 @@ void setTestComplete(ModelStub &model) { model.setTestComplete(); }
 class ExperimenterResponderStub : public ExperimenterResponder {
   public:
     void subscribe(EventListener *) override {}
-    void becomeChild(Presenter *) override {}
+    void becomeChild(IPresenter *) override {}
     void showContinueTestingDialogWithResultsWhenComplete() override {}
     void readyNextTrialIfNeeded() override {}
     void playNextTrialIfNeeded() override { nextTrialPlayedIfNeeded_ = true; }

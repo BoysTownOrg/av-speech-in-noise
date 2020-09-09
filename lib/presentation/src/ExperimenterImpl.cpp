@@ -1,5 +1,4 @@
 #include "ExperimenterImpl.hpp"
-#include "Presenter.hpp"
 #include <sstream>
 
 namespace av_speech_in_noise {
@@ -47,6 +46,7 @@ void ExperimenterResponderImpl::
     } else
         parent->readyNextTrial();
 }
+
 void ExperimenterResponderImpl::readyNextTrialIfNeeded() {
     if (model.testComplete())
         parent->switchToTestSetupView();
@@ -70,7 +70,7 @@ void ExperimenterResponderImpl::playNextTrialIfNeeded() {
     }
 }
 
-void ExperimenterResponderImpl::becomeChild(Presenter *p) { parent = p; }
+void ExperimenterResponderImpl::becomeChild(IPresenter *p) { parent = p; }
 
 ExperimenterPresenterImpl::ExperimenterPresenterImpl(
     ExperimenterOutputView &view)
