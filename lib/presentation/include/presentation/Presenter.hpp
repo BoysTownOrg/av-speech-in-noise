@@ -26,7 +26,6 @@ class Presenter : public Model::EventListener,
     static constexpr auto trackBumpLimit{10};
 
   private:
-    Model &model;
     View &view;
     PresenterSimple *testSetupPresenter;
     ExperimenterPresenter *experimenterPresenter;

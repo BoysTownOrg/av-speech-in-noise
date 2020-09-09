@@ -6,7 +6,7 @@ Presenter::Presenter(Model &model, View &view,
     TestSetupPresenter *testSetupPresenter,
     ExperimenterResponder *experimenterResponder,
     ExperimenterPresenter *experimenterPresenter)
-    : model{model}, view{view}, testSetupPresenter{testSetupPresenter},
+    : view{view}, testSetupPresenter{testSetupPresenter},
       experimenterPresenter{experimenterPresenter} {
     model.subscribe(this);
     if (testSetupResponder != nullptr) {
@@ -34,7 +34,7 @@ void Presenter::trialComplete() {
 }
 
 void Presenter::switchToTestSetupView() {
-    testSetupPresenter->start();
     experimenterPresenter->stop();
+    testSetupPresenter->start();
 }
 }
