@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETUP_HPP_
 
 #include "PresenterSimple.hpp"
+#include "Method.hpp"
 #include <vector>
 #include <string>
 
@@ -37,25 +38,6 @@ class TestSetupOutputView {
 
 class TestSetupView : public virtual TestSetupOutputView,
                       public virtual TestSetupInputView {};
-enum class Method {
-    adaptivePassFail,
-    adaptivePassFailWithEyeTracking,
-    adaptiveCorrectKeywords,
-    adaptiveCorrectKeywordsWithEyeTracking,
-    adaptiveCoordinateResponseMeasure,
-    adaptiveCoordinateResponseMeasureWithSingleSpeaker,
-    adaptiveCoordinateResponseMeasureWithDelayedMasker,
-    adaptiveCoordinateResponseMeasureWithEyeTracking,
-    fixedLevelFreeResponseWithTargetReplacement,
-    fixedLevelFreeResponseWithSilentIntervalTargets,
-    fixedLevelFreeResponseWithAllTargets,
-    fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
-    fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
-    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-    fixedLevelConsonants,
-    unknown
-};
 
 class SomethingIDK {
   public:

@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_EXPERIMENTER_HPP_
 
 #include "PresenterSimple.hpp"
+#include "Method.hpp"
 #include <string>
 
 namespace av_speech_in_noise {
