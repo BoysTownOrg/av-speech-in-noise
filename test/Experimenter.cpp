@@ -386,14 +386,16 @@ class TaskPresenterStub : public TaskPresenter {
 
 class PresenterStub : public IPresenter {
   public:
-    void switchToTestSetupView() override { switchedToTestSetupView_ = true; }
+    void notifyThatTestIsComplete() override {
+        notifiedThatTestIsComplete_ = true;
+    }
 
-    [[nodiscard]] auto switchedToTestSetupView() const -> bool {
-        return switchedToTestSetupView_;
+    [[nodiscard]] auto notifiedThatTestIsComplete() const -> bool {
+        return notifiedThatTestIsComplete_;
     }
 
   private:
-    bool switchedToTestSetupView_{};
+    bool notifiedThatTestIsComplete_{};
 };
 
 class ExperimenterTests : public ::testing::Test {
@@ -463,7 +465,7 @@ class ExperimenterTests : public ::testing::Test {
 
 EXPERIMENTER_TEST(responderSwitchesToTestSetupViewWhenExitTestButtonClicked) {
     exitTest(experimenterView);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.switchedToTestSetupView());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.notifiedThatTestIsComplete());
 }
 }
 }

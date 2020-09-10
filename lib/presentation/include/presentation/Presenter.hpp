@@ -13,7 +13,7 @@ class Presenter : public SomethingIDK, public IPresenter {
         TestSetupPresenter *testSetupPresenter,
         ExperimenterResponder *experimenterResponder,
         ExperimenterPresenter *experimenterPresenter);
-    void switchToTestSetupView() override;
+    void notifyThatTestIsComplete() override;
     void prepare(Method m) override;
     void run();
 

@@ -27,7 +27,7 @@ void Presenter::prepare(Method m) {
     experimenterPresenter->start();
 }
 
-void Presenter::switchToTestSetupView() {
+void Presenter::notifyThatTestIsComplete() {
     experimenterPresenter->stop();
     testSetupPresenter->start();
 }
