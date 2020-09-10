@@ -76,6 +76,60 @@ class ConsonantViewStub : public ConsonantOutputView,
     bool cursorShown_{};
 };
 
+class ConsonantOutputViewStub : public ConsonantOutputView {
+  public:
+    void show() override { shown_ = true; }
+
+    [[nodiscard]] auto shown() const -> bool { return shown_; }
+
+    void hide() override { hidden_ = true; }
+
+    [[nodiscard]] auto hidden() const -> bool { return hidden_; }
+
+    void showReadyButton() override { readyButtonShown_ = true; }
+
+    [[nodiscard]] auto readyButtonShown() const -> bool {
+        return readyButtonShown_;
+    }
+
+    void hideReadyButton() override { readyButtonHidden_ = true; }
+
+    [[nodiscard]] auto readyButtonHidden() const -> bool {
+        return readyButtonHidden_;
+    }
+
+    void hideResponseButtons() override { responseButtonsHidden_ = true; }
+
+    [[nodiscard]] auto responseButtonsHidden() const -> bool {
+        return responseButtonsHidden_;
+    }
+
+    void showResponseButtons() override { responseButtonsShown_ = true; }
+
+    [[nodiscard]] auto responseButtonsShown() const -> bool {
+        return responseButtonsShown_;
+    }
+
+    void setConsonant(std::string c) { consonant_ = std::move(c); }
+
+    [[nodiscard]] auto cursorHidden() const -> bool { return cursorHidden_; }
+
+    void hideCursor() override { cursorHidden_ = true; }
+
+    void showCursor() override { cursorShown_ = true; }
+
+  private:
+    std::string consonant_;
+    bool shown_{};
+    bool hidden_{};
+    bool responseButtonsShown_{};
+    bool responseButtonsHidden_{};
+    bool readyButtonShown_{};
+    bool readyButtonHidden_{};
+    bool cursorHidden_{};
+    bool cursorShown_{};
+};
+
 void notifyThatReadyButtonHasBeenClicked(ConsonantViewStub &view) {
     view.notifyThatReadyButtonHasBeenClicked();
 }
@@ -158,7 +212,7 @@ class TaskResponderListenerStub : public TaskResponder::EventListener {
     bool notifiedThatTaskHasStarted_{};
 };
 
-auto cursorHidden(ConsonantViewStub &view) -> bool {
+auto cursorHidden(ConsonantOutputViewStub &view) -> bool {
     return view.cursorHidden();
 }
 
@@ -178,8 +232,9 @@ class ConsonantTests : public ::testing::Test {
   protected:
     ModelStub model;
     ConsonantViewStub view;
+    ConsonantOutputViewStub outputView;
     ConsonantResponder responder{model, view};
-    ConsonantPresenter presenter{view};
+    ConsonantPresenter presenter{outputView};
     SubmittingConsonant submittingConsonant{&view};
     ExperimenterResponderStub experimenterResponder;
     TaskResponderListenerStub taskResponder;
@@ -200,42 +255,42 @@ class ConsonantTests : public ::testing::Test {
 
 CONSONANT_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.readyButtonHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.readyButtonHidden());
 }
 
 CONSONANT_TEST(presenterHidesCursorAfterTrialHasStarted) {
     notifyThatTrialHasStarted(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(view);
+    AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(outputView);
 }
 
 CONSONANT_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
     notifyThatUserIsDoneResponding(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
+    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(outputView);
 }
 
 CONSONANT_TEST(presenterHidesViewWhenStopped) {
     stop(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.hidden());
 }
 
 CONSONANT_TEST(presenterHidesResponseButtonsWhenStopped) {
     stop(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
+    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(outputView);
 }
 
 CONSONANT_TEST(presenterShowsViewWhenStarted) {
     start(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.shown());
 }
 
 CONSONANT_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.readyButtonShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.readyButtonShown());
 }
 
 CONSONANT_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseButtonsShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.responseButtonsShown());
 }
 
 CONSONANT_TEST(
