@@ -8,18 +8,6 @@
 
 namespace av_speech_in_noise {
 namespace {
-template <typename T> class Collection {
-  public:
-    explicit Collection(std::vector<T> items = {}) : items{std::move(items)} {}
-
-    [[nodiscard]] auto contains(const T &item) const -> bool {
-        return std::find(items.begin(), items.end(), item) != items.end();
-    }
-
-  private:
-    std::vector<T> items{};
-};
-
 class ExperimenterViewStub : public ExperimenterView {
   public:
     void declineContinuingTesting() { listener_->declineContinuingTesting(); }
@@ -46,35 +34,9 @@ class ExperimenterViewStub : public ExperimenterView {
         continueTestingDialogHidden_ = true;
     }
 
-    [[nodiscard]] auto continueTestingDialogHidden() const -> bool {
-        return continueTestingDialogHidden_;
-    }
-
-    [[nodiscard]] auto responseSubmissionHidden() const {
-        return responseSubmissionHidden_;
-    }
-
-    [[nodiscard]] auto evaluationButtonsHidden() const {
-        return evaluationButtonsHidden_;
-    }
-
-    [[nodiscard]] auto correctKeywordsEntryShown() const {
-        return correctKeywordsEntryShown_;
-    }
-
-    [[nodiscard]] auto correctKeywordsEntryHidden() const {
-        return correctKeywordsEntryHidden_;
-    }
-
-    [[nodiscard]] auto evaluationButtonsShown() const {
-        return evaluationButtonsShown_;
-    }
-
     [[nodiscard]] auto responseSubmissionShown() const {
         return responseSubmissionShown_;
     }
-
-    void setCorrectKeywords(std::string s) { correctKeywords_ = std::move(s); }
 
     void show() override { shown_ = true; }
 
@@ -91,8 +53,6 @@ class ExperimenterViewStub : public ExperimenterView {
     void exitTest() { listener_->exitTest(); }
 
     void playTrial() { listener_->playTrial(); }
-
-    void flagResponse() { flagged_ = true; }
 
     void display(std::string s) override { displayed_ = std::move(s); }
 
@@ -130,10 +90,6 @@ class ExperimenterViewStub : public ExperimenterView {
         return exitTestButtonHidden_;
     }
 
-    [[nodiscard]] auto freeResponseCleared() const -> bool {
-        return freeResponseCleared_;
-    }
-
   private:
     std::string displayed_;
     std::string secondaryDisplayed_;
@@ -141,22 +97,15 @@ class ExperimenterViewStub : public ExperimenterView {
     std::string response_;
     std::string correctKeywords_{"0"};
     ExperimenterView::EventListener *listener_{};
-    bool freeResponseCleared_{};
     bool exitTestButtonHidden_{};
     bool exitTestButtonShown_{};
     bool nextTrialButtonShown_{};
     bool nextTrialButtonHidden_{};
-    bool evaluationButtonsShown_{};
     bool responseSubmissionShown_{};
-    bool responseSubmissionHidden_{};
-    bool evaluationButtonsHidden_{};
-    bool correctKeywordsEntryShown_{};
-    bool correctKeywordsEntryHidden_{};
     bool continueTestingDialogShown_{};
     bool continueTestingDialogHidden_{};
     bool shown_{};
     bool hidden_{};
-    bool flagged_{};
 };
 
 class ViewStub : public View {
