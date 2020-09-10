@@ -514,5 +514,12 @@ EXPERIMENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponderListener.notifiedThatTrialHasStarted());
 }
+
+EXPERIMENTER_TEST(
+    responderRestartsAdaptiveTestWhilePreservingTargetsAfterContinueTestingDialogIsAccepted) {
+    experimenterView.acceptContinuingTesting();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        model.adaptiveTestRestartedWhilePreservingCyclicTargets());
+}
 }
 }
