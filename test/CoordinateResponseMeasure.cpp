@@ -85,6 +85,50 @@ class CoordinateResponseMeasureViewStub
     bool nextTrialButtonShown_{};
 };
 
+class CoordinateResponseMeasureOutputViewStub
+    : public CoordinateResponseMeasureOutputView {
+  public:
+    void show() override { shown_ = true; }
+
+    [[nodiscard]] auto shown() const { return shown_; }
+
+    void hide() override { hidden_ = true; }
+
+    [[nodiscard]] auto hidden() const { return hidden_; }
+
+    void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
+
+    [[nodiscard]] auto nextTrialButtonHidden() const {
+        return nextTrialButtonHidden_;
+    }
+
+    void hideResponseButtons() override { responseButtonsHidden_ = true; }
+
+    [[nodiscard]] auto responseButtonsHidden() const {
+        return responseButtonsHidden_;
+    }
+
+    void showNextTrialButton() override { nextTrialButtonShown_ = true; }
+
+    [[nodiscard]] auto nextTrialButtonShown() const {
+        return nextTrialButtonShown_;
+    }
+
+    void showResponseButtons() override { responseButtonsShown_ = true; }
+
+    [[nodiscard]] auto responseButtonsShown() const {
+        return responseButtonsShown_;
+    }
+
+  private:
+    bool responseButtonsShown_{};
+    bool responseButtonsHidden_{};
+    bool shown_{};
+    bool hidden_{};
+    bool nextTrialButtonHidden_{};
+    bool nextTrialButtonShown_{};
+};
+
 void notifyThatReadyButtonHasBeenClicked(
     CoordinateResponseMeasureViewStub &view) {
     view.notifyThatReadyButtonHasBeenClicked();
@@ -183,8 +227,9 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
   protected:
     ModelStub model;
     CoordinateResponseMeasureViewStub view;
+    CoordinateResponseMeasureOutputViewStub outputView;
     CoordinateResponseMeasureResponder responder{model, view};
-    CoordinateResponseMeasurePresenter presenter{view};
+    CoordinateResponseMeasurePresenter presenter{outputView};
     SubmittingCoordinateResponseMeasure submittingResponse{&view};
     ExperimenterResponderStub experimenterResponder;
     TaskResponderListenerStub taskResponderListener;
@@ -206,39 +251,39 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
 
 COORDINATE_RESPONSE_MEASURE_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.nextTrialButtonHidden());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(
     presenterHidesResponseButtonsAfterUserIsDoneResponding) {
     notifyThatUserIsDoneResponding(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
+    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(outputView);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(presenterHidesViewWhenStopped) {
     stop(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.hidden());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(presenterHidesResponseButtonsWhenStopped) {
     stop(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
+    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(outputView);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(presenterShowsViewWhenStarted) {
     start(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.shown());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.nextTrialButtonShown());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(
     presenterShowsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseButtonsShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.responseButtonsShown());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(
