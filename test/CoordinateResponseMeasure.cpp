@@ -29,7 +29,7 @@ class CoordinateResponseMeasureInputViewStub
 
     void subscribe(EventListener *e) override { listener_ = e; }
 
-    void submitResponse() {
+    void notifyThatResponseButtonHasBeenClicked() {
         listener_->notifyThatResponseButtonHasBeenClicked();
     }
 
@@ -95,52 +95,6 @@ void notifyThatReadyButtonHasBeenClicked(
     view.notifyThatReadyButtonHasBeenClicked();
 }
 
-class UseCase {
-  public:
-    virtual ~UseCase() = default;
-    virtual void run() = 0;
-};
-
-void run(UseCase &useCase) { useCase.run(); }
-
-class TrialSubmission : public virtual UseCase {
-  public:
-    virtual auto nextTrialButtonShown() -> bool = 0;
-    virtual auto responseViewShown() -> bool = 0;
-    virtual auto responseViewHidden() -> bool = 0;
-};
-
-class SubmittingCoordinateResponseMeasure : public TrialSubmission {
-    CoordinateResponseMeasureInputViewStub &inputView;
-    CoordinateResponseMeasureOutputViewStub &outputView;
-
-  public:
-    explicit SubmittingCoordinateResponseMeasure(
-        CoordinateResponseMeasureInputViewStub &inputView,
-        CoordinateResponseMeasureOutputViewStub &outputView)
-        : inputView{inputView}, outputView{outputView} {}
-
-    void run() override { inputView.submitResponse(); }
-
-    auto nextTrialButtonShown() -> bool override {
-        return outputView.nextTrialButtonShown();
-    }
-
-    auto responseViewShown() -> bool override {
-        return outputView.responseButtonsShown();
-    }
-
-    auto responseViewHidden() -> bool override {
-        return outputView.responseButtonsHidden();
-    }
-};
-
-class PlayingTrial : public virtual UseCase {
-  public:
-    virtual auto nextTrialButtonHidden() -> bool = 0;
-    virtual auto nextTrialButtonShown() -> bool = 0;
-};
-
 class ExperimenterResponderStub : public ExperimenterResponder {
   public:
     void subscribe(EventListener *) override {}
@@ -186,6 +140,11 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
+void notifyThatResponseButtonHasBeenClicked(
+    CoordinateResponseMeasureInputViewStub &view) {
+    view.notifyThatResponseButtonHasBeenClicked();
+}
+
 class CoordinateResponseMeasureTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -193,8 +152,6 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
     CoordinateResponseMeasureOutputViewStub outputView;
     CoordinateResponseMeasureResponder responder{model, inputView};
     CoordinateResponseMeasurePresenter presenter{outputView};
-    SubmittingCoordinateResponseMeasure submittingResponse{
-        inputView, outputView};
     ExperimenterResponderStub experimenterResponder;
     TaskResponderListenerStub taskResponderListener;
 
@@ -266,48 +223,48 @@ COORDINATE_RESPONSE_MEASURE_TEST(
 
 COORDINATE_RESPONSE_MEASURE_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
-    run(submittingResponse);
+    notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponder.notifiedThatUserIsReadyForNextTrial());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
-    run(submittingResponse);
+    notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskResponderListener.notifiedThatUserIsDoneResponding());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesNumberResponse) {
     inputView.setNumberResponse("1");
-    run(submittingResponse);
+    notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.responseParameters().number);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesGreenColor) {
     inputView.setGreenResponse();
-    run(submittingResponse);
+    notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::green);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesRedColor) {
     inputView.setRedResponse();
-    run(submittingResponse);
+    notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::red);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesBlueColor) {
     inputView.setBlueResponse();
-    run(submittingResponse);
+    notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::blue);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesWhiteColor) {
     inputView.setGrayResponse();
-    run(submittingResponse);
+    notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::white);
 }
