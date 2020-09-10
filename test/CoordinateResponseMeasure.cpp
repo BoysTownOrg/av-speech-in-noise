@@ -1,32 +1,11 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
-#include <presentation/Consonant.hpp>
 #include <presentation/CoordinateResponseMeasure.hpp>
-#include <presentation/FreeResponse.hpp>
-#include <presentation/PassFail.hpp>
-#include <presentation/CorrectKeywords.hpp>
-#include <presentation/TestSetupImpl.hpp>
-#include <presentation/ExperimenterImpl.hpp>
-#include <presentation/Presenter.hpp>
-#include <av-speech-in-noise/name.hpp>
 #include <gtest/gtest.h>
-#include <algorithm>
 #include <utility>
 
 namespace av_speech_in_noise {
 namespace {
-template <typename T> class Collection {
-  public:
-    explicit Collection(std::vector<T> items = {}) : items{std::move(items)} {}
-
-    [[nodiscard]] auto contains(const T &item) const -> bool {
-        return std::find(items.begin(), items.end(), item) != items.end();
-    }
-
-  private:
-    std::vector<T> items{};
-};
-
 class CoordinateResponseMeasureViewStub
     : public CoordinateResponseMeasureInputView,
       public CoordinateResponseMeasureOutputView {
@@ -119,16 +98,6 @@ class UseCase {
 
 void run(UseCase &useCase) { useCase.run(); }
 
-class ConditionUseCase : public virtual UseCase {
-  public:
-    virtual auto condition(ModelStub &) -> Condition = 0;
-};
-
-class LevelUseCase : public virtual UseCase {
-  public:
-    virtual auto fullScaleLevel(ModelStub &) -> int = 0;
-};
-
 class TrialSubmission : public virtual UseCase {
   public:
     virtual auto nextTrialButtonShown() -> bool = 0;
@@ -163,25 +132,6 @@ class PlayingTrial : public virtual UseCase {
   public:
     virtual auto nextTrialButtonHidden() -> bool = 0;
     virtual auto nextTrialButtonShown() -> bool = 0;
-};
-
-class PlayingCoordinateResponseMeasureTrial : public PlayingTrial {
-    CoordinateResponseMeasureViewStub *view;
-
-  public:
-    explicit PlayingCoordinateResponseMeasureTrial(
-        CoordinateResponseMeasureViewStub *view)
-        : view{view} {}
-
-    void run() override { view->notifyThatReadyButtonHasBeenClicked(); }
-
-    auto nextTrialButtonHidden() -> bool override {
-        return view->nextTrialButtonHidden();
-    }
-
-    auto nextTrialButtonShown() -> bool override {
-        return view->nextTrialButtonShown();
-    }
 };
 
 class ExperimenterResponderStub : public ExperimenterResponder {
@@ -225,10 +175,6 @@ void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
     presenter.notifyThatUserIsDoneResponding();
 }
 
-void notifyThatTrialHasStarted(TaskPresenter &presenter) {
-    presenter.notifyThatTrialHasStarted();
-}
-
 void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
@@ -239,8 +185,7 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
     CoordinateResponseMeasureViewStub view;
     CoordinateResponseMeasureResponder responder{model, view};
     CoordinateResponseMeasurePresenter presenter{view};
-    SubmittingCoordinateResponseMeasure submittingCoordinateResponseMeasure{
-        &view};
+    SubmittingCoordinateResponseMeasure submittingResponse{&view};
     ExperimenterResponderStub experimenterResponder;
     TaskResponderListenerStub taskResponder;
 
@@ -254,7 +199,7 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).responseButtonsHidden())
 
 #define AV_SPEECH_IN_NOISE_EXPECT_COLOR(model, c)                              \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(c, (model).responseParameters().color);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(c, (model).responseParameters().color)
 
 #define COORDINATE_RESPONSE_MEASURE_TEST(a)                                    \
     TEST_F(CoordinateResponseMeasureTests, a)
@@ -311,48 +256,48 @@ COORDINATE_RESPONSE_MEASURE_TEST(
 
 COORDINATE_RESPONSE_MEASURE_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
-    run(submittingCoordinateResponseMeasure);
+    run(submittingResponse);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponder.notifiedThatUserIsReadyForNextTrial());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
-    run(submittingCoordinateResponseMeasure);
+    run(submittingResponse);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskResponder.notifiedThatUserIsDoneResponding());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesNumberResponse) {
     view.setNumberResponse("1");
-    run(submittingCoordinateResponseMeasure);
+    run(submittingResponse);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.responseParameters().number);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesGreenColor) {
     view.setGreenResponse();
-    run(submittingCoordinateResponseMeasure);
+    run(submittingResponse);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::green);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesRedColor) {
     view.setRedResponse();
-    run(submittingCoordinateResponseMeasure);
+    run(submittingResponse);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::red);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesBlueColor) {
     view.setBlueResponse();
-    run(submittingCoordinateResponseMeasure);
+    run(submittingResponse);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::blue);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesWhiteColor) {
     view.setGrayResponse();
-    run(submittingCoordinateResponseMeasure);
+    run(submittingResponse);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::white);
 }
