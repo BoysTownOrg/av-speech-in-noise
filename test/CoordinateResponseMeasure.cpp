@@ -253,6 +253,9 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).responseButtonsHidden())
 
+#define AV_SPEECH_IN_NOISE_EXPECT_COLOR(model, c)                              \
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(c, (model).responseParameters().color);
+
 #define COORDINATE_RESPONSE_MEASURE_TEST(a)                                    \
     TEST_F(CoordinateResponseMeasureTests, a)
 
@@ -320,5 +323,38 @@ COORDINATE_RESPONSE_MEASURE_TEST(
         taskResponder.notifiedThatUserIsDoneResponding());
 }
 
+COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesNumberResponse) {
+    view.setNumberResponse("1");
+    run(submittingCoordinateResponseMeasure);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.responseParameters().number);
+}
+
+COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesGreenColor) {
+    view.setGreenResponse();
+    run(submittingCoordinateResponseMeasure);
+    AV_SPEECH_IN_NOISE_EXPECT_COLOR(
+        model, coordinate_response_measure::Color::green);
+}
+
+COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesRedColor) {
+    view.setRedResponse();
+    run(submittingCoordinateResponseMeasure);
+    AV_SPEECH_IN_NOISE_EXPECT_COLOR(
+        model, coordinate_response_measure::Color::red);
+}
+
+COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesBlueColor) {
+    view.setBlueResponse();
+    run(submittingCoordinateResponseMeasure);
+    AV_SPEECH_IN_NOISE_EXPECT_COLOR(
+        model, coordinate_response_measure::Color::blue);
+}
+
+COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesWhiteColor) {
+    view.setGrayResponse();
+    run(submittingCoordinateResponseMeasure);
+    AV_SPEECH_IN_NOISE_EXPECT_COLOR(
+        model, coordinate_response_measure::Color::white);
+}
 }
 }
