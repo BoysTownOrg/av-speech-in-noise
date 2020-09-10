@@ -10,16 +10,20 @@ void PassFailResponder::subscribe(TaskResponder::EventListener *e) {
     listener = e;
 }
 
-void PassFailResponder::notifyThatCorrectButtonHasBeenClicked() {
-    model.submitCorrectResponse();
+static void notifyThatUserIsDoneResponding(
+    TaskResponder::EventListener *listener, ExperimenterResponder *responder) {
     listener->notifyThatUserIsDoneResponding();
     responder->showContinueTestingDialogWithResultsWhenComplete();
 }
 
+void PassFailResponder::notifyThatCorrectButtonHasBeenClicked() {
+    model.submitCorrectResponse();
+    notifyThatUserIsDoneResponding(listener, responder);
+}
+
 void PassFailResponder::notifyThatIncorrectButtonHasBeenClicked() {
     model.submitIncorrectResponse();
-    listener->notifyThatUserIsDoneResponding();
-    responder->showContinueTestingDialogWithResultsWhenComplete();
+    notifyThatUserIsDoneResponding(listener, responder);
 }
 
 void PassFailResponder::subscribe(ExperimenterResponder *p) { responder = p; }
