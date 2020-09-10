@@ -8,72 +8,25 @@
 
 namespace av_speech_in_noise {
 namespace {
-class ConsonantViewStub : public ConsonantOutputView,
-                          public ConsonantInputView {
+class ConsonantInputViewStub : public ConsonantInputView {
   public:
-    void show() override { shown_ = true; }
-
-    [[nodiscard]] auto shown() const -> bool { return shown_; }
-
-    void hide() override { hidden_ = true; }
-
-    [[nodiscard]] auto hidden() const -> bool { return hidden_; }
-
     void notifyThatReadyButtonHasBeenClicked() {
         listener_->notifyThatReadyButtonHasBeenClicked();
     }
 
     void subscribe(EventListener *e) override { listener_ = e; }
 
-    void showReadyButton() override { readyButtonShown_ = true; }
-
-    [[nodiscard]] auto readyButtonShown() const -> bool {
-        return readyButtonShown_;
-    }
-
-    void hideReadyButton() override { readyButtonHidden_ = true; }
-
-    [[nodiscard]] auto readyButtonHidden() const -> bool {
-        return readyButtonHidden_;
-    }
-
     void notifyThatResponseButtonHasBeenClicked() {
         listener_->notifyThatResponseButtonHasBeenClicked();
-    }
-
-    void hideResponseButtons() override { responseButtonsHidden_ = true; }
-
-    [[nodiscard]] auto responseButtonsHidden() const -> bool {
-        return responseButtonsHidden_;
-    }
-
-    void showResponseButtons() override { responseButtonsShown_ = true; }
-
-    [[nodiscard]] auto responseButtonsShown() const -> bool {
-        return responseButtonsShown_;
     }
 
     void setConsonant(std::string c) { consonant_ = std::move(c); }
 
     auto consonant() -> std::string override { return consonant_; }
 
-    [[nodiscard]] auto cursorHidden() const -> bool { return cursorHidden_; }
-
-    void hideCursor() override { cursorHidden_ = true; }
-
-    void showCursor() override { cursorShown_ = true; }
-
   private:
     std::string consonant_;
     EventListener *listener_{};
-    bool shown_{};
-    bool hidden_{};
-    bool responseButtonsShown_{};
-    bool responseButtonsHidden_{};
-    bool readyButtonShown_{};
-    bool readyButtonHidden_{};
-    bool cursorHidden_{};
-    bool cursorShown_{};
 };
 
 class ConsonantOutputViewStub : public ConsonantOutputView {
@@ -110,8 +63,6 @@ class ConsonantOutputViewStub : public ConsonantOutputView {
         return responseButtonsShown_;
     }
 
-    void setConsonant(std::string c) { consonant_ = std::move(c); }
-
     [[nodiscard]] auto cursorHidden() const -> bool { return cursorHidden_; }
 
     void hideCursor() override { cursorHidden_ = true; }
@@ -119,7 +70,6 @@ class ConsonantOutputViewStub : public ConsonantOutputView {
     void showCursor() override { cursorShown_ = true; }
 
   private:
-    std::string consonant_;
     bool shown_{};
     bool hidden_{};
     bool responseButtonsShown_{};
@@ -130,7 +80,7 @@ class ConsonantOutputViewStub : public ConsonantOutputView {
     bool cursorShown_{};
 };
 
-void notifyThatReadyButtonHasBeenClicked(ConsonantViewStub &view) {
+void notifyThatReadyButtonHasBeenClicked(ConsonantInputViewStub &view) {
     view.notifyThatReadyButtonHasBeenClicked();
 }
 
@@ -155,23 +105,26 @@ class TrialSubmission : public virtual UseCase {
 };
 
 class SubmittingConsonant : public TrialSubmission {
-    ConsonantViewStub *view;
+    ConsonantInputViewStub *view;
+    ConsonantOutputViewStub *outputView;
 
   public:
-    explicit SubmittingConsonant(ConsonantViewStub *view) : view{view} {}
+    explicit SubmittingConsonant(
+        ConsonantInputViewStub *view, ConsonantOutputViewStub *outputView)
+        : view{view}, outputView{outputView} {}
 
     void run() override { view->notifyThatResponseButtonHasBeenClicked(); }
 
     auto nextTrialButtonShown() -> bool override {
-        return view->readyButtonShown();
+        return outputView->readyButtonShown();
     }
 
     auto responseViewShown() -> bool override {
-        return view->responseButtonsShown();
+        return outputView->responseButtonsShown();
     }
 
     auto responseViewHidden() -> bool override {
-        return view->responseButtonsHidden();
+        return outputView->responseButtonsHidden();
     }
 };
 
@@ -231,11 +184,11 @@ void start(TaskPresenter &presenter) { presenter.start(); }
 class ConsonantTests : public ::testing::Test {
   protected:
     ModelStub model;
-    ConsonantViewStub view;
+    ConsonantInputViewStub view;
     ConsonantOutputViewStub outputView;
     ConsonantResponder responder{model, view};
     ConsonantPresenter presenter{outputView};
-    SubmittingConsonant submittingConsonant{&view};
+    SubmittingConsonant submittingConsonant{&view, &outputView};
     ExperimenterResponderStub experimenterResponder;
     TaskResponderListenerStub taskResponder;
 
