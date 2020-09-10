@@ -362,6 +362,11 @@ void acceptContinuingTesting(ExperimenterViewStub &view) {
     view.acceptContinuingTesting();
 }
 
+void showContinueTestingDialogWithResultsWhenComplete(
+    ExperimenterResponder &responder) {
+    responder.showContinueTestingDialogWithResultsWhenComplete();
+}
+
 auto hidden(ExperimenterViewStub &view) -> bool { return view.hidden(); }
 
 void completeTrial(ModelStub &model) { model.completeTrial(); }
@@ -560,6 +565,29 @@ EXPERIMENTER_TEST(
     responderDisplaysTrialNumberAfterContinueTestingDialogIsAccepted) {
     model.setTrialNumber(1);
     acceptContinuingTesting(experimenterView);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"Trial 1"}, experimenterResponderListener.displayed());
+}
+
+EXPERIMENTER_TEST(
+    responderNotifiesThatNextTrialIsReadyAfterNotShowingContinueTestingDialogWithResults) {
+    showContinueTestingDialogWithResultsWhenComplete(experimenterResponder);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        experimenterResponderListener.notifiedThatNextTrialIsReady());
+}
+
+EXPERIMENTER_TEST(
+    responderDisplaysTargetFileNameAfterNotShowingContinueTestingDialogWithResults) {
+    model.setTargetFileName("a");
+    showContinueTestingDialogWithResultsWhenComplete(experimenterResponder);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, experimenterResponderListener.displayedSecondary());
+}
+
+EXPERIMENTER_TEST(
+    responderDisplaysTrialNumberAfterNotShowingContinueTestingDialogWithResults) {
+    model.setTrialNumber(1);
+    showContinueTestingDialogWithResultsWhenComplete(experimenterResponder);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"Trial 1"}, experimenterResponderListener.displayed());
 }
