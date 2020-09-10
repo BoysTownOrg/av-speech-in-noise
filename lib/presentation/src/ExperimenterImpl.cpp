@@ -1,5 +1,6 @@
 #include "ExperimenterImpl.hpp"
 #include <sstream>
+#include <functional>
 
 namespace av_speech_in_noise {
 static void displayTrialInformation(
@@ -57,7 +58,9 @@ static void notifyThatTestIsComplete(IPresenter *presenter) {
     presenter->notifyThatTestIsComplete();
 }
 
-void ExperimenterResponderImpl::exitTest() { notifyThatTestIsComplete(parent); }
+void ExperimenterResponderImpl::exitTest() {
+    notifyThatTestIsComplete(responder);
+}
 
 static void playTrial(
     Model &model, View &view, ExperimenterResponder::EventListener *listener) {
@@ -70,7 +73,7 @@ void ExperimenterResponderImpl::playTrial() {
 }
 
 void ExperimenterResponderImpl::declineContinuingTesting() {
-    notifyThatTestIsComplete(parent);
+    notifyThatTestIsComplete(responder);
 }
 
 void ExperimenterResponderImpl::acceptContinuingTesting() {
@@ -78,9 +81,18 @@ void ExperimenterResponderImpl::acceptContinuingTesting() {
     readyNextTrial(model, listener);
 }
 
+static void readyNextTrialIfTestIncompleteElse(Model &model,
+    ExperimenterResponder::EventListener *listener,
+    const std::function<void()> &f) {
+    if (model.testComplete())
+        f();
+    else
+        readyNextTrial(model, listener);
+}
+
 void ExperimenterResponderImpl::
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() {
-    if (model.testComplete()) {
+    readyNextTrialIfTestIncompleteElse(model, listener, [&] {
         listener->showContinueTestingDialog();
         std::stringstream thresholds;
         thresholds << "thresholds (targets: dB SNR)";
@@ -88,27 +100,24 @@ void ExperimenterResponderImpl::
             thresholds << '\n'
                        << result.targetsUrl.path << ": " << result.threshold;
         listener->setContinueTestingDialogMessage(thresholds.str());
-    } else
-        readyNextTrial(model, listener);
+    });
 }
 
 void ExperimenterResponderImpl::notifyThatUserIsDoneResponding() {
-    if (model.testComplete())
-        notifyThatTestIsComplete(parent);
-    else
-        readyNextTrial(model, listener);
+    readyNextTrialIfTestIncompleteElse(
+        model, listener, [&]() { notifyThatTestIsComplete(responder); });
 }
 
 void ExperimenterResponderImpl::notifyThatUserIsReadyForNextTrial() {
     if (model.testComplete())
-        notifyThatTestIsComplete(parent);
+        notifyThatTestIsComplete(responder);
     else {
         displayTrialInformation(model, listener);
         av_speech_in_noise::playTrial(model, mainView, listener);
     }
 }
 
-void ExperimenterResponderImpl::subscribe(IPresenter *p) { parent = p; }
+void ExperimenterResponderImpl::subscribe(IPresenter *p) { responder = p; }
 
 ExperimenterPresenterImpl::ExperimenterPresenterImpl(Model &model,
     ExperimenterOutputView &view, TaskPresenter *consonantPresenter,

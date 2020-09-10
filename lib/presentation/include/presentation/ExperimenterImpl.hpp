@@ -34,7 +34,7 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
     Model &model;
     View &mainView;
     ExperimenterResponder::EventListener *listener{};
-    IPresenter *parent{};
+    IPresenter *responder{};
 };
 
 class ExperimenterPresenterImpl : public Model::EventListener,
