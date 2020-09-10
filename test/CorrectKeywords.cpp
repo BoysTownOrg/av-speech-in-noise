@@ -62,64 +62,25 @@ void start(TaskPresenter &presenter) { presenter.start(); }
 
 class ViewStub : public View {
   public:
-    auto audioDevice() -> std::string override { return audioDevice_; }
-
     void showErrorMessage(std::string s) override {
         errorMessage_ = std::move(s);
     }
 
-    auto errorMessage() { return errorMessage_; }
+    auto errorMessage() -> std::string { return errorMessage_; }
 
-    void eventLoop() override { eventLoopCalled_ = true; }
-
-    auto browseForDirectory() -> std::string override {
-        return browseForDirectoryResult_;
-    }
-
-    auto browseCancelled() -> bool override { return browseCancelled_; }
-
-    auto browseForOpeningFile() -> std::string override {
-        return browseForOpeningFileResult_;
-    }
-
-    void populateAudioDeviceMenu(std::vector<std::string> v) override {
-        audioDevices_ = std::move(v);
-    }
+    auto audioDevice() -> std::string override { return {}; }
+    void eventLoop() override {}
+    auto browseForDirectory() -> std::string override { return {}; }
+    auto browseCancelled() -> bool override { return {}; }
+    auto browseForOpeningFile() -> std::string override { return {}; }
+    void populateAudioDeviceMenu(std::vector<std::string>) override {}
 
   private:
-    std::vector<std::string> audioDevices_;
     std::string errorMessage_;
-    std::string browseForDirectoryResult_;
-    std::string browseForOpeningFileResult_;
-    std::string audioDevice_;
-    bool eventLoopCalled_{};
-    bool browseCancelled_{};
 };
 
 class ExperimenterOutputViewStub : public ExperimenterOutputView {
   public:
-    void setContinueTestingDialogMessage(const std::string &s) override {
-        continueTestingDialogMessage_ = s;
-    }
-
-    void showContinueTestingDialog() override {
-        continueTestingDialogShown_ = true;
-    }
-
-    void hideContinueTestingDialog() override {
-        continueTestingDialogHidden_ = true;
-    }
-
-    void show() override { shown_ = true; }
-
-    void hide() override { hidden_ = true; }
-
-    void display(std::string s) override { displayed_ = std::move(s); }
-
-    void secondaryDisplay(std::string s) override {
-        secondaryDisplayed_ = std::move(s);
-    }
-
     void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
     [[nodiscard]] auto nextTrialButtonShown() const {
@@ -132,24 +93,19 @@ class ExperimenterOutputViewStub : public ExperimenterOutputView {
         return nextTrialButtonHidden_;
     }
 
-    void showExitTestButton() override { exitTestButtonShown_ = true; }
-
-    void hideExitTestButton() override { exitTestButtonHidden_ = true; }
+    void setContinueTestingDialogMessage(const std::string &) override {}
+    void showContinueTestingDialog() override {}
+    void hideContinueTestingDialog() override {}
+    void show() override {}
+    void hide() override {}
+    void display(std::string) override {}
+    void secondaryDisplay(std::string) override {}
+    void showExitTestButton() override {}
+    void hideExitTestButton() override {}
 
   private:
-    std::string displayed_;
-    std::string secondaryDisplayed_;
-    std::string continueTestingDialogMessage_;
-    std::string response_;
-    std::string correctKeywords_{"0"};
-    bool exitTestButtonHidden_{};
-    bool exitTestButtonShown_{};
     bool nextTrialButtonShown_{};
     bool nextTrialButtonHidden_{};
-    bool continueTestingDialogShown_{};
-    bool continueTestingDialogHidden_{};
-    bool shown_{};
-    bool hidden_{};
 };
 
 class CorrectKeywordsTests : public ::testing::Test {
