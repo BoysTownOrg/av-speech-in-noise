@@ -170,7 +170,7 @@ CORRECT_KEYWORDS_TEST(
     notifyThatSubmitButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponder
-            .continueTestingDialogShownWithResultsWhenComplete());
+            .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
 CORRECT_KEYWORDS_TEST(

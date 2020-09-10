@@ -152,7 +152,7 @@ PASS_FAIL_TEST(
     notifyThatCorrectButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponder
-            .continueTestingDialogShownWithResultsWhenComplete());
+            .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
 PASS_FAIL_TEST(
@@ -160,7 +160,7 @@ PASS_FAIL_TEST(
     notifyThatIncorrectButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponder
-            .continueTestingDialogShownWithResultsWhenComplete());
+            .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
 PASS_FAIL_TEST(

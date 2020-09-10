@@ -10,11 +10,13 @@ class ExperimenterResponderStub : public ExperimenterResponder {
     void subscribe(IPresenter *) override {}
     void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion()
         override {
-        continueTestingDialogShownWithResultsWhenComplete_ = true;
+        notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion_ =
+            true;
     }
-    [[nodiscard]] auto continueTestingDialogShownWithResultsWhenComplete() const
-        -> bool {
-        return continueTestingDialogShownWithResultsWhenComplete_;
+    [[nodiscard]] auto
+    notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion()
+        const -> bool {
+        return notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion_;
     }
     void notifyThatUserIsDoneResponding() override {
         notifiedThatUserIsDoneResponding_ = true;
@@ -31,7 +33,8 @@ class ExperimenterResponderStub : public ExperimenterResponder {
 
   private:
     bool notifiedThatUserIsReadyForNextTrial_{};
-    bool continueTestingDialogShownWithResultsWhenComplete_{};
+    bool
+        notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion_{};
     bool notifiedThatUserIsDoneResponding_{};
 };
 }
