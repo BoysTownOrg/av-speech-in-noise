@@ -1,5 +1,6 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
+#include "TaskResponderListenerStub.hpp"
 #include <presentation/Consonant.hpp>
 #include <av-speech-in-noise/name.hpp>
 #include <gtest/gtest.h>
@@ -99,26 +100,6 @@ class ExperimenterResponderStub : public ExperimenterResponder {
 
   private:
     bool notifiedThatUserIsReadyForNextTrial_{};
-};
-
-class TaskResponderListenerStub : public TaskResponder::EventListener {
-  public:
-    void notifyThatTaskHasStarted() override {
-        notifiedThatTaskHasStarted_ = true;
-    }
-    void notifyThatUserIsDoneResponding() override {
-        notifiedThatUserIsDoneResponding_ = true;
-    }
-    [[nodiscard]] auto notifiedThatUserIsDoneResponding() const -> bool {
-        return notifiedThatUserIsDoneResponding_;
-    }
-    [[nodiscard]] auto notifiedThatTaskHasStarted() const -> bool {
-        return notifiedThatTaskHasStarted_;
-    }
-
-  private:
-    bool notifiedThatUserIsDoneResponding_{};
-    bool notifiedThatTaskHasStarted_{};
 };
 
 auto cursorHidden(ConsonantOutputViewStub &view) -> bool {
