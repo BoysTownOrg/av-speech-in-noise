@@ -402,6 +402,25 @@ class PresenterStub : public IPresenter {
     bool notifiedThatTestIsComplete_{};
 };
 
+class ExperimenterResponderListenerStub
+    : public ExperimenterResponder::EventListener {
+  public:
+    void notifyThatTrialHasStarted() override {
+        notifiedThatTrialHasStarted_ = true;
+    }
+    [[nodiscard]] auto notifiedThatTrialHasStarted() const -> bool {
+        return notifiedThatTrialHasStarted_;
+    }
+    void setContinueTestingDialogMessage(const std::string &) override {}
+    void showContinueTestingDialog() override {}
+    void display(const std::string &) override {}
+    void secondaryDisplay(const std::string &) override {}
+    void notifyThatNextTrialIsReady() override {}
+
+  private:
+    bool notifiedThatTrialHasStarted_{};
+};
+
 class ExperimenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -460,10 +479,11 @@ class ExperimenterTests : public ::testing::Test {
     AcceptingContinuingTesting acceptingContinuingTesting{experimenterView};
     ExitingTest exitingTest{&experimenterView};
     PresenterStub presenter;
+    ExperimenterResponderListenerStub experimenterResponderListener;
 
     ExperimenterTests() {
         experimenterResponder.subscribe(&presenter);
-        experimenterResponder.subscribe(&experimenterPresenter);
+        experimenterResponder.subscribe(&experimenterResponderListener);
     }
 };
 
@@ -480,6 +500,13 @@ EXPERIMENTER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
     notifyThatPlayTrialButtonHasBeenClicked(experimenterView);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, model.trialParameters().audioDevice);
+}
+
+EXPERIMENTER_TEST(
+    responderNotifiesThatTrialHasStartedAfterPlayTrialButtonClicked) {
+    notifyThatPlayTrialButtonHasBeenClicked(experimenterView);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        experimenterResponderListener.notifiedThatTrialHasStarted());
 }
 }
 }
