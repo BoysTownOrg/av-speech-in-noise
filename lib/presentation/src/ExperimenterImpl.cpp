@@ -2,20 +2,10 @@
 #include <sstream>
 
 namespace av_speech_in_noise {
-static void displayTrialNumber(
-    Model &model, ExperimenterResponder::EventListener *presenter) {
-    presenter->display("Trial " + std::to_string(model.trialNumber()));
-}
-
-static void displayTarget(
-    Model &model, ExperimenterResponder::EventListener *presenter) {
-    presenter->secondaryDisplay(model.targetFileName());
-}
-
 static void displayTrialInformation(
     Model &model, ExperimenterResponder::EventListener *presenter) {
-    displayTrialNumber(model, presenter);
-    displayTarget(model, presenter);
+    presenter->display("Trial " + std::to_string(model.trialNumber()));
+    presenter->secondaryDisplay(model.targetFileName());
 }
 
 static void readyNextTrial(
