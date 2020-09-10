@@ -6,18 +6,9 @@
 
 namespace av_speech_in_noise {
 namespace {
-class CoordinateResponseMeasureViewStub
-    : public CoordinateResponseMeasureInputView,
-      public CoordinateResponseMeasureOutputView {
+class CoordinateResponseMeasureInputViewStub
+    : public CoordinateResponseMeasureInputView {
   public:
-    void show() override { shown_ = true; }
-
-    [[nodiscard]] auto shown() const { return shown_; }
-
-    void hide() override { hidden_ = true; }
-
-    [[nodiscard]] auto hidden() const { return hidden_; }
-
     auto whiteResponse() -> bool override { return grayResponse_; }
 
     void setGrayResponse() { grayResponse_ = true; }
@@ -31,30 +22,6 @@ class CoordinateResponseMeasureViewStub
     void setGreenResponse() { greenResponse_ = true; }
 
     auto greenResponse() -> bool override { return greenResponse_; }
-
-    void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
-
-    [[nodiscard]] auto nextTrialButtonHidden() const {
-        return nextTrialButtonHidden_;
-    }
-
-    void hideResponseButtons() override { responseButtonsHidden_ = true; }
-
-    [[nodiscard]] auto responseButtonsHidden() const {
-        return responseButtonsHidden_;
-    }
-
-    void showNextTrialButton() override { nextTrialButtonShown_ = true; }
-
-    [[nodiscard]] auto nextTrialButtonShown() const {
-        return nextTrialButtonShown_;
-    }
-
-    void showResponseButtons() override { responseButtonsShown_ = true; }
-
-    [[nodiscard]] auto responseButtonsShown() const {
-        return responseButtonsShown_;
-    }
 
     void setNumberResponse(std::string s) { numberResponse_ = std::move(s); }
 
@@ -73,16 +40,10 @@ class CoordinateResponseMeasureViewStub
   private:
     std::string numberResponse_{"0"};
     EventListener *listener_{};
-    bool responseButtonsShown_{};
-    bool responseButtonsHidden_{};
-    bool shown_{};
-    bool hidden_{};
     bool greenResponse_{};
     bool redResponse_{};
     bool blueResponse_{};
     bool grayResponse_{};
-    bool nextTrialButtonHidden_{};
-    bool nextTrialButtonShown_{};
 };
 
 class CoordinateResponseMeasureOutputViewStub
@@ -130,7 +91,7 @@ class CoordinateResponseMeasureOutputViewStub
 };
 
 void notifyThatReadyButtonHasBeenClicked(
-    CoordinateResponseMeasureViewStub &view) {
+    CoordinateResponseMeasureInputViewStub &view) {
     view.notifyThatReadyButtonHasBeenClicked();
 }
 
@@ -150,16 +111,16 @@ class TrialSubmission : public virtual UseCase {
 };
 
 class SubmittingCoordinateResponseMeasure : public TrialSubmission {
-    CoordinateResponseMeasureViewStub *view;
+    CoordinateResponseMeasureInputViewStub &inputView;
     CoordinateResponseMeasureOutputViewStub &outputView;
 
   public:
     explicit SubmittingCoordinateResponseMeasure(
-        CoordinateResponseMeasureViewStub *view,
+        CoordinateResponseMeasureInputViewStub &inputView,
         CoordinateResponseMeasureOutputViewStub &outputView)
-        : view{view}, outputView{outputView} {}
+        : inputView{inputView}, outputView{outputView} {}
 
-    void run() override { view->submitResponse(); }
+    void run() override { inputView.submitResponse(); }
 
     auto nextTrialButtonShown() -> bool override {
         return outputView.nextTrialButtonShown();
@@ -228,11 +189,12 @@ void start(TaskPresenter &presenter) { presenter.start(); }
 class CoordinateResponseMeasureTests : public ::testing::Test {
   protected:
     ModelStub model;
-    CoordinateResponseMeasureViewStub view;
+    CoordinateResponseMeasureInputViewStub inputView;
     CoordinateResponseMeasureOutputViewStub outputView;
-    CoordinateResponseMeasureResponder responder{model, view};
+    CoordinateResponseMeasureResponder responder{model, inputView};
     CoordinateResponseMeasurePresenter presenter{outputView};
-    SubmittingCoordinateResponseMeasure submittingResponse{&view, outputView};
+    SubmittingCoordinateResponseMeasure submittingResponse{
+        inputView, outputView};
     ExperimenterResponderStub experimenterResponder;
     TaskResponderListenerStub taskResponderListener;
 
@@ -290,14 +252,14 @@ COORDINATE_RESPONSE_MEASURE_TEST(
 
 COORDINATE_RESPONSE_MEASURE_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterReadyButtonIsClicked) {
-    notifyThatReadyButtonHasBeenClicked(view);
+    notifyThatReadyButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponder.notifiedThatUserIsReadyForNextTrial());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(
     responderNotifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
-    notifyThatReadyButtonHasBeenClicked(view);
+    notifyThatReadyButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskResponderListener.notifiedThatTaskHasStarted());
 }
@@ -317,34 +279,34 @@ COORDINATE_RESPONSE_MEASURE_TEST(
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesNumberResponse) {
-    view.setNumberResponse("1");
+    inputView.setNumberResponse("1");
     run(submittingResponse);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.responseParameters().number);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesGreenColor) {
-    view.setGreenResponse();
+    inputView.setGreenResponse();
     run(submittingResponse);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::green);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesRedColor) {
-    view.setRedResponse();
+    inputView.setRedResponse();
     run(submittingResponse);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::red);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesBlueColor) {
-    view.setBlueResponse();
+    inputView.setBlueResponse();
     run(submittingResponse);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::blue);
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesWhiteColor) {
-    view.setGrayResponse();
+    inputView.setGrayResponse();
     run(submittingResponse);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::white);

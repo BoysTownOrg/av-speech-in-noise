@@ -176,6 +176,10 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
+void notifyThatResponseButtonHasBeenClicked(ConsonantInputViewStub &view) {
+    view.notifyThatResponseButtonHasBeenClicked();
+}
+
 class ConsonantTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -183,7 +187,6 @@ class ConsonantTests : public ::testing::Test {
     ConsonantOutputViewStub outputView;
     ConsonantResponder responder{model, inputView};
     ConsonantPresenter presenter{outputView};
-    SubmittingConsonant submittingConsonant{inputView, outputView};
     ExperimenterResponderStub experimenterResponder;
     TaskResponderListenerStub taskResponder;
 
@@ -255,20 +258,20 @@ CONSONANT_TEST(responderNotifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
 
 CONSONANT_TEST(responderSubmitsConsonantAfterResponseButtonIsClicked) {
     inputView.setConsonant("b");
-    run(submittingConsonant);
+    notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL('b', model.consonantResponse().consonant);
 }
 
 CONSONANT_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
-    run(submittingConsonant);
+    notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponder.notifiedThatUserIsReadyForNextTrial());
 }
 
 CONSONANT_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
-    run(submittingConsonant);
+    notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskResponder.notifiedThatUserIsDoneResponding());
 }
