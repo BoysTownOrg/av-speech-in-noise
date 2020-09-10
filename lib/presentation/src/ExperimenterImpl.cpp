@@ -85,8 +85,7 @@ void ExperimenterResponderImpl::declineContinuingTesting() {
 
 void ExperimenterResponderImpl::acceptContinuingTesting() {
     model.restartAdaptiveTestWhilePreservingTargets();
-    displayTrialInformation(model, listener);
-    listener->notifyThatNextTrialIsReady();
+    readyNextTrial(model, listener);
 }
 
 void ExperimenterResponderImpl::
@@ -106,10 +105,8 @@ void ExperimenterResponderImpl::
 void ExperimenterResponderImpl::notifyThatUserIsDoneResponding() {
     if (model.testComplete())
         notifyThatTestIsComplete(parent);
-    else {
-        displayTrialInformation(model, listener);
-        listener->notifyThatNextTrialIsReady();
-    }
+    else
+        readyNextTrial(model, listener);
 }
 
 void ExperimenterResponderImpl::notifyThatUserIsReadyForNextTrial() {
