@@ -8,7 +8,8 @@ class ExperimenterResponderStub : public ExperimenterResponder {
   public:
     void subscribe(EventListener *) override {}
     void subscribe(IPresenter *) override {}
-    void showContinueTestingDialogWithResultsWhenComplete() override {
+    void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion()
+        override {
         continueTestingDialogShownWithResultsWhenComplete_ = true;
     }
     [[nodiscard]] auto continueTestingDialogShownWithResultsWhenComplete() const

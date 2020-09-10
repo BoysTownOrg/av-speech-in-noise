@@ -21,7 +21,8 @@ void CorrectKeywordsResponder::notifyThatSubmitButtonHasBeenClicked() {
         model.submit(CorrectKeywords{
             readInteger(keywordsView.correctKeywords(), "number")});
         listener->notifyThatUserIsDoneResponding();
-        responder->showContinueTestingDialogWithResultsWhenComplete();
+        responder
+            ->notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
     } catch (const std::runtime_error &e) {
         view.showErrorMessage(e.what());
     }

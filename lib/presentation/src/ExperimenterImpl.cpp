@@ -79,7 +79,7 @@ void ExperimenterResponderImpl::acceptContinuingTesting() {
 }
 
 void ExperimenterResponderImpl::
-    showContinueTestingDialogWithResultsWhenComplete() {
+    notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() {
     if (model.testComplete()) {
         listener->showContinueTestingDialog();
         std::stringstream thresholds;

@@ -13,7 +13,8 @@ void PassFailResponder::subscribe(TaskResponder::EventListener *e) {
 static void notifyThatUserIsDoneResponding(
     TaskResponder::EventListener *listener, ExperimenterResponder *responder) {
     listener->notifyThatUserIsDoneResponding();
-    responder->showContinueTestingDialogWithResultsWhenComplete();
+    responder
+        ->notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
 void PassFailResponder::notifyThatCorrectButtonHasBeenClicked() {

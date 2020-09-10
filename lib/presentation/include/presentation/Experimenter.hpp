@@ -60,7 +60,8 @@ class ExperimenterResponder {
     virtual ~ExperimenterResponder() = default;
     virtual void subscribe(EventListener *) = 0;
     virtual void subscribe(IPresenter *) = 0;
-    virtual void showContinueTestingDialogWithResultsWhenComplete() = 0;
+    virtual void
+    notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() = 0;
     virtual void notifyThatUserIsDoneResponding() = 0;
     virtual void notifyThatUserIsReadyForNextTrial() = 0;
 };
