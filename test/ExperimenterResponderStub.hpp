@@ -15,7 +15,12 @@ class ExperimenterResponderStub : public ExperimenterResponder {
         -> bool {
         return continueTestingDialogShownWithResultsWhenComplete_;
     }
-    void readyNextTrialIfNeeded() override {}
+    void readyNextTrialIfNeeded() override {
+        notifiedThatUserIsDoneResponding_ = true;
+    }
+    [[nodiscard]] auto notifiedThatUserIsDoneResponding() const -> bool {
+        return notifiedThatUserIsDoneResponding_;
+    }
     void notifyThatUserIsReadyForNextTrial() override {
         notifiedThatUserIsReadyForNextTrial_ = true;
     }
@@ -26,6 +31,7 @@ class ExperimenterResponderStub : public ExperimenterResponder {
   private:
     bool notifiedThatUserIsReadyForNextTrial_{};
     bool continueTestingDialogShownWithResultsWhenComplete_{};
+    bool notifiedThatUserIsDoneResponding_{};
 };
 }
 
