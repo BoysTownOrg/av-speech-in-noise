@@ -26,7 +26,7 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
     void declineContinuingTesting() override;
     void acceptContinuingTesting() override;
     void showContinueTestingDialogWithResultsWhenComplete() override;
-    void readyNextTrialIfNeeded() override;
+    void notifyThatUserIsDoneResponding() override;
     void notifyThatUserIsReadyForNextTrial() override;
 
   private:

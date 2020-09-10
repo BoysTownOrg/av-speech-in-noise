@@ -18,7 +18,7 @@ void FreeResponseResponder::subscribe(ExperimenterResponder *e) {
 void FreeResponseResponder::notifyThatSubmitButtonHasBeenClicked() {
     model.submit(FreeResponse{view.freeResponse(), view.flagged()});
     listener->notifyThatUserIsDoneResponding();
-    responder->readyNextTrialIfNeeded();
+    responder->notifyThatUserIsDoneResponding();
 }
 
 FreeResponsePresenter::FreeResponsePresenter(

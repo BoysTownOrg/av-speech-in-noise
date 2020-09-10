@@ -15,7 +15,7 @@ class ExperimenterResponderStub : public ExperimenterResponder {
         -> bool {
         return continueTestingDialogShownWithResultsWhenComplete_;
     }
-    void readyNextTrialIfNeeded() override {
+    void notifyThatUserIsDoneResponding() override {
         notifiedThatUserIsDoneResponding_ = true;
     }
     [[nodiscard]] auto notifiedThatUserIsDoneResponding() const -> bool {
