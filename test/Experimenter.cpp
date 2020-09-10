@@ -52,7 +52,7 @@ class ExperimenterViewStub : public ExperimenterView {
 
     void exitTest() { listener_->exitTest(); }
 
-    void playTrial() { listener_->playTrial(); }
+    void notifyThatPlayTrialButtonHasBeenClicked() { listener_->playTrial(); }
 
     void display(std::string s) override { displayed_ = std::move(s); }
 
@@ -354,6 +354,10 @@ class AcceptingContinuingTesting : public UseCase {
 
 void exitTest(ExperimenterViewStub &view) { view.exitTest(); }
 
+void notifyThatPlayTrialButtonHasBeenClicked(ExperimenterViewStub &view) {
+    view.notifyThatPlayTrialButtonHasBeenClicked();
+}
+
 auto hidden(ExperimenterViewStub &view) -> bool { return view.hidden(); }
 
 void completeTrial(ModelStub &model) { model.completeTrial(); }
@@ -419,10 +423,9 @@ class ExperimenterTests : public ::testing::Test {
         &coordinateResponseMeasurePresenter, &freeResponseResponder,
         &freeResponsePresenter, &correctKeywordsResponder,
         &correctKeywordsPresenter, &passFailResponder, &passFailPresenter};
-    ExperimenterPresenterImpl experimenterPresenterRefactored{model,
-        experimenterView, &consonantPresenter,
-        &coordinateResponseMeasurePresenter, &freeResponsePresenter,
-        &correctKeywordsPresenter, &passFailPresenter};
+    ExperimenterPresenterImpl experimenterPresenter{model, experimenterView,
+        &consonantPresenter, &coordinateResponseMeasurePresenter,
+        &freeResponsePresenter, &correctKeywordsPresenter, &passFailPresenter};
     InitializingAdaptiveCoordinateResponseMeasureMethod
         initializingAdaptiveCoordinateResponseMeasureMethod;
     InitializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker
@@ -458,7 +461,10 @@ class ExperimenterTests : public ::testing::Test {
     ExitingTest exitingTest{&experimenterView};
     PresenterStub presenter;
 
-    ExperimenterTests() { experimenterResponder.subscribe(&presenter); }
+    ExperimenterTests() {
+        experimenterResponder.subscribe(&presenter);
+        experimenterResponder.subscribe(&experimenterPresenter);
+    }
 };
 
 #define EXPERIMENTER_TEST(a) TEST_F(ExperimenterTests, a)
@@ -467,6 +473,13 @@ EXPERIMENTER_TEST(
     responderNotifiesThatTestIsCompleteAfterExitTestButtonClicked) {
     exitTest(experimenterView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.notifiedThatTestIsComplete());
+}
+
+EXPERIMENTER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
+    setAudioDevice(view, "a");
+    notifyThatPlayTrialButtonHasBeenClicked(experimenterView);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, model.trialParameters().audioDevice);
 }
 }
 }
