@@ -19,7 +19,8 @@ add_executable(
   CoordinateResponseMeasure.cpp
   CorrectKeywords.cpp
   FreeResponse.cpp
-  PassFail.cpp)
+  PassFail.cpp
+  Experimenter.cpp)
 target_compile_features(tests PRIVATE cxx_std_17)
 set_target_properties(tests PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(tests PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})
