@@ -33,20 +33,28 @@ void CoordinateResponseMeasureResponder::subscribe(
     listener = e;
 }
 
+static void notifyThatUserIsReadyForNextTrial(ExperimenterResponder *r) {
+    r->notifyThatUserIsReadyForNextTrial();
+}
+
 void CoordinateResponseMeasureResponder::notifyThatReadyButtonHasBeenClicked() {
     listener->notifyThatTaskHasStarted();
-    responder->notifyThatUserIsReadyForNextTrial();
+    notifyThatUserIsReadyForNextTrial(responder);
 }
 
 void CoordinateResponseMeasureResponder::
     notifyThatResponseButtonHasBeenClicked() {
     model.submit(subjectResponse(view));
     listener->notifyThatUserIsDoneResponding();
-    responder->notifyThatUserIsReadyForNextTrial();
+    notifyThatUserIsReadyForNextTrial(responder);
 }
 
 void CoordinateResponseMeasureResponder::subscribe(ExperimenterResponder *e) {
     responder = e;
+}
+
+static void hideResponseButtons(CoordinateResponseMeasureOutputView &view) {
+    view.hideResponseButtons();
 }
 
 CoordinateResponseMeasurePresenter::CoordinateResponseMeasurePresenter(
@@ -59,7 +67,7 @@ void CoordinateResponseMeasurePresenter::start() {
 }
 
 void CoordinateResponseMeasurePresenter::stop() {
-    view.hideResponseButtons();
+    hideResponseButtons(view);
     view.hide();
 }
 
@@ -68,7 +76,7 @@ void CoordinateResponseMeasurePresenter::notifyThatTaskHasStarted() {
 }
 
 void CoordinateResponseMeasurePresenter::notifyThatUserIsDoneResponding() {
-    view.hideResponseButtons();
+    hideResponseButtons(view);
 }
 
 void CoordinateResponseMeasurePresenter::showResponseSubmission() {

@@ -187,11 +187,11 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
     CoordinateResponseMeasurePresenter presenter{view};
     SubmittingCoordinateResponseMeasure submittingResponse{&view};
     ExperimenterResponderStub experimenterResponder;
-    TaskResponderListenerStub taskResponder;
+    TaskResponderListenerStub taskResponderListener;
 
     CoordinateResponseMeasureTests() {
         responder.subscribe(&experimenterResponder);
-        responder.subscribe(&taskResponder);
+        responder.subscribe(&taskResponderListener);
     }
 };
 
@@ -251,7 +251,8 @@ COORDINATE_RESPONSE_MEASURE_TEST(
 COORDINATE_RESPONSE_MEASURE_TEST(
     responderNotifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
     notifyThatReadyButtonHasBeenClicked(view);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskResponder.notifiedThatTaskHasStarted());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        taskResponderListener.notifiedThatTaskHasStarted());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(
@@ -265,7 +266,7 @@ COORDINATE_RESPONSE_MEASURE_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
     run(submittingResponse);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        taskResponder.notifiedThatUserIsDoneResponding());
+        taskResponderListener.notifiedThatUserIsDoneResponding());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesNumberResponse) {
