@@ -56,18 +56,12 @@ void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
     presenter.notifyThatUserIsDoneResponding();
 }
 
-void notifyThatTrialHasStarted(TaskPresenter &presenter) {
-    presenter.notifyThatTrialHasStarted();
-}
-
 void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
 class ViewStub : public View {
   public:
-    void setAudioDevice(std::string s) { audioDevice_ = std::move(s); }
-
     auto audioDevice() -> std::string override { return audioDevice_; }
 
     void showErrorMessage(std::string s) override {
@@ -77,8 +71,6 @@ class ViewStub : public View {
     auto errorMessage() { return errorMessage_; }
 
     void eventLoop() override { eventLoopCalled_ = true; }
-
-    [[nodiscard]] auto eventLoopCalled() const { return eventLoopCalled_; }
 
     auto browseForDirectory() -> std::string override {
         return browseForDirectoryResult_;
@@ -90,17 +82,9 @@ class ViewStub : public View {
         return browseForOpeningFileResult_;
     }
 
-    void setBrowseForOpeningFileResult(std::string s) {
-        browseForOpeningFileResult_ = std::move(s);
-    }
-
-    void setBrowseCancelled() { browseCancelled_ = true; }
-
     void populateAudioDeviceMenu(std::vector<std::string> v) override {
         audioDevices_ = std::move(v);
     }
-
-    [[nodiscard]] auto audioDevices() const { return audioDevices_; }
 
   private:
     std::vector<std::string> audioDevices_;
@@ -114,10 +98,6 @@ class ViewStub : public View {
 
 class ExperimenterOutputViewStub : public ExperimenterOutputView {
   public:
-    [[nodiscard]] auto continueTestingDialogMessage() const -> std::string {
-        return continueTestingDialogMessage_;
-    }
-
     void setContinueTestingDialogMessage(const std::string &s) override {
         continueTestingDialogMessage_ = s;
     }
@@ -126,36 +106,18 @@ class ExperimenterOutputViewStub : public ExperimenterOutputView {
         continueTestingDialogShown_ = true;
     }
 
-    [[nodiscard]] auto continueTestingDialogShown() const -> bool {
-        return continueTestingDialogShown_;
-    }
-
     void hideContinueTestingDialog() override {
         continueTestingDialogHidden_ = true;
     }
 
-    [[nodiscard]] auto continueTestingDialogHidden() const -> bool {
-        return continueTestingDialogHidden_;
-    }
-
     void show() override { shown_ = true; }
-
-    [[nodiscard]] auto shown() const { return shown_; }
 
     void hide() override { hidden_ = true; }
 
-    [[nodiscard]] auto hidden() const { return hidden_; }
-
     void display(std::string s) override { displayed_ = std::move(s); }
-
-    [[nodiscard]] auto displayed() const { return displayed_; }
 
     void secondaryDisplay(std::string s) override {
         secondaryDisplayed_ = std::move(s);
-    }
-
-    [[nodiscard]] auto secondaryDisplayed() const {
-        return secondaryDisplayed_;
     }
 
     void showNextTrialButton() override { nextTrialButtonShown_ = true; }
@@ -172,19 +134,7 @@ class ExperimenterOutputViewStub : public ExperimenterOutputView {
 
     void showExitTestButton() override { exitTestButtonShown_ = true; }
 
-    [[nodiscard]] auto exitTestButtonShown() const {
-        return exitTestButtonShown_;
-    }
-
     void hideExitTestButton() override { exitTestButtonHidden_ = true; }
-
-    [[nodiscard]] auto exitTestButtonHidden() const {
-        return exitTestButtonHidden_;
-    }
-
-    [[nodiscard]] auto freeResponseCleared() const -> bool {
-        return freeResponseCleared_;
-    }
 
   private:
     std::string displayed_;
@@ -192,7 +142,6 @@ class ExperimenterOutputViewStub : public ExperimenterOutputView {
     std::string continueTestingDialogMessage_;
     std::string response_;
     std::string correctKeywords_{"0"};
-    bool freeResponseCleared_{};
     bool exitTestButtonHidden_{};
     bool exitTestButtonShown_{};
     bool nextTrialButtonShown_{};
@@ -225,9 +174,6 @@ class CorrectKeywordsTests : public ::testing::Test {
 
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).correctKeywordsSubmissionHidden())
-
-#define AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(a)                             \
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(cursorHidden(a))
 
 CORRECT_KEYWORDS_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
