@@ -358,6 +358,10 @@ void notifyThatPlayTrialButtonHasBeenClicked(ExperimenterViewStub &view) {
     view.notifyThatPlayTrialButtonHasBeenClicked();
 }
 
+void acceptContinuingTesting(ExperimenterViewStub &view) {
+    view.acceptContinuingTesting();
+}
+
 auto hidden(ExperimenterViewStub &view) -> bool { return view.hidden(); }
 
 void completeTrial(ModelStub &model) { model.completeTrial(); }
@@ -493,18 +497,21 @@ class ExperimenterTests : public ::testing::Test {
     }
 };
 
+#define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(a)            \
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).notifiedThatTestIsComplete())
+
 #define EXPERIMENTER_TEST(a) TEST_F(ExperimenterTests, a)
 
 EXPERIMENTER_TEST(
     responderNotifiesThatTestIsCompleteAfterExitTestButtonClicked) {
     exitTest(experimenterView);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.notifiedThatTestIsComplete());
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(presenter);
 }
 
 EXPERIMENTER_TEST(
     responderNotifiesThatTestIsCompleteAfterContinueTestingDialogIsDeclined) {
     experimenterResponder.declineContinuingTesting();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.notifiedThatTestIsComplete());
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(presenter);
 }
 
 EXPERIMENTER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
@@ -523,14 +530,14 @@ EXPERIMENTER_TEST(
 
 EXPERIMENTER_TEST(
     responderRestartsAdaptiveTestWhilePreservingTargetsAfterContinueTestingDialogIsAccepted) {
-    experimenterView.acceptContinuingTesting();
+    acceptContinuingTesting(experimenterView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         model.adaptiveTestRestartedWhilePreservingCyclicTargets());
 }
 
 EXPERIMENTER_TEST(
     responderNotifiesThatNextTrialIsReadyAfterContinueTestingDialogIsAccepted) {
-    experimenterView.acceptContinuingTesting();
+    acceptContinuingTesting(experimenterView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponderListener.notifiedThatNextTrialIsReady());
 }
