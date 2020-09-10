@@ -92,11 +92,6 @@ class UseCase {
 
 void run(UseCase &useCase) { useCase.run(); }
 
-class ConditionUseCase : public virtual UseCase {
-  public:
-    virtual auto condition(ModelStub &) -> Condition = 0;
-};
-
 class TrialSubmission : public virtual UseCase {
   public:
     virtual auto nextTrialButtonShown() -> bool = 0;
