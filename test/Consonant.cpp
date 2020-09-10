@@ -105,26 +105,26 @@ class TrialSubmission : public virtual UseCase {
 };
 
 class SubmittingConsonant : public TrialSubmission {
-    ConsonantInputViewStub *view;
-    ConsonantOutputViewStub *outputView;
+    ConsonantInputViewStub &view;
+    ConsonantOutputViewStub &outputView;
 
   public:
     explicit SubmittingConsonant(
-        ConsonantInputViewStub *view, ConsonantOutputViewStub *outputView)
+        ConsonantInputViewStub &view, ConsonantOutputViewStub &outputView)
         : view{view}, outputView{outputView} {}
 
-    void run() override { view->notifyThatResponseButtonHasBeenClicked(); }
+    void run() override { view.notifyThatResponseButtonHasBeenClicked(); }
 
     auto nextTrialButtonShown() -> bool override {
-        return outputView->readyButtonShown();
+        return outputView.readyButtonShown();
     }
 
     auto responseViewShown() -> bool override {
-        return outputView->responseButtonsShown();
+        return outputView.responseButtonsShown();
     }
 
     auto responseViewHidden() -> bool override {
-        return outputView->responseButtonsHidden();
+        return outputView.responseButtonsHidden();
     }
 };
 
@@ -184,11 +184,11 @@ void start(TaskPresenter &presenter) { presenter.start(); }
 class ConsonantTests : public ::testing::Test {
   protected:
     ModelStub model;
-    ConsonantInputViewStub view;
+    ConsonantInputViewStub inputView;
     ConsonantOutputViewStub outputView;
-    ConsonantResponder responder{model, view};
+    ConsonantResponder responder{model, inputView};
     ConsonantPresenter presenter{outputView};
-    SubmittingConsonant submittingConsonant{&view, &outputView};
+    SubmittingConsonant submittingConsonant{inputView, outputView};
     ExperimenterResponderStub experimenterResponder;
     TaskResponderListenerStub taskResponder;
 
@@ -248,18 +248,18 @@ CONSONANT_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {
 
 CONSONANT_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterReadyButtonIsClicked) {
-    notifyThatReadyButtonHasBeenClicked(view);
+    notifyThatReadyButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponder.notifiedThatUserIsReadyForNextTrial());
 }
 
 CONSONANT_TEST(responderNotifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
-    notifyThatReadyButtonHasBeenClicked(view);
+    notifyThatReadyButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskResponder.notifiedThatTaskHasStarted());
 }
 
 CONSONANT_TEST(responderSubmitsConsonantAfterResponseButtonIsClicked) {
-    view.setConsonant("b");
+    inputView.setConsonant("b");
     run(submittingConsonant);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL('b', model.consonantResponse().consonant);
 }
