@@ -1,6 +1,7 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "TaskResponderListenerStub.hpp"
+#include "ExperimenterResponderStub.hpp"
 #include <presentation/CoordinateResponseMeasure.hpp>
 #include <gtest/gtest.h>
 #include <utility>
@@ -95,23 +96,6 @@ void notifyThatReadyButtonHasBeenClicked(
     CoordinateResponseMeasureInputViewStub &view) {
     view.notifyThatReadyButtonHasBeenClicked();
 }
-
-class ExperimenterResponderStub : public ExperimenterResponder {
-  public:
-    void subscribe(EventListener *) override {}
-    void subscribe(IPresenter *) override {}
-    void showContinueTestingDialogWithResultsWhenComplete() override {}
-    void readyNextTrialIfNeeded() override {}
-    void notifyThatUserIsReadyForNextTrial() override {
-        notifiedThatUserIsReadyForNextTrial_ = true;
-    }
-    [[nodiscard]] auto notifiedThatUserIsReadyForNextTrial() const -> bool {
-        return notifiedThatUserIsReadyForNextTrial_;
-    }
-
-  private:
-    bool notifiedThatUserIsReadyForNextTrial_{};
-};
 
 void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
     presenter.notifyThatUserIsDoneResponding();

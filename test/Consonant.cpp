@@ -1,10 +1,9 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "TaskResponderListenerStub.hpp"
+#include "ExperimenterResponderStub.hpp"
 #include <presentation/Consonant.hpp>
-#include <av-speech-in-noise/name.hpp>
 #include <gtest/gtest.h>
-#include <algorithm>
 #include <utility>
 
 namespace av_speech_in_noise {
@@ -84,23 +83,6 @@ class ConsonantOutputViewStub : public ConsonantOutputView {
 void notifyThatReadyButtonHasBeenClicked(ConsonantInputViewStub &view) {
     view.notifyThatReadyButtonHasBeenClicked();
 }
-
-class ExperimenterResponderStub : public ExperimenterResponder {
-  public:
-    void subscribe(EventListener *) override {}
-    void subscribe(IPresenter *) override {}
-    void showContinueTestingDialogWithResultsWhenComplete() override {}
-    void readyNextTrialIfNeeded() override {}
-    void notifyThatUserIsReadyForNextTrial() override {
-        notifiedThatUserIsReadyForNextTrial_ = true;
-    }
-    [[nodiscard]] auto notifiedThatUserIsReadyForNextTrial() const -> bool {
-        return notifiedThatUserIsReadyForNextTrial_;
-    }
-
-  private:
-    bool notifiedThatUserIsReadyForNextTrial_{};
-};
 
 auto cursorHidden(ConsonantOutputViewStub &view) -> bool {
     return view.cursorHidden();
