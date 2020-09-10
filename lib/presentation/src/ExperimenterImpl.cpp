@@ -81,21 +81,24 @@ void ExperimenterResponderImpl::acceptContinuingTesting() {
     readyNextTrial(model, listener);
 }
 
-static void readyNextTrialIfTestIncompleteElse(Model &model,
-    ExperimenterResponder::EventListener *listener,
-    const std::function<void()> &f) {
+static void ifTestCompleteElse(Model &model, const std::function<void()> &f,
+    const std::function<void()> &g) {
     if (model.testComplete())
         f();
     else
-        readyNextTrial(model, listener);
+        g();
+}
+
+static void readyNextTrialIfTestIncompleteElse(Model &model,
+    ExperimenterResponder::EventListener *listener,
+    const std::function<void()> &f) {
+    ifTestCompleteElse(model, f, [&]() { readyNextTrial(model, listener); });
 }
 
 static void notifyIfTestIsCompleteElse(
     Model &model, IPresenter *responder, const std::function<void()> &f) {
-    if (model.testComplete())
-        notifyThatTestIsComplete(responder);
-    else
-        f();
+    ifTestCompleteElse(
+        model, [&]() { notifyThatTestIsComplete(responder); }, f);
 }
 
 void ExperimenterResponderImpl::
