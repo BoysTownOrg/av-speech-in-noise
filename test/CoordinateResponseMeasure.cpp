@@ -151,24 +151,26 @@ class TrialSubmission : public virtual UseCase {
 
 class SubmittingCoordinateResponseMeasure : public TrialSubmission {
     CoordinateResponseMeasureViewStub *view;
+    CoordinateResponseMeasureOutputViewStub &outputView;
 
   public:
     explicit SubmittingCoordinateResponseMeasure(
-        CoordinateResponseMeasureViewStub *view)
-        : view{view} {}
+        CoordinateResponseMeasureViewStub *view,
+        CoordinateResponseMeasureOutputViewStub &outputView)
+        : view{view}, outputView{outputView} {}
 
     void run() override { view->submitResponse(); }
 
     auto nextTrialButtonShown() -> bool override {
-        return view->nextTrialButtonShown();
+        return outputView.nextTrialButtonShown();
     }
 
     auto responseViewShown() -> bool override {
-        return view->responseButtonsShown();
+        return outputView.responseButtonsShown();
     }
 
     auto responseViewHidden() -> bool override {
-        return view->responseButtonsHidden();
+        return outputView.responseButtonsHidden();
     }
 };
 
@@ -230,7 +232,7 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
     CoordinateResponseMeasureOutputViewStub outputView;
     CoordinateResponseMeasureResponder responder{model, view};
     CoordinateResponseMeasurePresenter presenter{outputView};
-    SubmittingCoordinateResponseMeasure submittingResponse{&view};
+    SubmittingCoordinateResponseMeasure submittingResponse{&view, outputView};
     ExperimenterResponderStub experimenterResponder;
     TaskResponderListenerStub taskResponderListener;
 
