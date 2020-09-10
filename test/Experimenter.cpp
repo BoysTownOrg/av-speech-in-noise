@@ -423,13 +423,15 @@ class ExperimenterResponderListenerStub
     }
     void setContinueTestingDialogMessage(const std::string &) override {}
     void showContinueTestingDialog() override {}
-    void display(const std::string &) override {}
+    void display(const std::string &s) override { displayed_ = s; }
+    auto displayed() -> std::string { return displayed_; }
     void secondaryDisplay(const std::string &s) override {
         displayedSecondary_ = s;
     }
     auto displayedSecondary() -> std::string { return displayedSecondary_; }
 
   private:
+    std::string displayed_;
     std::string displayedSecondary_;
     bool notifiedThatTrialHasStarted_{};
     bool notifiedThatNextTrialIsReady_{};
@@ -552,6 +554,14 @@ EXPERIMENTER_TEST(
     acceptContinuingTesting(experimenterView);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, experimenterResponderListener.displayedSecondary());
+}
+
+EXPERIMENTER_TEST(
+    responderDisplaysTrialNumberAfterContinueTestingDialogIsAccepted) {
+    model.setTrialNumber(1);
+    acceptContinuingTesting(experimenterView);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"Trial 1"}, experimenterResponderListener.displayed());
 }
 }
 }
