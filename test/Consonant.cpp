@@ -84,45 +84,6 @@ void notifyThatReadyButtonHasBeenClicked(ConsonantInputViewStub &view) {
     view.notifyThatReadyButtonHasBeenClicked();
 }
 
-class UseCase {
-  public:
-    virtual ~UseCase() = default;
-    virtual void run() = 0;
-};
-
-void run(UseCase &useCase) { useCase.run(); }
-
-class TrialSubmission : public virtual UseCase {
-  public:
-    virtual auto nextTrialButtonShown() -> bool = 0;
-    virtual auto responseViewShown() -> bool = 0;
-    virtual auto responseViewHidden() -> bool = 0;
-};
-
-class SubmittingConsonant : public TrialSubmission {
-    ConsonantInputViewStub &view;
-    ConsonantOutputViewStub &outputView;
-
-  public:
-    explicit SubmittingConsonant(
-        ConsonantInputViewStub &view, ConsonantOutputViewStub &outputView)
-        : view{view}, outputView{outputView} {}
-
-    void run() override { view.notifyThatResponseButtonHasBeenClicked(); }
-
-    auto nextTrialButtonShown() -> bool override {
-        return outputView.readyButtonShown();
-    }
-
-    auto responseViewShown() -> bool override {
-        return outputView.responseButtonsShown();
-    }
-
-    auto responseViewHidden() -> bool override {
-        return outputView.responseButtonsHidden();
-    }
-};
-
 class ExperimenterResponderStub : public ExperimenterResponder {
   public:
     void subscribe(EventListener *) override {}
