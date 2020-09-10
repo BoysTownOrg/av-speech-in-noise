@@ -90,6 +90,14 @@ static void readyNextTrialIfTestIncompleteElse(Model &model,
         readyNextTrial(model, listener);
 }
 
+static void notifyIfTestIsCompleteElse(
+    Model &model, IPresenter *responder, const std::function<void()> &f) {
+    if (model.testComplete())
+        notifyThatTestIsComplete(responder);
+    else
+        f();
+}
+
 void ExperimenterResponderImpl::
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() {
     readyNextTrialIfTestIncompleteElse(model, listener, [&] {
@@ -104,17 +112,15 @@ void ExperimenterResponderImpl::
 }
 
 void ExperimenterResponderImpl::notifyThatUserIsDoneResponding() {
-    readyNextTrialIfTestIncompleteElse(
-        model, listener, [&]() { notifyThatTestIsComplete(responder); });
+    notifyIfTestIsCompleteElse(
+        model, responder, [&]() { readyNextTrial(model, listener); });
 }
 
 void ExperimenterResponderImpl::notifyThatUserIsReadyForNextTrial() {
-    if (model.testComplete())
-        notifyThatTestIsComplete(responder);
-    else {
+    notifyIfTestIsCompleteElse(model, responder, [&]() {
         displayTrialInformation(model, listener);
         av_speech_in_noise::playTrial(model, mainView, listener);
-    }
+    });
 }
 
 void ExperimenterResponderImpl::subscribe(IPresenter *p) { responder = p; }
