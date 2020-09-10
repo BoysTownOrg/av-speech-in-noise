@@ -495,6 +495,12 @@ EXPERIMENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.notifiedThatTestIsComplete());
 }
 
+EXPERIMENTER_TEST(
+    responderNotifiesThatTestIsCompleteAfterContinueTestingDialogIsDeclined) {
+    experimenterResponder.declineContinuingTesting();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.notifiedThatTestIsComplete());
+}
+
 EXPERIMENTER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
     setAudioDevice(view, "a");
     notifyThatPlayTrialButtonHasBeenClicked(experimenterView);
