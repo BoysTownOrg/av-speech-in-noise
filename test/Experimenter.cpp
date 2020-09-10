@@ -463,7 +463,8 @@ class ExperimenterTests : public ::testing::Test {
 
 #define EXPERIMENTER_TEST(a) TEST_F(ExperimenterTests, a)
 
-EXPERIMENTER_TEST(responderSwitchesToTestSetupViewWhenExitTestButtonClicked) {
+EXPERIMENTER_TEST(
+    responderNotifiesThatTestIsCompleteAfterExitTestButtonClicked) {
     exitTest(experimenterView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.notifiedThatTestIsComplete());
 }
