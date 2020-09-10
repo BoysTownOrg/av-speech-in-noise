@@ -411,14 +411,20 @@ class ExperimenterResponderListenerStub
     [[nodiscard]] auto notifiedThatTrialHasStarted() const -> bool {
         return notifiedThatTrialHasStarted_;
     }
+    void notifyThatNextTrialIsReady() override {
+        notifiedThatNextTrialIsReady_ = true;
+    }
+    [[nodiscard]] auto notifiedThatNextTrialIsReady() const -> bool {
+        return notifiedThatNextTrialIsReady_;
+    }
     void setContinueTestingDialogMessage(const std::string &) override {}
     void showContinueTestingDialog() override {}
     void display(const std::string &) override {}
     void secondaryDisplay(const std::string &) override {}
-    void notifyThatNextTrialIsReady() override {}
 
   private:
     bool notifiedThatTrialHasStarted_{};
+    bool notifiedThatNextTrialIsReady_{};
 };
 
 class ExperimenterTests : public ::testing::Test {
@@ -520,6 +526,13 @@ EXPERIMENTER_TEST(
     experimenterView.acceptContinuingTesting();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         model.adaptiveTestRestartedWhilePreservingCyclicTargets());
+}
+
+EXPERIMENTER_TEST(
+    responderNotifiesThatNextTrialIsReadyAfterContinueTestingDialogIsAccepted) {
+    experimenterView.acceptContinuingTesting();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        experimenterResponderListener.notifiedThatNextTrialIsReady());
 }
 }
 }
