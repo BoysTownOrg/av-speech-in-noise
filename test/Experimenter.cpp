@@ -595,6 +595,13 @@ EXPERIMENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(presenter);
 }
 
+EXPERIMENTER_TEST(
+    responderNotifiesThatTestIsCompleteAfterUserIsDoneResponding) {
+    setTestComplete(model);
+    experimenterResponder.notifyThatUserIsDoneResponding();
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(presenter);
+}
+
 EXPERIMENTER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
     setAudioDevice(view, "a");
     notifyThatPlayTrialButtonHasBeenClicked(experimenterView);
