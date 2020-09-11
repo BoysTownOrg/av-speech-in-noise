@@ -551,6 +551,13 @@ class ExperimenterTests : public ::testing::Test {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"},                          \
         (experimenterResponderListener).displayedSecondary())
 
+#define AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(                              \
+    model, useCase, experimenterResponderListener)                             \
+    model.setTrialNumber(1);                                                   \
+    (useCase).run();                                                           \
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
+        std::string{"Trial 1"}, experimenterResponderListener.displayed())
+
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(a)            \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).notifiedThatTestIsComplete())
 
@@ -604,10 +611,8 @@ EXPERIMENTER_TEST(
 
 EXPERIMENTER_TEST(
     responderDisplaysTrialNumberAfterContinueTestingDialogIsAccepted) {
-    model.setTrialNumber(1);
-    acceptContinuingTesting(experimenterView);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"Trial 1"}, experimenterResponderListener.displayed());
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(
+        model, acceptingContinuingTesting, experimenterResponderListener);
 }
 
 EXPERIMENTER_TEST(
