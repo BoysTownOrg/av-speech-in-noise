@@ -783,5 +783,10 @@ EXPERIMENTER_TEST(presenterHidesExitTestButtonAfterTrialStarts) {
     experimenterPresenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.exitTestButtonHidden());
 }
+
+EXPERIMENTER_TEST(presenterHidesNextTrialButtonAfterTrialStarts) {
+    experimenterPresenter.notifyThatTrialHasStarted();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonHidden());
+}
 }
 }
