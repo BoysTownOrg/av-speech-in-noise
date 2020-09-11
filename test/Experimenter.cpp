@@ -487,6 +487,18 @@ class NotifyingThatUserIsDoneResponding : public ResponderUseCase {
     ExperimenterResponderImpl &responder;
 };
 
+class NotifyingThatUserIsReadyForNextTrial : public ResponderUseCase {
+  public:
+    explicit NotifyingThatUserIsReadyForNextTrial(
+        ExperimenterResponderImpl &responder)
+        : responder{responder} {}
+
+    void run() override { responder.notifyThatUserIsReadyForNextTrial(); }
+
+  private:
+    ExperimenterResponderImpl &responder;
+};
+
 class ExperimenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -548,6 +560,8 @@ class ExperimenterTests : public ::testing::Test {
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion{
             experimenterResponder};
     NotifyingThatUserIsDoneResponding notifyingThatUserIsDoneResponding{
+        experimenterResponder};
+    NotifyingThatUserIsReadyForNextTrial notifyingThatUserIsReadyForNextTrial{
         experimenterResponder};
     PresenterStub presenter;
     ExperimenterResponderListenerStub experimenterResponderListener;
@@ -658,6 +672,12 @@ EXPERIMENTER_TEST(
     responderDisplaysTargetFileNameAfterContinueTestingDialogIsAccepted) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(
         model, acceptingContinuingTesting, experimenterResponderListener);
+}
+
+EXPERIMENTER_TEST(
+    responderDisplaysTargetFileNameAfterNotifyingThatUserIsReadyForNextTrial) {
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
+        notifyingThatUserIsReadyForNextTrial, experimenterResponderListener);
 }
 
 EXPERIMENTER_TEST(responderDisplaysTrialNumberAfterUserIsDoneResponding) {
