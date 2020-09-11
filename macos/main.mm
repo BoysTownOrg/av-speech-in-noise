@@ -374,8 +374,8 @@ void main(
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
     TestSettingsInterpreterImpl testSettingsInterpreter;
-    ConsonantController consonantScreenController{model, consonantView};
-    ConsonantPresenter consonantPresenter{consonantView};
+    ConsonantTaskController consonantScreenController{model, consonantView};
+    ConsonantTaskPresenter consonantPresenter{consonantView};
     FreeResponseController freeResponseController{model, experimenterView};
     FreeResponsePresenter freeResponsePresenter{
         experimenterView, experimenterView};

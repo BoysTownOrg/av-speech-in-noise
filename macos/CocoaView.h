@@ -124,8 +124,8 @@ class CocoaTestSetupViewFactory : public MacOsTestSetupViewFactory {
     }
 };
 
-class CocoaConsonantView : public ConsonantOutputView,
-                           public ConsonantInputView {
+class CocoaConsonantView : public ConsonantTaskOutputView,
+                           public ConsonantTaskInputView {
   public:
     explicit CocoaConsonantView(NSRect);
     void attach(Observer *) override;

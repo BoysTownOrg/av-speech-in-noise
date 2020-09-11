@@ -8,7 +8,7 @@
 
 namespace av_speech_in_noise {
 namespace {
-class ConsonantInputViewStub : public ConsonantInputView {
+class ConsonantInputViewStub : public ConsonantTaskInputView {
   public:
     void notifyThatReadyButtonHasBeenClicked() {
         listener_->notifyThatReadyButtonHasBeenClicked();
@@ -29,7 +29,7 @@ class ConsonantInputViewStub : public ConsonantInputView {
     Observer *listener_{};
 };
 
-class ConsonantOutputViewStub : public ConsonantOutputView {
+class ConsonantOutputViewStub : public ConsonantTaskOutputView {
   public:
     void show() override { shown_ = true; }
 
@@ -109,8 +109,8 @@ class ConsonantTests : public ::testing::Test {
     ModelStub model;
     ConsonantInputViewStub inputView;
     ConsonantOutputViewStub outputView;
-    ConsonantController responder{model, inputView};
-    ConsonantPresenter presenter{outputView};
+    ConsonantTaskController responder{model, inputView};
+    ConsonantTaskPresenter presenter{outputView};
     ExperimenterControllerStub experimenterController;
     TaskControllerListenerStub taskController;
 

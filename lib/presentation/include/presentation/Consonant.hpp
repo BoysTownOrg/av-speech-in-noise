@@ -1,12 +1,12 @@
-#ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CONSONANT_HPP_
-#define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CONSONANT_HPP_
+#ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CONSONANTTASK_HPP_
+#define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CONSONANTTASK_HPP_
 
 #include "Task.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
 
 namespace av_speech_in_noise {
-class ConsonantInputView {
+class ConsonantTaskInputView {
   public:
     class Observer {
       public:
@@ -14,14 +14,14 @@ class ConsonantInputView {
         virtual void notifyThatReadyButtonHasBeenClicked() = 0;
         virtual void notifyThatResponseButtonHasBeenClicked() = 0;
     };
-    virtual ~ConsonantInputView() = default;
+    virtual ~ConsonantTaskInputView() = default;
     virtual void attach(Observer *) = 0;
     virtual auto consonant() -> std::string = 0;
 };
 
-class ConsonantOutputView {
+class ConsonantTaskOutputView {
   public:
-    virtual ~ConsonantOutputView() = default;
+    virtual ~ConsonantTaskOutputView() = default;
     virtual void showCursor() = 0;
     virtual void hideCursor() = 0;
     virtual void show() = 0;
@@ -32,9 +32,9 @@ class ConsonantOutputView {
     virtual void showResponseButtons() = 0;
 };
 
-class ConsonantPresenter : public TaskPresenter {
+class ConsonantTaskPresenter : public TaskPresenter {
   public:
-    explicit ConsonantPresenter(ConsonantOutputView &);
+    explicit ConsonantTaskPresenter(ConsonantTaskOutputView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
@@ -43,13 +43,13 @@ class ConsonantPresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    ConsonantOutputView &view;
+    ConsonantTaskOutputView &view;
 };
 
-class ConsonantController : public TaskController,
-                           public ConsonantInputView::Observer {
+class ConsonantTaskController : public TaskController,
+                                public ConsonantTaskInputView::Observer {
   public:
-    explicit ConsonantController(Model &, ConsonantInputView &);
+    explicit ConsonantTaskController(Model &, ConsonantTaskInputView &);
     void attach(TaskController::Observer *e) override;
     void attach(ExperimenterController *p) override;
     void notifyThatReadyButtonHasBeenClicked() override;
@@ -57,7 +57,7 @@ class ConsonantController : public TaskController,
 
   private:
     Model &model;
-    ConsonantInputView &view;
+    ConsonantTaskInputView &view;
     TaskController::Observer *listener{};
     ExperimenterController *responder{};
 };

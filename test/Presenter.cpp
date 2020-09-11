@@ -27,8 +27,8 @@ template <typename T> class Collection {
     std::vector<T> items{};
 };
 
-class ConsonantViewStub : public ConsonantOutputView,
-                          public ConsonantInputView {
+class ConsonantViewStub : public ConsonantTaskOutputView,
+                          public ConsonantTaskInputView {
   public:
     void show() override { shown_ = true; }
 
@@ -342,9 +342,7 @@ class ExperimenterViewStub : public ExperimenterView,
 
     [[nodiscard]] auto hidden() const { return hidden_; }
 
-    void attach(ExperimenterView::Observer *e) override {
-        listener_ = e;
-    }
+    void attach(ExperimenterView::Observer *e) override { listener_ = e; }
 
     void attach(FreeResponseInputView::Observer *e) override {
         freeResponseListener = e;
@@ -1255,8 +1253,8 @@ class PresenterTests : public ::testing::Test {
     CoordinateResponseMeasureViewStub coordinateResponseMeasureView;
     ConsonantViewStub consonantView;
     ExperimenterViewStub experimenterView;
-    ConsonantController consonantScreenController{model, consonantView};
-    ConsonantPresenter consonantPresenterRefactored{consonantView};
+    ConsonantTaskController consonantScreenController{model, consonantView};
+    ConsonantTaskPresenter consonantPresenterRefactored{consonantView};
     FreeResponseController freeResponseController{model, experimenterView};
     FreeResponsePresenter freeResponsePresenter{
         experimenterView, experimenterView};
