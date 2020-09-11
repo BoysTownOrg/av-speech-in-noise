@@ -33,7 +33,9 @@ class ExperimenterViewStub : public ExperimenterView {
     void hideContinueTestingDialog() override {
         continueTestingDialogHidden_ = true;
     }
-
+    auto continueTestingDialogHidden() -> bool {
+        return continueTestingDialogHidden_;
+    }
     [[nodiscard]] auto responseSubmissionShown() const {
         return responseSubmissionShown_;
     }
@@ -751,6 +753,12 @@ EXPERIMENTER_TEST(presenterShowsViewAfterStarting) {
 EXPERIMENTER_TEST(presenterHidesViewAfterStopping) {
     experimenterPresenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.hidden());
+}
+
+EXPERIMENTER_TEST(presenterHidesContinueTestingDialogAfterStopping) {
+    experimenterPresenter.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        experimenterView.continueTestingDialogHidden());
 }
 }
 }
