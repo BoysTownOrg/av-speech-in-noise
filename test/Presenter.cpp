@@ -1817,6 +1817,7 @@ PRESENTER_TEST(submittingCorrectKeywordsShowsTargetFileName) {
 }
 
 PRESENTER_TEST(submittingCoordinateResponseShowsTargetFileName) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     assertShowsTargetFileName(submittingCoordinateResponseMeasure);
 }
 
