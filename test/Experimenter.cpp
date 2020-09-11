@@ -698,6 +698,12 @@ EXPERIMENTER_TEST(
         model, acceptingContinuingTesting, experimenterResponderListener);
 }
 
+EXPERIMENTER_TEST(
+    responderDisplaysTrialNumberAfterNotifyingThatUserIsReadyForNextTrial) {
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
+        notifyingThatUserIsReadyForNextTrial, experimenterResponderListener);
+}
+
 EXPERIMENTER_TEST(responderShowsContinueTestingDialog) {
     setTestComplete(model);
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
