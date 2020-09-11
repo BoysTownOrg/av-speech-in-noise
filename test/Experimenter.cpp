@@ -428,7 +428,12 @@ class ExperimenterResponderListenerStub
         return notifiedThatNextTrialIsReady_;
     }
     void setContinueTestingDialogMessage(const std::string &) override {}
-    void showContinueTestingDialog() override {}
+    void showContinueTestingDialog() override {
+        continueTestingDialogShown_ = true;
+    }
+    [[nodiscard]] auto continueTestingDialogShown() const -> bool {
+        return continueTestingDialogShown_;
+    }
     void display(const std::string &s) override { displayed_ = s; }
     auto displayed() -> std::string { return displayed_; }
     void secondaryDisplay(const std::string &s) override {
@@ -441,6 +446,7 @@ class ExperimenterResponderListenerStub
     std::string displayedSecondary_;
     bool notifiedThatTrialHasStarted_{};
     bool notifiedThatNextTrialIsReady_{};
+    bool continueTestingDialogShown_{};
 };
 
 class ExperimenterTests : public ::testing::Test {
@@ -594,6 +600,14 @@ EXPERIMENTER_TEST(
         experimenterResponder);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"Trial 1"}, experimenterResponderListener.displayed());
+}
+
+EXPERIMENTER_TEST(responderShowsContinueTestingDialog) {
+    model.setTestComplete();
+    notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
+        experimenterResponder);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        experimenterResponderListener.continueTestingDialogShown());
 }
 }
 }
