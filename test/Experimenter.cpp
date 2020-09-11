@@ -504,7 +504,11 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
     void notifyThatUserIsDoneResponding() override {}
     void notifyThatTrialHasStarted() override {}
     void start() override {}
-    void stop() override {}
+    void stop() override { stopped_ = true; }
+    auto stopped() -> bool { return stopped_; }
+
+  private:
+    bool stopped_{};
 };
 
 class ExperimenterTests : public ::testing::Test {
@@ -770,20 +774,9 @@ EXPERIMENTER_TEST(presenterHidesContinueTestingDialogAfterStopping) {
         experimenterView.continueTestingDialogHidden());
 }
 
-EXPERIMENTER_TEST(
-    presenterStopsConsonantTaskAfterStoppingFixedLevelConsonantMethod) {
-    run(initializingFixedLevelConsonantMethod, experimenterPresenter);
+EXPERIMENTER_TEST(presenterStopsTaskAfterStopping) {
     experimenterPresenter.stop();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantPresenter.stopped());
-}
-
-EXPERIMENTER_TEST(
-    presenterStopsConsonantTaskAfterStoppingAdaptiveCoordinateResponseMeasureMethod) {
-    run(initializingAdaptiveCoordinateResponseMeasureMethod,
-        experimenterPresenter);
-    experimenterPresenter.stop();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        coordinateResponseMeasurePresenter.stopped());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.stopped());
 }
 }
 }

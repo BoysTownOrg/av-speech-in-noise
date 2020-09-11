@@ -146,7 +146,7 @@ ExperimenterPresenterImpl::ExperimenterPresenterImpl(Model &model,
 void ExperimenterPresenterImpl::start() { view.show(); }
 
 void ExperimenterPresenterImpl::stop() {
-    taskPresenter_->stop();
+    taskPresenter__->stop();
     view.hideContinueTestingDialog();
     view.hide();
 }
@@ -154,12 +154,12 @@ void ExperimenterPresenterImpl::stop() {
 void ExperimenterPresenterImpl::notifyThatTrialHasStarted() {
     view.hideExitTestButton();
     view.hideNextTrialButton();
-    taskPresenter_->notifyThatTrialHasStarted();
+    taskPresenter__->notifyThatTrialHasStarted();
 }
 
 void ExperimenterPresenterImpl::trialComplete() {
     view.showExitTestButton();
-    taskPresenter_->showResponseSubmission();
+    taskPresenter__->showResponseSubmission();
 }
 
 void ExperimenterPresenterImpl::notifyThatNextTrialIsReady() {
@@ -215,8 +215,8 @@ static auto consonant(Method m) -> bool {
 
 void ExperimenterPresenterImpl::initialize(Method m) {
     displayTrialInformation(model, this);
-    taskPresenter_ = taskPresenter(m);
-    taskPresenter_->start();
+    taskPresenter__->initialize(taskPresenter(m));
+    taskPresenter__->start();
 }
 
 auto ExperimenterPresenterImpl::taskPresenter(Method m) -> TaskPresenter * {

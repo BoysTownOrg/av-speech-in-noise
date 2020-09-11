@@ -1856,6 +1856,7 @@ PRESENTER_TEST(acceptingContinuingTestingHidesContinueTestingDialog) {
 }
 
 PRESENTER_TEST(decliningContinuingTestingHidesContinueTestingDialog) {
+    run(confirmingAdaptivePassFailTest);
     assertHidesContinueTestingDialog(decliningContinuingTesting);
 }
 
@@ -1901,6 +1902,7 @@ PRESENTER_TEST(submittingFailedTrialHidesSubmissionEvenWhenTestComplete) {
 }
 
 PRESENTER_TEST(submittingConsonantDoesNotHideCursorWhenTestComplete) {
+    run(confirmingFixedLevelConsonantTest);
     assertCompleteTestDoesNotHideCursor(submittingConsonant);
 }
 
@@ -2409,10 +2411,12 @@ PRESENTER_TEST(submittingConsonantTrialHidesCursor) {
 }
 
 PRESENTER_TEST(submittingCoordinateResponseMeasurePlaysTrial) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     assertPlaysTrial(submittingCoordinateResponseMeasure);
 }
 
 PRESENTER_TEST(submittingConsonantPlaysTrial) {
+    run(confirmingFixedLevelConsonantTest);
     assertPlaysTrial(submittingConsonant);
 }
 
@@ -2441,6 +2445,7 @@ PRESENTER_TEST(playingTrialHidesNextTrialButtonForExperimenter) {
 }
 
 PRESENTER_TEST(playingCoordinateResponseMeasureTrialHidesExitTestButton) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     assertHidesExitTestButton(playingCoordinateResponseMeasureTrial);
 }
 
@@ -2468,30 +2473,35 @@ PRESENTER_TEST(playCalibrationPassesAudioDevice) {
 }
 
 PRESENTER_TEST(coordinateResponsePassesNumberResponse) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     coordinateResponseMeasureView.setNumberResponse("1");
     submitResponse(coordinateResponseMeasureView);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.responseParameters().number);
 }
 
 PRESENTER_TEST(coordinateResponsePassesGreenColor) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     coordinateResponseMeasureView.setGreenResponse();
     submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::green);
 }
 
 PRESENTER_TEST(coordinateResponsePassesRedColor) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     coordinateResponseMeasureView.setRedResponse();
     submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::red);
 }
 
 PRESENTER_TEST(coordinateResponsePassesBlueColor) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     coordinateResponseMeasureView.setBlueResponse();
     submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::blue);
 }
 
 PRESENTER_TEST(coordinateResponsePassesWhiteColor) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     coordinateResponseMeasureView.setGrayResponse();
     submitResponse(coordinateResponseMeasureView);
     assertPassedColor(model, coordinate_response_measure::Color::white);
