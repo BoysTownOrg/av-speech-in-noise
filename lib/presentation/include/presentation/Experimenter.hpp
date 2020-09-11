@@ -39,9 +39,9 @@ class ExperimenterOutputView {
 class ExperimenterView : public virtual ExperimenterInputView,
                          public virtual ExperimenterOutputView {};
 
-class IPresenter {
+class SessionResponder {
   public:
-    virtual ~IPresenter() = default;
+    virtual ~SessionResponder() = default;
     virtual void notifyThatTestIsComplete() = 0;
 };
 
@@ -59,7 +59,7 @@ class ExperimenterResponder {
     };
     virtual ~ExperimenterResponder() = default;
     virtual void subscribe(EventListener *) = 0;
-    virtual void subscribe(IPresenter *) = 0;
+    virtual void subscribe(SessionResponder *) = 0;
     virtual void
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() = 0;
     virtual void notifyThatUserIsDoneResponding() = 0;

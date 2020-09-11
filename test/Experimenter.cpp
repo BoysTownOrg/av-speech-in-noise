@@ -385,7 +385,7 @@ class TaskPresenterStub : public TaskPresenter {
     void stop() override {}
 };
 
-class PresenterStub : public IPresenter {
+class PresenterStub : public SessionResponder {
   public:
     void notifyThatTestIsComplete() override {
         notifiedThatTestIsComplete_ = true;

@@ -20,7 +20,7 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
         TaskPresenter *correctKeywordsPresenter,
         TaskResponder *passFailResponder, TaskPresenter *passFailPresenter);
     void subscribe(ExperimenterResponder::EventListener *e) override;
-    void subscribe(IPresenter *p) override;
+    void subscribe(SessionResponder *p) override;
     void exitTest() override;
     void playTrial() override;
     void declineContinuingTesting() override;
@@ -34,7 +34,7 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
     Model &model;
     View &mainView;
     ExperimenterResponder::EventListener *listener{};
-    IPresenter *responder{};
+    SessionResponder *responder{};
 };
 
 class ExperimenterPresenterImpl : public Model::EventListener,

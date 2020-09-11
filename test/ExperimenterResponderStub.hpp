@@ -7,7 +7,7 @@ namespace av_speech_in_noise {
 class ExperimenterResponderStub : public ExperimenterResponder {
   public:
     void subscribe(EventListener *) override {}
-    void subscribe(IPresenter *) override {}
+    void subscribe(SessionResponder *) override {}
     void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion()
         override {
         notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion_ =

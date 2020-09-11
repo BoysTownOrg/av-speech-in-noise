@@ -54,7 +54,7 @@ void ExperimenterResponderImpl::subscribe(
     listener = e;
 }
 
-static void notifyThatTestIsComplete(IPresenter *presenter) {
+static void notifyThatTestIsComplete(SessionResponder *presenter) {
     presenter->notifyThatTestIsComplete();
 }
 
@@ -96,7 +96,7 @@ static void readyNextTrialIfTestIncompleteElse(Model &model,
 }
 
 static void notifyIfTestIsCompleteElse(
-    Model &model, IPresenter *responder, const std::function<void()> &f) {
+    Model &model, SessionResponder *responder, const std::function<void()> &f) {
     ifTestCompleteElse(
         model, [&]() { notifyThatTestIsComplete(responder); }, f);
 }
@@ -126,7 +126,9 @@ void ExperimenterResponderImpl::notifyThatUserIsReadyForNextTrial() {
     });
 }
 
-void ExperimenterResponderImpl::subscribe(IPresenter *p) { responder = p; }
+void ExperimenterResponderImpl::subscribe(SessionResponder *p) {
+    responder = p;
+}
 
 ExperimenterPresenterImpl::ExperimenterPresenterImpl(Model &model,
     ExperimenterOutputView &view, TaskPresenter *consonantPresenter,
