@@ -502,13 +502,19 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
     void showResponseSubmission() override {}
     void notifyThatTaskHasStarted() override {}
     void notifyThatUserIsDoneResponding() override {}
-    void notifyThatTrialHasStarted() override {}
+    void notifyThatTrialHasStarted() override {
+        notifiedThatTrialHasStarted_ = true;
+    }
     void start() override {}
     void stop() override { stopped_ = true; }
-    auto stopped() -> bool { return stopped_; }
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+    [[nodiscard]] auto notifiedThatTrialHasStarted() const -> bool {
+        return notifiedThatTrialHasStarted_;
+    }
 
   private:
     bool stopped_{};
+    bool notifiedThatTrialHasStarted_{};
 };
 
 class ExperimenterTests : public ::testing::Test {
@@ -787,6 +793,11 @@ EXPERIMENTER_TEST(presenterHidesExitTestButtonAfterTrialStarts) {
 EXPERIMENTER_TEST(presenterHidesNextTrialButtonAfterTrialStarts) {
     experimenterPresenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonHidden());
+}
+
+EXPERIMENTER_TEST(presenterNotifiesTaskPresenterThatTrialHasStarted) {
+    experimenterPresenter.notifyThatTrialHasStarted();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.notifiedThatTrialHasStarted());
 }
 }
 }
