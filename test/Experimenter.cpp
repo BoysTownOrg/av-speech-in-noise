@@ -610,9 +610,23 @@ EXPERIMENTER_TEST(
 }
 
 EXPERIMENTER_TEST(
+    responderDisplaysTargetFileNameAfterNotShowingContinueTestingDialogWithResults) {
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
+        notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
+        experimenterResponderListener);
+}
+
+EXPERIMENTER_TEST(
     responderDisplaysTrialNumberAfterContinueTestingDialogIsAccepted) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(
         model, acceptingContinuingTesting, experimenterResponderListener);
+}
+
+EXPERIMENTER_TEST(
+    responderDisplaysTrialNumberAfterNotShowingContinueTestingDialogWithResults) {
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
+        notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
+        experimenterResponderListener);
 }
 
 EXPERIMENTER_TEST(
@@ -621,20 +635,6 @@ EXPERIMENTER_TEST(
         experimenterResponder);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponderListener.notifiedThatNextTrialIsReady());
-}
-
-EXPERIMENTER_TEST(
-    responderDisplaysTargetFileNameAfterNotShowingContinueTestingDialogWithResults) {
-    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
-        notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
-        experimenterResponderListener);
-}
-
-EXPERIMENTER_TEST(
-    responderDisplaysTrialNumberAfterNotShowingContinueTestingDialogWithResults) {
-    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
-        notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
-        experimenterResponderListener);
 }
 
 EXPERIMENTER_TEST(responderShowsContinueTestingDialog) {
