@@ -39,12 +39,6 @@ class ExperimenterOutputView {
 class ExperimenterView : public virtual ExperimenterInputView,
                          public virtual ExperimenterOutputView {};
 
-class SessionController {
-  public:
-    virtual ~SessionController() = default;
-    virtual void notifyThatTestIsComplete() = 0;
-};
-
 class ExperimenterController {
   public:
     class EventListener {

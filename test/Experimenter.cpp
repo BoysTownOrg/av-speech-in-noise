@@ -394,6 +394,7 @@ class PresenterStub : public SessionController {
     [[nodiscard]] auto notifiedThatTestIsComplete() const -> bool {
         return notifiedThatTestIsComplete_;
     }
+    void prepare(Method) override {}
 
   private:
     bool notifiedThatTestIsComplete_{};
@@ -573,21 +574,21 @@ class ExperimenterTests : public ::testing::Test {
 };
 
 #define AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(                             \
-    model, useCase, experimenterControllerListener)                             \
+    model, useCase, experimenterControllerListener)                            \
     model.setTargetFileName("a");                                              \
     (useCase).run();                                                           \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"},                          \
         (experimenterControllerListener).displayedSecondary())
 
 #define AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(                              \
-    model, useCase, experimenterControllerListener)                             \
+    model, useCase, experimenterControllerListener)                            \
     model.setTrialNumber(1);                                                   \
     (useCase).run();                                                           \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         std::string{"Trial 1"}, experimenterControllerListener.displayed())
 
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(           \
-    useCase, experimenterControllerListener)                                    \
+    useCase, experimenterControllerListener)                                   \
     (useCase).run();                                                           \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(                                            \
         experimenterControllerListener.notifiedThatNextTrialIsReady())

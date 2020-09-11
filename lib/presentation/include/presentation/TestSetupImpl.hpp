@@ -39,7 +39,7 @@ constexpr auto name(Transducer c) -> const char * {
 }
 
 class TestSetupControllerImpl : public TestSetupInputView::EventListener,
-                               public TestSetupController {
+                                public TestSetupController {
   public:
     explicit TestSetupControllerImpl(Model &model, View &mainView,
         TestSetupInputView &view,
@@ -79,7 +79,7 @@ class TestSetupControllerImpl : public TestSetupInputView::EventListener,
         if (!mainView.browseCancelled())
             listener->notifyThatUserHasSelectedTestSettingsFile(file);
     }
-    void subscribe(SomethingIDK *p) override { parent = p; }
+    void subscribe(SessionController *p) override { parent = p; }
     void subscribe(TestSetupController::EventListener *e) override {
         listener = e;
     }
@@ -90,7 +90,7 @@ class TestSetupControllerImpl : public TestSetupInputView::EventListener,
     TestSetupInputView &view;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
-    SomethingIDK *parent{};
+    SessionController *parent{};
     TestSetupController::EventListener *listener{};
 };
 

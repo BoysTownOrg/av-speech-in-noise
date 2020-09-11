@@ -21,6 +21,13 @@ enum class Method {
     fixedLevelConsonants,
     unknown
 };
+
+class SessionController {
+  public:
+    virtual ~SessionController() = default;
+    virtual void notifyThatTestIsComplete() = 0;
+    virtual void prepare(Method) = 0;
+};
 }
 
 #endif

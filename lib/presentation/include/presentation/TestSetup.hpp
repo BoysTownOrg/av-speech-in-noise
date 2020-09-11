@@ -39,12 +39,6 @@ class TestSetupOutputView {
 class TestSetupView : public virtual TestSetupOutputView,
                       public virtual TestSetupInputView {};
 
-class SomethingIDK {
-  public:
-    virtual ~SomethingIDK() = default;
-    virtual void prepare(Method) = 0;
-};
-
 class TestSetupController {
   public:
     class EventListener {
@@ -54,7 +48,7 @@ class TestSetupController {
             const std::string &) = 0;
     };
     virtual ~TestSetupController() = default;
-    virtual void subscribe(SomethingIDK *) = 0;
+    virtual void subscribe(SessionController *) = 0;
     virtual void subscribe(EventListener *) = 0;
 };
 
