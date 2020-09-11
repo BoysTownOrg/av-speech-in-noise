@@ -572,6 +572,12 @@ class ExperimenterTests : public ::testing::Test {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         std::string{"Trial 1"}, experimenterResponderListener.displayed())
 
+#define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(           \
+    useCase, experimenterResponderListener)                                    \
+    (useCase).run();                                                           \
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(                                            \
+        experimenterResponderListener.notifiedThatNextTrialIsReady())
+
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(a)            \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).notifiedThatTestIsComplete())
 
@@ -612,9 +618,15 @@ EXPERIMENTER_TEST(
 
 EXPERIMENTER_TEST(
     responderNotifiesThatNextTrialIsReadyAfterContinueTestingDialogIsAccepted) {
-    acceptContinuingTesting(experimenterView);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterResponderListener.notifiedThatNextTrialIsReady());
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
+        acceptingContinuingTesting, experimenterResponderListener);
+}
+
+EXPERIMENTER_TEST(
+    responderNotifiesThatNextTrialIsReadyAfterNotShowingContinueTestingDialogWithResults) {
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
+        notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
+        experimenterResponderListener);
 }
 
 EXPERIMENTER_TEST(responderDisplaysTargetAfterUserIsDoneResponding) {
@@ -651,14 +663,6 @@ EXPERIMENTER_TEST(
     responderDisplaysTrialNumberAfterContinueTestingDialogIsAccepted) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(
         model, acceptingContinuingTesting, experimenterResponderListener);
-}
-
-EXPERIMENTER_TEST(
-    responderNotifiesThatNextTrialIsReadyAfterNotShowingContinueTestingDialogWithResults) {
-    notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
-        experimenterResponder);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterResponderListener.notifiedThatNextTrialIsReady());
 }
 
 EXPERIMENTER_TEST(responderShowsContinueTestingDialog) {
