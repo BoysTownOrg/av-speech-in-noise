@@ -747,5 +747,10 @@ EXPERIMENTER_TEST(presenterShowsViewAfterStarting) {
     experimenterPresenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.shown());
 }
+
+EXPERIMENTER_TEST(presenterHidesViewAfterStopping) {
+    experimenterPresenter.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.hidden());
+}
 }
 }
