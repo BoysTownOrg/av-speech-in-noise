@@ -623,6 +623,12 @@ EXPERIMENTER_TEST(
 }
 
 EXPERIMENTER_TEST(
+    responderNotifiesThatNextTrialIsReadyAfterNotifyingThatUserIsDoneResponding) {
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
+        notifyingThatUserIsDoneResponding, experimenterResponderListener);
+}
+
+EXPERIMENTER_TEST(
     responderNotifiesThatNextTrialIsReadyAfterNotShowingContinueTestingDialogWithResults) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
