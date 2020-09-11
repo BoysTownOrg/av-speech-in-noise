@@ -133,20 +133,19 @@ ExperimenterPresenterImpl::ExperimenterPresenterImpl(Model &model,
     TaskPresenter *coordinateResponseMeasurePresenter,
     TaskPresenter *freeResponsePresenter,
     TaskPresenter *correctKeywordsPresenter, TaskPresenter *passFailPresenter,
-    UninitializedTaskPresenter *taskPresenter__)
+    UninitializedTaskPresenter *taskPresenter_)
     : model{model}, view{view}, consonantPresenter{consonantPresenter},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       freeResponsePresenter{freeResponsePresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
-      passFailPresenter{passFailPresenter}, taskPresenter_{passFailPresenter},
-      taskPresenter__{taskPresenter__} {
+      passFailPresenter{passFailPresenter}, taskPresenter_{taskPresenter_} {
     model.attach(this);
 }
 
 void ExperimenterPresenterImpl::start() { view.show(); }
 
 void ExperimenterPresenterImpl::stop() {
-    taskPresenter__->stop();
+    taskPresenter_->stop();
     view.hideContinueTestingDialog();
     view.hide();
 }
@@ -154,12 +153,12 @@ void ExperimenterPresenterImpl::stop() {
 void ExperimenterPresenterImpl::notifyThatTrialHasStarted() {
     view.hideExitTestButton();
     view.hideNextTrialButton();
-    taskPresenter__->notifyThatTrialHasStarted();
+    taskPresenter_->notifyThatTrialHasStarted();
 }
 
 void ExperimenterPresenterImpl::trialComplete() {
     view.showExitTestButton();
-    taskPresenter__->showResponseSubmission();
+    taskPresenter_->showResponseSubmission();
 }
 
 void ExperimenterPresenterImpl::notifyThatNextTrialIsReady() {
@@ -215,8 +214,8 @@ static auto consonant(Method m) -> bool {
 
 void ExperimenterPresenterImpl::initialize(Method m) {
     displayTrialInformation(model, this);
-    taskPresenter__->initialize(taskPresenter(m));
-    taskPresenter__->start();
+    taskPresenter_->initialize(taskPresenter(m));
+    taskPresenter_->start();
 }
 
 auto ExperimenterPresenterImpl::taskPresenter(Method m) -> TaskPresenter * {

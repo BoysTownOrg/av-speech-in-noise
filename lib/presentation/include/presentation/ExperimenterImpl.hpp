@@ -105,8 +105,7 @@ class ExperimenterPresenterImpl : public Model::Observer,
     TaskPresenter *freeResponsePresenter;
     TaskPresenter *correctKeywordsPresenter;
     TaskPresenter *passFailPresenter;
-    TaskPresenter *taskPresenter_;
-    UninitializedTaskPresenter *taskPresenter__;
+    UninitializedTaskPresenter *taskPresenter_;
 };
 }
 
