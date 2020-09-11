@@ -624,6 +624,14 @@ EXPERIMENTER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
 }
 
 EXPERIMENTER_TEST(
+    responderPlaysTrialAfterNotifyingThatUserIsReadyForNextTrial) {
+    setAudioDevice(view, "a");
+    experimenterResponder.notifyThatUserIsReadyForNextTrial();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, model.trialParameters().audioDevice);
+}
+
+EXPERIMENTER_TEST(
     responderNotifiesThatTrialHasStartedAfterPlayTrialButtonClicked) {
     notifyThatPlayTrialButtonHasBeenClicked(experimenterView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
