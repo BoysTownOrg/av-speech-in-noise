@@ -1,7 +1,7 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
-#include "TaskResponderListenerStub.hpp"
-#include "ExperimenterResponderStub.hpp"
+#include "TaskControllerListenerStub.hpp"
+#include "ExperimenterControllerStub.hpp"
 #include <presentation/PassFail.hpp>
 #include <gtest/gtest.h>
 #include <utility>
@@ -94,14 +94,14 @@ class PassFailTests : public ::testing::Test {
     ExperimenterOutputViewStub experimenterOutputView;
     PassFailInputViewStub inputView;
     PassFailOutputViewStub outputView;
-    PassFailResponder responder{model, inputView};
+    PassFailController responder{model, inputView};
     PassFailPresenter presenter{experimenterOutputView, outputView};
-    ExperimenterResponderStub experimenterResponder;
-    TaskResponderListenerStub taskResponder;
+    ExperimenterControllerStub experimenterController;
+    TaskControllerListenerStub taskController;
 
     PassFailTests() {
-        responder.subscribe(&experimenterResponder);
-        responder.subscribe(&taskResponder);
+        responder.subscribe(&experimenterController);
+        responder.subscribe(&taskController);
     }
 };
 
@@ -151,7 +151,7 @@ PASS_FAIL_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterCorrectButtonIsClicked) {
     notifyThatCorrectButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterResponder
+        experimenterController
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
@@ -159,7 +159,7 @@ PASS_FAIL_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterIncorrectButtonIsClicked) {
     notifyThatIncorrectButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterResponder
+        experimenterController
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
@@ -167,14 +167,14 @@ PASS_FAIL_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterCorrectButtonIsClicked) {
     notifyThatCorrectButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        taskResponder.notifiedThatUserIsDoneResponding());
+        taskController.notifiedThatUserIsDoneResponding());
 }
 
 PASS_FAIL_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterIncorrectButtonIsClicked) {
     notifyThatIncorrectButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        taskResponder.notifiedThatUserIsDoneResponding());
+        taskController.notifiedThatUserIsDoneResponding());
 }
 }
 }

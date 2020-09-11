@@ -1,7 +1,7 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
-#include "TaskResponderListenerStub.hpp"
-#include "ExperimenterResponderStub.hpp"
+#include "TaskControllerListenerStub.hpp"
+#include "ExperimenterControllerStub.hpp"
 #include <presentation/CorrectKeywords.hpp>
 #include <gtest/gtest.h>
 #include <utility>
@@ -115,14 +115,14 @@ class CorrectKeywordsTests : public ::testing::Test {
     ExperimenterOutputViewStub experimenterOutputView;
     CorrectKeywordsInputViewStub inputView;
     CorrectKeywordsOutputViewStub outputView;
-    CorrectKeywordsResponder responder{model, mainView, inputView};
+    CorrectKeywordsController responder{model, mainView, inputView};
     CorrectKeywordsPresenter presenter{experimenterOutputView, outputView};
-    ExperimenterResponderStub experimenterResponder;
-    TaskResponderListenerStub taskResponder;
+    ExperimenterControllerStub experimenterController;
+    TaskControllerListenerStub taskController;
 
     CorrectKeywordsTests() {
-        responder.subscribe(&experimenterResponder);
-        responder.subscribe(&taskResponder);
+        responder.subscribe(&experimenterController);
+        responder.subscribe(&taskController);
     }
 };
 
@@ -169,7 +169,7 @@ CORRECT_KEYWORDS_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterResponder
+        experimenterController
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
@@ -177,7 +177,7 @@ CORRECT_KEYWORDS_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        taskResponder.notifiedThatUserIsDoneResponding());
+        taskController.notifiedThatUserIsDoneResponding());
 }
 
 CORRECT_KEYWORDS_TEST(responderShowsErrorMessageWhenInvalidCorrectKeywords) {

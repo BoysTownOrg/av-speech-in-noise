@@ -1,10 +1,10 @@
-#ifndef AV_SPEECH_IN_NOISE_TESTS_TASKRESPONDERLISTENERSTUB_HPP_
-#define AV_SPEECH_IN_NOISE_TESTS_TASKRESPONDERLISTENERSTUB_HPP_
+#ifndef AV_SPEECH_IN_NOISE_TESTS_TASKCONTROLLERLISTENERSTUB_HPP_
+#define AV_SPEECH_IN_NOISE_TESTS_TASKCONTROLLERLISTENERSTUB_HPP_
 
 #include <presentation/Task.hpp>
 
 namespace av_speech_in_noise {
-class TaskResponderListenerStub : public TaskResponder::EventListener {
+class TaskControllerListenerStub : public TaskController::EventListener {
   public:
     void notifyThatTaskHasStarted() override {
         notifiedThatTaskHasStarted_ = true;

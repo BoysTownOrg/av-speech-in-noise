@@ -5,7 +5,7 @@
 #include "Experimenter.hpp"
 
 namespace av_speech_in_noise {
-class TaskResponder {
+class TaskController {
   public:
     class EventListener {
       public:
@@ -14,12 +14,12 @@ class TaskResponder {
         virtual void notifyThatUserIsDoneResponding() = 0;
         virtual void notifyThatTrialHasStarted() {}
     };
-    virtual ~TaskResponder() = default;
+    virtual ~TaskController() = default;
     virtual void subscribe(EventListener *) = 0;
-    virtual void subscribe(ExperimenterResponder *) = 0;
+    virtual void subscribe(ExperimenterController *) = 0;
 };
 
-class TaskPresenter : virtual public TaskResponder::EventListener,
+class TaskPresenter : virtual public TaskController::EventListener,
                       virtual public PresenterSimple {
   public:
     virtual void showResponseSubmission() = 0;

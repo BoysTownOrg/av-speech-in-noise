@@ -27,22 +27,22 @@ class CorrectKeywordsOutputView {
     virtual void hideCorrectKeywordsSubmission() = 0;
 };
 
-class CorrectKeywordsResponder
-    : public TaskResponder,
+class CorrectKeywordsController
+    : public TaskController,
       public CorrectKeywordsInputView::EventListener {
   public:
-    explicit CorrectKeywordsResponder(
+    explicit CorrectKeywordsController(
         Model &, View &, CorrectKeywordsInputView &);
-    void subscribe(TaskResponder::EventListener *e) override;
-    void subscribe(ExperimenterResponder *r) override;
+    void subscribe(TaskController::EventListener *e) override;
+    void subscribe(ExperimenterController *r) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
     Model &model;
     View &view;
     CorrectKeywordsInputView &keywordsView;
-    TaskResponder::EventListener *listener{};
-    ExperimenterResponder *responder{};
+    TaskController::EventListener *listener{};
+    ExperimenterController *responder{};
 };
 
 class CorrectKeywordsPresenter : public TaskPresenter {

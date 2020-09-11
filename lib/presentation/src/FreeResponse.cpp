@@ -1,21 +1,21 @@
 #include "FreeResponse.hpp"
 
 namespace av_speech_in_noise {
-FreeResponseResponder::FreeResponseResponder(
+FreeResponseController::FreeResponseController(
     Model &model, FreeResponseInputView &view)
     : model{model}, view{view} {
     view.subscribe(this);
 }
 
-void FreeResponseResponder::subscribe(TaskResponder::EventListener *e) {
+void FreeResponseController::subscribe(TaskController::EventListener *e) {
     listener = e;
 }
 
-void FreeResponseResponder::subscribe(ExperimenterResponder *e) {
+void FreeResponseController::subscribe(ExperimenterController *e) {
     responder = e;
 }
 
-void FreeResponseResponder::notifyThatSubmitButtonHasBeenClicked() {
+void FreeResponseController::notifyThatSubmitButtonHasBeenClicked() {
     model.submit(FreeResponse{view.freeResponse(), view.flagged()});
     listener->notifyThatUserIsDoneResponding();
     responder->notifyThatUserIsDoneResponding();

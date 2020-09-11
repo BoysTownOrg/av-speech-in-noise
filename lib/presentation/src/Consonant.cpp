@@ -33,27 +33,27 @@ void ConsonantPresenter::showResponseSubmission() {
     view.showCursor();
 }
 
-ConsonantResponder::ConsonantResponder(Model &model, ConsonantInputView &view)
+ConsonantController::ConsonantController(Model &model, ConsonantInputView &view)
     : model{model}, view{view} {
     view.subscribe(this);
 }
 
-void ConsonantResponder::subscribe(TaskResponder::EventListener *e) {
+void ConsonantController::subscribe(TaskController::EventListener *e) {
     listener = e;
 }
 
-void ConsonantResponder::subscribe(ExperimenterResponder *p) { responder = p; }
+void ConsonantController::subscribe(ExperimenterController *p) { responder = p; }
 
-static void notifyThatUserIsReadyForNextTrial(ExperimenterResponder *r) {
+static void notifyThatUserIsReadyForNextTrial(ExperimenterController *r) {
     r->notifyThatUserIsReadyForNextTrial();
 }
 
-void ConsonantResponder::notifyThatReadyButtonHasBeenClicked() {
+void ConsonantController::notifyThatReadyButtonHasBeenClicked() {
     listener->notifyThatTaskHasStarted();
     notifyThatUserIsReadyForNextTrial(responder);
 }
 
-void ConsonantResponder::notifyThatResponseButtonHasBeenClicked() {
+void ConsonantController::notifyThatResponseButtonHasBeenClicked() {
     model.submit(ConsonantResponse{view.consonant().front()});
     listener->notifyThatUserIsDoneResponding();
     notifyThatUserIsReadyForNextTrial(responder);

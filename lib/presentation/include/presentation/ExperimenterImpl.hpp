@@ -7,20 +7,20 @@
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
-class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
-                                  public ExperimenterResponder {
+class ExperimenterControllerImpl : public ExperimenterInputView::EventListener,
+                                  public ExperimenterController {
   public:
-    explicit ExperimenterResponderImpl(Model &, View &, ExperimenterInputView &,
-        TaskResponder *consonantResponder, TaskPresenter *consonantPresenter,
-        TaskResponder *coordinateResponseMeasureResponder,
+    explicit ExperimenterControllerImpl(Model &, View &, ExperimenterInputView &,
+        TaskController *consonantController, TaskPresenter *consonantPresenter,
+        TaskController *coordinateResponseMeasureController,
         TaskPresenter *coordinateResponseMeasurePresenter,
-        TaskResponder *freeResponseResponder,
+        TaskController *freeResponseController,
         TaskPresenter *freeResponsePresenter,
-        TaskResponder *correctKeywordsResponder,
+        TaskController *correctKeywordsController,
         TaskPresenter *correctKeywordsPresenter,
-        TaskResponder *passFailResponder, TaskPresenter *passFailPresenter);
-    void subscribe(ExperimenterResponder::EventListener *e) override;
-    void subscribe(SessionResponder *p) override;
+        TaskController *passFailController, TaskPresenter *passFailPresenter);
+    void subscribe(ExperimenterController::EventListener *e) override;
+    void subscribe(SessionController *p) override;
     void exitTest() override;
     void playTrial() override;
     void declineContinuingTesting() override;
@@ -33,8 +33,8 @@ class ExperimenterResponderImpl : public ExperimenterInputView::EventListener,
   private:
     Model &model;
     View &mainView;
-    ExperimenterResponder::EventListener *listener{};
-    SessionResponder *responder{};
+    ExperimenterController::EventListener *listener{};
+    SessionController *responder{};
 };
 
 class ExperimenterPresenterImpl : public Model::EventListener,

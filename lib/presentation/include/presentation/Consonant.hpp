@@ -46,20 +46,20 @@ class ConsonantPresenter : public TaskPresenter {
     ConsonantOutputView &view;
 };
 
-class ConsonantResponder : public TaskResponder,
+class ConsonantController : public TaskController,
                            public ConsonantInputView::EventListener {
   public:
-    explicit ConsonantResponder(Model &, ConsonantInputView &);
-    void subscribe(TaskResponder::EventListener *e) override;
-    void subscribe(ExperimenterResponder *p) override;
+    explicit ConsonantController(Model &, ConsonantInputView &);
+    void subscribe(TaskController::EventListener *e) override;
+    void subscribe(ExperimenterController *p) override;
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
 
   private:
     Model &model;
     ConsonantInputView &view;
-    TaskResponder::EventListener *listener{};
-    ExperimenterResponder *responder{};
+    TaskController::EventListener *listener{};
+    ExperimenterController *responder{};
 };
 }
 

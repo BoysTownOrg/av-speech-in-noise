@@ -2,21 +2,21 @@
 #include "Input.hpp"
 
 namespace av_speech_in_noise {
-CorrectKeywordsResponder::CorrectKeywordsResponder(
+CorrectKeywordsController::CorrectKeywordsController(
     Model &model, View &view, CorrectKeywordsInputView &keywordsView)
     : model{model}, view{view}, keywordsView{keywordsView} {
     keywordsView.subscribe(this);
 }
 
-void CorrectKeywordsResponder::subscribe(TaskResponder::EventListener *e) {
+void CorrectKeywordsController::subscribe(TaskController::EventListener *e) {
     listener = e;
 }
 
-void CorrectKeywordsResponder::subscribe(ExperimenterResponder *r) {
+void CorrectKeywordsController::subscribe(ExperimenterController *r) {
     responder = r;
 }
 
-void CorrectKeywordsResponder::notifyThatSubmitButtonHasBeenClicked() {
+void CorrectKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     try {
         model.submit(CorrectKeywords{
             readInteger(keywordsView.correctKeywords(), "number")});

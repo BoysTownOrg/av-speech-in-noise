@@ -28,19 +28,19 @@ class FreeResponseOutputView {
     virtual void clearFreeResponse() = 0;
 };
 
-class FreeResponseResponder : public TaskResponder,
+class FreeResponseController : public TaskController,
                               public FreeResponseInputView::EventListener {
   public:
-    FreeResponseResponder(Model &, FreeResponseInputView &);
-    void subscribe(TaskResponder::EventListener *) override;
-    void subscribe(ExperimenterResponder *) override;
+    FreeResponseController(Model &, FreeResponseInputView &);
+    void subscribe(TaskController::EventListener *) override;
+    void subscribe(ExperimenterController *) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
     Model &model;
     FreeResponseInputView &view;
-    TaskResponder::EventListener *listener{};
-    ExperimenterResponder *responder{};
+    TaskController::EventListener *listener{};
+    ExperimenterController *responder{};
 };
 
 class FreeResponsePresenter : public TaskPresenter {

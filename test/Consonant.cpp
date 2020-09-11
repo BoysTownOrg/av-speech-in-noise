@@ -1,7 +1,7 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
-#include "TaskResponderListenerStub.hpp"
-#include "ExperimenterResponderStub.hpp"
+#include "TaskControllerListenerStub.hpp"
+#include "ExperimenterControllerStub.hpp"
 #include <presentation/Consonant.hpp>
 #include <gtest/gtest.h>
 #include <utility>
@@ -109,14 +109,14 @@ class ConsonantTests : public ::testing::Test {
     ModelStub model;
     ConsonantInputViewStub inputView;
     ConsonantOutputViewStub outputView;
-    ConsonantResponder responder{model, inputView};
+    ConsonantController responder{model, inputView};
     ConsonantPresenter presenter{outputView};
-    ExperimenterResponderStub experimenterResponder;
-    TaskResponderListenerStub taskResponder;
+    ExperimenterControllerStub experimenterController;
+    TaskControllerListenerStub taskController;
 
     ConsonantTests() {
-        responder.subscribe(&experimenterResponder);
-        responder.subscribe(&taskResponder);
+        responder.subscribe(&experimenterController);
+        responder.subscribe(&taskController);
     }
 };
 
@@ -172,12 +172,12 @@ CONSONANT_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterReadyButtonIsClicked) {
     notifyThatReadyButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterResponder.notifiedThatUserIsReadyForNextTrial());
+        experimenterController.notifiedThatUserIsReadyForNextTrial());
 }
 
 CONSONANT_TEST(responderNotifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
     notifyThatReadyButtonHasBeenClicked(inputView);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskResponder.notifiedThatTaskHasStarted());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskController.notifiedThatTaskHasStarted());
 }
 
 CONSONANT_TEST(responderSubmitsConsonantAfterResponseButtonIsClicked) {
@@ -190,14 +190,14 @@ CONSONANT_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
     notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterResponder.notifiedThatUserIsReadyForNextTrial());
+        experimenterController.notifiedThatUserIsReadyForNextTrial());
 }
 
 CONSONANT_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
     notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        taskResponder.notifiedThatUserIsDoneResponding());
+        taskController.notifiedThatUserIsDoneResponding());
 }
 }
 }

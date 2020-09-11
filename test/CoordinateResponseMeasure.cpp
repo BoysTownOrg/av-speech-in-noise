@@ -1,7 +1,7 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
-#include "TaskResponderListenerStub.hpp"
-#include "ExperimenterResponderStub.hpp"
+#include "TaskControllerListenerStub.hpp"
+#include "ExperimenterControllerStub.hpp"
 #include <presentation/CoordinateResponseMeasure.hpp>
 #include <gtest/gtest.h>
 #include <utility>
@@ -115,14 +115,14 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
     ModelStub model;
     CoordinateResponseMeasureInputViewStub inputView;
     CoordinateResponseMeasureOutputViewStub outputView;
-    CoordinateResponseMeasureResponder responder{model, inputView};
+    CoordinateResponseMeasureController responder{model, inputView};
     CoordinateResponseMeasurePresenter presenter{outputView};
-    ExperimenterResponderStub experimenterResponder;
-    TaskResponderListenerStub taskResponderListener;
+    ExperimenterControllerStub experimenterController;
+    TaskControllerListenerStub taskControllerListener;
 
     CoordinateResponseMeasureTests() {
-        responder.subscribe(&experimenterResponder);
-        responder.subscribe(&taskResponderListener);
+        responder.subscribe(&experimenterController);
+        responder.subscribe(&taskControllerListener);
     }
 };
 
@@ -176,28 +176,28 @@ COORDINATE_RESPONSE_MEASURE_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterReadyButtonIsClicked) {
     notifyThatReadyButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterResponder.notifiedThatUserIsReadyForNextTrial());
+        experimenterController.notifiedThatUserIsReadyForNextTrial());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(
     responderNotifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
     notifyThatReadyButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        taskResponderListener.notifiedThatTaskHasStarted());
+        taskControllerListener.notifiedThatTaskHasStarted());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
     notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterResponder.notifiedThatUserIsReadyForNextTrial());
+        experimenterController.notifiedThatUserIsReadyForNextTrial());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
     notifyThatResponseButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        taskResponderListener.notifiedThatUserIsDoneResponding());
+        taskControllerListener.notifiedThatUserIsDoneResponding());
 }
 
 COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesNumberResponse) {

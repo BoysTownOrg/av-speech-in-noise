@@ -2,19 +2,19 @@
 
 namespace av_speech_in_noise {
 Presenter::Presenter(Model &model, View &view,
-    TestSetupResponder *testSetupResponder,
+    TestSetupController *testSetupController,
     TestSetupPresenter *testSetupPresenter,
-    ExperimenterResponder *experimenterResponder,
+    ExperimenterController *experimenterController,
     ExperimenterPresenter *experimenterPresenter)
     : view{view}, testSetupPresenter{testSetupPresenter},
       experimenterPresenter{experimenterPresenter} {
-    if (testSetupResponder != nullptr) {
-        testSetupResponder->subscribe(this);
-        testSetupResponder->subscribe(testSetupPresenter);
+    if (testSetupController != nullptr) {
+        testSetupController->subscribe(this);
+        testSetupController->subscribe(testSetupPresenter);
     }
-    if (experimenterResponder != nullptr) {
-        experimenterResponder->subscribe(this);
-        experimenterResponder->subscribe(experimenterPresenter);
+    if (experimenterController != nullptr) {
+        experimenterController->subscribe(this);
+        experimenterController->subscribe(experimenterPresenter);
     }
     view.populateAudioDeviceMenu(model.audioDevices());
 }

@@ -25,19 +25,19 @@ class PassFailOutputView {
     virtual void hideEvaluationButtons() = 0;
 };
 
-class PassFailResponder : public TaskResponder,
+class PassFailController : public TaskController,
                           public PassFailInputView::EventListener {
   public:
-    PassFailResponder(Model &, PassFailInputView &);
-    void subscribe(TaskResponder::EventListener *) override;
-    void subscribe(ExperimenterResponder *) override;
+    PassFailController(Model &, PassFailInputView &);
+    void subscribe(TaskController::EventListener *) override;
+    void subscribe(ExperimenterController *) override;
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
 
   private:
     Model &model;
-    TaskResponder::EventListener *listener{};
-    ExperimenterResponder *responder{};
+    TaskController::EventListener *listener{};
+    ExperimenterController *responder{};
 };
 
 class PassFailPresenter : public TaskPresenter {

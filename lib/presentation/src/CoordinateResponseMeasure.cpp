@@ -22,34 +22,34 @@ static auto subjectResponse(CoordinateResponseMeasureInputView &inputView)
     return p;
 }
 
-CoordinateResponseMeasureResponder::CoordinateResponseMeasureResponder(
+CoordinateResponseMeasureController::CoordinateResponseMeasureController(
     Model &model, CoordinateResponseMeasureInputView &view)
     : model{model}, view{view} {
     view.subscribe(this);
 }
 
-void CoordinateResponseMeasureResponder::subscribe(
-    TaskResponder::EventListener *e) {
+void CoordinateResponseMeasureController::subscribe(
+    TaskController::EventListener *e) {
     listener = e;
 }
 
-static void notifyThatUserIsReadyForNextTrial(ExperimenterResponder *r) {
+static void notifyThatUserIsReadyForNextTrial(ExperimenterController *r) {
     r->notifyThatUserIsReadyForNextTrial();
 }
 
-void CoordinateResponseMeasureResponder::notifyThatReadyButtonHasBeenClicked() {
+void CoordinateResponseMeasureController::notifyThatReadyButtonHasBeenClicked() {
     listener->notifyThatTaskHasStarted();
     notifyThatUserIsReadyForNextTrial(responder);
 }
 
-void CoordinateResponseMeasureResponder::
+void CoordinateResponseMeasureController::
     notifyThatResponseButtonHasBeenClicked() {
     model.submit(subjectResponse(view));
     listener->notifyThatUserIsDoneResponding();
     notifyThatUserIsReadyForNextTrial(responder);
 }
 
-void CoordinateResponseMeasureResponder::subscribe(ExperimenterResponder *e) {
+void CoordinateResponseMeasureController::subscribe(ExperimenterController *e) {
     responder = e;
 }
 

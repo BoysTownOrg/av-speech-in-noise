@@ -4,79 +4,79 @@
 
 namespace av_speech_in_noise {
 static void displayTrialInformation(
-    Model &model, ExperimenterResponder::EventListener *presenter) {
+    Model &model, ExperimenterController::EventListener *presenter) {
     presenter->display("Trial " + std::to_string(model.trialNumber()));
     presenter->secondaryDisplay(model.targetFileName());
 }
 
 static void readyNextTrial(
-    Model &model, ExperimenterResponder::EventListener *presenter) {
+    Model &model, ExperimenterController::EventListener *presenter) {
     displayTrialInformation(model, presenter);
     presenter->notifyThatNextTrialIsReady();
 }
 
-ExperimenterResponderImpl::ExperimenterResponderImpl(Model &model,
+ExperimenterControllerImpl::ExperimenterControllerImpl(Model &model,
     View &mainView, ExperimenterInputView &view,
-    TaskResponder *consonantResponder, TaskPresenter *consonantPresenter,
-    TaskResponder *coordinateResponseMeasureResponder,
+    TaskController *consonantController, TaskPresenter *consonantPresenter,
+    TaskController *coordinateResponseMeasureController,
     TaskPresenter *coordinateResponseMeasurePresenter,
-    TaskResponder *freeResponseResponder, TaskPresenter *freeResponsePresenter,
-    TaskResponder *correctKeywordsResponder,
-    TaskPresenter *correctKeywordsPresenter, TaskResponder *passFailResponder,
+    TaskController *freeResponseController, TaskPresenter *freeResponsePresenter,
+    TaskController *correctKeywordsController,
+    TaskPresenter *correctKeywordsPresenter, TaskController *passFailController,
     TaskPresenter *passFailPresenter)
     : model{model}, mainView{mainView} {
     view.subscribe(this);
-    if (consonantResponder != nullptr) {
-        consonantResponder->subscribe(this);
-        consonantResponder->subscribe(consonantPresenter);
+    if (consonantController != nullptr) {
+        consonantController->subscribe(this);
+        consonantController->subscribe(consonantPresenter);
     }
-    if (freeResponseResponder != nullptr) {
-        freeResponseResponder->subscribe(this);
-        freeResponseResponder->subscribe(freeResponsePresenter);
+    if (freeResponseController != nullptr) {
+        freeResponseController->subscribe(this);
+        freeResponseController->subscribe(freeResponsePresenter);
     }
-    if (correctKeywordsResponder != nullptr) {
-        correctKeywordsResponder->subscribe(this);
-        correctKeywordsResponder->subscribe(correctKeywordsPresenter);
+    if (correctKeywordsController != nullptr) {
+        correctKeywordsController->subscribe(this);
+        correctKeywordsController->subscribe(correctKeywordsPresenter);
     }
-    if (passFailResponder != nullptr) {
-        passFailResponder->subscribe(this);
-        passFailResponder->subscribe(passFailPresenter);
+    if (passFailController != nullptr) {
+        passFailController->subscribe(this);
+        passFailController->subscribe(passFailPresenter);
     }
-    if (coordinateResponseMeasureResponder != nullptr) {
-        coordinateResponseMeasureResponder->subscribe(this);
-        coordinateResponseMeasureResponder->subscribe(
+    if (coordinateResponseMeasureController != nullptr) {
+        coordinateResponseMeasureController->subscribe(this);
+        coordinateResponseMeasureController->subscribe(
             coordinateResponseMeasurePresenter);
     }
 }
 
-void ExperimenterResponderImpl::subscribe(
-    ExperimenterResponder::EventListener *e) {
+void ExperimenterControllerImpl::subscribe(
+    ExperimenterController::EventListener *e) {
     listener = e;
 }
 
-static void notifyThatTestIsComplete(SessionResponder *presenter) {
+static void notifyThatTestIsComplete(SessionController *presenter) {
     presenter->notifyThatTestIsComplete();
 }
 
-void ExperimenterResponderImpl::exitTest() {
+void ExperimenterControllerImpl::exitTest() {
     notifyThatTestIsComplete(responder);
 }
 
 static void playTrial(
-    Model &model, View &view, ExperimenterResponder::EventListener *listener) {
+    Model &model, View &view, ExperimenterController::EventListener *listener) {
     model.playTrial(AudioSettings{view.audioDevice()});
     listener->notifyThatTrialHasStarted();
 }
 
-void ExperimenterResponderImpl::playTrial() {
+void ExperimenterControllerImpl::playTrial() {
     av_speech_in_noise::playTrial(model, mainView, listener);
 }
 
-void ExperimenterResponderImpl::declineContinuingTesting() {
+void ExperimenterControllerImpl::declineContinuingTesting() {
     notifyThatTestIsComplete(responder);
 }
 
-void ExperimenterResponderImpl::acceptContinuingTesting() {
+void ExperimenterControllerImpl::acceptContinuingTesting() {
     model.restartAdaptiveTestWhilePreservingTargets();
     readyNextTrial(model, listener);
 }
@@ -90,18 +90,18 @@ static void ifTestCompleteElse(Model &model, const std::function<void()> &f,
 }
 
 static void readyNextTrialIfTestIncompleteElse(Model &model,
-    ExperimenterResponder::EventListener *listener,
+    ExperimenterController::EventListener *listener,
     const std::function<void()> &f) {
     ifTestCompleteElse(model, f, [&]() { readyNextTrial(model, listener); });
 }
 
 static void notifyIfTestIsCompleteElse(
-    Model &model, SessionResponder *responder, const std::function<void()> &f) {
+    Model &model, SessionController *responder, const std::function<void()> &f) {
     ifTestCompleteElse(
         model, [&]() { notifyThatTestIsComplete(responder); }, f);
 }
 
-void ExperimenterResponderImpl::
+void ExperimenterControllerImpl::
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() {
     readyNextTrialIfTestIncompleteElse(model, listener, [&] {
         listener->showContinueTestingDialog();
@@ -114,19 +114,19 @@ void ExperimenterResponderImpl::
     });
 }
 
-void ExperimenterResponderImpl::notifyThatUserIsDoneResponding() {
+void ExperimenterControllerImpl::notifyThatUserIsDoneResponding() {
     notifyIfTestIsCompleteElse(
         model, responder, [&]() { readyNextTrial(model, listener); });
 }
 
-void ExperimenterResponderImpl::notifyThatUserIsReadyForNextTrial() {
+void ExperimenterControllerImpl::notifyThatUserIsReadyForNextTrial() {
     notifyIfTestIsCompleteElse(model, responder, [&]() {
         displayTrialInformation(model, listener);
         av_speech_in_noise::playTrial(model, mainView, listener);
     });
 }
 
-void ExperimenterResponderImpl::subscribe(SessionResponder *p) {
+void ExperimenterControllerImpl::subscribe(SessionController *p) {
     responder = p;
 }
 

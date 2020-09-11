@@ -45,7 +45,7 @@ class SomethingIDK {
     virtual void prepare(Method) = 0;
 };
 
-class TestSetupResponder {
+class TestSetupController {
   public:
     class EventListener {
       public:
@@ -53,12 +53,12 @@ class TestSetupResponder {
         virtual void notifyThatUserHasSelectedTestSettingsFile(
             const std::string &) = 0;
     };
-    virtual ~TestSetupResponder() = default;
+    virtual ~TestSetupController() = default;
     virtual void subscribe(SomethingIDK *) = 0;
     virtual void subscribe(EventListener *) = 0;
 };
 
-class TestSetupPresenter : public virtual TestSetupResponder::EventListener,
+class TestSetupPresenter : public virtual TestSetupController::EventListener,
                            public virtual PresenterSimple {};
 }
 

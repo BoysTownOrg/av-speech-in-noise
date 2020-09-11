@@ -39,13 +39,13 @@ class ExperimenterOutputView {
 class ExperimenterView : public virtual ExperimenterInputView,
                          public virtual ExperimenterOutputView {};
 
-class SessionResponder {
+class SessionController {
   public:
-    virtual ~SessionResponder() = default;
+    virtual ~SessionController() = default;
     virtual void notifyThatTestIsComplete() = 0;
 };
 
-class ExperimenterResponder {
+class ExperimenterController {
   public:
     class EventListener {
       public:
@@ -57,9 +57,9 @@ class ExperimenterResponder {
         virtual void secondaryDisplay(const std::string &) = 0;
         virtual void notifyThatNextTrialIsReady() = 0;
     };
-    virtual ~ExperimenterResponder() = default;
+    virtual ~ExperimenterController() = default;
     virtual void subscribe(EventListener *) = 0;
-    virtual void subscribe(SessionResponder *) = 0;
+    virtual void subscribe(SessionController *) = 0;
     virtual void
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() = 0;
     virtual void notifyThatUserIsDoneResponding() = 0;
@@ -67,7 +67,7 @@ class ExperimenterResponder {
 };
 
 class ExperimenterPresenter
-    : public virtual ExperimenterResponder::EventListener,
+    : public virtual ExperimenterController::EventListener,
       public virtual PresenterSimple {
   public:
     virtual void initialize(Method) = 0;

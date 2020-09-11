@@ -1,7 +1,7 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
-#include "TaskResponderListenerStub.hpp"
-#include "ExperimenterResponderStub.hpp"
+#include "TaskControllerListenerStub.hpp"
+#include "ExperimenterControllerStub.hpp"
 #include <presentation/FreeResponse.hpp>
 #include <gtest/gtest.h>
 #include <utility>
@@ -107,14 +107,14 @@ class FreeResponseTests : public ::testing::Test {
     ExperimenterOutputViewStub experimenterOutputView;
     FreeResponseInputViewStub inputView;
     FreeResponseOutputViewStub outputView;
-    FreeResponseResponder responder{model, inputView};
+    FreeResponseController responder{model, inputView};
     FreeResponsePresenter presenter{experimenterOutputView, outputView};
-    ExperimenterResponderStub experimenterResponder;
-    TaskResponderListenerStub taskResponder;
+    ExperimenterControllerStub experimenterController;
+    TaskControllerListenerStub taskController;
 
     FreeResponseTests() {
-        responder.subscribe(&experimenterResponder);
-        responder.subscribe(&taskResponder);
+        responder.subscribe(&experimenterController);
+        responder.subscribe(&taskController);
     }
 };
 
@@ -173,14 +173,14 @@ FREE_RESPONSE_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterResponder.notifiedThatUserIsDoneResponding());
+        experimenterController.notifiedThatUserIsDoneResponding());
 }
 
 FREE_RESPONSE_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(inputView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        taskResponder.notifiedThatUserIsDoneResponding());
+        taskController.notifiedThatUserIsDoneResponding());
 }
 }
 }

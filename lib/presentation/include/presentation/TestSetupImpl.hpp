@@ -38,10 +38,10 @@ constexpr auto name(Transducer c) -> const char * {
     }
 }
 
-class TestSetupResponderImpl : public TestSetupInputView::EventListener,
-                               public TestSetupResponder {
+class TestSetupControllerImpl : public TestSetupInputView::EventListener,
+                               public TestSetupController {
   public:
-    explicit TestSetupResponderImpl(Model &model, View &mainView,
+    explicit TestSetupControllerImpl(Model &model, View &mainView,
         TestSetupInputView &view,
         TestSettingsInterpreter &testSettingsInterpreter,
         TextFileReader &textFileReader)
@@ -80,7 +80,7 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
             listener->notifyThatUserHasSelectedTestSettingsFile(file);
     }
     void subscribe(SomethingIDK *p) override { parent = p; }
-    void subscribe(TestSetupResponder::EventListener *e) override {
+    void subscribe(TestSetupController::EventListener *e) override {
         listener = e;
     }
 
@@ -91,7 +91,7 @@ class TestSetupResponderImpl : public TestSetupInputView::EventListener,
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
     SomethingIDK *parent{};
-    TestSetupResponder::EventListener *listener{};
+    TestSetupController::EventListener *listener{};
 };
 
 class TestSetupPresenterImpl : public TestSetupPresenter {

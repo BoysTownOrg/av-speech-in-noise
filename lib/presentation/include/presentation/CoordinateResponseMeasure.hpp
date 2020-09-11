@@ -33,22 +33,22 @@ class CoordinateResponseMeasureOutputView {
     virtual void hideNextTrialButton() = 0;
 };
 
-class CoordinateResponseMeasureResponder
-    : public TaskResponder,
+class CoordinateResponseMeasureController
+    : public TaskController,
       public CoordinateResponseMeasureInputView::EventListener {
   public:
-    explicit CoordinateResponseMeasureResponder(
+    explicit CoordinateResponseMeasureController(
         Model &, CoordinateResponseMeasureInputView &);
-    void subscribe(TaskResponder::EventListener *e) override;
+    void subscribe(TaskController::EventListener *e) override;
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
-    void subscribe(ExperimenterResponder *e) override;
+    void subscribe(ExperimenterController *e) override;
 
   private:
     Model &model;
     CoordinateResponseMeasureInputView &view;
-    TaskResponder::EventListener *listener{};
-    ExperimenterResponder *responder{};
+    TaskController::EventListener *listener{};
+    ExperimenterController *responder{};
 };
 
 class CoordinateResponseMeasurePresenter : public TaskPresenter {

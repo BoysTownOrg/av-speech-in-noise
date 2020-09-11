@@ -1,33 +1,33 @@
 #include "PassFail.hpp"
 
 namespace av_speech_in_noise {
-PassFailResponder::PassFailResponder(Model &model, PassFailInputView &view)
+PassFailController::PassFailController(Model &model, PassFailInputView &view)
     : model{model} {
     view.subscribe(this);
 }
 
-void PassFailResponder::subscribe(TaskResponder::EventListener *e) {
+void PassFailController::subscribe(TaskController::EventListener *e) {
     listener = e;
 }
 
 static void notifyThatUserIsDoneResponding(
-    TaskResponder::EventListener *listener, ExperimenterResponder *responder) {
+    TaskController::EventListener *listener, ExperimenterController *responder) {
     listener->notifyThatUserIsDoneResponding();
     responder
         ->notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
-void PassFailResponder::notifyThatCorrectButtonHasBeenClicked() {
+void PassFailController::notifyThatCorrectButtonHasBeenClicked() {
     model.submitCorrectResponse();
     notifyThatUserIsDoneResponding(listener, responder);
 }
 
-void PassFailResponder::notifyThatIncorrectButtonHasBeenClicked() {
+void PassFailController::notifyThatIncorrectButtonHasBeenClicked() {
     model.submitIncorrectResponse();
     notifyThatUserIsDoneResponding(listener, responder);
 }
 
-void PassFailResponder::subscribe(ExperimenterResponder *p) { responder = p; }
+void PassFailController::subscribe(ExperimenterController *p) { responder = p; }
 
 PassFailPresenter::PassFailPresenter(
     ExperimenterOutputView &experimenterView, PassFailOutputView &view)

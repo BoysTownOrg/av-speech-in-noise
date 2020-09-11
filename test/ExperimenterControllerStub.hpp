@@ -1,13 +1,13 @@
-#ifndef AV_SPEECH_IN_NOISE_TESTS_EXPERIMENTERRESPONDERSTUB_HPP_
-#define AV_SPEECH_IN_NOISE_TESTS_EXPERIMENTERRESPONDERSTUB_HPP_
+#ifndef AV_SPEECH_IN_NOISE_TESTS_EXPERIMENTERCONTROLLERSTUB_HPP_
+#define AV_SPEECH_IN_NOISE_TESTS_EXPERIMENTERCONTROLLERSTUB_HPP_
 
 #include <presentation/Experimenter.hpp>
 
 namespace av_speech_in_noise {
-class ExperimenterResponderStub : public ExperimenterResponder {
+class ExperimenterControllerStub : public ExperimenterController {
   public:
     void subscribe(EventListener *) override {}
-    void subscribe(SessionResponder *) override {}
+    void subscribe(SessionController *) override {}
     void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion()
         override {
         notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion_ =
