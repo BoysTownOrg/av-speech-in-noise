@@ -52,7 +52,7 @@ class AvFoundationVideoPlayer : public VideoPlayer {
     void setDevice(int index) override;
     void hide() override;
     void show() override;
-    void subscribe(EventListener *) override;
+    void attach(EventListener *) override;
     auto deviceCount() -> int override;
     auto deviceDescription(int index) -> std::string override;
     auto playing() -> bool override;
@@ -93,7 +93,7 @@ class AvFoundationAudioPlayer : public AudioPlayer {
   public:
     AvFoundationAudioPlayer();
     ~AvFoundationAudioPlayer() override;
-    void subscribe(EventListener *) override;
+    void attach(EventListener *) override;
     void loadFile(std::string filePath) override;
     auto deviceCount() -> int override;
     auto deviceDescription(int index) -> std::string override;

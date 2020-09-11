@@ -4,14 +4,14 @@ namespace av_speech_in_noise {
 FreeResponseController::FreeResponseController(
     Model &model, FreeResponseInputView &view)
     : model{model}, view{view} {
-    view.subscribe(this);
+    view.attach(this);
 }
 
-void FreeResponseController::subscribe(TaskController::EventListener *e) {
+void FreeResponseController::attach(TaskController::EventListener *e) {
     listener = e;
 }
 
-void FreeResponseController::subscribe(ExperimenterController *e) {
+void FreeResponseController::attach(ExperimenterController *e) {
     responder = e;
 }
 

@@ -16,7 +16,7 @@ class ExperimenterInputView {
         virtual void declineContinuingTesting() = 0;
         virtual void acceptContinuingTesting() = 0;
     };
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(EventListener *) = 0;
     virtual ~ExperimenterInputView() = default;
 };
 
@@ -52,8 +52,8 @@ class ExperimenterController {
         virtual void notifyThatNextTrialIsReady() = 0;
     };
     virtual ~ExperimenterController() = default;
-    virtual void subscribe(EventListener *) = 0;
-    virtual void subscribe(SessionController *) = 0;
+    virtual void attach(EventListener *) = 0;
+    virtual void attach(SessionController *) = 0;
     virtual void
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() = 0;
     virtual void notifyThatUserIsDoneResponding() = 0;

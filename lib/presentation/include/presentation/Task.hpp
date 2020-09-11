@@ -15,8 +15,8 @@ class TaskController {
         virtual void notifyThatTrialHasStarted() {}
     };
     virtual ~TaskController() = default;
-    virtual void subscribe(EventListener *) = 0;
-    virtual void subscribe(ExperimenterController *) = 0;
+    virtual void attach(EventListener *) = 0;
+    virtual void attach(ExperimenterController *) = 0;
 };
 
 class TaskPresenter : virtual public TaskController::EventListener,

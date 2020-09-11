@@ -15,7 +15,7 @@ class FreeResponseInputView {
         virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
     };
     virtual ~FreeResponseInputView() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(EventListener *) = 0;
     virtual auto flagged() -> bool = 0;
     virtual auto freeResponse() -> std::string = 0;
 };
@@ -32,8 +32,8 @@ class FreeResponseController : public TaskController,
                               public FreeResponseInputView::EventListener {
   public:
     FreeResponseController(Model &, FreeResponseInputView &);
-    void subscribe(TaskController::EventListener *) override;
-    void subscribe(ExperimenterController *) override;
+    void attach(TaskController::EventListener *) override;
+    void attach(ExperimenterController *) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:

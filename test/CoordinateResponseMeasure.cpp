@@ -29,7 +29,7 @@ class CoordinateResponseMeasureInputViewStub
 
     auto numberResponse() -> std::string override { return numberResponse_; }
 
-    void subscribe(EventListener *e) override { listener_ = e; }
+    void attach(EventListener *e) override { listener_ = e; }
 
     void notifyThatResponseButtonHasBeenClicked() {
         listener_->notifyThatResponseButtonHasBeenClicked();
@@ -121,8 +121,8 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
     TaskControllerListenerStub taskControllerListener;
 
     CoordinateResponseMeasureTests() {
-        responder.subscribe(&experimenterController);
-        responder.subscribe(&taskControllerListener);
+        responder.attach(&experimenterController);
+        responder.attach(&taskControllerListener);
     }
 };
 

@@ -70,7 +70,7 @@ namespace {
 class TimerImpl : public Timer {
   public:
     TimerImpl();
-    void subscribe(EventListener *e) override;
+    void attach(EventListener *e) override;
     void scheduleCallbackAfterSeconds(double x) override;
     void timerCallback();
 
@@ -199,7 +199,7 @@ class TextFileReaderImpl : public TextFileReader {
 
 TimerImpl::TimerImpl() { scheduler->controller = this; }
 
-void TimerImpl::subscribe(EventListener *e) { listener = e; }
+void TimerImpl::attach(EventListener *e) { listener = e; }
 
 void TimerImpl::scheduleCallbackAfterSeconds(double x) {
     [scheduler scheduleCallbackAfterSeconds:x];
@@ -374,35 +374,35 @@ void main(
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
     TestSettingsInterpreterImpl testSettingsInterpreter;
-    ConsonantResponder consonantScreenResponder{model, consonantView};
+    ConsonantController consonantScreenController{model, consonantView};
     ConsonantPresenter consonantPresenter{consonantView};
-    FreeResponseResponder freeResponseResponder{model, experimenterView};
+    FreeResponseController freeResponseController{model, experimenterView};
     FreeResponsePresenter freeResponsePresenter{
         experimenterView, experimenterView};
-    CorrectKeywordsResponder correctKeywordsResponder{
+    CorrectKeywordsController correctKeywordsController{
         model, view, experimenterView};
     CorrectKeywordsPresenter correctKeywordsPresenter{
         experimenterView, experimenterView};
-    PassFailResponder passFailResponder{model, experimenterView};
+    PassFailController passFailController{model, experimenterView};
     PassFailPresenter passFailPresenter{experimenterView, experimenterView};
-    CoordinateResponseMeasureResponder coordinateResponseMeasureResponder{
+    CoordinateResponseMeasureController coordinateResponseMeasureController{
         model, coordinateResponseMeasureView};
     CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
         coordinateResponseMeasureView};
-    TestSetupResponderImpl testSetupResponderImpl{model, view,
+    TestSetupControllerImpl testSetupControllerImpl{model, view,
         *(testSetupView.get()), testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{*(testSetupView.get())};
-    ExperimenterResponderImpl experimenterResponder{model, view,
-        experimenterView, &consonantScreenResponder, &consonantPresenter,
-        &coordinateResponseMeasureResponder,
-        &coordinateResponseMeasurePresenter, &freeResponseResponder,
-        &freeResponsePresenter, &correctKeywordsResponder,
-        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter};
+    ExperimenterControllerImpl experimenterController{model, view,
+        experimenterView, &consonantScreenController, &consonantPresenter,
+        &coordinateResponseMeasureController,
+        &coordinateResponseMeasurePresenter, &freeResponseController,
+        &freeResponsePresenter, &correctKeywordsController,
+        &correctKeywordsPresenter, &passFailController, &passFailPresenter};
     ExperimenterPresenterImpl experimenterPresenter{model, experimenterView,
         &consonantPresenter, &coordinateResponseMeasurePresenter,
         &freeResponsePresenter, &correctKeywordsPresenter, &passFailPresenter};
-    Presenter presenter{model, view, &testSetupResponderImpl,
-        &testSetupPresenterRefactored, &experimenterResponder,
+    Presenter presenter{model, view, &testSetupControllerImpl,
+        &testSetupPresenterRefactored, &experimenterController,
         &experimenterPresenter};
     presenter.run();
 }

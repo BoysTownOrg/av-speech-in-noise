@@ -19,8 +19,8 @@ class ExperimenterControllerImpl : public ExperimenterInputView::EventListener,
         TaskController *correctKeywordsController,
         TaskPresenter *correctKeywordsPresenter,
         TaskController *passFailController, TaskPresenter *passFailPresenter);
-    void subscribe(ExperimenterController::EventListener *e) override;
-    void subscribe(SessionController *p) override;
+    void attach(ExperimenterController::EventListener *e) override;
+    void attach(SessionController *p) override;
     void exitTest() override;
     void playTrial() override;
     void declineContinuingTesting() override;

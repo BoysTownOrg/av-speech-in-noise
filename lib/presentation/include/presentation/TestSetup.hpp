@@ -16,7 +16,7 @@ class TestSetupInputView {
         virtual void notifyThatPlayCalibrationButtonHasBeenClicked() = 0;
         virtual void notifyThatBrowseForTestSettingsButtonHasBeenClicked() = 0;
     };
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(EventListener *) = 0;
     virtual ~TestSetupInputView() = default;
     virtual auto testSettingsFile() -> std::string = 0;
     virtual auto startingSnr() -> std::string = 0;
@@ -48,8 +48,8 @@ class TestSetupController {
             const std::string &) = 0;
     };
     virtual ~TestSetupController() = default;
-    virtual void subscribe(SessionController *) = 0;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(SessionController *) = 0;
+    virtual void attach(EventListener *) = 0;
 };
 
 class TestSetupPresenter : public virtual TestSetupController::EventListener,

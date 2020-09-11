@@ -68,7 +68,7 @@ class AudioPlayerStub : public AudioPlayer {
 
     void play() override { played_ = true; }
 
-    void subscribe(EventListener *listener) override { listener_ = listener; }
+    void attach(EventListener *listener) override { listener_ = listener; }
 
     [[nodiscard]] auto filePath() const { return filePath_; }
 
@@ -178,7 +178,7 @@ class TimerStub : public Timer {
 
     void callback() { listener_->callback(); }
 
-    void subscribe(EventListener *listener) override { listener_ = listener; }
+    void attach(EventListener *listener) override { listener_ = listener; }
 
   private:
     EventListener *listener_{};
@@ -259,7 +259,7 @@ class MaskerPlayerTests : public ::testing::Test {
     std::vector<float> leftChannel;
     std::vector<float> rightChannel;
 
-    MaskerPlayerTests() { player.subscribe(&listener); }
+    MaskerPlayerTests() { player.attach(&listener); }
 
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio,
         player_system_time_type t = {}) {

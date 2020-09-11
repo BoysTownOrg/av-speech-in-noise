@@ -207,7 +207,7 @@ class ModelStub : public Model {
         responseParameters_ = p;
     }
 
-    void subscribe(EventListener *listener) override { listener_ = listener; }
+    void attach(EventListener *listener) override { listener_ = listener; }
 
     void playCalibration(const Calibration &p) override { calibration_ = p; }
 

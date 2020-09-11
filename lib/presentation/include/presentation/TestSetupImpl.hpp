@@ -48,7 +48,7 @@ class TestSetupControllerImpl : public TestSetupInputView::EventListener,
         : model{model}, mainView{mainView}, view{view},
           testSettingsInterpreter{testSettingsInterpreter},
           textFileReader{textFileReader} {
-        view.subscribe(this);
+        view.attach(this);
     }
     void notifyThatConfirmButtonHasBeenClicked() override {
         try {
@@ -79,8 +79,8 @@ class TestSetupControllerImpl : public TestSetupInputView::EventListener,
         if (!mainView.browseCancelled())
             listener->notifyThatUserHasSelectedTestSettingsFile(file);
     }
-    void subscribe(SessionController *p) override { parent = p; }
-    void subscribe(TestSetupController::EventListener *e) override {
+    void attach(SessionController *p) override { parent = p; }
+    void attach(TestSetupController::EventListener *e) override {
         listener = e;
     }
 

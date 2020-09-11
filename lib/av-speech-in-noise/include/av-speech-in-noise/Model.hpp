@@ -127,7 +127,7 @@ class Model {
     };
 
     virtual ~Model() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(EventListener *) = 0;
     virtual void initialize(const AdaptiveTest &) = 0;
     virtual void initializeWithTargetReplacement(
         const FixedLevelFixedTrialsTest &) = 0;

@@ -3,10 +3,10 @@
 namespace av_speech_in_noise {
 PassFailController::PassFailController(Model &model, PassFailInputView &view)
     : model{model} {
-    view.subscribe(this);
+    view.attach(this);
 }
 
-void PassFailController::subscribe(TaskController::EventListener *e) {
+void PassFailController::attach(TaskController::EventListener *e) {
     listener = e;
 }
 
@@ -27,7 +27,7 @@ void PassFailController::notifyThatIncorrectButtonHasBeenClicked() {
     notifyThatUserIsDoneResponding(listener, responder);
 }
 
-void PassFailController::subscribe(ExperimenterController *p) { responder = p; }
+void PassFailController::attach(ExperimenterController *p) { responder = p; }
 
 PassFailPresenter::PassFailPresenter(
     ExperimenterOutputView &experimenterView, PassFailOutputView &view)

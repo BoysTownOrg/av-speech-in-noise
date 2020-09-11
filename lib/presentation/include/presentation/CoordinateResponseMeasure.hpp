@@ -15,7 +15,7 @@ class CoordinateResponseMeasureInputView {
         virtual void notifyThatResponseButtonHasBeenClicked() = 0;
     };
     virtual ~CoordinateResponseMeasureInputView() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(EventListener *) = 0;
     virtual auto numberResponse() -> std::string = 0;
     virtual auto greenResponse() -> bool = 0;
     virtual auto blueResponse() -> bool = 0;
@@ -39,10 +39,10 @@ class CoordinateResponseMeasureController
   public:
     explicit CoordinateResponseMeasureController(
         Model &, CoordinateResponseMeasureInputView &);
-    void subscribe(TaskController::EventListener *e) override;
+    void attach(TaskController::EventListener *e) override;
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
-    void subscribe(ExperimenterController *e) override;
+    void attach(ExperimenterController *e) override;
 
   private:
     Model &model;

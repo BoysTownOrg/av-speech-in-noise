@@ -308,7 +308,7 @@ auto CocoaTestSetupView::transducer() -> std::string {
     return transducerMenu.titleOfSelectedItem.UTF8String;
 }
 
-void CocoaTestSetupView::subscribe(EventListener *listener) {
+void CocoaTestSetupView::attach(EventListener *listener) {
     listener_ = listener;
 }
 
@@ -468,7 +468,7 @@ void CocoaConsonantView::hideReadyButton() {
     av_speech_in_noise::hide(readyButton);
 }
 
-void CocoaConsonantView::subscribe(EventListener *e) { listener_ = e; }
+void CocoaConsonantView::attach(EventListener *e) { listener_ = e; }
 
 void CocoaConsonantView::notifyThatReadyButtonHasBeenClicked() {
     listener_->notifyThatReadyButtonHasBeenClicked();
@@ -629,7 +629,7 @@ void CocoaCoordinateResponseMeasureView::hideResponseButtons() {
     av_speech_in_noise::hide(responseButtons);
 }
 
-void CocoaCoordinateResponseMeasureView::subscribe(EventListener *e) {
+void CocoaCoordinateResponseMeasureView::attach(EventListener *e) {
     listener_ = e;
 }
 
@@ -754,20 +754,20 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
     freeResponseActions->controller = this;
 }
 
-void CocoaExperimenterView::subscribe(ExperimenterView::EventListener *e) {
+void CocoaExperimenterView::attach(ExperimenterView::EventListener *e) {
     listener_ = e;
 }
 
-void CocoaExperimenterView::subscribe(FreeResponseInputView::EventListener *e) {
+void CocoaExperimenterView::attach(FreeResponseInputView::EventListener *e) {
     freeResponseListener = e;
 }
 
-void CocoaExperimenterView::subscribe(
+void CocoaExperimenterView::attach(
     CorrectKeywordsInputView::EventListener *e) {
     correctKeywordsListener = e;
 }
 
-void CocoaExperimenterView::subscribe(PassFailInputView::EventListener *e) {
+void CocoaExperimenterView::attach(PassFailInputView::EventListener *e) {
     passFailListener = e;
 }
 

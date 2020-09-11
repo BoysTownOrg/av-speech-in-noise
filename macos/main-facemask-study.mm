@@ -15,7 +15,7 @@ class FacemaskStudySetupView : public TestSetupView {
     void hide() override;
     auto testSettingsFile() -> std::string override;
     void setTestSettingsFile(std::string) override;
-    void subscribe(EventListener *) override;
+    void attach(EventListener *) override;
     void populateTransducerMenu(std::vector<std::string>) override {}
     auto startingSnr() -> std::string override { return "0"; }
     auto testerId() -> std::string override { return {}; }
@@ -271,7 +271,7 @@ void FacemaskStudySetupView::setTestSettingsFile(std::string s) {
     [testSettingsField setStringValue:nsString(s)];
 }
 
-void FacemaskStudySetupView::subscribe(EventListener *e) { listener_ = e; }
+void FacemaskStudySetupView::attach(EventListener *e) { listener_ = e; }
 
 void FacemaskStudySetupView::notifyThatConfirmButtonHasBeenClicked() {
     listener_->notifyThatConfirmButtonHasBeenClicked();

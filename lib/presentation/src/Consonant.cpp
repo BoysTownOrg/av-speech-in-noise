@@ -35,14 +35,14 @@ void ConsonantPresenter::showResponseSubmission() {
 
 ConsonantController::ConsonantController(Model &model, ConsonantInputView &view)
     : model{model}, view{view} {
-    view.subscribe(this);
+    view.attach(this);
 }
 
-void ConsonantController::subscribe(TaskController::EventListener *e) {
+void ConsonantController::attach(TaskController::EventListener *e) {
     listener = e;
 }
 
-void ConsonantController::subscribe(ExperimenterController *p) { responder = p; }
+void ConsonantController::attach(ExperimenterController *p) { responder = p; }
 
 static void notifyThatUserIsReadyForNextTrial(ExperimenterController *r) {
     r->notifyThatUserIsReadyForNextTrial();

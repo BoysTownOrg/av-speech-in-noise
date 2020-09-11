@@ -15,7 +15,7 @@ class ConsonantInputView {
         virtual void notifyThatResponseButtonHasBeenClicked() = 0;
     };
     virtual ~ConsonantInputView() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(EventListener *) = 0;
     virtual auto consonant() -> std::string = 0;
 };
 
@@ -50,8 +50,8 @@ class ConsonantController : public TaskController,
                            public ConsonantInputView::EventListener {
   public:
     explicit ConsonantController(Model &, ConsonantInputView &);
-    void subscribe(TaskController::EventListener *e) override;
-    void subscribe(ExperimenterController *p) override;
+    void attach(TaskController::EventListener *e) override;
+    void attach(ExperimenterController *p) override;
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
 

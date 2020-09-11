@@ -5,14 +5,14 @@ namespace av_speech_in_noise {
 CorrectKeywordsController::CorrectKeywordsController(
     Model &model, View &view, CorrectKeywordsInputView &keywordsView)
     : model{model}, view{view}, keywordsView{keywordsView} {
-    keywordsView.subscribe(this);
+    keywordsView.attach(this);
 }
 
-void CorrectKeywordsController::subscribe(TaskController::EventListener *e) {
+void CorrectKeywordsController::attach(TaskController::EventListener *e) {
     listener = e;
 }
 
-void CorrectKeywordsController::subscribe(ExperimenterController *r) {
+void CorrectKeywordsController::attach(ExperimenterController *r) {
     responder = r;
 }
 

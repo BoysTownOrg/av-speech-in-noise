@@ -20,7 +20,7 @@ class VideoPlayer {
     };
 
     virtual ~VideoPlayer() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(EventListener *) = 0;
     virtual void subscribeToPlaybackCompletion() = 0;
     virtual void show() = 0;
     virtual void hide() = 0;
@@ -38,7 +38,7 @@ class TargetPlayerImpl : public TargetPlayer,
                          public VideoPlayer::EventListener {
   public:
     TargetPlayerImpl(VideoPlayer *, AudioReader *);
-    void subscribe(TargetPlayer::EventListener *) override;
+    void attach(TargetPlayer::EventListener *) override;
     void play() override;
     void playAt(const PlayerTimeWithDelay &) override;
     void loadFile(const LocalUrl &) override;

@@ -25,10 +25,10 @@ static auto subjectResponse(CoordinateResponseMeasureInputView &inputView)
 CoordinateResponseMeasureController::CoordinateResponseMeasureController(
     Model &model, CoordinateResponseMeasureInputView &view)
     : model{model}, view{view} {
-    view.subscribe(this);
+    view.attach(this);
 }
 
-void CoordinateResponseMeasureController::subscribe(
+void CoordinateResponseMeasureController::attach(
     TaskController::EventListener *e) {
     listener = e;
 }
@@ -49,7 +49,7 @@ void CoordinateResponseMeasureController::
     notifyThatUserIsReadyForNextTrial(responder);
 }
 
-void CoordinateResponseMeasureController::subscribe(ExperimenterController *e) {
+void CoordinateResponseMeasureController::attach(ExperimenterController *e) {
     responder = e;
 }
 

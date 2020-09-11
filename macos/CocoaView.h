@@ -29,10 +29,10 @@ class CocoaExperimenterView : public ExperimenterView,
                               public PassFailOutputView {
   public:
     explicit CocoaExperimenterView(NSViewController *);
-    void subscribe(ExperimenterView::EventListener *) override;
-    void subscribe(FreeResponseInputView::EventListener *) override;
-    void subscribe(CorrectKeywordsInputView::EventListener *) override;
-    void subscribe(PassFailInputView::EventListener *) override;
+    void attach(ExperimenterView::EventListener *) override;
+    void attach(FreeResponseInputView::EventListener *) override;
+    void attach(CorrectKeywordsInputView::EventListener *) override;
+    void attach(PassFailInputView::EventListener *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;
     void show() override;
@@ -99,7 +99,7 @@ class CocoaTestSetupView : public TestSetupView {
     auto rmeSetting() -> std::string override;
     void populateTransducerMenu(std::vector<std::string>) override;
     void setTestSettingsFile(std::string) override;
-    void subscribe(EventListener *) override;
+    void attach(EventListener *) override;
     void notifyThatConfirmButtonHasBeenClicked();
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
     void notifyThatPlayCalibrationButtonHasBeenClicked();
@@ -128,7 +128,7 @@ class CocoaConsonantView : public ConsonantOutputView,
                            public ConsonantInputView {
   public:
     explicit CocoaConsonantView(NSRect);
-    void subscribe(EventListener *) override;
+    void attach(EventListener *) override;
     void show() override;
     void hide() override;
     void showResponseButtons() override;
@@ -164,7 +164,7 @@ class CocoaCoordinateResponseMeasureView
     void hideResponseButtons() override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
-    void subscribe(EventListener *) override;
+    void attach(EventListener *) override;
     void show() override;
     void hide() override;
     void notifyThatResponseButtonHasBeenClicked(id sender);

@@ -16,7 +16,7 @@ class CorrectKeywordsInputView {
         virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
     };
     virtual ~CorrectKeywordsInputView() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(EventListener *) = 0;
     virtual auto correctKeywords() -> std::string = 0;
 };
 
@@ -33,8 +33,8 @@ class CorrectKeywordsController
   public:
     explicit CorrectKeywordsController(
         Model &, View &, CorrectKeywordsInputView &);
-    void subscribe(TaskController::EventListener *e) override;
-    void subscribe(ExperimenterController *r) override;
+    void attach(TaskController::EventListener *e) override;
+    void attach(ExperimenterController *r) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:

@@ -14,7 +14,7 @@ class CorrectKeywordsInputViewStub : public CorrectKeywordsInputView {
         listener_->notifyThatSubmitButtonHasBeenClicked();
     }
 
-    void subscribe(EventListener *e) override { listener_ = e; }
+    void attach(EventListener *e) override { listener_ = e; }
 
     void setCorrectKeywords(std::string c) { correctKeywords_ = std::move(c); }
 
@@ -121,8 +121,8 @@ class CorrectKeywordsTests : public ::testing::Test {
     TaskControllerListenerStub taskController;
 
     CorrectKeywordsTests() {
-        responder.subscribe(&experimenterController);
-        responder.subscribe(&taskController);
+        responder.attach(&experimenterController);
+        responder.attach(&taskController);
     }
 };
 

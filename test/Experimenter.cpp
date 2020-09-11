@@ -46,7 +46,7 @@ class ExperimenterViewStub : public ExperimenterView {
 
     [[nodiscard]] auto hidden() const { return hidden_; }
 
-    void subscribe(ExperimenterView::EventListener *e) override {
+    void attach(ExperimenterView::EventListener *e) override {
         listener_ = e;
     }
 
@@ -371,8 +371,8 @@ auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
 
 class TaskControllerStub : public TaskController {
   public:
-    void subscribe(EventListener *) override {}
-    void subscribe(ExperimenterController *) override {}
+    void attach(EventListener *) override {}
+    void attach(ExperimenterController *) override {}
 };
 
 class TaskPresenterStub : public TaskPresenter {
@@ -568,8 +568,8 @@ class ExperimenterTests : public ::testing::Test {
     ExperimenterControllerListenerStub experimenterControllerListener;
 
     ExperimenterTests() {
-        experimenterController.subscribe(&presenter);
-        experimenterController.subscribe(&experimenterControllerListener);
+        experimenterController.attach(&presenter);
+        experimenterController.attach(&experimenterControllerListener);
     }
 };
 

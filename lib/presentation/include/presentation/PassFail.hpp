@@ -15,7 +15,7 @@ class PassFailInputView {
         virtual void notifyThatIncorrectButtonHasBeenClicked() = 0;
     };
     virtual ~PassFailInputView() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(EventListener *) = 0;
 };
 
 class PassFailOutputView {
@@ -29,8 +29,8 @@ class PassFailController : public TaskController,
                           public PassFailInputView::EventListener {
   public:
     PassFailController(Model &, PassFailInputView &);
-    void subscribe(TaskController::EventListener *) override;
-    void subscribe(ExperimenterController *) override;
+    void attach(TaskController::EventListener *) override;
+    void attach(ExperimenterController *) override;
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
 

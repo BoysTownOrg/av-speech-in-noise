@@ -153,7 +153,7 @@ class FixedLevelMethod : public virtual TestMethod {
 class RecognitionTestModel {
   public:
     virtual ~RecognitionTestModel() = default;
-    virtual void subscribe(Model::EventListener *) = 0;
+    virtual void attach(Model::EventListener *) = 0;
     virtual void initialize(TestMethod *, const Test &) = 0;
     virtual void initializeWithSingleSpeaker(TestMethod *, const Test &) = 0;
     virtual void initializeWithDelayedMasker(TestMethod *, const Test &) = 0;
@@ -183,7 +183,7 @@ class ModelImpl : public Model {
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         RepeatableFiniteTargetPlaylist &eachTargetNTimes,
         RecognitionTestModel &, OutputFile &);
-    void subscribe(Model::EventListener *) override;
+    void attach(Model::EventListener *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(
         const FixedLevelFixedTrialsTest &) override;

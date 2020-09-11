@@ -7,10 +7,10 @@
 namespace av_speech_in_noise {
 TargetPlayerImpl::TargetPlayerImpl(VideoPlayer *player, AudioReader *reader)
     : player{player}, reader{reader} {
-    player->subscribe(this);
+    player->attach(this);
 }
 
-void TargetPlayerImpl::subscribe(TargetPlayer::EventListener *e) {
+void TargetPlayerImpl::attach(TargetPlayer::EventListener *e) {
     listener_ = e;
 }
 

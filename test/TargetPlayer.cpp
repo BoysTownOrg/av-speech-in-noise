@@ -59,7 +59,7 @@ class VideoPlayerStub : public VideoPlayer {
 
     void show() override { shown_ = true; }
 
-    void subscribe(EventListener *e) override { listener_ = e; }
+    void attach(EventListener *e) override { listener_ = e; }
 
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
         listener_->fillAudioBuffer(audio);
@@ -114,7 +114,7 @@ class TargetPlayerTests : public ::testing::Test {
     TargetPlayerImpl player{&videoPlayer, &audioReader};
     PlayerTimeWithDelay systemTimeWithDelay{};
 
-    TargetPlayerTests() { player.subscribe(&listener); }
+    TargetPlayerTests() { player.attach(&listener); }
 
     void fillAudioBuffer(const std::vector<gsl::span<float>> &x) {
         videoPlayer.fillAudioBuffer(x);

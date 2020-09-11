@@ -18,7 +18,7 @@ class PassFailInputViewStub : public PassFailInputView {
         listener_->notifyThatIncorrectButtonHasBeenClicked();
     }
 
-    void subscribe(EventListener *e) override { listener_ = e; }
+    void attach(EventListener *e) override { listener_ = e; }
 
   private:
     EventListener *listener_{};
@@ -100,8 +100,8 @@ class PassFailTests : public ::testing::Test {
     TaskControllerListenerStub taskController;
 
     PassFailTests() {
-        responder.subscribe(&experimenterController);
-        responder.subscribe(&taskController);
+        responder.attach(&experimenterController);
+        responder.attach(&taskController);
     }
 };
 

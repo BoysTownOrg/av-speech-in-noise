@@ -519,7 +519,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingCorrectKeywords submittingCorrectKeywords;
     SubmittingConsonant submittingConsonant;
 
-    RecognitionTestModelTests() { model.subscribe(&listener); }
+    RecognitionTestModelTests() { model.attach(&listener); }
 
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase, model);

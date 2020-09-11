@@ -293,7 +293,7 @@ void AvFoundationVideoPlayer::showWindow() {
     [videoWindow makeKeyAndOrderFront:nil];
 }
 
-void AvFoundationVideoPlayer::subscribe(EventListener *e) { listener_ = e; }
+void AvFoundationVideoPlayer::attach(EventListener *e) { listener_ = e; }
 
 void AvFoundationVideoPlayer::play() { [player play]; }
 
@@ -475,7 +475,7 @@ auto AvFoundationAudioPlayer::audioBufferReady(AudioUnitRenderActionFlags *,
     return noErr;
 }
 
-void AvFoundationAudioPlayer::subscribe(EventListener *e) { listener_ = e; }
+void AvFoundationAudioPlayer::attach(EventListener *e) { listener_ = e; }
 
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     const auto asset{makeAvAsset(filePath)};

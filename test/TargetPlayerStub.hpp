@@ -58,7 +58,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     void playAt(const PlayerTimeWithDelay &t) override { timePlayedAt_ = t; }
 
-    void subscribe(EventListener *listener) override { listener_ = listener; }
+    void attach(EventListener *listener) override { listener_ = listener; }
 
     void loadFile(const LocalUrl &filePath) override {
         addToLog("loadFile ");

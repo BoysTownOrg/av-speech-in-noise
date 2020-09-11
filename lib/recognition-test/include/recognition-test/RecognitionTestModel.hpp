@@ -48,7 +48,7 @@ class TargetPlayer {
     };
 
     virtual ~TargetPlayer() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(EventListener *) = 0;
     virtual void setAudioDevice(std::string) = 0;
     virtual void play() = 0;
     virtual void playAt(const PlayerTimeWithDelay &) = 0;
@@ -79,7 +79,7 @@ class MaskerPlayer {
     };
 
     virtual ~MaskerPlayer() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(EventListener *) = 0;
     virtual auto outputAudioDeviceDescriptions()
         -> std::vector<std::string> = 0;
     virtual void setAudioDevice(std::string) = 0;
@@ -117,7 +117,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
   public:
     RecognitionTestModelImpl(TargetPlayer &, MaskerPlayer &,
         ResponseEvaluator &, OutputFile &, Randomizer &, EyeTracker &);
-    void subscribe(Model::EventListener *) override;
+    void attach(Model::EventListener *) override;
     void initialize(TestMethod *, const Test &) override;
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
     void initializeWithDelayedMasker(TestMethod *, const Test &) override;

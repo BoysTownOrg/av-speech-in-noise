@@ -25,31 +25,31 @@ ExperimenterControllerImpl::ExperimenterControllerImpl(Model &model,
     TaskPresenter *correctKeywordsPresenter, TaskController *passFailController,
     TaskPresenter *passFailPresenter)
     : model{model}, mainView{mainView} {
-    view.subscribe(this);
+    view.attach(this);
     if (consonantController != nullptr) {
-        consonantController->subscribe(this);
-        consonantController->subscribe(consonantPresenter);
+        consonantController->attach(this);
+        consonantController->attach(consonantPresenter);
     }
     if (freeResponseController != nullptr) {
-        freeResponseController->subscribe(this);
-        freeResponseController->subscribe(freeResponsePresenter);
+        freeResponseController->attach(this);
+        freeResponseController->attach(freeResponsePresenter);
     }
     if (correctKeywordsController != nullptr) {
-        correctKeywordsController->subscribe(this);
-        correctKeywordsController->subscribe(correctKeywordsPresenter);
+        correctKeywordsController->attach(this);
+        correctKeywordsController->attach(correctKeywordsPresenter);
     }
     if (passFailController != nullptr) {
-        passFailController->subscribe(this);
-        passFailController->subscribe(passFailPresenter);
+        passFailController->attach(this);
+        passFailController->attach(passFailPresenter);
     }
     if (coordinateResponseMeasureController != nullptr) {
-        coordinateResponseMeasureController->subscribe(this);
-        coordinateResponseMeasureController->subscribe(
+        coordinateResponseMeasureController->attach(this);
+        coordinateResponseMeasureController->attach(
             coordinateResponseMeasurePresenter);
     }
 }
 
-void ExperimenterControllerImpl::subscribe(
+void ExperimenterControllerImpl::attach(
     ExperimenterController::EventListener *e) {
     listener = e;
 }
@@ -126,7 +126,7 @@ void ExperimenterControllerImpl::notifyThatUserIsReadyForNextTrial() {
     });
 }
 
-void ExperimenterControllerImpl::subscribe(SessionController *p) {
+void ExperimenterControllerImpl::attach(SessionController *p) {
     responder = p;
 }
 
@@ -140,7 +140,7 @@ ExperimenterPresenterImpl::ExperimenterPresenterImpl(Model &model,
       freeResponsePresenter{freeResponsePresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
       passFailPresenter{passFailPresenter}, taskPresenter_{passFailPresenter} {
-    model.subscribe(this);
+    model.attach(this);
 }
 
 void ExperimenterPresenterImpl::start() { view.show(); }

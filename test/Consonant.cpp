@@ -14,7 +14,7 @@ class ConsonantInputViewStub : public ConsonantInputView {
         listener_->notifyThatReadyButtonHasBeenClicked();
     }
 
-    void subscribe(EventListener *e) override { listener_ = e; }
+    void attach(EventListener *e) override { listener_ = e; }
 
     void notifyThatResponseButtonHasBeenClicked() {
         listener_->notifyThatResponseButtonHasBeenClicked();
@@ -115,8 +115,8 @@ class ConsonantTests : public ::testing::Test {
     TaskControllerListenerStub taskController;
 
     ConsonantTests() {
-        responder.subscribe(&experimenterController);
-        responder.subscribe(&taskController);
+        responder.attach(&experimenterController);
+        responder.attach(&taskController);
     }
 };
 

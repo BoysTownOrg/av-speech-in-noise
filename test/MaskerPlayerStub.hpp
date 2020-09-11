@@ -112,7 +112,7 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     [[nodiscard]] auto fadeOutCalled() const -> bool { return fadeOutCalled_; }
 
-    void subscribe(EventListener *e) override { listener_ = e; }
+    void attach(EventListener *e) override { listener_ = e; }
 
     void fadeOut() override { fadeOutCalled_ = true; }
 

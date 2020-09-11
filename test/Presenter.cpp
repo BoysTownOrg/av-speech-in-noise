@@ -40,7 +40,7 @@ class ConsonantViewStub : public ConsonantOutputView,
 
     void playTrial() { listener_->notifyThatReadyButtonHasBeenClicked(); }
 
-    void subscribe(EventListener *e) override { listener_ = e; }
+    void attach(EventListener *e) override { listener_ = e; }
 
     void showReadyButton() override { readyButtonShown_ = true; }
 
@@ -149,7 +149,7 @@ class CoordinateResponseMeasureViewStub
 
     auto numberResponse() -> std::string override { return numberResponse_; }
 
-    void subscribe(EventListener *e) override { listener_ = e; }
+    void attach(EventListener *e) override { listener_ = e; }
 
     void submitResponse() {
         listener_->notifyThatResponseButtonHasBeenClicked();
@@ -232,7 +232,7 @@ class TestSetupViewStub : public TestSetupView {
 
     auto transducer() -> std::string override { return transducer_; }
 
-    void subscribe(EventListener *listener) override { listener_ = listener; }
+    void attach(EventListener *listener) override { listener_ = listener; }
 
     void setStartingSnr(std::string s) { startingSnr_ = std::move(s); }
 
@@ -342,19 +342,19 @@ class ExperimenterViewStub : public ExperimenterView,
 
     [[nodiscard]] auto hidden() const { return hidden_; }
 
-    void subscribe(ExperimenterView::EventListener *e) override {
+    void attach(ExperimenterView::EventListener *e) override {
         listener_ = e;
     }
 
-    void subscribe(FreeResponseInputView::EventListener *e) override {
+    void attach(FreeResponseInputView::EventListener *e) override {
         freeResponseListener = e;
     }
 
-    void subscribe(CorrectKeywordsInputView::EventListener *e) override {
+    void attach(CorrectKeywordsInputView::EventListener *e) override {
         correctKeywordsListener = e;
     }
 
-    void subscribe(PassFailInputView::EventListener *e) override {
+    void attach(PassFailInputView::EventListener *e) override {
         passFailListener = e;
     }
 
@@ -1687,7 +1687,7 @@ class RequestFailingModel : public Model {
     auto testComplete() -> bool override { return {}; }
     auto audioDevices() -> AudioDevices override { return {}; }
     auto adaptiveTestResults() -> AdaptiveTestResults override { return {}; }
-    void subscribe(EventListener *) override {}
+    void attach(EventListener *) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void restartAdaptiveTestWhilePreservingTargets() override {}

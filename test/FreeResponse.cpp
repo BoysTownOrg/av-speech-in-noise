@@ -14,7 +14,7 @@ class FreeResponseInputViewStub : public FreeResponseInputView {
         listener_->notifyThatSubmitButtonHasBeenClicked();
     }
 
-    void subscribe(EventListener *e) override { listener_ = e; }
+    void attach(EventListener *e) override { listener_ = e; }
 
     void setFreeResponse(std::string c) { freeResponse_ = std::move(c); }
 
@@ -113,8 +113,8 @@ class FreeResponseTests : public ::testing::Test {
     TaskControllerListenerStub taskController;
 
     FreeResponseTests() {
-        responder.subscribe(&experimenterController);
-        responder.subscribe(&taskController);
+        responder.attach(&experimenterController);
+        responder.attach(&taskController);
     }
 };
 

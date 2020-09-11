@@ -226,7 +226,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         return audioDevices_;
     }
 
-    void subscribe(Model::EventListener *e) override { listener_ = e; }
+    void attach(Model::EventListener *e) override { listener_ = e; }
 
     void playCalibration(const Calibration &c) override { calibration_ = &c; }
 
@@ -1112,7 +1112,7 @@ MODEL_TEST(returnsTargetFileName) {
 
 MODEL_TEST(subscribesToListener) {
     ModelEventListenerStub listener;
-    model.subscribe(&listener);
+    model.attach(&listener);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         static_cast<const Model::EventListener *>(&listener),
         internalModel.listener());

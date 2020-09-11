@@ -22,7 +22,7 @@ class AudioPlayer {
     };
 
     virtual ~AudioPlayer() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(EventListener *) = 0;
     virtual void play() = 0;
     virtual void stop() = 0;
     virtual auto playing() -> bool = 0;
@@ -44,7 +44,7 @@ class Timer {
         virtual void callback() = 0;
     };
     virtual ~Timer() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(EventListener *) = 0;
     virtual void scheduleCallbackAfterSeconds(double) = 0;
 };
 
@@ -57,7 +57,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
                          public Timer::EventListener {
   public:
     MaskerPlayerImpl(AudioPlayer *, AudioReader *, Timer *);
-    void subscribe(MaskerPlayer::EventListener *) override;
+    void attach(MaskerPlayer::EventListener *) override;
     void fadeIn() override;
     void fadeOut() override;
     void loadFile(const LocalUrl &) override;
@@ -125,7 +125,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         MainThread(AudioPlayer *, Timer *);
         void setSharedState(MaskerPlayerImpl *);
         void callback();
-        void subscribe(MaskerPlayer::EventListener *);
+        void attach(MaskerPlayer::EventListener *);
         void fadeIn();
         void fadeOut();
         void setChannelDelaySeconds(channel_index_type channel, double seconds);
