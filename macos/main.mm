@@ -398,9 +398,11 @@ void main(
         &coordinateResponseMeasurePresenter, &freeResponseController,
         &freeResponsePresenter, &correctKeywordsController,
         &correctKeywordsPresenter, &passFailController, &passFailPresenter};
+    UninitializedTaskPresenterImpl taskPresenter;
     ExperimenterPresenterImpl experimenterPresenter{model, experimenterView,
         &consonantPresenter, &coordinateResponseMeasurePresenter,
-        &freeResponsePresenter, &correctKeywordsPresenter, &passFailPresenter};
+        &freeResponsePresenter, &correctKeywordsPresenter, &passFailPresenter,
+        &taskPresenter};
     Presenter presenter{model, view, &testSetupControllerImpl,
         &testSetupPresenterRefactored, &experimenterController,
         &experimenterPresenter};
