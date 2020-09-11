@@ -632,11 +632,9 @@ EXPERIMENTER_TEST(
 
 EXPERIMENTER_TEST(
     responderDisplaysTrialNumberAfterNotShowingContinueTestingDialogWithResults) {
-    model.setTrialNumber(1);
-    notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
-        experimenterResponder);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"Trial 1"}, experimenterResponderListener.displayed());
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
+        notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
+        experimenterResponderListener);
 }
 
 EXPERIMENTER_TEST(responderShowsContinueTestingDialog) {
