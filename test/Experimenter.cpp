@@ -176,6 +176,20 @@ class LevelUseCase : public virtual UseCase {
     virtual auto fullScaleLevel(ModelStub &) -> int = 0;
 };
 
+class TaskPresenterStub : public TaskPresenter {
+  public:
+    void showResponseSubmission() override {}
+    void notifyThatTaskHasStarted() override {}
+    void notifyThatUserIsDoneResponding() override {}
+    void notifyThatTrialHasStarted() override {}
+    void start() override {}
+    void stop() override { stopped_ = true; }
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+
+  private:
+    bool stopped_{};
+};
+
 class InitializingExperimenterPresenter : public virtual UseCase {};
 
 class InitializingAdaptiveCoordinateResponseMeasureMethod
@@ -355,34 +369,16 @@ void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
         .notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
-auto hidden(ExperimenterViewStub &view) -> bool { return view.hidden(); }
-
-void completeTrial(ModelStub &model) { model.completeTrial(); }
-
-auto errorMessage(ViewStub &view) -> std::string { return view.errorMessage(); }
-
 void setAudioDevice(ViewStub &view, std::string s) {
     view.setAudioDevice(std::move(s));
 }
 
 void setTestComplete(ModelStub &model) { model.setTestComplete(); }
 
-auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
-
 class TaskControllerStub : public TaskController {
   public:
     void attach(Observer *) override {}
     void attach(ExperimenterController *) override {}
-};
-
-class TaskPresenterStub : public TaskPresenter {
-  public:
-    void showResponseSubmission() override {}
-    void notifyThatTaskHasStarted() override {}
-    void notifyThatUserIsDoneResponding() override {}
-    void notifyThatTrialHasStarted() override {}
-    void start() override {}
-    void stop() override {}
 };
 
 class PresenterStub : public SessionController {
@@ -759,6 +755,12 @@ EXPERIMENTER_TEST(presenterHidesContinueTestingDialogAfterStopping) {
     experimenterPresenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterView.continueTestingDialogHidden());
+}
+
+EXPERIMENTER_TEST(presenterStopsConsonantTaskAfterStopping) {
+    run(initializingFixedLevelConsonantMethod, experimenterPresenter);
+    experimenterPresenter.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantPresenter.stopped());
 }
 }
 }
