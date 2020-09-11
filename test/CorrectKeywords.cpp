@@ -14,7 +14,7 @@ class CorrectKeywordsInputViewStub : public CorrectKeywordsInputView {
         listener_->notifyThatSubmitButtonHasBeenClicked();
     }
 
-    void attach(EventListener *e) override { listener_ = e; }
+    void attach(Observer *e) override { listener_ = e; }
 
     void setCorrectKeywords(std::string c) { correctKeywords_ = std::move(c); }
 
@@ -22,7 +22,7 @@ class CorrectKeywordsInputViewStub : public CorrectKeywordsInputView {
 
   private:
     std::string correctKeywords_{"0"};
-    EventListener *listener_{};
+    Observer *listener_{};
 };
 
 class CorrectKeywordsOutputViewStub : public CorrectKeywordsOutputView {

@@ -70,12 +70,12 @@ namespace {
 class TimerImpl : public Timer {
   public:
     TimerImpl();
-    void attach(EventListener *e) override;
+    void attach(Observer *e) override;
     void scheduleCallbackAfterSeconds(double x) override;
     void timerCallback();
 
   private:
-    EventListener *listener{};
+    Observer *listener{};
     CallbackScheduler *scheduler{[[CallbackScheduler alloc] init]};
 };
 }
@@ -199,7 +199,7 @@ class TextFileReaderImpl : public TextFileReader {
 
 TimerImpl::TimerImpl() { scheduler->controller = this; }
 
-void TimerImpl::attach(EventListener *e) { listener = e; }
+void TimerImpl::attach(Observer *e) { listener = e; }
 
 void TimerImpl::scheduleCallbackAfterSeconds(double x) {
     [scheduler scheduleCallbackAfterSeconds:x];

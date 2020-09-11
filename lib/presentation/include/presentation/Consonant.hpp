@@ -8,14 +8,14 @@
 namespace av_speech_in_noise {
 class ConsonantInputView {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void notifyThatReadyButtonHasBeenClicked() = 0;
         virtual void notifyThatResponseButtonHasBeenClicked() = 0;
     };
     virtual ~ConsonantInputView() = default;
-    virtual void attach(EventListener *) = 0;
+    virtual void attach(Observer *) = 0;
     virtual auto consonant() -> std::string = 0;
 };
 
@@ -47,10 +47,10 @@ class ConsonantPresenter : public TaskPresenter {
 };
 
 class ConsonantController : public TaskController,
-                           public ConsonantInputView::EventListener {
+                           public ConsonantInputView::Observer {
   public:
     explicit ConsonantController(Model &, ConsonantInputView &);
-    void attach(TaskController::EventListener *e) override;
+    void attach(TaskController::Observer *e) override;
     void attach(ExperimenterController *p) override;
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
@@ -58,7 +58,7 @@ class ConsonantController : public TaskController,
   private:
     Model &model;
     ConsonantInputView &view;
-    TaskController::EventListener *listener{};
+    TaskController::Observer *listener{};
     ExperimenterController *responder{};
 };
 }

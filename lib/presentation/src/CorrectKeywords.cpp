@@ -8,7 +8,7 @@ CorrectKeywordsController::CorrectKeywordsController(
     keywordsView.attach(this);
 }
 
-void CorrectKeywordsController::attach(TaskController::EventListener *e) {
+void CorrectKeywordsController::attach(TaskController::Observer *e) {
     listener = e;
 }
 

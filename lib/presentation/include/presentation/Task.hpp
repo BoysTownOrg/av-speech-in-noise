@@ -7,19 +7,19 @@
 namespace av_speech_in_noise {
 class TaskController {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void notifyThatTaskHasStarted() = 0;
         virtual void notifyThatUserIsDoneResponding() = 0;
         virtual void notifyThatTrialHasStarted() {}
     };
     virtual ~TaskController() = default;
-    virtual void attach(EventListener *) = 0;
+    virtual void attach(Observer *) = 0;
     virtual void attach(ExperimenterController *) = 0;
 };
 
-class TaskPresenter : virtual public TaskController::EventListener,
+class TaskPresenter : virtual public TaskController::Observer,
                       virtual public PresenterSimple {
   public:
     virtual void showResponseSubmission() = 0;

@@ -196,7 +196,7 @@ auto ModelImpl::adaptiveTestResults() -> AdaptiveTestResults {
     return adaptiveMethod.testResults();
 }
 
-void ModelImpl::attach(Model::EventListener *e) { model.attach(e); }
+void ModelImpl::attach(Model::Observer *e) { model.attach(e); }
 
 auto ModelImpl::trialNumber() -> int { return model.trialNumber(); }
 

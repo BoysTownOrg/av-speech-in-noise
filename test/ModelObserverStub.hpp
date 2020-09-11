@@ -4,7 +4,7 @@
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
-class ModelEventListenerStub : public Model::EventListener {
+class ModelObserverStub : public Model::Observer {
     bool notified_{};
 
   public:

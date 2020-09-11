@@ -14,7 +14,7 @@ class ConsonantInputViewStub : public ConsonantInputView {
         listener_->notifyThatReadyButtonHasBeenClicked();
     }
 
-    void attach(EventListener *e) override { listener_ = e; }
+    void attach(Observer *e) override { listener_ = e; }
 
     void notifyThatResponseButtonHasBeenClicked() {
         listener_->notifyThatResponseButtonHasBeenClicked();
@@ -26,7 +26,7 @@ class ConsonantInputViewStub : public ConsonantInputView {
 
   private:
     std::string consonant_;
-    EventListener *listener_{};
+    Observer *listener_{};
 };
 
 class ConsonantOutputViewStub : public ConsonantOutputView {

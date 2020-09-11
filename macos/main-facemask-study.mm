@@ -15,7 +15,7 @@ class FacemaskStudySetupView : public TestSetupView {
     void hide() override;
     auto testSettingsFile() -> std::string override;
     void setTestSettingsFile(std::string) override;
-    void attach(EventListener *) override;
+    void attach(Observer *) override;
     void populateTransducerMenu(std::vector<std::string>) override {}
     auto startingSnr() -> std::string override { return "0"; }
     auto testerId() -> std::string override { return {}; }
@@ -30,7 +30,7 @@ class FacemaskStudySetupView : public TestSetupView {
   private:
     NSTextField *testSettingsField;
     FacemaskStudySetupViewActions *actions;
-    EventListener *listener_{};
+    Observer *listener_{};
     NSViewController *controller;
 };
 
@@ -271,7 +271,7 @@ void FacemaskStudySetupView::setTestSettingsFile(std::string s) {
     [testSettingsField setStringValue:nsString(s)];
 }
 
-void FacemaskStudySetupView::attach(EventListener *e) { listener_ = e; }
+void FacemaskStudySetupView::attach(Observer *e) { listener_ = e; }
 
 void FacemaskStudySetupView::notifyThatConfirmButtonHasBeenClicked() {
     listener_->notifyThatConfirmButtonHasBeenClicked();

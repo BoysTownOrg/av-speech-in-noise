@@ -6,12 +6,12 @@ PassFailController::PassFailController(Model &model, PassFailInputView &view)
     view.attach(this);
 }
 
-void PassFailController::attach(TaskController::EventListener *e) {
+void PassFailController::attach(TaskController::Observer *e) {
     listener = e;
 }
 
 static void notifyThatUserIsDoneResponding(
-    TaskController::EventListener *listener, ExperimenterController *responder) {
+    TaskController::Observer *listener, ExperimenterController *responder) {
     listener->notifyThatUserIsDoneResponding();
     responder
         ->notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();

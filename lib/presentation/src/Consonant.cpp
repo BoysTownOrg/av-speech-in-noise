@@ -38,7 +38,7 @@ ConsonantController::ConsonantController(Model &model, ConsonantInputView &view)
     view.attach(this);
 }
 
-void ConsonantController::attach(TaskController::EventListener *e) {
+void ConsonantController::attach(TaskController::Observer *e) {
     listener = e;
 }
 

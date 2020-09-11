@@ -14,7 +14,7 @@ class FreeResponseInputViewStub : public FreeResponseInputView {
         listener_->notifyThatSubmitButtonHasBeenClicked();
     }
 
-    void attach(EventListener *e) override { listener_ = e; }
+    void attach(Observer *e) override { listener_ = e; }
 
     void setFreeResponse(std::string c) { freeResponse_ = std::move(c); }
 
@@ -26,7 +26,7 @@ class FreeResponseInputViewStub : public FreeResponseInputView {
 
   private:
     std::string freeResponse_{"0"};
-    EventListener *listener_{};
+    Observer *listener_{};
     bool flagged_{};
 };
 

@@ -6,7 +6,7 @@
 namespace av_speech_in_noise {
 class ExperimenterControllerStub : public ExperimenterController {
   public:
-    void attach(EventListener *) override {}
+    void attach(Observer *) override {}
     void attach(SessionController *) override {}
     void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion()
         override {

@@ -8,14 +8,14 @@
 namespace av_speech_in_noise {
 class PassFailInputView {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void notifyThatCorrectButtonHasBeenClicked() = 0;
         virtual void notifyThatIncorrectButtonHasBeenClicked() = 0;
     };
     virtual ~PassFailInputView() = default;
-    virtual void attach(EventListener *) = 0;
+    virtual void attach(Observer *) = 0;
 };
 
 class PassFailOutputView {
@@ -26,17 +26,17 @@ class PassFailOutputView {
 };
 
 class PassFailController : public TaskController,
-                          public PassFailInputView::EventListener {
+                          public PassFailInputView::Observer {
   public:
     PassFailController(Model &, PassFailInputView &);
-    void attach(TaskController::EventListener *) override;
+    void attach(TaskController::Observer *) override;
     void attach(ExperimenterController *) override;
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
 
   private:
     Model &model;
-    TaskController::EventListener *listener{};
+    TaskController::Observer *listener{};
     ExperimenterController *responder{};
 };
 

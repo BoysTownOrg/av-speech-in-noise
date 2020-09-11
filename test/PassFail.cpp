@@ -18,10 +18,10 @@ class PassFailInputViewStub : public PassFailInputView {
         listener_->notifyThatIncorrectButtonHasBeenClicked();
     }
 
-    void attach(EventListener *e) override { listener_ = e; }
+    void attach(Observer *e) override { listener_ = e; }
 
   private:
-    EventListener *listener_{};
+    Observer *listener_{};
 };
 
 class PassFailOutputViewStub : public PassFailOutputView {

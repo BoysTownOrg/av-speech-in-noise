@@ -9,13 +9,13 @@
 namespace av_speech_in_noise {
 class FreeResponseInputView {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
     };
     virtual ~FreeResponseInputView() = default;
-    virtual void attach(EventListener *) = 0;
+    virtual void attach(Observer *) = 0;
     virtual auto flagged() -> bool = 0;
     virtual auto freeResponse() -> std::string = 0;
 };
@@ -29,17 +29,17 @@ class FreeResponseOutputView {
 };
 
 class FreeResponseController : public TaskController,
-                              public FreeResponseInputView::EventListener {
+                              public FreeResponseInputView::Observer {
   public:
     FreeResponseController(Model &, FreeResponseInputView &);
-    void attach(TaskController::EventListener *) override;
+    void attach(TaskController::Observer *) override;
     void attach(ExperimenterController *) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
     Model &model;
     FreeResponseInputView &view;
-    TaskController::EventListener *listener{};
+    TaskController::Observer *listener{};
     ExperimenterController *responder{};
 };
 

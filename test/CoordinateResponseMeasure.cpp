@@ -29,7 +29,7 @@ class CoordinateResponseMeasureInputViewStub
 
     auto numberResponse() -> std::string override { return numberResponse_; }
 
-    void attach(EventListener *e) override { listener_ = e; }
+    void attach(Observer *e) override { listener_ = e; }
 
     void notifyThatResponseButtonHasBeenClicked() {
         listener_->notifyThatResponseButtonHasBeenClicked();
@@ -41,7 +41,7 @@ class CoordinateResponseMeasureInputViewStub
 
   private:
     std::string numberResponse_{"0"};
-    EventListener *listener_{};
+    Observer *listener_{};
     bool greenResponse_{};
     bool redResponse_{};
     bool blueResponse_{};

@@ -115,9 +115,9 @@ using AudioDevices = typename std::vector<std::string>;
 
 class Model {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void trialComplete() = 0;
     };
 
@@ -127,7 +127,7 @@ class Model {
     };
 
     virtual ~Model() = default;
-    virtual void attach(EventListener *) = 0;
+    virtual void attach(Observer *) = 0;
     virtual void initialize(const AdaptiveTest &) = 0;
     virtual void initializeWithTargetReplacement(
         const FixedLevelFixedTrialsTest &) = 0;

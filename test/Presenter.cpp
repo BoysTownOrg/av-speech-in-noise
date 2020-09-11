@@ -40,7 +40,7 @@ class ConsonantViewStub : public ConsonantOutputView,
 
     void playTrial() { listener_->notifyThatReadyButtonHasBeenClicked(); }
 
-    void attach(EventListener *e) override { listener_ = e; }
+    void attach(Observer *e) override { listener_ = e; }
 
     void showReadyButton() override { readyButtonShown_ = true; }
 
@@ -84,7 +84,7 @@ class ConsonantViewStub : public ConsonantOutputView,
 
   private:
     std::string consonant_;
-    EventListener *listener_{};
+    Observer *listener_{};
     bool shown_{};
     bool hidden_{};
     bool responseButtonsShown_{};
@@ -149,7 +149,7 @@ class CoordinateResponseMeasureViewStub
 
     auto numberResponse() -> std::string override { return numberResponse_; }
 
-    void attach(EventListener *e) override { listener_ = e; }
+    void attach(Observer *e) override { listener_ = e; }
 
     void submitResponse() {
         listener_->notifyThatResponseButtonHasBeenClicked();
@@ -159,7 +159,7 @@ class CoordinateResponseMeasureViewStub
 
   private:
     std::string numberResponse_{"0"};
-    EventListener *listener_{};
+    Observer *listener_{};
     bool responseButtonsShown_{};
     bool responseButtonsHidden_{};
     bool shown_{};
@@ -232,7 +232,7 @@ class TestSetupViewStub : public TestSetupView {
 
     auto transducer() -> std::string override { return transducer_; }
 
-    void attach(EventListener *listener) override { listener_ = listener; }
+    void attach(Observer *listener) override { listener_ = listener; }
 
     void setStartingSnr(std::string s) { startingSnr_ = std::move(s); }
 
@@ -245,7 +245,7 @@ class TestSetupViewStub : public TestSetupView {
     std::string rmeSetting_;
     std::string transducer_;
     std::string testSettingsFile_;
-    EventListener *listener_{};
+    Observer *listener_{};
     bool shown_{};
     bool hidden_{};
 };
@@ -342,19 +342,19 @@ class ExperimenterViewStub : public ExperimenterView,
 
     [[nodiscard]] auto hidden() const { return hidden_; }
 
-    void attach(ExperimenterView::EventListener *e) override {
+    void attach(ExperimenterView::Observer *e) override {
         listener_ = e;
     }
 
-    void attach(FreeResponseInputView::EventListener *e) override {
+    void attach(FreeResponseInputView::Observer *e) override {
         freeResponseListener = e;
     }
 
-    void attach(CorrectKeywordsInputView::EventListener *e) override {
+    void attach(CorrectKeywordsInputView::Observer *e) override {
         correctKeywordsListener = e;
     }
 
-    void attach(PassFailInputView::EventListener *e) override {
+    void attach(PassFailInputView::Observer *e) override {
         passFailListener = e;
     }
 
@@ -434,10 +434,10 @@ class ExperimenterViewStub : public ExperimenterView,
     std::string continueTestingDialogMessage_;
     std::string response_;
     std::string correctKeywords_{"0"};
-    ExperimenterView::EventListener *listener_{};
-    FreeResponseInputView::EventListener *freeResponseListener{};
-    CorrectKeywordsInputView::EventListener *correctKeywordsListener{};
-    PassFailInputView::EventListener *passFailListener{};
+    ExperimenterView::Observer *listener_{};
+    FreeResponseInputView::Observer *freeResponseListener{};
+    CorrectKeywordsInputView::Observer *correctKeywordsListener{};
+    PassFailInputView::Observer *passFailListener{};
     bool freeResponseCleared_{};
     bool exitTestButtonHidden_{};
     bool exitTestButtonShown_{};
@@ -1687,7 +1687,7 @@ class RequestFailingModel : public Model {
     auto testComplete() -> bool override { return {}; }
     auto audioDevices() -> AudioDevices override { return {}; }
     auto adaptiveTestResults() -> AdaptiveTestResults override { return {}; }
-    void attach(EventListener *) override {}
+    void attach(Observer *) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void restartAdaptiveTestWhilePreservingTargets() override {}

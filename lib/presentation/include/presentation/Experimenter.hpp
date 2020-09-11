@@ -8,15 +8,15 @@
 namespace av_speech_in_noise {
 class ExperimenterInputView {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void exitTest() = 0;
         virtual void playTrial() = 0;
         virtual void declineContinuingTesting() = 0;
         virtual void acceptContinuingTesting() = 0;
     };
-    virtual void attach(EventListener *) = 0;
+    virtual void attach(Observer *) = 0;
     virtual ~ExperimenterInputView() = default;
 };
 
@@ -41,9 +41,9 @@ class ExperimenterView : public virtual ExperimenterInputView,
 
 class ExperimenterController {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void notifyThatTrialHasStarted() = 0;
         virtual void setContinueTestingDialogMessage(const std::string &) = 0;
         virtual void showContinueTestingDialog() = 0;
@@ -52,7 +52,7 @@ class ExperimenterController {
         virtual void notifyThatNextTrialIsReady() = 0;
     };
     virtual ~ExperimenterController() = default;
-    virtual void attach(EventListener *) = 0;
+    virtual void attach(Observer *) = 0;
     virtual void attach(SessionController *) = 0;
     virtual void
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() = 0;
@@ -61,7 +61,7 @@ class ExperimenterController {
 };
 
 class ExperimenterPresenter
-    : public virtual ExperimenterController::EventListener,
+    : public virtual ExperimenterController::Observer,
       public virtual PresenterSimple {
   public:
     virtual void initialize(Method) = 0;

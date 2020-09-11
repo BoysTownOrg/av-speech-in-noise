@@ -4,7 +4,7 @@
 #include <presentation/Task.hpp>
 
 namespace av_speech_in_noise {
-class TaskControllerListenerStub : public TaskController::EventListener {
+class TaskControllerListenerStub : public TaskController::Observer {
   public:
     void notifyThatTaskHasStarted() override {
         notifiedThatTaskHasStarted_ = true;

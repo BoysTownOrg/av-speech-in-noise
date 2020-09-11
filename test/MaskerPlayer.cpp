@@ -68,7 +68,7 @@ class AudioPlayerStub : public AudioPlayer {
 
     void play() override { played_ = true; }
 
-    void attach(EventListener *listener) override { listener_ = listener; }
+    void attach(Observer *listener) override { listener_ = listener; }
 
     [[nodiscard]] auto filePath() const { return filePath_; }
 
@@ -101,7 +101,7 @@ class AudioPlayerStub : public AudioPlayer {
     std::uintmax_t nanoseconds_{};
     player_system_time_type systemTimeForNanoseconds_{};
     player_system_time_type currentSystemTime_{};
-    EventListener *listener_{};
+    Observer *listener_{};
     double sampleRateHz_{};
     int deviceIndex_{};
     int deviceDescriptionDeviceIndex_{};
@@ -110,7 +110,7 @@ class AudioPlayerStub : public AudioPlayer {
     bool stopped_{};
 };
 
-class MaskerPlayerListenerStub : public MaskerPlayer::EventListener {
+class MaskerPlayerListenerStub : public MaskerPlayer::Observer {
   public:
     void fadeInComplete(const AudioSampleTimeWithOffset &t) override {
         fadeInCompleteSystemTime_ = t.playerTime.system;
@@ -178,10 +178,10 @@ class TimerStub : public Timer {
 
     void callback() { listener_->callback(); }
 
-    void attach(EventListener *listener) override { listener_ = listener; }
+    void attach(Observer *listener) override { listener_ = listener; }
 
   private:
-    EventListener *listener_{};
+    Observer *listener_{};
     bool callbackScheduled_{};
 };
 

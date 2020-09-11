@@ -11,16 +11,16 @@
 namespace av_speech_in_noise {
 class VideoPlayer {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void playbackComplete() = 0;
         virtual void fillAudioBuffer(
             const std::vector<gsl::span<float>> &audio) = 0;
     };
 
     virtual ~VideoPlayer() = default;
-    virtual void attach(EventListener *) = 0;
+    virtual void attach(Observer *) = 0;
     virtual void subscribeToPlaybackCompletion() = 0;
     virtual void show() = 0;
     virtual void hide() = 0;
@@ -35,10 +35,10 @@ class VideoPlayer {
 };
 
 class TargetPlayerImpl : public TargetPlayer,
-                         public VideoPlayer::EventListener {
+                         public VideoPlayer::Observer {
   public:
     TargetPlayerImpl(VideoPlayer *, AudioReader *);
-    void attach(TargetPlayer::EventListener *) override;
+    void attach(TargetPlayer::Observer *) override;
     void play() override;
     void playAt(const PlayerTimeWithDelay &) override;
     void loadFile(const LocalUrl &) override;
@@ -62,7 +62,7 @@ class TargetPlayerImpl : public TargetPlayer,
     std::string filePath_{};
     VideoPlayer *player;
     AudioReader *reader;
-    TargetPlayer::EventListener *listener_{};
+    TargetPlayer::Observer *listener_{};
     std::atomic<double> audioScale{1};
     std::atomic<bool> useFirstChannelOnly_{};
 };

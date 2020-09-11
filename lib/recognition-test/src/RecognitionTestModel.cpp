@@ -147,7 +147,7 @@ RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     maskerPlayer.attach(this);
 }
 
-void RecognitionTestModelImpl::attach(Model::EventListener *listener) {
+void RecognitionTestModelImpl::attach(Model::Observer *listener) {
     listener_ = listener;
 }
 

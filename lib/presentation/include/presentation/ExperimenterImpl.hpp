@@ -7,7 +7,7 @@
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
-class ExperimenterControllerImpl : public ExperimenterInputView::EventListener,
+class ExperimenterControllerImpl : public ExperimenterInputView::Observer,
                                   public ExperimenterController {
   public:
     explicit ExperimenterControllerImpl(Model &, View &, ExperimenterInputView &,
@@ -19,7 +19,7 @@ class ExperimenterControllerImpl : public ExperimenterInputView::EventListener,
         TaskController *correctKeywordsController,
         TaskPresenter *correctKeywordsPresenter,
         TaskController *passFailController, TaskPresenter *passFailPresenter);
-    void attach(ExperimenterController::EventListener *e) override;
+    void attach(ExperimenterController::Observer *e) override;
     void attach(SessionController *p) override;
     void exitTest() override;
     void playTrial() override;
@@ -33,11 +33,11 @@ class ExperimenterControllerImpl : public ExperimenterInputView::EventListener,
   private:
     Model &model;
     View &mainView;
-    ExperimenterController::EventListener *listener{};
+    ExperimenterController::Observer *listener{};
     SessionController *responder{};
 };
 
-class ExperimenterPresenterImpl : public Model::EventListener,
+class ExperimenterPresenterImpl : public Model::Observer,
                                   public ExperimenterPresenter {
   public:
     explicit ExperimenterPresenterImpl(Model &, ExperimenterOutputView &,

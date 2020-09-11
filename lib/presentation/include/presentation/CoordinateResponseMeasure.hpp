@@ -8,14 +8,14 @@
 namespace av_speech_in_noise {
 class CoordinateResponseMeasureInputView {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void notifyThatReadyButtonHasBeenClicked() = 0;
         virtual void notifyThatResponseButtonHasBeenClicked() = 0;
     };
     virtual ~CoordinateResponseMeasureInputView() = default;
-    virtual void attach(EventListener *) = 0;
+    virtual void attach(Observer *) = 0;
     virtual auto numberResponse() -> std::string = 0;
     virtual auto greenResponse() -> bool = 0;
     virtual auto blueResponse() -> bool = 0;
@@ -35,11 +35,11 @@ class CoordinateResponseMeasureOutputView {
 
 class CoordinateResponseMeasureController
     : public TaskController,
-      public CoordinateResponseMeasureInputView::EventListener {
+      public CoordinateResponseMeasureInputView::Observer {
   public:
     explicit CoordinateResponseMeasureController(
         Model &, CoordinateResponseMeasureInputView &);
-    void attach(TaskController::EventListener *e) override;
+    void attach(TaskController::Observer *e) override;
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
     void attach(ExperimenterController *e) override;
@@ -47,7 +47,7 @@ class CoordinateResponseMeasureController
   private:
     Model &model;
     CoordinateResponseMeasureInputView &view;
-    TaskController::EventListener *listener{};
+    TaskController::Observer *listener{};
     ExperimenterController *responder{};
 };
 

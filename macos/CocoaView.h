@@ -29,10 +29,10 @@ class CocoaExperimenterView : public ExperimenterView,
                               public PassFailOutputView {
   public:
     explicit CocoaExperimenterView(NSViewController *);
-    void attach(ExperimenterView::EventListener *) override;
-    void attach(FreeResponseInputView::EventListener *) override;
-    void attach(CorrectKeywordsInputView::EventListener *) override;
-    void attach(PassFailInputView::EventListener *) override;
+    void attach(ExperimenterView::Observer *) override;
+    void attach(FreeResponseInputView::Observer *) override;
+    void attach(CorrectKeywordsInputView::Observer *) override;
+    void attach(PassFailInputView::Observer *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;
     void show() override;
@@ -79,10 +79,10 @@ class CocoaExperimenterView : public ExperimenterView,
     NSButton *nextTrialButton;
     ExperimenterViewActions *actions;
     FreeResponseViewActions *freeResponseActions;
-    ExperimenterView::EventListener *listener_{};
-    FreeResponseInputView::EventListener *freeResponseListener{};
-    CorrectKeywordsInputView::EventListener *correctKeywordsListener{};
-    PassFailInputView::EventListener *passFailListener{};
+    ExperimenterView::Observer *listener_{};
+    FreeResponseInputView::Observer *freeResponseListener{};
+    CorrectKeywordsInputView::Observer *correctKeywordsListener{};
+    PassFailInputView::Observer *passFailListener{};
 };
 
 class CocoaTestSetupView : public TestSetupView {
@@ -99,7 +99,7 @@ class CocoaTestSetupView : public TestSetupView {
     auto rmeSetting() -> std::string override;
     void populateTransducerMenu(std::vector<std::string>) override;
     void setTestSettingsFile(std::string) override;
-    void attach(EventListener *) override;
+    void attach(Observer *) override;
     void notifyThatConfirmButtonHasBeenClicked();
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
     void notifyThatPlayCalibrationButtonHasBeenClicked();
@@ -114,7 +114,7 @@ class CocoaTestSetupView : public TestSetupView {
     NSTextField *testSettingsField;
     NSTextField *startingSnrField;
     SetupViewActions *actions;
-    EventListener *listener_{};
+    Observer *listener_{};
 };
 
 class CocoaTestSetupViewFactory : public MacOsTestSetupViewFactory {
@@ -128,7 +128,7 @@ class CocoaConsonantView : public ConsonantOutputView,
                            public ConsonantInputView {
   public:
     explicit CocoaConsonantView(NSRect);
-    void attach(EventListener *) override;
+    void attach(Observer *) override;
     void show() override;
     void hide() override;
     void showResponseButtons() override;
@@ -148,7 +148,7 @@ class CocoaConsonantView : public ConsonantOutputView,
     NSView *readyButton;
     NSButton *lastButtonPressed{};
     ConsonantViewActions *actions;
-    EventListener *listener_{};
+    Observer *listener_{};
 };
 
 class CocoaCoordinateResponseMeasureView
@@ -164,7 +164,7 @@ class CocoaCoordinateResponseMeasureView
     void hideResponseButtons() override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
-    void attach(EventListener *) override;
+    void attach(Observer *) override;
     void show() override;
     void hide() override;
     void notifyThatResponseButtonHasBeenClicked(id sender);
@@ -181,7 +181,7 @@ class CocoaCoordinateResponseMeasureView
     NSView *nextTrialButton;
     NSButton *lastButtonPressed{};
     CoordinateResponseMeasureViewActions *actions;
-    EventListener *listener_{};
+    Observer *listener_{};
 };
 
 class CocoaView : public View {

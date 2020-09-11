@@ -29,7 +29,7 @@ CoordinateResponseMeasureController::CoordinateResponseMeasureController(
 }
 
 void CoordinateResponseMeasureController::attach(
-    TaskController::EventListener *e) {
+    TaskController::Observer *e) {
     listener = e;
 }
 

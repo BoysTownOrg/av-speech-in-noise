@@ -7,7 +7,7 @@ FreeResponseController::FreeResponseController(
     view.attach(this);
 }
 
-void FreeResponseController::attach(TaskController::EventListener *e) {
+void FreeResponseController::attach(TaskController::Observer *e) {
     listener = e;
 }
 

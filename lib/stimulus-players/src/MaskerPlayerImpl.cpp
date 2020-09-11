@@ -112,7 +112,7 @@ MaskerPlayerImpl::MaskerPlayerImpl(
     audioThread.setSharedState(this);
 }
 
-void MaskerPlayerImpl::attach(MaskerPlayer::EventListener *e) {
+void MaskerPlayerImpl::attach(MaskerPlayer::Observer *e) {
     mainThread.attach(e);
 }
 
@@ -268,7 +268,7 @@ void MaskerPlayerImpl::MainThread::setSharedState(MaskerPlayerImpl *p) {
     sharedState = p;
 }
 
-void MaskerPlayerImpl::MainThread::attach(MaskerPlayer::EventListener *e) {
+void MaskerPlayerImpl::MainThread::attach(MaskerPlayer::Observer *e) {
     listener = e;
 }
 

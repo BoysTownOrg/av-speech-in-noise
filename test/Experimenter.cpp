@@ -46,7 +46,7 @@ class ExperimenterViewStub : public ExperimenterView {
 
     [[nodiscard]] auto hidden() const { return hidden_; }
 
-    void attach(ExperimenterView::EventListener *e) override {
+    void attach(ExperimenterView::Observer *e) override {
         listener_ = e;
     }
 
@@ -96,7 +96,7 @@ class ExperimenterViewStub : public ExperimenterView {
     std::string continueTestingDialogMessage_;
     std::string response_;
     std::string correctKeywords_{"0"};
-    ExperimenterView::EventListener *listener_{};
+    ExperimenterView::Observer *listener_{};
     bool exitTestButtonHidden_{};
     bool exitTestButtonShown_{};
     bool nextTrialButtonShown_{};
@@ -371,7 +371,7 @@ auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
 
 class TaskControllerStub : public TaskController {
   public:
-    void attach(EventListener *) override {}
+    void attach(Observer *) override {}
     void attach(ExperimenterController *) override {}
 };
 
@@ -401,7 +401,7 @@ class PresenterStub : public SessionController {
 };
 
 class ExperimenterControllerListenerStub
-    : public ExperimenterController::EventListener {
+    : public ExperimenterController::Observer {
   public:
     void notifyThatTrialHasStarted() override {
         notifiedThatTrialHasStarted_ = true;

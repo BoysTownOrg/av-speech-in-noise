@@ -10,7 +10,7 @@ TargetPlayerImpl::TargetPlayerImpl(VideoPlayer *player, AudioReader *reader)
     player->attach(this);
 }
 
-void TargetPlayerImpl::attach(TargetPlayer::EventListener *e) {
+void TargetPlayerImpl::attach(TargetPlayer::Observer *e) {
     listener_ = e;
 }
 
