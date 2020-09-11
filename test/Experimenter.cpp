@@ -646,6 +646,13 @@ EXPERIMENTER_TEST(
 }
 
 EXPERIMENTER_TEST(
+    responderNotifiesThatTrialHasStartedAfterNotifyingThatUserIsReadyForNextTrial) {
+    experimenterResponder.notifyThatUserIsReadyForNextTrial();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        experimenterResponderListener.notifiedThatTrialHasStarted());
+}
+
+EXPERIMENTER_TEST(
     responderRestartsAdaptiveTestWhilePreservingTargetsAfterContinueTestingDialogIsAccepted) {
     acceptContinuingTesting(experimenterView);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
