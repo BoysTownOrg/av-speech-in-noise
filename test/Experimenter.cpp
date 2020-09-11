@@ -475,6 +475,18 @@ class NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
     ExperimenterResponderImpl &responder;
 };
 
+class NotifyingThatUserIsDoneResponding : public ResponderUseCase {
+  public:
+    explicit NotifyingThatUserIsDoneResponding(
+        ExperimenterResponderImpl &responder)
+        : responder{responder} {}
+
+    void run() override { responder.notifyThatUserIsDoneResponding(); }
+
+  private:
+    ExperimenterResponderImpl &responder;
+};
+
 class ExperimenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -535,6 +547,8 @@ class ExperimenterTests : public ::testing::Test {
     NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion{
             experimenterResponder};
+    NotifyingThatUserIsDoneResponding notifyingThatUserIsDoneResponding{
+        experimenterResponder};
     PresenterStub presenter;
     ExperimenterResponderListenerStub experimenterResponderListener;
 
@@ -614,6 +628,11 @@ EXPERIMENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
         experimenterResponderListener);
+}
+
+EXPERIMENTER_TEST(responderDisplaysTrialNumberAfterUserIsDoneResponding) {
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
+        notifyingThatUserIsDoneResponding, experimenterResponderListener);
 }
 
 EXPERIMENTER_TEST(
