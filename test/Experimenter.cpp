@@ -778,5 +778,10 @@ EXPERIMENTER_TEST(presenterStopsTaskAfterStopping) {
     experimenterPresenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.stopped());
 }
+
+EXPERIMENTER_TEST(presenterHidesExitTestButtonAfterTrialStarts) {
+    experimenterPresenter.notifyThatTrialHasStarted();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.exitTestButtonHidden());
+}
 }
 }
