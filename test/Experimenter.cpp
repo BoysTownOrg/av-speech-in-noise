@@ -757,10 +757,20 @@ EXPERIMENTER_TEST(presenterHidesContinueTestingDialogAfterStopping) {
         experimenterView.continueTestingDialogHidden());
 }
 
-EXPERIMENTER_TEST(presenterStopsConsonantTaskAfterStopping) {
+EXPERIMENTER_TEST(
+    presenterStopsConsonantTaskAfterStoppingFixedLevelConsonantMethod) {
     run(initializingFixedLevelConsonantMethod, experimenterPresenter);
     experimenterPresenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(consonantPresenter.stopped());
+}
+
+EXPERIMENTER_TEST(
+    presenterStopsConsonantTaskAfterStoppingAdaptiveCoordinateResponseMeasureMethod) {
+    run(initializingAdaptiveCoordinateResponseMeasureMethod,
+        experimenterPresenter);
+    experimenterPresenter.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        coordinateResponseMeasurePresenter.stopped());
 }
 }
 }
