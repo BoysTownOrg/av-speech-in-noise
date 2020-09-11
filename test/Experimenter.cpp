@@ -46,9 +46,7 @@ class ExperimenterViewStub : public ExperimenterView {
 
     [[nodiscard]] auto hidden() const { return hidden_; }
 
-    void attach(ExperimenterView::Observer *e) override {
-        listener_ = e;
-    }
+    void attach(ExperimenterView::Observer *e) override { listener_ = e; }
 
     void exitTest() { listener_->exitTest(); }
 
@@ -743,6 +741,11 @@ EXPERIMENTER_TEST(responderShowsAdaptiveTestResults) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3"},
         experimenterControllerListener.continueTestingDialogMessage());
+}
+
+EXPERIMENTER_TEST(presenterShowsViewAfterStarting) {
+    experimenterPresenter.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.shown());
 }
 }
 }
