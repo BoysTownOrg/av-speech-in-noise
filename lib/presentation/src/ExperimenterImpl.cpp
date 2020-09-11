@@ -20,7 +20,8 @@ ExperimenterControllerImpl::ExperimenterControllerImpl(Model &model,
     TaskController *consonantController, TaskPresenter *consonantPresenter,
     TaskController *coordinateResponseMeasureController,
     TaskPresenter *coordinateResponseMeasurePresenter,
-    TaskController *freeResponseController, TaskPresenter *freeResponsePresenter,
+    TaskController *freeResponseController,
+    TaskPresenter *freeResponsePresenter,
     TaskController *correctKeywordsController,
     TaskPresenter *correctKeywordsPresenter, TaskController *passFailController,
     TaskPresenter *passFailPresenter)
@@ -49,8 +50,7 @@ ExperimenterControllerImpl::ExperimenterControllerImpl(Model &model,
     }
 }
 
-void ExperimenterControllerImpl::attach(
-    ExperimenterController::Observer *e) {
+void ExperimenterControllerImpl::attach(ExperimenterController::Observer *e) {
     listener = e;
 }
 
@@ -95,8 +95,8 @@ static void readyNextTrialIfTestIncompleteElse(Model &model,
     ifTestCompleteElse(model, f, [&]() { readyNextTrial(model, listener); });
 }
 
-static void notifyIfTestIsCompleteElse(
-    Model &model, SessionController *responder, const std::function<void()> &f) {
+static void notifyIfTestIsCompleteElse(Model &model,
+    SessionController *responder, const std::function<void()> &f) {
     ifTestCompleteElse(
         model, [&]() { notifyThatTestIsComplete(responder); }, f);
 }
@@ -126,20 +126,20 @@ void ExperimenterControllerImpl::notifyThatUserIsReadyForNextTrial() {
     });
 }
 
-void ExperimenterControllerImpl::attach(SessionController *p) {
-    responder = p;
-}
+void ExperimenterControllerImpl::attach(SessionController *p) { responder = p; }
 
 ExperimenterPresenterImpl::ExperimenterPresenterImpl(Model &model,
     ExperimenterOutputView &view, TaskPresenter *consonantPresenter,
     TaskPresenter *coordinateResponseMeasurePresenter,
     TaskPresenter *freeResponsePresenter,
-    TaskPresenter *correctKeywordsPresenter, TaskPresenter *passFailPresenter)
+    TaskPresenter *correctKeywordsPresenter, TaskPresenter *passFailPresenter,
+    UninitializedTaskPresenter *taskPresenter__)
     : model{model}, view{view}, consonantPresenter{consonantPresenter},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       freeResponsePresenter{freeResponsePresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
-      passFailPresenter{passFailPresenter}, taskPresenter_{passFailPresenter} {
+      passFailPresenter{passFailPresenter}, taskPresenter_{passFailPresenter},
+      taskPresenter__{taskPresenter__} {
     model.attach(this);
 }
 

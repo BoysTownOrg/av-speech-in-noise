@@ -496,6 +496,17 @@ class NotifyingThatUserIsReadyForNextTrial : public ControllerUseCase {
     ExperimenterControllerImpl &responder;
 };
 
+class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
+  public:
+    void initialize(TaskPresenter *) override {}
+    void showResponseSubmission() override {}
+    void notifyThatTaskHasStarted() override {}
+    void notifyThatUserIsDoneResponding() override {}
+    void notifyThatTrialHasStarted() override {}
+    void start() override {}
+    void stop() override {}
+};
+
 class ExperimenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -511,6 +522,7 @@ class ExperimenterTests : public ::testing::Test {
     TaskPresenterStub freeResponsePresenter;
     TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub passFailPresenter;
+    UninitializedTaskPresenterStub taskPresenter;
     ExperimenterControllerImpl experimenterController{model, view,
         experimenterView, &consonantController, &consonantPresenter,
         &coordinateResponseMeasureController,
@@ -519,7 +531,8 @@ class ExperimenterTests : public ::testing::Test {
         &correctKeywordsPresenter, &passFailController, &passFailPresenter};
     ExperimenterPresenterImpl experimenterPresenter{model, experimenterView,
         &consonantPresenter, &coordinateResponseMeasurePresenter,
-        &freeResponsePresenter, &correctKeywordsPresenter, &passFailPresenter};
+        &freeResponsePresenter, &correctKeywordsPresenter, &passFailPresenter,
+        &taskPresenter};
     InitializingAdaptiveCoordinateResponseMeasureMethod
         initializingAdaptiveCoordinateResponseMeasureMethod;
     InitializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker

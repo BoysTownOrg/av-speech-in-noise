@@ -1145,8 +1145,8 @@ class PresenterConstructionTests : public ::testing::Test {
     ExperimenterControllerImpl experimenterController{model, view,
         experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr};
-    ExperimenterPresenterImpl experimenterPresenterRefactored{
-        model, experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr};
+    ExperimenterPresenterImpl experimenterPresenterRefactored{model,
+        experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
     auto construct() -> Presenter {
         return {model, view, &testSetupControllerImpl,
@@ -1275,6 +1275,7 @@ class PresenterTests : public ::testing::Test {
     TestSetupControllerImpl testSetupControllerImpl{
         model, view, setupView, testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
+    UninitializedTaskPresenterImpl taskPresenter;
     ExperimenterControllerImpl experimenterController{model, view,
         experimenterView, &consonantScreenController,
         &consonantPresenterRefactored, &coordinateResponseMeasureController,
@@ -1284,7 +1285,7 @@ class PresenterTests : public ::testing::Test {
     ExperimenterPresenterImpl experimenterPresenterRefactored{model,
         experimenterView, &consonantPresenterRefactored,
         &coordinateResponseMeasurePresenterRefactored, &freeResponsePresenter,
-        &correctKeywordsPresenter, &passFailPresenter};
+        &correctKeywordsPresenter, &passFailPresenter, &taskPresenter};
     Presenter presenter{model, view, &testSetupControllerImpl,
         &testSetupPresenterRefactored, &experimenterController,
         &experimenterPresenterRefactored};
@@ -1718,7 +1719,8 @@ class PresenterFailureTests : public ::testing::Test {
             experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr,
             nullptr, nullptr, nullptr, nullptr, nullptr};
         ExperimenterPresenterImpl experimenterPresenterRefactored{*model,
-            experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr};
+            experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr,
+            nullptr};
         Presenter presenter{*model, view, &testSetupControllerImpl,
             &testSetupPresenterRefactored, &experimenterController,
             &experimenterPresenterRefactored};

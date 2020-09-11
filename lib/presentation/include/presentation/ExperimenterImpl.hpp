@@ -8,10 +8,11 @@
 
 namespace av_speech_in_noise {
 class ExperimenterControllerImpl : public ExperimenterInputView::Observer,
-                                  public ExperimenterController {
+                                   public ExperimenterController {
   public:
-    explicit ExperimenterControllerImpl(Model &, View &, ExperimenterInputView &,
-        TaskController *consonantController, TaskPresenter *consonantPresenter,
+    explicit ExperimenterControllerImpl(Model &, View &,
+        ExperimenterInputView &, TaskController *consonantController,
+        TaskPresenter *consonantPresenter,
         TaskController *coordinateResponseMeasureController,
         TaskPresenter *coordinateResponseMeasurePresenter,
         TaskController *freeResponseController,
@@ -37,6 +38,33 @@ class ExperimenterControllerImpl : public ExperimenterInputView::Observer,
     SessionController *responder{};
 };
 
+class UninitializedTaskPresenter : public TaskPresenter {
+  public:
+    virtual void initialize(TaskPresenter *p) = 0;
+};
+
+class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
+  public:
+    void initialize(TaskPresenter *p) override { presenter = p; }
+    void showResponseSubmission() override {
+        presenter->showResponseSubmission();
+    }
+    void notifyThatTaskHasStarted() override {
+        presenter->notifyThatTaskHasStarted();
+    }
+    void notifyThatUserIsDoneResponding() override {
+        presenter->notifyThatUserIsDoneResponding();
+    }
+    void notifyThatTrialHasStarted() override {
+        presenter->notifyThatTrialHasStarted();
+    }
+    void start() override { presenter->start(); }
+    void stop() override { presenter->stop(); }
+
+  private:
+    TaskPresenter *presenter;
+};
+
 class ExperimenterPresenterImpl : public Model::Observer,
                                   public ExperimenterPresenter {
   public:
@@ -45,7 +73,7 @@ class ExperimenterPresenterImpl : public Model::Observer,
         TaskPresenter *coordinateResponseMeasurePresenter,
         TaskPresenter *freeResponsePresenter,
         TaskPresenter *correctKeywordsPresenter,
-        TaskPresenter *passFailPresenter);
+        TaskPresenter *passFailPresenter, UninitializedTaskPresenter *);
     void trialComplete() override;
     void start() override;
     void stop() override;
@@ -68,6 +96,7 @@ class ExperimenterPresenterImpl : public Model::Observer,
     TaskPresenter *correctKeywordsPresenter;
     TaskPresenter *passFailPresenter;
     TaskPresenter *taskPresenter_;
+    UninitializedTaskPresenter *taskPresenter__;
 };
 }
 
