@@ -339,19 +339,6 @@ class DecliningContinuingTesting : public UseCase {
     ExperimenterViewStub &view;
 };
 
-class AcceptingContinuingTesting : public UseCase {
-  public:
-    explicit AcceptingContinuingTesting(ExperimenterViewStub &view)
-        : view{view} {}
-
-    void run(ExperimenterPresenter &) override {
-        view.acceptContinuingTesting();
-    }
-
-  private:
-    ExperimenterViewStub &view;
-};
-
 void exitTest(ExperimenterViewStub &view) { view.exitTest(); }
 
 void notifyThatPlayTrialButtonHasBeenClicked(ExperimenterViewStub &view) {
@@ -455,6 +442,39 @@ class ExperimenterResponderListenerStub
     bool continueTestingDialogShown_{};
 };
 
+class ResponderUseCase {
+  public:
+    virtual ~ResponderUseCase() = default;
+    virtual void run() = 0;
+};
+
+class AcceptingContinuingTesting : public ResponderUseCase {
+  public:
+    explicit AcceptingContinuingTesting(ExperimenterViewStub &view)
+        : view{view} {}
+
+    void run() override { acceptContinuingTesting(view); }
+
+  private:
+    ExperimenterViewStub &view;
+};
+
+class NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
+    : public ResponderUseCase {
+  public:
+    explicit NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
+        ExperimenterResponderImpl &responder)
+        : responder{responder} {}
+
+    void run() override {
+        notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
+            responder);
+    }
+
+  private:
+    ExperimenterResponderImpl &responder;
+};
+
 class ExperimenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -512,6 +532,9 @@ class ExperimenterTests : public ::testing::Test {
     DecliningContinuingTesting decliningContinuingTesting{experimenterView};
     AcceptingContinuingTesting acceptingContinuingTesting{experimenterView};
     ExitingTest exitingTest{&experimenterView};
+    NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
+        notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion{
+            experimenterResponder};
     PresenterStub presenter;
     ExperimenterResponderListenerStub experimenterResponderListener;
 
@@ -520,6 +543,13 @@ class ExperimenterTests : public ::testing::Test {
         experimenterResponder.subscribe(&experimenterResponderListener);
     }
 };
+
+#define AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(                             \
+    model, useCase, experimenterResponderListener)                             \
+    model.setTargetFileName("a");                                              \
+    (useCase).run();                                                           \
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"},                          \
+        (experimenterResponderListener).displayedSecondary())
 
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(a)            \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).notifiedThatTestIsComplete())
@@ -568,10 +598,8 @@ EXPERIMENTER_TEST(
 
 EXPERIMENTER_TEST(
     responderDisplaysTargetFileNameAfterContinueTestingDialogIsAccepted) {
-    model.setTargetFileName("a");
-    acceptContinuingTesting(experimenterView);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, experimenterResponderListener.displayedSecondary());
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(
+        model, acceptingContinuingTesting, experimenterResponderListener);
 }
 
 EXPERIMENTER_TEST(
@@ -592,11 +620,9 @@ EXPERIMENTER_TEST(
 
 EXPERIMENTER_TEST(
     responderDisplaysTargetFileNameAfterNotShowingContinueTestingDialogWithResults) {
-    model.setTargetFileName("a");
-    notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
-        experimenterResponder);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, experimenterResponderListener.displayedSecondary());
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
+        notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
+        experimenterResponderListener);
 }
 
 EXPERIMENTER_TEST(
