@@ -427,7 +427,12 @@ class ExperimenterResponderListenerStub
     [[nodiscard]] auto notifiedThatNextTrialIsReady() const -> bool {
         return notifiedThatNextTrialIsReady_;
     }
-    void setContinueTestingDialogMessage(const std::string &) override {}
+    void setContinueTestingDialogMessage(const std::string &s) override {
+        continueTestingDialogMessage_ = s;
+    }
+    auto continueTestingDialogMessage() -> std::string {
+        return continueTestingDialogMessage_;
+    }
     void showContinueTestingDialog() override {
         continueTestingDialogShown_ = true;
     }
@@ -444,6 +449,7 @@ class ExperimenterResponderListenerStub
   private:
     std::string displayed_;
     std::string displayedSecondary_;
+    std::string continueTestingDialogMessage_;
     bool notifiedThatTrialHasStarted_{};
     bool notifiedThatNextTrialIsReady_{};
     bool continueTestingDialogShown_{};
@@ -603,11 +609,21 @@ EXPERIMENTER_TEST(
 }
 
 EXPERIMENTER_TEST(responderShowsContinueTestingDialog) {
-    model.setTestComplete();
+    setTestComplete(model);
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
         experimenterResponder);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterResponderListener.continueTestingDialogShown());
+}
+
+EXPERIMENTER_TEST(responderShowsAdaptiveTestResults) {
+    setTestComplete(model);
+    model.setAdaptiveTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
+    notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
+        experimenterResponder);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3"},
+        experimenterResponderListener.continueTestingDialogMessage());
 }
 }
 }
