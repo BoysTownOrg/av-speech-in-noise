@@ -663,6 +663,11 @@ TEST_SETUP_TEST(presenterShowsViewWhenStarted) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(setupView.shown());
 }
 
+TEST_SETUP_TEST(presenterHidesViewWhenStopped) {
+    testSetupPresenterRefactored.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(setupView.hidden());
+}
+
 TEST_F(TestSetupFailureTests,
     initializeTestShowsErrorMessageWhenModelFailsRequest) {
     useFailingModel("a");
