@@ -25,7 +25,7 @@ class SessionControllerImpl : public SessionController {
 
   private:
     View &view;
-    PresenterSimple *testSetupPresenter;
+    Presenter *testSetupPresenter;
     ExperimenterPresenter *experimenterPresenter;
 };
 }

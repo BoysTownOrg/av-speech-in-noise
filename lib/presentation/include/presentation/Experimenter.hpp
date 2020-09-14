@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_EXPERIMENTER_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_EXPERIMENTER_HPP_
 
-#include "PresenterSimple.hpp"
+#include "Presenter.hpp"
 #include "Method.hpp"
 #include <string>
 
@@ -60,9 +60,8 @@ class ExperimenterController {
     virtual void notifyThatUserIsReadyForNextTrial() = 0;
 };
 
-class ExperimenterPresenter
-    : public virtual ExperimenterController::Observer,
-      public virtual PresenterSimple {
+class ExperimenterPresenter : public virtual ExperimenterController::Observer,
+                              public virtual Presenter {
   public:
     virtual void initialize(Method) = 0;
 };

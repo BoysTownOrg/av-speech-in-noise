@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TASK_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TASK_HPP_
 
-#include "PresenterSimple.hpp"
+#include "Presenter.hpp"
 #include "Experimenter.hpp"
 
 namespace av_speech_in_noise {
@@ -20,7 +20,7 @@ class TaskController {
 };
 
 class TaskPresenter : virtual public TaskController::Observer,
-                      virtual public PresenterSimple {
+                      virtual public Presenter {
   public:
     virtual void showResponseSubmission() = 0;
 };

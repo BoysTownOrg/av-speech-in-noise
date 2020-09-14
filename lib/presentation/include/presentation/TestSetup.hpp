@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETUP_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETUP_HPP_
 
-#include "PresenterSimple.hpp"
+#include "Presenter.hpp"
 #include "Method.hpp"
 #include <vector>
 #include <string>
@@ -53,7 +53,7 @@ class TestSetupController {
 };
 
 class TestSetupPresenter : public virtual TestSetupController::Observer,
-                           public virtual PresenterSimple {};
+                           public virtual Presenter {};
 }
 
 #endif
