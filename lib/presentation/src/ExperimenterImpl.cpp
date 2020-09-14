@@ -49,31 +49,31 @@ TestControllerImpl::TestControllerImpl(Model &model, SessionView &mainView,
     }
 }
 
-void TestControllerImpl::attach(TestController::Observer *e) { listener = e; }
+void TestControllerImpl::attach(TestController::Observer *e) { observer = e; }
 
 static void notifyThatTestIsComplete(SessionController *presenter) {
     presenter->notifyThatTestIsComplete();
 }
 
-void TestControllerImpl::exitTest() { notifyThatTestIsComplete(responder); }
+void TestControllerImpl::exitTest() { notifyThatTestIsComplete(controller); }
 
 static void playTrial(
-    Model &model, SessionView &view, TestController::Observer *listener) {
+    Model &model, SessionView &view, TestController::Observer *observer) {
     model.playTrial(AudioSettings{view.audioDevice()});
-    listener->notifyThatTrialHasStarted();
+    observer->notifyThatTrialHasStarted();
 }
 
 void TestControllerImpl::playTrial() {
-    av_speech_in_noise::playTrial(model, mainView, listener);
+    av_speech_in_noise::playTrial(model, mainView, observer);
 }
 
 void TestControllerImpl::declineContinuingTesting() {
-    notifyThatTestIsComplete(responder);
+    notifyThatTestIsComplete(controller);
 }
 
 void TestControllerImpl::acceptContinuingTesting() {
     model.restartAdaptiveTestWhilePreservingTargets();
-    readyNextTrial(model, listener);
+    readyNextTrial(model, observer);
 }
 
 static void ifTestCompleteElse(Model &model, const std::function<void()> &f,
@@ -85,42 +85,42 @@ static void ifTestCompleteElse(Model &model, const std::function<void()> &f,
 }
 
 static void readyNextTrialIfTestIncompleteElse(Model &model,
-    TestController::Observer *listener, const std::function<void()> &f) {
-    ifTestCompleteElse(model, f, [&]() { readyNextTrial(model, listener); });
+    TestController::Observer *observer, const std::function<void()> &f) {
+    ifTestCompleteElse(model, f, [&]() { readyNextTrial(model, observer); });
 }
 
 static void notifyIfTestIsCompleteElse(Model &model,
-    SessionController *responder, const std::function<void()> &f) {
+    SessionController *controller, const std::function<void()> &f) {
     ifTestCompleteElse(
-        model, [&]() { notifyThatTestIsComplete(responder); }, f);
+        model, [&]() { notifyThatTestIsComplete(controller); }, f);
 }
 
 void TestControllerImpl::
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() {
-    readyNextTrialIfTestIncompleteElse(model, listener, [&] {
-        listener->showContinueTestingDialog();
+    readyNextTrialIfTestIncompleteElse(model, observer, [&] {
+        observer->showContinueTestingDialog();
         std::stringstream thresholds;
         thresholds << "thresholds (targets: dB SNR)";
         for (const auto &result : model.adaptiveTestResults())
             thresholds << '\n'
                        << result.targetsUrl.path << ": " << result.threshold;
-        listener->setContinueTestingDialogMessage(thresholds.str());
+        observer->setContinueTestingDialogMessage(thresholds.str());
     });
 }
 
 void TestControllerImpl::notifyThatUserIsDoneResponding() {
     notifyIfTestIsCompleteElse(
-        model, responder, [&]() { readyNextTrial(model, listener); });
+        model, controller, [&]() { readyNextTrial(model, observer); });
 }
 
 void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
-    notifyIfTestIsCompleteElse(model, responder, [&]() {
-        displayTrialInformation(model, listener);
-        av_speech_in_noise::playTrial(model, mainView, listener);
+    notifyIfTestIsCompleteElse(model, controller, [&]() {
+        displayTrialInformation(model, observer);
+        av_speech_in_noise::playTrial(model, mainView, observer);
     });
 }
 
-void TestControllerImpl::attach(SessionController *p) { responder = p; }
+void TestControllerImpl::attach(SessionController *p) { controller = p; }
 
 ExperimenterPresenterImpl::ExperimenterPresenterImpl(Model &model,
     TestView &view, TaskPresenter *consonantPresenter,

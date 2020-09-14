@@ -32,8 +32,8 @@ class TestControllerImpl : public TestControl::Observer, public TestController {
   private:
     Model &model;
     SessionView &mainView;
-    TestController::Observer *listener{};
-    SessionController *responder{};
+    TestController::Observer *observer{};
+    SessionController *controller{};
 };
 
 class UninitializedTaskPresenter : public TaskPresenter {
