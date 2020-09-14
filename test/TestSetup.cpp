@@ -526,7 +526,7 @@ class TestSetupFailureTests : public ::testing::Test {
 
 TEST_SETUP_TEST(controllerPreparesTestAfterConfirmButtonIsClicked) {
     testSettingsInterpreter.setMethod(Method::adaptivePassFail);
-    confirmTestSetup(&setupView);
+    run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         Method::adaptivePassFail, sessionController.method());
 }
@@ -534,14 +534,14 @@ TEST_SETUP_TEST(controllerPreparesTestAfterConfirmButtonIsClicked) {
 TEST_SETUP_TEST(
     controllerDoesNotPrepareTestAfterConfirmButtonIsClickedWhenTestWouldAlreadyBeComplete) {
     setTestComplete(model);
-    confirmTestSetup(&setupView);
+    run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
 }
 
 TEST_SETUP_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {
     setupView.setSubjectId("b");
-    confirmTestSetup(&setupView);
+    run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"b"}, testSettingsInterpreter.identity().subjectId);
 }
@@ -549,28 +549,28 @@ TEST_SETUP_TEST(
 TEST_SETUP_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesStartingSnr) {
     setupView.setStartingSnr("1");
-    confirmTestSetup(&setupView);
+    run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, testSettingsInterpreter.startingSnr());
 }
 
 TEST_SETUP_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidStartingSnrShowsMessage) {
     setupView.setStartingSnr("a");
-    confirmTestSetup(&setupView);
+    run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"\"a\" is not a valid starting SNR."}, errorMessage(view));
 }
 
 TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
     setupView.setTesterId("c");
-    confirmTestSetup(&setupView);
+    run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"c"}, testSettingsInterpreter.identity().testerId);
 }
 
 TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
     setupView.setSession("e");
-    confirmTestSetup(&setupView);
+    run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"e"}, testSettingsInterpreter.identity().session);
 }
@@ -578,7 +578,7 @@ TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
 TEST_SETUP_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesRmeSetting) {
     setupView.setRmeSetting("e");
-    confirmTestSetup(&setupView);
+    run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"e"}, testSettingsInterpreter.identity().rmeSetting);
 }
@@ -586,9 +586,17 @@ TEST_SETUP_TEST(
 TEST_SETUP_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTransducer) {
     setupView.setTransducer("a");
-    confirmTestSetup(&setupView);
+    run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, testSettingsInterpreter.identity().transducer);
+}
+
+TEST_SETUP_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery) {
+    textFileReader.setRead("a");
+    run(confirmingTestSetup);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, testSettingsInterpreter.textForMethodQuery());
 }
 
 TEST_SETUP_TEST(playCalibrationPassesLevel) {
@@ -607,14 +615,6 @@ TEST_SETUP_TEST(
 }
 
 TEST_SETUP_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery) {
-    textFileReader.setRead("a");
-    confirmTestSetup(&setupView);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, testSettingsInterpreter.textForMethodQuery());
-}
-
-TEST_SETUP_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreter) {
     assertPassesTestSettingsTextToTestSettingsInterpreter(confirmingTestSetup);
 }
@@ -626,14 +626,14 @@ TEST_SETUP_TEST(
 
 TEST_SETUP_TEST(playCalibrationPassesFilePath) {
     interpretedCalibration.fileUrl.path = "a";
-    playCalibration(setupView);
+    run(playingCalibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, calibration(model).fileUrl.path);
 }
 
 TEST_SETUP_TEST(playCalibrationPassesAudioDevice) {
     setAudioDevice(view, "b");
-    playCalibration(setupView);
+    run(playingCalibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"b"}, calibration(model).audioDevice);
 }
