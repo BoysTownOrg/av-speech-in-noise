@@ -33,11 +33,9 @@ class ExperimenterViewStub : public TestView, public TestControl {
     void hideContinueTestingDialog() override {
         continueTestingDialogHidden_ = true;
     }
-    auto continueTestingDialogHidden() -> bool {
+
+    [[nodiscard]] auto continueTestingDialogHidden() const -> bool {
         return continueTestingDialogHidden_;
-    }
-    [[nodiscard]] auto responseSubmissionShown() const {
-        return responseSubmissionShown_;
     }
 
     void show() override { shown_ = true; }
@@ -101,7 +99,6 @@ class ExperimenterViewStub : public TestView, public TestControl {
     bool exitTestButtonShown_{};
     bool nextTrialButtonShown_{};
     bool nextTrialButtonHidden_{};
-    bool responseSubmissionShown_{};
     bool continueTestingDialogShown_{};
     bool continueTestingDialogHidden_{};
     bool shown_{};
@@ -118,11 +115,7 @@ class ViewStub : public SessionView {
         errorMessage_ = std::move(s);
     }
 
-    auto errorMessage() { return errorMessage_; }
-
     void eventLoop() override { eventLoopCalled_ = true; }
-
-    [[nodiscard]] auto eventLoopCalled() const { return eventLoopCalled_; }
 
     auto browseForDirectory() -> std::string override {
         return browseForDirectoryResult_;
@@ -134,17 +127,9 @@ class ViewStub : public SessionView {
         return browseForOpeningFileResult_;
     }
 
-    void setBrowseForOpeningFileResult(std::string s) {
-        browseForOpeningFileResult_ = std::move(s);
-    }
-
-    void setBrowseCancelled() { browseCancelled_ = true; }
-
     void populateAudioDeviceMenu(std::vector<std::string> v) override {
         audioDevices_ = std::move(v);
     }
-
-    [[nodiscard]] auto audioDevices() const { return audioDevices_; }
 
   private:
     std::vector<std::string> audioDevices_;
@@ -161,8 +146,6 @@ class UseCase {
     virtual ~UseCase() = default;
     virtual void run(TestPresenter &) = 0;
 };
-
-void run(UseCase &useCase, TestPresenter &presenter) { useCase.run(presenter); }
 
 class ConditionUseCase : public virtual UseCase {
   public:
@@ -181,11 +164,9 @@ class TaskPresenterStub : public TaskPresenter {
     void notifyThatUserIsDoneResponding() override {}
     void notifyThatTrialHasStarted() override {}
     void start() override {}
-    void stop() override { stopped_ = true; }
-    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+    void stop() override {}
 
   private:
-    bool stopped_{};
 };
 
 class InitializingExperimenterPresenter : public virtual UseCase {};
