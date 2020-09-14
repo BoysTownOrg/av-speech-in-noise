@@ -37,16 +37,16 @@ void ConsonantTaskPresenter::showResponseSubmission() {
 
 ConsonantTaskController::ConsonantTaskController(
     Model &model, ConsonantTaskControl &view)
-    : model{model}, view{view} {
+    : model{model}, control{view} {
     view.attach(this);
 }
 
 void ConsonantTaskController::attach(TaskController::Observer *e) {
-    listener = e;
+    observer = e;
 }
 
 void ConsonantTaskController::attach(ExperimenterController *p) {
-    responder = p;
+    controller = p;
 }
 
 static void notifyThatUserIsReadyForNextTrial(ExperimenterController *r) {
@@ -54,13 +54,13 @@ static void notifyThatUserIsReadyForNextTrial(ExperimenterController *r) {
 }
 
 void ConsonantTaskController::notifyThatReadyButtonHasBeenClicked() {
-    listener->notifyThatTaskHasStarted();
-    notifyThatUserIsReadyForNextTrial(responder);
+    observer->notifyThatTaskHasStarted();
+    notifyThatUserIsReadyForNextTrial(controller);
 }
 
 void ConsonantTaskController::notifyThatResponseButtonHasBeenClicked() {
-    model.submit(ConsonantResponse{view.consonant().front()});
-    listener->notifyThatUserIsDoneResponding();
-    notifyThatUserIsReadyForNextTrial(responder);
+    model.submit(ConsonantResponse{control.consonant().front()});
+    observer->notifyThatUserIsDoneResponding();
+    notifyThatUserIsReadyForNextTrial(controller);
 }
 }

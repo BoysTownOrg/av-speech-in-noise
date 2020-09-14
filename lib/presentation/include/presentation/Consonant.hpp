@@ -55,9 +55,9 @@ class ConsonantTaskController : public TaskController,
 
   private:
     Model &model;
-    ConsonantTaskControl &view;
-    TaskController::Observer *listener{};
-    ExperimenterController *responder{};
+    ConsonantTaskControl &control;
+    TaskController::Observer *observer{};
+    ExperimenterController *controller{};
 };
 }
 
