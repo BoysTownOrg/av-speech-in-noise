@@ -616,6 +616,12 @@ class ExperimenterTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(a)            \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).notifiedThatTestIsComplete())
 
+#define AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(                  \
+    useCase, experimenterPresenter, expected)                                  \
+    useCase.run(experimenterPresenter);                                        \
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
+        static_cast<TaskPresenter *>(&expected), taskPresenter.presenter())
+
 #define EXPERIMENTER_TEST(a) TEST_F(ExperimenterTests, a)
 
 EXPERIMENTER_TEST(
@@ -851,12 +857,11 @@ EXPERIMENTER_TEST(presenterStartsTaskPresenterWhenInitializing) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.started());
 }
 
-EXPERIMENTER_TEST(presenterInitializesAppropriateTask) {
-    initializingAdaptiveCoordinateResponseMeasureMethod.run(
-        experimenterPresenter);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        static_cast<TaskPresenter *>(&coordinateResponseMeasurePresenter),
-        taskPresenter.presenter());
+EXPERIMENTER_TEST(
+    initializingAdaptiveCoordinateResponseMeasureMethodInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingAdaptiveCoordinateResponseMeasureMethod,
+        experimenterPresenter, coordinateResponseMeasurePresenter);
 }
 }
 }
