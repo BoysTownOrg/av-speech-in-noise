@@ -41,10 +41,8 @@ constexpr auto name(Transducer c) -> const char * {
 class TestSetupControllerImpl : public TestSetupControl::Observer,
                                 public TestSetupController {
   public:
-    explicit TestSetupControllerImpl(Model &model, SessionView &mainView,
-        TestSetupControl &view,
-        TestSettingsInterpreter &testSettingsInterpreter,
-        TextFileReader &textFileReader);
+    explicit TestSetupControllerImpl(Model &, SessionView &, TestSetupControl &,
+        TestSettingsInterpreter &, TextFileReader &);
     void notifyThatConfirmButtonHasBeenClicked() override;
     void notifyThatPlayCalibrationButtonHasBeenClicked() override;
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
@@ -53,12 +51,12 @@ class TestSetupControllerImpl : public TestSetupControl::Observer,
 
   private:
     Model &model;
-    SessionView &mainView;
-    TestSetupControl &view;
+    SessionView &sessionView;
+    TestSetupControl &control;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
-    SessionController *parent{};
-    TestSetupController::Observer *listener{};
+    SessionController *controller{};
+    TestSetupController::Observer *observer{};
 };
 
 class TestSetupPresenterImpl : public TestSetupPresenter {
