@@ -559,14 +559,6 @@ void playCalibration(TestSetupViewStub &view) { view.playCalibration(); }
 
 auto shown(TestSetupViewStub &view) -> bool { return view.shown(); }
 
-void assertShown(TestSetupViewStub &view) {
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(shown(view));
-}
-
-auto hidden(TestSetupViewStub &view) -> bool { return view.hidden(); }
-
-void completeTrial(ModelStub &model) { model.completeTrial(); }
-
 auto errorMessage(ViewStub &view) -> std::string { return view.errorMessage(); }
 
 auto calibration(ModelStub &model) -> const Calibration & {
@@ -578,8 +570,6 @@ void setAudioDevice(ViewStub &view, std::string s) {
 }
 
 void setTestComplete(ModelStub &model) { model.setTestComplete(); }
-
-auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
 
 class SessionControllerStub : public SessionController {
   public:
@@ -687,11 +677,6 @@ class TestSetupTests : public ::testing::Test {
         assertEntryEquals(useCase, "a");
     }
 
-    void assertDoesNotHideTestSetupView(UseCase &useCase) {
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_FALSE(hidden(setupView));
-    }
-
     void assertPassesTestSettingsFileToTextFileReader(UseCase &useCase) {
         setupView.setTestSettingsFile("a");
         run(useCase);
@@ -713,27 +698,6 @@ class TestSetupTests : public ::testing::Test {
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"a"}, testSettingsInterpreter.textForMethodQuery());
-    }
-
-    void assertPassesSession(ConfirmingTestSetup &useCase) {
-        setupView.setSession("e");
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"e"}, testSettingsInterpreter.identity().session);
-    }
-
-    void assertPassesRmeSetting(ConfirmingTestSetup &useCase) {
-        setupView.setRmeSetting("e");
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"e"}, testSettingsInterpreter.identity().rmeSetting);
-    }
-
-    void assertPassesTransducer(ConfirmingTestSetup &useCase) {
-        setupView.setTransducer("a");
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"a"}, testSettingsInterpreter.identity().transducer);
     }
 };
 
