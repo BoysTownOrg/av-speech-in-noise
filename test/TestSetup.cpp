@@ -49,7 +49,7 @@ class TestSetupViewStub : public TestSetupView, public TestSetupControl {
 
     void show() override { shown_ = true; }
 
-    auto shown() -> bool { return shown_; }
+    [[nodiscard]] auto shown() const -> bool { return shown_; }
 
     void hide() override { hidden_ = true; }
 
@@ -297,8 +297,6 @@ void assertEntryEquals(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, entry(useCase));
 }
 
-void playCalibration(TestSetupViewStub &view) { view.playCalibration(); }
-
 auto errorMessage(ViewStub &view) -> std::string { return view.errorMessage(); }
 
 auto calibration(ModelStub &model) -> const Calibration & {
@@ -386,14 +384,6 @@ class TestSetupTests : public ::testing::Test {
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"a"}, testSettingsInterpreter.text());
-    }
-
-    void assertPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery(
-        UseCase &useCase) {
-        textFileReader.setRead("a");
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"a"}, testSettingsInterpreter.textForMethodQuery());
     }
 };
 
