@@ -21,7 +21,8 @@ add_executable(
   FreeResponse.cpp
   PassFail.cpp
   Experimenter.cpp
-  TestSetup.cpp)
+  TestSetup.cpp
+  SessionController.cpp)
 target_compile_features(tests PRIVATE cxx_std_17)
 set_target_properties(tests PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(tests PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})
