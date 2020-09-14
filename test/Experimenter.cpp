@@ -946,5 +946,11 @@ EXPERIMENTER_TEST(
         initializingAdaptiveCorrectKeywordsMethodWithEyeTracking,
         experimenterPresenter, correctKeywordsPresenter);
 }
+
+EXPERIMENTER_TEST(initializingFixedLevelConsonantMethodInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingFixedLevelConsonantMethod, experimenterPresenter,
+        consonantPresenter);
+}
 }
 }
