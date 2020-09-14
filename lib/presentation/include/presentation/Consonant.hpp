@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CONSONANTTASK_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CONSONANTTASK_HPP_
 
+#include "Interface.hpp"
 #include "View.hpp"
 #include "Task.hpp"
 #include <av-speech-in-noise/Model.hpp>
@@ -11,11 +12,11 @@ class ConsonantTaskControl {
   public:
     class Observer {
       public:
-        virtual ~Observer() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatReadyButtonHasBeenClicked() = 0;
         virtual void notifyThatResponseButtonHasBeenClicked() = 0;
     };
-    virtual ~ConsonantTaskControl() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ConsonantTaskControl);
     virtual void attach(Observer *) = 0;
     virtual auto consonant() -> std::string = 0;
 };
