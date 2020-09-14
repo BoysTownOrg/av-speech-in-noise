@@ -45,10 +45,10 @@ void ConsonantTaskController::attach(TaskController::Observer *e) {
     observer = e;
 }
 
-void ConsonantTaskController::attach(TestController *p) { controller = p; }
+void ConsonantTaskController::attach(TestController *c) { controller = c; }
 
-static void notifyThatUserIsReadyForNextTrial(TestController *r) {
-    r->notifyThatUserIsReadyForNextTrial();
+static void notifyThatUserIsReadyForNextTrial(TestController *c) {
+    c->notifyThatUserIsReadyForNextTrial();
 }
 
 void ConsonantTaskController::notifyThatReadyButtonHasBeenClicked() {
