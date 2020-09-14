@@ -905,5 +905,33 @@ EXPERIMENTER_TEST(
         initializingFixedLevelCoordinateResponseMeasureSilentIntervalsMethod,
         experimenterPresenter, coordinateResponseMeasurePresenter);
 }
+
+EXPERIMENTER_TEST(
+    initializingFixedLevelFreeResponseMethodWithAllTargetsInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingFixedLevelFreeResponseMethodWithAllTargets,
+        experimenterPresenter, freeResponsePresenter);
+}
+
+EXPERIMENTER_TEST(
+    initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTrackingInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking,
+        experimenterPresenter, freeResponsePresenter);
+}
+
+EXPERIMENTER_TEST(
+    initializingFixedLevelFreeResponseWithSilentIntervalTargetsMethodInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod,
+        experimenterPresenter, freeResponsePresenter);
+}
+
+EXPERIMENTER_TEST(
+    initializingFixedLevelFreeResponseWithTargetReplacementMethodInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingFixedLevelFreeResponseWithTargetReplacementMethod,
+        experimenterPresenter, freeResponsePresenter);
+}
 }
 }
