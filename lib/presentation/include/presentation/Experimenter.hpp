@@ -1,6 +1,8 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_EXPERIMENTER_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_EXPERIMENTER_HPP_
 
+#include "Interface.hpp"
+#include "View.hpp"
 #include "Presenter.hpp"
 #include "Method.hpp"
 #include <string>
@@ -10,14 +12,14 @@ class TestControl {
   public:
     class Observer {
       public:
-        virtual ~Observer() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void exitTest() = 0;
         virtual void playTrial() = 0;
         virtual void declineContinuingTesting() = 0;
         virtual void acceptContinuingTesting() = 0;
     };
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestControl);
     virtual void attach(Observer *) = 0;
-    virtual ~TestControl() = default;
 };
 
 class TestView {
