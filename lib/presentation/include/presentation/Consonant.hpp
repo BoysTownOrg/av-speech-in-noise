@@ -48,7 +48,7 @@ class ConsonantTaskPresenter : public TaskPresenter {
 class ConsonantTaskController : public TaskController,
                                 public ConsonantTaskControl::Observer {
   public:
-    explicit ConsonantTaskController(Model &, ConsonantTaskControl &);
+    ConsonantTaskController(Model &, ConsonantTaskControl &);
     void attach(TaskController::Observer *) override;
     void attach(TestController *) override;
     void notifyThatReadyButtonHasBeenClicked() override;
