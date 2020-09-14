@@ -715,35 +715,6 @@ class TestSetupTests : public ::testing::Test {
             std::string{"a"}, testSettingsInterpreter.textForMethodQuery());
     }
 
-    void assertInvalidSnrShowsMessage(ConfirmingTestSetup &useCase) {
-        setupView.setStartingSnr("a");
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"\"a\" is not a valid starting SNR."},
-            errorMessage(view));
-    }
-
-    void assertPassesStartingSnr(ConfirmingTestSetup &useCase) {
-        setupView.setStartingSnr("1");
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            1, testSettingsInterpreter.startingSnr());
-    }
-
-    void assertPassesSubjectId(ConfirmingTestSetup &useCase) {
-        setupView.setSubjectId("b");
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"b"}, testSettingsInterpreter.identity().subjectId);
-    }
-
-    void assertPassesTesterId(ConfirmingTestSetup &useCase) {
-        setupView.setTesterId("c");
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"c"}, testSettingsInterpreter.identity().testerId);
-    }
-
     void assertPassesSession(ConfirmingTestSetup &useCase) {
         setupView.setSession("e");
         run(useCase);
@@ -941,6 +912,29 @@ TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
         std::string{"c"}, testSettingsInterpreter.identity().testerId);
 }
 
+TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
+    setupView.setSession("e");
+    confirmTestSetup(&setupView);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"e"}, testSettingsInterpreter.identity().session);
+}
+
+TEST_SETUP_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesRmeSetting) {
+    setupView.setRmeSetting("e");
+    confirmTestSetup(&setupView);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"e"}, testSettingsInterpreter.identity().rmeSetting);
+}
+
+TEST_SETUP_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTransducer) {
+    setupView.setTransducer("a");
+    confirmTestSetup(&setupView);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, testSettingsInterpreter.identity().transducer);
+}
+
 TEST_SETUP_TEST(playCalibrationPassesLevel) {
     interpretedCalibration.level.dB_SPL = 1;
     playCalibration(setupView);
@@ -979,22 +973,6 @@ TEST_SETUP_TEST(playCalibrationPassesFilePath) {
     playCalibration(setupView);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, calibration(model).fileUrl.path);
-}
-
-TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
-    assertPassesSession(confirmingAdaptiveCoordinateResponseMeasureTest);
-}
-
-TEST_SETUP_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesRmeSetting) {
-    assertPassesRmeSetting(
-        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
-}
-
-TEST_SETUP_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTransducer) {
-    assertPassesTransducer(
-        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
 }
 
 TEST_SETUP_TEST(playCalibrationPassesAudioDevice) {
