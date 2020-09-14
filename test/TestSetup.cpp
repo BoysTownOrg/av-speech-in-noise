@@ -234,6 +234,16 @@ void setMethod(TestSettingsInterpreterStub &interpeter, Method m) {
     interpeter.setMethod(m);
 }
 
+class ConfirmingTestSetupImpl : public UseCase {
+  public:
+    explicit ConfirmingTestSetupImpl(TestSetupViewStub *view) : view{view} {}
+
+    void run() override { confirmTestSetup(view); }
+
+  private:
+    TestSetupViewStub *view;
+};
+
 class ConfirmingAdaptiveCoordinateResponseMeasureTest
     : public ConfirmingTestSetup {
     TestSetupViewStub *view;
@@ -654,6 +664,7 @@ class TestSetupTests : public ::testing::Test {
     PlayingCalibration playingCalibration{&setupView};
     SessionControllerStub sessionController;
     TestSetupControllerObserverStub testSetupControllerObserver;
+    ConfirmingTestSetupImpl confirmingTestSetup{&setupView};
 
     TestSetupTests() {
         testSetupControllerImpl.attach(&sessionController);
@@ -689,7 +700,7 @@ class TestSetupTests : public ::testing::Test {
     }
 
     void assertPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery(
-        ConfirmingTestSetup &useCase) {
+        UseCase &useCase) {
         textFileReader.setRead("a");
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -897,7 +908,7 @@ TEST_SETUP_TEST(
 
 TEST_SETUP_TEST(playCalibrationPassesLevel) {
     interpretedCalibration.level.dB_SPL = 1;
-    playCalibration(setupView);
+    run(playingCalibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, calibration(model).level.dB_SPL);
 }
 
@@ -907,20 +918,18 @@ TEST_SETUP_TEST(playingCalibrationPassesTestSettingsFileToTextFileReader) {
 
 TEST_SETUP_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsFileToTextFileReader) {
-    assertPassesTestSettingsFileToTextFileReader(
-        confirmingAdaptiveCoordinateResponseMeasureTest);
+    assertPassesTestSettingsFileToTextFileReader(confirmingTestSetup);
 }
 
 TEST_SETUP_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery) {
     assertPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery(
-        confirmingAdaptiveCoordinateResponseMeasureTest);
+        confirmingTestSetup);
 }
 
 TEST_SETUP_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreter) {
-    assertPassesTestSettingsTextToTestSettingsInterpreter(
-        confirmingAdaptiveCoordinateResponseMeasureTest);
+    assertPassesTestSettingsTextToTestSettingsInterpreter(confirmingTestSetup);
 }
 
 TEST_SETUP_TEST(
