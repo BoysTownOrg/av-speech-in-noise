@@ -44,43 +44,12 @@ class TestSetupControllerImpl : public TestSetupControl::Observer,
     explicit TestSetupControllerImpl(Model &model, SessionView &mainView,
         TestSetupControl &view,
         TestSettingsInterpreter &testSettingsInterpreter,
-        TextFileReader &textFileReader)
-        : model{model}, mainView{mainView}, view{view},
-          testSettingsInterpreter{testSettingsInterpreter},
-          textFileReader{textFileReader} {
-        view.attach(this);
-    }
-    void notifyThatConfirmButtonHasBeenClicked() override {
-        try {
-            const auto testSettings{
-                textFileReader.read({view.testSettingsFile()})};
-            TestIdentity p;
-            p.subjectId = view.subjectId();
-            p.testerId = view.testerId();
-            p.session = view.session();
-            p.rmeSetting = view.rmeSetting();
-            p.transducer = view.transducer();
-            testSettingsInterpreter.initialize(model, testSettings, p,
-                SNR{readInteger(view.startingSnr(), "starting SNR")});
-            if (!model.testComplete())
-                parent->prepare(testSettingsInterpreter.method(testSettings));
-        } catch (const std::runtime_error &e) {
-            mainView.showErrorMessage(e.what());
-        }
-    }
-    void notifyThatPlayCalibrationButtonHasBeenClicked() override {
-        auto p{testSettingsInterpreter.calibration(
-            textFileReader.read({view.testSettingsFile()}))};
-        p.audioDevice = mainView.audioDevice();
-        model.playCalibration(p);
-    }
-    void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override {
-        auto file{mainView.browseForOpeningFile()};
-        if (!mainView.browseCancelled())
-            listener->notifyThatUserHasSelectedTestSettingsFile(file);
-    }
-    void attach(SessionController *p) override { parent = p; }
-    void attach(TestSetupController::Observer *e) override { listener = e; }
+        TextFileReader &textFileReader);
+    void notifyThatConfirmButtonHasBeenClicked() override;
+    void notifyThatPlayCalibrationButtonHasBeenClicked() override;
+    void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
+    void attach(SessionController *p) override;
+    void attach(TestSetupController::Observer *e) override;
 
   private:
     Model &model;
@@ -94,16 +63,11 @@ class TestSetupControllerImpl : public TestSetupControl::Observer,
 
 class TestSetupPresenterImpl : public TestSetupPresenter {
   public:
-    explicit TestSetupPresenterImpl(TestSetupView &view) : view{view} {
-        view.populateTransducerMenu({name(Transducer::headphone),
-            name(Transducer::oneSpeaker), name(Transducer::twoSpeakers)});
-    }
-    void start() override { view.show(); }
-    void stop() override { view.hide(); }
+    explicit TestSetupPresenterImpl(TestSetupView &view);
+    void start() override;
+    void stop() override;
     void notifyThatUserHasSelectedTestSettingsFile(
-        const std::string &s) override {
-        view.setTestSettingsFile(s);
-    }
+        const std::string &s) override;
 
   private:
     TestSetupView &view;
