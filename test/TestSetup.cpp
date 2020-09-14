@@ -75,6 +75,8 @@ class TestSetupViewStub : public TestSetupView, public TestSetupControl {
 
     void setStartingSnr(std::string s) { startingSnr_ = std::move(s); }
 
+    auto transducers() -> std::vector<std::string> { return transducers_; }
+
   private:
     std::vector<std::string> transducers_;
     std::string startingSnr_{"0"};
@@ -671,6 +673,19 @@ TEST_SETUP_TEST(presenterHidesViewWhenStopped) {
 TEST_SETUP_TEST(presenterSetsTestSettingsFileWhenNotified) {
     testSetupPresenterRefactored.notifyThatUserHasSelectedTestSettingsFile("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", setupView.testSettingsFile());
+}
+auto contains(const std::vector<std::string> &items, const std::string &item)
+    -> bool {
+    return std::find(items.begin(), items.end(), item) != items.end();
+}
+
+TEST_SETUP_TEST(presenterPopulatesTransducerMenu) {
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        contains(setupView.transducers(), name(Transducer::headphone)));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        contains(setupView.transducers(), name(Transducer::oneSpeaker)));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        contains(setupView.transducers(), name(Transducer::twoSpeakers)));
 }
 
 TEST_F(TestSetupFailureTests,
