@@ -8,7 +8,7 @@
 
 namespace av_speech_in_noise {
 namespace {
-class FreeResponseInputViewStub : public FreeResponseInputView {
+class FreeResponseControlStub : public FreeResponseControl {
   public:
     void notifyThatSubmitButtonHasBeenClicked() {
         listener_->notifyThatSubmitButtonHasBeenClicked();
@@ -60,7 +60,7 @@ class FreeResponseOutputViewStub : public FreeResponseOutputView {
     bool freeResponseCleared_{};
 };
 
-void notifyThatSubmitButtonHasBeenClicked(FreeResponseInputViewStub &view) {
+void notifyThatSubmitButtonHasBeenClicked(FreeResponseControlStub &view) {
     view.notifyThatSubmitButtonHasBeenClicked();
 }
 
@@ -105,7 +105,7 @@ class FreeResponseTests : public ::testing::Test {
   protected:
     ModelStub model;
     ExperimenterOutputViewStub experimenterOutputView;
-    FreeResponseInputViewStub inputView;
+    FreeResponseControlStub inputView;
     FreeResponseOutputViewStub outputView;
     FreeResponseController responder{model, inputView};
     FreeResponsePresenter presenter{experimenterOutputView, outputView};

@@ -8,8 +8,8 @@
 
 namespace av_speech_in_noise {
 namespace {
-class CoordinateResponseMeasureInputViewStub
-    : public CoordinateResponseMeasureInputView {
+class CoordinateResponseMeasureControlStub
+    : public CoordinateResponseMeasureControl {
   public:
     auto whiteResponse() -> bool override { return grayResponse_; }
 
@@ -93,7 +93,7 @@ class CoordinateResponseMeasureOutputViewStub
 };
 
 void notifyThatReadyButtonHasBeenClicked(
-    CoordinateResponseMeasureInputViewStub &view) {
+    CoordinateResponseMeasureControlStub &view) {
     view.notifyThatReadyButtonHasBeenClicked();
 }
 
@@ -106,14 +106,14 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 void start(TaskPresenter &presenter) { presenter.start(); }
 
 void notifyThatResponseButtonHasBeenClicked(
-    CoordinateResponseMeasureInputViewStub &view) {
+    CoordinateResponseMeasureControlStub &view) {
     view.notifyThatResponseButtonHasBeenClicked();
 }
 
 class CoordinateResponseMeasureTests : public ::testing::Test {
   protected:
     ModelStub model;
-    CoordinateResponseMeasureInputViewStub inputView;
+    CoordinateResponseMeasureControlStub inputView;
     CoordinateResponseMeasureOutputViewStub outputView;
     CoordinateResponseMeasureController responder{model, inputView};
     CoordinateResponseMeasurePresenter presenter{outputView};

@@ -6,7 +6,7 @@
 #include <string>
 
 namespace av_speech_in_noise {
-class ConsonantTaskInputView {
+class ConsonantTaskControl {
   public:
     class Observer {
       public:
@@ -14,7 +14,7 @@ class ConsonantTaskInputView {
         virtual void notifyThatReadyButtonHasBeenClicked() = 0;
         virtual void notifyThatResponseButtonHasBeenClicked() = 0;
     };
-    virtual ~ConsonantTaskInputView() = default;
+    virtual ~ConsonantTaskControl() = default;
     virtual void attach(Observer *) = 0;
     virtual auto consonant() -> std::string = 0;
 };
@@ -47,9 +47,9 @@ class ConsonantTaskPresenter : public TaskPresenter {
 };
 
 class ConsonantTaskController : public TaskController,
-                                public ConsonantTaskInputView::Observer {
+                                public ConsonantTaskControl::Observer {
   public:
-    explicit ConsonantTaskController(Model &, ConsonantTaskInputView &);
+    explicit ConsonantTaskController(Model &, ConsonantTaskControl &);
     void attach(TaskController::Observer *) override;
     void attach(ExperimenterController *) override;
     void notifyThatReadyButtonHasBeenClicked() override;
@@ -57,7 +57,7 @@ class ConsonantTaskController : public TaskController,
 
   private:
     Model &model;
-    ConsonantTaskInputView &view;
+    ConsonantTaskControl &view;
     TaskController::Observer *listener{};
     ExperimenterController *responder{};
 };

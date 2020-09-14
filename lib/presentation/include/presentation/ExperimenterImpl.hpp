@@ -7,11 +7,11 @@
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
-class ExperimenterControllerImpl : public ExperimenterInputView::Observer,
+class ExperimenterControllerImpl : public ExperimenterControl::Observer,
                                    public ExperimenterController {
   public:
     explicit ExperimenterControllerImpl(Model &, SessionView &,
-        ExperimenterInputView &, TaskController *consonantController,
+        ExperimenterControl &, TaskController *consonantController,
         TaskPresenter *consonantPresenter,
         TaskController *coordinateResponseMeasureController,
         TaskPresenter *coordinateResponseMeasurePresenter,

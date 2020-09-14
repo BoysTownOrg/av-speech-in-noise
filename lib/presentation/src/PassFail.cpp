@@ -1,7 +1,7 @@
 #include "PassFail.hpp"
 
 namespace av_speech_in_noise {
-PassFailController::PassFailController(Model &model, PassFailInputView &view)
+PassFailController::PassFailController(Model &model, PassFailControl &view)
     : model{model} {
     view.attach(this);
 }

@@ -38,11 +38,11 @@ constexpr auto name(Transducer c) -> const char * {
     }
 }
 
-class TestSetupControllerImpl : public TestSetupInputView::Observer,
+class TestSetupControllerImpl : public TestSetupControl::Observer,
                                 public TestSetupController {
   public:
     explicit TestSetupControllerImpl(Model &model, SessionView &mainView,
-        TestSetupInputView &view,
+        TestSetupControl &view,
         TestSettingsInterpreter &testSettingsInterpreter,
         TextFileReader &textFileReader)
         : model{model}, mainView{mainView}, view{view},
@@ -85,7 +85,7 @@ class TestSetupControllerImpl : public TestSetupInputView::Observer,
   private:
     Model &model;
     SessionView &mainView;
-    TestSetupInputView &view;
+    TestSetupControl &view;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
     SessionController *parent{};

@@ -8,7 +8,7 @@
 
 namespace av_speech_in_noise {
 namespace {
-class CorrectKeywordsInputViewStub : public CorrectKeywordsInputView {
+class CorrectKeywordsControlStub : public CorrectKeywordsControl {
   public:
     void notifyThatSubmitButtonHasBeenClicked() {
         listener_->notifyThatSubmitButtonHasBeenClicked();
@@ -48,7 +48,7 @@ class CorrectKeywordsOutputViewStub : public CorrectKeywordsOutputView {
     bool correctKeywordsSubmissionHidden_{};
 };
 
-void notifyThatSubmitButtonHasBeenClicked(CorrectKeywordsInputViewStub &view) {
+void notifyThatSubmitButtonHasBeenClicked(CorrectKeywordsControlStub &view) {
     view.notifyThatSubmitButtonHasBeenClicked();
 }
 
@@ -113,7 +113,7 @@ class CorrectKeywordsTests : public ::testing::Test {
     ModelStub model;
     ViewStub mainView;
     ExperimenterOutputViewStub experimenterOutputView;
-    CorrectKeywordsInputViewStub inputView;
+    CorrectKeywordsControlStub inputView;
     CorrectKeywordsOutputViewStub outputView;
     CorrectKeywordsController responder{model, mainView, inputView};
     CorrectKeywordsPresenter presenter{experimenterOutputView, outputView};

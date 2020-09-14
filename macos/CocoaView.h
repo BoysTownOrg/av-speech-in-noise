@@ -21,18 +21,18 @@
 
 namespace av_speech_in_noise {
 class CocoaExperimenterView : public ExperimenterView,
-                              public FreeResponseInputView,
+                              public FreeResponseControl,
                               public FreeResponseOutputView,
-                              public CorrectKeywordsInputView,
+                              public CorrectKeywordsControl,
                               public CorrectKeywordsOutputView,
-                              public PassFailInputView,
+                              public PassFailControl,
                               public PassFailOutputView {
   public:
     explicit CocoaExperimenterView(NSViewController *);
     void attach(ExperimenterView::Observer *) override;
-    void attach(FreeResponseInputView::Observer *) override;
-    void attach(CorrectKeywordsInputView::Observer *) override;
-    void attach(PassFailInputView::Observer *) override;
+    void attach(FreeResponseControl::Observer *) override;
+    void attach(CorrectKeywordsControl::Observer *) override;
+    void attach(PassFailControl::Observer *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;
     void show() override;
@@ -80,9 +80,9 @@ class CocoaExperimenterView : public ExperimenterView,
     ExperimenterViewActions *actions;
     FreeResponseViewActions *freeResponseActions;
     ExperimenterView::Observer *listener_{};
-    FreeResponseInputView::Observer *freeResponseListener{};
-    CorrectKeywordsInputView::Observer *correctKeywordsListener{};
-    PassFailInputView::Observer *passFailListener{};
+    FreeResponseControl::Observer *freeResponseListener{};
+    CorrectKeywordsControl::Observer *correctKeywordsListener{};
+    PassFailControl::Observer *passFailListener{};
 };
 
 class CocoaTestSetupView : public TestSetupView {
@@ -125,7 +125,7 @@ class CocoaTestSetupViewFactory : public MacOsTestSetupViewFactory {
 };
 
 class CocoaConsonantView : public ConsonantTaskOutputView,
-                           public ConsonantTaskInputView {
+                           public ConsonantTaskControl {
   public:
     explicit CocoaConsonantView(NSRect);
     void attach(Observer *) override;
@@ -152,7 +152,7 @@ class CocoaConsonantView : public ConsonantTaskOutputView,
 };
 
 class CocoaCoordinateResponseMeasureView
-    : public CoordinateResponseMeasureInputView,
+    : public CoordinateResponseMeasureControl,
       public CoordinateResponseMeasureOutputView {
   public:
     CocoaCoordinateResponseMeasureView(NSRect);

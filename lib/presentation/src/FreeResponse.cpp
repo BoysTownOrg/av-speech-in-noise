@@ -2,7 +2,7 @@
 
 namespace av_speech_in_noise {
 FreeResponseController::FreeResponseController(
-    Model &model, FreeResponseInputView &view)
+    Model &model, FreeResponseControl &view)
     : model{model}, view{view} {
     view.attach(this);
 }

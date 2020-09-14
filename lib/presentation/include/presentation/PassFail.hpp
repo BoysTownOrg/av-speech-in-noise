@@ -6,7 +6,7 @@
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
-class PassFailInputView {
+class PassFailControl {
   public:
     class Observer {
       public:
@@ -14,7 +14,7 @@ class PassFailInputView {
         virtual void notifyThatCorrectButtonHasBeenClicked() = 0;
         virtual void notifyThatIncorrectButtonHasBeenClicked() = 0;
     };
-    virtual ~PassFailInputView() = default;
+    virtual ~PassFailControl() = default;
     virtual void attach(Observer *) = 0;
 };
 
@@ -26,9 +26,9 @@ class PassFailOutputView {
 };
 
 class PassFailController : public TaskController,
-                          public PassFailInputView::Observer {
+                          public PassFailControl::Observer {
   public:
-    PassFailController(Model &, PassFailInputView &);
+    PassFailController(Model &, PassFailControl &);
     void attach(TaskController::Observer *) override;
     void attach(ExperimenterController *) override;
     void notifyThatCorrectButtonHasBeenClicked() override;

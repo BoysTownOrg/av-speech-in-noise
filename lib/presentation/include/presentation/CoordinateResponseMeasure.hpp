@@ -6,7 +6,7 @@
 #include <string>
 
 namespace av_speech_in_noise {
-class CoordinateResponseMeasureInputView {
+class CoordinateResponseMeasureControl {
   public:
     class Observer {
       public:
@@ -14,7 +14,7 @@ class CoordinateResponseMeasureInputView {
         virtual void notifyThatReadyButtonHasBeenClicked() = 0;
         virtual void notifyThatResponseButtonHasBeenClicked() = 0;
     };
-    virtual ~CoordinateResponseMeasureInputView() = default;
+    virtual ~CoordinateResponseMeasureControl() = default;
     virtual void attach(Observer *) = 0;
     virtual auto numberResponse() -> std::string = 0;
     virtual auto greenResponse() -> bool = 0;
@@ -35,10 +35,10 @@ class CoordinateResponseMeasureOutputView {
 
 class CoordinateResponseMeasureController
     : public TaskController,
-      public CoordinateResponseMeasureInputView::Observer {
+      public CoordinateResponseMeasureControl::Observer {
   public:
     explicit CoordinateResponseMeasureController(
-        Model &, CoordinateResponseMeasureInputView &);
+        Model &, CoordinateResponseMeasureControl &);
     void attach(TaskController::Observer *e) override;
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
@@ -46,7 +46,7 @@ class CoordinateResponseMeasureController
 
   private:
     Model &model;
-    CoordinateResponseMeasureInputView &view;
+    CoordinateResponseMeasureControl &view;
     TaskController::Observer *listener{};
     ExperimenterController *responder{};
 };

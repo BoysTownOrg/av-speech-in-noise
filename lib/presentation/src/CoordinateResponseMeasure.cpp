@@ -3,7 +3,7 @@
 namespace av_speech_in_noise {
 using coordinate_response_measure::Color;
 
-static auto colorResponse(CoordinateResponseMeasureInputView &inputView)
+static auto colorResponse(CoordinateResponseMeasureControl &inputView)
     -> Color {
     if (inputView.greenResponse())
         return Color::green;
@@ -14,7 +14,7 @@ static auto colorResponse(CoordinateResponseMeasureInputView &inputView)
     return Color::red;
 }
 
-static auto subjectResponse(CoordinateResponseMeasureInputView &inputView)
+static auto subjectResponse(CoordinateResponseMeasureControl &inputView)
     -> coordinate_response_measure::Response {
     coordinate_response_measure::Response p{};
     p.color = colorResponse(inputView);
@@ -23,7 +23,7 @@ static auto subjectResponse(CoordinateResponseMeasureInputView &inputView)
 }
 
 CoordinateResponseMeasureController::CoordinateResponseMeasureController(
-    Model &model, CoordinateResponseMeasureInputView &view)
+    Model &model, CoordinateResponseMeasureControl &view)
     : model{model}, view{view} {
     view.attach(this);
 }

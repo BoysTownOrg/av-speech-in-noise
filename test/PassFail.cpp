@@ -8,7 +8,7 @@
 
 namespace av_speech_in_noise {
 namespace {
-class PassFailInputViewStub : public PassFailInputView {
+class PassFailControlStub : public PassFailControl {
   public:
     void notifyThatCorrectButtonHasBeenClicked() {
         listener_->notifyThatCorrectButtonHasBeenClicked();
@@ -43,11 +43,11 @@ class PassFailOutputViewStub : public PassFailOutputView {
     bool evaluationButtonsHidden_{};
 };
 
-void notifyThatIncorrectButtonHasBeenClicked(PassFailInputViewStub &view) {
+void notifyThatIncorrectButtonHasBeenClicked(PassFailControlStub &view) {
     view.notifyThatIncorrectButtonHasBeenClicked();
 }
 
-void notifyThatCorrectButtonHasBeenClicked(PassFailInputViewStub &view) {
+void notifyThatCorrectButtonHasBeenClicked(PassFailControlStub &view) {
     view.notifyThatCorrectButtonHasBeenClicked();
 }
 
@@ -92,7 +92,7 @@ class PassFailTests : public ::testing::Test {
   protected:
     ModelStub model;
     ExperimenterOutputViewStub experimenterOutputView;
-    PassFailInputViewStub inputView;
+    PassFailControlStub inputView;
     PassFailOutputViewStub outputView;
     PassFailController responder{model, inputView};
     PassFailPresenter presenter{experimenterOutputView, outputView};

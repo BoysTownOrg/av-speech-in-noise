@@ -16,7 +16,7 @@ static void readyNextTrial(
 }
 
 ExperimenterControllerImpl::ExperimenterControllerImpl(Model &model,
-    SessionView &mainView, ExperimenterInputView &view,
+    SessionView &mainView, ExperimenterControl &view,
     TaskController *consonantController, TaskPresenter *consonantPresenter,
     TaskController *coordinateResponseMeasureController,
     TaskPresenter *coordinateResponseMeasurePresenter,

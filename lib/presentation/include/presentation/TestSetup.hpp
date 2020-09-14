@@ -7,7 +7,7 @@
 #include <string>
 
 namespace av_speech_in_noise {
-class TestSetupInputView {
+class TestSetupControl {
   public:
     class Observer {
       public:
@@ -17,7 +17,7 @@ class TestSetupInputView {
         virtual void notifyThatBrowseForTestSettingsButtonHasBeenClicked() = 0;
     };
     virtual void attach(Observer *) = 0;
-    virtual ~TestSetupInputView() = default;
+    virtual ~TestSetupControl() = default;
     virtual auto testSettingsFile() -> std::string = 0;
     virtual auto startingSnr() -> std::string = 0;
     virtual auto testerId() -> std::string = 0;
@@ -37,7 +37,7 @@ class TestSetupOutputView {
 };
 
 class TestSetupView : public virtual TestSetupOutputView,
-                      public virtual TestSetupInputView {};
+                      public virtual TestSetupControl {};
 
 class TestSetupController {
   public:

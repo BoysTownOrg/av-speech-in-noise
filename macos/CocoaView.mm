@@ -758,16 +758,16 @@ void CocoaExperimenterView::attach(ExperimenterView::Observer *e) {
     listener_ = e;
 }
 
-void CocoaExperimenterView::attach(FreeResponseInputView::Observer *e) {
+void CocoaExperimenterView::attach(FreeResponseControl::Observer *e) {
     freeResponseListener = e;
 }
 
 void CocoaExperimenterView::attach(
-    CorrectKeywordsInputView::Observer *e) {
+    CorrectKeywordsControl::Observer *e) {
     correctKeywordsListener = e;
 }
 
-void CocoaExperimenterView::attach(PassFailInputView::Observer *e) {
+void CocoaExperimenterView::attach(PassFailControl::Observer *e) {
     passFailListener = e;
 }
 

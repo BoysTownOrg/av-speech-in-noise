@@ -28,7 +28,7 @@ template <typename T> class Collection {
 };
 
 class ConsonantViewStub : public ConsonantTaskOutputView,
-                          public ConsonantTaskInputView {
+                          public ConsonantTaskControl {
   public:
     void show() override { shown_ = true; }
 
@@ -96,7 +96,7 @@ class ConsonantViewStub : public ConsonantTaskOutputView,
 };
 
 class CoordinateResponseMeasureViewStub
-    : public CoordinateResponseMeasureInputView,
+    : public CoordinateResponseMeasureControl,
       public CoordinateResponseMeasureOutputView {
   public:
     void show() override { shown_ = true; }
@@ -251,11 +251,11 @@ class TestSetupViewStub : public TestSetupView {
 };
 
 class ExperimenterViewStub : public ExperimenterView,
-                             public FreeResponseInputView,
+                             public FreeResponseControl,
                              public FreeResponseOutputView,
-                             public CorrectKeywordsInputView,
+                             public CorrectKeywordsControl,
                              public CorrectKeywordsOutputView,
-                             public PassFailInputView,
+                             public PassFailControl,
                              public PassFailOutputView {
   public:
     void declineContinuingTesting() { listener_->declineContinuingTesting(); }
@@ -344,15 +344,15 @@ class ExperimenterViewStub : public ExperimenterView,
 
     void attach(ExperimenterView::Observer *e) override { listener_ = e; }
 
-    void attach(FreeResponseInputView::Observer *e) override {
+    void attach(FreeResponseControl::Observer *e) override {
         freeResponseListener = e;
     }
 
-    void attach(CorrectKeywordsInputView::Observer *e) override {
+    void attach(CorrectKeywordsControl::Observer *e) override {
         correctKeywordsListener = e;
     }
 
-    void attach(PassFailInputView::Observer *e) override {
+    void attach(PassFailControl::Observer *e) override {
         passFailListener = e;
     }
 
@@ -433,9 +433,9 @@ class ExperimenterViewStub : public ExperimenterView,
     std::string response_;
     std::string correctKeywords_{"0"};
     ExperimenterView::Observer *listener_{};
-    FreeResponseInputView::Observer *freeResponseListener{};
-    CorrectKeywordsInputView::Observer *correctKeywordsListener{};
-    PassFailInputView::Observer *passFailListener{};
+    FreeResponseControl::Observer *freeResponseListener{};
+    CorrectKeywordsControl::Observer *correctKeywordsListener{};
+    PassFailControl::Observer *passFailListener{};
     bool freeResponseCleared_{};
     bool exitTestButtonHidden_{};
     bool exitTestButtonShown_{};

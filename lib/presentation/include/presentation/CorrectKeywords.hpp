@@ -8,14 +8,14 @@
 #include <string>
 
 namespace av_speech_in_noise {
-class CorrectKeywordsInputView {
+class CorrectKeywordsControl {
   public:
     class Observer {
       public:
         virtual ~Observer() = default;
         virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
     };
-    virtual ~CorrectKeywordsInputView() = default;
+    virtual ~CorrectKeywordsControl() = default;
     virtual void attach(Observer *) = 0;
     virtual auto correctKeywords() -> std::string = 0;
 };
@@ -28,10 +28,10 @@ class CorrectKeywordsOutputView {
 };
 
 class CorrectKeywordsController : public TaskController,
-                                  public CorrectKeywordsInputView::Observer {
+                                  public CorrectKeywordsControl::Observer {
   public:
     explicit CorrectKeywordsController(
-        Model &, SessionView &, CorrectKeywordsInputView &);
+        Model &, SessionView &, CorrectKeywordsControl &);
     void attach(TaskController::Observer *e) override;
     void attach(ExperimenterController *r) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
@@ -39,7 +39,7 @@ class CorrectKeywordsController : public TaskController,
   private:
     Model &model;
     SessionView &view;
-    CorrectKeywordsInputView &keywordsView;
+    CorrectKeywordsControl &keywordsView;
     TaskController::Observer *listener{};
     ExperimenterController *responder{};
 };

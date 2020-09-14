@@ -36,7 +36,7 @@ void ConsonantTaskPresenter::showResponseSubmission() {
 }
 
 ConsonantTaskController::ConsonantTaskController(
-    Model &model, ConsonantTaskInputView &view)
+    Model &model, ConsonantTaskControl &view)
     : model{model}, view{view} {
     view.attach(this);
 }
