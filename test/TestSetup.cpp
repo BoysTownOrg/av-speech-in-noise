@@ -1,13 +1,6 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
-#include <presentation/Consonant.hpp>
-#include <presentation/CoordinateResponseMeasure.hpp>
-#include <presentation/FreeResponse.hpp>
-#include <presentation/PassFail.hpp>
-#include <presentation/CorrectKeywords.hpp>
 #include <presentation/TestSetupImpl.hpp>
-#include <presentation/ExperimenterImpl.hpp>
-#include <presentation/SessionControllerImpl.hpp>
 #include <av-speech-in-noise/name.hpp>
 #include <gtest/gtest.h>
 #include <algorithm>
