@@ -32,8 +32,8 @@ void CoordinateResponseMeasureController::attach(TaskController::Observer *e) {
     observer = e;
 }
 
-static void notifyThatUserIsReadyForNextTrial(TestController *r) {
-    r->notifyThatUserIsReadyForNextTrial();
+static void notifyThatUserIsReadyForNextTrial(TestController *c) {
+    c->notifyThatUserIsReadyForNextTrial();
 }
 
 void CoordinateResponseMeasureController::
@@ -49,8 +49,8 @@ void CoordinateResponseMeasureController::
     notifyThatUserIsReadyForNextTrial(controller);
 }
 
-void CoordinateResponseMeasureController::attach(TestController *e) {
-    controller = e;
+void CoordinateResponseMeasureController::attach(TestController *c) {
+    controller = c;
 }
 
 static void hideResponseButtons(CoordinateResponseMeasureView &view) {
