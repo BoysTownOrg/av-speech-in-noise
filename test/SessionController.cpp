@@ -52,7 +52,8 @@ class ViewStub : public SessionView {
 
 class TestPresenterStub : public TestPresenter {
   public:
-    void initialize(Method) {}
+    void initialize(Method m) { method_ = m; }
+    auto method() -> Method { return method_; }
     void start() { started_ = true; }
     void stop() { stopped_ = true; }
     void notifyThatTrialHasStarted() {}
@@ -65,6 +66,7 @@ class TestPresenterStub : public TestPresenter {
     auto stopped() -> bool { return stopped_; }
 
   private:
+    Method method_{};
     bool started_{};
     bool stopped_{};
 };
@@ -102,6 +104,12 @@ SESSION_CONTROLLER_TEST(prepareStopsTestSetup) {
 SESSION_CONTROLLER_TEST(prepareStartsTest) {
     controller.prepare(Method::unknown);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.started());
+}
+
+SESSION_CONTROLLER_TEST(prepareInitializesTest) {
+    controller.prepare(Method::adaptivePassFail);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Method::adaptivePassFail, testPresenter.method());
 }
 
 SESSION_CONTROLLER_TEST(testStopsAfterTestIsComplete) {
