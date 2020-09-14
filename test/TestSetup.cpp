@@ -899,7 +899,7 @@ class TestSetupFailureTests : public ::testing::Test {
 
 TEST_SETUP_TEST(controllerPreparesTestAfterConfirmButtonIsClicked) {
     testSettingsInterpreter.setMethod(Method::adaptivePassFail);
-    setupView.confirmTestSetup();
+    confirmTestSetup(&setupView);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         Method::adaptivePassFail, sessionController.method());
 }
@@ -907,8 +907,16 @@ TEST_SETUP_TEST(controllerPreparesTestAfterConfirmButtonIsClicked) {
 TEST_SETUP_TEST(
     controllerDoesNotPrepareTestAfterConfirmButtonIsClickedWhenTestWouldAlreadyBeComplete) {
     setTestComplete(model);
-    setupView.confirmTestSetup();
+    confirmTestSetup(&setupView);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
+}
+
+TEST_SETUP_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {
+    setupView.setSubjectId("b");
+    confirmTestSetup(&setupView);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"b"}, testSettingsInterpreter.identity().subjectId);
 }
 
 TEST_SETUP_TEST(playCalibrationPassesLevel) {
@@ -953,11 +961,6 @@ TEST_SETUP_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidStartingSnrShowsMessage) {
     assertInvalidSnrShowsMessage(
         confirmingAdaptiveCoordinateResponseMeasureTest);
-}
-
-TEST_SETUP_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {
-    assertPassesSubjectId(confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
