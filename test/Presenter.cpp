@@ -251,7 +251,7 @@ class TestSetupViewStub : public TestSetupView, public TestSetupControl {
 };
 
 class ExperimenterViewStub : public TestView,
-                             public ExperimenterControl,
+                             public TestControl,
                              public FreeResponseControl,
                              public FreeResponseView,
                              public CorrectKeywordsControl,
@@ -343,7 +343,7 @@ class ExperimenterViewStub : public TestView,
 
     [[nodiscard]] auto hidden() const { return hidden_; }
 
-    void attach(ExperimenterControl::Observer *e) override { listener_ = e; }
+    void attach(TestControl::Observer *e) override { listener_ = e; }
 
     void attach(FreeResponseControl::Observer *e) override {
         freeResponseListener = e;
@@ -431,7 +431,7 @@ class ExperimenterViewStub : public TestView,
     std::string continueTestingDialogMessage_;
     std::string response_;
     std::string correctKeywords_{"0"};
-    ExperimenterControl::Observer *listener_{};
+    TestControl::Observer *listener_{};
     FreeResponseControl::Observer *freeResponseListener{};
     CorrectKeywordsControl::Observer *correctKeywordsListener{};
     PassFailControl::Observer *passFailListener{};

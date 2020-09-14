@@ -21,7 +21,7 @@
 
 namespace av_speech_in_noise {
 class CocoaExperimenterView : public TestView,
-                              public ExperimenterControl,
+                              public TestControl,
                               public FreeResponseControl,
                               public FreeResponseView,
                               public CorrectKeywordsControl,
@@ -30,7 +30,7 @@ class CocoaExperimenterView : public TestView,
                               public PassFailView {
   public:
     explicit CocoaExperimenterView(NSViewController *);
-    void attach(ExperimenterControl::Observer *) override;
+    void attach(TestControl::Observer *) override;
     void attach(FreeResponseControl::Observer *) override;
     void attach(CorrectKeywordsControl::Observer *) override;
     void attach(PassFailControl::Observer *) override;
@@ -80,7 +80,7 @@ class CocoaExperimenterView : public TestView,
     NSButton *nextTrialButton;
     ExperimenterViewActions *actions;
     FreeResponseViewActions *freeResponseActions;
-    ExperimenterControl::Observer *listener_{};
+    TestControl::Observer *listener_{};
     FreeResponseControl::Observer *freeResponseListener{};
     CorrectKeywordsControl::Observer *correctKeywordsListener{};
     PassFailControl::Observer *passFailListener{};

@@ -15,7 +15,7 @@ static void readyNextTrial(Model &model, TestController::Observer *presenter) {
 }
 
 ExperimenterControllerImpl::ExperimenterControllerImpl(Model &model,
-    SessionView &mainView, ExperimenterControl &view,
+    SessionView &mainView, TestControl &view,
     TaskController *consonantController, TaskPresenter *consonantPresenter,
     TaskController *coordinateResponseMeasureController,
     TaskPresenter *coordinateResponseMeasurePresenter,

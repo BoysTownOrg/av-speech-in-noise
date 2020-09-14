@@ -6,7 +6,7 @@
 #include <string>
 
 namespace av_speech_in_noise {
-class ExperimenterControl {
+class TestControl {
   public:
     class Observer {
       public:
@@ -17,7 +17,7 @@ class ExperimenterControl {
         virtual void acceptContinuingTesting() = 0;
     };
     virtual void attach(Observer *) = 0;
-    virtual ~ExperimenterControl() = default;
+    virtual ~TestControl() = default;
 };
 
 class TestView {

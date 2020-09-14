@@ -750,9 +750,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
     freeResponseActions->controller = this;
 }
 
-void CocoaExperimenterView::attach(ExperimenterControl::Observer *e) {
-    listener_ = e;
-}
+void CocoaExperimenterView::attach(TestControl::Observer *e) { listener_ = e; }
 
 void CocoaExperimenterView::attach(FreeResponseControl::Observer *e) {
     freeResponseListener = e;
