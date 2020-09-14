@@ -459,7 +459,7 @@ class NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
     : public ControllerUseCase {
   public:
     explicit NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
-        ExperimenterControllerImpl &responder)
+        TestControllerImpl &responder)
         : responder{responder} {}
 
     void run() override {
@@ -468,31 +468,29 @@ class NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
     }
 
   private:
-    ExperimenterControllerImpl &responder;
+    TestControllerImpl &responder;
 };
 
 class NotifyingThatUserIsDoneResponding : public ControllerUseCase {
   public:
-    explicit NotifyingThatUserIsDoneResponding(
-        ExperimenterControllerImpl &responder)
+    explicit NotifyingThatUserIsDoneResponding(TestControllerImpl &responder)
         : responder{responder} {}
 
     void run() override { responder.notifyThatUserIsDoneResponding(); }
 
   private:
-    ExperimenterControllerImpl &responder;
+    TestControllerImpl &responder;
 };
 
 class NotifyingThatUserIsReadyForNextTrial : public ControllerUseCase {
   public:
-    explicit NotifyingThatUserIsReadyForNextTrial(
-        ExperimenterControllerImpl &responder)
+    explicit NotifyingThatUserIsReadyForNextTrial(TestControllerImpl &responder)
         : responder{responder} {}
 
     void run() override { responder.notifyThatUserIsReadyForNextTrial(); }
 
   private:
-    ExperimenterControllerImpl &responder;
+    TestControllerImpl &responder;
 };
 
 class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
@@ -534,8 +532,8 @@ class ExperimenterTests : public ::testing::Test {
     TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub passFailPresenter;
     UninitializedTaskPresenterStub taskPresenter;
-    ExperimenterControllerImpl experimenterController{model, view,
-        experimenterView, &consonantController, &consonantPresenter,
+    TestControllerImpl experimenterController{model, view, experimenterView,
+        &consonantController, &consonantPresenter,
         &coordinateResponseMeasureController,
         &coordinateResponseMeasurePresenter, &freeResponseController,
         &freeResponsePresenter, &correctKeywordsController,

@@ -14,9 +14,9 @@ static void readyNextTrial(Model &model, TestController::Observer *presenter) {
     presenter->notifyThatNextTrialIsReady();
 }
 
-ExperimenterControllerImpl::ExperimenterControllerImpl(Model &model,
-    SessionView &mainView, TestControl &view,
-    TaskController *consonantController, TaskPresenter *consonantPresenter,
+TestControllerImpl::TestControllerImpl(Model &model, SessionView &mainView,
+    TestControl &view, TaskController *consonantController,
+    TaskPresenter *consonantPresenter,
     TaskController *coordinateResponseMeasureController,
     TaskPresenter *coordinateResponseMeasurePresenter,
     TaskController *freeResponseController,
@@ -49,17 +49,13 @@ ExperimenterControllerImpl::ExperimenterControllerImpl(Model &model,
     }
 }
 
-void ExperimenterControllerImpl::attach(TestController::Observer *e) {
-    listener = e;
-}
+void TestControllerImpl::attach(TestController::Observer *e) { listener = e; }
 
 static void notifyThatTestIsComplete(SessionController *presenter) {
     presenter->notifyThatTestIsComplete();
 }
 
-void ExperimenterControllerImpl::exitTest() {
-    notifyThatTestIsComplete(responder);
-}
+void TestControllerImpl::exitTest() { notifyThatTestIsComplete(responder); }
 
 static void playTrial(
     Model &model, SessionView &view, TestController::Observer *listener) {
@@ -67,15 +63,15 @@ static void playTrial(
     listener->notifyThatTrialHasStarted();
 }
 
-void ExperimenterControllerImpl::playTrial() {
+void TestControllerImpl::playTrial() {
     av_speech_in_noise::playTrial(model, mainView, listener);
 }
 
-void ExperimenterControllerImpl::declineContinuingTesting() {
+void TestControllerImpl::declineContinuingTesting() {
     notifyThatTestIsComplete(responder);
 }
 
-void ExperimenterControllerImpl::acceptContinuingTesting() {
+void TestControllerImpl::acceptContinuingTesting() {
     model.restartAdaptiveTestWhilePreservingTargets();
     readyNextTrial(model, listener);
 }
@@ -99,7 +95,7 @@ static void notifyIfTestIsCompleteElse(Model &model,
         model, [&]() { notifyThatTestIsComplete(responder); }, f);
 }
 
-void ExperimenterControllerImpl::
+void TestControllerImpl::
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() {
     readyNextTrialIfTestIncompleteElse(model, listener, [&] {
         listener->showContinueTestingDialog();
@@ -112,19 +108,19 @@ void ExperimenterControllerImpl::
     });
 }
 
-void ExperimenterControllerImpl::notifyThatUserIsDoneResponding() {
+void TestControllerImpl::notifyThatUserIsDoneResponding() {
     notifyIfTestIsCompleteElse(
         model, responder, [&]() { readyNextTrial(model, listener); });
 }
 
-void ExperimenterControllerImpl::notifyThatUserIsReadyForNextTrial() {
+void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
     notifyIfTestIsCompleteElse(model, responder, [&]() {
         displayTrialInformation(model, listener);
         av_speech_in_noise::playTrial(model, mainView, listener);
     });
 }
 
-void ExperimenterControllerImpl::attach(SessionController *p) { responder = p; }
+void TestControllerImpl::attach(SessionController *p) { responder = p; }
 
 ExperimenterPresenterImpl::ExperimenterPresenterImpl(Model &model,
     TestView &view, TaskPresenter *consonantPresenter,

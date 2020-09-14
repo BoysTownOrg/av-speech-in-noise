@@ -392,8 +392,8 @@ void main(
     TestSetupControllerImpl testSetupControllerImpl{model, view,
         *(testSetupView.get()), testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{*(testSetupView.get())};
-    ExperimenterControllerImpl experimenterController{model, view,
-        experimenterView, &consonantScreenController, &consonantPresenter,
+    TestControllerImpl experimenterController{model, view, experimenterView,
+        &consonantScreenController, &consonantPresenter,
         &coordinateResponseMeasureController,
         &coordinateResponseMeasurePresenter, &freeResponseController,
         &freeResponsePresenter, &correctKeywordsController,
