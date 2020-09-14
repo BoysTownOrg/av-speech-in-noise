@@ -3,7 +3,7 @@
 #include "AvFoundationPlayers.h"
 #include "CocoaView.h"
 #include "common-objc.h"
-#include <presentation/Presenter.hpp>
+#include <presentation/SessionControllerImpl.hpp>
 #include <presentation/TestSettingsInterpreter.hpp>
 #include <recognition-test/Model.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>

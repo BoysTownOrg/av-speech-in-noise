@@ -1,7 +1,7 @@
 #include "main.h"
 #include "MacOsTestSetupViewFactory.h"
 #include "common-objc.h"
-#include <presentation/Presenter.hpp>
+#include <presentation/SessionControllerImpl.hpp>
 #import <Cocoa/Cocoa.h>
 #include <string>
 

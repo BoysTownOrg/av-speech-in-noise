@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_MACOS_MACOSTESTSETUPVIEWFACTORY_H_
 #define AV_SPEECH_IN_NOISE_MACOS_MACOSTESTSETUPVIEWFACTORY_H_
 
-#include <presentation/Presenter.hpp>
+#include <presentation/TestSetup.hpp>
 #import <Cocoa/Cocoa.h>
 #include <memory>
 
