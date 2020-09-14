@@ -863,5 +863,47 @@ EXPERIMENTER_TEST(
         initializingAdaptiveCoordinateResponseMeasureMethod,
         experimenterPresenter, coordinateResponseMeasurePresenter);
 }
+
+EXPERIMENTER_TEST(
+    initializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeakerInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker,
+        experimenterPresenter, coordinateResponseMeasurePresenter);
+}
+
+EXPERIMENTER_TEST(
+    initializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMaskerInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker,
+        experimenterPresenter, coordinateResponseMeasurePresenter);
+}
+
+EXPERIMENTER_TEST(
+    initializingAdaptiveCoordinateResponseMeasureMethodWithEyeTrackingInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking,
+        experimenterPresenter, coordinateResponseMeasurePresenter);
+}
+
+EXPERIMENTER_TEST(
+    initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement,
+        experimenterPresenter, coordinateResponseMeasurePresenter);
+}
+
+EXPERIMENTER_TEST(
+    initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTrackingInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking,
+        experimenterPresenter, coordinateResponseMeasurePresenter);
+}
+
+EXPERIMENTER_TEST(
+    initializingFixedLevelCoordinateResponseMeasureSilentIntervalsMethodInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingFixedLevelCoordinateResponseMeasureSilentIntervalsMethod,
+        experimenterPresenter, coordinateResponseMeasurePresenter);
+}
 }
 }
