@@ -20,9 +20,9 @@ class CorrectKeywordsControl {
     virtual auto correctKeywords() -> std::string = 0;
 };
 
-class CorrectKeywordsOutputView {
+class CorrectKeywordsView {
   public:
-    virtual ~CorrectKeywordsOutputView() = default;
+    virtual ~CorrectKeywordsView() = default;
     virtual void showCorrectKeywordsSubmission() = 0;
     virtual void hideCorrectKeywordsSubmission() = 0;
 };
@@ -47,7 +47,7 @@ class CorrectKeywordsController : public TaskController,
 class CorrectKeywordsPresenter : public TaskPresenter {
   public:
     explicit CorrectKeywordsPresenter(
-        ExperimenterOutputView &, CorrectKeywordsOutputView &);
+        ExperimenterView &, CorrectKeywordsView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
@@ -55,8 +55,8 @@ class CorrectKeywordsPresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    ExperimenterOutputView &experimenterView;
-    CorrectKeywordsOutputView &view;
+    ExperimenterView &experimenterView;
+    CorrectKeywordsView &view;
 };
 }
 

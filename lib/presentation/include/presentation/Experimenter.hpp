@@ -20,9 +20,9 @@ class ExperimenterControl {
     virtual ~ExperimenterControl() = default;
 };
 
-class ExperimenterOutputView {
+class ExperimenterView {
   public:
-    virtual ~ExperimenterOutputView() = default;
+    virtual ~ExperimenterView() = default;
     virtual void show() = 0;
     virtual void hide() = 0;
     virtual void showContinueTestingDialog() = 0;
@@ -35,9 +35,6 @@ class ExperimenterOutputView {
     virtual void display(std::string) = 0;
     virtual void secondaryDisplay(std::string) = 0;
 };
-
-class ExperimenterView : public virtual ExperimenterControl,
-                         public virtual ExperimenterOutputView {};
 
 class ExperimenterController {
   public:

@@ -29,7 +29,7 @@ void CorrectKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
 }
 
 CorrectKeywordsPresenter::CorrectKeywordsPresenter(
-    ExperimenterOutputView &experimenterView, CorrectKeywordsOutputView &view)
+    ExperimenterView &experimenterView, CorrectKeywordsView &view)
     : experimenterView{experimenterView}, view{view} {}
 
 void CorrectKeywordsPresenter::start() {

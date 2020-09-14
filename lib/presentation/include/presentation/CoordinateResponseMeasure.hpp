@@ -22,9 +22,9 @@ class CoordinateResponseMeasureControl {
     virtual auto whiteResponse() -> bool = 0;
 };
 
-class CoordinateResponseMeasureOutputView {
+class CoordinateResponseMeasureView {
   public:
-    virtual ~CoordinateResponseMeasureOutputView() = default;
+    virtual ~CoordinateResponseMeasureView() = default;
     virtual void show() = 0;
     virtual void hide() = 0;
     virtual void showResponseButtons() = 0;
@@ -54,7 +54,7 @@ class CoordinateResponseMeasureController
 class CoordinateResponseMeasurePresenter : public TaskPresenter {
   public:
     explicit CoordinateResponseMeasurePresenter(
-        CoordinateResponseMeasureOutputView &);
+        CoordinateResponseMeasureView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
@@ -62,7 +62,7 @@ class CoordinateResponseMeasurePresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    CoordinateResponseMeasureOutputView &view;
+    CoordinateResponseMeasureView &view;
 };
 }
 

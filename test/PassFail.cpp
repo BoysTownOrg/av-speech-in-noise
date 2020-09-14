@@ -24,7 +24,7 @@ class PassFailControlStub : public PassFailControl {
     Observer *listener_{};
 };
 
-class PassFailOutputViewStub : public PassFailOutputView {
+class PassFailViewStub : public PassFailView {
   public:
     void showEvaluationButtons() override { evaluationButtonsShown_ = true; }
 
@@ -59,7 +59,7 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class ExperimenterOutputViewStub : public ExperimenterOutputView {
+class ExperimenterViewStub : public ExperimenterView {
   public:
     void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
@@ -91,11 +91,11 @@ class ExperimenterOutputViewStub : public ExperimenterOutputView {
 class PassFailTests : public ::testing::Test {
   protected:
     ModelStub model;
-    ExperimenterOutputViewStub experimenterOutputView;
+    ExperimenterViewStub experimenterView;
     PassFailControlStub inputView;
-    PassFailOutputViewStub outputView;
+    PassFailViewStub outputView;
     PassFailController responder{model, inputView};
-    PassFailPresenter presenter{experimenterOutputView, outputView};
+    PassFailPresenter presenter{experimenterView, outputView};
     ExperimenterControllerStub experimenterController;
     TaskControllerListenerStub taskController;
 
@@ -113,7 +113,7 @@ class PassFailTests : public ::testing::Test {
 PASS_FAIL_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterOutputView.nextTrialButtonHidden());
+        experimenterView.nextTrialButtonHidden());
 }
 
 PASS_FAIL_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
@@ -129,7 +129,7 @@ PASS_FAIL_TEST(presenterHidesResponseButtonsWhenStopped) {
 PASS_FAIL_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterOutputView.nextTrialButtonShown());
+        experimenterView.nextTrialButtonShown());
 }
 
 PASS_FAIL_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {

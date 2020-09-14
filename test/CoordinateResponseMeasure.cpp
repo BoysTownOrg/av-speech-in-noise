@@ -48,8 +48,8 @@ class CoordinateResponseMeasureControlStub
     bool grayResponse_{};
 };
 
-class CoordinateResponseMeasureOutputViewStub
-    : public CoordinateResponseMeasureOutputView {
+class CoordinateResponseMeasureViewStub
+    : public CoordinateResponseMeasureView {
   public:
     void show() override { shown_ = true; }
 
@@ -114,7 +114,7 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
   protected:
     ModelStub model;
     CoordinateResponseMeasureControlStub inputView;
-    CoordinateResponseMeasureOutputViewStub outputView;
+    CoordinateResponseMeasureViewStub outputView;
     CoordinateResponseMeasureController responder{model, inputView};
     CoordinateResponseMeasurePresenter presenter{outputView};
     ExperimenterControllerStub experimenterController;

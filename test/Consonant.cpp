@@ -29,7 +29,7 @@ class ConsonantControlStub : public ConsonantTaskControl {
     Observer *listener_{};
 };
 
-class ConsonantOutputViewStub : public ConsonantTaskOutputView {
+class ConsonantViewStub : public ConsonantTaskView {
   public:
     void show() override { shown_ = true; }
 
@@ -84,7 +84,7 @@ void notifyThatReadyButtonHasBeenClicked(ConsonantControlStub &view) {
     view.notifyThatReadyButtonHasBeenClicked();
 }
 
-auto cursorHidden(ConsonantOutputViewStub &view) -> bool {
+auto cursorHidden(ConsonantViewStub &view) -> bool {
     return view.cursorHidden();
 }
 
@@ -108,7 +108,7 @@ class ConsonantTests : public ::testing::Test {
   protected:
     ModelStub model;
     ConsonantControlStub inputView;
-    ConsonantOutputViewStub outputView;
+    ConsonantViewStub outputView;
     ConsonantTaskController responder{model, inputView};
     ConsonantTaskPresenter presenter{outputView};
     ExperimenterControllerStub experimenterController;

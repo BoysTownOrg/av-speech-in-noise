@@ -8,7 +8,8 @@
 
 namespace av_speech_in_noise {
 namespace {
-class ExperimenterViewStub : public ExperimenterView {
+class ExperimenterViewStub : public ExperimenterView,
+                             public ExperimenterControl {
   public:
     void declineContinuingTesting() { listener_->declineContinuingTesting(); }
 
@@ -48,7 +49,7 @@ class ExperimenterViewStub : public ExperimenterView {
 
     [[nodiscard]] auto hidden() const { return hidden_; }
 
-    void attach(ExperimenterView::Observer *e) override { listener_ = e; }
+    void attach(ExperimenterControl::Observer *e) override { listener_ = e; }
 
     void exitTest() { listener_->exitTest(); }
 
@@ -96,7 +97,7 @@ class ExperimenterViewStub : public ExperimenterView {
     std::string continueTestingDialogMessage_;
     std::string response_;
     std::string correctKeywords_{"0"};
-    ExperimenterView::Observer *listener_{};
+    ExperimenterControl::Observer *listener_{};
     bool exitTestButtonHidden_{};
     bool exitTestButtonShown_{};
     bool nextTrialButtonShown_{};

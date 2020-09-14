@@ -78,7 +78,7 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
 class ExperimenterPresenterImpl : public Model::Observer,
                                   public ExperimenterPresenter {
   public:
-    explicit ExperimenterPresenterImpl(Model &, ExperimenterOutputView &,
+    explicit ExperimenterPresenterImpl(Model &, ExperimenterView &,
         TaskPresenter *consonantPresenter,
         TaskPresenter *coordinateResponseMeasurePresenter,
         TaskPresenter *freeResponsePresenter,
@@ -99,7 +99,7 @@ class ExperimenterPresenterImpl : public Model::Observer,
     auto taskPresenter(Method m) -> TaskPresenter *;
 
     Model &model;
-    ExperimenterOutputView &view;
+    ExperimenterView &view;
     TaskPresenter *consonantPresenter;
     TaskPresenter *coordinateResponseMeasurePresenter;
     TaskPresenter *freeResponsePresenter;

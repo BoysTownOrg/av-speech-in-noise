@@ -20,9 +20,9 @@ class FreeResponseControl {
     virtual auto freeResponse() -> std::string = 0;
 };
 
-class FreeResponseOutputView {
+class FreeResponseView {
   public:
-    virtual ~FreeResponseOutputView() = default;
+    virtual ~FreeResponseView() = default;
     virtual void showFreeResponseSubmission() = 0;
     virtual void hideFreeResponseSubmission() = 0;
     virtual void clearFreeResponse() = 0;
@@ -45,7 +45,7 @@ class FreeResponseController : public TaskController,
 
 class FreeResponsePresenter : public TaskPresenter {
   public:
-    FreeResponsePresenter(ExperimenterOutputView &, FreeResponseOutputView &);
+    FreeResponsePresenter(ExperimenterView &, FreeResponseView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
@@ -53,8 +53,8 @@ class FreeResponsePresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    ExperimenterOutputView &experimenterView;
-    FreeResponseOutputView &view;
+    ExperimenterView &experimenterView;
+    FreeResponseView &view;
 };
 }
 

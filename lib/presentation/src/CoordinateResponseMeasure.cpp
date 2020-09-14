@@ -53,12 +53,12 @@ void CoordinateResponseMeasureController::attach(ExperimenterController *e) {
     responder = e;
 }
 
-static void hideResponseButtons(CoordinateResponseMeasureOutputView &view) {
+static void hideResponseButtons(CoordinateResponseMeasureView &view) {
     view.hideResponseButtons();
 }
 
 CoordinateResponseMeasurePresenter::CoordinateResponseMeasurePresenter(
-    CoordinateResponseMeasureOutputView &view)
+    CoordinateResponseMeasureView &view)
     : view{view} {}
 
 void CoordinateResponseMeasurePresenter::start() {

@@ -1,7 +1,7 @@
 #include "Consonant.hpp"
 
 namespace av_speech_in_noise {
-ConsonantTaskPresenter::ConsonantTaskPresenter(ConsonantTaskOutputView &view)
+ConsonantTaskPresenter::ConsonantTaskPresenter(ConsonantTaskView &view)
     : view{view} {}
 
 void ConsonantTaskPresenter::start() {
@@ -9,9 +9,9 @@ void ConsonantTaskPresenter::start() {
     view.showReadyButton();
 }
 
-static void hideCursor(ConsonantTaskOutputView &view) { view.hideCursor(); }
+static void hideCursor(ConsonantTaskView &view) { view.hideCursor(); }
 
-static void hideResponseButtons(ConsonantTaskOutputView &view) {
+static void hideResponseButtons(ConsonantTaskView &view) {
     view.hideResponseButtons();
 }
 

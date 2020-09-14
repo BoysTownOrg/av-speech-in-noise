@@ -27,17 +27,14 @@ class TestSetupControl {
     virtual auto transducer() -> std::string = 0;
 };
 
-class TestSetupOutputView {
+class TestSetupView {
   public:
-    virtual ~TestSetupOutputView() = default;
+    virtual ~TestSetupView() = default;
     virtual void populateTransducerMenu(std::vector<std::string>) = 0;
     virtual void setTestSettingsFile(std::string) = 0;
     virtual void show() = 0;
     virtual void hide() = 0;
 };
-
-class TestSetupView : public virtual TestSetupOutputView,
-                      public virtual TestSetupControl {};
 
 class TestSetupController {
   public:

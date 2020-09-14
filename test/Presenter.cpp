@@ -27,7 +27,7 @@ template <typename T> class Collection {
     std::vector<T> items{};
 };
 
-class ConsonantViewStub : public ConsonantTaskOutputView,
+class ConsonantViewStub : public ConsonantTaskView,
                           public ConsonantTaskControl {
   public:
     void show() override { shown_ = true; }
@@ -97,7 +97,7 @@ class ConsonantViewStub : public ConsonantTaskOutputView,
 
 class CoordinateResponseMeasureViewStub
     : public CoordinateResponseMeasureControl,
-      public CoordinateResponseMeasureOutputView {
+      public CoordinateResponseMeasureView {
   public:
     void show() override { shown_ = true; }
 
@@ -172,7 +172,7 @@ class CoordinateResponseMeasureViewStub
     bool nextTrialButtonShown_{};
 };
 
-class TestSetupViewStub : public TestSetupView {
+class TestSetupViewStub : public TestSetupView, public TestSetupControl {
   public:
     auto testSettingsFile() -> std::string override {
         return testSettingsFile_;
@@ -251,12 +251,13 @@ class TestSetupViewStub : public TestSetupView {
 };
 
 class ExperimenterViewStub : public ExperimenterView,
+                             public ExperimenterControl,
                              public FreeResponseControl,
-                             public FreeResponseOutputView,
+                             public FreeResponseView,
                              public CorrectKeywordsControl,
-                             public CorrectKeywordsOutputView,
+                             public CorrectKeywordsView,
                              public PassFailControl,
-                             public PassFailOutputView {
+                             public PassFailView {
   public:
     void declineContinuingTesting() { listener_->declineContinuingTesting(); }
 
@@ -342,7 +343,7 @@ class ExperimenterViewStub : public ExperimenterView,
 
     [[nodiscard]] auto hidden() const { return hidden_; }
 
-    void attach(ExperimenterView::Observer *e) override { listener_ = e; }
+    void attach(ExperimenterControl::Observer *e) override { listener_ = e; }
 
     void attach(FreeResponseControl::Observer *e) override {
         freeResponseListener = e;
@@ -352,9 +353,7 @@ class ExperimenterViewStub : public ExperimenterView,
         correctKeywordsListener = e;
     }
 
-    void attach(PassFailControl::Observer *e) override {
-        passFailListener = e;
-    }
+    void attach(PassFailControl::Observer *e) override { passFailListener = e; }
 
     void setResponse(std::string s) { response_ = std::move(s); }
 
@@ -432,7 +431,7 @@ class ExperimenterViewStub : public ExperimenterView,
     std::string continueTestingDialogMessage_;
     std::string response_;
     std::string correctKeywords_{"0"};
-    ExperimenterView::Observer *listener_{};
+    ExperimenterControl::Observer *listener_{};
     FreeResponseControl::Observer *freeResponseListener{};
     CorrectKeywordsControl::Observer *correctKeywordsListener{};
     PassFailControl::Observer *passFailListener{};

@@ -30,7 +30,7 @@ class FreeResponseControlStub : public FreeResponseControl {
     bool flagged_{};
 };
 
-class FreeResponseOutputViewStub : public FreeResponseOutputView {
+class FreeResponseViewStub : public FreeResponseView {
   public:
     void showFreeResponseSubmission() override {
         freeResponseSubmissionShown_ = true;
@@ -72,7 +72,7 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class ExperimenterOutputViewStub : public ExperimenterOutputView {
+class ExperimenterViewStub : public ExperimenterView {
   public:
     void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
@@ -104,11 +104,11 @@ class ExperimenterOutputViewStub : public ExperimenterOutputView {
 class FreeResponseTests : public ::testing::Test {
   protected:
     ModelStub model;
-    ExperimenterOutputViewStub experimenterOutputView;
+    ExperimenterViewStub experimenterView;
     FreeResponseControlStub inputView;
-    FreeResponseOutputViewStub outputView;
+    FreeResponseViewStub outputView;
     FreeResponseController responder{model, inputView};
-    FreeResponsePresenter presenter{experimenterOutputView, outputView};
+    FreeResponsePresenter presenter{experimenterView, outputView};
     ExperimenterControllerStub experimenterController;
     TaskControllerListenerStub taskController;
 
@@ -126,7 +126,7 @@ class FreeResponseTests : public ::testing::Test {
 FREE_RESPONSE_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterOutputView.nextTrialButtonHidden());
+        experimenterView.nextTrialButtonHidden());
 }
 
 FREE_RESPONSE_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
@@ -142,7 +142,7 @@ FREE_RESPONSE_TEST(presenterHidesResponseButtonsWhenStopped) {
 FREE_RESPONSE_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterOutputView.nextTrialButtonShown());
+        experimenterView.nextTrialButtonShown());
 }
 
 FREE_RESPONSE_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {

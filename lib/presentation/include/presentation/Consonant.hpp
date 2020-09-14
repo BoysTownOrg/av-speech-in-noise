@@ -19,9 +19,9 @@ class ConsonantTaskControl {
     virtual auto consonant() -> std::string = 0;
 };
 
-class ConsonantTaskOutputView {
+class ConsonantTaskView {
   public:
-    virtual ~ConsonantTaskOutputView() = default;
+    virtual ~ConsonantTaskView() = default;
     virtual void showCursor() = 0;
     virtual void hideCursor() = 0;
     virtual void show() = 0;
@@ -34,7 +34,7 @@ class ConsonantTaskOutputView {
 
 class ConsonantTaskPresenter : public TaskPresenter {
   public:
-    explicit ConsonantTaskPresenter(ConsonantTaskOutputView &);
+    explicit ConsonantTaskPresenter(ConsonantTaskView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
@@ -43,7 +43,7 @@ class ConsonantTaskPresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    ConsonantTaskOutputView &view;
+    ConsonantTaskView &view;
 };
 
 class ConsonantTaskController : public TaskController,

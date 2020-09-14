@@ -94,7 +94,7 @@ class TestSetupControllerImpl : public TestSetupControl::Observer,
 
 class TestSetupPresenterImpl : public TestSetupPresenter {
   public:
-    explicit TestSetupPresenterImpl(TestSetupOutputView &view) : view{view} {
+    explicit TestSetupPresenterImpl(TestSetupView &view) : view{view} {
         view.populateTransducerMenu({name(Transducer::headphone),
             name(Transducer::oneSpeaker), name(Transducer::twoSpeakers)});
     }
@@ -106,7 +106,7 @@ class TestSetupPresenterImpl : public TestSetupPresenter {
     }
 
   private:
-    TestSetupOutputView &view;
+    TestSetupView &view;
 };
 }
 

@@ -25,7 +25,7 @@ class CorrectKeywordsControlStub : public CorrectKeywordsControl {
     Observer *listener_{};
 };
 
-class CorrectKeywordsOutputViewStub : public CorrectKeywordsOutputView {
+class CorrectKeywordsViewStub : public CorrectKeywordsView {
   public:
     void showCorrectKeywordsSubmission() override {
         correctKeywordsSubmissionShown_ = true;
@@ -79,7 +79,7 @@ class ViewStub : public SessionView {
     std::string errorMessage_;
 };
 
-class ExperimenterOutputViewStub : public ExperimenterOutputView {
+class ExperimenterViewStub : public ExperimenterView {
   public:
     void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
@@ -112,11 +112,11 @@ class CorrectKeywordsTests : public ::testing::Test {
   protected:
     ModelStub model;
     ViewStub mainView;
-    ExperimenterOutputViewStub experimenterOutputView;
+    ExperimenterViewStub experimenterView;
     CorrectKeywordsControlStub inputView;
-    CorrectKeywordsOutputViewStub outputView;
+    CorrectKeywordsViewStub outputView;
     CorrectKeywordsController responder{model, mainView, inputView};
-    CorrectKeywordsPresenter presenter{experimenterOutputView, outputView};
+    CorrectKeywordsPresenter presenter{experimenterView, outputView};
     ExperimenterControllerStub experimenterController;
     TaskControllerListenerStub taskController;
 
@@ -134,7 +134,7 @@ class CorrectKeywordsTests : public ::testing::Test {
 CORRECT_KEYWORDS_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterOutputView.nextTrialButtonHidden());
+        experimenterView.nextTrialButtonHidden());
 }
 
 CORRECT_KEYWORDS_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
@@ -150,7 +150,7 @@ CORRECT_KEYWORDS_TEST(presenterHidesResponseButtonsWhenStopped) {
 CORRECT_KEYWORDS_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterOutputView.nextTrialButtonShown());
+        experimenterView.nextTrialButtonShown());
 }
 
 CORRECT_KEYWORDS_TEST(

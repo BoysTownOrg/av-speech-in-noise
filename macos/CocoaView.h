@@ -22,11 +22,11 @@
 namespace av_speech_in_noise {
 class CocoaExperimenterView : public ExperimenterView,
                               public FreeResponseControl,
-                              public FreeResponseOutputView,
+                              public FreeResponseView,
                               public CorrectKeywordsControl,
-                              public CorrectKeywordsOutputView,
+                              public CorrectKeywordsView,
                               public PassFailControl,
-                              public PassFailOutputView {
+                              public PassFailView {
   public:
     explicit CocoaExperimenterView(NSViewController *);
     void attach(ExperimenterView::Observer *) override;
@@ -124,7 +124,7 @@ class CocoaTestSetupViewFactory : public MacOsTestSetupViewFactory {
     }
 };
 
-class CocoaConsonantView : public ConsonantTaskOutputView,
+class CocoaConsonantView : public ConsonantTaskView,
                            public ConsonantTaskControl {
   public:
     explicit CocoaConsonantView(NSRect);
@@ -153,7 +153,7 @@ class CocoaConsonantView : public ConsonantTaskOutputView,
 
 class CocoaCoordinateResponseMeasureView
     : public CoordinateResponseMeasureControl,
-      public CoordinateResponseMeasureOutputView {
+      public CoordinateResponseMeasureView {
   public:
     CocoaCoordinateResponseMeasureView(NSRect);
     auto numberResponse() -> std::string override;

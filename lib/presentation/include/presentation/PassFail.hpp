@@ -18,9 +18,9 @@ class PassFailControl {
     virtual void attach(Observer *) = 0;
 };
 
-class PassFailOutputView {
+class PassFailView {
   public:
-    virtual ~PassFailOutputView() = default;
+    virtual ~PassFailView() = default;
     virtual void showEvaluationButtons() = 0;
     virtual void hideEvaluationButtons() = 0;
 };
@@ -42,7 +42,7 @@ class PassFailController : public TaskController,
 
 class PassFailPresenter : public TaskPresenter {
   public:
-    PassFailPresenter(ExperimenterOutputView &, PassFailOutputView &);
+    PassFailPresenter(ExperimenterView &, PassFailView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
@@ -50,8 +50,8 @@ class PassFailPresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    ExperimenterOutputView &experimenterView;
-    PassFailOutputView &view;
+    ExperimenterView &experimenterView;
+    PassFailView &view;
 };
 }
 
