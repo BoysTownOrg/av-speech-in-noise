@@ -840,5 +840,11 @@ EXPERIMENTER_TEST(presenterShowsContinueTestingDialog) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterView.continueTestingDialogShown());
 }
+
+EXPERIMENTER_TEST(presenterSetsContinueTestingDialogMessage) {
+    experimenterPresenter.setContinueTestingDialogMessage("a");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, experimenterView.continueTestingDialogMessage());
+}
 }
 }
