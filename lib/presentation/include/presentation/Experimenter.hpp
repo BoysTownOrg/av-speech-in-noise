@@ -22,11 +22,8 @@ class TestControl {
     virtual void attach(Observer *) = 0;
 };
 
-class TestView {
+class TestView : public virtual View {
   public:
-    virtual ~TestView() = default;
-    virtual void show() = 0;
-    virtual void hide() = 0;
     virtual void showContinueTestingDialog() = 0;
     virtual void hideContinueTestingDialog() = 0;
     virtual void setContinueTestingDialogMessage(const std::string &) = 0;
@@ -42,7 +39,7 @@ class TestController {
   public:
     class Observer {
       public:
-        virtual ~Observer() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatTrialHasStarted() = 0;
         virtual void setContinueTestingDialogMessage(const std::string &) = 0;
         virtual void showContinueTestingDialog() = 0;
@@ -50,7 +47,7 @@ class TestController {
         virtual void secondaryDisplay(const std::string &) = 0;
         virtual void notifyThatNextTrialIsReady() = 0;
     };
-    virtual ~TestController() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestController);
     virtual void attach(Observer *) = 0;
     virtual void attach(SessionController *) = 0;
     virtual void
