@@ -13,7 +13,7 @@ class SessionControllerImpl : public SessionController {
         TestSetupController *testSetupController,
         TestSetupPresenter *testSetupPresenter,
         TestController *experimenterController,
-        ExperimenterPresenter *experimenterPresenter);
+        TestPresenter *experimenterPresenter);
     void notifyThatTestIsComplete() override;
     void prepare(Method m) override;
     void run();
@@ -26,7 +26,7 @@ class SessionControllerImpl : public SessionController {
   private:
     SessionView &view;
     Presenter *testSetupPresenter;
-    ExperimenterPresenter *experimenterPresenter;
+    TestPresenter *experimenterPresenter;
 };
 }
 

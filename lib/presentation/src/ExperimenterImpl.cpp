@@ -24,7 +24,7 @@ TestControllerImpl::TestControllerImpl(Model &model, SessionView &mainView,
     TaskController *correctKeywordsController,
     TaskPresenter *correctKeywordsPresenter, TaskController *passFailController,
     TaskPresenter *passFailPresenter)
-    : model{model}, mainView{mainView} {
+    : model{model}, sessionView{mainView} {
     view.attach(this);
     if (consonantController != nullptr) {
         consonantController->attach(this);
@@ -64,7 +64,7 @@ static void playTrial(
 }
 
 void TestControllerImpl::playTrial() {
-    av_speech_in_noise::playTrial(model, mainView, observer);
+    av_speech_in_noise::playTrial(model, sessionView, observer);
 }
 
 void TestControllerImpl::declineContinuingTesting() {
@@ -116,7 +116,7 @@ void TestControllerImpl::notifyThatUserIsDoneResponding() {
 void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
     notifyIfTestIsCompleteElse(model, controller, [&]() {
         displayTrialInformation(model, observer);
-        av_speech_in_noise::playTrial(model, mainView, observer);
+        av_speech_in_noise::playTrial(model, sessionView, observer);
     });
 }
 

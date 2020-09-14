@@ -31,7 +31,7 @@ class TestControllerImpl : public TestControl::Observer, public TestController {
 
   private:
     Model &model;
-    SessionView &mainView;
+    SessionView &sessionView;
     TestController::Observer *observer{};
     SessionController *controller{};
 };
@@ -73,8 +73,7 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
     TaskPresenter *presenter;
 };
 
-class ExperimenterPresenterImpl : public Model::Observer,
-                                  public ExperimenterPresenter {
+class ExperimenterPresenterImpl : public Model::Observer, public TestPresenter {
   public:
     explicit ExperimenterPresenterImpl(Model &, TestView &,
         TaskPresenter *consonantPresenter,

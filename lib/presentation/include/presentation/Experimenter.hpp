@@ -56,8 +56,8 @@ class TestController {
     virtual void notifyThatUserIsReadyForNextTrial() = 0;
 };
 
-class ExperimenterPresenter : public virtual TestController::Observer,
-                              public virtual Presenter {
+class TestPresenter : public virtual TestController::Observer,
+                      public virtual Presenter {
   public:
     virtual void initialize(Method) = 0;
 };

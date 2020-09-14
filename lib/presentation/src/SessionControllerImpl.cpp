@@ -5,7 +5,7 @@ SessionControllerImpl::SessionControllerImpl(Model &model, SessionView &view,
     TestSetupController *testSetupController,
     TestSetupPresenter *testSetupPresenter,
     TestController *experimenterController,
-    ExperimenterPresenter *experimenterPresenter)
+    TestPresenter *experimenterPresenter)
     : view{view}, testSetupPresenter{testSetupPresenter},
       experimenterPresenter{experimenterPresenter} {
     if (testSetupController != nullptr) {
