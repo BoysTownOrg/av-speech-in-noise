@@ -669,12 +669,6 @@ class TestSetupTests : public ::testing::Test {
         testSetupControllerImpl.attach(&testSetupControllerObserver);
     }
 
-    void assertBrowseResultPassedToEntry(BrowsingForTestSettingsFile &useCase) {
-        useCase.setResult(view, "a");
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", entry(useCase));
-    }
-
     void setBrowsingResult(BrowsingEnteredPathUseCase &useCase, std::string s) {
         useCase.setResult(view, std::move(s));
     }
@@ -686,13 +680,6 @@ class TestSetupTests : public ::testing::Test {
         view.setBrowseCancelled();
         run(useCase);
         assertEntryEquals(useCase, "a");
-    }
-
-    void assertAudioDevicePassedToTrial(PlayingTrial &useCase) {
-        setAudioDevice(view, "a");
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"a"}, model.trialParameters().audioDevice);
     }
 
     void assertDoesNotHideTestSetupView(UseCase &useCase) {
@@ -771,19 +758,6 @@ class TestSetupTests : public ::testing::Test {
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"a"}, testSettingsInterpreter.identity().transducer);
-    }
-
-    void assertCompleteTrialShowsResponseView(
-        ConfirmingTestSetup &useCase, TrialSubmission &trialSubmission) {
-        run(useCase);
-        completeTrial(model);
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(trialSubmission.responseViewShown());
-    }
-
-    void assertCompleteTestHidesResponse(TrialSubmission &useCase) {
-        setTestComplete(model);
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(useCase.responseViewHidden());
     }
 };
 
