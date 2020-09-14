@@ -584,11 +584,16 @@ auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
 class SessionControllerStub : public SessionController {
   public:
     void notifyThatTestIsComplete() override {}
-    void prepare(Method m) override { method_ = m; }
+    void prepare(Method m) override {
+        method_ = m;
+        prepareCalled_ = true;
+    }
     auto method() -> Method { return method_; }
+    [[nodiscard]] auto prepareCalled() const -> bool { return prepareCalled_; }
 
   private:
     Method method_{};
+    bool prepareCalled_{};
 };
 
 class TestSetupControllerObserverStub : public TestSetupController::Observer {
@@ -892,18 +897,18 @@ class TestSetupFailureTests : public ::testing::Test {
 
 #define TEST_SETUP_TEST(a) TEST_F(TestSetupTests, a)
 
-TEST_SETUP_TEST(confirmingAdaptiveCorrectKeywordsTestHidesTestSetupView) {
+TEST_SETUP_TEST(controllerPreparesTestAfterConfirmButtonIsClicked) {
     testSettingsInterpreter.setMethod(Method::adaptivePassFail);
-    testSetupControllerImpl.notifyThatConfirmButtonHasBeenClicked();
+    setupView.confirmTestSetup();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         Method::adaptivePassFail, sessionController.method());
 }
 
 TEST_SETUP_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestDoesNotHideSetupViewWhenTestComplete) {
+    controllerDoesNotPrepareTestAfterConfirmButtonIsClickedWhenTestWouldAlreadyBeComplete) {
     setTestComplete(model);
-    assertDoesNotHideTestSetupView(
-        confirmingAdaptiveCoordinateResponseMeasureTest);
+    setupView.confirmTestSetup();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
 }
 
 TEST_SETUP_TEST(playCalibrationPassesLevel) {
