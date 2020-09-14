@@ -828,5 +828,11 @@ EXPERIMENTER_TEST(presenterDisplaysMessage) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, experimenterView.displayed());
 }
+
+EXPERIMENTER_TEST(presenterDisplaysSecondaryMessage) {
+    experimenterPresenter.secondaryDisplay("a");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, experimenterView.secondaryDisplayed());
+}
 }
 }
