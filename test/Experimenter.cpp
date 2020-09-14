@@ -108,7 +108,7 @@ class ExperimenterViewStub : public ExperimenterView {
     bool hidden_{};
 };
 
-class ViewStub : public View {
+class ViewStub : public SessionView {
   public:
     void setAudioDevice(std::string s) { audioDevice_ = std::move(s); }
 

@@ -27,19 +27,18 @@ class CorrectKeywordsOutputView {
     virtual void hideCorrectKeywordsSubmission() = 0;
 };
 
-class CorrectKeywordsController
-    : public TaskController,
-      public CorrectKeywordsInputView::Observer {
+class CorrectKeywordsController : public TaskController,
+                                  public CorrectKeywordsInputView::Observer {
   public:
     explicit CorrectKeywordsController(
-        Model &, View &, CorrectKeywordsInputView &);
+        Model &, SessionView &, CorrectKeywordsInputView &);
     void attach(TaskController::Observer *e) override;
     void attach(ExperimenterController *r) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
     Model &model;
-    View &view;
+    SessionView &view;
     CorrectKeywordsInputView &keywordsView;
     TaskController::Observer *listener{};
     ExperimenterController *responder{};

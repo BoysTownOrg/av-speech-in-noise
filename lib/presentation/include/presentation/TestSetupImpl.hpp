@@ -41,7 +41,7 @@ constexpr auto name(Transducer c) -> const char * {
 class TestSetupControllerImpl : public TestSetupInputView::Observer,
                                 public TestSetupController {
   public:
-    explicit TestSetupControllerImpl(Model &model, View &mainView,
+    explicit TestSetupControllerImpl(Model &model, SessionView &mainView,
         TestSetupInputView &view,
         TestSettingsInterpreter &testSettingsInterpreter,
         TextFileReader &textFileReader)
@@ -80,13 +80,11 @@ class TestSetupControllerImpl : public TestSetupInputView::Observer,
             listener->notifyThatUserHasSelectedTestSettingsFile(file);
     }
     void attach(SessionController *p) override { parent = p; }
-    void attach(TestSetupController::Observer *e) override {
-        listener = e;
-    }
+    void attach(TestSetupController::Observer *e) override { listener = e; }
 
   private:
     Model &model;
-    View &mainView;
+    SessionView &mainView;
     TestSetupInputView &view;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;

@@ -16,7 +16,7 @@ static void readyNextTrial(
 }
 
 ExperimenterControllerImpl::ExperimenterControllerImpl(Model &model,
-    View &mainView, ExperimenterInputView &view,
+    SessionView &mainView, ExperimenterInputView &view,
     TaskController *consonantController, TaskPresenter *consonantPresenter,
     TaskController *coordinateResponseMeasureController,
     TaskPresenter *coordinateResponseMeasurePresenter,
@@ -62,8 +62,8 @@ void ExperimenterControllerImpl::exitTest() {
     notifyThatTestIsComplete(responder);
 }
 
-static void playTrial(
-    Model &model, View &view, ExperimenterController::Observer *listener) {
+static void playTrial(Model &model, SessionView &view,
+    ExperimenterController::Observer *listener) {
     model.playTrial(AudioSettings{view.audioDevice()});
     listener->notifyThatTrialHasStarted();
 }

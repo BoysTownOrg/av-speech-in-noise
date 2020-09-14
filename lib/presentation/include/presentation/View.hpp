@@ -5,9 +5,9 @@
 #include <string>
 
 namespace av_speech_in_noise {
-class View {
+class SessionView {
   public:
-    virtual ~View() = default;
+    virtual ~SessionView() = default;
     virtual void eventLoop() = 0;
     virtual auto browseForDirectory() -> std::string = 0;
     virtual auto browseForOpeningFile() -> std::string = 0;

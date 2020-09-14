@@ -60,7 +60,7 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class ViewStub : public View {
+class ViewStub : public SessionView {
   public:
     void showErrorMessage(std::string s) override {
         errorMessage_ = std::move(s);

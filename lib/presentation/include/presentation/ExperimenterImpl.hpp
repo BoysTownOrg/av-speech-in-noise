@@ -10,7 +10,7 @@ namespace av_speech_in_noise {
 class ExperimenterControllerImpl : public ExperimenterInputView::Observer,
                                    public ExperimenterController {
   public:
-    explicit ExperimenterControllerImpl(Model &, View &,
+    explicit ExperimenterControllerImpl(Model &, SessionView &,
         ExperimenterInputView &, TaskController *consonantController,
         TaskPresenter *consonantPresenter,
         TaskController *coordinateResponseMeasureController,
@@ -33,7 +33,7 @@ class ExperimenterControllerImpl : public ExperimenterInputView::Observer,
 
   private:
     Model &model;
-    View &mainView;
+    SessionView &mainView;
     ExperimenterController::Observer *listener{};
     SessionController *responder{};
 };

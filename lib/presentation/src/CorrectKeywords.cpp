@@ -3,7 +3,7 @@
 
 namespace av_speech_in_noise {
 CorrectKeywordsController::CorrectKeywordsController(
-    Model &model, View &view, CorrectKeywordsInputView &keywordsView)
+    Model &model, SessionView &view, CorrectKeywordsInputView &keywordsView)
     : model{model}, view{view}, keywordsView{keywordsView} {
     keywordsView.attach(this);
 }

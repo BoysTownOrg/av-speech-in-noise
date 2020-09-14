@@ -184,7 +184,7 @@ class CocoaCoordinateResponseMeasureView
     Observer *listener_{};
 };
 
-class CocoaView : public View {
+class CocoaView : public SessionView {
   public:
     explicit CocoaView(NSApplication *, NSViewController *);
     void eventLoop() override;

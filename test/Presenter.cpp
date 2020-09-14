@@ -454,7 +454,7 @@ class ExperimenterViewStub : public ExperimenterView,
     bool flagged_{};
 };
 
-class ViewStub : public View {
+class ViewStub : public SessionView {
   public:
     void setAudioDevice(std::string s) { audioDevice_ = std::move(s); }
 
