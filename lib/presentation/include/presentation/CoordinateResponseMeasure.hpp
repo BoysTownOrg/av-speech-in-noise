@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_COORDINATERESPONSEMEASURE_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_COORDINATERESPONSEMEASURE_HPP_
 
+#include "View.hpp"
 #include "Task.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
@@ -22,11 +23,8 @@ class CoordinateResponseMeasureControl {
     virtual auto whiteResponse() -> bool = 0;
 };
 
-class CoordinateResponseMeasureView {
+class CoordinateResponseMeasureView : public virtual View {
   public:
-    virtual ~CoordinateResponseMeasureView() = default;
-    virtual void show() = 0;
-    virtual void hide() = 0;
     virtual void showResponseButtons() = 0;
     virtual void hideResponseButtons() = 0;
     virtual void showNextTrialButton() = 0;
@@ -39,10 +37,10 @@ class CoordinateResponseMeasureController
   public:
     explicit CoordinateResponseMeasureController(
         Model &, CoordinateResponseMeasureControl &);
-    void attach(TaskController::Observer *e) override;
+    void attach(TaskController::Observer *) override;
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
-    void attach(TestController *e) override;
+    void attach(TestController *) override;
 
   private:
     Model &model;
