@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_PASSFAIL_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_PASSFAIL_HPP_
 
+#include "Interface.hpp"
 #include "Task.hpp"
 #include "Experimenter.hpp"
 #include <av-speech-in-noise/Model.hpp>
@@ -10,17 +11,17 @@ class PassFailControl {
   public:
     class Observer {
       public:
-        virtual ~Observer() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatCorrectButtonHasBeenClicked() = 0;
         virtual void notifyThatIncorrectButtonHasBeenClicked() = 0;
     };
-    virtual ~PassFailControl() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(PassFailControl);
     virtual void attach(Observer *) = 0;
 };
 
 class PassFailView {
   public:
-    virtual ~PassFailView() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(PassFailView);
     virtual void showEvaluationButtons() = 0;
     virtual void hideEvaluationButtons() = 0;
 };
