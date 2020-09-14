@@ -49,8 +49,6 @@ class TestSetupViewStub : public TestSetupView, public TestSetupControl {
 
     void show() override { shown_ = true; }
 
-    [[nodiscard]] auto shown() const { return shown_; }
-
     void hide() override { hidden_ = true; }
 
     [[nodiscard]] auto hidden() const { return hidden_; }
@@ -556,8 +554,6 @@ void assertEntryEquals(
 }
 
 void playCalibration(TestSetupViewStub &view) { view.playCalibration(); }
-
-auto shown(TestSetupViewStub &view) -> bool { return view.shown(); }
 
 auto errorMessage(ViewStub &view) -> std::string { return view.errorMessage(); }
 
