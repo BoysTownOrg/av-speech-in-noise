@@ -919,6 +919,28 @@ TEST_SETUP_TEST(
         std::string{"b"}, testSettingsInterpreter.identity().subjectId);
 }
 
+TEST_SETUP_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesStartingSnr) {
+    setupView.setStartingSnr("1");
+    confirmTestSetup(&setupView);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, testSettingsInterpreter.startingSnr());
+}
+
+TEST_SETUP_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidStartingSnrShowsMessage) {
+    setupView.setStartingSnr("a");
+    confirmTestSetup(&setupView);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"\"a\" is not a valid starting SNR."}, errorMessage(view));
+}
+
+TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
+    setupView.setTesterId("c");
+    confirmTestSetup(&setupView);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c"}, testSettingsInterpreter.identity().testerId);
+}
+
 TEST_SETUP_TEST(playCalibrationPassesLevel) {
     interpretedCalibration.level.dB_SPL = 1;
     playCalibration(setupView);
@@ -950,21 +972,6 @@ TEST_SETUP_TEST(
 TEST_SETUP_TEST(
     playingCalibrationPassesTestSettingsTextToTestSettingsInterpreter) {
     assertPassesTestSettingsTextToTestSettingsInterpreter(playingCalibration);
-}
-
-TEST_SETUP_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesStartingSnr) {
-    assertPassesStartingSnr(confirmingAdaptiveCoordinateResponseMeasureTest);
-}
-
-TEST_SETUP_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidStartingSnrShowsMessage) {
-    assertInvalidSnrShowsMessage(
-        confirmingAdaptiveCoordinateResponseMeasureTest);
-}
-
-TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
-    assertPassesTesterId(confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 TEST_SETUP_TEST(playCalibrationPassesFilePath) {
