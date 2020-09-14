@@ -7,9 +7,10 @@
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
-class Presenter : public SessionController {
+class SessionControllerImpl : public SessionController {
   public:
-    Presenter(Model &, View &, TestSetupController *testSetupController,
+    SessionControllerImpl(Model &, View &,
+        TestSetupController *testSetupController,
         TestSetupPresenter *testSetupPresenter,
         ExperimenterController *experimenterController,
         ExperimenterPresenter *experimenterPresenter);

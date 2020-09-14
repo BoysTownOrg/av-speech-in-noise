@@ -50,8 +50,8 @@ class ConsonantTaskController : public TaskController,
                                 public ConsonantTaskInputView::Observer {
   public:
     explicit ConsonantTaskController(Model &, ConsonantTaskInputView &);
-    void attach(TaskController::Observer *e) override;
-    void attach(ExperimenterController *p) override;
+    void attach(TaskController::Observer *) override;
+    void attach(ExperimenterController *) override;
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
 

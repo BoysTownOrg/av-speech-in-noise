@@ -403,7 +403,7 @@ void main(
         &consonantPresenter, &coordinateResponseMeasurePresenter,
         &freeResponsePresenter, &correctKeywordsPresenter, &passFailPresenter,
         &taskPresenter};
-    Presenter presenter{model, view, &testSetupControllerImpl,
+    SessionControllerImpl presenter{model, view, &testSetupControllerImpl,
         &testSetupPresenterRefactored, &experimenterController,
         &experimenterPresenter};
     presenter.run();

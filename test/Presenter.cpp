@@ -1148,7 +1148,7 @@ class PresenterConstructionTests : public ::testing::Test {
     ExperimenterPresenterImpl experimenterPresenterRefactored{model,
         experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
-    auto construct() -> Presenter {
+    auto construct() -> SessionControllerImpl {
         return {model, view, &testSetupControllerImpl,
             &testSetupPresenterRefactored, &experimenterController,
             &experimenterPresenterRefactored};
@@ -1286,7 +1286,7 @@ class PresenterTests : public ::testing::Test {
         experimenterView, &consonantPresenterRefactored,
         &coordinateResponseMeasurePresenterRefactored, &freeResponsePresenter,
         &correctKeywordsPresenter, &passFailPresenter, &taskPresenter};
-    Presenter presenter{model, view, &testSetupControllerImpl,
+    SessionControllerImpl presenter{model, view, &testSetupControllerImpl,
         &testSetupPresenterRefactored, &experimenterController,
         &experimenterPresenterRefactored};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
@@ -1721,7 +1721,7 @@ class PresenterFailureTests : public ::testing::Test {
         ExperimenterPresenterImpl experimenterPresenterRefactored{*model,
             experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr,
             nullptr};
-        Presenter presenter{*model, view, &testSetupControllerImpl,
+        SessionControllerImpl presenter{*model, view, &testSetupControllerImpl,
             &testSetupPresenterRefactored, &experimenterController,
             &experimenterPresenterRefactored};
         setupView.confirmTestSetup();

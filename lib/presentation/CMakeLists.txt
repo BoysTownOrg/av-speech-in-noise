@@ -1,6 +1,6 @@
 add_library(
   presentation
-  src/Presenter.cpp
+  src/SessionControllerImpl.cpp
   src/TestSettingsInterpreter.cpp
   src/Consonant.cpp
   src/FreeResponse.cpp

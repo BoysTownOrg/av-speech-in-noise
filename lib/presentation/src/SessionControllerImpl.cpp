@@ -1,7 +1,7 @@
 #include "Presenter.hpp"
 
 namespace av_speech_in_noise {
-Presenter::Presenter(Model &model, View &view,
+SessionControllerImpl::SessionControllerImpl(Model &model, View &view,
     TestSetupController *testSetupController,
     TestSetupPresenter *testSetupPresenter,
     ExperimenterController *experimenterController,
@@ -19,15 +19,15 @@ Presenter::Presenter(Model &model, View &view,
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 
-void Presenter::run() { view.eventLoop(); }
+void SessionControllerImpl::run() { view.eventLoop(); }
 
-void Presenter::prepare(Method m) {
+void SessionControllerImpl::prepare(Method m) {
     testSetupPresenter->stop();
     experimenterPresenter->initialize(m);
     experimenterPresenter->start();
 }
 
-void Presenter::notifyThatTestIsComplete() {
+void SessionControllerImpl::notifyThatTestIsComplete() {
     experimenterPresenter->stop();
     testSetupPresenter->start();
 }

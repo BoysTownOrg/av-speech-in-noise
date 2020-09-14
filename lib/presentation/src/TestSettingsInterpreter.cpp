@@ -184,10 +184,10 @@ static void initialize(AdaptiveTest &test, const std::string &contents,
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
-    test.ceilingSnr = Presenter::ceilingSnr;
-    test.floorSnr = Presenter::floorSnr;
-    test.trackBumpLimit = Presenter::trackBumpLimit;
-    test.fullScaleLevel = Presenter::fullScaleLevel;
+    test.ceilingSnr = SessionControllerImpl::ceilingSnr;
+    test.floorSnr = SessionControllerImpl::floorSnr;
+    test.trackBumpLimit = SessionControllerImpl::trackBumpLimit;
+    test.fullScaleLevel = SessionControllerImpl::fullScaleLevel;
     test.identity.method = name(method);
 }
 
@@ -195,7 +195,7 @@ static void initialize(FixedLevelTest &test, const std::string &contents,
     Method method, const TestIdentity &identity, SNR startingSnr,
     const std::function<void(const std::string &, const std::string &)> &f) {
     test.snr = startingSnr;
-    test.fullScaleLevel = Presenter::fullScaleLevel;
+    test.fullScaleLevel = SessionControllerImpl::fullScaleLevel;
     test.identity = identity;
     test.identity.method = name(method);
     applyToEachEntry(f, contents);
@@ -301,7 +301,7 @@ auto TestSettingsInterpreterImpl::calibration(const std::string &contents)
     applyToEachEntry([&](auto entryName,
                          auto entry) { assign(calibration, entryName, entry); },
         contents);
-    calibration.fullScaleLevel = Presenter::fullScaleLevel;
+    calibration.fullScaleLevel = SessionControllerImpl::fullScaleLevel;
     return calibration;
 }
 }
