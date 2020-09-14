@@ -608,8 +608,10 @@ TEST_SETUP_TEST(
 
 TEST_SETUP_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery) {
-    assertPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery(
-        confirmingTestSetup);
+    textFileReader.setRead("a");
+    confirmTestSetup(&setupView);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, testSettingsInterpreter.textForMethodQuery());
 }
 
 TEST_SETUP_TEST(
