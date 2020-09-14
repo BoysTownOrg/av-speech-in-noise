@@ -39,9 +39,9 @@ class FreeResponseController : public TaskController,
 
   private:
     Model &model;
-    FreeResponseControl &view;
-    TaskController::Observer *listener{};
-    TestController *responder{};
+    FreeResponseControl &control;
+    TaskController::Observer *observer{};
+    TestController *controller{};
 };
 
 class FreeResponsePresenter : public TaskPresenter {
@@ -54,7 +54,7 @@ class FreeResponsePresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    TestView &experimenterView;
+    TestView &testView;
     FreeResponseView &view;
 };
 }
