@@ -1,6 +1,6 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
-#include "TaskControllerListenerStub.hpp"
+#include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
 #include <presentation/PassFail.hpp>
 #include <gtest/gtest.h>
@@ -97,7 +97,7 @@ class PassFailTests : public ::testing::Test {
     PassFailController responder{model, inputView};
     PassFailPresenter presenter{experimenterView, outputView};
     TestControllerStub experimenterController;
-    TaskControllerListenerStub taskController;
+    TaskControllerObserverStub taskController;
 
     PassFailTests() {
         responder.attach(&experimenterController);

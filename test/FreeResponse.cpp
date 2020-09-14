@@ -1,6 +1,6 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
-#include "TaskControllerListenerStub.hpp"
+#include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
 #include <presentation/FreeResponse.hpp>
 #include <gtest/gtest.h>
@@ -110,7 +110,7 @@ class FreeResponseTests : public ::testing::Test {
     FreeResponseController responder{model, inputView};
     FreeResponsePresenter presenter{experimenterView, outputView};
     TestControllerStub experimenterController;
-    TaskControllerListenerStub taskController;
+    TaskControllerObserverStub taskController;
 
     FreeResponseTests() {
         responder.attach(&experimenterController);

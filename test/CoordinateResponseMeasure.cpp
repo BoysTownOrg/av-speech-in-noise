@@ -1,6 +1,6 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
-#include "TaskControllerListenerStub.hpp"
+#include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
 #include <presentation/CoordinateResponseMeasure.hpp>
 #include <gtest/gtest.h>
@@ -117,7 +117,7 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
     CoordinateResponseMeasureController responder{model, inputView};
     CoordinateResponseMeasurePresenter presenter{outputView};
     TestControllerStub experimenterController;
-    TaskControllerListenerStub taskControllerListener;
+    TaskControllerObserverStub taskControllerListener;
 
     CoordinateResponseMeasureTests() {
         responder.attach(&experimenterController);
