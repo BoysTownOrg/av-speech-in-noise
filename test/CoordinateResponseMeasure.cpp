@@ -125,6 +125,12 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
     }
 };
 
+class CoordinateResponseMeasurePresenterTests : public ::testing::Test {
+  protected:
+    CoordinateResponseMeasureViewStub view;
+    CoordinateResponseMeasurePresenter presenter{view};
+};
+
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).responseButtonsHidden())
 
@@ -134,38 +140,44 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
 #define COORDINATE_RESPONSE_MEASURE_TEST(a)                                    \
     TEST_F(CoordinateResponseMeasureTests, a)
 
-COORDINATE_RESPONSE_MEASURE_TEST(presenterHidesReadyButtonWhenTaskStarts) {
+#define COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(a)                          \
+    TEST_F(CoordinateResponseMeasurePresenterTests, a)
+
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(
+    presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonHidden());
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(
     presenterHidesResponseButtonsAfterUserIsDoneResponding) {
     notifyThatUserIsDoneResponding(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(presenterHidesViewWhenStopped) {
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(presenterHidesViewWhenStopped) {
     stop(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(presenterHidesResponseButtonsWhenStopped) {
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(
+    presenterHidesResponseButtonsWhenStopped) {
     stop(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(presenterShowsViewWhenStarted) {
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(presenterShowsViewWhenStarted) {
     start(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(presenterShowsReadyButtonWhenStarted) {
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(
+    presenterShowsReadyButtonWhenStarted) {
     start(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonShown());
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(
     presenterShowsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseButtonsShown());
