@@ -799,5 +799,10 @@ EXPERIMENTER_TEST(presenterNotifiesTaskPresenterThatTrialHasStarted) {
     experimenterPresenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.notifiedThatTrialHasStarted());
 }
+
+EXPERIMENTER_TEST(presenterShowsExitTestButtonWhenTrialCompletes) {
+    model.completeTrial();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.exitTestButtonShown());
+}
 }
 }
