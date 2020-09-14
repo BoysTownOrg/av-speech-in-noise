@@ -1,7 +1,7 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "TaskControllerListenerStub.hpp"
-#include "ExperimenterControllerStub.hpp"
+#include "TestControllerStub.hpp"
 #include <presentation/CoordinateResponseMeasure.hpp>
 #include <gtest/gtest.h>
 #include <utility>
@@ -48,8 +48,7 @@ class CoordinateResponseMeasureControlStub
     bool grayResponse_{};
 };
 
-class CoordinateResponseMeasureViewStub
-    : public CoordinateResponseMeasureView {
+class CoordinateResponseMeasureViewStub : public CoordinateResponseMeasureView {
   public:
     void show() override { shown_ = true; }
 
@@ -117,7 +116,7 @@ class CoordinateResponseMeasureTests : public ::testing::Test {
     CoordinateResponseMeasureViewStub outputView;
     CoordinateResponseMeasureController responder{model, inputView};
     CoordinateResponseMeasurePresenter presenter{outputView};
-    ExperimenterControllerStub experimenterController;
+    TestControllerStub experimenterController;
     TaskControllerListenerStub taskControllerListener;
 
     CoordinateResponseMeasureTests() {

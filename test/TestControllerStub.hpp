@@ -1,10 +1,10 @@
-#ifndef AV_SPEECH_IN_NOISE_TESTS_EXPERIMENTERCONTROLLERSTUB_HPP_
-#define AV_SPEECH_IN_NOISE_TESTS_EXPERIMENTERCONTROLLERSTUB_HPP_
+#ifndef AV_SPEECH_IN_NOISE_TESTS_TESTCONTROLLERSTUB_HPP_
+#define AV_SPEECH_IN_NOISE_TESTS_TESTCONTROLLERSTUB_HPP_
 
 #include <presentation/Test.hpp>
 
 namespace av_speech_in_noise {
-class ExperimenterControllerStub : public TestController {
+class TestControllerStub : public TestController {
   public:
     void attach(Observer *) override {}
     void attach(SessionController *) override {}

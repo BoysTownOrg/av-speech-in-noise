@@ -1,7 +1,7 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "TaskControllerListenerStub.hpp"
-#include "ExperimenterControllerStub.hpp"
+#include "TestControllerStub.hpp"
 #include <presentation/Consonant.hpp>
 #include <gtest/gtest.h>
 #include <utility>
@@ -111,7 +111,7 @@ class ConsonantTests : public ::testing::Test {
     ConsonantViewStub view;
     ConsonantTaskController controller{model, control};
     ConsonantTaskPresenter presenter{view};
-    ExperimenterControllerStub testController;
+    TestControllerStub testController;
     TaskControllerListenerStub taskController;
 
     ConsonantTests() {

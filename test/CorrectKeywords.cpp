@@ -1,7 +1,7 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "TaskControllerListenerStub.hpp"
-#include "ExperimenterControllerStub.hpp"
+#include "TestControllerStub.hpp"
 #include <presentation/CorrectKeywords.hpp>
 #include <gtest/gtest.h>
 #include <utility>
@@ -117,7 +117,7 @@ class CorrectKeywordsTests : public ::testing::Test {
     CorrectKeywordsViewStub outputView;
     CorrectKeywordsController responder{model, mainView, inputView};
     CorrectKeywordsPresenter presenter{experimenterView, outputView};
-    ExperimenterControllerStub experimenterController;
+    TestControllerStub experimenterController;
     TaskControllerListenerStub taskController;
 
     CorrectKeywordsTests() {
