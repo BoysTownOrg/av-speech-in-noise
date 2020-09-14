@@ -3,7 +3,7 @@
 
 #include "TestSetup.hpp"
 #include "Experimenter.hpp"
-#include "View.hpp"
+#include "SessionView.hpp"
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
