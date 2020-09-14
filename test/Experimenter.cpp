@@ -933,5 +933,18 @@ EXPERIMENTER_TEST(
         initializingFixedLevelFreeResponseWithTargetReplacementMethod,
         experimenterPresenter, freeResponsePresenter);
 }
+
+EXPERIMENTER_TEST(initializingAdaptiveCorrectKeywordsMethodInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingAdaptiveCorrectKeywordsMethod, experimenterPresenter,
+        correctKeywordsPresenter);
+}
+
+EXPERIMENTER_TEST(
+    initializingAdaptiveCorrectKeywordsMethodWithEyeTrackingInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingAdaptiveCorrectKeywordsMethodWithEyeTracking,
+        experimenterPresenter, correctKeywordsPresenter);
+}
 }
 }
