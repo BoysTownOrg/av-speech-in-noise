@@ -29,7 +29,7 @@ CoordinateResponseMeasureController::CoordinateResponseMeasureController(
 }
 
 void CoordinateResponseMeasureController::attach(TaskController::Observer *e) {
-    listener = e;
+    observer = e;
 }
 
 static void notifyThatUserIsReadyForNextTrial(TestController *r) {
@@ -38,19 +38,19 @@ static void notifyThatUserIsReadyForNextTrial(TestController *r) {
 
 void CoordinateResponseMeasureController::
     notifyThatReadyButtonHasBeenClicked() {
-    listener->notifyThatTaskHasStarted();
-    notifyThatUserIsReadyForNextTrial(responder);
+    observer->notifyThatTaskHasStarted();
+    notifyThatUserIsReadyForNextTrial(controller);
 }
 
 void CoordinateResponseMeasureController::
     notifyThatResponseButtonHasBeenClicked() {
     model.submit(subjectResponse(view));
-    listener->notifyThatUserIsDoneResponding();
-    notifyThatUserIsReadyForNextTrial(responder);
+    observer->notifyThatUserIsDoneResponding();
+    notifyThatUserIsReadyForNextTrial(controller);
 }
 
 void CoordinateResponseMeasureController::attach(TestController *e) {
-    responder = e;
+    controller = e;
 }
 
 static void hideResponseButtons(CoordinateResponseMeasureView &view) {
