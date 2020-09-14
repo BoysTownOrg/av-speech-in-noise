@@ -8,7 +8,7 @@
 
 namespace av_speech_in_noise {
 namespace {
-class ExperimenterViewStub : public TestView, public TestControl {
+class TestUIStub : public TestView, public TestControl {
   public:
     void declineContinuingTesting() { listener_->declineContinuingTesting(); }
 
@@ -311,32 +311,31 @@ class InitializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking
 };
 
 class ExitingTest : public UseCase {
-    ExperimenterViewStub *view;
+    TestUIStub *view;
 
   public:
-    explicit ExitingTest(ExperimenterViewStub *view) : view{view} {}
+    explicit ExitingTest(TestUIStub *view) : view{view} {}
 
     void run(TestPresenter &) override { view->exitTest(); }
 };
 
 class DecliningContinuingTesting : public UseCase {
   public:
-    explicit DecliningContinuingTesting(ExperimenterViewStub &view)
-        : view{view} {}
+    explicit DecliningContinuingTesting(TestUIStub &view) : view{view} {}
 
     void run(TestPresenter &) override { view.declineContinuingTesting(); }
 
   private:
-    ExperimenterViewStub &view;
+    TestUIStub &view;
 };
 
-void exitTest(ExperimenterViewStub &view) { view.exitTest(); }
+void exitTest(TestUIStub &view) { view.exitTest(); }
 
-void notifyThatPlayTrialButtonHasBeenClicked(ExperimenterViewStub &view) {
+void notifyThatPlayTrialButtonHasBeenClicked(TestUIStub &view) {
     view.notifyThatPlayTrialButtonHasBeenClicked();
 }
 
-void acceptContinuingTesting(ExperimenterViewStub &view) {
+void acceptContinuingTesting(TestUIStub &view) {
     view.acceptContinuingTesting();
 }
 
@@ -423,13 +422,12 @@ class ControllerUseCase {
 
 class AcceptingContinuingTesting : public ControllerUseCase {
   public:
-    explicit AcceptingContinuingTesting(ExperimenterViewStub &view)
-        : view{view} {}
+    explicit AcceptingContinuingTesting(TestUIStub &view) : view{view} {}
 
     void run() override { acceptContinuingTesting(view); }
 
   private:
-    ExperimenterViewStub &view;
+    TestUIStub &view;
 };
 
 class NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
@@ -503,7 +501,7 @@ class ExperimenterTests : public ::testing::Test {
   protected:
     ModelStub model;
     ViewStub view;
-    ExperimenterViewStub experimenterView;
+    TestUIStub experimenterView;
     TaskControllerStub consonantController;
     TaskControllerStub coordinateResponseMeasureController;
     TaskControllerStub freeResponseController;
