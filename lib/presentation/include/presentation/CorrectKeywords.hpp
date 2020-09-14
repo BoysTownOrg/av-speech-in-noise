@@ -24,7 +24,7 @@ class CorrectKeywordsControl {
 
 class CorrectKeywordsView {
   public:
-    virtual ~CorrectKeywordsView() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(CorrectKeywordsView);
     virtual void showCorrectKeywordsSubmission() = 0;
     virtual void hideCorrectKeywordsSubmission() = 0;
 };
