@@ -49,6 +49,8 @@ class TestSetupViewStub : public TestSetupView, public TestSetupControl {
 
     void show() override { shown_ = true; }
 
+    auto shown() -> bool { return shown_; }
+
     void hide() override { hidden_ = true; }
 
     [[nodiscard]] auto hidden() const { return hidden_; }
@@ -654,6 +656,11 @@ TEST_SETUP_TEST(playCalibrationPassesFullScaleLevel) {
     run(playingCalibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         1, calibration(model).fullScaleLevel.dB_SPL);
+}
+
+TEST_SETUP_TEST(presenterShowsViewWhenStarted) {
+    testSetupPresenterRefactored.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(setupView.shown());
 }
 
 TEST_F(TestSetupFailureTests,
