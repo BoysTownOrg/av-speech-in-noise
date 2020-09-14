@@ -54,7 +54,7 @@ class TestPresenterStub : public TestPresenter {
   public:
     void initialize(Method) {}
     void start() { started_ = true; }
-    void stop() {}
+    void stop() { stopped_ = true; }
     void notifyThatTrialHasStarted() {}
     void setContinueTestingDialogMessage(const std::string &) {}
     void showContinueTestingDialog() {}
@@ -62,19 +62,23 @@ class TestPresenterStub : public TestPresenter {
     void secondaryDisplay(const std::string &) {}
     void notifyThatNextTrialIsReady() {}
     auto started() -> bool { return started_; }
+    auto stopped() -> bool { return stopped_; }
 
   private:
     bool started_{};
+    bool stopped_{};
 };
 
 class TestSetupPresenterStub : public TestSetupPresenter {
   public:
     void notifyThatUserHasSelectedTestSettingsFile(const std::string &) {}
-    void start() {}
+    void start() { started_ = true; }
     void stop() { stopped_ = true; }
+    auto started() -> bool { return started_; }
     auto stopped() -> bool { return stopped_; }
 
   private:
+    bool started_{};
     bool stopped_{};
 };
 
@@ -98,6 +102,16 @@ SESSION_CONTROLLER_TEST(prepareStopsTestSetup) {
 SESSION_CONTROLLER_TEST(prepareStartsTest) {
     controller.prepare(Method::unknown);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.started());
+}
+
+SESSION_CONTROLLER_TEST(testStopsAfterTestIsComplete) {
+    controller.notifyThatTestIsComplete();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testSetupPresenter.started());
+}
+
+SESSION_CONTROLLER_TEST(testSetupStartsAfterTestIsComplete) {
+    controller.notifyThatTestIsComplete();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.stopped());
 }
 }
 }
