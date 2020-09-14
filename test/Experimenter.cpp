@@ -965,5 +965,12 @@ EXPERIMENTER_TEST(
         initializingAdaptivePassFailMethodWithEyeTracking,
         experimenterPresenter, passFailPresenter);
 }
+
+EXPERIMENTER_TEST(presenterDisplaysTrialNumberWhenInitializing) {
+    model.setTrialNumber(1);
+    experimenterPresenter.initialize(Method::unknown);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"Trial 1"}, experimenterView.displayed());
+}
 }
 }
