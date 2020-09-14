@@ -32,16 +32,16 @@ class CorrectKeywordsController : public TaskController,
   public:
     explicit CorrectKeywordsController(
         Model &, SessionView &, CorrectKeywordsControl &);
-    void attach(TaskController::Observer *e) override;
-    void attach(TestController *r) override;
+    void attach(TaskController::Observer *) override;
+    void attach(TestController *) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
     Model &model;
-    SessionView &view;
-    CorrectKeywordsControl &keywordsView;
-    TaskController::Observer *listener{};
-    TestController *responder{};
+    SessionView &sessionView;
+    CorrectKeywordsControl &control;
+    TaskController::Observer *observer{};
+    TestController *controller{};
 };
 
 class CorrectKeywordsPresenter : public TaskPresenter {
