@@ -499,7 +499,8 @@ class NotifyingThatUserIsReadyForNextTrial : public ControllerUseCase {
 class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
   public:
     void initialize(TaskPresenter *) override {}
-    void showResponseSubmission() override {}
+    void showResponseSubmission() override { responseSubmissionShown_ = true; }
+    auto responseSubmissionShown() -> bool { return responseSubmissionShown_; }
     void notifyThatTaskHasStarted() override {}
     void notifyThatUserIsDoneResponding() override {}
     void notifyThatTrialHasStarted() override {
@@ -515,6 +516,7 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
   private:
     bool stopped_{};
     bool notifiedThatTrialHasStarted_{};
+    bool responseSubmissionShown_{};
 };
 
 class ExperimenterTests : public ::testing::Test {
@@ -803,6 +805,11 @@ EXPERIMENTER_TEST(presenterNotifiesTaskPresenterThatTrialHasStarted) {
 EXPERIMENTER_TEST(presenterShowsExitTestButtonWhenTrialCompletes) {
     model.completeTrial();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.exitTestButtonShown());
+}
+
+EXPERIMENTER_TEST(presenterShowsTaskResponseSubmissionWhenTrialCompletes) {
+    model.completeTrial();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionShown());
 }
 }
 }
