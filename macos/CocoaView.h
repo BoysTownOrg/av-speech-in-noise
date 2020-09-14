@@ -21,6 +21,7 @@
 
 namespace av_speech_in_noise {
 class CocoaExperimenterView : public ExperimenterView,
+                              public ExperimenterControl,
                               public FreeResponseControl,
                               public FreeResponseView,
                               public CorrectKeywordsControl,
@@ -29,7 +30,7 @@ class CocoaExperimenterView : public ExperimenterView,
                               public PassFailView {
   public:
     explicit CocoaExperimenterView(NSViewController *);
-    void attach(ExperimenterView::Observer *) override;
+    void attach(ExperimenterControl::Observer *) override;
     void attach(FreeResponseControl::Observer *) override;
     void attach(CorrectKeywordsControl::Observer *) override;
     void attach(PassFailControl::Observer *) override;
@@ -79,13 +80,13 @@ class CocoaExperimenterView : public ExperimenterView,
     NSButton *nextTrialButton;
     ExperimenterViewActions *actions;
     FreeResponseViewActions *freeResponseActions;
-    ExperimenterView::Observer *listener_{};
+    ExperimenterControl::Observer *listener_{};
     FreeResponseControl::Observer *freeResponseListener{};
     CorrectKeywordsControl::Observer *correctKeywordsListener{};
     PassFailControl::Observer *passFailListener{};
 };
 
-class CocoaTestSetupView : public TestSetupView {
+class CocoaTestSetupView : public TestSetupUI {
   public:
     explicit CocoaTestSetupView(NSViewController *);
     void show() override;
@@ -119,7 +120,7 @@ class CocoaTestSetupView : public TestSetupView {
 
 class CocoaTestSetupViewFactory : public MacOsTestSetupViewFactory {
   public:
-    auto make(NSViewController *c) -> std::unique_ptr<TestSetupView> override {
+    auto make(NSViewController *c) -> std::unique_ptr<TestSetupUI> override {
         return std::make_unique<CocoaTestSetupView>(c);
     }
 };

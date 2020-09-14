@@ -6,10 +6,12 @@
 #include <memory>
 
 namespace av_speech_in_noise {
+class TestSetupUI : public virtual TestSetupView,
+                    public virtual TestSetupControl {};
 class MacOsTestSetupViewFactory {
   public:
     virtual ~MacOsTestSetupViewFactory() = default;
-    virtual auto make(NSViewController *) -> std::unique_ptr<TestSetupView> = 0;
+    virtual auto make(NSViewController *) -> std::unique_ptr<TestSetupUI> = 0;
 };
 }
 

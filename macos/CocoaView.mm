@@ -308,9 +308,7 @@ auto CocoaTestSetupView::transducer() -> std::string {
     return transducerMenu.titleOfSelectedItem.UTF8String;
 }
 
-void CocoaTestSetupView::attach(Observer *listener) {
-    listener_ = listener;
-}
+void CocoaTestSetupView::attach(Observer *listener) { listener_ = listener; }
 
 void CocoaTestSetupView::notifyThatConfirmButtonHasBeenClicked() {
     listener_->notifyThatConfirmButtonHasBeenClicked();
@@ -629,9 +627,7 @@ void CocoaCoordinateResponseMeasureView::hideResponseButtons() {
     av_speech_in_noise::hide(responseButtons);
 }
 
-void CocoaCoordinateResponseMeasureView::attach(Observer *e) {
-    listener_ = e;
-}
+void CocoaCoordinateResponseMeasureView::attach(Observer *e) { listener_ = e; }
 
 void CocoaCoordinateResponseMeasureView::show() {
     [window makeKeyAndOrderFront:nil];
@@ -754,7 +750,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
     freeResponseActions->controller = this;
 }
 
-void CocoaExperimenterView::attach(ExperimenterView::Observer *e) {
+void CocoaExperimenterView::attach(ExperimenterControl::Observer *e) {
     listener_ = e;
 }
 
@@ -762,8 +758,7 @@ void CocoaExperimenterView::attach(FreeResponseControl::Observer *e) {
     freeResponseListener = e;
 }
 
-void CocoaExperimenterView::attach(
-    CorrectKeywordsControl::Observer *e) {
+void CocoaExperimenterView::attach(CorrectKeywordsControl::Observer *e) {
     correctKeywordsListener = e;
 }
 
