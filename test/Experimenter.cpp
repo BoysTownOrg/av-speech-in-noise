@@ -972,5 +972,12 @@ EXPERIMENTER_TEST(presenterDisplaysTrialNumberWhenInitializing) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"Trial 1"}, experimenterView.displayed());
 }
+
+EXPERIMENTER_TEST(presenterDisplaysTargetWhenInitializing) {
+    model.setTargetFileName("a");
+    experimenterPresenter.initialize(Method::unknown);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, experimenterView.secondaryDisplayed());
+}
 }
 }
