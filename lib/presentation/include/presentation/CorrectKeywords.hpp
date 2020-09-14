@@ -56,7 +56,7 @@ class CorrectKeywordsPresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    TestView &experimenterView;
+    TestView &testView;
     CorrectKeywordsView &view;
 };
 }

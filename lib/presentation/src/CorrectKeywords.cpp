@@ -14,30 +14,33 @@ void CorrectKeywordsController::attach(TaskController::Observer *e) {
 
 void CorrectKeywordsController::attach(TestController *r) { controller = r; }
 
+static void submitCorrectKeywords(Model &model, CorrectKeywordsControl &control,
+    TaskController::Observer *observer, TestController *controller) {
+    model.submit(
+        CorrectKeywords{readInteger(control.correctKeywords(), "number")});
+    observer->notifyThatUserIsDoneResponding();
+    controller
+        ->notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
+}
+
 void CorrectKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     try {
-        model.submit(
-            CorrectKeywords{readInteger(control.correctKeywords(), "number")});
-        observer->notifyThatUserIsDoneResponding();
-        controller
-            ->notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
+        submitCorrectKeywords(model, control, observer, controller);
     } catch (const std::runtime_error &e) {
         sessionView.showErrorMessage(e.what());
     }
 }
 
 CorrectKeywordsPresenter::CorrectKeywordsPresenter(
-    TestView &experimenterView, CorrectKeywordsView &view)
-    : experimenterView{experimenterView}, view{view} {}
+    TestView &testView, CorrectKeywordsView &view)
+    : testView{testView}, view{view} {}
 
-void CorrectKeywordsPresenter::start() {
-    experimenterView.showNextTrialButton();
-}
+void CorrectKeywordsPresenter::start() { testView.showNextTrialButton(); }
 
 void CorrectKeywordsPresenter::stop() { view.hideCorrectKeywordsSubmission(); }
 
 void CorrectKeywordsPresenter::notifyThatTaskHasStarted() {
-    experimenterView.hideNextTrialButton();
+    testView.hideNextTrialButton();
 }
 
 void CorrectKeywordsPresenter::notifyThatUserIsDoneResponding() {
