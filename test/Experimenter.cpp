@@ -952,5 +952,18 @@ EXPERIMENTER_TEST(initializingFixedLevelConsonantMethodInitializesTask) {
         initializingFixedLevelConsonantMethod, experimenterPresenter,
         consonantPresenter);
 }
+
+EXPERIMENTER_TEST(initializingAdaptivePassFailMethodInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingAdaptivePassFailMethod, experimenterPresenter,
+        passFailPresenter);
+}
+
+EXPERIMENTER_TEST(
+    initializingAdaptivePassFailMethodWithEyeTrackingInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingAdaptivePassFailMethodWithEyeTracking,
+        experimenterPresenter, passFailPresenter);
+}
 }
 }
