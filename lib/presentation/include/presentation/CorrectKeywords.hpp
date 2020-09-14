@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CORRECTKEYWORDS_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CORRECTKEYWORDS_HPP_
 
+#include "Interface.hpp"
 #include "Task.hpp"
 #include "Experimenter.hpp"
 #include "SessionView.hpp"
@@ -12,10 +13,11 @@ class CorrectKeywordsControl {
   public:
     class Observer {
       public:
-        virtual ~Observer() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
     };
-    virtual ~CorrectKeywordsControl() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        CorrectKeywordsControl);
     virtual void attach(Observer *) = 0;
     virtual auto correctKeywords() -> std::string = 0;
 };
