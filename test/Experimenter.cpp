@@ -822,5 +822,11 @@ EXPERIMENTER_TEST(presenterShowsNextTrialButtonAfterNextTrialIsReady) {
     experimenterPresenter.notifyThatNextTrialIsReady();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonShown());
 }
+
+EXPERIMENTER_TEST(presenterDisplaysMessage) {
+    experimenterPresenter.display("a");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, experimenterView.displayed());
+}
 }
 }
