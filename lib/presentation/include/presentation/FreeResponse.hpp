@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_FREERESPONSE_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_FREERESPONSE_HPP_
 
+#include "Interface.hpp"
 #include "Task.hpp"
 #include "Experimenter.hpp"
 #include <av-speech-in-noise/Model.hpp>
@@ -11,10 +12,10 @@ class FreeResponseControl {
   public:
     class Observer {
       public:
-        virtual ~Observer() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
     };
-    virtual ~FreeResponseControl() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(FreeResponseControl);
     virtual void attach(Observer *) = 0;
     virtual auto flagged() -> bool = 0;
     virtual auto freeResponse() -> std::string = 0;
@@ -22,7 +23,7 @@ class FreeResponseControl {
 
 class FreeResponseView {
   public:
-    virtual ~FreeResponseView() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(FreeResponseView);
     virtual void showFreeResponseSubmission() = 0;
     virtual void hideFreeResponseSubmission() = 0;
     virtual void clearFreeResponse() = 0;
