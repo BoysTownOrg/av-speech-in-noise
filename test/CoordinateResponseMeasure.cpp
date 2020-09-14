@@ -31,11 +31,11 @@ class CoordinateResponseMeasureControlStub
 
     void attach(Observer *e) override { listener_ = e; }
 
-    void notifyThatResponseButtonHasBeenClicked() {
+    void clickResponseButton() {
         listener_->notifyThatResponseButtonHasBeenClicked();
     }
 
-    void notifyThatReadyButtonHasBeenClicked() {
+    void clickReadyButton() {
         listener_->notifyThatReadyButtonHasBeenClicked();
     }
 
@@ -91,9 +91,8 @@ class CoordinateResponseMeasureViewStub : public CoordinateResponseMeasureView {
     bool nextTrialButtonShown_{};
 };
 
-void notifyThatReadyButtonHasBeenClicked(
-    CoordinateResponseMeasureControlStub &view) {
-    view.notifyThatReadyButtonHasBeenClicked();
+void clickReadyButton(CoordinateResponseMeasureControlStub &view) {
+    view.clickReadyButton();
 }
 
 void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
@@ -104,22 +103,19 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-void notifyThatResponseButtonHasBeenClicked(
-    CoordinateResponseMeasureControlStub &view) {
-    view.notifyThatResponseButtonHasBeenClicked();
+void clickResponseButton(CoordinateResponseMeasureControlStub &view) {
+    view.clickResponseButton();
 }
 
-class CoordinateResponseMeasureTests : public ::testing::Test {
+class CoordinateResponseMeasureControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
     CoordinateResponseMeasureControlStub control;
-    CoordinateResponseMeasureViewStub view;
     CoordinateResponseMeasureController controller{model, control};
-    CoordinateResponseMeasurePresenter presenter{view};
     TestControllerStub testController;
     TaskControllerObserverStub observer;
 
-    CoordinateResponseMeasureTests() {
+    CoordinateResponseMeasureControllerTests() {
         controller.attach(&testController);
         controller.attach(&observer);
     }
@@ -137,108 +133,108 @@ class CoordinateResponseMeasurePresenterTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_COLOR(model, c)                              \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(c, (model).responseParameters().color)
 
-#define COORDINATE_RESPONSE_MEASURE_TEST(a)                                    \
-    TEST_F(CoordinateResponseMeasureTests, a)
+#define COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(a)                         \
+    TEST_F(CoordinateResponseMeasureControllerTests, a)
 
 #define COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(a)                          \
     TEST_F(CoordinateResponseMeasurePresenterTests, a)
 
-COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(
-    presenterHidesReadyButtonWhenTaskStarts) {
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(hidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonHidden());
 }
 
 COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(
-    presenterHidesResponseButtonsAfterUserIsDoneResponding) {
+    hidesResponseButtonsAfterUserIsDoneResponding) {
     notifyThatUserIsDoneResponding(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(presenterHidesViewWhenStopped) {
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(hidesViewWhenStopped) {
     stop(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(
-    presenterHidesResponseButtonsWhenStopped) {
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(hidesResponseButtonsWhenStopped) {
     stop(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(presenterShowsViewWhenStarted) {
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(showsViewWhenStarted) {
     start(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
 }
 
-COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(
-    presenterShowsReadyButtonWhenStarted) {
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(showsReadyButtonWhenStarted) {
     start(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonShown());
 }
 
 COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(
-    presenterShowsResponseButtonWhenShowingResponseSubmission) {
+    showsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseButtonsShown());
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(
-    responderNotifiesThatUserIsReadyForNextTrialAfterReadyButtonIsClicked) {
-    notifyThatReadyButtonHasBeenClicked(control);
+COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
+    notifiesThatUserIsReadyForNextTrialAfterReadyButtonIsClicked) {
+    clickReadyButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsReadyForNextTrial());
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(
-    responderNotifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
-    notifyThatReadyButtonHasBeenClicked(control);
+COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
+    notifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
+    clickReadyButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatTaskHasStarted());
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(
-    responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
-    notifyThatResponseButtonHasBeenClicked(control);
+COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
+    notifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
+    clickResponseButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsReadyForNextTrial());
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(
-    responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
-    notifyThatResponseButtonHasBeenClicked(control);
+COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
+    notifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
+    clickResponseButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatUserIsDoneResponding());
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesNumberResponse) {
+COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
+    coordinateResponsePassesNumberResponse) {
     control.setNumberResponse("1");
-    notifyThatResponseButtonHasBeenClicked(control);
+    clickResponseButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.responseParameters().number);
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesGreenColor) {
+COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
+    coordinateResponsePassesGreenColor) {
     control.setGreenResponse();
-    notifyThatResponseButtonHasBeenClicked(control);
+    clickResponseButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::green);
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesRedColor) {
+COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(coordinateResponsePassesRedColor) {
     control.setRedResponse();
-    notifyThatResponseButtonHasBeenClicked(control);
+    clickResponseButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::red);
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesBlueColor) {
+COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(coordinateResponsePassesBlueColor) {
     control.setBlueResponse();
-    notifyThatResponseButtonHasBeenClicked(control);
+    clickResponseButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::blue);
 }
 
-COORDINATE_RESPONSE_MEASURE_TEST(coordinateResponsePassesWhiteColor) {
+COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
+    coordinateResponsePassesWhiteColor) {
     control.setGrayResponse();
-    notifyThatResponseButtonHasBeenClicked(control);
+    clickResponseButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
         model, coordinate_response_measure::Color::white);
 }
