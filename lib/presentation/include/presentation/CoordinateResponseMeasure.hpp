@@ -46,7 +46,7 @@ class CoordinateResponseMeasureController
 
   private:
     Model &model;
-    CoordinateResponseMeasureControl &view;
+    CoordinateResponseMeasureControl &control;
     TaskController::Observer *observer{};
     TestController *controller{};
 };

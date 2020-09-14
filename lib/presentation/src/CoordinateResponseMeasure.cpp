@@ -3,29 +3,28 @@
 namespace av_speech_in_noise {
 using coordinate_response_measure::Color;
 
-static auto colorResponse(CoordinateResponseMeasureControl &inputView)
-    -> Color {
-    if (inputView.greenResponse())
+static auto colorResponse(CoordinateResponseMeasureControl &control) -> Color {
+    if (control.greenResponse())
         return Color::green;
-    if (inputView.blueResponse())
+    if (control.blueResponse())
         return Color::blue;
-    if (inputView.whiteResponse())
+    if (control.whiteResponse())
         return Color::white;
     return Color::red;
 }
 
-static auto subjectResponse(CoordinateResponseMeasureControl &inputView)
+static auto subjectResponse(CoordinateResponseMeasureControl &control)
     -> coordinate_response_measure::Response {
     coordinate_response_measure::Response p{};
-    p.color = colorResponse(inputView);
-    p.number = std::stoi(inputView.numberResponse());
+    p.color = colorResponse(control);
+    p.number = std::stoi(control.numberResponse());
     return p;
 }
 
 CoordinateResponseMeasureController::CoordinateResponseMeasureController(
-    Model &model, CoordinateResponseMeasureControl &view)
-    : model{model}, view{view} {
-    view.attach(this);
+    Model &model, CoordinateResponseMeasureControl &control)
+    : model{model}, control{control} {
+    control.attach(this);
 }
 
 void CoordinateResponseMeasureController::attach(TaskController::Observer *e) {
@@ -44,7 +43,7 @@ void CoordinateResponseMeasureController::
 
 void CoordinateResponseMeasureController::
     notifyThatResponseButtonHasBeenClicked() {
-    model.submit(subjectResponse(view));
+    model.submit(subjectResponse(control));
     observer->notifyThatUserIsDoneResponding();
     notifyThatUserIsReadyForNextTrial(controller);
 }
