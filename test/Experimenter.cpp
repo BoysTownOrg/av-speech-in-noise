@@ -817,5 +817,10 @@ EXPERIMENTER_TEST(presenterHidesContinueTestingDialogAfterNextTrialIsReady) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterView.continueTestingDialogHidden());
 }
+
+EXPERIMENTER_TEST(presenterShowsNextTrialButtonAfterNextTrialIsReady) {
+    experimenterPresenter.notifyThatNextTrialIsReady();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonShown());
+}
 }
 }
