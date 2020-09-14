@@ -4,13 +4,12 @@
 
 namespace av_speech_in_noise {
 static void displayTrialInformation(
-    Model &model, ExperimenterController::Observer *presenter) {
+    Model &model, TestController::Observer *presenter) {
     presenter->display("Trial " + std::to_string(model.trialNumber()));
     presenter->secondaryDisplay(model.targetFileName());
 }
 
-static void readyNextTrial(
-    Model &model, ExperimenterController::Observer *presenter) {
+static void readyNextTrial(Model &model, TestController::Observer *presenter) {
     displayTrialInformation(model, presenter);
     presenter->notifyThatNextTrialIsReady();
 }
@@ -50,7 +49,7 @@ ExperimenterControllerImpl::ExperimenterControllerImpl(Model &model,
     }
 }
 
-void ExperimenterControllerImpl::attach(ExperimenterController::Observer *e) {
+void ExperimenterControllerImpl::attach(TestController::Observer *e) {
     listener = e;
 }
 
@@ -62,8 +61,8 @@ void ExperimenterControllerImpl::exitTest() {
     notifyThatTestIsComplete(responder);
 }
 
-static void playTrial(Model &model, SessionView &view,
-    ExperimenterController::Observer *listener) {
+static void playTrial(
+    Model &model, SessionView &view, TestController::Observer *listener) {
     model.playTrial(AudioSettings{view.audioDevice()});
     listener->notifyThatTrialHasStarted();
 }
@@ -90,8 +89,7 @@ static void ifTestCompleteElse(Model &model, const std::function<void()> &f,
 }
 
 static void readyNextTrialIfTestIncompleteElse(Model &model,
-    ExperimenterController::Observer *listener,
-    const std::function<void()> &f) {
+    TestController::Observer *listener, const std::function<void()> &f) {
     ifTestCompleteElse(model, f, [&]() { readyNextTrial(model, listener); });
 }
 

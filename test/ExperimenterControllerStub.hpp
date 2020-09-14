@@ -4,7 +4,7 @@
 #include <presentation/Experimenter.hpp>
 
 namespace av_speech_in_noise {
-class ExperimenterControllerStub : public ExperimenterController {
+class ExperimenterControllerStub : public TestController {
   public:
     void attach(Observer *) override {}
     void attach(SessionController *) override {}

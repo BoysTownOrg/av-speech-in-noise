@@ -6,12 +6,10 @@ PassFailController::PassFailController(Model &model, PassFailControl &view)
     view.attach(this);
 }
 
-void PassFailController::attach(TaskController::Observer *e) {
-    listener = e;
-}
+void PassFailController::attach(TaskController::Observer *e) { listener = e; }
 
 static void notifyThatUserIsDoneResponding(
-    TaskController::Observer *listener, ExperimenterController *responder) {
+    TaskController::Observer *listener, TestController *responder) {
     listener->notifyThatUserIsDoneResponding();
     responder
         ->notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
@@ -27,7 +25,7 @@ void PassFailController::notifyThatIncorrectButtonHasBeenClicked() {
     notifyThatUserIsDoneResponding(listener, responder);
 }
 
-void PassFailController::attach(ExperimenterController *p) { responder = p; }
+void PassFailController::attach(TestController *p) { responder = p; }
 
 PassFailPresenter::PassFailPresenter(
     ExperimenterView &experimenterView, PassFailView &view)

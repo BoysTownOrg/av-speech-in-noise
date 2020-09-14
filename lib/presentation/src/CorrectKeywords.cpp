@@ -12,9 +12,7 @@ void CorrectKeywordsController::attach(TaskController::Observer *e) {
     listener = e;
 }
 
-void CorrectKeywordsController::attach(ExperimenterController *r) {
-    responder = r;
-}
+void CorrectKeywordsController::attach(TestController *r) { responder = r; }
 
 void CorrectKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     try {

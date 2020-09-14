@@ -33,7 +33,7 @@ class CorrectKeywordsController : public TaskController,
     explicit CorrectKeywordsController(
         Model &, SessionView &, CorrectKeywordsControl &);
     void attach(TaskController::Observer *e) override;
-    void attach(ExperimenterController *r) override;
+    void attach(TestController *r) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
@@ -41,7 +41,7 @@ class CorrectKeywordsController : public TaskController,
     SessionView &view;
     CorrectKeywordsControl &keywordsView;
     TaskController::Observer *listener{};
-    ExperimenterController *responder{};
+    TestController *responder{};
 };
 
 class CorrectKeywordsPresenter : public TaskPresenter {

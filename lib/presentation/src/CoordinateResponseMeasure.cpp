@@ -28,16 +28,16 @@ CoordinateResponseMeasureController::CoordinateResponseMeasureController(
     view.attach(this);
 }
 
-void CoordinateResponseMeasureController::attach(
-    TaskController::Observer *e) {
+void CoordinateResponseMeasureController::attach(TaskController::Observer *e) {
     listener = e;
 }
 
-static void notifyThatUserIsReadyForNextTrial(ExperimenterController *r) {
+static void notifyThatUserIsReadyForNextTrial(TestController *r) {
     r->notifyThatUserIsReadyForNextTrial();
 }
 
-void CoordinateResponseMeasureController::notifyThatReadyButtonHasBeenClicked() {
+void CoordinateResponseMeasureController::
+    notifyThatReadyButtonHasBeenClicked() {
     listener->notifyThatTaskHasStarted();
     notifyThatUserIsReadyForNextTrial(responder);
 }
@@ -49,7 +49,7 @@ void CoordinateResponseMeasureController::
     notifyThatUserIsReadyForNextTrial(responder);
 }
 
-void CoordinateResponseMeasureController::attach(ExperimenterController *e) {
+void CoordinateResponseMeasureController::attach(TestController *e) {
     responder = e;
 }
 

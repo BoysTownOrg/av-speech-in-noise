@@ -8,7 +8,7 @@
 
 namespace av_speech_in_noise {
 class ExperimenterControllerImpl : public ExperimenterControl::Observer,
-                                   public ExperimenterController {
+                                   public TestController {
   public:
     explicit ExperimenterControllerImpl(Model &, SessionView &,
         ExperimenterControl &, TaskController *consonantController,
@@ -20,7 +20,7 @@ class ExperimenterControllerImpl : public ExperimenterControl::Observer,
         TaskController *correctKeywordsController,
         TaskPresenter *correctKeywordsPresenter,
         TaskController *passFailController, TaskPresenter *passFailPresenter);
-    void attach(ExperimenterController::Observer *e) override;
+    void attach(TestController::Observer *e) override;
     void attach(SessionController *p) override;
     void exitTest() override;
     void playTrial() override;
@@ -34,7 +34,7 @@ class ExperimenterControllerImpl : public ExperimenterControl::Observer,
   private:
     Model &model;
     SessionView &mainView;
-    ExperimenterController::Observer *listener{};
+    TestController::Observer *listener{};
     SessionController *responder{};
 };
 

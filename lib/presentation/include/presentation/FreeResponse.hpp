@@ -29,18 +29,18 @@ class FreeResponseView {
 };
 
 class FreeResponseController : public TaskController,
-                              public FreeResponseControl::Observer {
+                               public FreeResponseControl::Observer {
   public:
     FreeResponseController(Model &, FreeResponseControl &);
     void attach(TaskController::Observer *) override;
-    void attach(ExperimenterController *) override;
+    void attach(TestController *) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
     Model &model;
     FreeResponseControl &view;
     TaskController::Observer *listener{};
-    ExperimenterController *responder{};
+    TestController *responder{};
 };
 
 class FreeResponsePresenter : public TaskPresenter {

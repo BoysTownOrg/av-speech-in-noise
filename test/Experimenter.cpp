@@ -365,7 +365,7 @@ void acceptContinuingTesting(ExperimenterViewStub &view) {
 }
 
 void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
-    ExperimenterController &responder) {
+    TestController &responder) {
     responder
         .notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
@@ -379,7 +379,7 @@ void setTestComplete(ModelStub &model) { model.setTestComplete(); }
 class TaskControllerStub : public TaskController {
   public:
     void attach(Observer *) override {}
-    void attach(ExperimenterController *) override {}
+    void attach(TestController *) override {}
 };
 
 class PresenterStub : public SessionController {
@@ -397,8 +397,7 @@ class PresenterStub : public SessionController {
     bool notifiedThatTestIsComplete_{};
 };
 
-class ExperimenterControllerListenerStub
-    : public ExperimenterController::Observer {
+class ExperimenterControllerListenerStub : public TestController::Observer {
   public:
     void notifyThatTrialHasStarted() override {
         notifiedThatTrialHasStarted_ = true;

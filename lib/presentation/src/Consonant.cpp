@@ -45,11 +45,9 @@ void ConsonantTaskController::attach(TaskController::Observer *e) {
     observer = e;
 }
 
-void ConsonantTaskController::attach(ExperimenterController *p) {
-    controller = p;
-}
+void ConsonantTaskController::attach(TestController *p) { controller = p; }
 
-static void notifyThatUserIsReadyForNextTrial(ExperimenterController *r) {
+static void notifyThatUserIsReadyForNextTrial(TestController *r) {
     r->notifyThatUserIsReadyForNextTrial();
 }
 

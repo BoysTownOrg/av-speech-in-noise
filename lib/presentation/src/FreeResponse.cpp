@@ -11,9 +11,7 @@ void FreeResponseController::attach(TaskController::Observer *e) {
     listener = e;
 }
 
-void FreeResponseController::attach(ExperimenterController *e) {
-    responder = e;
-}
+void FreeResponseController::attach(TestController *e) { responder = e; }
 
 void FreeResponseController::notifyThatSubmitButtonHasBeenClicked() {
     model.submit(FreeResponse{view.freeResponse(), view.flagged()});

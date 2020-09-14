@@ -26,18 +26,18 @@ class PassFailView {
 };
 
 class PassFailController : public TaskController,
-                          public PassFailControl::Observer {
+                           public PassFailControl::Observer {
   public:
     PassFailController(Model &, PassFailControl &);
     void attach(TaskController::Observer *) override;
-    void attach(ExperimenterController *) override;
+    void attach(TestController *) override;
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
 
   private:
     Model &model;
     TaskController::Observer *listener{};
-    ExperimenterController *responder{};
+    TestController *responder{};
 };
 
 class PassFailPresenter : public TaskPresenter {

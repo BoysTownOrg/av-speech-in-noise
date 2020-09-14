@@ -36,7 +36,7 @@ class ExperimenterView {
     virtual void secondaryDisplay(std::string) = 0;
 };
 
-class ExperimenterController {
+class TestController {
   public:
     class Observer {
       public:
@@ -48,7 +48,7 @@ class ExperimenterController {
         virtual void secondaryDisplay(const std::string &) = 0;
         virtual void notifyThatNextTrialIsReady() = 0;
     };
-    virtual ~ExperimenterController() = default;
+    virtual ~TestController() = default;
     virtual void attach(Observer *) = 0;
     virtual void attach(SessionController *) = 0;
     virtual void
@@ -57,7 +57,7 @@ class ExperimenterController {
     virtual void notifyThatUserIsReadyForNextTrial() = 0;
 };
 
-class ExperimenterPresenter : public virtual ExperimenterController::Observer,
+class ExperimenterPresenter : public virtual TestController::Observer,
                               public virtual Presenter {
   public:
     virtual void initialize(Method) = 0;

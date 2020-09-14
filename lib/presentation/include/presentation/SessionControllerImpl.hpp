@@ -12,7 +12,7 @@ class SessionControllerImpl : public SessionController {
     SessionControllerImpl(Model &, SessionView &,
         TestSetupController *testSetupController,
         TestSetupPresenter *testSetupPresenter,
-        ExperimenterController *experimenterController,
+        TestController *experimenterController,
         ExperimenterPresenter *experimenterPresenter);
     void notifyThatTestIsComplete() override;
     void prepare(Method m) override;

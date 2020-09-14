@@ -42,13 +42,13 @@ class CoordinateResponseMeasureController
     void attach(TaskController::Observer *e) override;
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
-    void attach(ExperimenterController *e) override;
+    void attach(TestController *e) override;
 
   private:
     Model &model;
     CoordinateResponseMeasureControl &view;
     TaskController::Observer *listener{};
-    ExperimenterController *responder{};
+    TestController *responder{};
 };
 
 class CoordinateResponseMeasurePresenter : public TaskPresenter {

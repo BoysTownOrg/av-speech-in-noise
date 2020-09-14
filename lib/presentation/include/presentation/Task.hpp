@@ -16,7 +16,7 @@ class TaskController {
     };
     virtual ~TaskController() = default;
     virtual void attach(Observer *) = 0;
-    virtual void attach(ExperimenterController *) = 0;
+    virtual void attach(TestController *) = 0;
 };
 
 class TaskPresenter : virtual public TaskController::Observer,
