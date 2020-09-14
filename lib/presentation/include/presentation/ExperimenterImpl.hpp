@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_EXPERIMENTERIMPL_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_EXPERIMENTERIMPL_HPP_
 
-#include "Experimenter.hpp"
+#include "Test.hpp"
 #include "SessionView.hpp"
 #include "Task.hpp"
 #include <av-speech-in-noise/Model.hpp>

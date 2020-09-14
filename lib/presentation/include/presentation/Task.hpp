@@ -2,7 +2,7 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TASK_HPP_
 
 #include "Presenter.hpp"
-#include "Experimenter.hpp"
+#include "Test.hpp"
 
 namespace av_speech_in_noise {
 class TaskController {

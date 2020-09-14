@@ -3,7 +3,7 @@
 
 #include "Interface.hpp"
 #include "Task.hpp"
-#include "Experimenter.hpp"
+#include "Test.hpp"
 #include "SessionView.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <string>

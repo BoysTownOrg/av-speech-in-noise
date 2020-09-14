@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_TESTS_EXPERIMENTERCONTROLLERSTUB_HPP_
 #define AV_SPEECH_IN_NOISE_TESTS_EXPERIMENTERCONTROLLERSTUB_HPP_
 
-#include <presentation/Experimenter.hpp>
+#include <presentation/Test.hpp>
 
 namespace av_speech_in_noise {
 class ExperimenterControllerStub : public TestController {
