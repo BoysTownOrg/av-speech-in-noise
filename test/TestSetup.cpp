@@ -960,60 +960,8 @@ TEST_SETUP_TEST(
     assertPassesSubjectId(confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
-TEST_SETUP_TEST(confirmingAdaptivePassFailTestPassesSubjectId) {
-    assertPassesSubjectId(confirmingAdaptivePassFailTest);
-}
-
-TEST_SETUP_TEST(confirmingAdaptivePassFailTestWithEyeTrackingPassesSubjectId) {
-    assertPassesSubjectId(confirmingAdaptivePassFailTestWithEyeTracking);
-}
-
-TEST_SETUP_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesSubjectId) {
-    assertPassesSubjectId(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-TEST_SETUP_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesSubjectId) {
-    assertPassesSubjectId(
-        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
-}
-
-TEST_SETUP_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTrackingPassesSubjectId) {
-    assertPassesSubjectId(
-        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking);
-}
-
-TEST_SETUP_TEST(confirmingFixedLevelConsonantTestPassesSubjectId) {
-    assertPassesSubjectId(confirmingFixedLevelConsonantTest);
-}
-
 TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
     assertPassesTesterId(confirmingAdaptiveCoordinateResponseMeasureTest);
-}
-
-TEST_SETUP_TEST(confirmingAdaptivePassFailTestPassesTesterId) {
-    assertPassesTesterId(confirmingAdaptivePassFailTest);
-}
-
-TEST_SETUP_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesTesterId) {
-    assertPassesTesterId(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-TEST_SETUP_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTesterId) {
-    assertPassesTesterId(
-        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
-}
-
-TEST_SETUP_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTrackingPassesTesterId) {
-    assertPassesTesterId(
-        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking);
 }
 
 TEST_SETUP_TEST(playCalibrationPassesFilePath) {
@@ -1025,22 +973,6 @@ TEST_SETUP_TEST(playCalibrationPassesFilePath) {
 
 TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
     assertPassesSession(confirmingAdaptiveCoordinateResponseMeasureTest);
-}
-
-TEST_SETUP_TEST(confirmingAdaptivePassFailTestPassesSession) {
-    assertPassesSession(confirmingAdaptivePassFailTest);
-}
-
-TEST_SETUP_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesSession) {
-    assertPassesSession(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-TEST_SETUP_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesSession) {
-    assertPassesSession(
-        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
 }
 
 TEST_SETUP_TEST(
