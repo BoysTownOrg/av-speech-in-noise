@@ -491,15 +491,19 @@ class NotifyingThatUserIsReadyForNextTrial : public ControllerUseCase {
 
 class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
   public:
-    void initialize(TaskPresenter *) override {}
+    void initialize(TaskPresenter *p) override { presenter_ = p; }
+    auto presenter() -> TaskPresenter * { return presenter_; }
     void showResponseSubmission() override { responseSubmissionShown_ = true; }
-    auto responseSubmissionShown() -> bool { return responseSubmissionShown_; }
+    [[nodiscard]] auto responseSubmissionShown() const -> bool {
+        return responseSubmissionShown_;
+    }
     void notifyThatTaskHasStarted() override {}
     void notifyThatUserIsDoneResponding() override {}
     void notifyThatTrialHasStarted() override {
         notifiedThatTrialHasStarted_ = true;
     }
-    void start() override {}
+    void start() override { started_ = true; }
+    [[nodiscard]] auto started() const -> bool { return started_; }
     void stop() override { stopped_ = true; }
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
     [[nodiscard]] auto notifiedThatTrialHasStarted() const -> bool {
@@ -507,7 +511,9 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
     }
 
   private:
+    TaskPresenter *presenter_{};
     bool stopped_{};
+    bool started_{};
     bool notifiedThatTrialHasStarted_{};
     bool responseSubmissionShown_{};
 };
@@ -838,6 +844,19 @@ EXPERIMENTER_TEST(presenterSetsContinueTestingDialogMessage) {
     experimenterPresenter.setContinueTestingDialogMessage("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, experimenterView.continueTestingDialogMessage());
+}
+
+EXPERIMENTER_TEST(presenterStartsTaskPresenterWhenInitializing) {
+    experimenterPresenter.initialize(Method::unknown);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.started());
+}
+
+EXPERIMENTER_TEST(presenterInitializesAppropriateTask) {
+    initializingAdaptiveCoordinateResponseMeasureMethod.run(
+        experimenterPresenter);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        static_cast<TaskPresenter *>(&coordinateResponseMeasurePresenter),
+        taskPresenter.presenter());
 }
 }
 }
