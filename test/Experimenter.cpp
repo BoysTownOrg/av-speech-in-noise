@@ -811,5 +811,11 @@ EXPERIMENTER_TEST(presenterShowsTaskResponseSubmissionWhenTrialCompletes) {
     model.completeTrial();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionShown());
 }
+
+EXPERIMENTER_TEST(presenterHidesContinueTestingDialogAfterNextTrialIsReady) {
+    experimenterPresenter.notifyThatNextTrialIsReady();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        experimenterView.continueTestingDialogHidden());
+}
 }
 }
