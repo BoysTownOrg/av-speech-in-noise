@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CONSONANTTASK_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CONSONANTTASK_HPP_
 
+#include "View.hpp"
 #include "Task.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
@@ -19,13 +20,10 @@ class ConsonantTaskControl {
     virtual auto consonant() -> std::string = 0;
 };
 
-class ConsonantTaskView {
+class ConsonantTaskView : public virtual View {
   public:
-    virtual ~ConsonantTaskView() = default;
     virtual void showCursor() = 0;
     virtual void hideCursor() = 0;
-    virtual void show() = 0;
-    virtual void hide() = 0;
     virtual void showReadyButton() = 0;
     virtual void hideReadyButton() = 0;
     virtual void hideResponseButtons() = 0;
