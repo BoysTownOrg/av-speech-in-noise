@@ -15,18 +15,6 @@
 
 namespace av_speech_in_noise {
 namespace {
-template <typename T> class Collection {
-  public:
-    explicit Collection(std::vector<T> items = {}) : items{std::move(items)} {}
-
-    [[nodiscard]] auto contains(const T &item) const -> bool {
-        return std::find(items.begin(), items.end(), item) != items.end();
-    }
-
-  private:
-    std::vector<T> items{};
-};
-
 class TestSetupViewStub : public TestSetupView, public TestSetupControl {
   public:
     auto testSettingsFile() -> std::string override {
@@ -41,10 +29,6 @@ class TestSetupViewStub : public TestSetupView, public TestSetupControl {
 
     void browseForTestSettingsFile() {
         listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
-    }
-
-    [[nodiscard]] auto transducers() const -> std::vector<std::string> {
-        return transducers_;
     }
 
     void populateTransducerMenu(std::vector<std::string> v) override {
@@ -119,8 +103,6 @@ class ViewStub : public SessionView {
 
     void eventLoop() override { eventLoopCalled_ = true; }
 
-    [[nodiscard]] auto eventLoopCalled() const { return eventLoopCalled_; }
-
     auto browseForDirectory() -> std::string override {
         return browseForDirectoryResult_;
     }
@@ -140,8 +122,6 @@ class ViewStub : public SessionView {
     void populateAudioDeviceMenu(std::vector<std::string> v) override {
         audioDevices_ = std::move(v);
     }
-
-    [[nodiscard]] auto audioDevices() const { return audioDevices_; }
 
   private:
     std::vector<std::string> audioDevices_;
@@ -575,27 +555,6 @@ void assertEntryEquals(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, entry(useCase));
 }
 
-void assertHidesPlayTrialButton(PlayingTrial &useCase) {
-    run(useCase);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(useCase.nextTrialButtonHidden());
-}
-
-void assertConfirmTestSetupShowsNextTrialButton(
-    ConfirmingTestSetup &confirmingTest, PlayingTrial &playingTrial) {
-    run(confirmingTest);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(playingTrial.nextTrialButtonShown());
-}
-
-void assertShowsNextTrialButton(TrialSubmission &useCase) {
-    run(useCase);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(useCase.nextTrialButtonShown());
-}
-
-void assertResponseViewHidden(TrialSubmission &useCase) {
-    run(useCase);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(useCase.responseViewHidden());
-}
-
 void playCalibration(TestSetupViewStub &view) { view.playCalibration(); }
 
 auto shown(TestSetupViewStub &view) -> bool { return view.shown(); }
@@ -609,10 +568,6 @@ auto hidden(TestSetupViewStub &view) -> bool { return view.hidden(); }
 void completeTrial(ModelStub &model) { model.completeTrial(); }
 
 auto errorMessage(ViewStub &view) -> std::string { return view.errorMessage(); }
-
-void assertPassedColor(ModelStub &model, coordinate_response_measure::Color c) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(c, model.responseParameters().color);
-}
 
 auto calibration(ModelStub &model) -> const Calibration & {
     return model.calibration();
@@ -628,8 +583,8 @@ auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
 
 class SessionControllerStub : public SessionController {
   public:
-    void notifyThatTestIsComplete() {}
-    void prepare(Method m) { method_ = m; }
+    void notifyThatTestIsComplete() override {}
+    void prepare(Method m) override { method_ = m; }
     auto method() -> Method { return method_; }
 
   private:
@@ -638,7 +593,8 @@ class SessionControllerStub : public SessionController {
 
 class TestSetupControllerObserverStub : public TestSetupController::Observer {
   public:
-    void notifyThatUserHasSelectedTestSettingsFile(const std::string &s) {
+    void notifyThatUserHasSelectedTestSettingsFile(
+        const std::string &s) override {
         testSettingsFile_ = s;
     }
     auto testSettingsFile() -> std::string { return testSettingsFile_; }
@@ -737,33 +693,6 @@ class TestSetupTests : public ::testing::Test {
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"a"}, model.trialParameters().audioDevice);
-    }
-
-    void assertPlaysTrial(UseCase &useCase) {
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(trialPlayed(model));
-    }
-
-    void assertCompleteTestShowsSetupView(TrialSubmission &useCase) {
-        setTestComplete(model);
-        run(useCase);
-        assertShown(setupView);
-    }
-
-    void assertShowsSetupView(UseCase &useCase) {
-        run(useCase);
-        assertShown(setupView);
-    }
-
-    void assertIncompleteTestDoesNotShowSetupView(TrialSubmission &useCase) {
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_FALSE(shown(setupView));
-    }
-
-    void assertCompleteTestDoesNotPlayTrial(UseCase &useCase) {
-        setTestComplete(model);
-        run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_FALSE(trialPlayed(model));
     }
 
     void assertDoesNotHideTestSetupView(UseCase &useCase) {
