@@ -37,8 +37,8 @@ class PassFailController : public TaskController,
 
   private:
     Model &model;
-    TaskController::Observer *listener{};
-    TestController *responder{};
+    TaskController::Observer *observer{};
+    TestController *controller{};
 };
 
 class PassFailPresenter : public TaskPresenter {
@@ -51,7 +51,7 @@ class PassFailPresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    TestView &experimenterView;
+    TestView &testView;
     PassFailView &view;
 };
 }

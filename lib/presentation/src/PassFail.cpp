@@ -6,37 +6,37 @@ PassFailController::PassFailController(Model &model, PassFailControl &view)
     view.attach(this);
 }
 
-void PassFailController::attach(TaskController::Observer *e) { listener = e; }
+void PassFailController::attach(TaskController::Observer *e) { observer = e; }
 
 static void notifyThatUserIsDoneResponding(
-    TaskController::Observer *listener, TestController *responder) {
+    TaskController::Observer *listener, TestController *controller) {
     listener->notifyThatUserIsDoneResponding();
-    responder
+    controller
         ->notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
 void PassFailController::notifyThatCorrectButtonHasBeenClicked() {
     model.submitCorrectResponse();
-    notifyThatUserIsDoneResponding(listener, responder);
+    notifyThatUserIsDoneResponding(observer, controller);
 }
 
 void PassFailController::notifyThatIncorrectButtonHasBeenClicked() {
     model.submitIncorrectResponse();
-    notifyThatUserIsDoneResponding(listener, responder);
+    notifyThatUserIsDoneResponding(observer, controller);
 }
 
-void PassFailController::attach(TestController *p) { responder = p; }
+void PassFailController::attach(TestController *p) { controller = p; }
 
 PassFailPresenter::PassFailPresenter(
     TestView &experimenterView, PassFailView &view)
-    : experimenterView{experimenterView}, view{view} {}
+    : testView{experimenterView}, view{view} {}
 
-void PassFailPresenter::start() { experimenterView.showNextTrialButton(); }
+void PassFailPresenter::start() { testView.showNextTrialButton(); }
 
 void PassFailPresenter::stop() { view.hideEvaluationButtons(); }
 
 void PassFailPresenter::notifyThatTaskHasStarted() {
-    experimenterView.hideNextTrialButton();
+    testView.hideNextTrialButton();
 }
 
 void PassFailPresenter::notifyThatUserIsDoneResponding() {
