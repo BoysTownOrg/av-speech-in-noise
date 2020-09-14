@@ -20,7 +20,7 @@
 @class FreeResponseViewActions;
 
 namespace av_speech_in_noise {
-class CocoaExperimenterView : public ExperimenterView,
+class CocoaExperimenterView : public TestView,
                               public ExperimenterControl,
                               public FreeResponseControl,
                               public FreeResponseView,

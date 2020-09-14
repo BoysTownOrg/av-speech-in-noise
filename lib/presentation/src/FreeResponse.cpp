@@ -20,7 +20,7 @@ void FreeResponseController::notifyThatSubmitButtonHasBeenClicked() {
 }
 
 FreeResponsePresenter::FreeResponsePresenter(
-    ExperimenterView &experimenterView, FreeResponseView &view)
+    TestView &experimenterView, FreeResponseView &view)
     : experimenterView{experimenterView}, view{view} {}
 
 void FreeResponsePresenter::start() { experimenterView.showNextTrialButton(); }

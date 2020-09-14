@@ -250,7 +250,7 @@ class TestSetupViewStub : public TestSetupView, public TestSetupControl {
     bool hidden_{};
 };
 
-class ExperimenterViewStub : public ExperimenterView,
+class ExperimenterViewStub : public TestView,
                              public ExperimenterControl,
                              public FreeResponseControl,
                              public FreeResponseView,

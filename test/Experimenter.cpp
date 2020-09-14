@@ -8,8 +8,7 @@
 
 namespace av_speech_in_noise {
 namespace {
-class ExperimenterViewStub : public ExperimenterView,
-                             public ExperimenterControl {
+class ExperimenterViewStub : public TestView, public ExperimenterControl {
   public:
     void declineContinuingTesting() { listener_->declineContinuingTesting(); }
 

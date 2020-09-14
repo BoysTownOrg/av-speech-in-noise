@@ -72,7 +72,7 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class ExperimenterViewStub : public ExperimenterView {
+class ExperimenterViewStub : public TestView {
   public:
     void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
@@ -125,8 +125,7 @@ class FreeResponseTests : public ::testing::Test {
 
 FREE_RESPONSE_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterView.nextTrialButtonHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonHidden());
 }
 
 FREE_RESPONSE_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
@@ -141,8 +140,7 @@ FREE_RESPONSE_TEST(presenterHidesResponseButtonsWhenStopped) {
 
 FREE_RESPONSE_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterView.nextTrialButtonShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonShown());
 }
 
 FREE_RESPONSE_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {

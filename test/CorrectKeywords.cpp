@@ -79,7 +79,7 @@ class ViewStub : public SessionView {
     std::string errorMessage_;
 };
 
-class ExperimenterViewStub : public ExperimenterView {
+class ExperimenterViewStub : public TestView {
   public:
     void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
@@ -133,8 +133,7 @@ class CorrectKeywordsTests : public ::testing::Test {
 
 CORRECT_KEYWORDS_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterView.nextTrialButtonHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonHidden());
 }
 
 CORRECT_KEYWORDS_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
@@ -149,8 +148,7 @@ CORRECT_KEYWORDS_TEST(presenterHidesResponseButtonsWhenStopped) {
 
 CORRECT_KEYWORDS_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterView.nextTrialButtonShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonShown());
 }
 
 CORRECT_KEYWORDS_TEST(

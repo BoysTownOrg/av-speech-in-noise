@@ -42,7 +42,7 @@ class PassFailController : public TaskController,
 
 class PassFailPresenter : public TaskPresenter {
   public:
-    PassFailPresenter(ExperimenterView &, PassFailView &);
+    PassFailPresenter(TestView &, PassFailView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
@@ -50,7 +50,7 @@ class PassFailPresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    ExperimenterView &experimenterView;
+    TestView &experimenterView;
     PassFailView &view;
 };
 }

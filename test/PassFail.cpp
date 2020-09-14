@@ -59,7 +59,7 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class ExperimenterViewStub : public ExperimenterView {
+class ExperimenterViewStub : public TestView {
   public:
     void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
@@ -112,8 +112,7 @@ class PassFailTests : public ::testing::Test {
 
 PASS_FAIL_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterView.nextTrialButtonHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonHidden());
 }
 
 PASS_FAIL_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
@@ -128,8 +127,7 @@ PASS_FAIL_TEST(presenterHidesResponseButtonsWhenStopped) {
 
 PASS_FAIL_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterView.nextTrialButtonShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonShown());
 }
 
 PASS_FAIL_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {

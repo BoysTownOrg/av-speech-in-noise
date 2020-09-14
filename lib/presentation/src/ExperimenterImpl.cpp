@@ -127,7 +127,7 @@ void ExperimenterControllerImpl::notifyThatUserIsReadyForNextTrial() {
 void ExperimenterControllerImpl::attach(SessionController *p) { responder = p; }
 
 ExperimenterPresenterImpl::ExperimenterPresenterImpl(Model &model,
-    ExperimenterView &view, TaskPresenter *consonantPresenter,
+    TestView &view, TaskPresenter *consonantPresenter,
     TaskPresenter *coordinateResponseMeasurePresenter,
     TaskPresenter *freeResponsePresenter,
     TaskPresenter *correctKeywordsPresenter, TaskPresenter *passFailPresenter,

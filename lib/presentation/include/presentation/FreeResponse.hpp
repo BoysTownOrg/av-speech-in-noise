@@ -45,7 +45,7 @@ class FreeResponseController : public TaskController,
 
 class FreeResponsePresenter : public TaskPresenter {
   public:
-    FreeResponsePresenter(ExperimenterView &, FreeResponseView &);
+    FreeResponsePresenter(TestView &, FreeResponseView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
@@ -53,7 +53,7 @@ class FreeResponsePresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    ExperimenterView &experimenterView;
+    TestView &experimenterView;
     FreeResponseView &view;
 };
 }

@@ -20,9 +20,9 @@ class ExperimenterControl {
     virtual ~ExperimenterControl() = default;
 };
 
-class ExperimenterView {
+class TestView {
   public:
-    virtual ~ExperimenterView() = default;
+    virtual ~TestView() = default;
     virtual void show() = 0;
     virtual void hide() = 0;
     virtual void showContinueTestingDialog() = 0;

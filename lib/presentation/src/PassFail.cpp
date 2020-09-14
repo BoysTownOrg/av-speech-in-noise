@@ -28,7 +28,7 @@ void PassFailController::notifyThatIncorrectButtonHasBeenClicked() {
 void PassFailController::attach(TestController *p) { responder = p; }
 
 PassFailPresenter::PassFailPresenter(
-    ExperimenterView &experimenterView, PassFailView &view)
+    TestView &experimenterView, PassFailView &view)
     : experimenterView{experimenterView}, view{view} {}
 
 void PassFailPresenter::start() { experimenterView.showNextTrialButton(); }
