@@ -77,32 +77,43 @@ class PassFailTests : public ::testing::Test {
     }
 };
 
+class PassFailPresenterTests : public ::testing::Test {
+  protected:
+    TestViewStub testView;
+    PassFailViewStub view;
+    PassFailPresenter presenter{testView, view};
+};
+
 #define PASS_FAIL_TEST(a) TEST_F(PassFailTests, a)
+
+#define PASS_FAIL_PRESENTER_TEST(a) TEST_F(PassFailPresenterTests, a)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).evaluationButtonsHidden())
 
-PASS_FAIL_TEST(presenterHidesReadyButtonWhenTaskStarts) {
+PASS_FAIL_PRESENTER_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
 }
 
-PASS_FAIL_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
+PASS_FAIL_PRESENTER_TEST(
+    presenterHidesResponseButtonsAfterUserIsDoneResponding) {
     notifyThatUserIsDoneResponding(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-PASS_FAIL_TEST(presenterHidesResponseButtonsWhenStopped) {
+PASS_FAIL_PRESENTER_TEST(presenterHidesResponseButtonsWhenStopped) {
     stop(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-PASS_FAIL_TEST(presenterShowsReadyButtonWhenStarted) {
+PASS_FAIL_PRESENTER_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
 }
 
-PASS_FAIL_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {
+PASS_FAIL_PRESENTER_TEST(
+    presenterShowsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.evaluationButtonsShown());
 }
