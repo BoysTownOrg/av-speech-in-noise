@@ -257,7 +257,7 @@ class PresenterStub : public SessionController {
     bool notifiedThatTestIsComplete_{};
 };
 
-class ExperimenterControllerListenerStub : public TestController::Observer {
+class TestControllerListenerStub : public TestController::Observer {
   public:
     void notifyThatTrialHasStarted() override {
         notifiedThatTrialHasStarted_ = true;
@@ -450,7 +450,7 @@ class ExperimenterTests : public ::testing::Test {
     NotifyingThatUserIsReadyForNextTrial notifyingThatUserIsReadyForNextTrial{
         experimenterController};
     PresenterStub presenter;
-    ExperimenterControllerListenerStub experimenterControllerListener;
+    TestControllerListenerStub experimenterControllerListener;
 
     ExperimenterTests() {
         experimenterController.attach(&presenter);
