@@ -457,6 +457,51 @@ class ExperimenterTests : public ::testing::Test {
     }
 };
 
+class TestPresenterTests : public ::testing::Test {
+  protected:
+    ModelStub model;
+    TestViewStub view;
+    TaskPresenterStub consonantPresenter;
+    TaskPresenterStub coordinateResponseMeasurePresenter;
+    TaskPresenterStub freeResponsePresenter;
+    TaskPresenterStub correctKeywordsPresenter;
+    TaskPresenterStub passFailPresenter;
+    UninitializedTaskPresenterStub taskPresenter;
+    ExperimenterPresenterImpl presenter{model, view, &consonantPresenter,
+        &coordinateResponseMeasurePresenter, &freeResponsePresenter,
+        &correctKeywordsPresenter, &passFailPresenter, &taskPresenter};
+    InitializingAdaptiveCoordinateResponseMeasureMethod
+        initializingAdaptiveCoordinateResponseMeasureMethod;
+    InitializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker
+        initializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker;
+    InitializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker
+        initializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker;
+    InitializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking
+        initializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking;
+    InitializingAdaptivePassFailMethod initializingAdaptivePassFailMethod;
+    InitializingAdaptivePassFailMethodWithEyeTracking
+        initializingAdaptivePassFailMethodWithEyeTracking;
+    InitializingFixedLevelFreeResponseWithTargetReplacementMethod
+        initializingFixedLevelFreeResponseWithTargetReplacementMethod;
+    InitializingFixedLevelConsonantMethod initializingFixedLevelConsonantMethod;
+    InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement
+        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement;
+    InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking
+        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking;
+    InitializingAdaptiveCorrectKeywordsMethod
+        initializingAdaptiveCorrectKeywordsMethod;
+    InitializingAdaptiveCorrectKeywordsMethodWithEyeTracking
+        initializingAdaptiveCorrectKeywordsMethodWithEyeTracking;
+    InitializingFixedLevelCoordinateResponseMeasureMethodWithSilentIntervalTargets
+        initializingFixedLevelCoordinateResponseMeasureSilentIntervalsMethod;
+    InitializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod
+        initializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod;
+    InitializingFixedLevelFreeResponseMethodWithAllTargets
+        initializingFixedLevelFreeResponseMethodWithAllTargets;
+    InitializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking
+        initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking;
+};
+
 #define AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(                             \
     model, useCase, experimenterControllerListener)                            \
     model.setTargetFileName("a");                                              \
@@ -487,6 +532,7 @@ class ExperimenterTests : public ::testing::Test {
         static_cast<TaskPresenter *>(&expected), taskPresenter.presenter())
 
 #define EXPERIMENTER_TEST(a) TEST_F(ExperimenterTests, a)
+#define TEST_PRESENTER_TEST(a) TEST_F(TestPresenterTests, a)
 
 EXPERIMENTER_TEST(
     responderNotifiesThatTestIsCompleteAfterExitTestButtonClicked) {
@@ -635,202 +681,202 @@ EXPERIMENTER_TEST(responderShowsAdaptiveTestResults) {
         experimenterControllerListener.continueTestingDialogMessage());
 }
 
-EXPERIMENTER_TEST(presenterShowsViewAfterStarting) {
+TEST_PRESENTER_TEST(presenterShowsViewAfterStarting) {
     presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
 }
 
-EXPERIMENTER_TEST(presenterHidesViewAfterStopping) {
+TEST_PRESENTER_TEST(presenterHidesViewAfterStopping) {
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-EXPERIMENTER_TEST(presenterHidesContinueTestingDialogAfterStopping) {
+TEST_PRESENTER_TEST(presenterHidesContinueTestingDialogAfterStopping) {
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.continueTestingDialogHidden());
 }
 
-EXPERIMENTER_TEST(presenterStopsTaskAfterStopping) {
+TEST_PRESENTER_TEST(presenterStopsTaskAfterStopping) {
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.stopped());
 }
 
-EXPERIMENTER_TEST(presenterHidesExitTestButtonAfterTrialStarts) {
+TEST_PRESENTER_TEST(presenterHidesExitTestButtonAfterTrialStarts) {
     presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.exitTestButtonHidden());
 }
 
-EXPERIMENTER_TEST(presenterHidesNextTrialButtonAfterTrialStarts) {
+TEST_PRESENTER_TEST(presenterHidesNextTrialButtonAfterTrialStarts) {
     presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonHidden());
 }
 
-EXPERIMENTER_TEST(presenterNotifiesTaskPresenterThatTrialHasStarted) {
+TEST_PRESENTER_TEST(presenterNotifiesTaskPresenterThatTrialHasStarted) {
     presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.notifiedThatTrialHasStarted());
 }
 
-EXPERIMENTER_TEST(presenterShowsExitTestButtonWhenTrialCompletes) {
+TEST_PRESENTER_TEST(presenterShowsExitTestButtonWhenTrialCompletes) {
     model.completeTrial();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.exitTestButtonShown());
 }
 
-EXPERIMENTER_TEST(presenterShowsTaskResponseSubmissionWhenTrialCompletes) {
+TEST_PRESENTER_TEST(presenterShowsTaskResponseSubmissionWhenTrialCompletes) {
     model.completeTrial();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionShown());
 }
 
-EXPERIMENTER_TEST(presenterHidesContinueTestingDialogAfterNextTrialIsReady) {
+TEST_PRESENTER_TEST(presenterHidesContinueTestingDialogAfterNextTrialIsReady) {
     presenter.notifyThatNextTrialIsReady();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.continueTestingDialogHidden());
 }
 
-EXPERIMENTER_TEST(presenterShowsNextTrialButtonAfterNextTrialIsReady) {
+TEST_PRESENTER_TEST(presenterShowsNextTrialButtonAfterNextTrialIsReady) {
     presenter.notifyThatNextTrialIsReady();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonShown());
 }
 
-EXPERIMENTER_TEST(presenterDisplaysMessage) {
+TEST_PRESENTER_TEST(presenterDisplaysMessage) {
     presenter.display("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, view.displayed());
 }
 
-EXPERIMENTER_TEST(presenterDisplaysSecondaryMessage) {
+TEST_PRESENTER_TEST(presenterDisplaysSecondaryMessage) {
     presenter.secondaryDisplay("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.secondaryDisplayed());
 }
 
-EXPERIMENTER_TEST(presenterShowsContinueTestingDialog) {
+TEST_PRESENTER_TEST(presenterShowsContinueTestingDialog) {
     presenter.showContinueTestingDialog();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.continueTestingDialogShown());
 }
 
-EXPERIMENTER_TEST(presenterSetsContinueTestingDialogMessage) {
+TEST_PRESENTER_TEST(presenterSetsContinueTestingDialogMessage) {
     presenter.setContinueTestingDialogMessage("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.continueTestingDialogMessage());
 }
 
-EXPERIMENTER_TEST(presenterStartsTaskPresenterWhenInitializing) {
+TEST_PRESENTER_TEST(presenterStartsTaskPresenterWhenInitializing) {
     presenter.initialize(Method::unknown);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.started());
 }
 
-EXPERIMENTER_TEST(
+TEST_PRESENTER_TEST(
     initializingAdaptiveCoordinateResponseMeasureMethodInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingAdaptiveCoordinateResponseMeasureMethod, presenter,
         coordinateResponseMeasurePresenter);
 }
 
-EXPERIMENTER_TEST(
+TEST_PRESENTER_TEST(
     initializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeakerInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker,
         presenter, coordinateResponseMeasurePresenter);
 }
 
-EXPERIMENTER_TEST(
+TEST_PRESENTER_TEST(
     initializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMaskerInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker,
         presenter, coordinateResponseMeasurePresenter);
 }
 
-EXPERIMENTER_TEST(
+TEST_PRESENTER_TEST(
     initializingAdaptiveCoordinateResponseMeasureMethodWithEyeTrackingInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking,
         presenter, coordinateResponseMeasurePresenter);
 }
 
-EXPERIMENTER_TEST(
+TEST_PRESENTER_TEST(
     initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement,
         presenter, coordinateResponseMeasurePresenter);
 }
 
-EXPERIMENTER_TEST(
+TEST_PRESENTER_TEST(
     initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTrackingInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking,
         presenter, coordinateResponseMeasurePresenter);
 }
 
-EXPERIMENTER_TEST(
+TEST_PRESENTER_TEST(
     initializingFixedLevelCoordinateResponseMeasureSilentIntervalsMethodInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingFixedLevelCoordinateResponseMeasureSilentIntervalsMethod,
         presenter, coordinateResponseMeasurePresenter);
 }
 
-EXPERIMENTER_TEST(
+TEST_PRESENTER_TEST(
     initializingFixedLevelFreeResponseMethodWithAllTargetsInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingFixedLevelFreeResponseMethodWithAllTargets, presenter,
         freeResponsePresenter);
 }
 
-EXPERIMENTER_TEST(
+TEST_PRESENTER_TEST(
     initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTrackingInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking,
         presenter, freeResponsePresenter);
 }
 
-EXPERIMENTER_TEST(
+TEST_PRESENTER_TEST(
     initializingFixedLevelFreeResponseWithSilentIntervalTargetsMethodInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod,
         presenter, freeResponsePresenter);
 }
 
-EXPERIMENTER_TEST(
+TEST_PRESENTER_TEST(
     initializingFixedLevelFreeResponseWithTargetReplacementMethodInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingFixedLevelFreeResponseWithTargetReplacementMethod,
         presenter, freeResponsePresenter);
 }
 
-EXPERIMENTER_TEST(initializingAdaptiveCorrectKeywordsMethodInitializesTask) {
+TEST_PRESENTER_TEST(initializingAdaptiveCorrectKeywordsMethodInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingAdaptiveCorrectKeywordsMethod, presenter,
         correctKeywordsPresenter);
 }
 
-EXPERIMENTER_TEST(
+TEST_PRESENTER_TEST(
     initializingAdaptiveCorrectKeywordsMethodWithEyeTrackingInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingAdaptiveCorrectKeywordsMethodWithEyeTracking, presenter,
         correctKeywordsPresenter);
 }
 
-EXPERIMENTER_TEST(initializingFixedLevelConsonantMethodInitializesTask) {
+TEST_PRESENTER_TEST(initializingFixedLevelConsonantMethodInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingFixedLevelConsonantMethod, presenter, consonantPresenter);
 }
 
-EXPERIMENTER_TEST(initializingAdaptivePassFailMethodInitializesTask) {
+TEST_PRESENTER_TEST(initializingAdaptivePassFailMethodInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingAdaptivePassFailMethod, presenter, passFailPresenter);
 }
 
-EXPERIMENTER_TEST(
+TEST_PRESENTER_TEST(
     initializingAdaptivePassFailMethodWithEyeTrackingInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingAdaptivePassFailMethodWithEyeTracking, presenter,
         passFailPresenter);
 }
 
-EXPERIMENTER_TEST(presenterDisplaysTrialNumberWhenInitializing) {
+TEST_PRESENTER_TEST(presenterDisplaysTrialNumberWhenInitializing) {
     model.setTrialNumber(1);
     presenter.initialize(Method::unknown);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"Trial 1"}, view.displayed());
 }
 
-EXPERIMENTER_TEST(presenterDisplaysTargetWhenInitializing) {
+TEST_PRESENTER_TEST(presenterDisplaysTargetWhenInitializing) {
     model.setTargetFileName("a");
     presenter.initialize(Method::unknown);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
