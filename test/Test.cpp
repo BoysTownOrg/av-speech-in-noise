@@ -26,22 +26,6 @@ class TestControlStub : public TestControl {
     TestControl::Observer *observer{};
 };
 
-class UseCase {
-  public:
-    virtual ~UseCase() = default;
-    virtual void run(TestPresenter &) = 0;
-};
-
-class ConditionUseCase : public virtual UseCase {
-  public:
-    virtual auto condition(ModelStub &) -> Condition = 0;
-};
-
-class LevelUseCase : public virtual UseCase {
-  public:
-    virtual auto fullScaleLevel(ModelStub &) -> int = 0;
-};
-
 class TaskPresenterStub : public TaskPresenter {
   public:
     void showResponseSubmission() override {}
@@ -50,14 +34,16 @@ class TaskPresenterStub : public TaskPresenter {
     void notifyThatTrialHasStarted() override {}
     void start() override {}
     void stop() override {}
-
-  private:
 };
 
-class InitializingExperimenterPresenter : public virtual UseCase {};
+class PresenterUseCase {
+  public:
+    virtual ~PresenterUseCase() = default;
+    virtual void run(TestPresenter &) = 0;
+};
 
 class InitializingAdaptiveCoordinateResponseMeasureMethod
-    : public InitializingExperimenterPresenter {
+    : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(Method::adaptiveCoordinateResponseMeasure);
@@ -65,7 +51,7 @@ class InitializingAdaptiveCoordinateResponseMeasureMethod
 };
 
 class InitializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker
-    : public InitializingExperimenterPresenter {
+    : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(
@@ -74,7 +60,7 @@ class InitializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker
 };
 
 class InitializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking
-    : public InitializingExperimenterPresenter {
+    : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(
@@ -83,7 +69,7 @@ class InitializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking
 };
 
 class InitializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker
-    : public InitializingExperimenterPresenter {
+    : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(
@@ -91,8 +77,7 @@ class InitializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker
     }
 };
 
-class InitializingAdaptivePassFailMethod
-    : public InitializingExperimenterPresenter {
+class InitializingAdaptivePassFailMethod : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(Method::adaptivePassFail);
@@ -100,15 +85,14 @@ class InitializingAdaptivePassFailMethod
 };
 
 class InitializingAdaptivePassFailMethodWithEyeTracking
-    : public InitializingExperimenterPresenter {
+    : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(Method::adaptivePassFailWithEyeTracking);
     }
 };
 
-class InitializingAdaptiveCorrectKeywordsMethod
-    : public InitializingExperimenterPresenter {
+class InitializingAdaptiveCorrectKeywordsMethod : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(Method::adaptiveCorrectKeywords);
@@ -116,7 +100,7 @@ class InitializingAdaptiveCorrectKeywordsMethod
 };
 
 class InitializingAdaptiveCorrectKeywordsMethodWithEyeTracking
-    : public InitializingExperimenterPresenter {
+    : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(Method::adaptiveCorrectKeywordsWithEyeTracking);
@@ -124,7 +108,7 @@ class InitializingAdaptiveCorrectKeywordsMethodWithEyeTracking
 };
 
 class InitializingFixedLevelFreeResponseWithTargetReplacementMethod
-    : public InitializingExperimenterPresenter {
+    : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(
@@ -132,8 +116,7 @@ class InitializingFixedLevelFreeResponseWithTargetReplacementMethod
     }
 };
 
-class InitializingFixedLevelConsonantMethod
-    : public InitializingExperimenterPresenter {
+class InitializingFixedLevelConsonantMethod : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(Method::fixedLevelConsonants);
@@ -141,7 +124,7 @@ class InitializingFixedLevelConsonantMethod
 };
 
 class InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement
-    : public InitializingExperimenterPresenter {
+    : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(
@@ -151,7 +134,7 @@ class InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement
 
 class
     InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking
-    : public InitializingExperimenterPresenter {
+    : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(Method::
@@ -161,7 +144,7 @@ class
 
 class
     InitializingFixedLevelCoordinateResponseMeasureMethodWithSilentIntervalTargets
-    : public InitializingExperimenterPresenter {
+    : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(Method::
@@ -170,7 +153,7 @@ class
 };
 
 class InitializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod
-    : public InitializingExperimenterPresenter {
+    : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(
@@ -179,7 +162,7 @@ class InitializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod
 };
 
 class InitializingFixedLevelFreeResponseMethodWithAllTargets
-    : public InitializingExperimenterPresenter {
+    : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(Method::fixedLevelFreeResponseWithAllTargets);
@@ -187,31 +170,12 @@ class InitializingFixedLevelFreeResponseMethodWithAllTargets
 };
 
 class InitializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking
-    : public InitializingExperimenterPresenter {
+    : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(
             Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
     }
-};
-
-class ExitingTest : public UseCase {
-    TestControlStub &control;
-
-  public:
-    explicit ExitingTest(TestControlStub &control) : control{control} {}
-
-    void run(TestPresenter &) override { control.exitTest(); }
-};
-
-class DecliningContinuingTesting : public UseCase {
-  public:
-    explicit DecliningContinuingTesting(TestControlStub &view) : view{view} {}
-
-    void run(TestPresenter &) override { view.declineContinuingTesting(); }
-
-  private:
-    TestControlStub &view;
 };
 
 void exitTest(TestControlStub &c) { c.exitTest(); }
@@ -222,14 +186,13 @@ void declineContinuingTesting(TestControlStub &c) {
 
 void playTrial(TestControlStub &c) { c.playTrial(); }
 
-void acceptContinuingTesting(TestControlStub &view) {
-    view.acceptContinuingTesting();
+void acceptContinuingTesting(TestControlStub &c) {
+    c.acceptContinuingTesting();
 }
 
 void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
-    TestController &responder) {
-    responder
-        .notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
+    TestController &c) {
+    c.notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
 void setAudioDevice(SessionViewStub &view, std::string s) {
@@ -237,12 +200,6 @@ void setAudioDevice(SessionViewStub &view, std::string s) {
 }
 
 void setTestComplete(ModelStub &model) { model.setTestComplete(); }
-
-class TaskControllerStub : public TaskController {
-  public:
-    void attach(Observer *) override {}
-    void attach(TestController *) override {}
-};
 
 class SessionControllerStub : public SessionController {
   public:
@@ -309,12 +266,34 @@ class ControllerUseCase {
 
 class AcceptingContinuingTesting : public ControllerUseCase {
   public:
-    explicit AcceptingContinuingTesting(TestControlStub &view) : view{view} {}
+    explicit AcceptingContinuingTesting(TestControlStub &control)
+        : control{control} {}
 
-    void run() override { acceptContinuingTesting(view); }
+    void run() override { acceptContinuingTesting(control); }
 
   private:
-    TestControlStub &view;
+    TestControlStub &control;
+};
+
+class ExitingTest : public ControllerUseCase {
+  public:
+    explicit ExitingTest(TestControlStub &control) : control{control} {}
+
+    void run() override { control.exitTest(); }
+
+  private:
+    TestControlStub &control;
+};
+
+class DecliningContinuingTesting : public ControllerUseCase {
+  public:
+    explicit DecliningContinuingTesting(TestControlStub &control)
+        : control{control} {}
+
+    void run() override { control.declineContinuingTesting(); }
+
+  private:
+    TestControlStub &control;
 };
 
 class NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
