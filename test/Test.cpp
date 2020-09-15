@@ -12,23 +12,18 @@ namespace av_speech_in_noise {
 namespace {
 class TestControlStub : public TestControl {
   public:
-    void declineContinuingTesting() { listener_->declineContinuingTesting(); }
+    void attach(TestControl::Observer *e) override { observer = e; }
 
-    void acceptContinuingTesting() { listener_->acceptContinuingTesting(); }
+    void declineContinuingTesting() { observer->declineContinuingTesting(); }
 
-    void attach(TestControl::Observer *e) override { listener_ = e; }
+    void acceptContinuingTesting() { observer->acceptContinuingTesting(); }
 
-    void exitTest() { listener_->exitTest(); }
+    void exitTest() { observer->exitTest(); }
 
-    void notifyThatPlayTrialButtonHasBeenClicked() { listener_->playTrial(); }
+    void playTrial() { observer->playTrial(); }
 
   private:
-    std::string displayed_;
-    std::string secondaryDisplayed_;
-    std::string continueTestingDialogMessage_;
-    std::string response_;
-    std::string correctKeywords_{"0"};
-    TestControl::Observer *listener_{};
+    TestControl::Observer *observer{};
 };
 
 class UseCase {
@@ -222,7 +217,7 @@ class DecliningContinuingTesting : public UseCase {
 void exitTest(TestControlStub &view) { view.exitTest(); }
 
 void notifyThatPlayTrialButtonHasBeenClicked(TestControlStub &view) {
-    view.notifyThatPlayTrialButtonHasBeenClicked();
+    view.playTrial();
 }
 
 void acceptContinuingTesting(TestControlStub &view) {
