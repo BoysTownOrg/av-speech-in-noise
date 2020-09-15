@@ -60,18 +60,15 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class PassFailTests : public ::testing::Test {
+class PassFailControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
-    TestViewStub testView;
     PassFailControlStub control;
-    PassFailViewStub view;
     PassFailController controller{model, control};
-    PassFailPresenter presenter{testView, view};
     TestControllerStub testController;
     TaskControllerObserverStub taskController;
 
-    PassFailTests() {
+    PassFailControllerTests() {
         controller.attach(&testController);
         controller.attach(&taskController);
     }
@@ -84,7 +81,7 @@ class PassFailPresenterTests : public ::testing::Test {
     PassFailPresenter presenter{testView, view};
 };
 
-#define PASS_FAIL_TEST(a) TEST_F(PassFailTests, a)
+#define PASS_FAIL_CONTROLLER_TEST(a) TEST_F(PassFailControllerTests, a)
 
 #define PASS_FAIL_PRESENTER_TEST(a) TEST_F(PassFailPresenterTests, a)
 
@@ -118,17 +115,19 @@ PASS_FAIL_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.evaluationButtonsShown());
 }
 
-PASS_FAIL_TEST(responderSubmitsCorrectResponseAfterCorrectButtonIsClicked) {
+PASS_FAIL_CONTROLLER_TEST(
+    responderSubmitsCorrectResponseAfterCorrectButtonIsClicked) {
     notifyThatCorrectButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.correctResponseSubmitted());
 }
 
-PASS_FAIL_TEST(responderSubmitsIncorrectResponseAfterIncorrectButtonIsClicked) {
+PASS_FAIL_CONTROLLER_TEST(
+    responderSubmitsIncorrectResponseAfterIncorrectButtonIsClicked) {
     notifyThatIncorrectButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.incorrectResponseSubmitted());
 }
 
-PASS_FAIL_TEST(
+PASS_FAIL_CONTROLLER_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterCorrectButtonIsClicked) {
     notifyThatCorrectButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
@@ -136,7 +135,7 @@ PASS_FAIL_TEST(
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
-PASS_FAIL_TEST(
+PASS_FAIL_CONTROLLER_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterIncorrectButtonIsClicked) {
     notifyThatIncorrectButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
@@ -144,14 +143,14 @@ PASS_FAIL_TEST(
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
-PASS_FAIL_TEST(
+PASS_FAIL_CONTROLLER_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterCorrectButtonIsClicked) {
     notifyThatCorrectButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskController.notifiedThatUserIsDoneResponding());
 }
 
-PASS_FAIL_TEST(
+PASS_FAIL_CONTROLLER_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterIncorrectButtonIsClicked) {
     notifyThatIncorrectButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
