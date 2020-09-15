@@ -63,17 +63,17 @@ void start(TaskPresenter &presenter) { presenter.start(); }
 class PassFailTests : public ::testing::Test {
   protected:
     ModelStub model;
-    TestViewStub experimenterView;
-    PassFailControlStub inputView;
-    PassFailViewStub outputView;
-    PassFailController responder{model, inputView};
-    PassFailPresenter presenter{experimenterView, outputView};
-    TestControllerStub experimenterController;
+    TestViewStub testView;
+    PassFailControlStub control;
+    PassFailViewStub view;
+    PassFailController controller{model, control};
+    PassFailPresenter presenter{testView, view};
+    TestControllerStub testController;
     TaskControllerObserverStub taskController;
 
     PassFailTests() {
-        responder.attach(&experimenterController);
-        responder.attach(&taskController);
+        controller.attach(&testController);
+        controller.attach(&taskController);
     }
 };
 
@@ -84,65 +84,65 @@ class PassFailTests : public ::testing::Test {
 
 PASS_FAIL_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
 }
 
 PASS_FAIL_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
     notifyThatUserIsDoneResponding(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(outputView);
+    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
 PASS_FAIL_TEST(presenterHidesResponseButtonsWhenStopped) {
     stop(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(outputView);
+    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
 PASS_FAIL_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
 }
 
 PASS_FAIL_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.evaluationButtonsShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.evaluationButtonsShown());
 }
 
 PASS_FAIL_TEST(responderSubmitsCorrectResponseAfterCorrectButtonIsClicked) {
-    notifyThatCorrectButtonHasBeenClicked(inputView);
+    notifyThatCorrectButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.correctResponseSubmitted());
 }
 
 PASS_FAIL_TEST(responderSubmitsIncorrectResponseAfterIncorrectButtonIsClicked) {
-    notifyThatIncorrectButtonHasBeenClicked(inputView);
+    notifyThatIncorrectButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.incorrectResponseSubmitted());
 }
 
 PASS_FAIL_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterCorrectButtonIsClicked) {
-    notifyThatCorrectButtonHasBeenClicked(inputView);
+    notifyThatCorrectButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterController
+        testController
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
 PASS_FAIL_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterIncorrectButtonIsClicked) {
-    notifyThatIncorrectButtonHasBeenClicked(inputView);
+    notifyThatIncorrectButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterController
+        testController
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
 PASS_FAIL_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterCorrectButtonIsClicked) {
-    notifyThatCorrectButtonHasBeenClicked(inputView);
+    notifyThatCorrectButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskController.notifiedThatUserIsDoneResponding());
 }
 
 PASS_FAIL_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterIncorrectButtonIsClicked) {
-    notifyThatIncorrectButtonHasBeenClicked(inputView);
+    notifyThatIncorrectButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskController.notifiedThatUserIsDoneResponding());
 }
