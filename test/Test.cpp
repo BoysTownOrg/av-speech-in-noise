@@ -399,12 +399,7 @@ class TestControllerTests : public ::testing::Test {
     TaskPresenterStub freeResponsePresenter;
     TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub passFailPresenter;
-    TestControllerImpl controller{model, sessionView, control,
-        &consonantController, &consonantPresenter,
-        &coordinateResponseMeasureController,
-        &coordinateResponseMeasurePresenter, &freeResponseController,
-        &freeResponsePresenter, &correctKeywordsController,
-        &correctKeywordsPresenter, &passFailController, &passFailPresenter};
+    TestControllerImpl controller{model, sessionView, control};
     DecliningContinuingTesting decliningContinuingTesting{control};
     AcceptingContinuingTesting acceptingContinuingTesting{control};
     ExitingTest exitingTest{control};

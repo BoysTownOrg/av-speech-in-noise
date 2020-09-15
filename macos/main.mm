@@ -392,12 +392,7 @@ void main(
     TestSetupControllerImpl testSetupController{model, view,
         *(testSetupView.get()), testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenter{*(testSetupView.get())};
-    TestControllerImpl testController{model, view, experimenterView,
-        &consonantTaskController, &consonantPresenter,
-        &coordinateResponseMeasureController,
-        &coordinateResponseMeasurePresenter, &freeResponseController,
-        &freeResponsePresenter, &correctKeywordsController,
-        &correctKeywordsPresenter, &passFailController, &passFailPresenter};
+    TestControllerImpl testController{model, view, experimenterView};
     consonantTaskController.attach(&testController);
     consonantTaskController.attach(&consonantPresenter);
     freeResponseController.attach(&testController);

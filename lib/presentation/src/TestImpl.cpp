@@ -14,16 +14,8 @@ static void readyNextTrial(Model &model, TestController::Observer *presenter) {
     presenter->notifyThatNextTrialIsReady();
 }
 
-TestControllerImpl::TestControllerImpl(Model &model, SessionView &sessionView,
-    TestControl &control, TaskController *consonantController,
-    TaskPresenter *consonantPresenter,
-    TaskController *coordinateResponseMeasureController,
-    TaskPresenter *coordinateResponseMeasurePresenter,
-    TaskController *freeResponseController,
-    TaskPresenter *freeResponsePresenter,
-    TaskController *correctKeywordsController,
-    TaskPresenter *correctKeywordsPresenter, TaskController *passFailController,
-    TaskPresenter *passFailPresenter)
+TestControllerImpl::TestControllerImpl(
+    Model &model, SessionView &sessionView, TestControl &control)
     : model{model}, sessionView{sessionView} {
     control.attach(this);
 }
