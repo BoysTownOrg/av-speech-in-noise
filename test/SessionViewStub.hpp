@@ -38,6 +38,8 @@ class SessionViewStub : public SessionView {
         audioDevices_ = std::move(v);
     }
 
+    auto audioDevices() -> std::vector<std::string> { return audioDevices_; }
+
   private:
     std::vector<std::string> audioDevices_;
     std::string errorMessage_;

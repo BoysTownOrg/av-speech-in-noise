@@ -79,5 +79,22 @@ SESSION_CONTROLLER_TEST(testSetupStartsAfterTestIsComplete) {
     controller.notifyThatTestIsComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.stopped());
 }
+class SessionControllerTBDTests : public ::testing::Test {};
+
+TEST_F(SessionControllerTBDTests, constructorPopulatesAudioDeviceMenu) {
+    ModelStub model;
+    SessionViewStub view;
+    TestSetupPresenterStub testSetupPresenter;
+    TestPresenterStub testPresenter;
+    model.setAudioDevices({"a", "b", "c"});
+    SessionControllerImpl controller{
+        model, view, &testSetupPresenter, &testPresenter};
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, view.audioDevices().at(0));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"b"}, view.audioDevices().at(1));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c"}, view.audioDevices().at(2));
+}
 }
 }
