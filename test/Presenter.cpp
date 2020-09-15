@@ -1271,16 +1271,16 @@ class PresenterTests : public ::testing::Test {
     TextFileReaderStub textFileReader;
     TestSetupControllerImpl testSetupControllerImpl{
         model, view, setupView, testSettingsInterpreter, textFileReader};
-    TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
+    TestSetupPresenterImpl testSetupPresenter{setupView};
     UninitializedTaskPresenterImpl taskPresenter;
     TestControllerImpl experimenterController{model, view, experimenterView};
-    TestPresenterImpl experimenterPresenterRefactored{model, experimenterView,
+    TestPresenterImpl testPresenter{model, experimenterView,
         &consonantPresenterRefactored,
         &coordinateResponseMeasurePresenterRefactored, &freeResponsePresenter,
         &correctKeywordsPresenter, &passFailPresenter, &taskPresenter};
-    SessionControllerImpl presenter{model, view, &testSetupControllerImpl,
-        &testSetupPresenterRefactored, &experimenterController,
-        &experimenterPresenterRefactored};
+    SessionControllerImpl sessionController{model, view,
+        &testSetupControllerImpl, &testSetupPresenter, &experimenterController,
+        &testPresenter};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTest
         confirmingAdaptiveCoordinateResponseMeasureTest{
@@ -1355,6 +1355,10 @@ class PresenterTests : public ::testing::Test {
         coordinateResponseMeasureController.attach(&experimenterController);
         coordinateResponseMeasureController.attach(
             &coordinateResponseMeasurePresenterRefactored);
+        testSetupControllerImpl.attach(&sessionController);
+        testSetupControllerImpl.attach(&testSetupPresenter);
+        experimenterController.attach(&sessionController);
+        experimenterController.attach(&testPresenter);
     }
 
     void assertBrowseResultPassedToEntry(BrowsingEnteredPathUseCase &useCase) {
@@ -1930,7 +1934,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(callsEventLoopWhenRun) {
-    presenter.run();
+    sessionController.run();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.eventLoopCalled());
 }
 
