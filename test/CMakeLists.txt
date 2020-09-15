@@ -7,7 +7,6 @@ add_executable(
   MaskerPlayer.cpp
   OutputFilePath.cpp
   OutputFile.cpp
-  Presenter.cpp
   RecognitionTestModel.cpp
   Model.cpp
   ResponseEvaluator.cpp
