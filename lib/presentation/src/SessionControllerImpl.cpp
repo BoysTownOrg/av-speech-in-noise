@@ -4,8 +4,8 @@ namespace av_speech_in_noise {
 SessionControllerImpl::SessionControllerImpl(Model &model, SessionView &view,
     TestSetupPresenter *testSetupPresenter,
     TestPresenter *experimenterPresenter)
-    : view{view}, testSetupPresenter{testSetupPresenter},
-      experimenterPresenter{experimenterPresenter} {
+    : testSetupPresenter{testSetupPresenter}, experimenterPresenter{
+                                                  experimenterPresenter} {
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 

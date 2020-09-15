@@ -20,7 +20,6 @@ class SessionControllerImpl : public SessionController {
     static constexpr auto trackBumpLimit{10};
 
   private:
-    SessionView &view;
     Presenter *testSetupPresenter;
     TestPresenter *experimenterPresenter;
 };
