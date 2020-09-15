@@ -90,37 +90,49 @@ class FreeResponseTests : public ::testing::Test {
     }
 };
 
+class FreeResponsePresenterTests : public ::testing::Test {
+  protected:
+    TestViewStub testView;
+    FreeResponseViewStub view;
+    FreeResponsePresenter presenter{testView, view};
+};
+
 #define FREE_RESPONSE_TEST(a) TEST_F(FreeResponseTests, a)
+
+#define FREE_RESPONSE_PRESENTER_TEST(a) TEST_F(FreeResponsePresenterTests, a)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).freeResponseSubmissionHidden())
 
-FREE_RESPONSE_TEST(presenterHidesReadyButtonWhenTaskStarts) {
+FREE_RESPONSE_PRESENTER_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
 }
 
-FREE_RESPONSE_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
+FREE_RESPONSE_PRESENTER_TEST(
+    presenterHidesResponseButtonsAfterUserIsDoneResponding) {
     notifyThatUserIsDoneResponding(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-FREE_RESPONSE_TEST(presenterHidesResponseButtonsWhenStopped) {
+FREE_RESPONSE_PRESENTER_TEST(presenterHidesResponseButtonsWhenStopped) {
     stop(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-FREE_RESPONSE_TEST(presenterShowsReadyButtonWhenStarted) {
+FREE_RESPONSE_PRESENTER_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
 }
 
-FREE_RESPONSE_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {
+FREE_RESPONSE_PRESENTER_TEST(
+    presenterShowsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.freeResponseSubmissionShown());
 }
 
-FREE_RESPONSE_TEST(presenterClearsFreeResponseWhenShowingResponseSubmission) {
+FREE_RESPONSE_PRESENTER_TEST(
+    presenterClearsFreeResponseWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.freeResponseCleared());
 }
