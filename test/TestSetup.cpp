@@ -393,36 +393,36 @@ class RequestFailingModel : public Model {
 
 class TestSetupFailureTests : public ::testing::Test {
   protected:
-    RequestFailingModel failure;
+    RequestFailingModel failingModel;
     ModelStub defaultModel;
     Model *model{&defaultModel};
-    SessionViewStub view;
-    TestSetupViewStub setupView;
+    SessionViewStub sessionView;
+    TestSetupViewStub view;
     TestSetupControlStub control;
     TestSettingsInterpreterStub testSettingsInterpreter;
-    TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
+    TestSetupPresenterImpl testSetupPresenterRefactored{view};
     TextFileReaderStub textFileReader;
 
     void useFailingModel(std::string s = {}) {
-        failure.setErrorMessage(std::move(s));
-        model = &failure;
+        failingModel.setErrorMessage(std::move(s));
+        model = &failingModel;
         testSettingsInterpreter.initializeAnyTestOnApply();
     }
 
     void confirmTestSetup() {
-        TestSetupControllerImpl testSetupControllerImpl{
-            *model, view, control, testSettingsInterpreter, textFileReader};
+        TestSetupControllerImpl controller{*model, sessionView, control,
+            testSettingsInterpreter, textFileReader};
         control.confirmTestSetup();
     }
 
     void assertConfirmTestSetupShowsErrorMessage(const std::string &s) {
         confirmTestSetup();
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, errorMessage(view));
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, errorMessage(sessionView));
     }
 
     void assertConfirmTestSetupDoesNotHideSetupView() {
         confirmTestSetup();
-        AV_SPEECH_IN_NOISE_EXPECT_FALSE(setupView.hidden());
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.hidden());
     }
 };
 
