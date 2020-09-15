@@ -10,9 +10,7 @@ namespace av_speech_in_noise {
 class SessionControllerImpl : public SessionController {
   public:
     SessionControllerImpl(Model &, SessionView &,
-        TestSetupController *testSetupController,
         TestSetupPresenter *testSetupPresenter,
-        TestController *experimenterController,
         TestPresenter *experimenterPresenter);
     void notifyThatTestIsComplete() override;
     void prepare(Method m) override;

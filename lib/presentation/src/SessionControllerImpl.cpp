@@ -2,9 +2,7 @@
 
 namespace av_speech_in_noise {
 SessionControllerImpl::SessionControllerImpl(Model &model, SessionView &view,
-    TestSetupController *testSetupController,
     TestSetupPresenter *testSetupPresenter,
-    TestController *experimenterController,
     TestPresenter *experimenterPresenter)
     : view{view}, testSetupPresenter{testSetupPresenter},
       experimenterPresenter{experimenterPresenter} {

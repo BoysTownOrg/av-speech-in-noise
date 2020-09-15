@@ -49,7 +49,7 @@ class SessionControllerTests : public ::testing::Test {
     TestSetupPresenterStub testSetupPresenter;
     TestPresenterStub testPresenter;
     SessionControllerImpl controller{
-        model, view, nullptr, &testSetupPresenter, nullptr, &testPresenter};
+        model, view, &testSetupPresenter, &testPresenter};
 };
 
 #define SESSION_CONTROLLER_TEST(a) TEST_F(SessionControllerTests, a)

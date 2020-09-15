@@ -1146,8 +1146,7 @@ class PresenterConstructionTests : public ::testing::Test {
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
     auto construct() -> SessionControllerImpl {
-        return {model, view, &testSetupControllerImpl,
-            &testSetupPresenterRefactored, &experimenterController,
+        return {model, view, &testSetupPresenterRefactored,
             &experimenterPresenterRefactored};
     }
 };
@@ -1278,9 +1277,8 @@ class PresenterTests : public ::testing::Test {
         &consonantPresenterRefactored,
         &coordinateResponseMeasurePresenterRefactored, &freeResponsePresenter,
         &correctKeywordsPresenter, &passFailPresenter, &taskPresenter};
-    SessionControllerImpl sessionController{model, view,
-        &testSetupControllerImpl, &testSetupPresenter, &experimenterController,
-        &testPresenter};
+    SessionControllerImpl sessionController{
+        model, view, &testSetupPresenter, &testPresenter};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTest
         confirmingAdaptiveCoordinateResponseMeasureTest{
@@ -1730,9 +1728,8 @@ class PresenterFailureTests : public ::testing::Test {
         TestPresenterImpl experimenterPresenterRefactored{*model,
             experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr,
             nullptr};
-        SessionControllerImpl presenter{*model, view, &testSetupControllerImpl,
-            &testSetupPresenterRefactored, &experimenterController,
-            &experimenterPresenterRefactored};
+        SessionControllerImpl presenter{*model, view,
+            &testSetupPresenterRefactored, &experimenterPresenterRefactored};
         setupView.confirmTestSetup();
     }
 

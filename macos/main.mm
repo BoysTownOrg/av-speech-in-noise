@@ -409,8 +409,8 @@ void main(
         &consonantPresenter, &coordinateResponseMeasurePresenter,
         &freeResponsePresenter, &correctKeywordsPresenter, &passFailPresenter,
         &taskPresenter};
-    SessionControllerImpl sessionController{model, view, &testSetupController,
-        &testSetupPresenter, &testController, &experimenterPresenter};
+    SessionControllerImpl sessionController{
+        model, view, &testSetupPresenter, &experimenterPresenter};
     testSetupController.attach(&sessionController);
     testSetupController.attach(&testSetupPresenter);
     testController.attach(&sessionController);
