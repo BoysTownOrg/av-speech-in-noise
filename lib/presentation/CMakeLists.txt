@@ -7,7 +7,7 @@ add_library(
   src/CorrectKeywords.cpp
   src/CoordinateResponseMeasure.cpp
   src/PassFail.cpp
-  src/ExperimenterImpl.cpp
+  src/TestImpl.cpp
   src/TestSetupImpl.cpp)
 target_include_directories(
   presentation
