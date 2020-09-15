@@ -20,20 +20,8 @@ class TestSetupViewStub : public TestSetupView, public TestSetupControl {
         testSettingsFile_ = std::move(s);
     }
 
-    void browseForTestSettingsFile() {
-        listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
-    }
-
     void populateTransducerMenu(std::vector<std::string> v) override {
         transducers_ = std::move(v);
-    }
-
-    void confirmTestSetup() {
-        listener_->notifyThatConfirmButtonHasBeenClicked();
-    }
-
-    void playCalibration() {
-        listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
     }
 
     auto session() -> std::string override { return session_; }
@@ -82,6 +70,68 @@ class TestSetupViewStub : public TestSetupView, public TestSetupControl {
     Observer *listener_{};
     bool shown_{};
     bool hidden_{};
+};
+
+class TestSetupControlStub : public TestSetupControl {
+  public:
+    auto testSettingsFile() -> std::string override {
+        return testSettingsFile_;
+    }
+
+    auto startingSnr() -> std::string override { return startingSnr_; }
+
+    void browseForTestSettingsFile() {
+        listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
+    }
+
+    void confirmTestSetup() {
+        listener_->notifyThatConfirmButtonHasBeenClicked();
+    }
+
+    void playCalibration() {
+        listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
+    }
+
+    auto session() -> std::string override { return session_; }
+
+    void setSession(std::string s) { session_ = std::move(s); }
+
+    void setRmeSetting(std::string s) { rmeSetting_ = std::move(s); }
+
+    auto rmeSetting() -> std::string override { return rmeSetting_; }
+
+    void setTransducer(std::string s) { transducer_ = std::move(s); }
+
+    void setSubjectId(std::string s) { subjectId_ = std::move(s); }
+
+    auto subjectId() -> std::string override { return subjectId_; }
+
+    void setTesterId(std::string s) { testerId_ = std::move(s); }
+
+    auto testerId() -> std::string override { return testerId_; }
+
+    auto transducer() -> std::string override { return transducer_; }
+
+    void attach(Observer *listener) override { listener_ = listener; }
+
+    void setStartingSnr(std::string s) { startingSnr_ = std::move(s); }
+
+    auto transducers() -> std::vector<std::string> { return transducers_; }
+
+    void setTestSettingsFile(std::string s) {
+        testSettingsFile_ = std::move(s);
+    }
+
+  private:
+    std::vector<std::string> transducers_;
+    std::string startingSnr_{"0"};
+    std::string subjectId_;
+    std::string testerId_;
+    std::string session_;
+    std::string rmeSetting_;
+    std::string transducer_;
+    std::string testSettingsFile_;
+    Observer *listener_{};
 };
 
 class ViewStub : public SessionView {
@@ -211,10 +261,10 @@ class LevelUseCase : public virtual UseCase {
 };
 
 class PlayingCalibration : public LevelUseCase {
-    TestSetupViewStub *view;
+    TestSetupControlStub *view;
 
   public:
-    explicit PlayingCalibration(TestSetupViewStub *view) : view{view} {}
+    explicit PlayingCalibration(TestSetupControlStub *view) : view{view} {}
 
     void run() override { view->playCalibration(); }
 
@@ -225,16 +275,16 @@ class PlayingCalibration : public LevelUseCase {
 
 class ConfirmingTestSetup : public virtual UseCase {};
 
-void confirmTestSetup(TestSetupViewStub *view) { view->confirmTestSetup(); }
+void confirmTestSetup(TestSetupControlStub *view) { view->confirmTestSetup(); }
 
 class ConfirmingTestSetupImpl : public UseCase {
   public:
-    explicit ConfirmingTestSetupImpl(TestSetupViewStub *view) : view{view} {}
+    explicit ConfirmingTestSetupImpl(TestSetupControlStub *view) : view{view} {}
 
     void run() override { confirmTestSetup(view); }
 
   private:
-    TestSetupViewStub *view;
+    TestSetupControlStub *view;
 };
 
 class TrialSubmission : public virtual UseCase {
@@ -259,26 +309,6 @@ class BrowsingEnteredPathUseCase : public virtual BrowsingUseCase {
   public:
     virtual auto entry() -> std::string = 0;
     virtual void setEntry(std::string) = 0;
-};
-
-class BrowsingForTestSettingsFile : public BrowsingEnteredPathUseCase {
-    TestSetupViewStub *view;
-
-  public:
-    explicit BrowsingForTestSettingsFile(TestSetupViewStub *view)
-        : view{view} {}
-
-    void run() override { view->browseForTestSettingsFile(); }
-
-    void setResult(ViewStub &view_, std::string s) override {
-        view_.setBrowseForOpeningFileResult(s);
-    }
-
-    auto entry() -> std::string override { return view->testSettingsFile(); }
-
-    void setEntry(std::string s) override {
-        view->setTestSettingsFile(std::move(s));
-    }
 };
 
 auto entry(BrowsingEnteredPathUseCase &useCase) -> std::string {
@@ -334,17 +364,17 @@ class TestSetupTests : public ::testing::Test {
     ModelStub model;
     ViewStub view;
     TestSetupViewStub setupView;
+    TestSetupControlStub control;
     Calibration interpretedCalibration;
     TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
     TextFileReaderStub textFileReader;
     TestSetupControllerImpl testSetupControllerImpl{
-        model, view, setupView, testSettingsInterpreter, textFileReader};
+        model, view, control, testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
-    BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
-    PlayingCalibration playingCalibration{&setupView};
+    PlayingCalibration playingCalibration{&control};
     SessionControllerStub sessionController;
     TestSetupControllerObserverStub testSetupControllerObserver;
-    ConfirmingTestSetupImpl confirmingTestSetup{&setupView};
+    ConfirmingTestSetupImpl confirmingTestSetup{&control};
 
     TestSetupTests() {
         testSetupControllerImpl.attach(&sessionController);
@@ -365,7 +395,7 @@ class TestSetupTests : public ::testing::Test {
     }
 
     void assertPassesTestSettingsFileToTextFileReader(UseCase &useCase) {
-        setupView.setTestSettingsFile("a");
+        control.setTestSettingsFile("a");
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"a"}, textFileReader.filePath());
@@ -482,6 +512,7 @@ class TestSetupFailureTests : public ::testing::Test {
     Model *model{&defaultModel};
     ViewStub view;
     TestSetupViewStub setupView;
+    TestSetupControlStub control;
     TestSettingsInterpreterStub testSettingsInterpreter;
     TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
     TextFileReaderStub textFileReader;
@@ -494,8 +525,8 @@ class TestSetupFailureTests : public ::testing::Test {
 
     void confirmTestSetup() {
         TestSetupControllerImpl testSetupControllerImpl{
-            *model, view, setupView, testSettingsInterpreter, textFileReader};
-        setupView.confirmTestSetup();
+            *model, view, control, testSettingsInterpreter, textFileReader};
+        control.confirmTestSetup();
     }
 
     void assertConfirmTestSetupShowsErrorMessage(const std::string &s) {
@@ -527,7 +558,7 @@ TEST_SETUP_TEST(
 
 TEST_SETUP_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {
-    setupView.setSubjectId("b");
+    control.setSubjectId("b");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"b"}, testSettingsInterpreter.identity().subjectId);
@@ -535,28 +566,28 @@ TEST_SETUP_TEST(
 
 TEST_SETUP_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesStartingSnr) {
-    setupView.setStartingSnr("1");
+    control.setStartingSnr("1");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, testSettingsInterpreter.startingSnr());
 }
 
 TEST_SETUP_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidStartingSnrShowsMessage) {
-    setupView.setStartingSnr("a");
+    control.setStartingSnr("a");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"\"a\" is not a valid starting SNR."}, errorMessage(view));
 }
 
 TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
-    setupView.setTesterId("c");
+    control.setTesterId("c");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"c"}, testSettingsInterpreter.identity().testerId);
 }
 
 TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
-    setupView.setSession("e");
+    control.setSession("e");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"e"}, testSettingsInterpreter.identity().session);
@@ -564,7 +595,7 @@ TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
 
 TEST_SETUP_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesRmeSetting) {
-    setupView.setRmeSetting("e");
+    control.setRmeSetting("e");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"e"}, testSettingsInterpreter.identity().rmeSetting);
@@ -572,7 +603,7 @@ TEST_SETUP_TEST(
 
 TEST_SETUP_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTransducer) {
-    setupView.setTransducer("a");
+    control.setTransducer("a");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, testSettingsInterpreter.identity().transducer);
@@ -626,14 +657,18 @@ TEST_SETUP_TEST(playCalibrationPassesAudioDevice) {
 }
 
 TEST_SETUP_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
-    browsingForTestSettingsFile.setResult(view, "a");
-    run(browsingForTestSettingsFile);
+    view.setBrowseForOpeningFileResult("a");
+    control.browseForTestSettingsFile();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "a", testSetupControllerObserver.testSettingsFile());
 }
 
 TEST_SETUP_TEST(browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
-    assertCancellingBrowseDoesNotChangePath(browsingForTestSettingsFile);
+    setupView.setTestSettingsFile("a");
+    view.setBrowseForOpeningFileResult("b");
+    view.setBrowseCancelled();
+    control.browseForTestSettingsFile();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", setupView.testSettingsFile());
 }
 
 TEST_SETUP_TEST(playCalibrationPassesFullScaleLevel) {
