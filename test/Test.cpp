@@ -216,6 +216,10 @@ class DecliningContinuingTesting : public UseCase {
 
 void exitTest(TestControlStub &view) { view.exitTest(); }
 
+void declineContinuingTesting(TestControlStub &c) {
+    c.declineContinuingTesting();
+}
+
 void notifyThatPlayTrialButtonHasBeenClicked(TestControlStub &view) {
     view.playTrial();
 }
@@ -508,7 +512,7 @@ TEST_CONTROLLER_TEST(
 
 TEST_CONTROLLER_TEST(
     responderNotifiesThatTestIsCompleteAfterContinueTestingDialogIsDeclined) {
-    controller.declineContinuingTesting();
+    declineContinuingTesting(control);
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
 }
 

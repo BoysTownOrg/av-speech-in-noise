@@ -14,8 +14,8 @@ static void readyNextTrial(Model &model, TestController::Observer *presenter) {
     presenter->notifyThatNextTrialIsReady();
 }
 
-TestControllerImpl::TestControllerImpl(Model &model, SessionView &mainView,
-    TestControl &view, TaskController *consonantController,
+TestControllerImpl::TestControllerImpl(Model &model, SessionView &sessionView,
+    TestControl &control, TaskController *consonantController,
     TaskPresenter *consonantPresenter,
     TaskController *coordinateResponseMeasureController,
     TaskPresenter *coordinateResponseMeasurePresenter,
@@ -24,8 +24,8 @@ TestControllerImpl::TestControllerImpl(Model &model, SessionView &mainView,
     TaskController *correctKeywordsController,
     TaskPresenter *correctKeywordsPresenter, TaskController *passFailController,
     TaskPresenter *passFailPresenter)
-    : model{model}, sessionView{mainView} {
-    view.attach(this);
+    : model{model}, sessionView{sessionView} {
+    control.attach(this);
     if (consonantController != nullptr) {
         consonantController->attach(this);
         consonantController->attach(consonantPresenter);
