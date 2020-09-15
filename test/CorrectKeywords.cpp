@@ -65,18 +65,18 @@ void start(TaskPresenter &presenter) { presenter.start(); }
 class CorrectKeywordsTests : public ::testing::Test {
   protected:
     ModelStub model;
-    SessionViewStub mainView;
-    TestViewStub experimenterView;
-    CorrectKeywordsControlStub inputView;
-    CorrectKeywordsViewStub outputView;
-    CorrectKeywordsController responder{model, mainView, inputView};
-    CorrectKeywordsPresenter presenter{experimenterView, outputView};
-    TestControllerStub experimenterController;
+    SessionViewStub sessionView;
+    TestViewStub testView;
+    CorrectKeywordsControlStub control;
+    CorrectKeywordsViewStub view;
+    CorrectKeywordsController controller{model, sessionView, control};
+    CorrectKeywordsPresenter presenter{testView, view};
+    TestControllerStub testController;
     TaskControllerObserverStub taskController;
 
     CorrectKeywordsTests() {
-        responder.attach(&experimenterController);
-        responder.attach(&taskController);
+        controller.attach(&testController);
+        controller.attach(&taskController);
     }
 };
 
@@ -87,56 +87,56 @@ class CorrectKeywordsTests : public ::testing::Test {
 
 CORRECT_KEYWORDS_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
 }
 
 CORRECT_KEYWORDS_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
     notifyThatUserIsDoneResponding(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(outputView);
+    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
 CORRECT_KEYWORDS_TEST(presenterHidesResponseButtonsWhenStopped) {
     stop(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(outputView);
+    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
 CORRECT_KEYWORDS_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
 }
 
 CORRECT_KEYWORDS_TEST(
     presenterShowsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.correctKeywordsSubmissionShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.correctKeywordsSubmissionShown());
 }
 
 CORRECT_KEYWORDS_TEST(responderSubmitsConsonantAfterResponseButtonIsClicked) {
-    inputView.setCorrectKeywords("1");
-    notifyThatSubmitButtonHasBeenClicked(inputView);
+    control.setCorrectKeywords("1");
+    notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.correctKeywords());
 }
 
 CORRECT_KEYWORDS_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
-    notifyThatSubmitButtonHasBeenClicked(inputView);
+    notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterController
+        testController
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
 CORRECT_KEYWORDS_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
-    notifyThatSubmitButtonHasBeenClicked(inputView);
+    notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskController.notifiedThatUserIsDoneResponding());
 }
 
 CORRECT_KEYWORDS_TEST(responderShowsErrorMessageWhenInvalidCorrectKeywords) {
-    inputView.setCorrectKeywords("a");
-    notifyThatSubmitButtonHasBeenClicked(inputView);
+    control.setCorrectKeywords("a");
+    notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        "\"a\" is not a valid number.", mainView.errorMessage());
+        "\"a\" is not a valid number.", sessionView.errorMessage());
 }
 }
 }
