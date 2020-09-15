@@ -249,15 +249,15 @@ class TestSetupControllerObserverStub : public TestSetupController::Observer {
 class TestSetupTests : public ::testing::Test {
   protected:
     ModelStub model;
-    SessionViewStub view;
-    TestSetupViewStub setupView;
+    SessionViewStub sessionView;
+    TestSetupViewStub view;
     TestSetupControlStub control;
     Calibration calibration;
     TestSettingsInterpreterStub testSettingsInterpreter{calibration};
     TextFileReaderStub textFileReader;
     TestSetupControllerImpl controller{
-        model, view, control, testSettingsInterpreter, textFileReader};
-    TestSetupPresenterImpl presenter{setupView};
+        model, sessionView, control, testSettingsInterpreter, textFileReader};
+    TestSetupPresenterImpl presenter{view};
     PlayingCalibration playingCalibration{control};
     SessionControllerStub sessionController;
     TestSetupControllerObserverStub testSetupControllerObserver;
@@ -450,7 +450,8 @@ TEST_SETUP_TEST(
     control.setStartingSnr("a");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"\"a\" is not a valid starting SNR."}, errorMessage(view));
+        std::string{"\"a\" is not a valid starting SNR."},
+        errorMessage(sessionView));
 }
 
 TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
@@ -525,25 +526,25 @@ TEST_SETUP_TEST(playCalibrationPassesFilePath) {
 }
 
 TEST_SETUP_TEST(playCalibrationPassesAudioDevice) {
-    setAudioDevice(view, "b");
+    setAudioDevice(sessionView, "b");
     run(playingCalibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"b"}, av_speech_in_noise::calibration(model).audioDevice);
 }
 
 TEST_SETUP_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
-    view.setBrowseForOpeningFileResult("a");
+    sessionView.setBrowseForOpeningFileResult("a");
     control.browseForTestSettingsFile();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "a", testSetupControllerObserver.testSettingsFile());
 }
 
 TEST_SETUP_TEST(browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
-    setupView.setTestSettingsFile("a");
-    view.setBrowseForOpeningFileResult("b");
-    view.setBrowseCancelled();
+    view.setTestSettingsFile("a");
+    sessionView.setBrowseForOpeningFileResult("b");
+    sessionView.setBrowseCancelled();
     control.browseForTestSettingsFile();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", setupView.testSettingsFile());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", view.testSettingsFile());
 }
 
 TEST_SETUP_TEST(playCalibrationPassesFullScaleLevel) {
@@ -555,17 +556,17 @@ TEST_SETUP_TEST(playCalibrationPassesFullScaleLevel) {
 
 TEST_SETUP_TEST(presenterShowsViewWhenStarted) {
     presenter.start();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(setupView.shown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
 }
 
 TEST_SETUP_TEST(presenterHidesViewWhenStopped) {
     presenter.stop();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(setupView.hidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
 TEST_SETUP_TEST(presenterSetsTestSettingsFileWhenNotified) {
     presenter.notifyThatUserHasSelectedTestSettingsFile("a");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", setupView.testSettingsFile());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", view.testSettingsFile());
 }
 auto contains(const std::vector<std::string> &items, const std::string &item)
     -> bool {
@@ -574,11 +575,11 @@ auto contains(const std::vector<std::string> &items, const std::string &item)
 
 TEST_SETUP_TEST(presenterPopulatesTransducerMenu) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        contains(setupView.transducers(), name(Transducer::headphone)));
+        contains(view.transducers(), name(Transducer::headphone)));
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        contains(setupView.transducers(), name(Transducer::oneSpeaker)));
+        contains(view.transducers(), name(Transducer::oneSpeaker)));
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        contains(setupView.transducers(), name(Transducer::twoSpeakers)));
+        contains(view.transducers(), name(Transducer::twoSpeakers)));
 }
 
 TEST_F(TestSetupFailureTests,
