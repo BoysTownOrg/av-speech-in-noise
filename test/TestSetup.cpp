@@ -239,31 +239,34 @@ class TestSetupControllerObserverStub : public TestSetupController::Observer {
     void notifyThatUserHasSelectedTestSettingsFile(
         const std::string &s) override {
         testSettingsFile_ = s;
+        notifiedThatUserHasSelectedTestSettingsFile_ = true;
     }
     auto testSettingsFile() -> std::string { return testSettingsFile_; }
+    auto notifiedThatUserHasSelectedTestSettingsFile() -> bool {
+        return notifiedThatUserHasSelectedTestSettingsFile_;
+    }
 
   private:
     std::string testSettingsFile_;
+    bool notifiedThatUserHasSelectedTestSettingsFile_{};
 };
 
-class TestSetupTests : public ::testing::Test {
+class TestSetupControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
     SessionViewStub sessionView;
-    TestSetupViewStub view;
     TestSetupControlStub control;
     Calibration calibration;
     TestSettingsInterpreterStub testSettingsInterpreter{calibration};
     TextFileReaderStub textFileReader;
     TestSetupControllerImpl controller{
         model, sessionView, control, testSettingsInterpreter, textFileReader};
-    TestSetupPresenterImpl presenter{view};
     PlayingCalibration playingCalibration{control};
     SessionControllerStub sessionController;
     TestSetupControllerObserverStub testSetupControllerObserver;
     ConfirmingTestSetupImpl confirmingTestSetup{control};
 
-    TestSetupTests() {
+    TestSetupControllerTests() {
         controller.attach(&sessionController);
         controller.attach(&testSetupControllerObserver);
     }
@@ -420,7 +423,7 @@ class TestSetupFailureTests : public ::testing::Test {
     }
 };
 
-#define TEST_SETUP_TEST(a) TEST_F(TestSetupTests, a)
+#define TEST_SETUP_TEST(a) TEST_F(TestSetupControllerTests, a)
 
 #define TEST_SETUP_PRESENTER_TEST(a) TEST_F(TestSetupPresenterTests, a)
 
@@ -548,11 +551,11 @@ TEST_SETUP_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
 }
 
 TEST_SETUP_TEST(browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
-    view.setTestSettingsFile("a");
-    sessionView.setBrowseForOpeningFileResult("b");
     sessionView.setBrowseCancelled();
     control.browseForTestSettingsFile();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", view.testSettingsFile());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
+        testSetupControllerObserver
+            .notifiedThatUserHasSelectedTestSettingsFile());
 }
 
 TEST_SETUP_TEST(playCalibrationPassesFullScaleLevel) {
