@@ -1,52 +1,64 @@
 #include "Consonant.hpp"
 
 namespace av_speech_in_noise {
-ConsonantPresenter::ConsonantPresenter(Model &model, ConsonantOutputView &view)
-    : model{model}, view{view} {}
+ConsonantTaskPresenter::ConsonantTaskPresenter(ConsonantTaskView &view)
+    : view{view} {}
 
-void ConsonantPresenter::start() {
+void ConsonantTaskPresenter::start() {
     view.show();
     view.showReadyButton();
 }
 
-void ConsonantPresenter::stop() {
+static void hideCursor(ConsonantTaskView &view) { view.hideCursor(); }
+
+static void hideResponseButtons(ConsonantTaskView &view) {
     view.hideResponseButtons();
+}
+
+void ConsonantTaskPresenter::stop() {
+    hideResponseButtons(view);
     view.hide();
 }
 
-void ConsonantPresenter::notifyThatTaskHasStarted() {
+void ConsonantTaskPresenter::notifyThatTaskHasStarted() {
     view.hideReadyButton();
-    view.hideCursor();
 }
 
-void ConsonantPresenter::notifyThatUserIsDoneResponding() {
-    view.hideResponseButtons();
-    if (!model.testComplete())
-        view.hideCursor();
+void ConsonantTaskPresenter::notifyThatUserIsDoneResponding() {
+    hideResponseButtons(view);
 }
 
-void ConsonantPresenter::showResponseSubmission() {
+void ConsonantTaskPresenter::notifyThatTrialHasStarted() { hideCursor(view); }
+
+void ConsonantTaskPresenter::showResponseSubmission() {
     view.showResponseButtons();
+    view.showCursor();
 }
 
-ConsonantResponder::ConsonantResponder(Model &model, ConsonantInputView &view)
-    : model{model}, view{view} {
-    view.subscribe(this);
+ConsonantTaskController::ConsonantTaskController(
+    Model &model, ConsonantTaskControl &view)
+    : model{model}, control{view} {
+    view.attach(this);
 }
 
-void ConsonantResponder::subscribe(TaskResponder::EventListener *e) {
-    listener = e;
-}
-void ConsonantResponder::subscribe(ExperimenterResponder *p) { responder = p; }
-
-void ConsonantResponder::notifyThatReadyButtonHasBeenClicked() {
-    listener->notifyThatTaskHasStarted();
-    responder->playTrial();
+void ConsonantTaskController::attach(TaskController::Observer *e) {
+    observer = e;
 }
 
-void ConsonantResponder::notifyThatResponseButtonHasBeenClicked() {
-    model.submit(ConsonantResponse{view.consonant().front()});
-    listener->notifyThatUserIsDoneResponding();
-    responder->playNextTrialIfNeeded();
+void ConsonantTaskController::attach(TestController *c) { controller = c; }
+
+static void notifyThatUserIsReadyForNextTrial(TestController *c) {
+    c->notifyThatUserIsReadyForNextTrial();
+}
+
+void ConsonantTaskController::notifyThatReadyButtonHasBeenClicked() {
+    observer->notifyThatTaskHasStarted();
+    notifyThatUserIsReadyForNextTrial(controller);
+}
+
+void ConsonantTaskController::notifyThatResponseButtonHasBeenClicked() {
+    model.submit(ConsonantResponse{control.consonant().front()});
+    observer->notifyThatUserIsDoneResponding();
+    notifyThatUserIsReadyForNextTrial(controller);
 }
 }

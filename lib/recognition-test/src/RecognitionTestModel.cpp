@@ -143,11 +143,11 @@ RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     : maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
       evaluator{evaluator}, outputFile{outputFile}, randomizer{randomizer},
       eyeTracker{eyeTracker}, testMethod{&nullTestMethod} {
-    targetPlayer.subscribe(this);
-    maskerPlayer.subscribe(this);
+    targetPlayer.attach(this);
+    maskerPlayer.attach(this);
 }
 
-void RecognitionTestModelImpl::subscribe(Model::EventListener *listener) {
+void RecognitionTestModelImpl::attach(Model::Observer *listener) {
     listener_ = listener;
 }
 

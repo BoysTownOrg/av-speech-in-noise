@@ -1,60 +1,60 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_COORDINATERESPONSEMEASURE_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_COORDINATERESPONSEMEASURE_HPP_
 
+#include "Interface.hpp"
+#include "View.hpp"
 #include "Task.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
 
 namespace av_speech_in_noise {
-class CoordinateResponseMeasureInputView {
+class CoordinateResponseMeasureControl {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatReadyButtonHasBeenClicked() = 0;
         virtual void notifyThatResponseButtonHasBeenClicked() = 0;
     };
-    virtual ~CoordinateResponseMeasureInputView() = default;
-    virtual void subscribe(EventListener *) = 0;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        CoordinateResponseMeasureControl);
+    virtual void attach(Observer *) = 0;
     virtual auto numberResponse() -> std::string = 0;
     virtual auto greenResponse() -> bool = 0;
     virtual auto blueResponse() -> bool = 0;
     virtual auto whiteResponse() -> bool = 0;
 };
 
-class CoordinateResponseMeasureOutputView {
+class CoordinateResponseMeasureView : public virtual View {
   public:
-    virtual ~CoordinateResponseMeasureOutputView() = default;
-    virtual void show() = 0;
-    virtual void hide() = 0;
     virtual void showResponseButtons() = 0;
     virtual void hideResponseButtons() = 0;
     virtual void showNextTrialButton() = 0;
     virtual void hideNextTrialButton() = 0;
 };
 
-class CoordinateResponseMeasureResponder
-    : public TaskResponder,
-      public CoordinateResponseMeasureInputView::EventListener {
+class CoordinateResponseMeasureController
+    : public TaskController,
+      public CoordinateResponseMeasureControl::Observer {
   public:
-    explicit CoordinateResponseMeasureResponder(
-        Model &, CoordinateResponseMeasureInputView &);
-    void subscribe(TaskResponder::EventListener *e) override;
+    explicit CoordinateResponseMeasureController(
+        Model &, CoordinateResponseMeasureControl &);
+    void attach(TaskController::Observer *) override;
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
-    void subscribe(ExperimenterResponder *e) override;
+    void attach(TestController *) override;
 
   private:
     Model &model;
-    CoordinateResponseMeasureInputView &view;
-    TaskResponder::EventListener *listener{};
-    ExperimenterResponder *responder{};
+    CoordinateResponseMeasureControl &control;
+    TaskController::Observer *observer{};
+    TestController *controller{};
 };
 
 class CoordinateResponseMeasurePresenter : public TaskPresenter {
   public:
     explicit CoordinateResponseMeasurePresenter(
-        CoordinateResponseMeasureOutputView &);
+        CoordinateResponseMeasureView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
@@ -62,7 +62,7 @@ class CoordinateResponseMeasurePresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    CoordinateResponseMeasureOutputView &view;
+    CoordinateResponseMeasureView &view;
 };
 }
 

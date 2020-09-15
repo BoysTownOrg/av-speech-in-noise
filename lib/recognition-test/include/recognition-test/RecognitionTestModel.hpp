@@ -41,14 +41,14 @@ struct LevelAmplification {
 
 class TargetPlayer {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void playbackComplete() = 0;
     };
 
     virtual ~TargetPlayer() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(Observer *) = 0;
     virtual void setAudioDevice(std::string) = 0;
     virtual void play() = 0;
     virtual void playAt(const PlayerTimeWithDelay &) = 0;
@@ -71,15 +71,15 @@ struct AudioSampleTimeWithOffset {
 
 class MaskerPlayer {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void fadeInComplete(const AudioSampleTimeWithOffset &) = 0;
         virtual void fadeOutComplete() = 0;
     };
 
     virtual ~MaskerPlayer() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(Observer *) = 0;
     virtual auto outputAudioDeviceDescriptions()
         -> std::vector<std::string> = 0;
     virtual void setAudioDevice(std::string) = 0;
@@ -111,13 +111,13 @@ class EyeTracker {
     virtual auto currentSystemTime() -> EyeTrackerSystemTime = 0;
 };
 
-class RecognitionTestModelImpl : public TargetPlayer::EventListener,
-                                 public MaskerPlayer::EventListener,
+class RecognitionTestModelImpl : public TargetPlayer::Observer,
+                                 public MaskerPlayer::Observer,
                                  public RecognitionTestModel {
   public:
     RecognitionTestModelImpl(TargetPlayer &, MaskerPlayer &,
         ResponseEvaluator &, OutputFile &, Randomizer &, EyeTracker &);
-    void subscribe(Model::EventListener *) override;
+    void attach(Model::Observer *) override;
     void initialize(TestMethod *, const Test &) override;
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
     void initializeWithDelayedMasker(TestMethod *, const Test &) override;
@@ -157,7 +157,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     EyeTrackerTargetPlayerSynchronization
         lastEyeTrackerTargetPlayerSynchronization{};
     TargetStartTime lastTargetStartTime{};
-    Model::EventListener *listener_{};
+    Model::Observer *listener_{};
     TestMethod *testMethod{};
     RealLevel maskerLevel_{};
     RealLevel fullScaleLevel_{};

@@ -2,43 +2,45 @@
 #include "Input.hpp"
 
 namespace av_speech_in_noise {
-CorrectKeywordsResponder::CorrectKeywordsResponder(
-    Model &model, View &view, CorrectKeywordsInputView &keywordsView)
-    : model{model}, view{view}, keywordsView{keywordsView} {
-    keywordsView.subscribe(this);
+CorrectKeywordsController::CorrectKeywordsController(
+    Model &model, SessionView &view, CorrectKeywordsControl &keywordsView)
+    : model{model}, sessionView{view}, control{keywordsView} {
+    keywordsView.attach(this);
 }
 
-void CorrectKeywordsResponder::subscribe(TaskResponder::EventListener *e) {
-    listener = e;
+void CorrectKeywordsController::attach(TaskController::Observer *e) {
+    observer = e;
 }
 
-void CorrectKeywordsResponder::subscribe(ExperimenterResponder *r) {
-    responder = r;
+void CorrectKeywordsController::attach(TestController *r) { controller = r; }
+
+static void submitCorrectKeywords(Model &model, CorrectKeywordsControl &control,
+    TaskController::Observer *observer, TestController *controller) {
+    model.submit(
+        CorrectKeywords{readInteger(control.correctKeywords(), "number")});
+    observer->notifyThatUserIsDoneResponding();
+    controller
+        ->notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
-void CorrectKeywordsResponder::notifyThatSubmitButtonHasBeenClicked() {
+void CorrectKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     try {
-        model.submit(CorrectKeywords{
-            readInteger(keywordsView.correctKeywords(), "number")});
-        listener->notifyThatUserIsDoneResponding();
-        responder->showContinueTestingDialogWithResultsWhenComplete();
+        submitCorrectKeywords(model, control, observer, controller);
     } catch (const std::runtime_error &e) {
-        view.showErrorMessage(e.what());
+        sessionView.showErrorMessage(e.what());
     }
 }
 
 CorrectKeywordsPresenter::CorrectKeywordsPresenter(
-    ExperimenterOutputView &experimenterView, CorrectKeywordsOutputView &view)
-    : experimenterView{experimenterView}, view{view} {}
+    TestView &testView, CorrectKeywordsView &view)
+    : testView{testView}, view{view} {}
 
-void CorrectKeywordsPresenter::start() {
-    experimenterView.showNextTrialButton();
-}
+void CorrectKeywordsPresenter::start() { testView.showNextTrialButton(); }
 
 void CorrectKeywordsPresenter::stop() { view.hideCorrectKeywordsSubmission(); }
 
 void CorrectKeywordsPresenter::notifyThatTaskHasStarted() {
-    experimenterView.hideNextTrialButton();
+    testView.hideNextTrialButton();
 }
 
 void CorrectKeywordsPresenter::notifyThatUserIsDoneResponding() {

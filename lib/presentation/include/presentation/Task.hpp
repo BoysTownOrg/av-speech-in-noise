@@ -1,25 +1,26 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TASK_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TASK_HPP_
 
-#include "PresenterSimple.hpp"
-#include "Experimenter.hpp"
+#include "Presenter.hpp"
+#include "Test.hpp"
 
 namespace av_speech_in_noise {
-class TaskResponder {
+class TaskController {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void notifyThatTaskHasStarted() = 0;
         virtual void notifyThatUserIsDoneResponding() = 0;
+        virtual void notifyThatTrialHasStarted() {}
     };
-    virtual ~TaskResponder() = default;
-    virtual void subscribe(EventListener *) = 0;
-    virtual void subscribe(ExperimenterResponder *) = 0;
+    virtual ~TaskController() = default;
+    virtual void attach(Observer *) = 0;
+    virtual void attach(TestController *) = 0;
 };
 
-class TaskPresenter : virtual public TaskResponder::EventListener,
-                      virtual public PresenterSimple {
+class TaskPresenter : virtual public TaskController::Observer,
+                      virtual public Presenter {
   public:
     virtual void showResponseSubmission() = 0;
 };

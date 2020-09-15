@@ -1,55 +1,63 @@
 #include "CoordinateResponseMeasure.hpp"
 
 namespace av_speech_in_noise {
-static auto colorResponse(CoordinateResponseMeasureInputView *inputView)
-    -> coordinate_response_measure::Color {
-    if (inputView->greenResponse())
-        return coordinate_response_measure::Color::green;
-    if (inputView->blueResponse())
-        return coordinate_response_measure::Color::blue;
-    if (inputView->whiteResponse())
-        return coordinate_response_measure::Color::white;
+using coordinate_response_measure::Color;
 
-    return coordinate_response_measure::Color::red;
+static auto colorResponse(CoordinateResponseMeasureControl &control) -> Color {
+    if (control.greenResponse())
+        return Color::green;
+    if (control.blueResponse())
+        return Color::blue;
+    if (control.whiteResponse())
+        return Color::white;
+    return Color::red;
 }
 
-static auto subjectResponse(CoordinateResponseMeasureInputView *inputView)
+static auto subjectResponse(CoordinateResponseMeasureControl &control)
     -> coordinate_response_measure::Response {
     coordinate_response_measure::Response p{};
-    p.color = colorResponse(inputView);
-    p.number = std::stoi(inputView->numberResponse());
+    p.color = colorResponse(control);
+    p.number = std::stoi(control.numberResponse());
     return p;
 }
 
-CoordinateResponseMeasureResponder::CoordinateResponseMeasureResponder(
-    Model &model, CoordinateResponseMeasureInputView &view)
-    : model{model}, view{view} {
-    view.subscribe(this);
+CoordinateResponseMeasureController::CoordinateResponseMeasureController(
+    Model &model, CoordinateResponseMeasureControl &control)
+    : model{model}, control{control} {
+    control.attach(this);
 }
 
-void CoordinateResponseMeasureResponder::subscribe(
-    TaskResponder::EventListener *e) {
-    listener = e;
+void CoordinateResponseMeasureController::attach(TaskController::Observer *e) {
+    observer = e;
 }
 
-void CoordinateResponseMeasureResponder::notifyThatReadyButtonHasBeenClicked() {
-    listener->notifyThatTaskHasStarted();
-    responder->playTrial();
+static void notifyThatUserIsReadyForNextTrial(TestController *c) {
+    c->notifyThatUserIsReadyForNextTrial();
 }
 
-void CoordinateResponseMeasureResponder::
+void CoordinateResponseMeasureController::
+    notifyThatReadyButtonHasBeenClicked() {
+    observer->notifyThatTaskHasStarted();
+    notifyThatUserIsReadyForNextTrial(controller);
+}
+
+void CoordinateResponseMeasureController::
     notifyThatResponseButtonHasBeenClicked() {
-    model.submit(subjectResponse(&view));
-    listener->notifyThatUserIsDoneResponding();
-    responder->playNextTrialIfNeeded();
+    model.submit(subjectResponse(control));
+    observer->notifyThatUserIsDoneResponding();
+    notifyThatUserIsReadyForNextTrial(controller);
 }
 
-void CoordinateResponseMeasureResponder::subscribe(ExperimenterResponder *e) {
-    responder = e;
+void CoordinateResponseMeasureController::attach(TestController *c) {
+    controller = c;
+}
+
+static void hideResponseButtons(CoordinateResponseMeasureView &view) {
+    view.hideResponseButtons();
 }
 
 CoordinateResponseMeasurePresenter::CoordinateResponseMeasurePresenter(
-    CoordinateResponseMeasureOutputView &view)
+    CoordinateResponseMeasureView &view)
     : view{view} {}
 
 void CoordinateResponseMeasurePresenter::start() {
@@ -58,7 +66,7 @@ void CoordinateResponseMeasurePresenter::start() {
 }
 
 void CoordinateResponseMeasurePresenter::stop() {
-    view.hideResponseButtons();
+    hideResponseButtons(view);
     view.hide();
 }
 
@@ -67,7 +75,7 @@ void CoordinateResponseMeasurePresenter::notifyThatTaskHasStarted() {
 }
 
 void CoordinateResponseMeasurePresenter::notifyThatUserIsDoneResponding() {
-    view.hideResponseButtons();
+    hideResponseButtons(view);
 }
 
 void CoordinateResponseMeasurePresenter::showResponseSubmission() {

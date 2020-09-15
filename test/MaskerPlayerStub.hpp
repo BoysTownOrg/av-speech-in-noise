@@ -18,7 +18,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     double channelDelaySeconds_{};
     double sampleRateHz_{};
     gsl::index channelDelayed_{};
-    EventListener *listener_{};
+    Observer *listener_{};
     PlayerTime currentSystemTime_{};
     std::vector<player_system_time_type> toNanosecondsSystemTime_{};
     std::uintmax_t nanoseconds_{};
@@ -112,7 +112,7 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     [[nodiscard]] auto fadeOutCalled() const -> bool { return fadeOutCalled_; }
 
-    void subscribe(EventListener *e) override { listener_ = e; }
+    void attach(Observer *e) override { listener_ = e; }
 
     void fadeOut() override { fadeOutCalled_ = true; }
 
@@ -126,7 +126,7 @@ class MaskerPlayerStub : public MaskerPlayer {
         return outputAudioDeviceDescriptions_;
     }
 
-    [[nodiscard]] auto listener() const -> const EventListener * {
+    [[nodiscard]] auto listener() const -> const Observer * {
         return listener_;
     }
 

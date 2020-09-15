@@ -7,14 +7,21 @@ add_executable(
   MaskerPlayer.cpp
   OutputFilePath.cpp
   OutputFile.cpp
-  Presenter.cpp
   RecognitionTestModel.cpp
   Model.cpp
   ResponseEvaluator.cpp
   SubdirectoryTargetListReader.cpp
   RandomizedTargetPlaylists.cpp
   TargetPlayer.cpp
-  TestSettingsInterpreter.cpp)
+  TestSettingsInterpreter.cpp
+  Consonant.cpp
+  CoordinateResponseMeasure.cpp
+  CorrectKeywords.cpp
+  FreeResponse.cpp
+  PassFail.cpp
+  Test.cpp
+  TestSetup.cpp
+  SessionController.cpp)
 target_compile_features(tests PRIVATE cxx_std_17)
 set_target_properties(tests PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(tests PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})

@@ -13,16 +13,16 @@ using channel_buffer_type = gsl::span<float>;
 
 class AudioPlayer {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void fillAudioBuffer(
             const std::vector<channel_buffer_type> &audio,
             player_system_time_type) = 0;
     };
 
     virtual ~AudioPlayer() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(Observer *) = 0;
     virtual void play() = 0;
     virtual void stop() = 0;
     virtual auto playing() -> bool = 0;
@@ -38,13 +38,13 @@ class AudioPlayer {
 
 class Timer {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        virtual ~Observer() = default;
         virtual void callback() = 0;
     };
     virtual ~Timer() = default;
-    virtual void subscribe(EventListener *) = 0;
+    virtual void attach(Observer *) = 0;
     virtual void scheduleCallbackAfterSeconds(double) = 0;
 };
 
@@ -53,11 +53,11 @@ using channel_index_type = cpp_core_guidelines_index_type;
 using sample_index_type = cpp_core_guidelines_index_type;
 
 class MaskerPlayerImpl : public MaskerPlayer,
-                         public AudioPlayer::EventListener,
-                         public Timer::EventListener {
+                         public AudioPlayer::Observer,
+                         public Timer::Observer {
   public:
     MaskerPlayerImpl(AudioPlayer *, AudioReader *, Timer *);
-    void subscribe(MaskerPlayer::EventListener *) override;
+    void attach(MaskerPlayer::Observer *) override;
     void fadeIn() override;
     void fadeOut() override;
     void loadFile(const LocalUrl &) override;
@@ -125,7 +125,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         MainThread(AudioPlayer *, Timer *);
         void setSharedState(MaskerPlayerImpl *);
         void callback();
-        void subscribe(MaskerPlayer::EventListener *);
+        void attach(MaskerPlayer::Observer *);
         void fadeIn();
         void fadeOut();
         void setChannelDelaySeconds(channel_index_type channel, double seconds);
@@ -141,7 +141,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         std::vector<double> channelDelaySeconds_;
         MaskerPlayerImpl *sharedState{};
         AudioPlayer *player;
-        MaskerPlayer::EventListener *listener{};
+        MaskerPlayer::Observer *listener{};
         Timer *timer;
         double fadeInOutSeconds{};
         bool fadingIn{};

@@ -207,7 +207,7 @@ class ModelStub : public Model {
         responseParameters_ = p;
     }
 
-    void subscribe(EventListener *listener) override { listener_ = listener; }
+    void attach(Observer *listener) override { listener_ = listener; }
 
     void playCalibration(const Calibration &p) override { calibration_ = p; }
 
@@ -245,7 +245,7 @@ class ModelStub : public Model {
     ConsonantResponse consonantResponse_{};
     CorrectKeywords correctKeywords_{};
     std::string targetFileName_{};
-    EventListener *listener_{};
+    Observer *listener_{};
     int trialNumber_{};
     bool testComplete_{};
     bool trialPlayed_{};

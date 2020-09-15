@@ -1,6 +1,6 @@
 #include "LogString.hpp"
 #include "MaskerPlayerStub.hpp"
-#include "ModelEventListenerStub.hpp"
+#include "ModelObserverStub.hpp"
 #include "OutputFileStub.hpp"
 #include "RandomizerStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
@@ -424,13 +424,13 @@ void assertChannelDelaysCleared(MaskerPlayerStub &player) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.channelDelaysCleared());
 }
 
-auto targetPlayerEventListener(const RecognitionTestModelImpl &model)
-    -> const TargetPlayer::EventListener * {
+auto targetPlayerObserver(const RecognitionTestModelImpl &model)
+    -> const TargetPlayer::Observer * {
     return &model;
 }
 
-auto maskerPlayerEventListener(const RecognitionTestModelImpl &model)
-    -> const MaskerPlayer::EventListener * {
+auto maskerPlayerObserver(const RecognitionTestModelImpl &model)
+    -> const MaskerPlayer::Observer * {
     return &model;
 }
 
@@ -489,7 +489,7 @@ void fadeInComplete(
 
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
-    ModelEventListenerStub listener;
+    ModelObserverStub listener;
     TargetPlayerStub targetPlayer;
     MaskerPlayerStub maskerPlayer;
     ResponseEvaluatorStub evaluator;
@@ -519,7 +519,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingCorrectKeywords submittingCorrectKeywords;
     SubmittingConsonant submittingConsonant;
 
-    RecognitionTestModelTests() { model.subscribe(&listener); }
+    RecognitionTestModelTests() { model.attach(&listener); }
 
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase, model);
@@ -725,9 +725,9 @@ class RecognitionTestModelTests : public ::testing::Test {
 
 RECOGNITION_TEST_MODEL_TEST(subscribesToPlayerEvents) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        targetPlayerEventListener(model), targetPlayer.listener());
+        targetPlayerObserver(model), targetPlayer.listener());
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        maskerPlayerEventListener(model), maskerPlayer.listener());
+        maskerPlayerObserver(model), maskerPlayer.listener());
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetPlayer) {

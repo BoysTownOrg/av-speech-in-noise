@@ -1,22 +1,25 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETUP_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETUP_HPP_
 
-#include "PresenterSimple.hpp"
+#include "Interface.hpp"
+#include "View.hpp"
+#include "Presenter.hpp"
+#include "Method.hpp"
 #include <vector>
 #include <string>
 
 namespace av_speech_in_noise {
-class TestSetupInputView {
+class TestSetupControl {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatConfirmButtonHasBeenClicked() = 0;
         virtual void notifyThatPlayCalibrationButtonHasBeenClicked() = 0;
         virtual void notifyThatBrowseForTestSettingsButtonHasBeenClicked() = 0;
     };
-    virtual void subscribe(EventListener *) = 0;
-    virtual ~TestSetupInputView() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestSetupControl);
+    virtual void attach(Observer *) = 0;
     virtual auto testSettingsFile() -> std::string = 0;
     virtual auto startingSnr() -> std::string = 0;
     virtual auto testerId() -> std::string = 0;
@@ -26,58 +29,27 @@ class TestSetupInputView {
     virtual auto transducer() -> std::string = 0;
 };
 
-class TestSetupOutputView {
+class TestSetupView : public virtual View {
   public:
-    virtual ~TestSetupOutputView() = default;
     virtual void populateTransducerMenu(std::vector<std::string>) = 0;
     virtual void setTestSettingsFile(std::string) = 0;
-    virtual void show() = 0;
-    virtual void hide() = 0;
 };
 
-class TestSetupView : public virtual TestSetupOutputView,
-                      public virtual TestSetupInputView {};
-enum class Method {
-    adaptivePassFail,
-    adaptivePassFailWithEyeTracking,
-    adaptiveCorrectKeywords,
-    adaptiveCorrectKeywordsWithEyeTracking,
-    adaptiveCoordinateResponseMeasure,
-    adaptiveCoordinateResponseMeasureWithSingleSpeaker,
-    adaptiveCoordinateResponseMeasureWithDelayedMasker,
-    adaptiveCoordinateResponseMeasureWithEyeTracking,
-    fixedLevelFreeResponseWithTargetReplacement,
-    fixedLevelFreeResponseWithSilentIntervalTargets,
-    fixedLevelFreeResponseWithAllTargets,
-    fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
-    fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
-    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-    fixedLevelConsonants,
-    unknown
-};
-
-class SomethingIDK {
+class TestSetupController {
   public:
-    virtual ~SomethingIDK() = default;
-    virtual void prepare(Method) = 0;
-};
-
-class TestSetupResponder {
-  public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatUserHasSelectedTestSettingsFile(
             const std::string &) = 0;
     };
-    virtual ~TestSetupResponder() = default;
-    virtual void becomeChild(SomethingIDK *) = 0;
-    virtual void subscribe(EventListener *) = 0;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestSetupController);
+    virtual void attach(SessionController *) = 0;
+    virtual void attach(Observer *) = 0;
 };
 
-class TestSetupPresenter : public virtual TestSetupResponder::EventListener,
-                           public virtual PresenterSimple {};
+class TestSetupPresenter : public virtual TestSetupController::Observer,
+                           public virtual Presenter {};
 }
 
 #endif

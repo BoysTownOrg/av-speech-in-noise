@@ -2,7 +2,7 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETUPIMPL_HPP_
 
 #include "TestSetup.hpp"
-#include "View.hpp"
+#include "SessionView.hpp"
 #include "Input.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
@@ -38,77 +38,37 @@ constexpr auto name(Transducer c) -> const char * {
     }
 }
 
-class TestSetupResponderImpl : public TestSetupInputView::EventListener,
-                               public TestSetupResponder {
+class TestSetupControllerImpl : public TestSetupControl::Observer,
+                                public TestSetupController {
   public:
-    explicit TestSetupResponderImpl(Model &model, View &mainView,
-        TestSetupInputView &view,
-        TestSettingsInterpreter &testSettingsInterpreter,
-        TextFileReader &textFileReader)
-        : model{model}, mainView{mainView}, view{view},
-          testSettingsInterpreter{testSettingsInterpreter},
-          textFileReader{textFileReader} {
-        view.subscribe(this);
-    }
-    void notifyThatConfirmButtonHasBeenClicked() override {
-        try {
-            const auto testSettings{
-                textFileReader.read({view.testSettingsFile()})};
-            TestIdentity p;
-            p.subjectId = view.subjectId();
-            p.testerId = view.testerId();
-            p.session = view.session();
-            p.rmeSetting = view.rmeSetting();
-            p.transducer = view.transducer();
-            testSettingsInterpreter.initialize(model, testSettings, p,
-                SNR{readInteger(view.startingSnr(), "starting SNR")});
-            if (!model.testComplete())
-                parent->prepare(testSettingsInterpreter.method(testSettings));
-        } catch (const std::runtime_error &e) {
-            mainView.showErrorMessage(e.what());
-        }
-    }
-    void notifyThatPlayCalibrationButtonHasBeenClicked() override {
-        auto p{testSettingsInterpreter.calibration(
-            textFileReader.read({view.testSettingsFile()}))};
-        p.audioDevice = mainView.audioDevice();
-        model.playCalibration(p);
-    }
-    void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override {
-        auto file{mainView.browseForOpeningFile()};
-        if (!mainView.browseCancelled())
-            listener->notifyThatUserHasSelectedTestSettingsFile(file);
-    }
-    void becomeChild(SomethingIDK *p) override { parent = p; }
-    void subscribe(TestSetupResponder::EventListener *e) override {
-        listener = e;
-    }
+    explicit TestSetupControllerImpl(Model &, SessionView &, TestSetupControl &,
+        TestSettingsInterpreter &, TextFileReader &);
+    void notifyThatConfirmButtonHasBeenClicked() override;
+    void notifyThatPlayCalibrationButtonHasBeenClicked() override;
+    void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
+    void attach(SessionController *p) override;
+    void attach(TestSetupController::Observer *e) override;
 
   private:
     Model &model;
-    View &mainView;
-    TestSetupInputView &view;
+    SessionView &sessionView;
+    TestSetupControl &control;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
-    SomethingIDK *parent{};
-    TestSetupResponder::EventListener *listener{};
+    SessionController *controller{};
+    TestSetupController::Observer *observer{};
 };
 
 class TestSetupPresenterImpl : public TestSetupPresenter {
   public:
-    explicit TestSetupPresenterImpl(TestSetupOutputView &view) : view{view} {
-        view.populateTransducerMenu({name(Transducer::headphone),
-            name(Transducer::oneSpeaker), name(Transducer::twoSpeakers)});
-    }
-    void start() override { view.show(); }
-    void stop() override { view.hide(); }
+    explicit TestSetupPresenterImpl(TestSetupView &view);
+    void start() override;
+    void stop() override;
     void notifyThatUserHasSelectedTestSettingsFile(
-        const std::string &s) override {
-        view.setTestSettingsFile(s);
-    }
+        const std::string &s) override;
 
   private:
-    TestSetupOutputView &view;
+    TestSetupView &view;
 };
 }
 

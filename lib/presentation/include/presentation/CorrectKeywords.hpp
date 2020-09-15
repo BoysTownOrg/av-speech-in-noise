@@ -1,54 +1,54 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CORRECTKEYWORDS_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CORRECTKEYWORDS_HPP_
 
+#include "Interface.hpp"
 #include "Task.hpp"
-#include "Experimenter.hpp"
-#include "View.hpp"
+#include "Test.hpp"
+#include "SessionView.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
 
 namespace av_speech_in_noise {
-class CorrectKeywordsInputView {
+class CorrectKeywordsControl {
   public:
-    class EventListener {
+    class Observer {
       public:
-        virtual ~EventListener() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
     };
-    virtual ~CorrectKeywordsInputView() = default;
-    virtual void subscribe(EventListener *) = 0;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        CorrectKeywordsControl);
+    virtual void attach(Observer *) = 0;
     virtual auto correctKeywords() -> std::string = 0;
 };
 
-class CorrectKeywordsOutputView {
+class CorrectKeywordsView {
   public:
-    virtual ~CorrectKeywordsOutputView() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(CorrectKeywordsView);
     virtual void showCorrectKeywordsSubmission() = 0;
     virtual void hideCorrectKeywordsSubmission() = 0;
 };
 
-class CorrectKeywordsResponder
-    : public TaskResponder,
-      public CorrectKeywordsInputView::EventListener {
+class CorrectKeywordsController : public TaskController,
+                                  public CorrectKeywordsControl::Observer {
   public:
-    explicit CorrectKeywordsResponder(
-        Model &, View &, CorrectKeywordsInputView &);
-    void subscribe(TaskResponder::EventListener *e) override;
-    void subscribe(ExperimenterResponder *r) override;
+    explicit CorrectKeywordsController(
+        Model &, SessionView &, CorrectKeywordsControl &);
+    void attach(TaskController::Observer *) override;
+    void attach(TestController *) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
     Model &model;
-    View &view;
-    CorrectKeywordsInputView &keywordsView;
-    TaskResponder::EventListener *listener{};
-    ExperimenterResponder *responder{};
+    SessionView &sessionView;
+    CorrectKeywordsControl &control;
+    TaskController::Observer *observer{};
+    TestController *controller{};
 };
 
 class CorrectKeywordsPresenter : public TaskPresenter {
   public:
-    explicit CorrectKeywordsPresenter(
-        ExperimenterOutputView &, CorrectKeywordsOutputView &);
+    explicit CorrectKeywordsPresenter(TestView &, CorrectKeywordsView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
@@ -56,8 +56,8 @@ class CorrectKeywordsPresenter : public TaskPresenter {
     void showResponseSubmission() override;
 
   private:
-    ExperimenterOutputView &experimenterView;
-    CorrectKeywordsOutputView &view;
+    TestView &testView;
+    CorrectKeywordsView &view;
 };
 }
 

@@ -1,5 +1,5 @@
 #include "OutputFileStub.hpp"
-#include "ModelEventListenerStub.hpp"
+#include "ModelObserverStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "assert-utility.hpp"
@@ -142,7 +142,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     TestMethod *testMethodToCallNextTargetOnSubmitConsonants_{};
     TestMethod *
         testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_{};
-    const Model::EventListener *listener_{};
+    const Model::Observer *listener_{};
     const Calibration *calibration_{};
     const AudioSettings *playTrialSettings_{};
     const Test *test_{};
@@ -226,7 +226,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         return audioDevices_;
     }
 
-    void subscribe(Model::EventListener *e) override { listener_ = e; }
+    void attach(Model::Observer *e) override { listener_ = e; }
 
     void playCalibration(const Calibration &c) override { calibration_ = &c; }
 
@@ -1111,10 +1111,10 @@ MODEL_TEST(returnsTargetFileName) {
 }
 
 MODEL_TEST(subscribesToListener) {
-    ModelEventListenerStub listener;
-    model.subscribe(&listener);
+    ModelObserverStub listener;
+    model.attach(&listener);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        static_cast<const Model::EventListener *>(&listener),
+        static_cast<const Model::Observer *>(&listener),
         internalModel.listener());
 }
 }

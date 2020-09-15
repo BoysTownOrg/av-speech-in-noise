@@ -1,21 +1,21 @@
 #include "main.h"
 #include "MacOsTestSetupViewFactory.h"
 #include "common-objc.h"
-#include <presentation/Presenter.hpp>
+#include <presentation/SessionControllerImpl.hpp>
 #import <Cocoa/Cocoa.h>
 #include <string>
 
 @class FacemaskStudySetupViewActions;
 
 namespace av_speech_in_noise {
-class FacemaskStudySetupView : public TestSetupView {
+class FacemaskStudySetupView : public TestSetupUI {
   public:
     explicit FacemaskStudySetupView(NSViewController *);
     void show() override;
     void hide() override;
     auto testSettingsFile() -> std::string override;
     void setTestSettingsFile(std::string) override;
-    void subscribe(EventListener *) override;
+    void attach(Observer *) override;
     void populateTransducerMenu(std::vector<std::string>) override {}
     auto startingSnr() -> std::string override { return "0"; }
     auto testerId() -> std::string override { return {}; }
@@ -30,13 +30,13 @@ class FacemaskStudySetupView : public TestSetupView {
   private:
     NSTextField *testSettingsField;
     FacemaskStudySetupViewActions *actions;
-    EventListener *listener_{};
+    Observer *listener_{};
     NSViewController *controller;
 };
 
 class FacemaskStudySetupViewFactory : public MacOsTestSetupViewFactory {
   public:
-    auto make(NSViewController *c) -> std::unique_ptr<TestSetupView> override {
+    auto make(NSViewController *c) -> std::unique_ptr<TestSetupUI> override {
         return std::make_unique<FacemaskStudySetupView>(c);
     }
 };
@@ -271,7 +271,7 @@ void FacemaskStudySetupView::setTestSettingsFile(std::string s) {
     [testSettingsField setStringValue:nsString(s)];
 }
 
-void FacemaskStudySetupView::subscribe(EventListener *e) { listener_ = e; }
+void FacemaskStudySetupView::attach(Observer *e) { listener_ = e; }
 
 void FacemaskStudySetupView::notifyThatConfirmButtonHasBeenClicked() {
     listener_->notifyThatConfirmButtonHasBeenClicked();

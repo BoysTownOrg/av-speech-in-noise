@@ -8,8 +8,8 @@
 #include <presentation/PassFail.hpp>
 #include <presentation/CorrectKeywords.hpp>
 #include <presentation/TestSetupImpl.hpp>
-#include <presentation/ExperimenterImpl.hpp>
-#include <presentation/Presenter.hpp>
+#include <presentation/TestImpl.hpp>
+#include <presentation/SessionControllerImpl.hpp>
 #import <Cocoa/Cocoa.h>
 #include <unordered_map>
 
@@ -20,19 +20,20 @@
 @class FreeResponseViewActions;
 
 namespace av_speech_in_noise {
-class CocoaExperimenterView : public ExperimenterView,
-                              public FreeResponseInputView,
-                              public FreeResponseOutputView,
-                              public CorrectKeywordsInputView,
-                              public CorrectKeywordsOutputView,
-                              public PassFailInputView,
-                              public PassFailOutputView {
+class CocoaExperimenterView : public TestView,
+                              public TestControl,
+                              public FreeResponseControl,
+                              public FreeResponseView,
+                              public CorrectKeywordsControl,
+                              public CorrectKeywordsView,
+                              public PassFailControl,
+                              public PassFailView {
   public:
     explicit CocoaExperimenterView(NSViewController *);
-    void subscribe(ExperimenterView::EventListener *) override;
-    void subscribe(FreeResponseInputView::EventListener *) override;
-    void subscribe(CorrectKeywordsInputView::EventListener *) override;
-    void subscribe(PassFailInputView::EventListener *) override;
+    void attach(TestControl::Observer *) override;
+    void attach(FreeResponseControl::Observer *) override;
+    void attach(CorrectKeywordsControl::Observer *) override;
+    void attach(PassFailControl::Observer *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;
     void show() override;
@@ -79,13 +80,13 @@ class CocoaExperimenterView : public ExperimenterView,
     NSButton *nextTrialButton;
     ExperimenterViewActions *actions;
     FreeResponseViewActions *freeResponseActions;
-    ExperimenterView::EventListener *listener_{};
-    FreeResponseInputView::EventListener *freeResponseListener{};
-    CorrectKeywordsInputView::EventListener *correctKeywordsListener{};
-    PassFailInputView::EventListener *passFailListener{};
+    TestControl::Observer *listener_{};
+    FreeResponseControl::Observer *freeResponseListener{};
+    CorrectKeywordsControl::Observer *correctKeywordsListener{};
+    PassFailControl::Observer *passFailListener{};
 };
 
-class CocoaTestSetupView : public TestSetupView {
+class CocoaTestSetupView : public TestSetupUI {
   public:
     explicit CocoaTestSetupView(NSViewController *);
     void show() override;
@@ -99,7 +100,7 @@ class CocoaTestSetupView : public TestSetupView {
     auto rmeSetting() -> std::string override;
     void populateTransducerMenu(std::vector<std::string>) override;
     void setTestSettingsFile(std::string) override;
-    void subscribe(EventListener *) override;
+    void attach(Observer *) override;
     void notifyThatConfirmButtonHasBeenClicked();
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
     void notifyThatPlayCalibrationButtonHasBeenClicked();
@@ -114,21 +115,21 @@ class CocoaTestSetupView : public TestSetupView {
     NSTextField *testSettingsField;
     NSTextField *startingSnrField;
     SetupViewActions *actions;
-    EventListener *listener_{};
+    Observer *listener_{};
 };
 
 class CocoaTestSetupViewFactory : public MacOsTestSetupViewFactory {
   public:
-    auto make(NSViewController *c) -> std::unique_ptr<TestSetupView> override {
+    auto make(NSViewController *c) -> std::unique_ptr<TestSetupUI> override {
         return std::make_unique<CocoaTestSetupView>(c);
     }
 };
 
-class CocoaConsonantView : public ConsonantOutputView,
-                           public ConsonantInputView {
+class CocoaConsonantView : public ConsonantTaskView,
+                           public ConsonantTaskControl {
   public:
     explicit CocoaConsonantView(NSRect);
-    void subscribe(EventListener *) override;
+    void attach(Observer *) override;
     void show() override;
     void hide() override;
     void showResponseButtons() override;
@@ -139,6 +140,7 @@ class CocoaConsonantView : public ConsonantOutputView,
     void hideCursor() override;
     void notifyThatResponseButtonHasBeenClicked(id sender);
     void notifyThatReadyButtonHasBeenClicked();
+    void showCursor() override;
 
   private:
     std::unordered_map<id, std::string> consonants;
@@ -147,12 +149,12 @@ class CocoaConsonantView : public ConsonantOutputView,
     NSView *readyButton;
     NSButton *lastButtonPressed{};
     ConsonantViewActions *actions;
-    EventListener *listener_{};
+    Observer *listener_{};
 };
 
 class CocoaCoordinateResponseMeasureView
-    : public CoordinateResponseMeasureInputView,
-      public CoordinateResponseMeasureOutputView {
+    : public CoordinateResponseMeasureControl,
+      public CoordinateResponseMeasureView {
   public:
     CocoaCoordinateResponseMeasureView(NSRect);
     auto numberResponse() -> std::string override;
@@ -163,7 +165,7 @@ class CocoaCoordinateResponseMeasureView
     void hideResponseButtons() override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
-    void subscribe(EventListener *) override;
+    void attach(Observer *) override;
     void show() override;
     void hide() override;
     void notifyThatResponseButtonHasBeenClicked(id sender);
@@ -180,10 +182,10 @@ class CocoaCoordinateResponseMeasureView
     NSView *nextTrialButton;
     NSButton *lastButtonPressed{};
     CoordinateResponseMeasureViewActions *actions;
-    EventListener *listener_{};
+    Observer *listener_{};
 };
 
-class CocoaView : public View {
+class CocoaView : public SessionView {
   public:
     explicit CocoaView(NSApplication *, NSViewController *);
     void eventLoop() override;
@@ -193,7 +195,6 @@ class CocoaView : public View {
     auto browseForOpeningFile() -> std::string override;
     auto audioDevice() -> std::string override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
-    void showCursor() override;
 
   private:
     auto browseModal(NSOpenPanel *panel) -> std::string;

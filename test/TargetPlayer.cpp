@@ -59,7 +59,7 @@ class VideoPlayerStub : public VideoPlayer {
 
     void show() override { shown_ = true; }
 
-    void subscribe(EventListener *e) override { listener_ = e; }
+    void attach(Observer *e) override { listener_ = e; }
 
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
         listener_->fillAudioBuffer(audio);
@@ -87,7 +87,7 @@ class VideoPlayerStub : public VideoPlayer {
     double secondsDelayedPlayedAt_{};
     player_system_time_type baseSystemTimePlayedAt_{};
     int deviceIndex_{};
-    EventListener *listener_{};
+    Observer *listener_{};
     bool shown_{};
     bool hidden_{};
     bool played_{};
@@ -95,7 +95,7 @@ class VideoPlayerStub : public VideoPlayer {
     bool playbackCompletionSubscribedTo_{};
 };
 
-class TargetPlayerListenerStub : public TargetPlayer::EventListener {
+class TargetPlayerListenerStub : public TargetPlayer::Observer {
     bool notified_{};
 
   public:
@@ -114,7 +114,7 @@ class TargetPlayerTests : public ::testing::Test {
     TargetPlayerImpl player{&videoPlayer, &audioReader};
     PlayerTimeWithDelay systemTimeWithDelay{};
 
-    TargetPlayerTests() { player.subscribe(&listener); }
+    TargetPlayerTests() { player.attach(&listener); }
 
     void fillAudioBuffer(const std::vector<gsl::span<float>> &x) {
         videoPlayer.fillAudioBuffer(x);

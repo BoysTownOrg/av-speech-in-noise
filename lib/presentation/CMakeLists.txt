@@ -1,12 +1,14 @@
 add_library(
   presentation
-  src/Presenter.cpp
+  src/SessionControllerImpl.cpp
   src/TestSettingsInterpreter.cpp
   src/Consonant.cpp
   src/FreeResponse.cpp
   src/CorrectKeywords.cpp
   src/CoordinateResponseMeasure.cpp
-  src/PassFail.cpp)
+  src/PassFail.cpp
+  src/TestImpl.cpp
+  src/TestSetupImpl.cpp)
 target_include_directories(
   presentation
   PUBLIC include

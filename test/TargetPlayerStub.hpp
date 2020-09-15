@@ -58,7 +58,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     void playAt(const PlayerTimeWithDelay &t) override { timePlayedAt_ = t; }
 
-    void subscribe(EventListener *listener) override { listener_ = listener; }
+    void attach(Observer *listener) override { listener_ = listener; }
 
     void loadFile(const LocalUrl &filePath) override {
         addToLog("loadFile ");
@@ -80,7 +80,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     void playbackComplete() { listener_->playbackComplete(); }
 
-    auto listener() const -> const EventListener * { return listener_; }
+    auto listener() const -> const Observer * { return listener_; }
 
     auto filePath() const { return filePath_; }
 
@@ -102,7 +102,7 @@ class TargetPlayerStub : public TargetPlayer {
     DigitalLevel digitalLevel_{};
     double level_dB_{};
     double durationSeconds_{};
-    EventListener *listener_{};
+    Observer *listener_{};
     bool played_{};
     bool videoHidden_{};
     bool videoShown_{};

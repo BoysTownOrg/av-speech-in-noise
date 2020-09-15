@@ -308,9 +308,7 @@ auto CocoaTestSetupView::transducer() -> std::string {
     return transducerMenu.titleOfSelectedItem.UTF8String;
 }
 
-void CocoaTestSetupView::subscribe(EventListener *listener) {
-    listener_ = listener;
-}
+void CocoaTestSetupView::attach(Observer *listener) { listener_ = listener; }
 
 void CocoaTestSetupView::notifyThatConfirmButtonHasBeenClicked() {
     listener_->notifyThatConfirmButtonHasBeenClicked();
@@ -468,7 +466,7 @@ void CocoaConsonantView::hideReadyButton() {
     av_speech_in_noise::hide(readyButton);
 }
 
-void CocoaConsonantView::subscribe(EventListener *e) { listener_ = e; }
+void CocoaConsonantView::attach(Observer *e) { listener_ = e; }
 
 void CocoaConsonantView::notifyThatReadyButtonHasBeenClicked() {
     listener_->notifyThatReadyButtonHasBeenClicked();
@@ -492,6 +490,8 @@ auto CocoaConsonantView::consonant() -> std::string {
 }
 
 void CocoaConsonantView::hideCursor() { [NSCursor hide]; }
+
+void CocoaConsonantView::showCursor() { [NSCursor unhide]; }
 
 static auto greenColor{NSColor.greenColor};
 static auto redColor{NSColor.redColor};
@@ -627,9 +627,7 @@ void CocoaCoordinateResponseMeasureView::hideResponseButtons() {
     av_speech_in_noise::hide(responseButtons);
 }
 
-void CocoaCoordinateResponseMeasureView::subscribe(EventListener *e) {
-    listener_ = e;
-}
+void CocoaCoordinateResponseMeasureView::attach(Observer *e) { listener_ = e; }
 
 void CocoaCoordinateResponseMeasureView::show() {
     [window makeKeyAndOrderFront:nil];
@@ -752,20 +750,17 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
     freeResponseActions->controller = this;
 }
 
-void CocoaExperimenterView::subscribe(ExperimenterView::EventListener *e) {
-    listener_ = e;
-}
+void CocoaExperimenterView::attach(TestControl::Observer *e) { listener_ = e; }
 
-void CocoaExperimenterView::subscribe(FreeResponseInputView::EventListener *e) {
+void CocoaExperimenterView::attach(FreeResponseControl::Observer *e) {
     freeResponseListener = e;
 }
 
-void CocoaExperimenterView::subscribe(
-    CorrectKeywordsInputView::EventListener *e) {
+void CocoaExperimenterView::attach(CorrectKeywordsControl::Observer *e) {
     correctKeywordsListener = e;
 }
 
-void CocoaExperimenterView::subscribe(PassFailInputView::EventListener *e) {
+void CocoaExperimenterView::attach(PassFailControl::Observer *e) {
     passFailListener = e;
 }
 
@@ -950,6 +945,4 @@ void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (const auto &item : items)
         [audioDeviceMenu addItemWithTitle:nsString(item)];
 }
-
-void CocoaView::showCursor() { [NSCursor unhide]; }
 }

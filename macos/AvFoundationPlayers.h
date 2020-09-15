@@ -52,7 +52,7 @@ class AvFoundationVideoPlayer : public VideoPlayer {
     void setDevice(int index) override;
     void hide() override;
     void show() override;
-    void subscribe(EventListener *) override;
+    void attach(Observer *) override;
     auto deviceCount() -> int override;
     auto deviceDescription(int index) -> std::string override;
     auto playing() -> bool override;
@@ -86,14 +86,14 @@ class AvFoundationVideoPlayer : public VideoPlayer {
     AVPlayer *player;
     AVPlayerLayer *playerLayer;
     NSScreen *screen;
-    EventListener *listener_{};
+    Observer *listener_{};
 };
 
 class AvFoundationAudioPlayer : public AudioPlayer {
   public:
     AvFoundationAudioPlayer();
     ~AvFoundationAudioPlayer() override;
-    void subscribe(EventListener *) override;
+    void attach(Observer *) override;
     void loadFile(std::string filePath) override;
     auto deviceCount() -> int override;
     auto deviceDescription(int index) -> std::string override;
@@ -117,7 +117,7 @@ class AvFoundationAudioPlayer : public AudioPlayer {
         UInt32 inNumberFrames, AudioBufferList *ioData) -> OSStatus;
 
     std::vector<gsl::span<float>> audio;
-    EventListener *listener_{};
+    Observer *listener_{};
     AudioUnit audioUnit{};
     double sampleRate_{};
 };

@@ -76,13 +76,14 @@ void assertPassesSimpleAdaptiveSettings(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(65, adaptiveTest(model).maskerLevel.dB_SPL);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(5, adaptiveTest(model).startingSnr.dB);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4, adaptiveTest(model).thresholdReversals);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(SessionControllerImpl::ceilingSnr.dB,
+        adaptiveTest(model).ceilingSnr.dB);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Presenter::ceilingSnr.dB, adaptiveTest(model).ceilingSnr.dB);
+        SessionControllerImpl::floorSnr.dB, adaptiveTest(model).floorSnr.dB);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(SessionControllerImpl::trackBumpLimit,
+        adaptiveTest(model).trackBumpLimit);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Presenter::floorSnr.dB, adaptiveTest(model).floorSnr.dB);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Presenter::trackBumpLimit, adaptiveTest(model).trackBumpLimit);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(Presenter::fullScaleLevel.dB_SPL,
+        SessionControllerImpl::fullScaleLevel.dB_SPL,
         adaptiveTest(model).fullScaleLevel.dB_SPL);
 }
 
@@ -102,7 +103,8 @@ void assertPassesSimpleFixedLevelSettings(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         65, fixedLevelTest(model).maskerLevel.dB_SPL);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(5, fixedLevelTest(model).snr.dB);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(Presenter::fullScaleLevel.dB_SPL,
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        SessionControllerImpl::fullScaleLevel.dB_SPL,
         fixedLevelTest(model).fullScaleLevel.dB_SPL);
 }
 
@@ -264,7 +266,8 @@ TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, calibration.fileUrl.path);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, calibration.level.dB_SPL);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Presenter::fullScaleLevel.dB_SPL, calibration.fullScaleLevel.dB_SPL);
+        SessionControllerImpl::fullScaleLevel.dB_SPL,
+        calibration.fullScaleLevel.dB_SPL);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
@@ -690,7 +693,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
         65, fixedLevelTestWithEachTargetNTimes(model).maskerLevel.dB_SPL);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         5, fixedLevelTestWithEachTargetNTimes(model).snr.dB);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(Presenter::fullScaleLevel.dB_SPL,
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        SessionControllerImpl::fullScaleLevel.dB_SPL,
         fixedLevelTestWithEachTargetNTimes(model).fullScaleLevel.dB_SPL);
 }
 

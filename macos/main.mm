@@ -3,7 +3,7 @@
 #include "AvFoundationPlayers.h"
 #include "CocoaView.h"
 #include "common-objc.h"
-#include <presentation/Presenter.hpp>
+#include <presentation/SessionControllerImpl.hpp>
 #include <presentation/TestSettingsInterpreter.hpp>
 #include <recognition-test/Model.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
@@ -70,12 +70,12 @@ namespace {
 class TimerImpl : public Timer {
   public:
     TimerImpl();
-    void subscribe(EventListener *e) override;
+    void attach(Observer *e) override;
     void scheduleCallbackAfterSeconds(double x) override;
     void timerCallback();
 
   private:
-    EventListener *listener{};
+    Observer *listener{};
     CallbackScheduler *scheduler{[[CallbackScheduler alloc] init]};
 };
 }
@@ -199,7 +199,7 @@ class TextFileReaderImpl : public TextFileReader {
 
 TimerImpl::TimerImpl() { scheduler->controller = this; }
 
-void TimerImpl::subscribe(EventListener *e) { listener = e; }
+void TimerImpl::attach(Observer *e) { listener = e; }
 
 void TimerImpl::scheduleCallbackAfterSeconds(double x) {
     [scheduler scheduleCallbackAfterSeconds:x];
@@ -374,34 +374,47 @@ void main(
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
     TestSettingsInterpreterImpl testSettingsInterpreter;
-    ConsonantResponder consonantScreenResponder{model, consonantView};
-    ConsonantPresenter consonantPresenter{model, consonantView};
-    FreeResponseResponder freeResponseResponder{model, experimenterView};
+    ConsonantTaskController consonantTaskController{model, consonantView};
+    ConsonantTaskPresenter consonantPresenter{consonantView};
+    FreeResponseController freeResponseController{model, experimenterView};
     FreeResponsePresenter freeResponsePresenter{
         experimenterView, experimenterView};
-    CorrectKeywordsResponder correctKeywordsResponder{
+    CorrectKeywordsController correctKeywordsController{
         model, view, experimenterView};
     CorrectKeywordsPresenter correctKeywordsPresenter{
         experimenterView, experimenterView};
-    PassFailResponder passFailResponder{model, experimenterView};
+    PassFailController passFailController{model, experimenterView};
     PassFailPresenter passFailPresenter{experimenterView, experimenterView};
-    CoordinateResponseMeasureResponder coordinateResponseMeasureResponder{
+    CoordinateResponseMeasureController coordinateResponseMeasureController{
         model, coordinateResponseMeasureView};
     CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
         coordinateResponseMeasureView};
-    TestSetupResponderImpl testSetupResponderImpl{model, view,
+    TestSetupControllerImpl testSetupController{model, view,
         *(testSetupView.get()), testSettingsInterpreter, textFileReader};
-    TestSetupPresenterImpl testSetupPresenterRefactored{*(testSetupView.get())};
-    ExperimenterResponderImpl experimenterResponder{
-        model, view, experimenterView};
-    ExperimenterPresenterImpl experimenterPresenter{experimenterView};
-    Presenter presenter{model, view, &consonantScreenResponder,
-        &consonantPresenter, &coordinateResponseMeasureResponder,
-        &coordinateResponseMeasurePresenter, &freeResponseResponder,
-        &freeResponsePresenter, &correctKeywordsResponder,
-        &correctKeywordsPresenter, &passFailResponder, &passFailPresenter,
-        &testSetupResponderImpl, &testSetupPresenterRefactored,
-        &experimenterResponder, &experimenterPresenter};
-    presenter.run();
+    TestSetupPresenterImpl testSetupPresenter{*(testSetupView.get())};
+    TestControllerImpl testController{model, view, experimenterView};
+    consonantTaskController.attach(&testController);
+    consonantTaskController.attach(&consonantPresenter);
+    freeResponseController.attach(&testController);
+    freeResponseController.attach(&freeResponsePresenter);
+    correctKeywordsController.attach(&testController);
+    correctKeywordsController.attach(&correctKeywordsPresenter);
+    passFailController.attach(&testController);
+    passFailController.attach(&passFailPresenter);
+    coordinateResponseMeasureController.attach(&testController);
+    coordinateResponseMeasureController.attach(
+        &coordinateResponseMeasurePresenter);
+    UninitializedTaskPresenterImpl taskPresenter;
+    TestPresenterImpl experimenterPresenter{model, experimenterView,
+        &consonantPresenter, &coordinateResponseMeasurePresenter,
+        &freeResponsePresenter, &correctKeywordsPresenter, &passFailPresenter,
+        &taskPresenter};
+    SessionControllerImpl sessionController{
+        model, view, &testSetupPresenter, &experimenterPresenter};
+    testSetupController.attach(&sessionController);
+    testSetupController.attach(&testSetupPresenter);
+    testController.attach(&sessionController);
+    testController.attach(&experimenterPresenter);
+    [app run];
 }
 }

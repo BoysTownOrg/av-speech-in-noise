@@ -106,14 +106,14 @@ MaskerPlayerImpl::MaskerPlayerImpl(
     AudioPlayer *player, AudioReader *reader, Timer *timer)
     : mainThread{player, timer}, samplesToWaitPerChannel(maxChannels),
       audioFrameHeadsPerChannel(maxChannels), player{player}, reader{reader} {
-    player->subscribe(this);
-    timer->subscribe(this);
+    player->attach(this);
+    timer->attach(this);
     mainThread.setSharedState(this);
     audioThread.setSharedState(this);
 }
 
-void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
-    mainThread.subscribe(e);
+void MaskerPlayerImpl::attach(MaskerPlayer::Observer *e) {
+    mainThread.attach(e);
 }
 
 auto MaskerPlayerImpl::duration() -> Duration {
@@ -268,7 +268,7 @@ void MaskerPlayerImpl::MainThread::setSharedState(MaskerPlayerImpl *p) {
     sharedState = p;
 }
 
-void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
+void MaskerPlayerImpl::MainThread::attach(MaskerPlayer::Observer *e) {
     listener = e;
 }
 

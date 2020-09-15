@@ -1,36 +1,34 @@
 #include "FreeResponse.hpp"
 
 namespace av_speech_in_noise {
-FreeResponseResponder::FreeResponseResponder(
-    Model &model, FreeResponseInputView &view)
-    : model{model}, view{view} {
-    view.subscribe(this);
+FreeResponseController::FreeResponseController(
+    Model &model, FreeResponseControl &control)
+    : model{model}, control{control} {
+    control.attach(this);
 }
 
-void FreeResponseResponder::subscribe(TaskResponder::EventListener *e) {
-    listener = e;
+void FreeResponseController::attach(TaskController::Observer *e) {
+    observer = e;
 }
 
-void FreeResponseResponder::subscribe(ExperimenterResponder *e) {
-    responder = e;
-}
+void FreeResponseController::attach(TestController *e) { controller = e; }
 
-void FreeResponseResponder::notifyThatSubmitButtonHasBeenClicked() {
-    model.submit(FreeResponse{view.freeResponse(), view.flagged()});
-    listener->notifyThatUserIsDoneResponding();
-    responder->readyNextTrialIfNeeded();
+void FreeResponseController::notifyThatSubmitButtonHasBeenClicked() {
+    model.submit(FreeResponse{control.freeResponse(), control.flagged()});
+    observer->notifyThatUserIsDoneResponding();
+    controller->notifyThatUserIsDoneResponding();
 }
 
 FreeResponsePresenter::FreeResponsePresenter(
-    ExperimenterOutputView &experimenterView, FreeResponseOutputView &view)
-    : experimenterView{experimenterView}, view{view} {}
+    TestView &testView, FreeResponseView &view)
+    : testView{testView}, view{view} {}
 
-void FreeResponsePresenter::start() { experimenterView.showNextTrialButton(); }
+void FreeResponsePresenter::start() { testView.showNextTrialButton(); }
 
 void FreeResponsePresenter::stop() { view.hideFreeResponseSubmission(); }
 
 void FreeResponsePresenter::notifyThatTaskHasStarted() {
-    experimenterView.hideNextTrialButton();
+    testView.hideNextTrialButton();
 }
 
 void FreeResponsePresenter::notifyThatUserIsDoneResponding() {

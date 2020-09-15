@@ -1,39 +1,42 @@
 #include "PassFail.hpp"
 
 namespace av_speech_in_noise {
-PassFailResponder::PassFailResponder(Model &model, PassFailInputView &view)
+PassFailController::PassFailController(Model &model, PassFailControl &view)
     : model{model} {
-    view.subscribe(this);
+    view.attach(this);
 }
 
-void PassFailResponder::subscribe(TaskResponder::EventListener *e) {
-    listener = e;
+void PassFailController::attach(TaskController::Observer *e) { observer = e; }
+
+static void notifyThatUserIsDoneResponding(
+    TaskController::Observer *listener, TestController *controller) {
+    listener->notifyThatUserIsDoneResponding();
+    controller
+        ->notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
-void PassFailResponder::notifyThatCorrectButtonHasBeenClicked() {
+void PassFailController::notifyThatCorrectButtonHasBeenClicked() {
     model.submitCorrectResponse();
-    listener->notifyThatUserIsDoneResponding();
-    responder->showContinueTestingDialogWithResultsWhenComplete();
+    notifyThatUserIsDoneResponding(observer, controller);
 }
 
-void PassFailResponder::notifyThatIncorrectButtonHasBeenClicked() {
+void PassFailController::notifyThatIncorrectButtonHasBeenClicked() {
     model.submitIncorrectResponse();
-    listener->notifyThatUserIsDoneResponding();
-    responder->showContinueTestingDialogWithResultsWhenComplete();
+    notifyThatUserIsDoneResponding(observer, controller);
 }
 
-void PassFailResponder::subscribe(ExperimenterResponder *p) { responder = p; }
+void PassFailController::attach(TestController *p) { controller = p; }
 
 PassFailPresenter::PassFailPresenter(
-    ExperimenterOutputView &experimenterView, PassFailOutputView &view)
-    : experimenterView{experimenterView}, view{view} {}
+    TestView &experimenterView, PassFailView &view)
+    : testView{experimenterView}, view{view} {}
 
-void PassFailPresenter::start() { experimenterView.showNextTrialButton(); }
+void PassFailPresenter::start() { testView.showNextTrialButton(); }
 
 void PassFailPresenter::stop() { view.hideEvaluationButtons(); }
 
 void PassFailPresenter::notifyThatTaskHasStarted() {
-    experimenterView.hideNextTrialButton();
+    testView.hideNextTrialButton();
 }
 
 void PassFailPresenter::notifyThatUserIsDoneResponding() {
