@@ -193,8 +193,6 @@ class PlayingCalibration : public LevelUseCase {
     }
 };
 
-class ConfirmingTestSetup : public virtual UseCase {};
-
 void confirmTestSetup(TestSetupControlStub *view) { view->confirmTestSetup(); }
 
 class ConfirmingTestSetupImpl : public UseCase {
@@ -206,39 +204,6 @@ class ConfirmingTestSetupImpl : public UseCase {
   private:
     TestSetupControlStub *view;
 };
-
-class TrialSubmission : public virtual UseCase {
-  public:
-    virtual auto nextTrialButtonShown() -> bool = 0;
-    virtual auto responseViewShown() -> bool = 0;
-    virtual auto responseViewHidden() -> bool = 0;
-};
-
-class PlayingTrial : public virtual UseCase {
-  public:
-    virtual auto nextTrialButtonHidden() -> bool = 0;
-    virtual auto nextTrialButtonShown() -> bool = 0;
-};
-
-class BrowsingUseCase : public virtual UseCase {
-  public:
-    virtual void setResult(SessionViewStub &, std::string) = 0;
-};
-
-class BrowsingEnteredPathUseCase : public virtual BrowsingUseCase {
-  public:
-    virtual auto entry() -> std::string = 0;
-    virtual void setEntry(std::string) = 0;
-};
-
-auto entry(BrowsingEnteredPathUseCase &useCase) -> std::string {
-    return useCase.entry();
-}
-
-void assertEntryEquals(
-    BrowsingEnteredPathUseCase &useCase, const std::string &s) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, entry(useCase));
-}
 
 auto errorMessage(SessionViewStub &view) -> std::string {
     return view.errorMessage();
@@ -301,19 +266,6 @@ class TestSetupTests : public ::testing::Test {
     TestSetupTests() {
         testSetupControllerImpl.attach(&sessionController);
         testSetupControllerImpl.attach(&testSetupControllerObserver);
-    }
-
-    void setBrowsingResult(BrowsingEnteredPathUseCase &useCase, std::string s) {
-        useCase.setResult(view, std::move(s));
-    }
-
-    void assertCancellingBrowseDoesNotChangePath(
-        BrowsingEnteredPathUseCase &useCase) {
-        useCase.setEntry("a");
-        setBrowsingResult(useCase, "b");
-        view.setBrowseCancelled();
-        run(useCase);
-        assertEntryEquals(useCase, "a");
     }
 
     void assertPassesTestSettingsFileToTextFileReader(UseCase &useCase) {
