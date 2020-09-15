@@ -241,8 +241,11 @@ class TestSetupControllerObserverStub : public TestSetupController::Observer {
         testSettingsFile_ = s;
         notifiedThatUserHasSelectedTestSettingsFile_ = true;
     }
+
     auto testSettingsFile() -> std::string { return testSettingsFile_; }
-    auto notifiedThatUserHasSelectedTestSettingsFile() -> bool {
+
+    [[nodiscard]] auto notifiedThatUserHasSelectedTestSettingsFile() const
+        -> bool {
         return notifiedThatUserHasSelectedTestSettingsFile_;
     }
 
@@ -423,25 +426,25 @@ class TestSetupFailureTests : public ::testing::Test {
     }
 };
 
-#define TEST_SETUP_TEST(a) TEST_F(TestSetupControllerTests, a)
+#define TEST_SETUP_CONTROLLER_TEST(a) TEST_F(TestSetupControllerTests, a)
 
 #define TEST_SETUP_PRESENTER_TEST(a) TEST_F(TestSetupPresenterTests, a)
 
-TEST_SETUP_TEST(controllerPreparesTestAfterConfirmButtonIsClicked) {
+TEST_SETUP_CONTROLLER_TEST(controllerPreparesTestAfterConfirmButtonIsClicked) {
     testSettingsInterpreter.setMethod(Method::adaptivePassFail);
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         Method::adaptivePassFail, sessionController.method());
 }
 
-TEST_SETUP_TEST(
+TEST_SETUP_CONTROLLER_TEST(
     controllerDoesNotPrepareTestAfterConfirmButtonIsClickedWhenTestWouldAlreadyBeComplete) {
     setTestComplete(model);
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
 }
 
-TEST_SETUP_TEST(
+TEST_SETUP_CONTROLLER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {
     control.setSubjectId("b");
     run(confirmingTestSetup);
@@ -449,14 +452,14 @@ TEST_SETUP_TEST(
         std::string{"b"}, testSettingsInterpreter.identity().subjectId);
 }
 
-TEST_SETUP_TEST(
+TEST_SETUP_CONTROLLER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesStartingSnr) {
     control.setStartingSnr("1");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, testSettingsInterpreter.startingSnr());
 }
 
-TEST_SETUP_TEST(
+TEST_SETUP_CONTROLLER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidStartingSnrShowsMessage) {
     control.setStartingSnr("a");
     run(confirmingTestSetup);
@@ -465,21 +468,23 @@ TEST_SETUP_TEST(
         errorMessage(sessionView));
 }
 
-TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
+TEST_SETUP_CONTROLLER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
     control.setTesterId("c");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"c"}, testSettingsInterpreter.identity().testerId);
 }
 
-TEST_SETUP_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
+TEST_SETUP_CONTROLLER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
     control.setSession("e");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"e"}, testSettingsInterpreter.identity().session);
 }
 
-TEST_SETUP_TEST(
+TEST_SETUP_CONTROLLER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesRmeSetting) {
     control.setRmeSetting("e");
     run(confirmingTestSetup);
@@ -487,7 +492,7 @@ TEST_SETUP_TEST(
         std::string{"e"}, testSettingsInterpreter.identity().rmeSetting);
 }
 
-TEST_SETUP_TEST(
+TEST_SETUP_CONTROLLER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTransducer) {
     control.setTransducer("a");
     run(confirmingTestSetup);
@@ -495,7 +500,7 @@ TEST_SETUP_TEST(
         std::string{"a"}, testSettingsInterpreter.identity().transducer);
 }
 
-TEST_SETUP_TEST(
+TEST_SETUP_CONTROLLER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery) {
     textFileReader.setRead("a");
     run(confirmingTestSetup);
@@ -503,54 +508,56 @@ TEST_SETUP_TEST(
         std::string{"a"}, testSettingsInterpreter.textForMethodQuery());
 }
 
-TEST_SETUP_TEST(playCalibrationPassesLevel) {
+TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesLevel) {
     calibration.level.dB_SPL = 1;
     run(playingCalibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         1, av_speech_in_noise::calibration(model).level.dB_SPL);
 }
 
-TEST_SETUP_TEST(playingCalibrationPassesTestSettingsFileToTextFileReader) {
+TEST_SETUP_CONTROLLER_TEST(
+    playingCalibrationPassesTestSettingsFileToTextFileReader) {
     assertPassesTestSettingsFileToTextFileReader(playingCalibration);
 }
 
-TEST_SETUP_TEST(
+TEST_SETUP_CONTROLLER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsFileToTextFileReader) {
     assertPassesTestSettingsFileToTextFileReader(confirmingTestSetup);
 }
 
-TEST_SETUP_TEST(
+TEST_SETUP_CONTROLLER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreter) {
     assertPassesTestSettingsTextToTestSettingsInterpreter(confirmingTestSetup);
 }
 
-TEST_SETUP_TEST(
+TEST_SETUP_CONTROLLER_TEST(
     playingCalibrationPassesTestSettingsTextToTestSettingsInterpreter) {
     assertPassesTestSettingsTextToTestSettingsInterpreter(playingCalibration);
 }
 
-TEST_SETUP_TEST(playCalibrationPassesFilePath) {
+TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFilePath) {
     calibration.fileUrl.path = "a";
     run(playingCalibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, av_speech_in_noise::calibration(model).fileUrl.path);
 }
 
-TEST_SETUP_TEST(playCalibrationPassesAudioDevice) {
+TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesAudioDevice) {
     setAudioDevice(sessionView, "b");
     run(playingCalibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"b"}, av_speech_in_noise::calibration(model).audioDevice);
 }
 
-TEST_SETUP_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
+TEST_SETUP_CONTROLLER_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
     sessionView.setBrowseForOpeningFileResult("a");
     control.browseForTestSettingsFile();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "a", testSetupControllerObserver.testSettingsFile());
 }
 
-TEST_SETUP_TEST(browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
+TEST_SETUP_CONTROLLER_TEST(
+    browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
     sessionView.setBrowseCancelled();
     control.browseForTestSettingsFile();
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(
@@ -558,7 +565,7 @@ TEST_SETUP_TEST(browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
             .notifiedThatUserHasSelectedTestSettingsFile());
 }
 
-TEST_SETUP_TEST(playCalibrationPassesFullScaleLevel) {
+TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFullScaleLevel) {
     calibration.fullScaleLevel.dB_SPL = 1;
     run(playingCalibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
