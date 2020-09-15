@@ -8,14 +8,6 @@ SessionControllerImpl::SessionControllerImpl(Model &model, SessionView &view,
     TestPresenter *experimenterPresenter)
     : view{view}, testSetupPresenter{testSetupPresenter},
       experimenterPresenter{experimenterPresenter} {
-    if (testSetupController != nullptr) {
-        testSetupController->attach(this);
-        testSetupController->attach(testSetupPresenter);
-    }
-    if (experimenterController != nullptr) {
-        experimenterController->attach(this);
-        experimenterController->attach(experimenterPresenter);
-    }
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 
