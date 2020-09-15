@@ -1,5 +1,6 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
+#include "TestViewStub.hpp"
 #include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
 #include <presentation/FreeResponse.hpp>
@@ -72,43 +73,14 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class ExperimenterViewStub : public TestView {
-  public:
-    void showNextTrialButton() override { nextTrialButtonShown_ = true; }
-
-    [[nodiscard]] auto nextTrialButtonShown() const {
-        return nextTrialButtonShown_;
-    }
-
-    void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
-
-    [[nodiscard]] auto nextTrialButtonHidden() const {
-        return nextTrialButtonHidden_;
-    }
-
-    void setContinueTestingDialogMessage(const std::string &) override {}
-    void showContinueTestingDialog() override {}
-    void hideContinueTestingDialog() override {}
-    void show() override {}
-    void hide() override {}
-    void display(std::string) override {}
-    void secondaryDisplay(std::string) override {}
-    void showExitTestButton() override {}
-    void hideExitTestButton() override {}
-
-  private:
-    bool nextTrialButtonShown_{};
-    bool nextTrialButtonHidden_{};
-};
-
 class FreeResponseTests : public ::testing::Test {
   protected:
     ModelStub model;
-    ExperimenterViewStub experimenterView;
+    TestViewStub testView;
     FreeResponseControlStub inputView;
     FreeResponseViewStub outputView;
     FreeResponseController responder{model, inputView};
-    FreeResponsePresenter presenter{experimenterView, outputView};
+    FreeResponsePresenter presenter{testView, outputView};
     TestControllerStub experimenterController;
     TaskControllerObserverStub taskController;
 
@@ -125,7 +97,7 @@ class FreeResponseTests : public ::testing::Test {
 
 FREE_RESPONSE_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
 }
 
 FREE_RESPONSE_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
@@ -140,7 +112,7 @@ FREE_RESPONSE_TEST(presenterHidesResponseButtonsWhenStopped) {
 
 FREE_RESPONSE_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(experimenterView.nextTrialButtonShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
 }
 
 FREE_RESPONSE_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {
