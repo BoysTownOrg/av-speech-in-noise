@@ -9,12 +9,10 @@
 namespace av_speech_in_noise {
 class SessionControllerImpl : public SessionController {
   public:
-    SessionControllerImpl(Model &, SessionView &,
-        TestSetupPresenter *testSetupPresenter,
-        TestPresenter *experimenterPresenter);
+    SessionControllerImpl(
+        Model &, SessionView &, TestSetupPresenter *, TestPresenter *);
     void notifyThatTestIsComplete() override;
     void prepare(Method m) override;
-    void run();
 
     static constexpr RealLevel fullScaleLevel{119};
     static constexpr SNR ceilingSnr{20};

@@ -9,8 +9,6 @@ SessionControllerImpl::SessionControllerImpl(Model &model, SessionView &view,
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 
-void SessionControllerImpl::run() { view.eventLoop(); }
-
 void SessionControllerImpl::prepare(Method m) {
     testSetupPresenter->stop();
     experimenterPresenter->initialize(m);

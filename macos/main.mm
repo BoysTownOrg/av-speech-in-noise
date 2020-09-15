@@ -415,6 +415,6 @@ void main(
     testSetupController.attach(&testSetupPresenter);
     testController.attach(&sessionController);
     testController.attach(&experimenterPresenter);
-    sessionController.run();
+    [app run];
 }
 }

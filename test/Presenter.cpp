@@ -1930,11 +1930,6 @@ PRESENTER_TEST(
         submittingCorrectKeywords);
 }
 
-PRESENTER_TEST(callsEventLoopWhenRun) {
-    sessionController.run();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.eventLoopCalled());
-}
-
 PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveCorrectKeywordsTest);
 }
