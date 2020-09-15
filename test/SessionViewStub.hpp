@@ -28,6 +28,12 @@ class SessionViewStub : public SessionView {
         return browseForOpeningFileResult_;
     }
 
+    void setBrowseForOpeningFileResult(std::string s) {
+        browseForOpeningFileResult_ = std::move(s);
+    }
+
+    void setBrowseCancelled() { browseCancelled_ = true; }
+
     void populateAudioDeviceMenu(std::vector<std::string> v) override {
         audioDevices_ = std::move(v);
     }
