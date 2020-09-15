@@ -77,16 +77,16 @@ class FreeResponseTests : public ::testing::Test {
   protected:
     ModelStub model;
     TestViewStub testView;
-    FreeResponseControlStub inputView;
-    FreeResponseViewStub outputView;
-    FreeResponseController responder{model, inputView};
-    FreeResponsePresenter presenter{testView, outputView};
-    TestControllerStub experimenterController;
+    FreeResponseControlStub control;
+    FreeResponseViewStub view;
+    FreeResponseController controller{model, control};
+    FreeResponsePresenter presenter{testView, view};
+    TestControllerStub testController;
     TaskControllerObserverStub taskController;
 
     FreeResponseTests() {
-        responder.attach(&experimenterController);
-        responder.attach(&taskController);
+        controller.attach(&testController);
+        controller.attach(&taskController);
     }
 };
 
@@ -102,12 +102,12 @@ FREE_RESPONSE_TEST(presenterHidesReadyButtonWhenTaskStarts) {
 
 FREE_RESPONSE_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
     notifyThatUserIsDoneResponding(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(outputView);
+    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
 FREE_RESPONSE_TEST(presenterHidesResponseButtonsWhenStopped) {
     stop(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(outputView);
+    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
 FREE_RESPONSE_TEST(presenterShowsReadyButtonWhenStarted) {
@@ -117,38 +117,38 @@ FREE_RESPONSE_TEST(presenterShowsReadyButtonWhenStarted) {
 
 FREE_RESPONSE_TEST(presenterShowsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.freeResponseSubmissionShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.freeResponseSubmissionShown());
 }
 
 FREE_RESPONSE_TEST(presenterClearsFreeResponseWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputView.freeResponseCleared());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.freeResponseCleared());
 }
 
 FREE_RESPONSE_TEST(responderSubmitsFreeResponseAfterResponseButtonIsClicked) {
-    inputView.setFreeResponse("a");
-    notifyThatSubmitButtonHasBeenClicked(inputView);
+    control.setFreeResponse("a");
+    notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, model.freeResponse().response);
 }
 
 FREE_RESPONSE_TEST(
     responderSubmitsFlaggedFreeResponseAfterResponseButtonIsClicked) {
-    inputView.setFlagged();
-    notifyThatSubmitButtonHasBeenClicked(inputView);
+    control.setFlagged();
+    notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.freeResponse().flagged);
 }
 
 FREE_RESPONSE_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
-    notifyThatSubmitButtonHasBeenClicked(inputView);
+    notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterController.notifiedThatUserIsDoneResponding());
+        testController.notifiedThatUserIsDoneResponding());
 }
 
 FREE_RESPONSE_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
-    notifyThatSubmitButtonHasBeenClicked(inputView);
+    notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskController.notifiedThatUserIsDoneResponding());
 }
