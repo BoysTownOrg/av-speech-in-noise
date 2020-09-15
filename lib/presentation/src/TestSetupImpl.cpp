@@ -2,13 +2,13 @@
 
 namespace av_speech_in_noise {
 TestSetupControllerImpl::TestSetupControllerImpl(Model &model,
-    SessionView &mainView, TestSetupControl &view,
+    SessionView &mainView, TestSetupControl &control,
     TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader)
-    : model{model}, sessionView{mainView}, control{view},
+    : model{model}, sessionView{mainView}, control{control},
       testSettingsInterpreter{testSettingsInterpreter}, textFileReader{
                                                             textFileReader} {
-    view.attach(this);
+    control.attach(this);
 }
 
 void TestSetupControllerImpl::notifyThatConfirmButtonHasBeenClicked() {

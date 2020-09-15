@@ -170,39 +170,39 @@ class UseCase {
 
 void run(UseCase &useCase) { useCase.run(); }
 
-class ConditionUseCase : public virtual UseCase {
-  public:
-    virtual auto condition(ModelStub &) -> Condition = 0;
-};
-
 class LevelUseCase : public virtual UseCase {
   public:
     virtual auto fullScaleLevel(ModelStub &) -> int = 0;
 };
 
 class PlayingCalibration : public LevelUseCase {
-    TestSetupControlStub *view;
-
   public:
-    explicit PlayingCalibration(TestSetupControlStub *view) : view{view} {}
+    explicit PlayingCalibration(TestSetupControlStub &control)
+        : control{control} {}
 
-    void run() override { view->playCalibration(); }
+    void run() override { control.playCalibration(); }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
         return m.calibration().fullScaleLevel.dB_SPL;
     }
+
+  private:
+    TestSetupControlStub &control;
 };
 
-void confirmTestSetup(TestSetupControlStub *view) { view->confirmTestSetup(); }
+void confirmTestSetup(TestSetupControlStub &control) {
+    control.confirmTestSetup();
+}
 
 class ConfirmingTestSetupImpl : public UseCase {
   public:
-    explicit ConfirmingTestSetupImpl(TestSetupControlStub *view) : view{view} {}
+    explicit ConfirmingTestSetupImpl(TestSetupControlStub &control)
+        : control{control} {}
 
-    void run() override { confirmTestSetup(view); }
+    void run() override { confirmTestSetup(control); }
 
   private:
-    TestSetupControlStub *view;
+    TestSetupControlStub &control;
 };
 
 auto errorMessage(SessionViewStub &view) -> std::string {
@@ -252,20 +252,20 @@ class TestSetupTests : public ::testing::Test {
     SessionViewStub view;
     TestSetupViewStub setupView;
     TestSetupControlStub control;
-    Calibration interpretedCalibration;
-    TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
+    Calibration calibration;
+    TestSettingsInterpreterStub testSettingsInterpreter{calibration};
     TextFileReaderStub textFileReader;
-    TestSetupControllerImpl testSetupControllerImpl{
+    TestSetupControllerImpl controller{
         model, view, control, testSettingsInterpreter, textFileReader};
-    TestSetupPresenterImpl testSetupPresenterRefactored{setupView};
-    PlayingCalibration playingCalibration{&control};
+    TestSetupPresenterImpl presenter{setupView};
+    PlayingCalibration playingCalibration{control};
     SessionControllerStub sessionController;
     TestSetupControllerObserverStub testSetupControllerObserver;
-    ConfirmingTestSetupImpl confirmingTestSetup{&control};
+    ConfirmingTestSetupImpl confirmingTestSetup{control};
 
     TestSetupTests() {
-        testSetupControllerImpl.attach(&sessionController);
-        testSetupControllerImpl.attach(&testSetupControllerObserver);
+        controller.attach(&sessionController);
+        controller.attach(&testSetupControllerObserver);
     }
 
     void assertPassesTestSettingsFileToTextFileReader(UseCase &useCase) {
@@ -492,9 +492,10 @@ TEST_SETUP_TEST(
 }
 
 TEST_SETUP_TEST(playCalibrationPassesLevel) {
-    interpretedCalibration.level.dB_SPL = 1;
+    calibration.level.dB_SPL = 1;
     run(playingCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, calibration(model).level.dB_SPL);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        1, av_speech_in_noise::calibration(model).level.dB_SPL);
 }
 
 TEST_SETUP_TEST(playingCalibrationPassesTestSettingsFileToTextFileReader) {
@@ -517,17 +518,17 @@ TEST_SETUP_TEST(
 }
 
 TEST_SETUP_TEST(playCalibrationPassesFilePath) {
-    interpretedCalibration.fileUrl.path = "a";
+    calibration.fileUrl.path = "a";
     run(playingCalibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, calibration(model).fileUrl.path);
+        std::string{"a"}, av_speech_in_noise::calibration(model).fileUrl.path);
 }
 
 TEST_SETUP_TEST(playCalibrationPassesAudioDevice) {
     setAudioDevice(view, "b");
     run(playingCalibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"b"}, calibration(model).audioDevice);
+        std::string{"b"}, av_speech_in_noise::calibration(model).audioDevice);
 }
 
 TEST_SETUP_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
@@ -546,24 +547,24 @@ TEST_SETUP_TEST(browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
 }
 
 TEST_SETUP_TEST(playCalibrationPassesFullScaleLevel) {
-    interpretedCalibration.fullScaleLevel.dB_SPL = 1;
+    calibration.fullScaleLevel.dB_SPL = 1;
     run(playingCalibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        1, calibration(model).fullScaleLevel.dB_SPL);
+        1, av_speech_in_noise::calibration(model).fullScaleLevel.dB_SPL);
 }
 
 TEST_SETUP_TEST(presenterShowsViewWhenStarted) {
-    testSetupPresenterRefactored.start();
+    presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(setupView.shown());
 }
 
 TEST_SETUP_TEST(presenterHidesViewWhenStopped) {
-    testSetupPresenterRefactored.stop();
+    presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(setupView.hidden());
 }
 
 TEST_SETUP_TEST(presenterSetsTestSettingsFileWhenNotified) {
-    testSetupPresenterRefactored.notifyThatUserHasSelectedTestSettingsFile("a");
+    presenter.notifyThatUserHasSelectedTestSettingsFile("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", setupView.testSettingsFile());
 }
 auto contains(const std::vector<std::string> &items, const std::string &item)
