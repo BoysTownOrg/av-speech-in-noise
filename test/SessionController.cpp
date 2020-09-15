@@ -9,18 +9,18 @@ namespace av_speech_in_noise {
 namespace {
 class TestPresenterStub : public TestPresenter {
   public:
-    void initialize(Method m) { method_ = m; }
+    void initialize(Method m) override { method_ = m; }
     auto method() -> Method { return method_; }
-    void start() { started_ = true; }
-    void stop() { stopped_ = true; }
-    void notifyThatTrialHasStarted() {}
-    void setContinueTestingDialogMessage(const std::string &) {}
-    void showContinueTestingDialog() {}
-    void display(const std::string &) {}
-    void secondaryDisplay(const std::string &) {}
-    void notifyThatNextTrialIsReady() {}
-    auto started() -> bool { return started_; }
-    auto stopped() -> bool { return stopped_; }
+    void start() override { started_ = true; }
+    void stop() override { stopped_ = true; }
+    void notifyThatTrialHasStarted() override {}
+    void setContinueTestingDialogMessage(const std::string &) override {}
+    void showContinueTestingDialog() override {}
+    void display(const std::string &) override {}
+    void secondaryDisplay(const std::string &) override {}
+    void notifyThatNextTrialIsReady() override {}
+    [[nodiscard]] auto started() const -> bool { return started_; }
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
 
   private:
     Method method_{};
@@ -30,11 +30,12 @@ class TestPresenterStub : public TestPresenter {
 
 class TestSetupPresenterStub : public TestSetupPresenter {
   public:
-    void notifyThatUserHasSelectedTestSettingsFile(const std::string &) {}
-    void start() { started_ = true; }
-    void stop() { stopped_ = true; }
-    auto started() -> bool { return started_; }
-    auto stopped() -> bool { return stopped_; }
+    void notifyThatUserHasSelectedTestSettingsFile(
+        const std::string &) override {}
+    void start() override { started_ = true; }
+    void stop() override { stopped_ = true; }
+    [[nodiscard]] auto started() const -> bool { return started_; }
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
 
   private:
     bool started_{};
