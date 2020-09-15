@@ -20,7 +20,7 @@ add_executable(
   CorrectKeywords.cpp
   FreeResponse.cpp
   PassFail.cpp
-  Experimenter.cpp
+  Test.cpp
   TestSetup.cpp
   SessionController.cpp)
 target_compile_features(tests PRIVATE cxx_std_17)
