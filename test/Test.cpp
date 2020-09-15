@@ -382,11 +382,10 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
     bool responseSubmissionShown_{};
 };
 
-class ExperimenterTests : public ::testing::Test {
+class TestControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
     SessionViewStub sessionView;
-    TestViewStub view;
     TestControlStub control;
     TaskControllerStub consonantController;
     TaskControllerStub coordinateResponseMeasureController;
@@ -398,46 +397,12 @@ class ExperimenterTests : public ::testing::Test {
     TaskPresenterStub freeResponsePresenter;
     TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub passFailPresenter;
-    UninitializedTaskPresenterStub taskPresenter;
     TestControllerImpl controller{model, sessionView, control,
         &consonantController, &consonantPresenter,
         &coordinateResponseMeasureController,
         &coordinateResponseMeasurePresenter, &freeResponseController,
         &freeResponsePresenter, &correctKeywordsController,
         &correctKeywordsPresenter, &passFailController, &passFailPresenter};
-    TestPresenterImpl presenter{model, view, &consonantPresenter,
-        &coordinateResponseMeasurePresenter, &freeResponsePresenter,
-        &correctKeywordsPresenter, &passFailPresenter, &taskPresenter};
-    InitializingAdaptiveCoordinateResponseMeasureMethod
-        initializingAdaptiveCoordinateResponseMeasureMethod;
-    InitializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker
-        initializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker;
-    InitializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker
-        initializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker;
-    InitializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking
-        initializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking;
-    InitializingAdaptivePassFailMethod initializingAdaptivePassFailMethod;
-    InitializingAdaptivePassFailMethodWithEyeTracking
-        initializingAdaptivePassFailMethodWithEyeTracking;
-    InitializingFixedLevelFreeResponseWithTargetReplacementMethod
-        initializingFixedLevelFreeResponseWithTargetReplacementMethod;
-    InitializingFixedLevelConsonantMethod initializingFixedLevelConsonantMethod;
-    InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement
-        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement;
-    InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking
-        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking;
-    InitializingAdaptiveCorrectKeywordsMethod
-        initializingAdaptiveCorrectKeywordsMethod;
-    InitializingAdaptiveCorrectKeywordsMethodWithEyeTracking
-        initializingAdaptiveCorrectKeywordsMethodWithEyeTracking;
-    InitializingFixedLevelCoordinateResponseMeasureMethodWithSilentIntervalTargets
-        initializingFixedLevelCoordinateResponseMeasureSilentIntervalsMethod;
-    InitializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod
-        initializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod;
-    InitializingFixedLevelFreeResponseMethodWithAllTargets
-        initializingFixedLevelFreeResponseMethodWithAllTargets;
-    InitializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking
-        initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking;
     DecliningContinuingTesting decliningContinuingTesting{control};
     AcceptingContinuingTesting acceptingContinuingTesting{control};
     ExitingTest exitingTest{control};
@@ -451,7 +416,7 @@ class ExperimenterTests : public ::testing::Test {
     SessionControllerStub sessionController;
     TestControllerListenerStub experimenterControllerListener;
 
-    ExperimenterTests() {
+    TestControllerTests() {
         controller.attach(&sessionController);
         controller.attach(&experimenterControllerListener);
     }
@@ -531,43 +496,44 @@ class TestPresenterTests : public ::testing::Test {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         static_cast<TaskPresenter *>(&expected), taskPresenter.presenter())
 
-#define EXPERIMENTER_TEST(a) TEST_F(ExperimenterTests, a)
+#define TEST_CONTROLLER_TEST(a) TEST_F(TestControllerTests, a)
+
 #define TEST_PRESENTER_TEST(a) TEST_F(TestPresenterTests, a)
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderNotifiesThatTestIsCompleteAfterExitTestButtonClicked) {
     exitTest(control);
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderNotifiesThatTestIsCompleteAfterContinueTestingDialogIsDeclined) {
     controller.declineContinuingTesting();
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderNotifiesThatTestIsCompleteAfterUserIsDoneResponding) {
     setTestComplete(model);
     controller.notifyThatUserIsDoneResponding();
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderNotifiesThatTestIsCompleteAfterNotifyingThatUserIsReadyForNextTrial) {
     setTestComplete(model);
     controller.notifyThatUserIsReadyForNextTrial();
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
 }
 
-EXPERIMENTER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
+TEST_CONTROLLER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
     setAudioDevice(sessionView, "a");
     notifyThatPlayTrialButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, model.trialParameters().audioDevice);
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderPlaysTrialAfterNotifyingThatUserIsReadyForNextTrial) {
     setAudioDevice(sessionView, "a");
     controller.notifyThatUserIsReadyForNextTrial();
@@ -575,95 +541,95 @@ EXPERIMENTER_TEST(
         std::string{"a"}, model.trialParameters().audioDevice);
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderNotifiesThatTrialHasStartedAfterPlayTrialButtonClicked) {
     notifyThatPlayTrialButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterControllerListener.notifiedThatTrialHasStarted());
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderNotifiesThatTrialHasStartedAfterNotifyingThatUserIsReadyForNextTrial) {
     controller.notifyThatUserIsReadyForNextTrial();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterControllerListener.notifiedThatTrialHasStarted());
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderRestartsAdaptiveTestWhilePreservingTargetsAfterContinueTestingDialogIsAccepted) {
     acceptContinuingTesting(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         model.adaptiveTestRestartedWhilePreservingCyclicTargets());
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderNotifiesThatNextTrialIsReadyAfterContinueTestingDialogIsAccepted) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
         acceptingContinuingTesting, experimenterControllerListener);
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderNotifiesThatNextTrialIsReadyAfterNotifyingThatUserIsDoneResponding) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
         notifyingThatUserIsDoneResponding, experimenterControllerListener);
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderNotifiesThatNextTrialIsReadyAfterNotShowingContinueTestingDialogWithResults) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
         experimenterControllerListener);
 }
 
-EXPERIMENTER_TEST(responderDisplaysTargetAfterUserIsDoneResponding) {
+TEST_CONTROLLER_TEST(responderDisplaysTargetAfterUserIsDoneResponding) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
         notifyingThatUserIsDoneResponding, experimenterControllerListener);
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderDisplaysTargetFileNameAfterNotShowingContinueTestingDialogWithResults) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
         experimenterControllerListener);
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderDisplaysTargetFileNameAfterContinueTestingDialogIsAccepted) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(
         model, acceptingContinuingTesting, experimenterControllerListener);
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderDisplaysTargetFileNameAfterNotifyingThatUserIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
         notifyingThatUserIsReadyForNextTrial, experimenterControllerListener);
 }
 
-EXPERIMENTER_TEST(responderDisplaysTrialNumberAfterUserIsDoneResponding) {
+TEST_CONTROLLER_TEST(responderDisplaysTrialNumberAfterUserIsDoneResponding) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
         notifyingThatUserIsDoneResponding, experimenterControllerListener);
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderDisplaysTrialNumberAfterNotShowingContinueTestingDialogWithResults) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
         experimenterControllerListener);
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderDisplaysTrialNumberAfterContinueTestingDialogIsAccepted) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(
         model, acceptingContinuingTesting, experimenterControllerListener);
 }
 
-EXPERIMENTER_TEST(
+TEST_CONTROLLER_TEST(
     responderDisplaysTrialNumberAfterNotifyingThatUserIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
         notifyingThatUserIsReadyForNextTrial, experimenterControllerListener);
 }
 
-EXPERIMENTER_TEST(responderShowsContinueTestingDialog) {
+TEST_CONTROLLER_TEST(responderShowsContinueTestingDialog) {
     setTestComplete(model);
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
         controller);
@@ -671,7 +637,7 @@ EXPERIMENTER_TEST(responderShowsContinueTestingDialog) {
         experimenterControllerListener.continueTestingDialogShown());
 }
 
-EXPERIMENTER_TEST(responderShowsAdaptiveTestResults) {
+TEST_CONTROLLER_TEST(responderShowsAdaptiveTestResults) {
     setTestComplete(model);
     model.setAdaptiveTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
