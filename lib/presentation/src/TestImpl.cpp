@@ -122,8 +122,8 @@ void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
 
 void TestControllerImpl::attach(SessionController *p) { controller = p; }
 
-ExperimenterPresenterImpl::ExperimenterPresenterImpl(Model &model,
-    TestView &view, TaskPresenter *consonantPresenter,
+TestPresenterImpl::TestPresenterImpl(Model &model, TestView &view,
+    TaskPresenter *consonantPresenter,
     TaskPresenter *coordinateResponseMeasurePresenter,
     TaskPresenter *freeResponsePresenter,
     TaskPresenter *correctKeywordsPresenter, TaskPresenter *passFailPresenter,
@@ -136,44 +136,41 @@ ExperimenterPresenterImpl::ExperimenterPresenterImpl(Model &model,
     model.attach(this);
 }
 
-void ExperimenterPresenterImpl::start() { view.show(); }
+void TestPresenterImpl::start() { view.show(); }
 
-void ExperimenterPresenterImpl::stop() {
+void TestPresenterImpl::stop() {
     taskPresenter_->stop();
     view.hideContinueTestingDialog();
     view.hide();
 }
 
-void ExperimenterPresenterImpl::notifyThatTrialHasStarted() {
+void TestPresenterImpl::notifyThatTrialHasStarted() {
     view.hideExitTestButton();
     view.hideNextTrialButton();
     taskPresenter_->notifyThatTrialHasStarted();
 }
 
-void ExperimenterPresenterImpl::trialComplete() {
+void TestPresenterImpl::trialComplete() {
     view.showExitTestButton();
     taskPresenter_->showResponseSubmission();
 }
 
-void ExperimenterPresenterImpl::notifyThatNextTrialIsReady() {
+void TestPresenterImpl::notifyThatNextTrialIsReady() {
     view.hideContinueTestingDialog();
     view.showNextTrialButton();
 }
 
-void ExperimenterPresenterImpl::display(const std::string &s) {
-    view.display(s);
-}
+void TestPresenterImpl::display(const std::string &s) { view.display(s); }
 
-void ExperimenterPresenterImpl::secondaryDisplay(const std::string &s) {
+void TestPresenterImpl::secondaryDisplay(const std::string &s) {
     view.secondaryDisplay(s);
 }
 
-void ExperimenterPresenterImpl::showContinueTestingDialog() {
+void TestPresenterImpl::showContinueTestingDialog() {
     view.showContinueTestingDialog();
 }
 
-void ExperimenterPresenterImpl::setContinueTestingDialogMessage(
-    const std::string &s) {
+void TestPresenterImpl::setContinueTestingDialogMessage(const std::string &s) {
     view.setContinueTestingDialogMessage(s);
 }
 
@@ -206,13 +203,13 @@ static auto consonant(Method m) -> bool {
     return m == Method::fixedLevelConsonants;
 }
 
-void ExperimenterPresenterImpl::initialize(Method m) {
+void TestPresenterImpl::initialize(Method m) {
     displayTrialInformation(model, this);
     taskPresenter_->initialize(taskPresenter(m));
     taskPresenter_->start();
 }
 
-auto ExperimenterPresenterImpl::taskPresenter(Method m) -> TaskPresenter * {
+auto TestPresenterImpl::taskPresenter(Method m) -> TaskPresenter * {
     if (coordinateResponseMeasure(m))
         return coordinateResponseMeasurePresenter;
     if (consonant(m))

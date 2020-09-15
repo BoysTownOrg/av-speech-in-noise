@@ -399,7 +399,7 @@ void main(
         &freeResponsePresenter, &correctKeywordsController,
         &correctKeywordsPresenter, &passFailController, &passFailPresenter};
     UninitializedTaskPresenterImpl taskPresenter;
-    ExperimenterPresenterImpl experimenterPresenter{model, experimenterView,
+    TestPresenterImpl experimenterPresenter{model, experimenterView,
         &consonantPresenter, &coordinateResponseMeasurePresenter,
         &freeResponsePresenter, &correctKeywordsPresenter, &passFailPresenter,
         &taskPresenter};

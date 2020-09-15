@@ -405,7 +405,7 @@ class ExperimenterTests : public ::testing::Test {
         &coordinateResponseMeasurePresenter, &freeResponseController,
         &freeResponsePresenter, &correctKeywordsController,
         &correctKeywordsPresenter, &passFailController, &passFailPresenter};
-    ExperimenterPresenterImpl presenter{model, view, &consonantPresenter,
+    TestPresenterImpl presenter{model, view, &consonantPresenter,
         &coordinateResponseMeasurePresenter, &freeResponsePresenter,
         &correctKeywordsPresenter, &passFailPresenter, &taskPresenter};
     InitializingAdaptiveCoordinateResponseMeasureMethod
@@ -467,7 +467,7 @@ class TestPresenterTests : public ::testing::Test {
     TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub passFailPresenter;
     UninitializedTaskPresenterStub taskPresenter;
-    ExperimenterPresenterImpl presenter{model, view, &consonantPresenter,
+    TestPresenterImpl presenter{model, view, &consonantPresenter,
         &coordinateResponseMeasurePresenter, &freeResponsePresenter,
         &correctKeywordsPresenter, &passFailPresenter, &taskPresenter};
     InitializingAdaptiveCoordinateResponseMeasureMethod

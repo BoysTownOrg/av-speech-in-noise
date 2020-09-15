@@ -1144,8 +1144,8 @@ class PresenterConstructionTests : public ::testing::Test {
     TestControllerImpl experimenterController{model, view, experimenterView,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr};
-    ExperimenterPresenterImpl experimenterPresenterRefactored{model,
-        experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
+    TestPresenterImpl experimenterPresenterRefactored{model, experimenterView,
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
     auto construct() -> SessionControllerImpl {
         return {model, view, &testSetupControllerImpl,
@@ -1281,8 +1281,8 @@ class PresenterTests : public ::testing::Test {
         &coordinateResponseMeasurePresenterRefactored, &freeResponseController,
         &freeResponsePresenter, &correctKeywordsController,
         &correctKeywordsPresenter, &passFailController, &passFailPresenter};
-    ExperimenterPresenterImpl experimenterPresenterRefactored{model,
-        experimenterView, &consonantPresenterRefactored,
+    TestPresenterImpl experimenterPresenterRefactored{model, experimenterView,
+        &consonantPresenterRefactored,
         &coordinateResponseMeasurePresenterRefactored, &freeResponsePresenter,
         &correctKeywordsPresenter, &passFailPresenter, &taskPresenter};
     SessionControllerImpl presenter{model, view, &testSetupControllerImpl,
@@ -1717,7 +1717,7 @@ class PresenterFailureTests : public ::testing::Test {
         TestControllerImpl experimenterController{*model, view,
             experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr,
             nullptr, nullptr, nullptr, nullptr, nullptr};
-        ExperimenterPresenterImpl experimenterPresenterRefactored{*model,
+        TestPresenterImpl experimenterPresenterRefactored{*model,
             experimenterView, nullptr, nullptr, nullptr, nullptr, nullptr,
             nullptr};
         SessionControllerImpl presenter{*model, view, &testSetupControllerImpl,

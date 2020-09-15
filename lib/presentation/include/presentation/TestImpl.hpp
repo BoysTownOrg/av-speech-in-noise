@@ -73,9 +73,9 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
     TaskPresenter *presenter;
 };
 
-class ExperimenterPresenterImpl : public Model::Observer, public TestPresenter {
+class TestPresenterImpl : public Model::Observer, public TestPresenter {
   public:
-    explicit ExperimenterPresenterImpl(Model &, TestView &,
+    explicit TestPresenterImpl(Model &, TestView &,
         TaskPresenter *consonantPresenter,
         TaskPresenter *coordinateResponseMeasurePresenter,
         TaskPresenter *freeResponsePresenter,
