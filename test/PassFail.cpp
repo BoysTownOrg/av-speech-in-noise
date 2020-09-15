@@ -1,5 +1,6 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
+#include "TestViewStub.hpp"
 #include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
 #include <presentation/PassFail.hpp>
@@ -59,39 +60,10 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class ExperimenterViewStub : public TestView {
-  public:
-    void showNextTrialButton() override { nextTrialButtonShown_ = true; }
-
-    [[nodiscard]] auto nextTrialButtonShown() const {
-        return nextTrialButtonShown_;
-    }
-
-    void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
-
-    [[nodiscard]] auto nextTrialButtonHidden() const {
-        return nextTrialButtonHidden_;
-    }
-
-    void setContinueTestingDialogMessage(const std::string &) override {}
-    void showContinueTestingDialog() override {}
-    void hideContinueTestingDialog() override {}
-    void show() override {}
-    void hide() override {}
-    void display(std::string) override {}
-    void secondaryDisplay(std::string) override {}
-    void showExitTestButton() override {}
-    void hideExitTestButton() override {}
-
-  private:
-    bool nextTrialButtonShown_{};
-    bool nextTrialButtonHidden_{};
-};
-
 class PassFailTests : public ::testing::Test {
   protected:
     ModelStub model;
-    ExperimenterViewStub experimenterView;
+    TestViewStub experimenterView;
     PassFailControlStub inputView;
     PassFailViewStub outputView;
     PassFailController responder{model, inputView};
