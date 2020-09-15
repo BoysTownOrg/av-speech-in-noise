@@ -73,18 +73,15 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class FreeResponseTests : public ::testing::Test {
+class FreeResponseControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
-    TestViewStub testView;
     FreeResponseControlStub control;
-    FreeResponseViewStub view;
     FreeResponseController controller{model, control};
-    FreeResponsePresenter presenter{testView, view};
     TestControllerStub testController;
     TaskControllerObserverStub taskController;
 
-    FreeResponseTests() {
+    FreeResponseControllerTests() {
         controller.attach(&testController);
         controller.attach(&taskController);
     }
@@ -97,7 +94,7 @@ class FreeResponsePresenterTests : public ::testing::Test {
     FreeResponsePresenter presenter{testView, view};
 };
 
-#define FREE_RESPONSE_TEST(a) TEST_F(FreeResponseTests, a)
+#define FREE_RESPONSE_CONTROLLER_TEST(a) TEST_F(FreeResponseControllerTests, a)
 
 #define FREE_RESPONSE_PRESENTER_TEST(a) TEST_F(FreeResponsePresenterTests, a)
 
@@ -137,28 +134,29 @@ FREE_RESPONSE_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.freeResponseCleared());
 }
 
-FREE_RESPONSE_TEST(responderSubmitsFreeResponseAfterResponseButtonIsClicked) {
+FREE_RESPONSE_CONTROLLER_TEST(
+    responderSubmitsFreeResponseAfterResponseButtonIsClicked) {
     control.setFreeResponse("a");
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, model.freeResponse().response);
 }
 
-FREE_RESPONSE_TEST(
+FREE_RESPONSE_CONTROLLER_TEST(
     responderSubmitsFlaggedFreeResponseAfterResponseButtonIsClicked) {
     control.setFlagged();
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.freeResponse().flagged);
 }
 
-FREE_RESPONSE_TEST(
+FREE_RESPONSE_CONTROLLER_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
 }
 
-FREE_RESPONSE_TEST(
+FREE_RESPONSE_CONTROLLER_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
