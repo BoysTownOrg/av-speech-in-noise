@@ -1350,6 +1350,20 @@ class PresenterTests : public ::testing::Test {
     AcceptingContinuingTesting acceptingContinuingTesting{experimenterView};
     ExitingTest exitingTest{&experimenterView};
 
+    PresenterTests() {
+        consonantScreenController.attach(&experimenterController);
+        consonantScreenController.attach(&consonantPresenterRefactored);
+        freeResponseController.attach(&experimenterController);
+        freeResponseController.attach(&freeResponsePresenter);
+        correctKeywordsController.attach(&experimenterController);
+        correctKeywordsController.attach(&correctKeywordsPresenter);
+        passFailController.attach(&experimenterController);
+        passFailController.attach(&passFailPresenter);
+        coordinateResponseMeasureController.attach(&experimenterController);
+        coordinateResponseMeasureController.attach(
+            &coordinateResponseMeasurePresenterRefactored);
+    }
+
     void assertBrowseResultPassedToEntry(BrowsingEnteredPathUseCase &useCase) {
         setBrowsingResult(useCase, "a");
         run(useCase);

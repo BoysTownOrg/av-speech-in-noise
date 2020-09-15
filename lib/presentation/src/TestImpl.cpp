@@ -26,27 +26,6 @@ TestControllerImpl::TestControllerImpl(Model &model, SessionView &sessionView,
     TaskPresenter *passFailPresenter)
     : model{model}, sessionView{sessionView} {
     control.attach(this);
-    if (consonantController != nullptr) {
-        consonantController->attach(this);
-        consonantController->attach(consonantPresenter);
-    }
-    if (freeResponseController != nullptr) {
-        freeResponseController->attach(this);
-        freeResponseController->attach(freeResponsePresenter);
-    }
-    if (correctKeywordsController != nullptr) {
-        correctKeywordsController->attach(this);
-        correctKeywordsController->attach(correctKeywordsPresenter);
-    }
-    if (passFailController != nullptr) {
-        passFailController->attach(this);
-        passFailController->attach(passFailPresenter);
-    }
-    if (coordinateResponseMeasureController != nullptr) {
-        coordinateResponseMeasureController->attach(this);
-        coordinateResponseMeasureController->attach(
-            coordinateResponseMeasurePresenter);
-    }
 }
 
 void TestControllerImpl::attach(TestController::Observer *e) { observer = e; }
