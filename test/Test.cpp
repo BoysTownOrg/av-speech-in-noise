@@ -106,6 +106,27 @@ class TestUIStub : public TestView, public TestControl {
     bool hidden_{};
 };
 
+class TestControlStub : public TestControl {
+  public:
+    void declineContinuingTesting() { listener_->declineContinuingTesting(); }
+
+    void acceptContinuingTesting() { listener_->acceptContinuingTesting(); }
+
+    void attach(TestControl::Observer *e) override { listener_ = e; }
+
+    void exitTest() { listener_->exitTest(); }
+
+    void notifyThatPlayTrialButtonHasBeenClicked() { listener_->playTrial(); }
+
+  private:
+    std::string displayed_;
+    std::string secondaryDisplayed_;
+    std::string continueTestingDialogMessage_;
+    std::string response_;
+    std::string correctKeywords_{"0"};
+    TestControl::Observer *listener_{};
+};
+
 class UseCase {
   public:
     virtual ~UseCase() = default;
@@ -276,31 +297,31 @@ class InitializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking
 };
 
 class ExitingTest : public UseCase {
-    TestUIStub *view;
+    TestControlStub *view;
 
   public:
-    explicit ExitingTest(TestUIStub *view) : view{view} {}
+    explicit ExitingTest(TestControlStub *view) : view{view} {}
 
     void run(TestPresenter &) override { view->exitTest(); }
 };
 
 class DecliningContinuingTesting : public UseCase {
   public:
-    explicit DecliningContinuingTesting(TestUIStub &view) : view{view} {}
+    explicit DecliningContinuingTesting(TestControlStub &view) : view{view} {}
 
     void run(TestPresenter &) override { view.declineContinuingTesting(); }
 
   private:
-    TestUIStub &view;
+    TestControlStub &view;
 };
 
-void exitTest(TestUIStub &view) { view.exitTest(); }
+void exitTest(TestControlStub &view) { view.exitTest(); }
 
-void notifyThatPlayTrialButtonHasBeenClicked(TestUIStub &view) {
+void notifyThatPlayTrialButtonHasBeenClicked(TestControlStub &view) {
     view.notifyThatPlayTrialButtonHasBeenClicked();
 }
 
-void acceptContinuingTesting(TestUIStub &view) {
+void acceptContinuingTesting(TestControlStub &view) {
     view.acceptContinuingTesting();
 }
 
@@ -387,12 +408,12 @@ class ControllerUseCase {
 
 class AcceptingContinuingTesting : public ControllerUseCase {
   public:
-    explicit AcceptingContinuingTesting(TestUIStub &view) : view{view} {}
+    explicit AcceptingContinuingTesting(TestControlStub &view) : view{view} {}
 
     void run() override { acceptContinuingTesting(view); }
 
   private:
-    TestUIStub &view;
+    TestControlStub &view;
 };
 
 class NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
@@ -467,6 +488,7 @@ class ExperimenterTests : public ::testing::Test {
     ModelStub model;
     SessionViewStub view;
     TestUIStub experimenterView;
+    TestControlStub control;
     TaskControllerStub consonantController;
     TaskControllerStub coordinateResponseMeasureController;
     TaskControllerStub freeResponseController;
@@ -478,7 +500,7 @@ class ExperimenterTests : public ::testing::Test {
     TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub passFailPresenter;
     UninitializedTaskPresenterStub taskPresenter;
-    TestControllerImpl experimenterController{model, view, experimenterView,
+    TestControllerImpl experimenterController{model, view, control,
         &consonantController, &consonantPresenter,
         &coordinateResponseMeasureController,
         &coordinateResponseMeasurePresenter, &freeResponseController,
@@ -518,9 +540,9 @@ class ExperimenterTests : public ::testing::Test {
         initializingFixedLevelFreeResponseMethodWithAllTargets;
     InitializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking
         initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking;
-    DecliningContinuingTesting decliningContinuingTesting{experimenterView};
-    AcceptingContinuingTesting acceptingContinuingTesting{experimenterView};
-    ExitingTest exitingTest{&experimenterView};
+    DecliningContinuingTesting decliningContinuingTesting{control};
+    AcceptingContinuingTesting acceptingContinuingTesting{control};
+    ExitingTest exitingTest{&control};
     NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion{
             experimenterController};
@@ -570,7 +592,7 @@ class ExperimenterTests : public ::testing::Test {
 
 EXPERIMENTER_TEST(
     responderNotifiesThatTestIsCompleteAfterExitTestButtonClicked) {
-    exitTest(experimenterView);
+    exitTest(control);
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(presenter);
 }
 
@@ -596,7 +618,7 @@ EXPERIMENTER_TEST(
 
 EXPERIMENTER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
     setAudioDevice(view, "a");
-    notifyThatPlayTrialButtonHasBeenClicked(experimenterView);
+    notifyThatPlayTrialButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, model.trialParameters().audioDevice);
 }
@@ -611,7 +633,7 @@ EXPERIMENTER_TEST(
 
 EXPERIMENTER_TEST(
     responderNotifiesThatTrialHasStartedAfterPlayTrialButtonClicked) {
-    notifyThatPlayTrialButtonHasBeenClicked(experimenterView);
+    notifyThatPlayTrialButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterControllerListener.notifiedThatTrialHasStarted());
 }
@@ -625,7 +647,7 @@ EXPERIMENTER_TEST(
 
 EXPERIMENTER_TEST(
     responderRestartsAdaptiveTestWhilePreservingTargetsAfterContinueTestingDialogIsAccepted) {
-    acceptContinuingTesting(experimenterView);
+    acceptContinuingTesting(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         model.adaptiveTestRestartedWhilePreservingCyclicTargets());
 }
