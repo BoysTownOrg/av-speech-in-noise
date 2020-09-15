@@ -6,7 +6,7 @@
 #include <presentation/PassFail.hpp>
 #include <presentation/CorrectKeywords.hpp>
 #include <presentation/TestSetupImpl.hpp>
-#include <presentation/ExperimenterImpl.hpp>
+#include <presentation/TestImpl.hpp>
 #include <presentation/SessionControllerImpl.hpp>
 #include <av-speech-in-noise/name.hpp>
 #include <gtest/gtest.h>
