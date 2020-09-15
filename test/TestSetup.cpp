@@ -8,14 +8,8 @@
 
 namespace av_speech_in_noise {
 namespace {
-class TestSetupViewStub : public TestSetupView, public TestSetupControl {
+class TestSetupViewStub : public TestSetupView {
   public:
-    auto testSettingsFile() -> std::string override {
-        return testSettingsFile_;
-    }
-
-    auto startingSnr() -> std::string override { return startingSnr_; }
-
     void setTestSettingsFile(std::string s) override {
         testSettingsFile_ = std::move(s);
     }
@@ -23,10 +17,6 @@ class TestSetupViewStub : public TestSetupView, public TestSetupControl {
     void populateTransducerMenu(std::vector<std::string> v) override {
         transducers_ = std::move(v);
     }
-
-    auto session() -> std::string override { return session_; }
-
-    void setSession(std::string s) { session_ = std::move(s); }
 
     void show() override { shown_ = true; }
 
@@ -36,38 +26,13 @@ class TestSetupViewStub : public TestSetupView, public TestSetupControl {
 
     [[nodiscard]] auto hidden() const { return hidden_; }
 
-    void setRmeSetting(std::string s) { rmeSetting_ = std::move(s); }
-
-    auto rmeSetting() -> std::string override { return rmeSetting_; }
-
-    void setTransducer(std::string s) { transducer_ = std::move(s); }
-
-    void setSubjectId(std::string s) { subjectId_ = std::move(s); }
-
-    auto subjectId() -> std::string override { return subjectId_; }
-
-    void setTesterId(std::string s) { testerId_ = std::move(s); }
-
-    auto testerId() -> std::string override { return testerId_; }
-
-    auto transducer() -> std::string override { return transducer_; }
-
-    void attach(Observer *listener) override { listener_ = listener; }
-
-    void setStartingSnr(std::string s) { startingSnr_ = std::move(s); }
-
     auto transducers() -> std::vector<std::string> { return transducers_; }
+
+    auto testSettingsFile() -> std::string { return testSettingsFile_; }
 
   private:
     std::vector<std::string> transducers_;
-    std::string startingSnr_{"0"};
-    std::string subjectId_;
-    std::string testerId_;
-    std::string session_;
-    std::string rmeSetting_;
-    std::string transducer_;
     std::string testSettingsFile_;
-    Observer *listener_{};
     bool shown_{};
     bool hidden_{};
 };
@@ -115,8 +80,6 @@ class TestSetupControlStub : public TestSetupControl {
     void attach(Observer *listener) override { listener_ = listener; }
 
     void setStartingSnr(std::string s) { startingSnr_ = std::move(s); }
-
-    auto transducers() -> std::vector<std::string> { return transducers_; }
 
     void setTestSettingsFile(std::string s) {
         testSettingsFile_ = std::move(s);
