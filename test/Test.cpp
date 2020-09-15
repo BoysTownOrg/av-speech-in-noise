@@ -1,5 +1,6 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
+#include "SessionViewStub.hpp"
 #include <presentation/TestImpl.hpp>
 #include <av-speech-in-noise/name.hpp>
 #include <gtest/gtest.h>
@@ -103,42 +104,6 @@ class TestUIStub : public TestView, public TestControl {
     bool continueTestingDialogHidden_{};
     bool shown_{};
     bool hidden_{};
-};
-
-class ViewStub : public SessionView {
-  public:
-    void setAudioDevice(std::string s) { audioDevice_ = std::move(s); }
-
-    auto audioDevice() -> std::string override { return audioDevice_; }
-
-    void showErrorMessage(std::string s) override {
-        errorMessage_ = std::move(s);
-    }
-
-    void eventLoop() override { eventLoopCalled_ = true; }
-
-    auto browseForDirectory() -> std::string override {
-        return browseForDirectoryResult_;
-    }
-
-    auto browseCancelled() -> bool override { return browseCancelled_; }
-
-    auto browseForOpeningFile() -> std::string override {
-        return browseForOpeningFileResult_;
-    }
-
-    void populateAudioDeviceMenu(std::vector<std::string> v) override {
-        audioDevices_ = std::move(v);
-    }
-
-  private:
-    std::vector<std::string> audioDevices_;
-    std::string errorMessage_;
-    std::string browseForDirectoryResult_;
-    std::string browseForOpeningFileResult_;
-    std::string audioDevice_;
-    bool eventLoopCalled_{};
-    bool browseCancelled_{};
 };
 
 class UseCase {
@@ -345,7 +310,7 @@ void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
         .notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
-void setAudioDevice(ViewStub &view, std::string s) {
+void setAudioDevice(SessionViewStub &view, std::string s) {
     view.setAudioDevice(std::move(s));
 }
 
@@ -500,7 +465,7 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
 class ExperimenterTests : public ::testing::Test {
   protected:
     ModelStub model;
-    ViewStub view;
+    SessionViewStub view;
     TestUIStub experimenterView;
     TaskControllerStub consonantController;
     TaskControllerStub coordinateResponseMeasureController;

@@ -6,21 +6,40 @@
 namespace av_speech_in_noise {
 class SessionViewStub : public SessionView {
   public:
+    void setAudioDevice(std::string s) { audioDevice_ = std::move(s); }
+
+    auto audioDevice() -> std::string override { return audioDevice_; }
+
     void showErrorMessage(std::string s) override {
         errorMessage_ = std::move(s);
     }
 
     auto errorMessage() -> std::string { return errorMessage_; }
 
-    auto audioDevice() -> std::string override { return {}; }
-    void eventLoop() override {}
-    auto browseForDirectory() -> std::string override { return {}; }
-    auto browseCancelled() -> bool override { return {}; }
-    auto browseForOpeningFile() -> std::string override { return {}; }
-    void populateAudioDeviceMenu(std::vector<std::string>) override {}
+    void eventLoop() override { eventLoopCalled_ = true; }
+
+    auto browseForDirectory() -> std::string override {
+        return browseForDirectoryResult_;
+    }
+
+    auto browseCancelled() -> bool override { return browseCancelled_; }
+
+    auto browseForOpeningFile() -> std::string override {
+        return browseForOpeningFileResult_;
+    }
+
+    void populateAudioDeviceMenu(std::vector<std::string> v) override {
+        audioDevices_ = std::move(v);
+    }
 
   private:
+    std::vector<std::string> audioDevices_;
     std::string errorMessage_;
+    std::string browseForDirectoryResult_;
+    std::string browseForOpeningFileResult_;
+    std::string audioDevice_;
+    bool eventLoopCalled_{};
+    bool browseCancelled_{};
 };
 }
 
