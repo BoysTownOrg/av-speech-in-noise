@@ -214,15 +214,13 @@ class DecliningContinuingTesting : public UseCase {
     TestControlStub &view;
 };
 
-void exitTest(TestControlStub &view) { view.exitTest(); }
+void exitTest(TestControlStub &c) { c.exitTest(); }
 
 void declineContinuingTesting(TestControlStub &c) {
     c.declineContinuingTesting();
 }
 
-void notifyThatPlayTrialButtonHasBeenClicked(TestControlStub &view) {
-    view.playTrial();
-}
+void playTrial(TestControlStub &c) { c.playTrial(); }
 
 void acceptContinuingTesting(TestControlStub &view) {
     view.acceptContinuingTesting();
@@ -532,7 +530,7 @@ TEST_CONTROLLER_TEST(
 
 TEST_CONTROLLER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
     setAudioDevice(sessionView, "a");
-    notifyThatPlayTrialButtonHasBeenClicked(control);
+    playTrial(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, model.trialParameters().audioDevice);
 }
@@ -547,7 +545,7 @@ TEST_CONTROLLER_TEST(
 
 TEST_CONTROLLER_TEST(
     responderNotifiesThatTrialHasStartedAfterPlayTrialButtonClicked) {
-    notifyThatPlayTrialButtonHasBeenClicked(control);
+    playTrial(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterControllerListener.notifiedThatTrialHasStarted());
 }
