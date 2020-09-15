@@ -80,32 +80,42 @@ class CorrectKeywordsTests : public ::testing::Test {
     }
 };
 
+class CorrectKeywordsPresenterTests : public ::testing::Test {
+  protected:
+    TestViewStub testView;
+    CorrectKeywordsViewStub view;
+    CorrectKeywordsPresenter presenter{testView, view};
+};
+
 #define CORRECT_KEYWORDS_TEST(a) TEST_F(CorrectKeywordsTests, a)
+#define CORRECT_KEYWORDS_PRESENTER_TEST(a)                                     \
+    TEST_F(CorrectKeywordsPresenterTests, a)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).correctKeywordsSubmissionHidden())
 
-CORRECT_KEYWORDS_TEST(presenterHidesReadyButtonWhenTaskStarts) {
+CORRECT_KEYWORDS_PRESENTER_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
 }
 
-CORRECT_KEYWORDS_TEST(presenterHidesResponseButtonsAfterUserIsDoneResponding) {
+CORRECT_KEYWORDS_PRESENTER_TEST(
+    presenterHidesResponseButtonsAfterUserIsDoneResponding) {
     notifyThatUserIsDoneResponding(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-CORRECT_KEYWORDS_TEST(presenterHidesResponseButtonsWhenStopped) {
+CORRECT_KEYWORDS_PRESENTER_TEST(presenterHidesResponseButtonsWhenStopped) {
     stop(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-CORRECT_KEYWORDS_TEST(presenterShowsReadyButtonWhenStarted) {
+CORRECT_KEYWORDS_PRESENTER_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
 }
 
-CORRECT_KEYWORDS_TEST(
+CORRECT_KEYWORDS_PRESENTER_TEST(
     presenterShowsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.correctKeywordsSubmissionShown());
