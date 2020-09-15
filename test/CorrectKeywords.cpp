@@ -62,19 +62,16 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class CorrectKeywordsTests : public ::testing::Test {
+class CorrectKeywordsControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
     SessionViewStub sessionView;
-    TestViewStub testView;
     CorrectKeywordsControlStub control;
-    CorrectKeywordsViewStub view;
     CorrectKeywordsController controller{model, sessionView, control};
-    CorrectKeywordsPresenter presenter{testView, view};
     TestControllerStub testController;
     TaskControllerObserverStub taskController;
 
-    CorrectKeywordsTests() {
+    CorrectKeywordsControllerTests() {
         controller.attach(&testController);
         controller.attach(&taskController);
     }
@@ -87,7 +84,9 @@ class CorrectKeywordsPresenterTests : public ::testing::Test {
     CorrectKeywordsPresenter presenter{testView, view};
 };
 
-#define CORRECT_KEYWORDS_TEST(a) TEST_F(CorrectKeywordsTests, a)
+#define CORRECT_KEYWORDS_CONTROLLER_TEST(a)                                    \
+    TEST_F(CorrectKeywordsControllerTests, a)
+
 #define CORRECT_KEYWORDS_PRESENTER_TEST(a)                                     \
     TEST_F(CorrectKeywordsPresenterTests, a)
 
@@ -121,13 +120,14 @@ CORRECT_KEYWORDS_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.correctKeywordsSubmissionShown());
 }
 
-CORRECT_KEYWORDS_TEST(responderSubmitsConsonantAfterResponseButtonIsClicked) {
+CORRECT_KEYWORDS_CONTROLLER_TEST(
+    responderSubmitsConsonantAfterResponseButtonIsClicked) {
     control.setCorrectKeywords("1");
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.correctKeywords());
 }
 
-CORRECT_KEYWORDS_TEST(
+CORRECT_KEYWORDS_CONTROLLER_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
@@ -135,14 +135,15 @@ CORRECT_KEYWORDS_TEST(
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
-CORRECT_KEYWORDS_TEST(
+CORRECT_KEYWORDS_CONTROLLER_TEST(
     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskController.notifiedThatUserIsDoneResponding());
 }
 
-CORRECT_KEYWORDS_TEST(responderShowsErrorMessageWhenInvalidCorrectKeywords) {
+CORRECT_KEYWORDS_CONTROLLER_TEST(
+    responderShowsErrorMessageWhenInvalidCorrectKeywords) {
     control.setCorrectKeywords("a");
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
