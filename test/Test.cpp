@@ -196,12 +196,12 @@ class InitializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking
 };
 
 class ExitingTest : public UseCase {
-    TestControlStub *view;
+    TestControlStub &control;
 
   public:
-    explicit ExitingTest(TestControlStub *view) : view{view} {}
+    explicit ExitingTest(TestControlStub &control) : control{control} {}
 
-    void run(TestPresenter &) override { view->exitTest(); }
+    void run(TestPresenter &) override { control.exitTest(); }
 };
 
 class DecliningContinuingTesting : public UseCase {
@@ -441,7 +441,7 @@ class ExperimenterTests : public ::testing::Test {
         initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking;
     DecliningContinuingTesting decliningContinuingTesting{control};
     AcceptingContinuingTesting acceptingContinuingTesting{control};
-    ExitingTest exitingTest{&control};
+    ExitingTest exitingTest{control};
     NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion{
             experimenterController};
