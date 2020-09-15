@@ -1,5 +1,6 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
+#include "SessionViewStub.hpp"
 #include "TestViewStub.hpp"
 #include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
@@ -61,29 +62,10 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class ViewStub : public SessionView {
-  public:
-    void showErrorMessage(std::string s) override {
-        errorMessage_ = std::move(s);
-    }
-
-    auto errorMessage() -> std::string { return errorMessage_; }
-
-    auto audioDevice() -> std::string override { return {}; }
-    void eventLoop() override {}
-    auto browseForDirectory() -> std::string override { return {}; }
-    auto browseCancelled() -> bool override { return {}; }
-    auto browseForOpeningFile() -> std::string override { return {}; }
-    void populateAudioDeviceMenu(std::vector<std::string>) override {}
-
-  private:
-    std::string errorMessage_;
-};
-
 class CorrectKeywordsTests : public ::testing::Test {
   protected:
     ModelStub model;
-    ViewStub mainView;
+    SessionViewStub mainView;
     TestViewStub experimenterView;
     CorrectKeywordsControlStub inputView;
     CorrectKeywordsViewStub outputView;
