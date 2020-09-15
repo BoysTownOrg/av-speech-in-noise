@@ -284,6 +284,12 @@ class TestSetupTests : public ::testing::Test {
     }
 };
 
+class TestSetupPresenterTests : public ::testing::Test {
+  protected:
+    TestSetupViewStub view;
+    TestSetupPresenterImpl presenter{view};
+};
+
 class RequestFailingModel : public Model {
     std::string errorMessage{};
 
@@ -415,6 +421,8 @@ class TestSetupFailureTests : public ::testing::Test {
 };
 
 #define TEST_SETUP_TEST(a) TEST_F(TestSetupTests, a)
+
+#define TEST_SETUP_PRESENTER_TEST(a) TEST_F(TestSetupPresenterTests, a)
 
 TEST_SETUP_TEST(controllerPreparesTestAfterConfirmButtonIsClicked) {
     testSettingsInterpreter.setMethod(Method::adaptivePassFail);
@@ -554,17 +562,17 @@ TEST_SETUP_TEST(playCalibrationPassesFullScaleLevel) {
         1, av_speech_in_noise::calibration(model).fullScaleLevel.dB_SPL);
 }
 
-TEST_SETUP_TEST(presenterShowsViewWhenStarted) {
+TEST_SETUP_PRESENTER_TEST(presenterShowsViewWhenStarted) {
     presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
 }
 
-TEST_SETUP_TEST(presenterHidesViewWhenStopped) {
+TEST_SETUP_PRESENTER_TEST(presenterHidesViewWhenStopped) {
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-TEST_SETUP_TEST(presenterSetsTestSettingsFileWhenNotified) {
+TEST_SETUP_PRESENTER_TEST(presenterSetsTestSettingsFileWhenNotified) {
     presenter.notifyThatUserHasSelectedTestSettingsFile("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", view.testSettingsFile());
 }
@@ -573,7 +581,7 @@ auto contains(const std::vector<std::string> &items, const std::string &item)
     return std::find(items.begin(), items.end(), item) != items.end();
 }
 
-TEST_SETUP_TEST(presenterPopulatesTransducerMenu) {
+TEST_SETUP_PRESENTER_TEST(presenterPopulatesTransducerMenu) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         contains(view.transducers(), name(Transducer::headphone)));
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
