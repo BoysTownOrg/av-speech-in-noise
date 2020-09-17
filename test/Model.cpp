@@ -645,10 +645,6 @@ class InitializingFixedLevelTestWithEachTargetNTimes
 
     void run(ModelImpl &model) override { model.initialize(test__); }
 
-    void run(ModelImpl &model, const FixedLevelTestWithEachTargetNTimes &test) {
-        model.initialize(test);
-    }
-
     auto test() -> const Test & override { return test__; }
 
     auto testMethod() -> const TestMethod * override { return method; }
@@ -894,8 +890,7 @@ MODEL_TEST(
 
 MODEL_TEST(initializeFixedLevelTestWithEachTargetNTimesSetsTargetRepeats) {
     fixedLevelTestWithEachTargetNTimes.timesEachTargetIsPlayed = 2;
-    initializingFixedLevelTestWithEachTargetNTimes.run(
-        model, fixedLevelTestWithEachTargetNTimes);
+    initializingFixedLevelTestWithEachTargetNTimes.run(model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(gsl::index{1}, eachTargetNTimes.repeats());
 }
 
