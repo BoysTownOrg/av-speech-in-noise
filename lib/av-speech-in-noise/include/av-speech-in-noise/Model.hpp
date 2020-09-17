@@ -101,6 +101,11 @@ struct FixedLevelTestWithEachTargetNTimes : FixedLevelTest {
     int timesEachTargetIsPlayed{1};
 };
 
+struct FixedLevelTestWithEachTargetNTimesAndFiltering
+    : FixedLevelTestWithEachTargetNTimes {
+    LocalUrl firFilterFileLocalUrl;
+};
+
 struct AudioSettings {
     std::string audioDevice;
 };
@@ -143,6 +148,8 @@ class Model {
         const FixedLevelTest &) = 0;
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
     virtual void initialize(const FixedLevelTestWithEachTargetNTimes &) = 0;
+    virtual void initialize(
+        const FixedLevelTestWithEachTargetNTimesAndFiltering &) {}
     virtual void initializeWithAllTargetsAndEyeTracking(
         const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;

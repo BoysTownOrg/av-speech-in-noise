@@ -53,6 +53,11 @@ auto fixedLevelTestWithEachTargetNTimes(ModelStub &m)
     return m.fixedLevelTestWithEachTargetNTimes();
 }
 
+auto fixedLevelTestWithEachTargetNTimesAndFiltering(ModelStub &m)
+    -> const FixedLevelTestWithEachTargetNTimesAndFiltering & {
+    return m.fixedLevelTestWithEachTargetNTimesAndFiltering();
+}
+
 void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
     const std::vector<std::string> &v, int startingSnr = {},
     const TestIdentity &identity = {}) {
@@ -793,6 +798,15 @@ TEST_SETTINGS_INTERPRETER_TEST(
                 TestSetting::method, Method::fixedLevelConsonants)});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         1, fixedLevelTestWithEachTargetNTimes(model).timesEachTargetIsPlayed);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(consonantTestWithFiltering) {
+    initialize(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
+            entryWithNewline(TestSetting::firFilter, "a")});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"},
+        fixedLevelTestWithEachTargetNTimesAndFiltering(model)
+            .firFilterFileLocalUrl.path);
 }
 }
 }

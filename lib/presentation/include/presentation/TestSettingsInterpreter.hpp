@@ -62,7 +62,8 @@ enum class TestSetting {
     testerId,
     session,
     rmeSetting,
-    transducer
+    transducer,
+    firFilter
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -101,6 +102,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "RME setting";
     case TestSetting::transducer:
         return "transducer";
+    case TestSetting::firFilter:
+        return "FIR filter";
     }
 }
 

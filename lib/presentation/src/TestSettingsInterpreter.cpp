@@ -119,6 +119,15 @@ static void assign(FixedLevelTestWithEachTargetNTimes &test,
         assign(static_cast<FixedLevelTest &>(test), entryName, entry);
 }
 
+static void assign(FixedLevelTestWithEachTargetNTimesAndFiltering &test,
+    const std::string &entryName, const std::string &entry) {
+    if (entryName == name(TestSetting::firFilter))
+        test.firFilterFileLocalUrl.path = entry;
+    else
+        assign(static_cast<FixedLevelTestWithEachTargetNTimes &>(test),
+            entryName, entry);
+}
+
 static void assign(Calibration &calibration, const std::string &entryName,
     const std::string &entry) {
     if (entryName == name(TestSetting::masker))
@@ -214,6 +223,21 @@ static void initialize(FixedLevelTestWithEachTargetNTimes &test,
         [&](auto entryName, auto entry) { assign(test, entryName, entry); });
 }
 
+static void initialize(FixedLevelTestWithEachTargetNTimesAndFiltering &test,
+    const std::string &contents, Method method, const TestIdentity &identity,
+    SNR startingSnr) {
+    initialize(test, contents, method, identity, startingSnr,
+        [&](auto entryName, auto entry) { assign(test, entryName, entry); });
+}
+
+static auto contains(const std::string &contents, TestSetting s) -> bool {
+    std::stringstream stream{contents};
+    for (std::string line; std::getline(stream, line);)
+        if (entryName(line) == name(s))
+            return true;
+    return false;
+}
+
 void TestSettingsInterpreterImpl::initialize(Model &model,
     const std::string &contents, const TestIdentity &identity,
     SNR startingSnr) {
@@ -266,10 +290,17 @@ void TestSettingsInterpreterImpl::initialize(Model &model,
             test, contents, method, identity, startingSnr);
         model.initializeWithAllTargets(test);
     } else if (method == Method::fixedLevelConsonants) {
-        FixedLevelTestWithEachTargetNTimes test;
-        av_speech_in_noise::initialize(
-            test, contents, method, identity, startingSnr);
-        model.initialize(test);
+        if (contains(contents, TestSetting::firFilter)) {
+            FixedLevelTestWithEachTargetNTimesAndFiltering test;
+            av_speech_in_noise::initialize(
+                test, contents, method, identity, startingSnr);
+            model.initialize(test);
+        } else {
+            FixedLevelTestWithEachTargetNTimes test;
+            av_speech_in_noise::initialize(
+                test, contents, method, identity, startingSnr);
+            model.initialize(test);
+        }
     } else if (method ==
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking) {
         FixedLevelTest test;

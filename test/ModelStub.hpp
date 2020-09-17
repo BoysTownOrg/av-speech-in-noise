@@ -85,6 +85,11 @@ class ModelStub : public Model {
         return fixedLevelTestWithEachTargetNTimes_;
     }
 
+    [[nodiscard]] auto fixedLevelTestWithEachTargetNTimesAndFiltering() const
+        -> const FixedLevelTestWithEachTargetNTimesAndFiltering & {
+        return fixedLevelTestWithEachTargetNTimesAndFiltering_;
+    }
+
     [[nodiscard]] auto fixedLevelFixedTrialsTest() const -> auto & {
         return fixedLevelFixedTrialsTest_;
     }
@@ -173,6 +178,10 @@ class ModelStub : public Model {
         fixedLevelTestWithEachTargetNTimesInitialized_ = true;
     }
 
+    void initialize(const FixedLevelTestWithEachTargetNTimesAndFiltering &p) {
+        fixedLevelTestWithEachTargetNTimesAndFiltering_ = p;
+    }
+
     void initializeWithAllTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithAllTargetsInitialized_ = true;
@@ -236,6 +245,8 @@ class ModelStub : public Model {
     FixedLevelTest fixedLevelTest_{};
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest_{};
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes_{};
+    FixedLevelTestWithEachTargetNTimesAndFiltering
+        fixedLevelTestWithEachTargetNTimesAndFiltering_{};
     Calibration calibration_{};
     AudioSettings trialParameters_{};
     coordinate_response_measure::Response responseParameters_{};
