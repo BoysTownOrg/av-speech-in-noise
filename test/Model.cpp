@@ -743,6 +743,13 @@ class ModelTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&useCase.test(), internalModel.test());
     }
 
+    void assertInitializesInternalModel(InitializingTestUseCase &useCase,
+        const av_speech_in_noise::Test &test, const TestMethod &method) {
+        run(useCase);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&method, internalModel.testMethod());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&test, internalModel.test());
+    }
+
     void assertInitializesFixedLevelMethod(
         InitializingFixedLevelTest &useCase) {
         useCase.run(model, fixedLevelTest);
@@ -940,7 +947,8 @@ MODEL_TEST(
 MODEL_TEST(
     initializingFixedLevelTestWithEachTargetNTimesInitializesInternalModel) {
     assertInitializesInternalModel(
-        initializingFixedLevelTestWithEachTargetNTimes);
+        initializingFixedLevelTestWithEachTargetNTimes,
+        fixedLevelTestWithEachTargetNTimes, fixedLevelMethod);
 }
 
 MODEL_TEST(
