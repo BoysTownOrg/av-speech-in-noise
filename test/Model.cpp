@@ -637,13 +637,11 @@ class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
 
 class InitializingFixedLevelTestWithEachTargetNTimes : public UseCase {
     const FixedLevelTestWithEachTargetNTimes &test_;
-    FixedLevelMethodStub *method;
 
   public:
     explicit InitializingFixedLevelTestWithEachTargetNTimes(
-        FixedLevelMethodStub *method,
         const FixedLevelTestWithEachTargetNTimes &test_)
-        : method{method}, test_{test_} {}
+        : test_{test_} {}
 
     void run(ModelImpl &model) override { model.initialize(test_); }
 };
@@ -651,13 +649,11 @@ class InitializingFixedLevelTestWithEachTargetNTimes : public UseCase {
 class InitializingFixedLevelTestWithEachTargetNTimesAndFiltering
     : public UseCase {
     const FixedLevelTestWithEachTargetNTimesAndFiltering &test_;
-    FixedLevelMethodStub *method;
 
   public:
     explicit InitializingFixedLevelTestWithEachTargetNTimesAndFiltering(
-        FixedLevelMethodStub *method,
         const FixedLevelTestWithEachTargetNTimesAndFiltering &test_)
-        : method{method}, test_{test_} {}
+        : test_{test_} {}
 
     void run(ModelImpl &model) override { model.initialize(test_); }
 };
@@ -718,10 +714,10 @@ class ModelTests : public ::testing::Test {
             &fixedLevelMethod};
     InitializingFixedLevelTestWithEachTargetNTimes
         initializingFixedLevelTestWithEachTargetNTimes{
-            &fixedLevelMethod, fixedLevelTestWithEachTargetNTimes};
+            fixedLevelTestWithEachTargetNTimes};
     InitializingFixedLevelTestWithEachTargetNTimesAndFiltering
         initializingFixedLevelTestWithEachTargetNTimesAndFiltering{
-            &fixedLevelMethod, fixedLevelTestWithEachTargetNTimesAndFiltering};
+            fixedLevelTestWithEachTargetNTimesAndFiltering};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
