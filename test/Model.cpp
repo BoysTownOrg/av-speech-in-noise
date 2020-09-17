@@ -652,24 +652,18 @@ class InitializingFixedLevelTestWithEachTargetNTimes
 
 class InitializingFixedLevelTestWithEachTargetNTimesAndFiltering
     : public InitializingTestUseCase {
-    FixedLevelTestWithEachTargetNTimesAndFiltering test_;
-    const FixedLevelTestWithEachTargetNTimesAndFiltering &test__;
+    const FixedLevelTestWithEachTargetNTimesAndFiltering &test_;
     FixedLevelMethodStub *method;
 
   public:
     explicit InitializingFixedLevelTestWithEachTargetNTimesAndFiltering(
         FixedLevelMethodStub *method,
-        const FixedLevelTestWithEachTargetNTimesAndFiltering &test__)
-        : method{method}, test__{test__} {}
+        const FixedLevelTestWithEachTargetNTimesAndFiltering &test_)
+        : method{method}, test_{test_} {}
 
-    void run(ModelImpl &model) override { model.initialize(test__); }
+    void run(ModelImpl &model) override { model.initialize(test_); }
 
-    void run(ModelImpl &model,
-        const FixedLevelTestWithEachTargetNTimesAndFiltering &test) {
-        model.initialize(test);
-    }
-
-    auto test() -> const Test & override { return test__; }
+    auto test() -> const Test & override { return test_; }
 
     auto testMethod() -> const TestMethod * override { return method; }
 };
