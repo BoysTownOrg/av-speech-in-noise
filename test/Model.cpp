@@ -782,6 +782,14 @@ class ModelTests : public ::testing::Test {
         useCase.run(model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&expected, fixedLevelMethod.test());
     }
+
+    void assertSetsEachTargetToRepeat(InitializingTestUseCase &useCase,
+        FixedLevelTestWithEachTargetNTimes &test) {
+        test.timesEachTargetIsPlayed = 2;
+        useCase.run(model);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            gsl::index{1}, eachTargetNTimes.repeats());
+    }
 };
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
@@ -889,16 +897,15 @@ MODEL_TEST(
 }
 
 MODEL_TEST(initializeFixedLevelTestWithEachTargetNTimesSetsTargetRepeats) {
-    fixedLevelTestWithEachTargetNTimes.timesEachTargetIsPlayed = 2;
-    initializingFixedLevelTestWithEachTargetNTimes.run(model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(gsl::index{1}, eachTargetNTimes.repeats());
+    assertSetsEachTargetToRepeat(initializingFixedLevelTestWithEachTargetNTimes,
+        fixedLevelTestWithEachTargetNTimes);
 }
 
 MODEL_TEST(
     initializeFixedLevelTestWithEachTargetNTimesAndFilteringSetsTargetRepeats) {
-    fixedLevelTestWithEachTargetNTimesAndFiltering.timesEachTargetIsPlayed = 2;
-    initializingFixedLevelTestWithEachTargetNTimesAndFiltering.run(model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(gsl::index{1}, eachTargetNTimes.repeats());
+    assertSetsEachTargetToRepeat(
+        initializingFixedLevelTestWithEachTargetNTimesAndFiltering,
+        fixedLevelTestWithEachTargetNTimesAndFiltering);
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
