@@ -635,8 +635,7 @@ class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingFixedLevelTestWithEachTargetNTimes
-    : public InitializingTestUseCase {
+class InitializingFixedLevelTestWithEachTargetNTimes : public UseCase {
     const FixedLevelTestWithEachTargetNTimes &test_;
     FixedLevelMethodStub *method;
 
@@ -647,14 +646,10 @@ class InitializingFixedLevelTestWithEachTargetNTimes
         : method{method}, test_{test_} {}
 
     void run(ModelImpl &model) override { model.initialize(test_); }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
 };
 
 class InitializingFixedLevelTestWithEachTargetNTimesAndFiltering
-    : public InitializingTestUseCase {
+    : public UseCase {
     const FixedLevelTestWithEachTargetNTimesAndFiltering &test_;
     FixedLevelMethodStub *method;
 
@@ -665,10 +660,6 @@ class InitializingFixedLevelTestWithEachTargetNTimesAndFiltering
         : method{method}, test_{test_} {}
 
     void run(ModelImpl &model) override { model.initialize(test_); }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
 };
 
 auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
@@ -743,9 +734,9 @@ class ModelTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&useCase.test(), internalModel.test());
     }
 
-    void assertInitializesInternalModel(InitializingTestUseCase &useCase,
+    void assertInitializesInternalModel(UseCase &useCase,
         const av_speech_in_noise::Test &test, const TestMethod &method) {
-        run(useCase);
+        useCase.run(model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&method, internalModel.testMethod());
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&test, internalModel.test());
     }
@@ -954,7 +945,8 @@ MODEL_TEST(
 MODEL_TEST(
     initializingFixedLevelTestWithEachTargetNTimesAndFilteringInitializesInternalModel) {
     assertInitializesInternalModel(
-        initializingFixedLevelTestWithEachTargetNTimesAndFiltering);
+        initializingFixedLevelTestWithEachTargetNTimesAndFiltering,
+        fixedLevelTestWithEachTargetNTimesAndFiltering, fixedLevelMethod);
 }
 
 MODEL_TEST(
