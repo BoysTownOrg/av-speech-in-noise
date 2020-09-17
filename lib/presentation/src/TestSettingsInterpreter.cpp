@@ -76,8 +76,8 @@ static void applyToEachEntry(
     const std::function<void(const std::string &, const std::string &)> &f,
     const std::string &contents) {
     std::stringstream stream{contents};
-    std::for_each(std::istream_iterator<Line>(stream),
-        std::istream_iterator<Line>(),
+    std::for_each(std::istream_iterator<Line>{stream},
+        std::istream_iterator<Line>{},
         [=](const Line &line) { f(entryName(line), entry(line)); });
 }
 
@@ -166,10 +166,12 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
 
 static auto name(const std::string &contents) -> std::string {
     std::stringstream stream{contents};
-    for (std::string line; std::getline(stream, line);)
-        if (entryName(line) == name(TestSetting::method))
-            return entry(line);
-    return name(Method::unknown);
+    auto found{std::find_if(std::istream_iterator<Line>{stream},
+        std::istream_iterator<Line>{}, [](const Line &line) {
+            return entryName(line) == name(TestSetting::method);
+        })};
+    return found != std::istream_iterator<Line>{} ? entry(*found)
+                                                  : name(Method::unknown);
 }
 
 static auto method(const std::string &s) -> Method {
@@ -242,8 +244,8 @@ static void initialize(FixedLevelTestWithEachTargetNTimesAndFiltering &test,
 
 static auto contains(const std::string &contents, TestSetting s) -> bool {
     std::stringstream stream{contents};
-    return std::any_of(std::istream_iterator<Line>(stream),
-        std::istream_iterator<Line>(),
+    return std::any_of(std::istream_iterator<Line>{stream},
+        std::istream_iterator<Line>{},
         [=](const Line &line) { return entryName(line) == name(s); });
 }
 
