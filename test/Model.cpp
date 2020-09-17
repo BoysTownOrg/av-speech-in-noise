@@ -290,10 +290,14 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     void submit(const FreeResponse &) override {}
 };
 
-class InitializingTestUseCase {
+class UseCase {
   public:
-    virtual ~InitializingTestUseCase() = default;
+    virtual ~UseCase() = default;
     virtual void run(ModelImpl &) = 0;
+};
+
+class InitializingTestUseCase : public virtual UseCase {
+  public:
     virtual auto test() -> const Test & = 0;
     virtual auto testMethod() -> const TestMethod * = 0;
 };
@@ -764,20 +768,20 @@ class ModelTests : public ::testing::Test {
     }
 
     void assertInitializesFixedLevelTestWithTargetPlaylist(
-        InitializingTestUseCase &useCase, TargetPlaylist &targetList) {
-        run(useCase);
+        UseCase &useCase, TargetPlaylist &targetList) {
+        useCase.run(model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             &targetList, fixedLevelMethod.targetList());
     }
 
     void assertInitializesFixedLevelMethod(
-        InitializingTestUseCase &useCase, const FixedLevelTest &expected) {
+        UseCase &useCase, const FixedLevelTest &expected) {
         useCase.run(model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&expected, fixedLevelMethod.test());
     }
 
-    void assertSetsEachTargetToRepeat(InitializingTestUseCase &useCase,
-        FixedLevelTestWithEachTargetNTimes &test) {
+    void assertSetsEachTargetToRepeat(
+        UseCase &useCase, FixedLevelTestWithEachTargetNTimes &test) {
         test.timesEachTargetIsPlayed = 2;
         useCase.run(model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
