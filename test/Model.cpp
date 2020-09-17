@@ -634,20 +634,22 @@ class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
 class InitializingFixedLevelTestWithEachTargetNTimes
     : public InitializingTestUseCase {
     FixedLevelTestWithEachTargetNTimes test_;
+    const FixedLevelTestWithEachTargetNTimes &test__;
     FixedLevelMethodStub *method;
 
   public:
     explicit InitializingFixedLevelTestWithEachTargetNTimes(
-        FixedLevelMethodStub *method)
-        : method{method} {}
+        FixedLevelMethodStub *method,
+        const FixedLevelTestWithEachTargetNTimes &test__)
+        : method{method}, test__{test__} {}
 
-    void run(ModelImpl &model) override { model.initialize(test_); }
+    void run(ModelImpl &model) override { model.initialize(test__); }
 
     void run(ModelImpl &model, const FixedLevelTestWithEachTargetNTimes &test) {
         model.initialize(test);
     }
 
-    auto test() -> const Test & override { return test_; }
+    auto test() -> const Test & override { return test__; }
 
     auto testMethod() -> const TestMethod * override { return method; }
 };
@@ -655,21 +657,23 @@ class InitializingFixedLevelTestWithEachTargetNTimes
 class InitializingFixedLevelTestWithEachTargetNTimesAndFiltering
     : public InitializingTestUseCase {
     FixedLevelTestWithEachTargetNTimesAndFiltering test_;
+    const FixedLevelTestWithEachTargetNTimesAndFiltering &test__;
     FixedLevelMethodStub *method;
 
   public:
     explicit InitializingFixedLevelTestWithEachTargetNTimesAndFiltering(
-        FixedLevelMethodStub *method)
-        : method{method} {}
+        FixedLevelMethodStub *method,
+        const FixedLevelTestWithEachTargetNTimesAndFiltering &test__)
+        : method{method}, test__{test__} {}
 
-    void run(ModelImpl &model) override { model.initialize(test_); }
+    void run(ModelImpl &model) override { model.initialize(test__); }
 
     void run(ModelImpl &model,
         const FixedLevelTestWithEachTargetNTimesAndFiltering &test) {
         model.initialize(test);
     }
 
-    auto test() -> const Test & override { return test_; }
+    auto test() -> const Test & override { return test__; }
 
     auto testMethod() -> const TestMethod * override { return method; }
 };
@@ -697,6 +701,8 @@ class ModelTests : public ::testing::Test {
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes;
+    FixedLevelTestWithEachTargetNTimesAndFiltering
+        fixedLevelTestWithEachTargetNTimesAndFiltering;
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest;
     InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{
         &adaptiveMethod};
@@ -727,10 +733,11 @@ class ModelTests : public ::testing::Test {
         initializingFixedLevelTestWithAllTargetsAndEyeTracking{
             &fixedLevelMethod};
     InitializingFixedLevelTestWithEachTargetNTimes
-        initializingFixedLevelTestWithEachTargetNTimes{&fixedLevelMethod};
+        initializingFixedLevelTestWithEachTargetNTimes{
+            &fixedLevelMethod, fixedLevelTestWithEachTargetNTimes};
     InitializingFixedLevelTestWithEachTargetNTimesAndFiltering
         initializingFixedLevelTestWithEachTargetNTimesAndFiltering{
-            &fixedLevelMethod};
+            &fixedLevelMethod, fixedLevelTestWithEachTargetNTimesAndFiltering};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
@@ -772,6 +779,12 @@ class ModelTests : public ::testing::Test {
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             &targetList, fixedLevelMethod.targetList());
+    }
+
+    void assertInitializesFixedLevelMethod(
+        InitializingTestUseCase &useCase, const FixedLevelTest &expected) {
+        useCase.run(model);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&expected, fixedLevelMethod.test());
     }
 };
 
@@ -815,21 +828,16 @@ MODEL_TEST(
 
 MODEL_TEST(
     initializingFixedLevelTestWithEachTargetNTimesInitializesFixedLevelMethod) {
-    initializingFixedLevelTestWithEachTargetNTimes.run(
-        model, fixedLevelTestWithEachTargetNTimes);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &static_cast<const FixedLevelTest &>(
-            std::as_const(fixedLevelTestWithEachTargetNTimes)),
-        fixedLevelMethod.test());
+    assertInitializesFixedLevelMethod(
+        initializingFixedLevelTestWithEachTargetNTimes,
+        fixedLevelTestWithEachTargetNTimes);
 }
 
 MODEL_TEST(
     initializingFixedLevelTestWithEachTargetNTimesAndFilteringInitializesFixedLevelMethod) {
-    FixedLevelTestWithEachTargetNTimesAndFiltering test;
-    initializingFixedLevelTestWithEachTargetNTimesAndFiltering.run(model, test);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &static_cast<const FixedLevelTest &>(std::as_const(test)),
-        fixedLevelMethod.test());
+    assertInitializesFixedLevelMethod(
+        initializingFixedLevelTestWithEachTargetNTimesAndFiltering,
+        fixedLevelTestWithEachTargetNTimesAndFiltering);
 }
 
 MODEL_TEST(
