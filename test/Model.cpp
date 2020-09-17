@@ -885,6 +885,13 @@ MODEL_TEST(
         initializingFixedLevelTestWithEachTargetNTimes, eachTargetNTimes);
 }
 
+MODEL_TEST(
+    initializeFixedLevelTestWithEachTargetNTimesAndFilteringInitializesWithEachTargetNTimes) {
+    assertInitializesFixedLevelTestWithTargetPlaylist(
+        initializingFixedLevelTestWithEachTargetNTimesAndFiltering,
+        eachTargetNTimes);
+}
+
 MODEL_TEST(initializeFixedLevelTestWithEachTargetNTimesSetsTargetRepeats) {
     fixedLevelTestWithEachTargetNTimes.timesEachTargetIsPlayed = 2;
     initializingFixedLevelTestWithEachTargetNTimes.run(
