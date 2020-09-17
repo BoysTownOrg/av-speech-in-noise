@@ -164,9 +164,9 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
         assign(static_cast<Test &>(test), entryName, entry);
 }
 
-static auto name(const std::string &contents) -> std::string {
+static auto methodName(const std::string &contents) -> std::string {
     std::stringstream stream{contents};
-    auto found{std::find_if(std::istream_iterator<Line>{stream},
+    const auto found{std::find_if(std::istream_iterator<Line>{stream},
         std::istream_iterator<Line>{}, [](const Line &line) {
             return entryName(line) == name(TestSetting::method);
         })};
@@ -193,7 +193,7 @@ static auto method(const std::string &s) -> Method {
             Method::adaptiveCoordinateResponseMeasure,
             Method::fixedLevelConsonants,
             Method::adaptiveCoordinateResponseMeasureWithEyeTracking})
-        if (name(s) == name(m))
+        if (methodName(s) == name(m))
             return m;
     return Method::unknown;
 }
