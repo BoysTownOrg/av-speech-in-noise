@@ -633,19 +633,18 @@ class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
 
 class InitializingFixedLevelTestWithEachTargetNTimes
     : public InitializingTestUseCase {
-    FixedLevelTestWithEachTargetNTimes test_;
-    const FixedLevelTestWithEachTargetNTimes &test__;
+    const FixedLevelTestWithEachTargetNTimes &test_;
     FixedLevelMethodStub *method;
 
   public:
     explicit InitializingFixedLevelTestWithEachTargetNTimes(
         FixedLevelMethodStub *method,
-        const FixedLevelTestWithEachTargetNTimes &test__)
-        : method{method}, test__{test__} {}
+        const FixedLevelTestWithEachTargetNTimes &test_)
+        : method{method}, test_{test_} {}
 
-    void run(ModelImpl &model) override { model.initialize(test__); }
+    void run(ModelImpl &model) override { model.initialize(test_); }
 
-    auto test() -> const Test & override { return test__; }
+    auto test() -> const Test & override { return test_; }
 
     auto testMethod() -> const TestMethod * override { return method; }
 };
