@@ -3,10 +3,19 @@
 #include <gsl/gsl>
 #include <sstream>
 #include <functional>
+#include <algorithm>
+#include <iterator>
 
 namespace av_speech_in_noise {
 static auto entryDelimiter(const std::string &s) -> gsl::index {
     return s.find(':');
+}
+
+// https://stackoverflow.com/a/1731005
+struct Line : std::string {};
+
+static auto operator>>(std::istream &stream, Line &line) -> std::istream & {
+    return std::getline(stream, line);
 }
 
 static auto vectorOfInts(const std::string &s) -> std::vector<int> {
@@ -67,8 +76,9 @@ static void applyToEachEntry(
     const std::function<void(const std::string &, const std::string &)> &f,
     const std::string &contents) {
     std::stringstream stream{contents};
-    for (std::string line; std::getline(stream, line);)
-        f(entryName(line), entry(line));
+    std::for_each(std::istream_iterator<Line>(stream),
+        std::istream_iterator<Line>(),
+        [=](const Line &line) { f(entryName(line), entry(line)); });
 }
 
 static auto integer(const std::string &s) -> int {
@@ -228,13 +238,6 @@ static void initialize(FixedLevelTestWithEachTargetNTimesAndFiltering &test,
     SNR startingSnr) {
     initialize(test, contents, method, identity, startingSnr,
         [&](auto entryName, auto entry) { assign(test, entryName, entry); });
-}
-
-// https://stackoverflow.com/a/1731005
-struct Line : std::string {};
-
-static auto operator>>(std::istream &stream, Line &line) -> std::istream & {
-    return std::getline(stream, line);
 }
 
 static auto contains(const std::string &contents, TestSetting s) -> bool {
