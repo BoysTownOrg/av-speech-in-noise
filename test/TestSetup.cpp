@@ -314,6 +314,11 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
+    void initialize(
+        const FixedLevelTestWithEachTargetNTimesAndFiltering &) override {
+        throw RequestFailure{errorMessage};
+    }
+
     void initializeWithTargetReplacement(
         const FixedLevelFixedTrialsTest &) override {
         throw RequestFailure{errorMessage};

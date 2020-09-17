@@ -149,7 +149,7 @@ class Model {
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
     virtual void initialize(const FixedLevelTestWithEachTargetNTimes &) = 0;
     virtual void initialize(
-        const FixedLevelTestWithEachTargetNTimesAndFiltering &) {}
+        const FixedLevelTestWithEachTargetNTimesAndFiltering &) = 0;
     virtual void initializeWithAllTargetsAndEyeTracking(
         const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
