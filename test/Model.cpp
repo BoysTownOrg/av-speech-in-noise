@@ -945,6 +945,12 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
+    initializingFixedLevelTestWithEachTargetNTimesAndFilteringInitializesInternalModel) {
+    assertInitializesInternalModel(
+        initializingFixedLevelTestWithEachTargetNTimesAndFiltering);
+}
+
+MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementInitializesInternalModel) {
     assertInitializesInternalModel(
         initializingFixedLevelTestWithTargetReplacement);
