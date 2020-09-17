@@ -93,6 +93,7 @@ void ModelImpl::initialize(const FixedLevelTestWithEachTargetNTimes &test) {
 
 void ModelImpl::initialize(
     const FixedLevelTestWithEachTargetNTimesAndFiltering &test) {
+    eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
     av_speech_in_noise::initialize(fixedLevelMethod, test, eachTargetNTimes);
 }
 

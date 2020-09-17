@@ -899,6 +899,13 @@ MODEL_TEST(initializeFixedLevelTestWithEachTargetNTimesSetsTargetRepeats) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(gsl::index{1}, eachTargetNTimes.repeats());
 }
 
+MODEL_TEST(
+    initializeFixedLevelTestWithEachTargetNTimesAndFilteringSetsTargetRepeats) {
+    fixedLevelTestWithEachTargetNTimesAndFiltering.timesEachTargetIsPlayed = 2;
+    initializingFixedLevelTestWithEachTargetNTimesAndFiltering.run(model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(gsl::index{1}, eachTargetNTimes.repeats());
+}
+
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(
         initializingDefaultAdaptiveTest, targetsWithReplacementReader);
