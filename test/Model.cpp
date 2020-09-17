@@ -652,6 +652,28 @@ class InitializingFixedLevelTestWithEachTargetNTimes
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
+class InitializingFixedLevelTestWithEachTargetNTimesAndFiltering
+    : public InitializingTestUseCase {
+    FixedLevelTestWithEachTargetNTimesAndFiltering test_;
+    FixedLevelMethodStub *method;
+
+  public:
+    explicit InitializingFixedLevelTestWithEachTargetNTimesAndFiltering(
+        FixedLevelMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override { model.initialize(test_); }
+
+    void run(ModelImpl &model,
+        const FixedLevelTestWithEachTargetNTimesAndFiltering &test) {
+        model.initialize(test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
 auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
     return m.initializedWithEyeTracking();
 }
@@ -706,6 +728,9 @@ class ModelTests : public ::testing::Test {
             &fixedLevelMethod};
     InitializingFixedLevelTestWithEachTargetNTimes
         initializingFixedLevelTestWithEachTargetNTimes{&fixedLevelMethod};
+    InitializingFixedLevelTestWithEachTargetNTimesAndFiltering
+        initializingFixedLevelTestWithEachTargetNTimesAndFiltering{
+            &fixedLevelMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
@@ -795,6 +820,15 @@ MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &static_cast<const FixedLevelTest &>(
             std::as_const(fixedLevelTestWithEachTargetNTimes)),
+        fixedLevelMethod.test());
+}
+
+MODEL_TEST(
+    initializingFixedLevelTestWithEachTargetNTimesAndFilteringInitializesFixedLevelMethod) {
+    FixedLevelTestWithEachTargetNTimesAndFiltering test;
+    initializingFixedLevelTestWithEachTargetNTimesAndFiltering.run(model, test);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &static_cast<const FixedLevelTest &>(std::as_const(test)),
         fixedLevelMethod.test());
 }
 
