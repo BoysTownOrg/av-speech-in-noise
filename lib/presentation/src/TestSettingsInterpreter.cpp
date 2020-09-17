@@ -230,12 +230,18 @@ static void initialize(FixedLevelTestWithEachTargetNTimesAndFiltering &test,
         [&](auto entryName, auto entry) { assign(test, entryName, entry); });
 }
 
+// https://stackoverflow.com/a/1731005
+struct Line : std::string {};
+
+static auto operator>>(std::istream &stream, Line &line) -> std::istream & {
+    return std::getline(stream, line);
+}
+
 static auto contains(const std::string &contents, TestSetting s) -> bool {
     std::stringstream stream{contents};
-    for (std::string line; std::getline(stream, line);)
-        if (entryName(line) == name(s))
-            return true;
-    return false;
+    return std::any_of(std::istream_iterator<Line>(stream),
+        std::istream_iterator<Line>(),
+        [=](const Line &line) { return entryName(line) == name(s); });
 }
 
 void TestSettingsInterpreterImpl::initialize(Model &model,

@@ -178,7 +178,8 @@ class ModelStub : public Model {
         fixedLevelTestWithEachTargetNTimesInitialized_ = true;
     }
 
-    void initialize(const FixedLevelTestWithEachTargetNTimesAndFiltering &p) {
+    void initialize(
+        const FixedLevelTestWithEachTargetNTimesAndFiltering &p) override {
         fixedLevelTestWithEachTargetNTimesAndFiltering_ = p;
     }
 
