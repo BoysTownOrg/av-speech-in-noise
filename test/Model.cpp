@@ -664,11 +664,14 @@ auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
 
 class TargetFilterSwitchStub : public TargetFilterSwitch {
   public:
-    void turnOn(const LocalUrl &url) { firFilterFileLocalUrl_ = url; }
+    void turnOn(const LocalUrl &url) override { firFilterFileLocalUrl_ = url; }
+    void turnOff() { turnedOff_ = true; }
+    auto turnedOff() -> bool { return turnedOff_; }
     auto firFilterFileLocalUrl() -> LocalUrl { return firFilterFileLocalUrl_; }
 
   private:
     LocalUrl firFilterFileLocalUrl_;
+    bool turnedOff_{};
 };
 
 class ModelTests : public ::testing::Test {
@@ -962,6 +965,12 @@ MODEL_TEST(
     initializingFixedLevelTestWithEachTargetNTimesAndFiltering.run(model);
     AV_SPEECH_IN_NOISE_EXPECT_STRING_EQUAL(
         "a", targetFilterSwitch.firFilterFileLocalUrl().path);
+}
+
+MODEL_TEST(
+    initializeFixedLevelTestWithTargetReplacementTurnsOffTargetFiltering) {
+    initializingFixedLevelTestWithTargetReplacement.run(model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetFilterSwitch.turnedOff());
 }
 
 MODEL_TEST(

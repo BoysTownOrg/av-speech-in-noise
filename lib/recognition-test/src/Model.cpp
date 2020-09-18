@@ -63,6 +63,7 @@ static void initializeWithEyeTracking(
 
 void ModelImpl::initializeWithTargetReplacement(
     const FixedLevelFixedTrialsTest &test) {
+    targetFilterSwitch->turnOff();
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, targetsWithReplacement);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);

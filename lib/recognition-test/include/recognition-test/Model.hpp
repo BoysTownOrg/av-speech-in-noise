@@ -177,6 +177,7 @@ class TargetFilterSwitch {
   public:
     virtual ~TargetFilterSwitch() = default;
     virtual void turnOn(const LocalUrl &url) = 0;
+    virtual void turnOff() = 0;
 };
 
 class ModelImpl : public Model {
