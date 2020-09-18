@@ -106,14 +106,16 @@ class TargetPlayerListenerStub : public TargetPlayer::Observer {
 
 class SignalProcessorStub : public SignalProcessor {
   public:
-    void initialize(const audio_type &) override {}
+    void initialize(const audio_type &a) override { initializingAudio_ = a; }
     void process(const std::vector<gsl::span<float>> &s) override {
         signal_ = s;
     }
     auto signal() -> std::vector<gsl::span<float>> { return signal_; }
+    auto initializingAudio() -> audio_type { return initializingAudio_; }
 
   private:
     std::vector<gsl::span<float>> signal_;
+    audio_type initializingAudio_;
 };
 
 class TargetPlayerTests : public ::testing::Test {
@@ -294,6 +296,13 @@ TEST_F(TargetPlayerTests, digitalLevelComputesFirstChannel) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         20 * std::log10(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.F)),
         player.digitalLevel().dBov);
+}
+
+TEST_F(TargetPlayerTests, initializeProcessorPassesAudioToProcessor) {
+    audioReader.set({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+    player.initializeProcessor({});
+    assertEqual(
+        {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}, signalProcessor.initializingAudio());
 }
 
 TEST_F(TargetPlayerTests, digitalLevelPassesLoadedFileToVideoPlayer) {
