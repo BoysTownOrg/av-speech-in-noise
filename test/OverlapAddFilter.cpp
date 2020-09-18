@@ -11,9 +11,6 @@ template <typename T> using signal_type = gsl::span<T>;
 template <typename T> using const_signal_type = signal_type<const T>;
 
 template <typename T>
-using signal_iterator_type = typename signal_type<T>::iterator;
-
-template <typename T>
 using const_signal_iterator_type = typename const_signal_type<T>::iterator;
 
 template <typename T>
@@ -24,17 +21,10 @@ template <typename T> using complex_type = std::complex<T>;
 template <typename T> using complex_signal_type = signal_type<complex_type<T>>;
 
 template <typename T>
-using const_complex_signal_type = const_signal_type<complex_type<T>>;
-
-template <typename T> using buffer_type = std::vector<T>;
+using buffer_iterator_type = typename std::vector<T>::iterator;
 
 template <typename T>
-using buffer_iterator_type = typename buffer_type<T>::iterator;
-
-template <typename T>
-using buffer_reverse_iterator_type = typename buffer_type<T>::reverse_iterator;
-
-template <typename T> using complex_buffer_type = buffer_type<complex_type<T>>;
+using buffer_reverse_iterator_type = typename std::vector<T>::reverse_iterator;
 
 template <typename T> auto size(const signal_type<T> &x) -> index_type {
     return x.size();
@@ -42,16 +32,6 @@ template <typename T> auto size(const signal_type<T> &x) -> index_type {
 
 template <typename T> auto size(const const_signal_type<T> &x) -> index_type {
     return x.size();
-}
-
-template <typename T>
-auto element(const signal_type<T> &x, index_type i) -> T & {
-    return at(x, i);
-}
-
-template <typename T>
-auto element(const const_signal_type<T> &x, index_type i) -> const T & {
-    return at(x, i);
 }
 
 template <typename T> void zero(signal_type<T> x) {
@@ -77,7 +57,7 @@ void zero(
 
 template <typename T> void shiftLeft(signal_type<T> x, index_type n) {
     for (index_type i{0}; i < size(x) - n; ++i)
-        element(x, i) = element(x, i + n);
+        at(x, i) = at(x, i + n);
     zero<T>(rbegin(x), rbegin(x) + n);
 }
 
@@ -87,14 +67,9 @@ void addFirstToSecond(const_signal_type<T> x, signal_type<T> y) {
 }
 
 template <typename T>
-void multiplyFirstToSecond(const_signal_type<T> x, signal_type<T> y) {
-    std::transform(begin(y), end(y), begin(x), begin(y), std::multiplies<>{});
-}
-
-template <typename T>
 void copyFirstToSecond(const_signal_iterator_type<T> sourceBegin,
     const_signal_iterator_type<T> sourceEnd,
-    signal_iterator_type<T> destination) {
+    typename signal_type<T>::iterator destination) {
     std::copy(sourceBegin, sourceEnd, destination);
 }
 
@@ -111,8 +86,8 @@ void copyFirstToSecond(
 }
 
 template <typename T>
-void transform(const complex_buffer_type<T> &first,
-    const complex_buffer_type<T> &second, buffer_type<T> &out,
+void transform(const std::vector<complex_type<T>> &first,
+    const std::vector<complex_type<T>> &second, std::vector<T> &out,
     std::function<T(const complex_type<T> &, const complex_type<T> &)> f) {
     transform(begin(first), end(first), begin(second), begin(out), f);
 }
@@ -136,7 +111,7 @@ template <typename T> class OverlapAdd {
     void next(signal_type<T> y);
 
   private:
-    buffer_type<T> buffer;
+    std::vector<T> buffer;
 };
 
 template <typename T> OverlapAdd<T>::OverlapAdd(index_type N) : buffer(N) {}
@@ -166,7 +141,7 @@ template <typename T> class FourierTransformer {
 
 template <typename T> class OverlapAddFilter : public Filter<T> {
   public:
-    OverlapAddFilter(const buffer_type<T> &b,
+    OverlapAddFilter(const std::vector<T> &b,
         typename FourierTransformer<T>::Factory &factory);
     void filter(signal_type<T> x) override;
 
@@ -174,9 +149,9 @@ template <typename T> class OverlapAddFilter : public Filter<T> {
     void filter_(signal_type<T> x);
 
     OverlapAdd<T> overlap;
-    complex_buffer_type<T> complexBuffer;
-    complex_buffer_type<T> H;
-    buffer_type<T> realBuffer;
+    std::vector<complex_type<T>> complexBuffer;
+    std::vector<complex_type<T>> H;
+    std::vector<T> realBuffer;
     std::shared_ptr<FourierTransformer<T>> transformer;
     index_type L;
 };
@@ -188,16 +163,16 @@ constexpr auto nearestGreaterPowerTwo(index_type n) -> index_type {
     return 1 << power;
 }
 
-template <typename T> void resize(buffer_type<T> &x, index_type n) {
+template <typename T> void resize(std::vector<T> &x, index_type n) {
     x.resize(n);
 }
 
-template <typename T> auto N(const buffer_type<T> &b) -> index_type {
+template <typename T> auto N(const std::vector<T> &b) -> index_type {
     return nearestGreaterPowerTwo(size<T>(b));
 }
 
 template <typename T>
-auto dftBufferLength(const buffer_type<T> &b) -> index_type {
+auto dftBufferLength(const std::vector<T> &b) -> index_type {
     return N(b) / 2 + 1;
 }
 
@@ -209,7 +184,7 @@ void dft(const std::shared_ptr<FourierTransformer<T>> &transformer,
 
 template <typename T>
 OverlapAddFilter<T>::OverlapAddFilter(
-    const buffer_type<T> &b, typename FourierTransformer<T>::Factory &factory)
+    const std::vector<T> &b, typename FourierTransformer<T>::Factory &factory)
     : overlap{N(b)}, complexBuffer(dftBufferLength(b)), H(dftBufferLength(b)),
       realBuffer(N(b)), transformer{factory.make(N(b))}, L{N(b) - size<T>(b) +
                                                              1} {
@@ -228,7 +203,8 @@ template <typename T> void OverlapAddFilter<T>::filter_(signal_type<T> x) {
     zero<T>(begin(realBuffer) + size(x), end(realBuffer));
     copyFirstToSecond<T>(x, realBuffer);
     dft<T>(transformer, realBuffer, complexBuffer);
-    multiplyFirstToSecond<complex_type<T>>(H, complexBuffer);
+    std::transform(begin(complexBuffer), end(complexBuffer), begin(H),
+        begin(complexBuffer), std::multiplies<>{});
     transformer->idft(complexBuffer, realBuffer);
     overlap.add(realBuffer);
     overlap.next(x);
