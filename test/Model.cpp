@@ -1024,6 +1024,20 @@ MODEL_TEST(
         initializingFixedLevelTestWithTargetReplacement);
 }
 
+MODEL_TEST(initializingAdaptiveTestWithDelayedMaskerTurnsOffTargetFiltering) {
+    assertTurnsTargetFilteringOff(initializingAdaptiveTestWithDelayedMasker);
+}
+
+MODEL_TEST(initializingAdaptiveTestWithSingleSpeakerTurnsOffTargetFiltering) {
+    assertTurnsTargetFilteringOff(initializingAdaptiveTestWithSingleSpeaker);
+}
+
+MODEL_TEST(
+    initializingFixedLevelTestWithAllTargetsAndEyeTrackingTurnsOffTargetFiltering) {
+    assertTurnsTargetFilteringOff(
+        initializingFixedLevelTestWithAllTargetsAndEyeTracking);
+}
+
 MODEL_TEST(
     initializingFixedLevelTestWithTargetReplacementAndEyeTrackingTurnsOffTargetFiltering) {
     assertTurnsTargetFilteringOff(

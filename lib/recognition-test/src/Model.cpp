@@ -107,11 +107,13 @@ void ModelImpl::initialize(
 
 void ModelImpl::initializeWithAllTargetsAndEyeTracking(
     const FixedLevelTest &test) {
+    targetFilterSwitch->turnOff();
     av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
 void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &test) {
+    targetFilterSwitch->turnOff();
     av_speech_in_noise::initialize(
         adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initializeWithSingleSpeaker(
@@ -119,6 +121,7 @@ void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &test) {
 }
 
 void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
+    targetFilterSwitch->turnOff();
     av_speech_in_noise::initialize(
         adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initializeWithDelayedMasker(
