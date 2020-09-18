@@ -27,6 +27,8 @@ void TargetPlayerImpl::initializeProcessor(const LocalUrl &url) {
     }
 }
 
+void TargetPlayerImpl::clearProcessor() { signalProcessor->clear(); }
+
 void TargetPlayerImpl::loadFile(const LocalUrl &file) {
     player->loadFile(filePath_ = file.path);
 }

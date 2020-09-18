@@ -63,6 +63,7 @@ class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
     void useFirstChannelOnly() override;
     void useAllChannels() override;
     void initializeProcessor(const LocalUrl &);
+    void clearProcessor();
 
   private:
     auto readAudio_() -> audio_type;

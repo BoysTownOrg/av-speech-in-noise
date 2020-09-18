@@ -113,11 +113,13 @@ class SignalProcessorStub : public SignalProcessor {
     }
     auto signal() -> std::vector<gsl::span<float>> { return signal_; }
     auto initializingAudio() -> audio_type { return initializingAudio_; }
-    void clear() override {}
+    void clear() override { cleared_ = true; }
+    auto cleared() -> bool { return cleared_; }
 
   private:
     std::vector<gsl::span<float>> signal_;
     audio_type initializingAudio_;
+    bool cleared_{};
 };
 
 class TargetPlayerTests : public ::testing::Test {
@@ -323,6 +325,11 @@ TEST_F(TargetPlayerTests, initializeProcessorPassesAudioToProcessor) {
     initializeProcessor(player);
     assertEqual(
         {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}, signalProcessor.initializingAudio());
+}
+
+TEST_F(TargetPlayerTests, clearProcessorClearsProcessor) {
+    player.clearProcessor();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(signalProcessor.cleared());
 }
 
 #define AV_SPEECH_IN_NOISE_EXPECT_AUDIO_READER_FILE_PATH(                      \
