@@ -110,7 +110,7 @@ OverlapAddFilter<T>::OverlapAddFilter(
     dft<T>(transformer, realBuffer, H);
 }
 
-template <typename T> void OverlapAddFilter<T>::filter(signal_type<T> x) {
+template <typename T> void OverlapAddFilter<T>::process(signal_type<T> x) {
     for (index_type j{0}; j < size(x) / L; ++j)
         filter_(x.subspan(j * L, L));
     if (const auto left{size(x) % L})

@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_STIMULUS_PLAYERS_INCLUDE_STIMULUS_PLAYERS_OVERLAPADDFILTER_HPP_
 #define AV_SPEECH_IN_NOISE_STIMULUS_PLAYERS_INCLUDE_STIMULUS_PLAYERS_OVERLAPADDFILTER_HPP_
 
+#include "MonoSignalProcessor.hpp"
 #include <gsl/gsl>
 #include <memory>
 #include <complex>
@@ -29,18 +30,6 @@ using buffer_iterator_type = typename std::vector<T>::iterator;
 template <typename T>
 using buffer_reverse_iterator_type = typename std::vector<T>::reverse_iterator;
 
-template <typename T> class Filter {
-  public:
-    virtual ~Filter() = default;
-    virtual void filter(signal_type<T>) = 0;
-
-    class Factory {
-      public:
-        virtual ~Factory() = default;
-        virtual auto make() -> std::shared_ptr<Filter> = 0;
-    };
-};
-
 template <typename T> class OverlapAdd {
   public:
     explicit OverlapAdd(index_type N);
@@ -65,11 +54,11 @@ template <typename T> class FourierTransformer {
     };
 };
 
-template <typename T> class OverlapAddFilter : public Filter<T> {
+template <typename T> class OverlapAddFilter : public MonoSignalProcessor<T> {
   public:
     OverlapAddFilter(const std::vector<T> &b,
         typename FourierTransformer<T>::Factory &factory);
-    void filter(signal_type<T> x) override;
+    void process(signal_type<T> x) override;
 
   private:
     void filter_(signal_type<T> x);
