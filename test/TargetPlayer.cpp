@@ -315,15 +315,19 @@ TEST_F(TargetPlayerTests, initializeProcessorPassesAudioToProcessor) {
         {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}, signalProcessor.initializingAudio());
 }
 
+#define AV_SPEECH_IN_NOISE_EXPECT_AUDIO_READER_FILE_PATH(                      \
+    audioReader, expected)                                                     \
+    AV_SPEECH_IN_NOISE_EXPECT_STRING_EQUAL(expected, audioReader.filePath())
+
 TEST_F(TargetPlayerTests, digitalLevelPassesLoadedFileToVideoPlayer) {
     player.loadFile({"a"});
     player.digitalLevel();
-    AV_SPEECH_IN_NOISE_EXPECT_STRING_EQUAL("a", audioReader.filePath());
+    AV_SPEECH_IN_NOISE_EXPECT_AUDIO_READER_FILE_PATH(audioReader, "a");
 }
 
 TEST_F(TargetPlayerTests, initializeProcessorPassFileToAudioReader) {
     player.initializeProcessor({"a"});
-    AV_SPEECH_IN_NOISE_EXPECT_STRING_EQUAL("a", audioReader.filePath());
+    AV_SPEECH_IN_NOISE_EXPECT_AUDIO_READER_FILE_PATH(audioReader, "a");
 }
 
 TEST_F(TargetPlayerTests, subscribesToTargetPlaybackCompletionNotification) {
