@@ -76,6 +76,19 @@ set_target_properties(
              "${AV_SPEECH_IN_NOISE_MACOS_OTHER_CODE_SIGN_FLAGS}"
              XCODE_ATTRIBUTE_CODE_SIGN_INJECT_BASE_ENTITLEMENTS NO)
 
+option(AV_SPEECH_IN_NOISE_ENABLE_TARGET_FILTERING
+       "Enables target filtering via FFTW" OFF)
+if(${AV_SPEECH_IN_NOISE_ENABLE_TARGET_FILTERING})
+  set(ENABLE_FLOAT
+      ON
+      CACHE BOOL "" FORCE)
+  FetchContent_Declare(
+    fftw
+    URL http://fftw.org/fftw-3.3.8.tar.gz
+    URL_MD5 8aac833c943d8e90d51b697b27d4384d)
+  FetchContent_MakeAvailable(fftw)
+endif()
+
 add_executable(
   av-speech-in-noise-facemask-study MACOSX_BUNDLE
   AvFoundationPlayers.mm CocoaView.mm main-facemask-study.mm main.mm
