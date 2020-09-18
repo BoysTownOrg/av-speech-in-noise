@@ -144,6 +144,7 @@ void ModelImpl::initializeWithEyeTracking(const AdaptiveTest &test) {
 }
 
 void ModelImpl::initializeWithCyclicTargets(const AdaptiveTest &test) {
+    targetFilterSwitch->turnOff();
     av_speech_in_noise::initialize(adaptiveMethod, test, cyclicTargetsReader);
     av_speech_in_noise::initialize(model, adaptiveMethod, test);
 }

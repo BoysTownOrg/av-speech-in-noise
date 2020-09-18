@@ -794,6 +794,11 @@ class ModelTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             gsl::index{1}, eachTargetNTimes.repeats());
     }
+
+    void assertTurnsTargetFilteringOff(UseCase &useCase) {
+        useCase.run(model);
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetFilterSwitch.turnedOff());
+    }
 };
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
@@ -969,8 +974,12 @@ MODEL_TEST(
 
 MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementTurnsOffTargetFiltering) {
-    initializingFixedLevelTestWithTargetReplacement.run(model);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetFilterSwitch.turnedOff());
+    assertTurnsTargetFilteringOff(
+        initializingFixedLevelTestWithTargetReplacement);
+}
+
+MODEL_TEST(initializingAdaptiveTestWithCyclicTargetsTurnsOffTargetFiltering) {
+    assertTurnsTargetFilteringOff(initializingAdaptiveTestWithCyclicTargets);
 }
 
 MODEL_TEST(
