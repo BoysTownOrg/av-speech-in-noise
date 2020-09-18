@@ -12,6 +12,9 @@
 #define AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected, actual)                      \
     EXPECT_EQ(expected, actual)
 
+#define AV_SPEECH_IN_NOISE_EXPECT_STRING_EQUAL(expected, actual)               \
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{expected}, actual)
+
 #define AV_SPEECH_IN_NOISE_ASSERT_EQUAL(expected, actual)                      \
     ASSERT_EQ(expected, actual)
 

@@ -318,12 +318,12 @@ TEST_F(TargetPlayerTests, initializeProcessorPassesAudioToProcessor) {
 TEST_F(TargetPlayerTests, digitalLevelPassesLoadedFileToVideoPlayer) {
     player.loadFile({"a"});
     player.digitalLevel();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, audioReader.filePath());
+    AV_SPEECH_IN_NOISE_EXPECT_STRING_EQUAL("a", audioReader.filePath());
 }
 
 TEST_F(TargetPlayerTests, initializeProcessorPassFileToAudioReader) {
     player.initializeProcessor({"a"});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, audioReader.filePath());
+    AV_SPEECH_IN_NOISE_EXPECT_STRING_EQUAL("a", audioReader.filePath());
 }
 
 TEST_F(TargetPlayerTests, subscribesToTargetPlaybackCompletionNotification) {
