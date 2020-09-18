@@ -1,9 +1,9 @@
-#include "AudioReaderStub.hpp"
 #include "assert-utility.hpp"
-#include "recognition-test/RecognitionTestModel.hpp"
-#include <cmath>
-#include <gtest/gtest.h>
+#include "AudioReaderStub.hpp"
 #include <stimulus-players/TargetPlayerImpl.hpp>
+#include <gtest/gtest.h>
+#include <cmath>
+#include <functional>
 
 namespace av_speech_in_noise {
 namespace {
@@ -172,6 +172,16 @@ class TargetPlayerTests : public ::testing::Test {
     }
 
     void playAt() { player.playAt(systemTimeWithDelay); }
+
+    void assertThrowsInvalidAudioFileWhenReaderThrows(
+        const std::function<void()> &f) {
+        audioReader.throwOnRead();
+        try {
+            f();
+            FAIL() << "Expected av_speech_in_noise::InvalidAudioFile";
+        } catch (const InvalidAudioFile &) {
+        }
+    }
 };
 
 TEST_F(TargetPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -281,7 +291,7 @@ TEST_F(TargetPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
     setAudioDeviceDescriptions({"zeroth", "first", "second"});
     try {
         player.setAudioDevice("third");
-        FAIL() << "Expected av_coordinate_response_measure::InvalidAudioDevice";
+        FAIL() << "Expected av_speech_in_noise::InvalidAudioDevice";
     } catch (const InvalidAudioDevice &) {
     }
 }
@@ -323,22 +333,14 @@ TEST_F(TargetPlayerTests, subscribesToTargetPlaybackCompletionNotification) {
 
 TEST_F(TargetPlayerTests,
     digitalLevelThrowsInvalidAudioFileWhenAudioReaderThrows) {
-    audioReader.throwOnRead();
-    try {
-        player.digitalLevel();
-        FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
-    } catch (const InvalidAudioFile &) {
-    }
+    assertThrowsInvalidAudioFileWhenReaderThrows(
+        [&]() { player.digitalLevel(); });
 }
 
 TEST_F(TargetPlayerTests,
     initializeProcessorThrowsInvalidAudioFileWhenAudioReaderThrows) {
-    audioReader.throwOnRead();
-    try {
-        player.initializeProcessor({});
-        FAIL() << "Expected av_speech_in_noise::InvalidAudioFile";
-    } catch (const InvalidAudioFile &) {
-    }
+    assertThrowsInvalidAudioFileWhenReaderThrows(
+        [&]() { player.initializeProcessor({}); });
 }
 }
 }
