@@ -19,6 +19,10 @@ void TargetPlayerImpl::playAt(const PlayerTimeWithDelay &t) {
     player->playAt(t);
 }
 
+void TargetPlayerImpl::initializeProcessor(const LocalUrl &url) {
+    reader->read(url.path);
+}
+
 void TargetPlayerImpl::loadFile(const LocalUrl &file) {
     player->loadFile(filePath_ = file.path);
 }
