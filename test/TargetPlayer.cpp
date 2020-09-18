@@ -313,9 +313,13 @@ TEST_F(TargetPlayerTests, digitalLevelComputesFirstChannel) {
         player.digitalLevel().dBov);
 }
 
+void initializeProcessor(TargetPlayerImpl &player, const LocalUrl &url = {}) {
+    player.initializeProcessor(url);
+}
+
 TEST_F(TargetPlayerTests, initializeProcessorPassesAudioToProcessor) {
     set(audioReader, {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-    player.initializeProcessor({});
+    initializeProcessor(player);
     assertEqual(
         {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}, signalProcessor.initializingAudio());
 }
@@ -331,7 +335,7 @@ TEST_F(TargetPlayerTests, digitalLevelPassesLoadedFileToVideoPlayer) {
 }
 
 TEST_F(TargetPlayerTests, initializeProcessorPassFileToAudioReader) {
-    player.initializeProcessor({"a"});
+    initializeProcessor(player, {"a"});
     AV_SPEECH_IN_NOISE_EXPECT_AUDIO_READER_FILE_PATH(audioReader, "a");
 }
 
@@ -349,7 +353,7 @@ TEST_F(TargetPlayerTests,
 TEST_F(TargetPlayerTests,
     initializeProcessorThrowsInvalidAudioFileWhenAudioReaderThrows) {
     assertThrowsInvalidAudioFileWhenReaderThrows(
-        [&]() { player.initializeProcessor({}); });
+        [&]() { initializeProcessor(player); });
 }
 }
 }
