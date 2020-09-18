@@ -983,6 +983,30 @@ MODEL_TEST(initializingAdaptiveTestWithCyclicTargetsTurnsOffTargetFiltering) {
 }
 
 MODEL_TEST(
+    initializingAdaptiveTestWithCyclicTargetsAndEyeTrackingTurnsOffTargetFiltering) {
+    assertTurnsTargetFilteringOff(
+        initializingAdaptiveTestWithCyclicTargetsAndEyeTracking);
+}
+
+MODEL_TEST(initializingAdaptiveTestWithEyeTrackingTurnsOffTargetFiltering) {
+    assertTurnsTargetFilteringOff(initializingAdaptiveTestWithEyeTracking);
+}
+
+MODEL_TEST(initializingDefaultAdaptiveTestTurnsOffTargetFiltering) {
+    assertTurnsTargetFilteringOff(initializingDefaultAdaptiveTest);
+}
+
+MODEL_TEST(initializingFixedLevelTestWithAllTargetsTurnsOffTargetFiltering) {
+    assertTurnsTargetFilteringOff(initializingFixedLevelTestWithAllTargets);
+}
+
+MODEL_TEST(
+    initializingFixedLevelTestWithEachTargetNTimesTurnsOffTargetFiltering) {
+    assertTurnsTargetFilteringOff(
+        initializingFixedLevelTestWithEachTargetNTimes);
+}
+
+MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementInitializesInternalModel) {
     assertInitializesInternalModel(
         initializingFixedLevelTestWithTargetReplacement);

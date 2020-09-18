@@ -70,6 +70,7 @@ void ModelImpl::initializeWithTargetReplacement(
 }
 
 void ModelImpl::initialize(const AdaptiveTest &test) {
+    targetFilterSwitch->turnOff();
     av_speech_in_noise::initialize(
         adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initialize(model, adaptiveMethod, test);
@@ -83,11 +84,13 @@ void ModelImpl::initializeWithSilentIntervalTargets(
 }
 
 void ModelImpl::initializeWithAllTargets(const FixedLevelTest &test) {
+    targetFilterSwitch->turnOff();
     av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
 void ModelImpl::initialize(const FixedLevelTestWithEachTargetNTimes &test) {
+    targetFilterSwitch->turnOff();
     eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
     av_speech_in_noise::initialize(fixedLevelMethod, test, eachTargetNTimes);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
@@ -138,6 +141,7 @@ void ModelImpl::initializeWithSilentIntervalTargetsAndEyeTracking(
 }
 
 void ModelImpl::initializeWithEyeTracking(const AdaptiveTest &test) {
+    targetFilterSwitch->turnOff();
     av_speech_in_noise::initialize(
         adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initializeWithEyeTracking(model, adaptiveMethod, test);
@@ -151,6 +155,7 @@ void ModelImpl::initializeWithCyclicTargets(const AdaptiveTest &test) {
 
 void ModelImpl::initializeWithCyclicTargetsAndEyeTracking(
     const AdaptiveTest &test) {
+    targetFilterSwitch->turnOff();
     av_speech_in_noise::initialize(adaptiveMethod, test, cyclicTargetsReader);
     av_speech_in_noise::initializeWithEyeTracking(model, adaptiveMethod, test);
 }
