@@ -21,7 +21,6 @@ class FilterAdapter : public SignalProcessor {
 
 namespace av_speech_in_noise {
 namespace {
-
 class FilterStub : public Filter<float> {
   public:
     void filter(gsl::span<float>) override {}
@@ -54,7 +53,7 @@ class FilterAdapterTests : public ::testing::Test {
 
 #define FILTER_ADAPTER_TEST(a) TEST_F(FilterAdapterTests, a)
 
-FILTER_ADAPTER_TEST(initializePassesTapsToFactory) {
+FILTER_ADAPTER_TEST(initializePassesFirstChannelToFactory) {
     adapter.initialize({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
     assertEqual({1, 2, 3}, filterFactory.taps());
 }
