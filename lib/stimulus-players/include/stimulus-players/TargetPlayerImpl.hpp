@@ -3,6 +3,7 @@
 
 #include "AudioReader.hpp"
 #include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/TargetFilterSwitchAdapter.hpp>
 #include <gsl/gsl>
 #include <vector>
 #include <string>
@@ -42,7 +43,9 @@ class SignalProcessor {
     virtual void clear() = 0;
 };
 
-class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
+class TargetPlayerImpl : public TargetPlayer,
+                         public VideoPlayer::Observer,
+                         public SignalProcessorSwitch {
   public:
     TargetPlayerImpl(VideoPlayer *, AudioReader *, SignalProcessor * = {});
     void attach(TargetPlayer::Observer *) override;
@@ -62,8 +65,8 @@ class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
     auto audioDevices() -> std::vector<std::string>;
     void useFirstChannelOnly() override;
     void useAllChannels() override;
-    void initializeProcessor(const LocalUrl &);
-    void clearProcessor();
+    void initializeProcessor(const LocalUrl &) override;
+    void clearProcessor() override;
 
   private:
     auto readAudio_() -> audio_type;
