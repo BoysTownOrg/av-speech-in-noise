@@ -6,13 +6,18 @@ class FilterAdapter : public SignalProcessor {
   public:
     explicit FilterAdapter(Filter<float>::Factory &factory)
         : factory{factory} {}
-    void process(const std::vector<gsl::span<float>> &) override {}
+
+    void process(const std::vector<gsl::span<float>> &audio) override {
+        filter->filter(audio.front());
+    }
+
     void initialize(const audio_type &audio) override {
-        factory.make(audio.front());
+        filter = factory.make(audio.front());
     }
 
   private:
     Filter<float>::Factory &factory;
+    std::shared_ptr<Filter<float>> filter;
 };
 }
 
@@ -23,7 +28,12 @@ namespace av_speech_in_noise {
 namespace {
 class FilterStub : public Filter<float> {
   public:
-    void filter(gsl::span<float>) override {}
+    void filter(gsl::span<float> s) override { signal_ = s; }
+
+    auto signal() -> gsl::span<float> { return signal_; }
+
+  private:
+    gsl::span<float> signal_;
 };
 
 class FilterFactoryStub : public Filter<float>::Factory {
@@ -56,6 +66,22 @@ class FilterAdapterTests : public ::testing::Test {
 FILTER_ADAPTER_TEST(initializePassesFirstChannelToFactory) {
     adapter.initialize({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
     assertEqual({1, 2, 3}, filterFactory.taps());
+}
+
+template <typename T>
+void assertEqual_(const std::vector<T> &expected, gsl::span<T> actual) {
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(expected.size(), actual.size());
+    for (typename gsl::span<T>::size_type i{0}; i < expected.size(); ++i)
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.at(i), at(actual, i));
+}
+
+FILTER_ADAPTER_TEST(processPassesFirstChannelToFilter) {
+    adapter.initialize({{}});
+    std::vector<float> first{1, 2, 3};
+    std::vector<float> second{4, 5, 6};
+    std::vector<float> third{7, 8, 9};
+    adapter.process({first, second, third});
+    assertEqual_({1, 2, 3}, filter->signal());
 }
 }
 }
