@@ -8,13 +8,16 @@ class FilterAdapter : public SignalProcessor {
         : factory{factory} {}
 
     void process(const std::vector<gsl::span<float>> &audio) override {
-        filter->filter(audio.front());
+        if (filter)
+            filter->filter(audio.front());
     }
 
     void initialize(const audio_type &audio) override {
         filter =
             factory.make(audio.empty() ? std::vector<float>{} : audio.front());
     }
+
+    void reset() { filter.reset(); }
 
   private:
     Filter<float>::Factory &factory;
@@ -29,11 +32,17 @@ namespace av_speech_in_noise {
 namespace {
 class FilterStub : public Filter<float> {
   public:
-    void filter(gsl::span<float> s) override { signal_ = s; }
+    void filter(gsl::span<float> s) override {
+        signal_ = s;
+        filterCalled_ = true;
+    }
 
     auto signal() -> gsl::span<float> { return signal_; }
 
+    [[nodiscard]] auto filterCalled() const -> bool { return filterCalled_; }
+
   private:
+    bool filterCalled_{};
     gsl::span<float> signal_;
 };
 
@@ -83,6 +92,16 @@ FILTER_ADAPTER_TEST(processPassesFirstChannelToFilter) {
     std::vector<float> third{7, 8, 9};
     adapter.process({first, second, third});
     assertEqual_({1, 2, 3}, filter->signal());
+}
+
+FILTER_ADAPTER_TEST(turnOffDoesNotUseFilter) {
+    adapter.initialize({});
+    adapter.reset();
+    std::vector<float> first{1, 2, 3};
+    std::vector<float> second{4, 5, 6};
+    std::vector<float> third{7, 8, 9};
+    adapter.process({first, second, third});
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(filter->filterCalled());
 }
 }
 }
