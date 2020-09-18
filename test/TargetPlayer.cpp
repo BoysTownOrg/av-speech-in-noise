@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 #include <cmath>
 #include <functional>
+#include <utility>
 
 namespace av_speech_in_noise {
 namespace {
@@ -301,15 +302,19 @@ TEST_F(TargetPlayerTests, audioDevicesReturnsDescriptions) {
     assertEqual({"a", "b", "c"}, player.audioDevices());
 }
 
+void set(AudioReaderStub &audioReader, audio_type x) {
+    audioReader.set(std::move(x));
+};
+
 TEST_F(TargetPlayerTests, digitalLevelComputesFirstChannel) {
-    audioReader.set({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+    set(audioReader, {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         20 * std::log10(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.F)),
         player.digitalLevel().dBov);
 }
 
 TEST_F(TargetPlayerTests, initializeProcessorPassesAudioToProcessor) {
-    audioReader.set({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+    set(audioReader, {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
     player.initializeProcessor({});
     assertEqual(
         {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}, signalProcessor.initializingAudio());
