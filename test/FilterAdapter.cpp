@@ -17,7 +17,7 @@ class FilterAdapter : public SignalProcessor {
             factory.make(audio.empty() ? std::vector<float>{} : audio.front());
     }
 
-    void reset() { filter.reset(); }
+    void clear() { filter.reset(); }
 
   private:
     Filter<float>::Factory &factory;
@@ -94,9 +94,9 @@ FILTER_ADAPTER_TEST(processPassesFirstChannelToFilter) {
     assertEqual_({1, 2, 3}, filter->signal());
 }
 
-FILTER_ADAPTER_TEST(turnOffDoesNotUseFilter) {
+FILTER_ADAPTER_TEST(clearDoesNotUseFilter) {
     adapter.initialize({});
-    adapter.reset();
+    adapter.clear();
     std::vector<float> first{1, 2, 3};
     std::vector<float> second{4, 5, 6};
     std::vector<float> third{7, 8, 9};
