@@ -55,17 +55,6 @@ void zero(
     fill(b, e, T{0});
 }
 
-template <typename T> void shiftLeft(signal_type<T> x, index_type n) {
-    for (index_type i{0}; i < size(x) - n; ++i)
-        at(x, i) = at(x, i + n);
-    zero<T>(rbegin(x), rbegin(x) + n);
-}
-
-template <typename T>
-void addFirstToSecond(const_signal_type<T> x, signal_type<T> y) {
-    transform(begin(y), end(y), begin(x), begin(y), std::plus<>{});
-}
-
 template <typename T>
 void copyFirstToSecond(const_signal_iterator_type<T> sourceBegin,
     const_signal_iterator_type<T> sourceEnd,
@@ -117,7 +106,14 @@ template <typename T> class OverlapAdd {
 template <typename T> OverlapAdd<T>::OverlapAdd(index_type N) : buffer(N) {}
 
 template <typename T> void OverlapAdd<T>::add(const_signal_type<T> x) {
-    addFirstToSecond<T>(x, buffer);
+    transform(
+        begin(buffer), end(buffer), begin(x), begin(buffer), std::plus<>{});
+}
+
+template <typename T> void shiftLeft(signal_type<T> x, index_type n) {
+    for (index_type i{0}; i < size(x) - n; ++i)
+        at(x, i) = at(x, i + n);
+    zero<T>(rbegin(x), rbegin(x) + n);
 }
 
 template <typename T> void OverlapAdd<T>::next(signal_type<T> y) {
@@ -203,7 +199,7 @@ template <typename T> void OverlapAddFilter<T>::filter_(signal_type<T> x) {
     zero<T>(begin(realBuffer) + size(x), end(realBuffer));
     copyFirstToSecond<T>(x, realBuffer);
     dft<T>(transformer, realBuffer, complexBuffer);
-    std::transform(begin(complexBuffer), end(complexBuffer), begin(H),
+    transform(begin(complexBuffer), end(complexBuffer), begin(H),
         begin(complexBuffer), std::multiplies<>{});
     transformer->idft(complexBuffer, realBuffer);
     overlap.add(realBuffer);
@@ -338,7 +334,7 @@ OVERLAP_ADD_FILTER_TEST(
 
 OVERLAP_ADD_FILTER_TEST(filterPassesEachBlockLSamplesToTransformZeroPaddedToN) {
     setTapCount(4 - 1);
-    auto overlapAdd = construct();
+    auto overlapAdd{construct()};
     signal = {5, 6, 7, 8, 9, 10};
     filter(overlapAdd);
     assertDftRealEquals({5, 6, 0, 0}, 1);
@@ -349,7 +345,7 @@ OVERLAP_ADD_FILTER_TEST(filterPassesEachBlockLSamplesToTransformZeroPaddedToN) {
 OVERLAP_ADD_FILTER_TEST(
     filterPassesEachBlockLSamplesToTransformZeroPaddedToN2) {
     setTapCount(4 - 1);
-    auto overlapAdd = construct();
+    auto overlapAdd{construct()};
     signal = {5, 6, 7};
     filter(overlapAdd);
     assertDftRealEquals({5, 6, 0, 0}, 1);
@@ -359,7 +355,7 @@ OVERLAP_ADD_FILTER_TEST(
 OVERLAP_ADD_FILTER_TEST(filterPassesTransformProductToInverseTransform) {
     setTapCount(8 - 1);
     setDftComplex({5, 6, 7, 8, 9});
-    auto overlapAdd = construct();
+    auto overlapAdd{construct()};
     setDftComplex({11, 12, 13, 14, 15});
     resizeX(2);
     filter(overlapAdd);
@@ -369,7 +365,7 @@ OVERLAP_ADD_FILTER_TEST(filterPassesTransformProductToInverseTransform) {
 OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform) {
     setTapCount(8 - 1);
     setDftComplex({0, 0, 0, 0, 0});
-    auto overlapAdd = construct();
+    auto overlapAdd{construct()};
     resizeX(2);
     setIdftReal({5, 6, 7, 8, 9, 10, 11, 12});
     filter(overlapAdd);
@@ -379,7 +375,7 @@ OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform) {
 OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform2) {
     setTapCount(4 - 1);
     setDftComplex({0, 0, 0});
-    auto overlapAdd = construct();
+    auto overlapAdd{construct()};
     resizeX(4);
     setIdftReal({5, 6, 7, 8});
     filter(overlapAdd);
@@ -389,7 +385,7 @@ OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform2) {
 OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform3) {
     setTapCount(4 - 1);
     setDftComplex({0, 0, 0});
-    auto overlapAdd = construct();
+    auto overlapAdd{construct()};
     resizeX(2);
     setIdftReal({5, 6, 7, 8});
     filter(overlapAdd);
@@ -402,7 +398,7 @@ OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform3) {
 OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform4) {
     setTapCount(4 - 1);
     setDftComplex({0, 0, 0});
-    auto overlapAdd = construct();
+    auto overlapAdd{construct()};
     resizeX(3);
     setIdftReal({5, 6, 7, 8});
     filter(overlapAdd);
@@ -412,7 +408,7 @@ OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform4) {
 OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform5) {
     setTapCount(4 - 1);
     setDftComplex({0, 0, 0});
-    auto overlapAdd = construct();
+    auto overlapAdd{construct()};
     resizeX(3);
     setIdftReal({5, 6, 7, 8});
     filter(overlapAdd);
