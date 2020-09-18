@@ -1007,6 +1007,30 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
+    initializingFixedLevelTestWithSilentIntervalTargetsTurnsOffTargetFiltering) {
+    assertTurnsTargetFilteringOff(
+        initializingFixedLevelTestWithSilentIntervalTargets);
+}
+
+MODEL_TEST(
+    initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingTurnsOffTargetFiltering) {
+    assertTurnsTargetFilteringOff(
+        initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);
+}
+
+MODEL_TEST(
+    initializingFixedLevelTestWithTargetReplacementTurnsOffTargetFiltering) {
+    assertTurnsTargetFilteringOff(
+        initializingFixedLevelTestWithTargetReplacement);
+}
+
+MODEL_TEST(
+    initializingFixedLevelTestWithTargetReplacementAndEyeTrackingTurnsOffTargetFiltering) {
+    assertTurnsTargetFilteringOff(
+        initializingFixedLevelTestWithTargetReplacementAndEyeTracking);
+}
+
+MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementInitializesInternalModel) {
     assertInitializesInternalModel(
         initializingFixedLevelTestWithTargetReplacement);

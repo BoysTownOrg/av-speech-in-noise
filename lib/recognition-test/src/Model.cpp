@@ -78,6 +78,7 @@ void ModelImpl::initialize(const AdaptiveTest &test) {
 
 void ModelImpl::initializeWithSilentIntervalTargets(
     const FixedLevelTest &test) {
+    targetFilterSwitch->turnOff();
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, silentIntervalTargets);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
@@ -126,6 +127,7 @@ void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
 
 void ModelImpl::initializeWithTargetReplacementAndEyeTracking(
     const FixedLevelFixedTrialsTest &test) {
+    targetFilterSwitch->turnOff();
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, targetsWithReplacement);
     av_speech_in_noise::initializeWithEyeTracking(
@@ -134,6 +136,7 @@ void ModelImpl::initializeWithTargetReplacementAndEyeTracking(
 
 void ModelImpl::initializeWithSilentIntervalTargetsAndEyeTracking(
     const FixedLevelTest &test) {
+    targetFilterSwitch->turnOff();
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, silentIntervalTargets);
     av_speech_in_noise::initializeWithEyeTracking(
