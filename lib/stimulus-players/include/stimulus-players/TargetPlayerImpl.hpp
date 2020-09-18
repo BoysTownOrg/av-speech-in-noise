@@ -34,10 +34,16 @@ class VideoPlayer {
     virtual auto durationSeconds() -> double = 0;
 };
 
-class TargetPlayerImpl : public TargetPlayer,
-                         public VideoPlayer::Observer {
+class SignalProcessor {
   public:
-    TargetPlayerImpl(VideoPlayer *, AudioReader *);
+    virtual ~SignalProcessor() = default;
+    virtual void process(const std::vector<gsl::span<float>> &) = 0;
+    virtual void initialize(const audio_type &) = 0;
+};
+
+class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
+  public:
+    TargetPlayerImpl(VideoPlayer *, AudioReader *, SignalProcessor * = {});
     void attach(TargetPlayer::Observer *) override;
     void play() override;
     void playAt(const PlayerTimeWithDelay &) override;
@@ -62,6 +68,7 @@ class TargetPlayerImpl : public TargetPlayer,
     std::string filePath_{};
     VideoPlayer *player;
     AudioReader *reader;
+    SignalProcessor *signalProcessor;
     TargetPlayer::Observer *listener_{};
     std::atomic<double> audioScale{1};
     std::atomic<bool> useFirstChannelOnly_{};

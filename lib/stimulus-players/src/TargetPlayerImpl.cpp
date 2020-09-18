@@ -5,14 +5,13 @@
 #include <limits>
 
 namespace av_speech_in_noise {
-TargetPlayerImpl::TargetPlayerImpl(VideoPlayer *player, AudioReader *reader)
-    : player{player}, reader{reader} {
+TargetPlayerImpl::TargetPlayerImpl(
+    VideoPlayer *player, AudioReader *reader, SignalProcessor *signalProcessor)
+    : player{player}, reader{reader}, signalProcessor{signalProcessor} {
     player->attach(this);
 }
 
-void TargetPlayerImpl::attach(TargetPlayer::Observer *e) {
-    listener_ = e;
-}
+void TargetPlayerImpl::attach(TargetPlayer::Observer *e) { listener_ = e; }
 
 void TargetPlayerImpl::play() { player->play(); }
 
@@ -80,6 +79,8 @@ void TargetPlayerImpl::fillAudioBuffer(
                 [&](auto &x) { return gsl::narrow_cast<float>(x * scale); });
         afterFirstChannel = true;
     }
+    if (signalProcessor != nullptr)
+        signalProcessor->process(audio);
 }
 
 void TargetPlayerImpl::setAudioDevice(std::string device) {

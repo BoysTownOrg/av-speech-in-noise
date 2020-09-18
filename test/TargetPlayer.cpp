@@ -104,6 +104,18 @@ class TargetPlayerListenerStub : public TargetPlayer::Observer {
     [[nodiscard]] auto notified() const { return notified_; }
 };
 
+class SignalProcessorStub : public SignalProcessor {
+  public:
+    void initialize(const audio_type &) override {}
+    void process(const std::vector<gsl::span<float>> &s) override {
+        signal_ = s;
+    }
+    auto signal() -> std::vector<gsl::span<float>> { return signal_; }
+
+  private:
+    std::vector<gsl::span<float>> signal_;
+};
+
 class TargetPlayerTests : public ::testing::Test {
   protected:
     std::vector<float> leftChannel{};
@@ -111,7 +123,8 @@ class TargetPlayerTests : public ::testing::Test {
     VideoPlayerStub videoPlayer;
     TargetPlayerListenerStub listener;
     AudioReaderStub audioReader{};
-    TargetPlayerImpl player{&videoPlayer, &audioReader};
+    SignalProcessorStub signalProcessor;
+    TargetPlayerImpl player{&videoPlayer, &audioReader, &signalProcessor};
     PlayerTimeWithDelay systemTimeWithDelay{};
 
     TargetPlayerTests() { player.attach(&listener); }
@@ -217,6 +230,21 @@ TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen_Stereo) {
     fillAudioBufferStereo();
     assertLeftChannelEquals({10, 20, 30});
     assertRightChannelEquals({40, 50, 60});
+}
+
+template <typename T>
+void assertEqual_(const std::vector<T> &expected, gsl::span<T> actual) {
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(expected.size(), actual.size());
+    for (typename gsl::span<T>::size_type i{0}; i < expected.size(); ++i)
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.at(i), at(actual, i));
+}
+
+TEST_F(TargetPlayerTests, passesSignalToProcessor) {
+    setLeftChannel({1, 2, 3});
+    setRightChannel({4, 5, 6});
+    fillAudioBufferStereo();
+    assertEqual_({1, 2, 3}, signalProcessor.signal().at(0));
+    assertEqual_({4, 5, 6}, signalProcessor.signal().at(1));
 }
 
 TEST_F(TargetPlayerTests, onlyPlayFirstChannel) {
