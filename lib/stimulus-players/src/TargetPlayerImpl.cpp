@@ -20,7 +20,11 @@ void TargetPlayerImpl::playAt(const PlayerTimeWithDelay &t) {
 }
 
 void TargetPlayerImpl::initializeProcessor(const LocalUrl &url) {
-    reader->read(url.path);
+    try {
+        reader->read(url.path);
+    } catch (const AudioReader::InvalidFile &) {
+        throw InvalidAudioFile{};
+    }
 }
 
 void TargetPlayerImpl::loadFile(const LocalUrl &file) {

@@ -321,5 +321,15 @@ TEST_F(TargetPlayerTests,
     } catch (const InvalidAudioFile &) {
     }
 }
+
+TEST_F(TargetPlayerTests,
+    initializeProcessorThrowsInvalidAudioFileWhenAudioReaderThrows) {
+    audioReader.throwOnRead();
+    try {
+        player.initializeProcessor({});
+        FAIL() << "Expected av_speech_in_noise::InvalidAudioFile";
+    } catch (const InvalidAudioFile &) {
+    }
+}
 }
 }
