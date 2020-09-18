@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_STIMULUS_PLAYERS_INCLUDE_STIMULUS_PLAYERS_OVERLAPADDFILTER_HPP_
 #define AV_SPEECH_IN_NOISE_STIMULUS_PLAYERS_INCLUDE_STIMULUS_PLAYERS_OVERLAPADDFILTER_HPP_
 
-#include "MonoSignalProcessor.hpp"
+#include "Filter.hpp"
 #include <gsl/gsl>
 #include <memory>
 #include <complex>
@@ -54,11 +54,11 @@ template <typename T> class FourierTransformer {
     };
 };
 
-template <typename T> class OverlapAddFilter : public MonoSignalProcessor<T> {
+template <typename T> class OverlapAddFilter : public Filter<T> {
   public:
     OverlapAddFilter(const std::vector<T> &b,
         typename FourierTransformer<T>::Factory &factory);
-    void process(signal_type<T> x) override;
+    void filter(signal_type<T> x) override;
 
   private:
     void filter_(signal_type<T> x);

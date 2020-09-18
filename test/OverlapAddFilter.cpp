@@ -94,7 +94,7 @@ class OverlapAddFilterTests : public ::testing::Test {
     }
 
     void filter(OverlapAddFilter<double> &overlapAdd) {
-        overlapAdd.process(signal);
+        overlapAdd.filter(signal);
     }
 
     void assertXEquals(const std::vector<double> &x_) {
