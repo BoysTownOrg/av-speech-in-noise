@@ -17,7 +17,7 @@ class FilterAdapter : public SignalProcessor {
             factory.make(audio.empty() ? std::vector<float>{} : audio.front());
     }
 
-    void clear() { filter.reset(); }
+    void clear() override { filter.reset(); }
 
   private:
     Filter<float>::Factory &factory;

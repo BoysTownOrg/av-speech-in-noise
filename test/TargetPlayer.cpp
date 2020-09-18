@@ -113,6 +113,7 @@ class SignalProcessorStub : public SignalProcessor {
     }
     auto signal() -> std::vector<gsl::span<float>> { return signal_; }
     auto initializingAudio() -> audio_type { return initializingAudio_; }
+    void clear() override {}
 
   private:
     std::vector<gsl::span<float>> signal_;

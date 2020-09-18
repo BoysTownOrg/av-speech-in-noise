@@ -39,6 +39,7 @@ class SignalProcessor {
     virtual ~SignalProcessor() = default;
     virtual void process(const std::vector<gsl::span<float>> &) = 0;
     virtual void initialize(const audio_type &) = 0;
+    virtual void clear() = 0;
 };
 
 class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
