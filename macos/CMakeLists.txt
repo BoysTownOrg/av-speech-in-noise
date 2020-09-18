@@ -96,6 +96,8 @@ add_executable(
 target_compile_features(av-speech-in-noise-facemask-study PRIVATE cxx_std_17)
 target_compile_options(av-speech-in-noise-facemask-study
                        PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})
+target_include_directories(av-speech-in-noise-facemask-study
+                           PRIVATE ${fftw_SOURCE_DIR}/api)
 target_link_libraries(
   av-speech-in-noise-facemask-study
   recognition-test
@@ -109,7 +111,8 @@ target_link_libraries(
   ${CORE_MEDIA}
   ${MEDIA_TOOLBOX}
   ${AUDIO_TOOLBOX}
-  GSL)
+  GSL
+  fftw3f)
 set_target_properties(
   av-speech-in-noise-facemask-study
   PROPERTIES MACOSX_BUNDLE_BUNDLE_VERSION ${CMAKE_PROJECT_VERSION}

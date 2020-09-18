@@ -12,6 +12,7 @@
 #include <recognition-test/OutputFile.hpp>
 #include <recognition-test/OutputFilePath.hpp>
 #include <recognition-test/ResponseEvaluator.hpp>
+#include <recognition-test/TargetFilterSwitchAdapter.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <stimulus-players/TargetPlayerImpl.hpp>
 #include <stimulus-players/AudioReaderImpl.hpp>
@@ -218,13 +219,14 @@ static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
     return controller;
 }
 
-void main(
-    EyeTracker &eyeTracker, MacOsTestSetupViewFactory *testSetupViewFactory) {
+void main(EyeTracker &eyeTracker,
+    MacOsTestSetupViewFactory *testSetupViewFactory,
+    SignalProcessor *signalProcessor) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     CoreAudioBufferedReader bufferedReader;
     AudioReaderImpl audioReader{&bufferedReader};
-    TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
+    TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader, signalProcessor};
     AvFoundationAudioPlayer audioPlayer;
     TimerImpl timer;
     MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader, &timer};
@@ -301,10 +303,12 @@ void main(
         &onlyIncludesTargetFileExtensions, &randomizer};
     SubdirectoryTargetPlaylistReader cyclicTargetsReader{
         &cyclicTargetsFactory, &directoryReader};
+    TargetFilterSwitchAdapter targetFilterSwitch{targetPlayer};
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
-        allTargetsNTimes, recognitionTestModel, outputFile};
+        allTargetsNTimes, recognitionTestModel, outputFile,
+        &targetFilterSwitch};
     const auto viewController{nsTabViewControllerWithoutTabControl()};
     const auto window{
         [NSWindow windowWithContentViewController:viewController]};

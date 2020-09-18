@@ -3,9 +3,10 @@
 
 #include "MacOsTestSetupViewFactory.h"
 #include <recognition-test/RecognitionTestModel.hpp>
+#include <stimulus-players/TargetPlayerImpl.hpp>
 
 namespace av_speech_in_noise {
-void main(EyeTracker &, MacOsTestSetupViewFactory *);
+void main(EyeTracker &, MacOsTestSetupViewFactory *, SignalProcessor * = {});
 }
 
 #endif

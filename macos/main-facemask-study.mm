@@ -2,12 +2,97 @@
 #include "MacOsTestSetupViewFactory.h"
 #include "common-objc.h"
 #include <presentation/SessionControllerImpl.hpp>
+#include <stimulus-players/OverlapAddFilter.hpp>
+#include <stimulus-players/FilterAdapter.hpp>
 #import <Cocoa/Cocoa.h>
+#include <fftw3.h>
+#include <vector>
 #include <string>
 
 @class FacemaskStudySetupViewActions;
 
 namespace av_speech_in_noise {
+template <typename T> auto data(std::vector<T> &x) { return x.data(); }
+
+inline auto to_fftw_complex(std::vector<complex_type<float>> &x) -> auto * {
+    return reinterpret_cast<fftwf_complex *>(x.data());
+}
+
+inline auto make_fftw_plan(int a, float *b, fftwf_complex *c, unsigned int d)
+    -> auto * {
+    return fftwf_plan_dft_r2c_1d(a, b, c, d);
+}
+
+inline auto make_fftw_plan(int a, fftwf_complex *b, float *c, unsigned int d)
+    -> auto * {
+    return fftwf_plan_dft_c2r_1d(a, b, c, d);
+}
+
+template <typename T>
+void copyFirstToSecond(const_signal_iterator_type<T> sourceBegin,
+    const_signal_iterator_type<T> sourceEnd,
+    typename signal_type<T>::iterator destination) {
+    std::copy(sourceBegin, sourceEnd, destination);
+}
+
+template <typename T>
+void copyFirstToSecond(
+    const_signal_type<T> source, signal_type<T> destination) {
+    copyFirstToSecond<T>(begin(source), end(source), begin(destination));
+}
+
+template <typename T> class FftwTransformer : public FourierTransformer<T> {
+    using complex_buffer_type = std::vector<complex_type<T>>;
+    using real_buffer_type = std::vector<T>;
+    std::vector<complex_type<T>> dftComplex;
+    std::vector<complex_type<T>> idftComplex;
+    real_buffer_type dftReal;
+    real_buffer_type idftReal;
+    using is_double = std::is_same<double, T>;
+    using fftw_plan_type =
+        std::conditional_t<is_double::value, fftw_plan, fftwf_plan>;
+    fftw_plan_type dftPlan;
+    fftw_plan_type idftPlan;
+    using unused_type = std::conditional_t<is_double::value, float, double>;
+    index_type N;
+
+  public:
+    explicit FftwTransformer(index_type N)
+        : dftComplex(N / 2 + 1), idftComplex(N / 2 + 1), dftReal(N),
+          idftReal(N), dftPlan{make_fftw_plan(N, data(dftReal),
+                           to_fftw_complex(dftComplex), FFTW_ESTIMATE)},
+          idftPlan{make_fftw_plan(
+              N, to_fftw_complex(idftComplex), data(idftReal), FFTW_ESTIMATE)},
+          N{N} {}
+
+    ~FftwTransformer() override {
+        fftwf_destroy_plan(dftPlan);
+        fftwf_destroy_plan(idftPlan);
+    }
+
+    void dft(signal_type<T> x, complex_signal_type<T> y) override {
+        copyFirstToSecond<T>(x, dftReal);
+        fftwf_execute(dftPlan);
+        copyFirstToSecond<complex_type<T>>(dftComplex, y);
+    }
+
+    void idft(complex_signal_type<T> x, signal_type<T> y) override {
+        copyFirstToSecond<complex_type<T>>(x, idftComplex);
+        fftwf_execute(idftPlan);
+        copyFirstToSecond<T>(idftReal, y);
+        for (auto &y_ : y)
+            y_ /= N;
+    }
+};
+
+template <typename T>
+class FftwFactory : public FourierTransformer<T>::Factory {
+  public:
+    auto make(index_type N) -> std::shared_ptr<FourierTransformer<T>> override {
+        return std::make_shared<FftwTransformer<T>>(N);
+    }
+};
+
 class FacemaskStudySetupView : public TestSetupUI {
   public:
     explicit FacemaskStudySetupView(NSViewController *);
@@ -290,5 +375,9 @@ void FacemaskStudySetupView::notifyThatPlayCalibrationButtonHasBeenClicked() {
 int main() {
     av_speech_in_noise::EyeTrackerStub eyeTracker;
     av_speech_in_noise::FacemaskStudySetupViewFactory testSetupViewFactory;
-    av_speech_in_noise::main(eyeTracker, &testSetupViewFactory);
+    av_speech_in_noise::FftwFactory<float> transformFactory;
+    av_speech_in_noise::OverlapAddFilterFactory<float> filterFactory{
+        transformFactory};
+    av_speech_in_noise::FilterAdapter filterAdapter{filterFactory};
+    av_speech_in_noise::main(eyeTracker, &testSetupViewFactory, &filterAdapter);
 }

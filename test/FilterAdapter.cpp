@@ -1,31 +1,5 @@
-#include <stimulus-players/Filter.hpp>
-#include <stimulus-players/TargetPlayerImpl.hpp>
-
-namespace av_speech_in_noise {
-class FilterAdapter : public SignalProcessor {
-  public:
-    explicit FilterAdapter(Filter<float>::Factory &factory)
-        : factory{factory} {}
-
-    void process(const std::vector<gsl::span<float>> &audio) override {
-        if (filter)
-            filter->filter(audio.front());
-    }
-
-    void initialize(const audio_type &audio) override {
-        filter =
-            factory.make(audio.empty() ? std::vector<float>{} : audio.front());
-    }
-
-    void clear() override { filter.reset(); }
-
-  private:
-    Filter<float>::Factory &factory;
-    std::shared_ptr<Filter<float>> filter;
-};
-}
-
 #include "assert-utility.hpp"
+#include <stimulus-players/FilterAdapter.hpp>
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise {
