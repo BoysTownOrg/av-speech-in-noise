@@ -12,7 +12,8 @@ class FilterAdapter : public SignalProcessor {
     }
 
     void initialize(const audio_type &audio) override {
-        filter = factory.make(audio.front());
+        filter =
+            factory.make(audio.empty() ? std::vector<float>{} : audio.front());
     }
 
   private:
@@ -76,7 +77,7 @@ void assertEqual_(const std::vector<T> &expected, gsl::span<T> actual) {
 }
 
 FILTER_ADAPTER_TEST(processPassesFirstChannelToFilter) {
-    adapter.initialize({{}});
+    adapter.initialize({});
     std::vector<float> first{1, 2, 3};
     std::vector<float> second{4, 5, 6};
     std::vector<float> third{7, 8, 9};
