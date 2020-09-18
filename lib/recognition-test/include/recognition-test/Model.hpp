@@ -173,6 +173,12 @@ class RecognitionTestModel {
     virtual void prepareNextTrialIfNeeded() = 0;
 };
 
+class TargetFilterSwitch {
+  public:
+    virtual ~TargetFilterSwitch() = default;
+    virtual void turnOn(const LocalUrl &url) = 0;
+};
+
 class ModelImpl : public Model {
   public:
     ModelImpl(AdaptiveMethod &, FixedLevelMethod &,
@@ -182,7 +188,7 @@ class ModelImpl : public Model {
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         RepeatableFiniteTargetPlaylist &eachTargetNTimes,
-        RecognitionTestModel &, OutputFile &);
+        RecognitionTestModel &, OutputFile &, TargetFilterSwitch * = {});
     void attach(Model::Observer *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(
@@ -232,6 +238,7 @@ class ModelImpl : public Model {
     RepeatableFiniteTargetPlaylist &eachTargetNTimes;
     RecognitionTestModel &model;
     OutputFile &outputFile;
+    TargetFilterSwitch *targetFilterSwitch;
 };
 }
 

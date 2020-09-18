@@ -9,15 +9,16 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     RepeatableFiniteTargetPlaylist &eachTargetNTimes,
-    RecognitionTestModel &model, OutputFile &outputFile)
+    RecognitionTestModel &model, OutputFile &outputFile,
+    TargetFilterSwitch *targetFilterSwitch)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
       cyclicTargetsReader{cyclicTargetsReader},
       targetsWithReplacement{targetsWithReplacement},
       silentIntervalTargets{silentIntervalTargets},
-      everyTargetOnce{everyTargetOnce},
-      eachTargetNTimes{eachTargetNTimes}, model{model}, outputFile{outputFile} {
-}
+      everyTargetOnce{everyTargetOnce}, eachTargetNTimes{eachTargetNTimes},
+      model{model}, outputFile{outputFile}, targetFilterSwitch{
+                                                targetFilterSwitch} {}
 
 static void initialize(
     RecognitionTestModel &model, TestMethod &method, const Test &test) {
@@ -93,6 +94,7 @@ void ModelImpl::initialize(const FixedLevelTestWithEachTargetNTimes &test) {
 
 void ModelImpl::initialize(
     const FixedLevelTestWithEachTargetNTimesAndFiltering &test) {
+    targetFilterSwitch->turnOn(test.firFilterFileLocalUrl);
     eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
     av_speech_in_noise::initialize(fixedLevelMethod, test, eachTargetNTimes);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);

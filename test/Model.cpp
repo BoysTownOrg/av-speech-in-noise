@@ -662,6 +662,15 @@ auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
     return m.initializedWithEyeTracking();
 }
 
+class TargetFilterSwitchStub : public TargetFilterSwitch {
+  public:
+    void turnOn(const LocalUrl &url) { firFilterFileLocalUrl_ = url; }
+    auto firFilterFileLocalUrl() -> LocalUrl { return firFilterFileLocalUrl_; }
+
+  private:
+    LocalUrl firFilterFileLocalUrl_;
+};
+
 class ModelTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub adaptiveMethod;
@@ -674,10 +683,11 @@ class ModelTests : public ::testing::Test {
     RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
     RecognitionTestModelStub internalModel;
     OutputFileStub outputFile;
+    TargetFilterSwitchStub targetFilterSwitch;
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervals, everyTargetOnce,
-        eachTargetNTimes, internalModel, outputFile};
+        eachTargetNTimes, internalModel, outputFile, &targetFilterSwitch};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes;
@@ -943,6 +953,15 @@ MODEL_TEST(
     assertInitializesInternalModel(
         initializingFixedLevelTestWithEachTargetNTimesAndFiltering,
         fixedLevelTestWithEachTargetNTimesAndFiltering, fixedLevelMethod);
+}
+
+MODEL_TEST(
+    initializingFixedLevelTestWithEachTargetNTimesAndFilteringInitializesFilter) {
+    fixedLevelTestWithEachTargetNTimesAndFiltering.firFilterFileLocalUrl.path =
+        "a";
+    initializingFixedLevelTestWithEachTargetNTimesAndFiltering.run(model);
+    AV_SPEECH_IN_NOISE_EXPECT_STRING_EQUAL(
+        "a", targetFilterSwitch.firFilterFileLocalUrl().path);
 }
 
 MODEL_TEST(
