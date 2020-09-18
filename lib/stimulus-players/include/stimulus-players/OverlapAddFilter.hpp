@@ -71,6 +71,22 @@ template <typename T> class OverlapAddFilter : public Filter<T> {
     index_type L;
 };
 
+template <typename T>
+class OverlapAddFilterFactory : public Filter<T>::Factory {
+  public:
+    explicit OverlapAddFilterFactory(
+        typename FourierTransformer<T>::Factory &factory)
+        : factory{factory} {}
+
+    virtual auto make(const std::vector<T> &taps)
+        -> std::shared_ptr<Filter<T>> {
+        return std::make_shared<OverlapAddFilter<T>>(taps, factory);
+    }
+
+  private:
+    typename FourierTransformer<T>::Factory &factory;
+};
+
 extern template class OverlapAddFilter<float>;
 extern template class OverlapAddFilter<double>;
 }
