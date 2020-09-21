@@ -189,7 +189,7 @@ class ModelImpl : public Model {
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         RepeatableFiniteTargetPlaylist &eachTargetNTimes,
-        RecognitionTestModel &, OutputFile &, TargetFilterSwitch * = {});
+        RecognitionTestModel &, OutputFile &, TargetFilterSwitch *);
     void attach(Model::Observer *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(
