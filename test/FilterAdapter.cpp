@@ -27,6 +27,7 @@ class FilterFactoryStub : public Filter<float>::Factory {
 
     auto make(const std::vector<float> &taps)
         -> std::shared_ptr<Filter<float>> override {
+        anyMade_ = true;
         taps_ = taps;
         auto next = first ? filter : secondFilter;
         first = false;
@@ -39,7 +40,10 @@ class FilterFactoryStub : public Filter<float>::Factory {
         secondFilter = std::move(s);
     }
 
+    [[nodiscard]] auto anyMade() const -> bool { return anyMade_; }
+
   private:
+    bool anyMade_{};
     bool first{true};
     std::vector<float> taps_;
     std::shared_ptr<FilterStub> filter;
@@ -60,6 +64,11 @@ FILTER_ADAPTER_TEST(initializePassesFirstChannelToFactory) {
     assertEqual({1, 2, 3}, filterFactory.taps());
 }
 
+FILTER_ADAPTER_TEST(noFiltersMadeWhenAudioEmpty) {
+    adapter.initialize({});
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(filterFactory.anyMade());
+}
+
 template <typename T>
 void assertEqual_(const std::vector<T> &expected, gsl::span<T> actual) {
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(expected.size(), actual.size());
@@ -68,7 +77,7 @@ void assertEqual_(const std::vector<T> &expected, gsl::span<T> actual) {
 }
 
 FILTER_ADAPTER_TEST(processPassesFirstChannelToFilter) {
-    adapter.initialize({});
+    adapter.initialize({{}});
     std::vector<float> first{1, 2, 3};
     std::vector<float> second{4, 5, 6};
     std::vector<float> third{7, 8, 9};
@@ -79,7 +88,7 @@ FILTER_ADAPTER_TEST(processPassesFirstChannelToFilter) {
 FILTER_ADAPTER_TEST(processPassesSecondChannelToSecondFilter) {
     auto secondFilter{std::make_shared<FilterStub>()};
     filterFactory.setSecondFilter(secondFilter);
-    adapter.initialize({});
+    adapter.initialize({{}});
     std::vector<float> first{1, 2, 3};
     std::vector<float> second{4, 5, 6};
     std::vector<float> third{7, 8, 9};

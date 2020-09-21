@@ -19,10 +19,10 @@ class FilterAdapter : public SignalProcessor {
     }
 
     void initialize(const audio_type &audio) override {
-        filter =
-            factory.make(audio.empty() ? std::vector<float>{} : audio.front());
-        secondFilter =
-            factory.make(audio.empty() ? std::vector<float>{} : audio.front());
+        if (audio.empty())
+            return;
+        filter = factory.make(audio.front());
+        secondFilter = factory.make(audio.front());
     }
 
     void clear() override { filter.reset(); }
