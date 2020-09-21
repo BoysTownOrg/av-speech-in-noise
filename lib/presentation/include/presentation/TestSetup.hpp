@@ -1,10 +1,10 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETUP_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETUP_HPP_
 
-#include <av-speech-in-noise/Interface.hpp>
 #include "View.hpp"
 #include "Presenter.hpp"
 #include "Method.hpp"
+#include <av-speech-in-noise/Interface.hpp>
 #include <vector>
 #include <string>
 

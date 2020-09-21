@@ -226,6 +226,7 @@ class ModelImpl : public Model {
     auto adaptiveTestResults() -> AdaptiveTestResults override;
     void restartAdaptiveTestWhilePreservingTargets() override;
 
+  private:
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
     TargetPlaylistReader &targetsWithReplacementReader;
