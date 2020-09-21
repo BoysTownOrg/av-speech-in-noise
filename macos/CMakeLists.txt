@@ -85,6 +85,9 @@ if(${AV_SPEECH_IN_NOISE_ENABLE_TARGET_FILTERING})
   set(BUILD_TESTS
       OFF
       CACHE BOOL "" FORCE)
+  set(BUILD_SHARED_LIBS
+      OFF
+      CACHE BOOL "" FORCE)
 
   FetchContent_Declare(
     fftw
