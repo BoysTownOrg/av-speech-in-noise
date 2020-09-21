@@ -307,8 +307,7 @@ void main(EyeTracker &eyeTracker,
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
-        allTargetsNTimes, recognitionTestModel, outputFile,
-        &targetFilterSwitch};
+        allTargetsNTimes, recognitionTestModel, outputFile, targetFilterSwitch};
     const auto viewController{nsTabViewControllerWithoutTabControl()};
     const auto window{
         [NSWindow windowWithContentViewController:viewController]};

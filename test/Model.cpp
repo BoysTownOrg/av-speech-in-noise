@@ -690,7 +690,7 @@ class ModelTests : public ::testing::Test {
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervals, everyTargetOnce,
-        eachTargetNTimes, internalModel, outputFile, &targetFilterSwitch};
+        eachTargetNTimes, internalModel, outputFile, targetFilterSwitch};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes;

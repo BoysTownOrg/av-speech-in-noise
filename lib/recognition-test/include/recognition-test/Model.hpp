@@ -189,7 +189,7 @@ class ModelImpl : public Model {
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         RepeatableFiniteTargetPlaylist &eachTargetNTimes,
-        RecognitionTestModel &, OutputFile &, TargetFilterSwitch *);
+        RecognitionTestModel &, OutputFile &, TargetFilterSwitch &);
     void attach(Model::Observer *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(
@@ -226,9 +226,6 @@ class ModelImpl : public Model {
     auto adaptiveTestResults() -> AdaptiveTestResults override;
     void restartAdaptiveTestWhilePreservingTargets() override;
 
-  private:
-    void initializeTest_(const AdaptiveTest &);
-
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
     TargetPlaylistReader &targetsWithReplacementReader;
@@ -239,7 +236,7 @@ class ModelImpl : public Model {
     RepeatableFiniteTargetPlaylist &eachTargetNTimes;
     RecognitionTestModel &model;
     OutputFile &outputFile;
-    TargetFilterSwitch *targetFilterSwitch;
+    TargetFilterSwitch &targetFilterSwitch;
 };
 }
 
