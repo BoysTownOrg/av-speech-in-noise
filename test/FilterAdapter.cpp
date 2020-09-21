@@ -55,6 +55,8 @@ class FilterAdapterTests : public ::testing::Test {
     std::shared_ptr<FilterStub> filter{std::make_shared<FilterStub>()};
     FilterFactoryStub filterFactory{filter};
     FilterAdapter adapter{filterFactory};
+    std::shared_ptr<FilterStub> secondFilter{std::make_shared<FilterStub>()};
+    FilterAdapterTests() { filterFactory.setSecondFilter(secondFilter); }
 };
 
 #define FILTER_ADAPTER_TEST(a) TEST_F(FilterAdapterTests, a)
@@ -91,8 +93,6 @@ FILTER_ADAPTER_TEST(processPassesFirstChannelToFilter) {
 }
 
 FILTER_ADAPTER_TEST(processPassesSecondChannelToSecondFilter) {
-    auto secondFilter{std::make_shared<FilterStub>()};
-    filterFactory.setSecondFilter(secondFilter);
     initialize(adapter);
     std::vector<float> first{1, 2, 3};
     std::vector<float> second{4, 5, 6};
@@ -102,8 +102,6 @@ FILTER_ADAPTER_TEST(processPassesSecondChannelToSecondFilter) {
 }
 
 FILTER_ADAPTER_TEST(processDoesNotFilterSecondChannelIfOnlyOneChannel) {
-    auto secondFilter{std::make_shared<FilterStub>()};
-    filterFactory.setSecondFilter(secondFilter);
     initialize(adapter);
     std::vector<float> first{1, 2, 3};
     adapter.process({first});
