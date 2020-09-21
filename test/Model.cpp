@@ -665,8 +665,8 @@ auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
 class TargetFilterSwitchStub : public TargetFilterSwitch {
   public:
     void turnOn(const LocalUrl &url) override { firFilterFileLocalUrl_ = url; }
-    void turnOff() { turnedOff_ = true; }
-    auto turnedOff() -> bool { return turnedOff_; }
+    void turnOff() override { turnedOff_ = true; }
+    [[nodiscard]] auto turnedOff() const -> bool { return turnedOff_; }
     auto firFilterFileLocalUrl() -> LocalUrl { return firFilterFileLocalUrl_; }
 
   private:
