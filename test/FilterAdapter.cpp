@@ -28,13 +28,13 @@ class FilterFactoryStub : public Filter<float>::Factory {
     auto make(const std::vector<float> &taps)
         -> std::shared_ptr<Filter<float>> override {
         anyMade_ = true;
-        taps_ = taps;
+        taps_.push_back(taps);
         auto next = first ? filter : secondFilter;
         first = false;
         return std::move(next);
     }
 
-    auto taps() -> std::vector<float> { return taps_; }
+    auto taps() -> std::vector<std::vector<float>> { return taps_; }
 
     void setSecondFilter(std::shared_ptr<FilterStub> s) {
         secondFilter = std::move(s);
@@ -45,7 +45,7 @@ class FilterFactoryStub : public Filter<float>::Factory {
   private:
     bool anyMade_{};
     bool first{true};
-    std::vector<float> taps_;
+    std::vector<std::vector<float>> taps_;
     std::shared_ptr<FilterStub> filter;
     std::shared_ptr<FilterStub> secondFilter;
 };
@@ -63,9 +63,10 @@ void initialize(FilterAdapter &adapter, const audio_type &x) {
     adapter.initialize(x);
 }
 
-FILTER_ADAPTER_TEST(initializePassesFirstChannelToFactory) {
+FILTER_ADAPTER_TEST(initializePassesFirstChannelToFactoryForLeftAndRight) {
     initialize(adapter, {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-    assertEqual({1, 2, 3}, filterFactory.taps());
+    assertEqual({1, 2, 3}, filterFactory.taps().at(0));
+    assertEqual({1, 2, 3}, filterFactory.taps().at(1));
 }
 
 FILTER_ADAPTER_TEST(noFiltersMadeWhenAudioEmpty) {
