@@ -59,7 +59,7 @@ class FilterAdapterTests : public ::testing::Test {
 
 #define FILTER_ADAPTER_TEST(a) TEST_F(FilterAdapterTests, a)
 
-void initialize(FilterAdapter &adapter, const audio_type &x) {
+void initialize(FilterAdapter &adapter, const audio_type &x = {{}}) {
     adapter.initialize(x);
 }
 
@@ -82,7 +82,7 @@ void assertEqual_(const std::vector<T> &expected, gsl::span<T> actual) {
 }
 
 FILTER_ADAPTER_TEST(processPassesFirstChannelToFilter) {
-    initialize(adapter, {{}});
+    initialize(adapter);
     std::vector<float> first{1, 2, 3};
     std::vector<float> second{4, 5, 6};
     std::vector<float> third{7, 8, 9};
@@ -93,7 +93,7 @@ FILTER_ADAPTER_TEST(processPassesFirstChannelToFilter) {
 FILTER_ADAPTER_TEST(processPassesSecondChannelToSecondFilter) {
     auto secondFilter{std::make_shared<FilterStub>()};
     filterFactory.setSecondFilter(secondFilter);
-    initialize(adapter, {{}});
+    initialize(adapter);
     std::vector<float> first{1, 2, 3};
     std::vector<float> second{4, 5, 6};
     std::vector<float> third{7, 8, 9};
