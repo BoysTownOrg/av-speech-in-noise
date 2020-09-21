@@ -101,6 +101,15 @@ FILTER_ADAPTER_TEST(processPassesSecondChannelToSecondFilter) {
     assertEqual_({4, 5, 6}, secondFilter->signal());
 }
 
+FILTER_ADAPTER_TEST(processDoesNotFilterSecondChannelIfOnlyOneChannel) {
+    auto secondFilter{std::make_shared<FilterStub>()};
+    filterFactory.setSecondFilter(secondFilter);
+    initialize(adapter);
+    std::vector<float> first{1, 2, 3};
+    adapter.process({first});
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(secondFilter->filterCalled());
+}
+
 FILTER_ADAPTER_TEST(clearDoesNotUseFilter) {
     initialize(adapter, {});
     adapter.clear();
