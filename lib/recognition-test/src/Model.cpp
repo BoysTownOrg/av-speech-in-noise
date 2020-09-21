@@ -97,9 +97,20 @@ void ModelImpl::initialize(const FixedLevelTestWithEachTargetNTimes &test) {
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
+static void throwRequestFailureOnInvalidAudioFile(
+    const std::function<void(const LocalUrl &)> &f, const LocalUrl &s) {
+    try {
+        f(s);
+    } catch (const InvalidAudioFile &) {
+        throw Model::RequestFailure{"unable to read " + s.path};
+    }
+}
+
 void ModelImpl::initialize(
     const FixedLevelTestWithEachTargetNTimesAndFiltering &test) {
-    targetFilterSwitch.turnOn(test.firFilterFileLocalUrl);
+    throwRequestFailureOnInvalidAudioFile(
+        [&](const LocalUrl &s) { targetFilterSwitch.turnOn(s); },
+        test.firFilterFileLocalUrl);
     eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
     av_speech_in_noise::initialize(fixedLevelMethod, test, eachTargetNTimes);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);

@@ -664,13 +664,21 @@ auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
 
 class TargetFilterSwitchStub : public TargetFilterSwitch {
   public:
-    void turnOn(const LocalUrl &url) override { firFilterFileLocalUrl_ = url; }
+    void turnOn(const LocalUrl &url) override {
+        firFilterFileLocalUrl_ = url;
+        if (throwInvalidAudioFileWhenTurnedOn_)
+            throw InvalidAudioFile{};
+    }
     void turnOff() override { turnedOff_ = true; }
     [[nodiscard]] auto turnedOff() const -> bool { return turnedOff_; }
     auto firFilterFileLocalUrl() -> LocalUrl { return firFilterFileLocalUrl_; }
+    void throwInvalidAudioFileWhenTurnedOn() {
+        throwInvalidAudioFileWhenTurnedOn_ = true;
+    }
 
   private:
     LocalUrl firFilterFileLocalUrl_;
+    bool throwInvalidAudioFileWhenTurnedOn_{};
     bool turnedOff_{};
 };
 
@@ -1272,6 +1280,19 @@ MODEL_TEST(subscribesToListener) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         static_cast<const Model::Observer *>(&listener),
         internalModel.listener());
+}
+
+MODEL_TEST(
+    initializingFixedLevelTestWithEachTargetNTimesAndFilteringThrowsRequestFailureOnInvalidAudioFile) {
+    try {
+        fixedLevelTestWithEachTargetNTimesAndFiltering.firFilterFileLocalUrl
+            .path = "a";
+        targetFilterSwitch.throwInvalidAudioFileWhenTurnedOn();
+        initializingFixedLevelTestWithEachTargetNTimesAndFiltering.run(model);
+        FAIL() << "Expected av_speech_in_noise::Model::RequestFailure";
+    } catch (const Model::RequestFailure &e) {
+        AV_SPEECH_IN_NOISE_EXPECT_STRING_EQUAL("unable to read a", e.what());
+    }
 }
 }
 }

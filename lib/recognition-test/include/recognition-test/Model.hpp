@@ -12,6 +12,8 @@
 #include <memory>
 
 namespace av_speech_in_noise {
+class InvalidAudioFile {};
+
 struct EyeGaze {
     float x;
     float y;

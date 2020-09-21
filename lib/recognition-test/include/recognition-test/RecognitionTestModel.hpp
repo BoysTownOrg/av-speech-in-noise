@@ -10,7 +10,6 @@
 
 namespace av_speech_in_noise {
 class InvalidAudioDevice {};
-class InvalidAudioFile {};
 
 struct Duration {
     double seconds;
