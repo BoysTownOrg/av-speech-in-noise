@@ -101,6 +101,13 @@ FILTER_ADAPTER_TEST(processPassesSecondChannelToSecondFilter) {
     assertEqual_({4, 5, 6}, secondFilter->signal());
 }
 
+FILTER_ADAPTER_TEST(processDoesNotFilterEitherChannelIfNoChannels) {
+    initialize(adapter);
+    adapter.process({});
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(filter->filterCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(secondFilter->filterCalled());
+}
+
 FILTER_ADAPTER_TEST(processDoesNotFilterSecondChannelIfOnlyOneChannel) {
     initialize(adapter);
     std::vector<float> first{1, 2, 3};

@@ -12,7 +12,7 @@ class FilterAdapter : public SignalProcessor {
         : factory{factory} {}
 
     void process(const std::vector<gsl::span<float>> &audio) override {
-        if (filter)
+        if (filter && !audio.empty())
             filter->filter(audio.front());
         if (secondFilter && audio.size() > 1)
             secondFilter->filter(audio.at(1));
