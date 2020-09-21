@@ -59,13 +59,17 @@ class FilterAdapterTests : public ::testing::Test {
 
 #define FILTER_ADAPTER_TEST(a) TEST_F(FilterAdapterTests, a)
 
+void initialize(FilterAdapter &adapter, const audio_type &x) {
+    adapter.initialize(x);
+}
+
 FILTER_ADAPTER_TEST(initializePassesFirstChannelToFactory) {
-    adapter.initialize({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+    initialize(adapter, {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
     assertEqual({1, 2, 3}, filterFactory.taps());
 }
 
 FILTER_ADAPTER_TEST(noFiltersMadeWhenAudioEmpty) {
-    adapter.initialize({});
+    initialize(adapter, {});
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(filterFactory.anyMade());
 }
 
@@ -77,7 +81,7 @@ void assertEqual_(const std::vector<T> &expected, gsl::span<T> actual) {
 }
 
 FILTER_ADAPTER_TEST(processPassesFirstChannelToFilter) {
-    adapter.initialize({{}});
+    initialize(adapter, {{}});
     std::vector<float> first{1, 2, 3};
     std::vector<float> second{4, 5, 6};
     std::vector<float> third{7, 8, 9};
@@ -88,7 +92,7 @@ FILTER_ADAPTER_TEST(processPassesFirstChannelToFilter) {
 FILTER_ADAPTER_TEST(processPassesSecondChannelToSecondFilter) {
     auto secondFilter{std::make_shared<FilterStub>()};
     filterFactory.setSecondFilter(secondFilter);
-    adapter.initialize({{}});
+    initialize(adapter, {{}});
     std::vector<float> first{1, 2, 3};
     std::vector<float> second{4, 5, 6};
     std::vector<float> third{7, 8, 9};
@@ -97,7 +101,7 @@ FILTER_ADAPTER_TEST(processPassesSecondChannelToSecondFilter) {
 }
 
 FILTER_ADAPTER_TEST(clearDoesNotUseFilter) {
-    adapter.initialize({});
+    initialize(adapter, {});
     adapter.clear();
     std::vector<float> first{1, 2, 3};
     std::vector<float> second{4, 5, 6};
