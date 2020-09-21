@@ -82,6 +82,10 @@ if(${AV_SPEECH_IN_NOISE_ENABLE_TARGET_FILTERING})
   set(ENABLE_FLOAT
       ON
       CACHE BOOL "" FORCE)
+  set(BUILD_TESTS
+      OFF
+      CACHE BOOL "" FORCE)
+
   FetchContent_Declare(
     fftw
     URL http://fftw.org/fftw-3.3.8.tar.gz
