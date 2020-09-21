@@ -2,11 +2,13 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_TARGETFILTERSWITCHADAPTER_HPP_
 
 #include "Model.hpp"
+#include <av-speech-in-noise/Interface.hpp>
 
 namespace av_speech_in_noise {
 class SignalProcessorSwitch {
   public:
-    virtual ~SignalProcessorSwitch() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        SignalProcessorSwitch);
     virtual void initializeProcessor(const LocalUrl &) = 0;
     virtual void clearProcessor() = 0;
 };
