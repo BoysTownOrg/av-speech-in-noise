@@ -6,34 +6,44 @@
 #include <memory>
 
 namespace av_speech_in_noise {
+static auto hasAtLeastOneChannel(const std::vector<gsl::span<float>> &audio)
+    -> bool {
+    return !audio.empty();
+}
+
+static auto hasAtLeastTwoChannels(const std::vector<gsl::span<float>> &audio)
+    -> bool {
+    return audio.size() > 1;
+}
+
 class FilterAdapter : public SignalProcessor {
   public:
     explicit FilterAdapter(Filter<float>::Factory &factory)
         : factory{factory} {}
 
     void process(const std::vector<gsl::span<float>> &audio) override {
-        if (filter && !audio.empty())
-            filter->filter(audio.front());
-        if (secondFilter && audio.size() > 1)
-            secondFilter->filter(audio.at(1));
+        if (leftFilter && hasAtLeastOneChannel(audio))
+            leftFilter->filter(audio.front());
+        if (rightFilter && hasAtLeastTwoChannels(audio))
+            rightFilter->filter(audio.at(1));
     }
 
     void initialize(const audio_type &audio) override {
         if (audio.empty())
             return;
-        filter = factory.make(audio.front());
-        secondFilter = factory.make(audio.front());
+        leftFilter = factory.make(audio.front());
+        rightFilter = factory.make(audio.front());
     }
 
     void clear() override {
-        filter.reset();
-        secondFilter.reset();
+        leftFilter.reset();
+        rightFilter.reset();
     }
 
   private:
     Filter<float>::Factory &factory;
-    std::shared_ptr<Filter<float>> filter;
-    std::shared_ptr<Filter<float>> secondFilter;
+    std::shared_ptr<Filter<float>> leftFilter;
+    std::shared_ptr<Filter<float>> rightFilter;
 };
 }
 
