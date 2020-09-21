@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_AV_SPEECH_IN_NOISE_INCLUDE_AV_SPEECH_IN_NOISE_MODEL_HPP_
 #define AV_SPEECH_IN_NOISE_AV_SPEECH_IN_NOISE_INCLUDE_AV_SPEECH_IN_NOISE_MODEL_HPP_
 
+#include "Interface.hpp"
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -70,7 +71,7 @@ struct RealLevelDifference {
 };
 
 struct SNR : RealLevelDifference {
-    explicit constexpr SNR(int dB = {}) : RealLevelDifference{dB} {}
+    explicit constexpr SNR(int dB_ = {}) : RealLevelDifference{dB_} {}
 };
 
 struct AdaptiveTest : Test {
@@ -122,7 +123,7 @@ class Model {
   public:
     class Observer {
       public:
-        virtual ~Observer() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void trialComplete() = 0;
     };
 
@@ -131,7 +132,7 @@ class Model {
         explicit RequestFailure(const std::string &s) : std::runtime_error{s} {}
     };
 
-    virtual ~Model() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Model);
     virtual void attach(Observer *) = 0;
     virtual void initialize(const AdaptiveTest &) = 0;
     virtual void initializeWithTargetReplacement(
