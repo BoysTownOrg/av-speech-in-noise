@@ -25,7 +25,10 @@ class FilterAdapter : public SignalProcessor {
         secondFilter = factory.make(audio.front());
     }
 
-    void clear() override { filter.reset(); }
+    void clear() override {
+        filter.reset();
+        secondFilter.reset();
+    }
 
   private:
     Filter<float>::Factory &factory;

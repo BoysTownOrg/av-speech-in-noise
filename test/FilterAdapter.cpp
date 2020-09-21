@@ -115,14 +115,15 @@ FILTER_ADAPTER_TEST(processDoesNotFilterSecondChannelIfOnlyOneChannel) {
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(secondFilter->filterCalled());
 }
 
-FILTER_ADAPTER_TEST(clearDoesNotUseFilter) {
-    initialize(adapter, {});
+FILTER_ADAPTER_TEST(clearDoesNotUseEitherFilter) {
+    initialize(adapter);
     adapter.clear();
     std::vector<float> first{1, 2, 3};
     std::vector<float> second{4, 5, 6};
     std::vector<float> third{7, 8, 9};
     adapter.process({first, second, third});
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(filter->filterCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(secondFilter->filterCalled());
 }
 }
 }
