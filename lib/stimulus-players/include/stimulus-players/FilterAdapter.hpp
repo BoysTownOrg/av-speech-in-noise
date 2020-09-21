@@ -16,6 +16,16 @@ static auto hasAtLeastTwoChannels(const std::vector<gsl::span<float>> &audio)
     return audio.size() > 1;
 }
 
+static auto firstChannel(const std::vector<gsl::span<float>> &audio)
+    -> gsl::span<float> {
+    return audio.front();
+}
+
+static auto secondChannel(const std::vector<gsl::span<float>> &audio)
+    -> gsl::span<float> {
+    return audio.at(1);
+}
+
 class FilterAdapter : public SignalProcessor {
   public:
     explicit FilterAdapter(Filter<float>::Factory &factory)
@@ -23,9 +33,9 @@ class FilterAdapter : public SignalProcessor {
 
     void process(const std::vector<gsl::span<float>> &audio) override {
         if (leftFilter && hasAtLeastOneChannel(audio))
-            leftFilter->filter(audio.front());
+            leftFilter->filter(firstChannel(audio));
         if (rightFilter && hasAtLeastTwoChannels(audio))
-            rightFilter->filter(audio.at(1));
+            rightFilter->filter(secondChannel(audio));
     }
 
     void initialize(const audio_type &audio) override {
