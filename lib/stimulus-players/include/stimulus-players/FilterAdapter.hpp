@@ -14,10 +14,14 @@ class FilterAdapter : public SignalProcessor {
     void process(const std::vector<gsl::span<float>> &audio) override {
         if (filter)
             filter->filter(audio.front());
+        if (secondFilter)
+            secondFilter->filter(audio.at(1));
     }
 
     void initialize(const audio_type &audio) override {
         filter =
+            factory.make(audio.empty() ? std::vector<float>{} : audio.front());
+        secondFilter =
             factory.make(audio.empty() ? std::vector<float>{} : audio.front());
     }
 
@@ -26,6 +30,7 @@ class FilterAdapter : public SignalProcessor {
   private:
     Filter<float>::Factory &factory;
     std::shared_ptr<Filter<float>> filter;
+    std::shared_ptr<Filter<float>> secondFilter;
 };
 }
 

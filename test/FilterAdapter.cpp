@@ -28,14 +28,22 @@ class FilterFactoryStub : public Filter<float>::Factory {
     auto make(const std::vector<float> &taps)
         -> std::shared_ptr<Filter<float>> override {
         taps_ = taps;
-        return filter;
+        auto next = first ? filter : secondFilter;
+        first = false;
+        return std::move(next);
     }
 
     auto taps() -> std::vector<float> { return taps_; }
 
+    void setSecondFilter(std::shared_ptr<FilterStub> s) {
+        secondFilter = std::move(s);
+    }
+
   private:
+    bool first{true};
     std::vector<float> taps_;
     std::shared_ptr<FilterStub> filter;
+    std::shared_ptr<FilterStub> secondFilter;
 };
 
 class FilterAdapterTests : public ::testing::Test {
@@ -66,6 +74,17 @@ FILTER_ADAPTER_TEST(processPassesFirstChannelToFilter) {
     std::vector<float> third{7, 8, 9};
     adapter.process({first, second, third});
     assertEqual_({1, 2, 3}, filter->signal());
+}
+
+FILTER_ADAPTER_TEST(processPassesSecondChannelToSecondFilter) {
+    auto secondFilter{std::make_shared<FilterStub>()};
+    filterFactory.setSecondFilter(secondFilter);
+    adapter.initialize({});
+    std::vector<float> first{1, 2, 3};
+    std::vector<float> second{4, 5, 6};
+    std::vector<float> third{7, 8, 9};
+    adapter.process({first, second, third});
+    assertEqual_({4, 5, 6}, secondFilter->signal());
 }
 
 FILTER_ADAPTER_TEST(clearDoesNotUseFilter) {
