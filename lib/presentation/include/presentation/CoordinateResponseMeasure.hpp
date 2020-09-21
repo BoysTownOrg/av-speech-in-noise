@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_COORDINATERESPONSEMEASURE_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_COORDINATERESPONSEMEASURE_HPP_
 
-#include "Interface.hpp"
+#include <av-speech-in-noise/Interface.hpp>
 #include "View.hpp"
 #include "Task.hpp"
 #include <av-speech-in-noise/Model.hpp>
