@@ -1,5 +1,7 @@
-add_library(stimulus-players src/AudioReaderImpl.cpp src/MaskerPlayerImpl.cpp
-                             src/TargetPlayerImpl.cpp src/OverlapAddFilter.cpp)
+add_library(
+  stimulus-players
+  src/AudioReaderImpl.cpp src/MaskerPlayerImpl.cpp src/TargetPlayerImpl.cpp
+  src/OverlapAddFilter.cpp src/FilterAdapter.cpp)
 target_include_directories(
   stimulus-players
   PUBLIC include
