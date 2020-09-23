@@ -11,7 +11,7 @@ class TargetPlayerStub : public TargetPlayer {
   public:
     void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
 
-    void useSecondChannelOnly() { usingSecondChannelOnly_ = true; }
+    void useSecondChannelOnly() override { usingSecondChannelOnly_ = true; }
 
     void useAllChannels() override { usingAllChannels_ = true; }
 

@@ -34,8 +34,7 @@ class VideoPlayer {
     virtual auto durationSeconds() -> double = 0;
 };
 
-class TargetPlayerImpl : public TargetPlayer,
-                         public VideoPlayer::Observer {
+class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
   public:
     TargetPlayerImpl(VideoPlayer *, AudioReader *);
     void attach(TargetPlayer::Observer *) override;
@@ -54,6 +53,7 @@ class TargetPlayerImpl : public TargetPlayer,
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
     auto audioDevices() -> std::vector<std::string>;
     void useFirstChannelOnly() override;
+    void useSecondChannelOnly() override {}
     void useAllChannels() override;
 
   private:
