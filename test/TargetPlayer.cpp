@@ -104,14 +104,6 @@ class TargetPlayerListenerStub : public TargetPlayer::Observer {
     [[nodiscard]] auto notified() const { return notified_; }
 };
 
-void setFirstChannelOnly(TargetPlayerImpl &player) {
-    player.useFirstChannelOnly();
-}
-
-void setSecondChannelOnly(TargetPlayerImpl &player) {
-    player.useSecondChannelOnly();
-}
-
 class TargetPlayerTests : public ::testing::Test {
   protected:
     std::vector<float> leftChannel{};
@@ -151,6 +143,8 @@ class TargetPlayerTests : public ::testing::Test {
     }
 
     void setLevel_dB(double x) { player.apply(LevelAmplification{x}); }
+
+    void setFirstChannelOnly() { player.useFirstChannelOnly(); }
 
     void useAllChannels() { player.useAllChannels(); }
 
@@ -228,7 +222,7 @@ TARGET_PLAYER_TEST(twentydBMultipliesSignalByTen_Stereo) {
 }
 
 TARGET_PLAYER_TEST(onlyPlayFirstChannel) {
-    setFirstChannelOnly(player);
+    setFirstChannelOnly();
     setLeftChannel({1, 2, 3});
     setRightChannel({4, 5, 6});
     fillAudioBufferStereo();
@@ -237,7 +231,7 @@ TARGET_PLAYER_TEST(onlyPlayFirstChannel) {
 }
 
 TARGET_PLAYER_TEST(onlyPlaySecondChannel) {
-    setSecondChannelOnly(player);
+    player.useSecondChannelOnly();
     setLeftChannel({1, 2, 3});
     setRightChannel({4, 5, 6});
     fillAudioBufferStereo();
@@ -246,7 +240,7 @@ TARGET_PLAYER_TEST(onlyPlaySecondChannel) {
 }
 
 TARGET_PLAYER_TEST(switchBackToAllChannels) {
-    setFirstChannelOnly(player);
+    setFirstChannelOnly();
     setLeftChannel({1, 2, 3});
     setRightChannel({7, 8, 9});
     fillAudioBufferStereo();
@@ -259,7 +253,7 @@ TARGET_PLAYER_TEST(switchBackToAllChannels) {
 }
 
 TARGET_PLAYER_TEST(switchBackToAllChannelsAfterOnlyUsingSecondChannel) {
-    setSecondChannelOnly(player);
+    player.useSecondChannelOnly();
     setLeftChannel({1, 2, 3});
     setRightChannel({7, 8, 9});
     fillAudioBufferStereo();
