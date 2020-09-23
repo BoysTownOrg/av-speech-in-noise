@@ -180,7 +180,7 @@ void run(UseCase &useCase) { useCase.run(); }
 
 class LevelUseCase : public virtual UseCase {
   public:
-    virtual auto fullScaleLevel(ModelStub &) -> int = 0;
+    virtual auto calibration(ModelStub &) -> Calibration = 0;
 };
 
 class PlayingCalibration : public LevelUseCase {
@@ -190,8 +190,8 @@ class PlayingCalibration : public LevelUseCase {
 
     void run() override { control.playCalibration(); }
 
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return m.calibration().fullScaleLevel.dB_SPL;
+    auto calibration(ModelStub &m) -> Calibration override {
+        return m.calibration();
     }
 
   private:
@@ -205,8 +205,8 @@ class PlayingLeftSpeakerCalibration : public LevelUseCase {
 
     void run() override { control.playLeftSpeakerCalibration(); }
 
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return m.calibration().fullScaleLevel.dB_SPL;
+    auto calibration(ModelStub &m) -> Calibration override {
+        return m.leftSpeakerCalibration();
     }
 
   private:
@@ -220,8 +220,8 @@ class PlayingRightSpeakerCalibration : public LevelUseCase {
 
     void run() override { control.playRightSpeakerCalibration(); }
 
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return m.calibration().fullScaleLevel.dB_SPL;
+    auto calibration(ModelStub &m) -> Calibration override {
+        return m.rightSpeakerCalibration();
     }
 
   private:
@@ -327,6 +327,13 @@ class TestSetupControllerTests : public ::testing::Test {
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"a"}, testSettingsInterpreter.text());
+    }
+
+    void assertPassesCalibrationLevel(LevelUseCase &useCase) {
+        calibration.level.dB_SPL = 1;
+        run(useCase);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            1, useCase.calibration(model).level.dB_SPL);
     }
 };
 
@@ -557,17 +564,11 @@ TEST_SETUP_CONTROLLER_TEST(
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesLevel) {
-    calibration.level.dB_SPL = 1;
-    run(playingCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        1, av_speech_in_noise::calibration(model).level.dB_SPL);
+    assertPassesCalibrationLevel(playingCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesLevel) {
-    calibration.level.dB_SPL = 1;
-    run(playingLeftSpeakerCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        1, model.leftSpeakerCalibration().level.dB_SPL);
+    assertPassesCalibrationLevel(playingLeftSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(

@@ -95,6 +95,10 @@ class ModelStub : public Model {
         return leftSpeakerCalibration_;
     }
 
+    auto rightSpeakerCalibration() -> Calibration {
+        return rightSpeakerCalibration_;
+    }
+
     [[nodiscard]] auto incorrectResponseSubmitted() const {
         return incorrectResponseSubmitted_;
     }
