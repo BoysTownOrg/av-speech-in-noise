@@ -571,6 +571,10 @@ TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesLevel) {
     assertPassesCalibrationLevel(playingLeftSpeakerCalibration);
 }
 
+TEST_SETUP_CONTROLLER_TEST(playRightSpeakerCalibrationPassesLevel) {
+    assertPassesCalibrationLevel(playingRightSpeakerCalibration);
+}
+
 TEST_SETUP_CONTROLLER_TEST(
     playingCalibrationPassesTestSettingsFileToTextFileReader) {
     assertPassesTestSettingsFileToTextFileReader(playingCalibration);
