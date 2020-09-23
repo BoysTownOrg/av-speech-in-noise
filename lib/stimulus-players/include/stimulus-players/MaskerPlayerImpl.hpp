@@ -77,6 +77,8 @@ class MaskerPlayerImpl : public MaskerPlayer,
     void setChannelDelaySeconds(
         channel_index_type channel, double seconds) override;
     void useFirstChannelOnly() override;
+    void useSecondChannelOnly() override {}
+    void play() override {}
     void clearChannelDelays() override;
     void useAllChannels() override;
     auto nanoseconds(PlayerTime) -> std::uintmax_t override;

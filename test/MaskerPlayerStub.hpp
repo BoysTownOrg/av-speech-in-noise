@@ -35,9 +35,9 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool played_{};
 
   public:
-    auto played() -> bool { return played_; }
+    [[nodiscard]] auto played() const -> bool { return played_; }
 
-    void play() { played_ = true; }
+    void play() override { played_ = true; }
 
     auto currentSystemTime() -> PlayerTime override {
         return currentSystemTime_;
@@ -72,7 +72,7 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
 
-    void useSecondChannelOnly() { usingSecondChannelOnly_ = true; }
+    void useSecondChannelOnly() override { usingSecondChannelOnly_ = true; }
 
     [[nodiscard]] auto usingFirstChannelOnly() const {
         return usingFirstChannelOnly_;
