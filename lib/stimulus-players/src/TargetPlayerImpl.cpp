@@ -103,6 +103,7 @@ static void store(std::atomic<bool> &where, bool what) { where.store(what); }
 
 void TargetPlayerImpl::useFirstChannelOnly() {
     store(useFirstChannelOnly_, true);
+    store(useSecondChannelOnly_, false);
 }
 
 void TargetPlayerImpl::useSecondChannelOnly() {
