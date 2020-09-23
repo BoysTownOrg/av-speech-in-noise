@@ -369,7 +369,8 @@ void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
     }
 }
 
-void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
+static void play(MaskerPlayer &maskerPlayer, TargetPlayer &targetPlayer,
+    const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(maskerPlayer);
 
     throwRequestFailureOnInvalidAudioDevice(
@@ -383,40 +384,20 @@ void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
         calibration.fileUrl);
     show(targetPlayer);
     play(targetPlayer);
+}
+
+void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
+    play(maskerPlayer, targetPlayer, calibration);
 }
 
 void RecognitionTestModelImpl::playLeftSpeakerCalibration(
     const Calibration &calibration) {
-    throwRequestFailureIfTrialInProgress(maskerPlayer);
-
-    throwRequestFailureOnInvalidAudioDevice(
-        [&](auto device) { setAudioDevice(targetPlayer, device); },
-        calibration.audioDevice);
-    throwRequestFailureOnInvalidAudioFile(
-        [&](auto file) {
-            loadFile(targetPlayer, file);
-            apply(targetPlayer, levelAmplification(targetPlayer, calibration));
-        },
-        calibration.fileUrl);
-    show(targetPlayer);
-    play(targetPlayer);
+    play(maskerPlayer, targetPlayer, calibration);
 }
 
 void RecognitionTestModelImpl::playRightSpeakerCalibration(
     const Calibration &calibration) {
-    throwRequestFailureIfTrialInProgress(maskerPlayer);
-
-    throwRequestFailureOnInvalidAudioDevice(
-        [&](auto device) { setAudioDevice(targetPlayer, device); },
-        calibration.audioDevice);
-    throwRequestFailureOnInvalidAudioFile(
-        [&](auto file) {
-            loadFile(targetPlayer, file);
-            apply(targetPlayer, levelAmplification(targetPlayer, calibration));
-        },
-        calibration.fileUrl);
-    show(targetPlayer);
-    play(targetPlayer);
+    play(maskerPlayer, targetPlayer, calibration);
 }
 
 auto RecognitionTestModelImpl::testComplete() -> bool {
