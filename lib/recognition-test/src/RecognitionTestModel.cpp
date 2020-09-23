@@ -399,6 +399,19 @@ static void play(TargetPlayer &targetPlayer, const Calibration &calibration) {
     play(targetPlayer);
 }
 
+static void play(MaskerPlayer &maskerPlayer, const Calibration &calibration) {
+    throwRequestFailureOnInvalidAudioDevice(
+        [&](auto device) { setAudioDevice(maskerPlayer, device); },
+        calibration.audioDevice);
+    throwRequestFailureOnInvalidAudioFile(
+        [&](auto file) {
+            loadFile(maskerPlayer, file);
+            apply(maskerPlayer, levelAmplification(maskerPlayer, calibration));
+        },
+        calibration.fileUrl);
+    play(maskerPlayer);
+}
+
 void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(maskerPlayer);
     targetPlayer.useAllChannels();
@@ -409,32 +422,14 @@ void RecognitionTestModelImpl::playLeftSpeakerCalibration(
     const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(maskerPlayer);
     maskerPlayer.useFirstChannelOnly();
-    throwRequestFailureOnInvalidAudioDevice(
-        [&](auto device) { setAudioDevice(maskerPlayer, device); },
-        calibration.audioDevice);
-    throwRequestFailureOnInvalidAudioFile(
-        [&](auto file) {
-            loadFile(maskerPlayer, file);
-            apply(maskerPlayer, levelAmplification(maskerPlayer, calibration));
-        },
-        calibration.fileUrl);
-    play(maskerPlayer);
+    play(maskerPlayer, calibration);
 }
 
 void RecognitionTestModelImpl::playRightSpeakerCalibration(
     const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(maskerPlayer);
     maskerPlayer.useSecondChannelOnly();
-    throwRequestFailureOnInvalidAudioDevice(
-        [&](auto device) { setAudioDevice(maskerPlayer, device); },
-        calibration.audioDevice);
-    throwRequestFailureOnInvalidAudioFile(
-        [&](auto file) {
-            loadFile(maskerPlayer, file);
-            apply(maskerPlayer, levelAmplification(maskerPlayer, calibration));
-        },
-        calibration.fileUrl);
-    play(maskerPlayer);
+    play(maskerPlayer, calibration);
 }
 
 auto RecognitionTestModelImpl::testComplete() -> bool {
