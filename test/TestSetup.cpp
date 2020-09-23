@@ -559,6 +559,12 @@ TEST_SETUP_CONTROLLER_TEST(
     assertPassesTestSettingsTextToTestSettingsInterpreter(playingCalibration);
 }
 
+TEST_SETUP_CONTROLLER_TEST(
+    playingLeftSpeakerCalibrationPassesTestSettingsTextToTestSettingsInterpreter) {
+    assertPassesTestSettingsTextToTestSettingsInterpreter(
+        playingLeftSpeakerCalibration);
+}
+
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFilePath) {
     calibration.fileUrl.path = "a";
     run(playingCalibration);
