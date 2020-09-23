@@ -259,7 +259,10 @@ void MaskerPlayerImpl::useSecondChannelOnly() {
     clear(firstChannelOnly);
 }
 
-void MaskerPlayerImpl::useAllChannels() { clear(firstChannelOnly); }
+void MaskerPlayerImpl::useAllChannels() {
+    clear(firstChannelOnly);
+    clear(secondChannelOnly);
+}
 
 void MaskerPlayerImpl::fadeIn() { mainThread.fadeIn(); }
 

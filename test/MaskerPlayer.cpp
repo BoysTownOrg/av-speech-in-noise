@@ -697,6 +697,18 @@ MASKER_PLAYER_TEST(useAllChannelsAfterUsingFirstChannelOnly) {
     assertRightChannelEquals({10, 11, 12});
 }
 
+MASKER_PLAYER_TEST(useAllChannelsAfterUsingSecondChannelOnly) {
+    useSecondChannelOnly(player);
+    loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
+    fillAudioBufferStereo(3);
+    assertLeftChannelEquals({0, 0, 0});
+    assertRightChannelEquals({7, 8, 9});
+    useAllChannels();
+    fillAudioBufferStereo(3);
+    assertLeftChannelEquals({4, 5, 6});
+    assertRightChannelEquals({10, 11, 12});
+}
+
 MASKER_PLAYER_TEST(noAudioLoadedMutesChannel) {
     leftChannel = {-1, -1, -1};
     fillAudioBufferMono(3);
