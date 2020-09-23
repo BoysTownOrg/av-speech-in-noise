@@ -581,6 +581,17 @@ TEST_SETUP_CONTROLLER_TEST(
 }
 
 TEST_SETUP_CONTROLLER_TEST(
+    playingLeftSpeakerCalibrationPassesTestSettingsFileToTextFileReader) {
+    assertPassesTestSettingsFileToTextFileReader(playingLeftSpeakerCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(
+    playingRightSpeakerCalibrationPassesTestSettingsFileToTextFileReader) {
+    assertPassesTestSettingsFileToTextFileReader(
+        playingRightSpeakerCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsFileToTextFileReader) {
     assertPassesTestSettingsFileToTextFileReader(confirmingTestSetup);
 }
