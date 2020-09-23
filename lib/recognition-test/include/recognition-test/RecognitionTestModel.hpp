@@ -96,6 +96,7 @@ class MaskerPlayer {
     virtual auto fadeTime() -> Duration = 0;
     virtual void useAllChannels() = 0;
     virtual void useFirstChannelOnly() = 0;
+    virtual void useSecondChannelOnly() {}
     virtual void clearChannelDelays() = 0;
     virtual void setChannelDelaySeconds(gsl::index channel, double seconds) = 0;
     virtual auto nanoseconds(PlayerTime) -> std::uintmax_t = 0;

@@ -370,7 +370,6 @@ void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
 }
 
 static void play(TargetPlayer &targetPlayer, const Calibration &calibration) {
-
     throwRequestFailureOnInvalidAudioDevice(
         [&](auto device) { setAudioDevice(targetPlayer, device); },
         calibration.audioDevice);
@@ -393,14 +392,14 @@ void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
 void RecognitionTestModelImpl::playLeftSpeakerCalibration(
     const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(maskerPlayer);
-    useFirstChannelOnly(targetPlayer);
+    maskerPlayer.useFirstChannelOnly();
     play(targetPlayer, calibration);
 }
 
 void RecognitionTestModelImpl::playRightSpeakerCalibration(
     const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(maskerPlayer);
-    targetPlayer.useSecondChannelOnly();
+    maskerPlayer.useSecondChannelOnly();
     play(targetPlayer, calibration);
 }
 

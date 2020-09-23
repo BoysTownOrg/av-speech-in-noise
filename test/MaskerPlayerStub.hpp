@@ -30,6 +30,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool throwInvalidAudioFileOnLoad_{};
     bool usingAllChannels_{};
     bool usingFirstChannelOnly_{};
+    bool usingSecondChannelOnly_{};
     bool channelDelaysCleared_{};
 
   public:
@@ -66,8 +67,14 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
 
+    void useSecondChannelOnly() { usingSecondChannelOnly_ = true; }
+
     [[nodiscard]] auto usingFirstChannelOnly() const {
         return usingFirstChannelOnly_;
+    }
+
+    [[nodiscard]] auto usingSecondChannelOnly() const {
+        return usingSecondChannelOnly_;
     }
 
     [[nodiscard]] auto channelDelaysCleared() const {
