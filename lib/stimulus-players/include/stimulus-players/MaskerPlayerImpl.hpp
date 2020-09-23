@@ -77,7 +77,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     void setChannelDelaySeconds(
         channel_index_type channel, double seconds) override;
     void useFirstChannelOnly() override;
-    void useSecondChannelOnly() override {}
+    void useSecondChannelOnly() override;
     void play() override;
     void clearChannelDelays() override;
     void useAllChannels() override;
@@ -163,6 +163,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
     std::atomic<int> levelTransitionSamples_{};
     std::atomic<bool> firstChannelOnly{};
+    std::atomic<bool> secondChannelOnly{};
     std::atomic<bool> fadeOutComplete{};
     std::atomic<bool> fadeInComplete{};
     std::atomic<bool> pleaseFadeOut{};

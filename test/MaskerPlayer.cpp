@@ -653,6 +653,14 @@ MASKER_PLAYER_TEST(useFirstChannelOnlyMutesOtherChannels) {
     assertRightChannelEquals({0, 0, 0});
 }
 
+MASKER_PLAYER_TEST(useSecondChannelOnlyMutesOtherChannels) {
+    player.useSecondChannelOnly();
+    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    fillAudioBufferStereo(3);
+    assertLeftChannelEquals({0, 0, 0});
+    assertRightChannelEquals({4, 5, 6});
+}
+
 MASKER_PLAYER_TEST(useAllChannelsAfterUsingFirstChannelOnly) {
     useFirstChannelOnly();
     loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
