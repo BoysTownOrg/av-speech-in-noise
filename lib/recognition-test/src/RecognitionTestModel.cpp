@@ -420,14 +420,12 @@ void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
 
 void RecognitionTestModelImpl::playLeftSpeakerCalibration(
     const Calibration &calibration) {
-    throwRequestFailureIfTrialInProgress(maskerPlayer);
     maskerPlayer.useFirstChannelOnly();
     play(maskerPlayer, calibration);
 }
 
 void RecognitionTestModelImpl::playRightSpeakerCalibration(
     const Calibration &calibration) {
-    throwRequestFailureIfTrialInProgress(maskerPlayer);
     maskerPlayer.useSecondChannelOnly();
     play(maskerPlayer, calibration);
 }
