@@ -256,6 +256,7 @@ void MaskerPlayerImpl::useFirstChannelOnly() {
 
 void MaskerPlayerImpl::useSecondChannelOnly() {
     av_speech_in_noise::set(secondChannelOnly);
+    clear(firstChannelOnly);
 }
 
 void MaskerPlayerImpl::useAllChannels() { clear(firstChannelOnly); }

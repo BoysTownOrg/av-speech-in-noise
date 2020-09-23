@@ -653,9 +653,13 @@ MASKER_PLAYER_TEST(useFirstChannelOnlyMutesOtherChannels) {
     assertRightChannelEquals({0, 0, 0});
 }
 
+void useSecondChannelOnly(MaskerPlayerImpl &player) {
+    player.useSecondChannelOnly();
+}
+
 MASKER_PLAYER_TEST(
     useFirstChannelOnlyAfterUsingSecondChannelOnlyMutesOtherChannels) {
-    player.useSecondChannelOnly();
+    useSecondChannelOnly(player);
     useFirstChannelOnly();
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
     fillAudioBufferStereo(3);
@@ -664,7 +668,17 @@ MASKER_PLAYER_TEST(
 }
 
 MASKER_PLAYER_TEST(useSecondChannelOnlyMutesOtherChannels) {
-    player.useSecondChannelOnly();
+    useSecondChannelOnly(player);
+    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    fillAudioBufferStereo(3);
+    assertLeftChannelEquals({0, 0, 0});
+    assertRightChannelEquals({4, 5, 6});
+}
+
+MASKER_PLAYER_TEST(
+    useSecondChannelOnlyAfterUsingFirstChannelOnlyMutesOtherChannels) {
+    useFirstChannelOnly();
+    useSecondChannelOnly(player);
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
     fillAudioBufferStereo(3);
     assertLeftChannelEquals({0, 0, 0});
