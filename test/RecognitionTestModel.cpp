@@ -841,6 +841,12 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    playingLeftSpeakerCalibrationUsesFirstChannelOnlyOfTargetPlayer) {
+    run(playingLeftSpeakerCalibration, model);
+    assertOnlyUsingFirstChannel(targetPlayer);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithSingleSpeakerClearsAllMaskerPlayerChannelDelays) {
     run(initializingTestWithSingleSpeaker, model);
     assertChannelDelaysCleared(maskerPlayer);

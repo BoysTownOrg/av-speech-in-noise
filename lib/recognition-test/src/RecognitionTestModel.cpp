@@ -369,9 +369,7 @@ void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
     }
 }
 
-static void play(MaskerPlayer &maskerPlayer, TargetPlayer &targetPlayer,
-    const Calibration &calibration) {
-    throwRequestFailureIfTrialInProgress(maskerPlayer);
+static void play(TargetPlayer &targetPlayer, const Calibration &calibration) {
 
     throwRequestFailureOnInvalidAudioDevice(
         [&](auto device) { setAudioDevice(targetPlayer, device); },
@@ -387,17 +385,21 @@ static void play(MaskerPlayer &maskerPlayer, TargetPlayer &targetPlayer,
 }
 
 void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
-    play(maskerPlayer, targetPlayer, calibration);
+    throwRequestFailureIfTrialInProgress(maskerPlayer);
+    play(targetPlayer, calibration);
 }
 
 void RecognitionTestModelImpl::playLeftSpeakerCalibration(
     const Calibration &calibration) {
-    play(maskerPlayer, targetPlayer, calibration);
+    throwRequestFailureIfTrialInProgress(maskerPlayer);
+    useFirstChannelOnly(targetPlayer);
+    play(targetPlayer, calibration);
 }
 
 void RecognitionTestModelImpl::playRightSpeakerCalibration(
     const Calibration &calibration) {
-    play(maskerPlayer, targetPlayer, calibration);
+    throwRequestFailureIfTrialInProgress(maskerPlayer);
+    play(targetPlayer, calibration);
 }
 
 auto RecognitionTestModelImpl::testComplete() -> bool {
