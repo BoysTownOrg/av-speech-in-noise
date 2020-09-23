@@ -56,6 +56,10 @@ static void setAudioDevice(TargetPlayer &player, const std::string &device) {
     player.setAudioDevice(device);
 }
 
+static void setAudioDevice(MaskerPlayer &player, const std::string &device) {
+    player.setAudioDevice(device);
+}
+
 static void setAudioDevices(MaskerPlayer &maskerPlayer,
     TargetPlayer &targetPlayer, const std::string &device) {
     maskerPlayer.setAudioDevice(device);
@@ -379,6 +383,15 @@ void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
         calibration.fileUrl);
     show(targetPlayer);
     play(targetPlayer);
+}
+
+void RecognitionTestModelImpl::playLeftSpeakerCalibration(
+    const Calibration &calibration) {
+    throwRequestFailureIfTrialInProgress(maskerPlayer);
+
+    throwRequestFailureOnInvalidAudioDevice(
+        [&](auto device) { setAudioDevice(maskerPlayer, device); },
+        calibration.audioDevice);
 }
 
 auto RecognitionTestModelImpl::testComplete() -> bool {
