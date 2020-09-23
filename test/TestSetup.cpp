@@ -325,28 +325,28 @@ class TestSetupControllerTests : public ::testing::Test {
             std::string{"a"}, testSettingsInterpreter.text());
     }
 
-    void assertPassesCalibrationLevel(CalibrationUseCase &useCase) {
+    void assertPassesLevel(CalibrationUseCase &useCase) {
         calibration.level.dB_SPL = 1;
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             1, useCase.calibration(model).level.dB_SPL);
     }
 
-    void assertPassesCalibrationAudioUrl(CalibrationUseCase &useCase) {
+    void assertPassesAudioFileUrl(CalibrationUseCase &useCase) {
         calibration.fileUrl.path = "a";
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"a"}, useCase.calibration(model).fileUrl.path);
     }
 
-    void assertPassesCalibrationAudioDevice(CalibrationUseCase &useCase) {
+    void assertPassesAudioDevice(CalibrationUseCase &useCase) {
         setAudioDevice(sessionView, "b");
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"b"}, useCase.calibration(model).audioDevice);
     }
 
-    void assertPassesCalibrationFullScaleLevel(CalibrationUseCase &useCase) {
+    void assertPassesFullScaleLevel(CalibrationUseCase &useCase) {
         calibration.fullScaleLevel.dB_SPL = 1;
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -581,15 +581,15 @@ TEST_SETUP_CONTROLLER_TEST(
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesLevel) {
-    assertPassesCalibrationLevel(playingCalibration);
+    assertPassesLevel(playingCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesLevel) {
-    assertPassesCalibrationLevel(playingLeftSpeakerCalibration);
+    assertPassesLevel(playingLeftSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playRightSpeakerCalibrationPassesLevel) {
-    assertPassesCalibrationLevel(playingRightSpeakerCalibration);
+    assertPassesLevel(playingRightSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(
@@ -636,27 +636,27 @@ TEST_SETUP_CONTROLLER_TEST(
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFilePath) {
-    assertPassesCalibrationAudioUrl(playingCalibration);
+    assertPassesAudioFileUrl(playingCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesFilePath) {
-    assertPassesCalibrationAudioUrl(playingLeftSpeakerCalibration);
+    assertPassesAudioFileUrl(playingLeftSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playRightSpeakerCalibrationPassesFilePath) {
-    assertPassesCalibrationAudioUrl(playingRightSpeakerCalibration);
+    assertPassesAudioFileUrl(playingRightSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesAudioDevice) {
-    assertPassesCalibrationAudioDevice(playingCalibration);
+    assertPassesAudioDevice(playingCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playingLeftSpeakerCalibrationPassesAudioDevice) {
-    assertPassesCalibrationAudioDevice(playingLeftSpeakerCalibration);
+    assertPassesAudioDevice(playingLeftSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playingRightSpeakerCalibrationPassesAudioDevice) {
-    assertPassesCalibrationAudioDevice(playingRightSpeakerCalibration);
+    assertPassesAudioDevice(playingRightSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
@@ -676,15 +676,15 @@ TEST_SETUP_CONTROLLER_TEST(
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFullScaleLevel) {
-    assertPassesCalibrationFullScaleLevel(playingCalibration);
+    assertPassesFullScaleLevel(playingCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesFullScaleLevel) {
-    assertPassesCalibrationFullScaleLevel(playingLeftSpeakerCalibration);
+    assertPassesFullScaleLevel(playingLeftSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playRightSpeakerCalibrationPassesFullScaleLevel) {
-    assertPassesCalibrationFullScaleLevel(playingRightSpeakerCalibration);
+    assertPassesFullScaleLevel(playingRightSpeakerCalibration);
 }
 
 TEST_SETUP_PRESENTER_TEST(presenterShowsViewWhenStarted) {
