@@ -349,6 +349,13 @@ class TestSetupControllerTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"b"}, useCase.calibration(model).audioDevice);
     }
+
+    void assertPassesCalibrationFullScaleLevel(LevelUseCase &useCase) {
+        calibration.fullScaleLevel.dB_SPL = 1;
+        run(useCase);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            1, useCase.calibration(model).fullScaleLevel.dB_SPL);
+    }
 };
 
 class TestSetupPresenterTests : public ::testing::Test {
@@ -673,17 +680,11 @@ TEST_SETUP_CONTROLLER_TEST(
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFullScaleLevel) {
-    calibration.fullScaleLevel.dB_SPL = 1;
-    run(playingCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        1, av_speech_in_noise::calibration(model).fullScaleLevel.dB_SPL);
+    assertPassesCalibrationFullScaleLevel(playingCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesFullScaleLevel) {
-    calibration.fullScaleLevel.dB_SPL = 1;
-    run(playingLeftSpeakerCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        1, model.leftSpeakerCalibration().fullScaleLevel.dB_SPL);
+    assertPassesCalibrationFullScaleLevel(playingLeftSpeakerCalibration);
 }
 
 TEST_SETUP_PRESENTER_TEST(presenterShowsViewWhenStarted) {
