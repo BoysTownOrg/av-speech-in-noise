@@ -450,6 +450,10 @@ void assertOnlyUsingFirstChannel(TargetPlayerStub &player) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.usingFirstChannelOnly());
 }
 
+void assertOnlyUsingSecondChannel(TargetPlayerStub &player) {
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.usingSecondChannelOnly());
+}
+
 void assertUsingAllChannels(MaskerPlayerStub &player) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.usingAllChannels());
 }
@@ -849,6 +853,12 @@ RECOGNITION_TEST_MODEL_TEST(
     playingLeftSpeakerCalibrationUsesFirstChannelOnlyOfTargetPlayer) {
     run(playingLeftSpeakerCalibration, model);
     assertOnlyUsingFirstChannel(targetPlayer);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playingRightSpeakerCalibrationUsesSecondChannelOnlyOfTargetPlayer) {
+    run(playingRightSpeakerCalibration, model);
+    assertOnlyUsingSecondChannel(targetPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
