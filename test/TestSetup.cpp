@@ -687,6 +687,10 @@ TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesFullScaleLevel) {
     assertPassesCalibrationFullScaleLevel(playingLeftSpeakerCalibration);
 }
 
+TEST_SETUP_CONTROLLER_TEST(playRightSpeakerCalibrationPassesFullScaleLevel) {
+    assertPassesCalibrationFullScaleLevel(playingRightSpeakerCalibration);
+}
+
 TEST_SETUP_PRESENTER_TEST(presenterShowsViewWhenStarted) {
     presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
