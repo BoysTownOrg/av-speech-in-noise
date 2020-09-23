@@ -32,8 +32,13 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool usingFirstChannelOnly_{};
     bool usingSecondChannelOnly_{};
     bool channelDelaysCleared_{};
+    bool played_{};
 
   public:
+    auto played() -> bool { return played_; }
+
+    void play() { played_ = true; }
+
     auto currentSystemTime() -> PlayerTime override {
         return currentSystemTime_;
     }

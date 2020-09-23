@@ -404,6 +404,10 @@ void assertPlayed(TargetPlayerStub &player) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(played(player));
 }
 
+void assertPlayed(MaskerPlayerStub &player) {
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.played());
+}
+
 auto filePath(TargetPlayerStub &player) { return player.filePath(); }
 
 void assertFilePathEquals(TargetPlayerStub &player, const std::string &what) {
@@ -1017,14 +1021,14 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPlaysTarget) {
     assertPlayed(targetPlayer);
 }
 
-RECOGNITION_TEST_MODEL_TEST(playLeftSpeakerCalibrationPlaysTarget) {
+RECOGNITION_TEST_MODEL_TEST(playLeftSpeakerCalibrationPlaysMasker) {
     run(playingLeftSpeakerCalibration, model);
-    assertPlayed(targetPlayer);
+    assertPlayed(maskerPlayer);
 }
 
-RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationPlaysTarget) {
+RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationPlaysMasker) {
     run(playingRightSpeakerCalibration, model);
-    assertPlayed(targetPlayer);
+    assertPlayed(maskerPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {

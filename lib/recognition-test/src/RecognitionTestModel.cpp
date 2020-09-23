@@ -92,6 +92,8 @@ static void loadFile(TargetPlayer &player, const LocalUrl &s) {
 
 static void play(TargetPlayer &player) { player.play(); }
 
+static void play(MaskerPlayer &player) { player.play(); }
+
 static auto targetName(ResponseEvaluator &evaluator, TestMethod *testMethod)
     -> std::string {
     return evaluator.fileName(testMethod->currentTarget());
@@ -402,7 +404,7 @@ void RecognitionTestModelImpl::playLeftSpeakerCalibration(
             apply(targetPlayer, levelAmplification(targetPlayer, calibration));
         },
         calibration.fileUrl);
-    play(targetPlayer);
+    play(maskerPlayer);
 }
 
 void RecognitionTestModelImpl::playRightSpeakerCalibration(
@@ -418,7 +420,7 @@ void RecognitionTestModelImpl::playRightSpeakerCalibration(
             apply(targetPlayer, levelAmplification(targetPlayer, calibration));
         },
         calibration.fileUrl);
-    play(targetPlayer);
+    play(maskerPlayer);
 }
 
 auto RecognitionTestModelImpl::testComplete() -> bool {
