@@ -625,6 +625,13 @@ TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFilePath) {
         std::string{"a"}, av_speech_in_noise::calibration(model).fileUrl.path);
 }
 
+TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesFilePath) {
+    calibration.fileUrl.path = "a";
+    run(playingLeftSpeakerCalibration);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"},
+        playingLeftSpeakerCalibration.calibration(model).fileUrl.path);
+}
+
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesAudioDevice) {
     setAudioDevice(sessionView, "b");
     run(playingCalibration);
