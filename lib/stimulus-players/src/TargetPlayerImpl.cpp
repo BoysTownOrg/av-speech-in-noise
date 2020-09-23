@@ -109,10 +109,7 @@ void TargetPlayerImpl::useSecondChannelOnly() {
     store(useSecondChannelOnly_, true);
 }
 
-void TargetPlayerImpl::useAllChannels() {
-    store(useFirstChannelOnly_, false);
-    store(useSecondChannelOnly_, false);
-}
+void TargetPlayerImpl::useAllChannels() { store(useFirstChannelOnly_, false); }
 
 auto TargetPlayerImpl::playing() -> bool { return player->playing(); }
 
