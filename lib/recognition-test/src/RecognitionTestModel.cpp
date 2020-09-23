@@ -62,7 +62,7 @@ static void setAudioDevice(MaskerPlayer &player, const std::string &device) {
 
 static void setAudioDevices(MaskerPlayer &maskerPlayer,
     TargetPlayer &targetPlayer, const std::string &device) {
-    maskerPlayer.setAudioDevice(device);
+    setAudioDevice(maskerPlayer, device);
     setAudioDevice(targetPlayer, device);
 }
 
