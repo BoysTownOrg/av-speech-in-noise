@@ -158,8 +158,9 @@ class AudioDeviceUseCase : public virtual UseCase {
 
 class PlayingCalibration : public AudioDeviceUseCase {
   public:
-    explicit PlayingCalibration(Calibration &calibration)
-        : calibration{calibration} {}
+    explicit PlayingCalibration(
+        Calibration &calibration, TargetPlayerStub &player)
+        : calibration{calibration}, player{player} {}
 
     void setAudioDevice(std::string s) override {
         calibration.audioDevice = std::move(s);
@@ -169,14 +170,22 @@ class PlayingCalibration : public AudioDeviceUseCase {
         model.playCalibration(calibration);
     }
 
+    void set(DigitalLevel x) { player.setDigitalLevel(x); }
+
+    auto levelAmplification() -> LevelAmplification {
+        return player.levelAmplification();
+    }
+
   private:
     Calibration &calibration;
+    TargetPlayerStub &player;
 };
 
 class PlayingLeftSpeakerCalibration : public AudioDeviceUseCase {
   public:
-    explicit PlayingLeftSpeakerCalibration(Calibration &calibration)
-        : calibration{calibration} {}
+    explicit PlayingLeftSpeakerCalibration(
+        Calibration &calibration, MaskerPlayerStub &player)
+        : calibration{calibration}, player{player} {}
 
     void setAudioDevice(std::string s) override {
         calibration.audioDevice = std::move(s);
@@ -186,14 +195,22 @@ class PlayingLeftSpeakerCalibration : public AudioDeviceUseCase {
         model.playLeftSpeakerCalibration(calibration);
     }
 
+    void set(DigitalLevel x) { player.setDigitalLevel(x); }
+
+    auto levelAmplification() -> LevelAmplification {
+        return player.levelAmplification();
+    }
+
   private:
     Calibration &calibration;
+    MaskerPlayerStub &player;
 };
 
 class PlayingRightSpeakerCalibration : public AudioDeviceUseCase {
   public:
-    explicit PlayingRightSpeakerCalibration(Calibration &calibration)
-        : calibration{calibration} {}
+    explicit PlayingRightSpeakerCalibration(
+        Calibration &calibration, MaskerPlayerStub &player)
+        : calibration{calibration}, player{player} {}
 
     void setAudioDevice(std::string s) override {
         calibration.audioDevice = std::move(s);
@@ -203,8 +220,15 @@ class PlayingRightSpeakerCalibration : public AudioDeviceUseCase {
         model.playRightSpeakerCalibration(calibration);
     }
 
+    void set(DigitalLevel x) { player.setDigitalLevel(x); }
+
+    auto levelAmplification() -> LevelAmplification {
+        return player.levelAmplification();
+    }
+
   private:
     Calibration &calibration;
+    MaskerPlayerStub &player;
 };
 
 class PlayingTrial : public AudioDeviceUseCase {
@@ -554,9 +578,11 @@ class RecognitionTestModelTests : public ::testing::Test {
         outputFile, randomizer, eyeTracker};
     TestMethodStub testMethod;
     Calibration calibration{};
-    PlayingCalibration playingCalibration{calibration};
-    PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{calibration};
-    PlayingRightSpeakerCalibration playingRightSpeakerCalibration{calibration};
+    PlayingCalibration playingCalibration{calibration, targetPlayer};
+    PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{
+        calibration, maskerPlayer};
+    PlayingRightSpeakerCalibration playingRightSpeakerCalibration{
+        calibration, maskerPlayer};
     av_speech_in_noise::Test test{};
     InitializingTest initializingTest{&testMethod, test};
     InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
@@ -1433,25 +1459,28 @@ RECOGNITION_TEST_MODEL_TEST(submitIncorrectResponseSetsTargetPlayerLevel) {
 RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
     calibration.level.dB_SPL = 1;
     calibration.fullScaleLevel.dB_SPL = 2;
-    targetPlayer.setDigitalLevel(DigitalLevel{3});
+    playingCalibration.set(DigitalLevel{3});
     run(playingCalibration, model);
-    assertLevelEquals_dB(targetPlayer, 1 - 2 - 3);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        1 - 2 - 3, playingCalibration.levelAmplification().dB);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playLeftSpeakerCalibrationSetsTargetPlayerLevel) {
     calibration.level.dB_SPL = 1;
     calibration.fullScaleLevel.dB_SPL = 2;
-    maskerPlayer.setDigitalLevel(DigitalLevel{3});
+    playingLeftSpeakerCalibration.set(DigitalLevel{3});
     run(playingLeftSpeakerCalibration, model);
-    assertLevelEquals_dB(maskerPlayer, 1 - 2 - 3);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        1 - 2 - 3, playingLeftSpeakerCalibration.levelAmplification().dB);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationSetsTargetPlayerLevel) {
     calibration.level.dB_SPL = 1;
     calibration.fullScaleLevel.dB_SPL = 2;
-    maskerPlayer.setDigitalLevel(DigitalLevel{3});
+    playingRightSpeakerCalibration.set(DigitalLevel{3});
     run(playingRightSpeakerCalibration, model);
-    assertLevelEquals_dB(maskerPlayer, 1 - 2 - 3);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        1 - 2 - 3, playingRightSpeakerCalibration.levelAmplification().dB);
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {

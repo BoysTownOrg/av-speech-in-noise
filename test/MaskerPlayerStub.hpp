@@ -11,6 +11,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     std::string filePath_;
     std::string device_;
     DigitalLevel digitalLevel_{};
+    LevelAmplification levelAmplification_{};
     double level_dB_{};
     double fadeTimeSeconds_{};
     double durationSeconds_{};
@@ -152,9 +153,16 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     [[nodiscard]] auto level_dB() const -> double { return level_dB_; }
 
+    auto levelAmplification() -> LevelAmplification {
+        return levelAmplification_;
+    }
+
     auto digitalLevel() -> DigitalLevel override { return digitalLevel_; }
 
-    void apply(LevelAmplification x) override { level_dB_ = x.dB; }
+    void apply(LevelAmplification x) override {
+        level_dB_ = x.dB;
+        levelAmplification_ = x;
+    }
 
     auto duration() -> Duration override { return Duration{durationSeconds_}; }
 

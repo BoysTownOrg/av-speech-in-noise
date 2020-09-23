@@ -74,7 +74,14 @@ class TargetPlayerStub : public TargetPlayer {
         return digitalLevel_;
     }
 
-    void apply(LevelAmplification x) override { level_dB_ = x.dB; }
+    auto levelAmplification() -> LevelAmplification {
+        return levelAmplification_;
+    }
+
+    void apply(LevelAmplification x) override {
+        level_dB_ = x.dB;
+        levelAmplification_ = x;
+    }
 
     auto duration() -> Duration override { return Duration{durationSeconds_}; }
 
@@ -100,6 +107,7 @@ class TargetPlayerStub : public TargetPlayer {
     std::string device_;
     PlayerTimeWithDelay timePlayedAt_{};
     DigitalLevel digitalLevel_{};
+    LevelAmplification levelAmplification_{};
     double level_dB_{};
     double durationSeconds_{};
     Observer *listener_{};
