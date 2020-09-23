@@ -394,6 +394,15 @@ void RecognitionTestModelImpl::playLeftSpeakerCalibration(
         calibration.audioDevice);
 }
 
+void RecognitionTestModelImpl::playRightSpeakerCalibration(
+    const Calibration &calibration) {
+    throwRequestFailureIfTrialInProgress(maskerPlayer);
+
+    throwRequestFailureOnInvalidAudioDevice(
+        [&](auto device) { setAudioDevice(maskerPlayer, device); },
+        calibration.audioDevice);
+}
+
 auto RecognitionTestModelImpl::testComplete() -> bool {
     return testMethod->complete();
 }

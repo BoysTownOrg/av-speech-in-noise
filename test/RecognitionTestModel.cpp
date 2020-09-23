@@ -190,6 +190,23 @@ class PlayingLeftSpeakerCalibration : public AudioDeviceUseCase {
     Calibration &calibration;
 };
 
+class PlayingRightSpeakerCalibration : public AudioDeviceUseCase {
+  public:
+    explicit PlayingRightSpeakerCalibration(Calibration &calibration)
+        : calibration{calibration} {}
+
+    void setAudioDevice(std::string s) override {
+        calibration.audioDevice = std::move(s);
+    }
+
+    void run(RecognitionTestModelImpl &model) override {
+        model.playRightSpeakerCalibration(calibration);
+    }
+
+  private:
+    Calibration &calibration;
+};
+
 class PlayingTrial : public AudioDeviceUseCase {
   public:
     void setAudioDevice(std::string s) override {
@@ -519,6 +536,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     Calibration calibration{};
     PlayingCalibration playingCalibration{calibration};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{calibration};
+    PlayingRightSpeakerCalibration playingRightSpeakerCalibration{calibration};
     av_speech_in_noise::Test test{};
     InitializingTest initializingTest{&testMethod, test};
     InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
@@ -953,6 +971,11 @@ RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToMaskerPlayer) {
 RECOGNITION_TEST_MODEL_TEST(
     playLeftSpeakerCalibrationPassesAudioDeviceToMaskerPlayer) {
     assertDevicePassedToMaskerPlayer(playingLeftSpeakerCalibration);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playRightSpeakerCalibrationPassesAudioDeviceToMaskerPlayer) {
+    assertDevicePassedToMaskerPlayer(playingRightSpeakerCalibration);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialFadesInMasker) {
