@@ -10,7 +10,9 @@ TargetPlayerImpl::TargetPlayerImpl(VideoPlayer *player, AudioReader *reader)
     player->attach(this);
 }
 
-void TargetPlayerImpl::attach(TargetPlayer::Observer *e) { listener_ = e; }
+void TargetPlayerImpl::attach(TargetPlayer::Observer *e) {
+    listener_ = e;
+}
 
 void TargetPlayerImpl::play() { player->play(); }
 
@@ -69,11 +71,9 @@ void TargetPlayerImpl::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audio) {
     auto scale{audioScale.load()};
     auto usingFirstChannelOnly{useFirstChannelOnly_.load()};
-    auto usingSecondChannelOnly{useSecondChannelOnly_.load()};
     auto afterFirstChannel{false};
     for (auto channel : audio) {
-        if ((usingFirstChannelOnly && afterFirstChannel) ||
-            (usingSecondChannelOnly && !afterFirstChannel))
+        if (usingFirstChannelOnly && afterFirstChannel)
             std::fill(begin(channel), end(channel), float{0});
         else
             std::transform(begin(channel), end(channel), begin(channel),
@@ -103,10 +103,6 @@ static void store(std::atomic<bool> &where, bool what) { where.store(what); }
 
 void TargetPlayerImpl::useFirstChannelOnly() {
     store(useFirstChannelOnly_, true);
-}
-
-void TargetPlayerImpl::useSecondChannelOnly() {
-    store(useSecondChannelOnly_, true);
 }
 
 void TargetPlayerImpl::useAllChannels() { store(useFirstChannelOnly_, false); }

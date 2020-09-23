@@ -53,7 +53,7 @@ class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
     auto audioDevices() -> std::vector<std::string>;
     void useFirstChannelOnly() override;
-    void useSecondChannelOnly() override;
+    void useSecondChannelOnly() override {}
     void useAllChannels() override;
 
   private:
@@ -65,7 +65,6 @@ class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
     TargetPlayer::Observer *listener_{};
     std::atomic<double> audioScale{1};
     std::atomic<bool> useFirstChannelOnly_{};
-    std::atomic<bool> useSecondChannelOnly_{};
 };
 }
 

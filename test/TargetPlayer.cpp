@@ -228,15 +228,6 @@ TEST_F(TargetPlayerTests, onlyPlayFirstChannel) {
     assertRightChannelEquals({0, 0, 0});
 }
 
-TEST_F(TargetPlayerTests, onlyPlaySecondChannel) {
-    player.useSecondChannelOnly();
-    setLeftChannel({1, 2, 3});
-    setRightChannel({4, 5, 6});
-    fillAudioBufferStereo();
-    assertLeftChannelEquals({0, 0, 0});
-    assertRightChannelEquals({4, 5, 6});
-}
-
 TEST_F(TargetPlayerTests, switchBackToAllChannels) {
     setFirstChannelOnly();
     setLeftChannel({1, 2, 3});
