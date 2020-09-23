@@ -145,6 +145,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const Model::Observer *listener_{};
     const Calibration *calibration_{};
     const Calibration *leftSpeakerCalibration_{};
+    const Calibration *rightSpeakerCalibration_{};
     const AudioSettings *playTrialSettings_{};
     const Test *test_{};
     const TestMethod *testMethod_{};
@@ -235,6 +236,10 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         leftSpeakerCalibration_ = &c;
     }
 
+    void playRightSpeakerCalibration(const Calibration &c) {
+        rightSpeakerCalibration_ = &c;
+    }
+
     [[nodiscard]] auto initializedWithSingleSpeaker() const -> bool {
         return initializedWithSingleSpeaker_;
     }
@@ -265,6 +270,10 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     auto leftSpeakerCalibration() -> const Calibration * {
         return leftSpeakerCalibration_;
+    }
+
+    auto rightSpeakerCalibration() -> const Calibration * {
+        return rightSpeakerCalibration_;
     }
 
     [[nodiscard]] auto listener() const { return listener_; }
@@ -1097,6 +1106,13 @@ MODEL_TEST(playLeftSpeakerCalibrationPassesCalibration) {
     model.playLeftSpeakerCalibration(calibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(calibration), internalModel.leftSpeakerCalibration());
+}
+
+MODEL_TEST(playRightSpeakerCalibrationPassesCalibration) {
+    Calibration calibration;
+    model.playRightSpeakerCalibration(calibration);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(calibration), internalModel.rightSpeakerCalibration());
 }
 
 MODEL_TEST(testCompleteWhenComplete) {

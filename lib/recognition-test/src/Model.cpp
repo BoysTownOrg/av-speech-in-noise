@@ -191,6 +191,10 @@ void ModelImpl::playLeftSpeakerCalibration(const Calibration &p) {
     model.playLeftSpeakerCalibration(p);
 }
 
+void ModelImpl::playRightSpeakerCalibration(const Calibration &p) {
+    model.playRightSpeakerCalibration(p);
+}
+
 auto ModelImpl::testComplete() -> bool { return model.testComplete(); }
 
 auto ModelImpl::audioDevices() -> std::vector<std::string> {
