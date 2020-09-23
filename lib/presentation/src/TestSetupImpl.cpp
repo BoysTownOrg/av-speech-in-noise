@@ -46,6 +46,14 @@ void TestSetupControllerImpl::
 }
 
 void TestSetupControllerImpl::
+    notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() {
+    auto p{testSettingsInterpreter.calibration(
+        textFileReader.read({control.testSettingsFile()}))};
+    p.audioDevice = sessionView.audioDevice();
+    model.playRightSpeakerCalibration(p);
+}
+
+void TestSetupControllerImpl::
     notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
     auto file{sessionView.browseForOpeningFile()};
     if (!sessionView.browseCancelled())

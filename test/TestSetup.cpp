@@ -62,6 +62,10 @@ class TestSetupControlStub : public TestSetupControl {
         listener_->notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked();
     }
 
+    void playRightSpeakerCalibration() {
+        listener_->notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
+    }
+
     auto session() -> std::string override { return session_; }
 
     void setSession(std::string s) { session_ = std::move(s); }
@@ -209,6 +213,21 @@ class PlayingLeftSpeakerCalibration : public LevelUseCase {
     TestSetupControlStub &control;
 };
 
+class PlayingRightSpeakerCalibration : public LevelUseCase {
+  public:
+    explicit PlayingRightSpeakerCalibration(TestSetupControlStub &control)
+        : control{control} {}
+
+    void run() override { control.playRightSpeakerCalibration(); }
+
+    auto fullScaleLevel(ModelStub &m) -> int override {
+        return m.calibration().fullScaleLevel.dB_SPL;
+    }
+
+  private:
+    TestSetupControlStub &control;
+};
+
 void confirmTestSetup(TestSetupControlStub &control) {
     control.confirmTestSetup();
 }
@@ -285,6 +304,7 @@ class TestSetupControllerTests : public ::testing::Test {
         model, sessionView, control, testSettingsInterpreter, textFileReader};
     PlayingCalibration playingCalibration{control};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
+    PlayingRightSpeakerCalibration playingRightSpeakerCalibration{control};
     SessionControllerStub sessionController;
     TestSetupControllerObserverStub testSetupControllerObserver;
     ConfirmingTestSetupImpl confirmingTestSetup{control};
@@ -563,6 +583,12 @@ TEST_SETUP_CONTROLLER_TEST(
     playingLeftSpeakerCalibrationPassesTestSettingsTextToTestSettingsInterpreter) {
     assertPassesTestSettingsTextToTestSettingsInterpreter(
         playingLeftSpeakerCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(
+    playingRightSpeakerCalibrationPassesTestSettingsTextToTestSettingsInterpreter) {
+    assertPassesTestSettingsTextToTestSettingsInterpreter(
+        playingRightSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFilePath) {
