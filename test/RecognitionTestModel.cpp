@@ -466,10 +466,6 @@ void assertOnlyUsingFirstChannel(MaskerPlayerStub &player) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.usingFirstChannelOnly());
 }
 
-void assertOnlyUsingSecondChannel(TargetPlayerStub &player) {
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.usingSecondChannelOnly());
-}
-
 void assertOnlyUsingSecondChannel(MaskerPlayerStub &player) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.usingSecondChannelOnly());
 }

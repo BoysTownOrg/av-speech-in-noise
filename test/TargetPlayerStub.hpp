@@ -11,17 +11,11 @@ class TargetPlayerStub : public TargetPlayer {
   public:
     void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
 
-    void useSecondChannelOnly() { usingSecondChannelOnly_ = true; }
-
     void useAllChannels() override { usingAllChannels_ = true; }
 
     auto usingAllChannels() const { return usingAllChannels_; }
 
     auto usingFirstChannelOnly() const { return usingFirstChannelOnly_; }
-
-    auto usingSecondChannelOnly() const -> bool {
-        return usingSecondChannelOnly_;
-    }
 
     void subscribeToPlaybackCompletion() override {
         playbackCompletionSubscribedTo_ = true;
@@ -119,7 +113,6 @@ class TargetPlayerStub : public TargetPlayer {
     bool playbackCompletionSubscribedTo_{};
     bool usingAllChannels_{};
     bool usingFirstChannelOnly_{};
-    bool usingSecondChannelOnly_{};
 };
 }
 
