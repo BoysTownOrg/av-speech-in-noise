@@ -156,7 +156,14 @@ class AudioDeviceUseCase : public virtual UseCase {
     virtual void setAudioDevice(std::string) = 0;
 };
 
-class PlayingCalibration : public AudioDeviceUseCase {
+class PlayerLevelUseCase : public virtual UseCase {
+  public:
+    virtual void set(DigitalLevel) = 0;
+    virtual auto levelAmplification() -> LevelAmplification = 0;
+};
+
+class PlayingCalibration : public AudioDeviceUseCase,
+                           public PlayerLevelUseCase {
   public:
     explicit PlayingCalibration(
         Calibration &calibration, TargetPlayerStub &player)
@@ -170,9 +177,9 @@ class PlayingCalibration : public AudioDeviceUseCase {
         model.playCalibration(calibration);
     }
 
-    void set(DigitalLevel x) { player.setDigitalLevel(x); }
+    void set(DigitalLevel x) override { player.setDigitalLevel(x); }
 
-    auto levelAmplification() -> LevelAmplification {
+    auto levelAmplification() -> LevelAmplification override {
         return player.levelAmplification();
     }
 
@@ -181,7 +188,8 @@ class PlayingCalibration : public AudioDeviceUseCase {
     TargetPlayerStub &player;
 };
 
-class PlayingLeftSpeakerCalibration : public AudioDeviceUseCase {
+class PlayingLeftSpeakerCalibration : public AudioDeviceUseCase,
+                                      public PlayerLevelUseCase {
   public:
     explicit PlayingLeftSpeakerCalibration(
         Calibration &calibration, MaskerPlayerStub &player)
@@ -195,9 +203,9 @@ class PlayingLeftSpeakerCalibration : public AudioDeviceUseCase {
         model.playLeftSpeakerCalibration(calibration);
     }
 
-    void set(DigitalLevel x) { player.setDigitalLevel(x); }
+    void set(DigitalLevel x) override { player.setDigitalLevel(x); }
 
-    auto levelAmplification() -> LevelAmplification {
+    auto levelAmplification() -> LevelAmplification override {
         return player.levelAmplification();
     }
 
@@ -206,7 +214,8 @@ class PlayingLeftSpeakerCalibration : public AudioDeviceUseCase {
     MaskerPlayerStub &player;
 };
 
-class PlayingRightSpeakerCalibration : public AudioDeviceUseCase {
+class PlayingRightSpeakerCalibration : public AudioDeviceUseCase,
+                                       public PlayerLevelUseCase {
   public:
     explicit PlayingRightSpeakerCalibration(
         Calibration &calibration, MaskerPlayerStub &player)
@@ -220,9 +229,9 @@ class PlayingRightSpeakerCalibration : public AudioDeviceUseCase {
         model.playRightSpeakerCalibration(calibration);
     }
 
-    void set(DigitalLevel x) { player.setDigitalLevel(x); }
+    void set(DigitalLevel x) override { player.setDigitalLevel(x); }
 
-    auto levelAmplification() -> LevelAmplification {
+    auto levelAmplification() -> LevelAmplification override {
         return player.levelAmplification();
     }
 
