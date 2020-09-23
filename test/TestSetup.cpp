@@ -644,6 +644,13 @@ TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesAudioDevice) {
         std::string{"b"}, av_speech_in_noise::calibration(model).audioDevice);
 }
 
+TEST_SETUP_CONTROLLER_TEST(playingLeftSpeakerCalibrationPassesAudioDevice) {
+    setAudioDevice(sessionView, "b");
+    run(playingLeftSpeakerCalibration);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"b"},
+        playingLeftSpeakerCalibration.calibration(model).audioDevice);
+}
+
 TEST_SETUP_CONTROLLER_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
     sessionView.setBrowseForOpeningFileResult("a");
     control.browseForTestSettingsFile();
