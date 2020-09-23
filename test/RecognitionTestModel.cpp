@@ -414,6 +414,10 @@ void assertFilePathEquals(TargetPlayerStub &player, const std::string &what) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, filePath(player));
 }
 
+void assertFilePathEquals(MaskerPlayerStub &player, const std::string &what) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, player.filePath());
+}
+
 auto playbackCompletionSubscribed(TargetPlayerStub &player) -> bool {
     return player.playbackCompletionSubscribedTo();
 }
@@ -1236,6 +1240,20 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
     calibration.fileUrl.path = "a";
     run(playingCalibration, model);
     assertFilePathEquals(targetPlayer, "a");
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playLeftSpeakerCalibrationPassesAudioFileToMaskerPlayer) {
+    calibration.fileUrl.path = "a";
+    run(playingLeftSpeakerCalibration, model);
+    assertFilePathEquals(maskerPlayer, "a");
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playRightSpeakerCalibrationPassesAudioFileToMaskerPlayer) {
+    calibration.fileUrl.path = "a";
+    run(playingRightSpeakerCalibration, model);
+    assertFilePathEquals(maskerPlayer, "a");
 }
 
 RECOGNITION_TEST_MODEL_TEST(

@@ -90,6 +90,10 @@ static void loadFile(TargetPlayer &player, const LocalUrl &s) {
     player.loadFile(s);
 }
 
+static void loadFile(MaskerPlayer &player, const LocalUrl &s) {
+    player.loadFile(s);
+}
+
 static void play(TargetPlayer &player) { player.play(); }
 
 static void play(MaskerPlayer &player) { player.play(); }
@@ -400,7 +404,7 @@ void RecognitionTestModelImpl::playLeftSpeakerCalibration(
         calibration.audioDevice);
     throwRequestFailureOnInvalidAudioFile(
         [&](auto file) {
-            loadFile(targetPlayer, file);
+            loadFile(maskerPlayer, file);
             apply(targetPlayer, levelAmplification(targetPlayer, calibration));
         },
         calibration.fileUrl);
@@ -416,7 +420,7 @@ void RecognitionTestModelImpl::playRightSpeakerCalibration(
         calibration.audioDevice);
     throwRequestFailureOnInvalidAudioFile(
         [&](auto file) {
-            loadFile(targetPlayer, file);
+            loadFile(maskerPlayer, file);
             apply(targetPlayer, levelAmplification(targetPlayer, calibration));
         },
         calibration.fileUrl);
