@@ -232,11 +232,11 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void playCalibration(const Calibration &c) override { calibration_ = &c; }
 
-    void playLeftSpeakerCalibration(const Calibration &c) {
+    void playLeftSpeakerCalibration(const Calibration &c) override {
         leftSpeakerCalibration_ = &c;
     }
 
-    void playRightSpeakerCalibration(const Calibration &c) {
+    void playRightSpeakerCalibration(const Calibration &c) override {
         rightSpeakerCalibration_ = &c;
     }
 

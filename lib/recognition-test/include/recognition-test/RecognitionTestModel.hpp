@@ -124,6 +124,8 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     void initializeWithEyeTracking(TestMethod *, const Test &) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
+    void playLeftSpeakerCalibration(const Calibration &) override {}
+    void playRightSpeakerCalibration(const Calibration &) override {}
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const FreeResponse &) override;
     void submit(const CorrectKeywords &) override;
