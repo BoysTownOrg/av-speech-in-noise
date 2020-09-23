@@ -236,33 +236,13 @@ TARGET_PLAYER_TEST(onlyPlayFirstChannel) {
     assertRightChannelEquals({0, 0, 0});
 }
 
-TARGET_PLAYER_TEST(onlyPlayFirstChannelAfterOnlySecondChannel) {
-    setSecondChannelOnly(player);
-    setFirstChannelOnly(player);
-    setLeftChannel({1, 2, 3});
-    setRightChannel({4, 5, 6});
-    fillAudioBufferStereo();
-    assertLeftChannelEquals({1, 2, 3});
-    assertRightChannelEquals({0, 0, 0});
-}
-
 TARGET_PLAYER_TEST(onlyPlaySecondChannel) {
     setSecondChannelOnly(player);
     setLeftChannel({1, 2, 3});
     setRightChannel({4, 5, 6});
     fillAudioBufferStereo();
     assertLeftChannelEquals({0, 0, 0});
-    assertRightChannelEquals({1, 2, 3});
-}
-
-TARGET_PLAYER_TEST(onlyPlaySecondChannelAfterOnlyFirstChannel) {
-    setFirstChannelOnly(player);
-    setSecondChannelOnly(player);
-    setLeftChannel({1, 2, 3});
-    setRightChannel({4, 5, 6});
-    fillAudioBufferStereo();
-    assertLeftChannelEquals({0, 0, 0});
-    assertRightChannelEquals({1, 2, 3});
+    assertRightChannelEquals({4, 5, 6});
 }
 
 TARGET_PLAYER_TEST(switchBackToAllChannels) {

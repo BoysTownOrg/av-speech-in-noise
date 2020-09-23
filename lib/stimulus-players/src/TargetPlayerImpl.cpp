@@ -72,8 +72,6 @@ void TargetPlayerImpl::fillAudioBuffer(
     auto usingSecondChannelOnly{useSecondChannelOnly_.load()};
     auto afterFirstChannel{false};
     for (auto channel : audio) {
-        if (usingSecondChannelOnly && !afterFirstChannel)
-            std::copy(begin(channel), end(channel), begin(audio.at(1)));
         if ((usingFirstChannelOnly && afterFirstChannel) ||
             (usingSecondChannelOnly && !afterFirstChannel))
             std::fill(begin(channel), end(channel), float{0});
@@ -105,11 +103,9 @@ static void store(std::atomic<bool> &where, bool what) { where.store(what); }
 
 void TargetPlayerImpl::useFirstChannelOnly() {
     store(useFirstChannelOnly_, true);
-    store(useSecondChannelOnly_, false);
 }
 
 void TargetPlayerImpl::useSecondChannelOnly() {
-    store(useFirstChannelOnly_, false);
     store(useSecondChannelOnly_, true);
 }
 
