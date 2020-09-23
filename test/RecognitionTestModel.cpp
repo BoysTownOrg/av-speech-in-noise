@@ -775,16 +775,6 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetPlayer) {
     assertOnlyShown(targetPlayer);
 }
 
-RECOGNITION_TEST_MODEL_TEST(playingLeftSpeakerCalibrationShowsTargetPlayer) {
-    run(playingLeftSpeakerCalibration, model);
-    assertOnlyShown(targetPlayer);
-}
-
-RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationShowsTargetPlayer) {
-    run(playingRightSpeakerCalibration, model);
-    assertOnlyShown(targetPlayer);
-}
-
 RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestClosesOutputFile_OpensAndWritesTestInOrder) {
     assertClosesOutputFileOpensAndWritesTestInOrder(initializingTest);
