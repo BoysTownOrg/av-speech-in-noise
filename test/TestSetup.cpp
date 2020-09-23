@@ -402,6 +402,10 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
+    void playLeftSpeakerCalibration(const Calibration &) override {
+        throw RequestFailure{errorMessage};
+    }
+
     auto testComplete() -> bool override { return {}; }
     auto audioDevices() -> AudioDevices override { return {}; }
     auto adaptiveTestResults() -> AdaptiveTestResults override { return {}; }

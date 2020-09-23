@@ -215,7 +215,7 @@ class ModelStub : public Model {
 
     void playCalibration(const Calibration &p) override { calibration_ = p; }
 
-    void playLeftSpeakerCalibration(const Calibration &p) {
+    void playLeftSpeakerCalibration(const Calibration &p) override {
         leftSpeakerCalibration_ = p;
     }
 

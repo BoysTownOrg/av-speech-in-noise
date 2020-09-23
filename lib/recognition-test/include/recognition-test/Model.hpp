@@ -204,6 +204,7 @@ class ModelImpl : public Model {
         const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
+    void playLeftSpeakerCalibration(const Calibration &) override {}
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const FreeResponse &) override;
     void submit(const CorrectKeywords &) override;
