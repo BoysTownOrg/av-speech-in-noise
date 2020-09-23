@@ -633,6 +633,10 @@ TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesFilePath) {
     assertPassesCalibrationAudioUrl(playingLeftSpeakerCalibration);
 }
 
+TEST_SETUP_CONTROLLER_TEST(playRightSpeakerCalibrationPassesFilePath) {
+    assertPassesCalibrationAudioUrl(playingRightSpeakerCalibration);
+}
+
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesAudioDevice) {
     setAudioDevice(sessionView, "b");
     run(playingCalibration);
