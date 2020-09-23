@@ -72,6 +72,8 @@ void TargetPlayerImpl::fillAudioBuffer(
     auto usingSecondChannelOnly{useSecondChannelOnly_.load()};
     auto afterFirstChannel{false};
     for (auto channel : audio) {
+        if (usingSecondChannelOnly && !afterFirstChannel)
+            std::copy(begin(channel), end(channel), begin(audio.at(1)));
         if ((usingFirstChannelOnly && afterFirstChannel) ||
             (usingSecondChannelOnly && !afterFirstChannel))
             std::fill(begin(channel), end(channel), float{0});
