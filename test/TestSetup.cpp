@@ -652,6 +652,10 @@ TEST_SETUP_CONTROLLER_TEST(playingLeftSpeakerCalibrationPassesAudioDevice) {
     assertPassesCalibrationAudioDevice(playingLeftSpeakerCalibration);
 }
 
+TEST_SETUP_CONTROLLER_TEST(playingRightSpeakerCalibrationPassesAudioDevice) {
+    assertPassesCalibrationAudioDevice(playingRightSpeakerCalibration);
+}
+
 TEST_SETUP_CONTROLLER_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
     sessionView.setBrowseForOpeningFileResult("a");
     control.browseForTestSettingsFile();
