@@ -1465,31 +1465,25 @@ RECOGNITION_TEST_MODEL_TEST(submitIncorrectResponseSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingIncorrectResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
+void assertLevelSet(Calibration &calibration, PlayerLevelUseCase &useCase,
+    RecognitionTestModelImpl &model) {
     calibration.level.dB_SPL = 1;
     calibration.fullScaleLevel.dB_SPL = 2;
-    playingCalibration.set(DigitalLevel{3});
-    run(playingCalibration, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        1 - 2 - 3, playingCalibration.levelAmplification().dB);
+    useCase.set(DigitalLevel{3});
+    run(useCase, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1 - 2 - 3, useCase.levelAmplification().dB);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
+    assertLevelSet(calibration, playingCalibration, model);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playLeftSpeakerCalibrationSetsTargetPlayerLevel) {
-    calibration.level.dB_SPL = 1;
-    calibration.fullScaleLevel.dB_SPL = 2;
-    playingLeftSpeakerCalibration.set(DigitalLevel{3});
-    run(playingLeftSpeakerCalibration, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        1 - 2 - 3, playingLeftSpeakerCalibration.levelAmplification().dB);
+    assertLevelSet(calibration, playingLeftSpeakerCalibration, model);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationSetsTargetPlayerLevel) {
-    calibration.level.dB_SPL = 1;
-    calibration.fullScaleLevel.dB_SPL = 2;
-    playingRightSpeakerCalibration.set(DigitalLevel{3});
-    run(playingRightSpeakerCalibration, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        1 - 2 - 3, playingRightSpeakerCalibration.levelAmplification().dB);
+    assertLevelSet(calibration, playingRightSpeakerCalibration, model);
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {
