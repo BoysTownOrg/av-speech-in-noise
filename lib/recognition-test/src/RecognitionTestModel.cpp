@@ -386,6 +386,7 @@ static void play(TargetPlayer &targetPlayer, const Calibration &calibration) {
 
 void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(maskerPlayer);
+    targetPlayer.useAllChannels();
     play(targetPlayer, calibration);
 }
 

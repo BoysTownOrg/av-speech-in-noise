@@ -803,6 +803,11 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetPlayer.usingAllChannels());
 }
 
+RECOGNITION_TEST_MODEL_TEST(playingCalibrationUsesAllTargetPlayerChannels) {
+    run(playingCalibration, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetPlayer.usingAllChannels());
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllMaskerPlayerChannels) {
     run(initializingTest, model);
     assertUsingAllChannels(maskerPlayer);
