@@ -106,6 +106,7 @@ void TargetPlayerImpl::useFirstChannelOnly() {
 }
 
 void TargetPlayerImpl::useSecondChannelOnly() {
+    store(useFirstChannelOnly_, false);
     store(useSecondChannelOnly_, true);
 }
 

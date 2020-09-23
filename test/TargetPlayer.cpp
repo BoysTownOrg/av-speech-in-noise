@@ -245,6 +245,16 @@ TARGET_PLAYER_TEST(onlyPlaySecondChannel) {
     assertRightChannelEquals({4, 5, 6});
 }
 
+TARGET_PLAYER_TEST(onlyPlaySecondChannelAfterOnlyFirstChannel) {
+    setFirstChannelOnly(player);
+    setSecondChannelOnly(player);
+    setLeftChannel({1, 2, 3});
+    setRightChannel({4, 5, 6});
+    fillAudioBufferStereo();
+    assertLeftChannelEquals({0, 0, 0});
+    assertRightChannelEquals({4, 5, 6});
+}
+
 TARGET_PLAYER_TEST(switchBackToAllChannels) {
     setFirstChannelOnly(player);
     setLeftChannel({1, 2, 3});
