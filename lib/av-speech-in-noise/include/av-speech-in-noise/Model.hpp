@@ -146,6 +146,7 @@ class Model {
     virtual void initializeWithAllTargetsAndEyeTracking(
         const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
+    virtual void playLeftSpeakerCalibration(const Calibration &) {}
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void submit(const FreeResponse &) = 0;

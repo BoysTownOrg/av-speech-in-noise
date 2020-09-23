@@ -58,6 +58,10 @@ class TestSetupControlStub : public TestSetupControl {
         listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
     }
 
+    void playLeftSpeakerCalibration() {
+        listener_->notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked();
+    }
+
     auto session() -> std::string override { return session_; }
 
     void setSession(std::string s) { session_ = std::move(s); }
@@ -190,6 +194,21 @@ class PlayingCalibration : public LevelUseCase {
     TestSetupControlStub &control;
 };
 
+class PlayingLeftSpeakerCalibration : public LevelUseCase {
+  public:
+    explicit PlayingLeftSpeakerCalibration(TestSetupControlStub &control)
+        : control{control} {}
+
+    void run() override { control.playLeftSpeakerCalibration(); }
+
+    auto fullScaleLevel(ModelStub &m) -> int override {
+        return m.calibration().fullScaleLevel.dB_SPL;
+    }
+
+  private:
+    TestSetupControlStub &control;
+};
+
 void confirmTestSetup(TestSetupControlStub &control) {
     control.confirmTestSetup();
 }
@@ -265,6 +284,7 @@ class TestSetupControllerTests : public ::testing::Test {
     TestSetupControllerImpl controller{
         model, sessionView, control, testSettingsInterpreter, textFileReader};
     PlayingCalibration playingCalibration{control};
+    PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
     SessionControllerStub sessionController;
     TestSetupControllerObserverStub testSetupControllerObserver;
     ConfirmingTestSetupImpl confirmingTestSetup{control};
@@ -570,6 +590,13 @@ TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFullScaleLevel) {
     run(playingCalibration);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         1, av_speech_in_noise::calibration(model).fullScaleLevel.dB_SPL);
+}
+
+TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesFullScaleLevel) {
+    calibration.fullScaleLevel.dB_SPL = 1;
+    run(playingLeftSpeakerCalibration);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        1, model.leftSpeakerCalibration().fullScaleLevel.dB_SPL);
 }
 
 TEST_SETUP_PRESENTER_TEST(presenterShowsViewWhenStarted) {
