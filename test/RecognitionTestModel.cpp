@@ -771,6 +771,16 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetPlayer) {
     assertOnlyShown(targetPlayer);
 }
 
+RECOGNITION_TEST_MODEL_TEST(playingLeftSpeakerCalibrationShowsTargetPlayer) {
+    run(playingLeftSpeakerCalibration, model);
+    assertOnlyShown(targetPlayer);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationShowsTargetPlayer) {
+    run(playingRightSpeakerCalibration, model);
+    assertOnlyShown(targetPlayer);
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestClosesOutputFile_OpensAndWritesTestInOrder) {
     assertClosesOutputFileOpensAndWritesTestInOrder(initializingTest);
@@ -964,18 +974,18 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioDeviceToTargetPlayer) {
     assertDevicePassedToTargetPlayer(playingCalibration);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    playLeftSpeakerCalibrationPassesAudioDeviceToTargetPlayer) {
+    assertDevicePassedToTargetPlayer(playingLeftSpeakerCalibration);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playRightSpeakerCalibrationPassesAudioDeviceToTargetPlayer) {
+    assertDevicePassedToTargetPlayer(playingRightSpeakerCalibration);
+}
+
 RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToMaskerPlayer) {
     assertDevicePassedToMaskerPlayer(playingTrial);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playLeftSpeakerCalibrationPassesAudioDeviceToMaskerPlayer) {
-    assertDevicePassedToMaskerPlayer(playingLeftSpeakerCalibration);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playRightSpeakerCalibrationPassesAudioDeviceToMaskerPlayer) {
-    assertDevicePassedToMaskerPlayer(playingRightSpeakerCalibration);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialFadesInMasker) {

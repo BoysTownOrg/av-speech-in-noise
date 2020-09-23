@@ -390,8 +390,16 @@ void RecognitionTestModelImpl::playLeftSpeakerCalibration(
     throwRequestFailureIfTrialInProgress(maskerPlayer);
 
     throwRequestFailureOnInvalidAudioDevice(
-        [&](auto device) { setAudioDevice(maskerPlayer, device); },
+        [&](auto device) { setAudioDevice(targetPlayer, device); },
         calibration.audioDevice);
+    throwRequestFailureOnInvalidAudioFile(
+        [&](auto file) {
+            loadFile(targetPlayer, file);
+            apply(targetPlayer, levelAmplification(targetPlayer, calibration));
+        },
+        calibration.fileUrl);
+    show(targetPlayer);
+    play(targetPlayer);
 }
 
 void RecognitionTestModelImpl::playRightSpeakerCalibration(
@@ -399,8 +407,16 @@ void RecognitionTestModelImpl::playRightSpeakerCalibration(
     throwRequestFailureIfTrialInProgress(maskerPlayer);
 
     throwRequestFailureOnInvalidAudioDevice(
-        [&](auto device) { setAudioDevice(maskerPlayer, device); },
+        [&](auto device) { setAudioDevice(targetPlayer, device); },
         calibration.audioDevice);
+    throwRequestFailureOnInvalidAudioFile(
+        [&](auto file) {
+            loadFile(targetPlayer, file);
+            apply(targetPlayer, levelAmplification(targetPlayer, calibration));
+        },
+        calibration.fileUrl);
+    show(targetPlayer);
+    play(targetPlayer);
 }
 
 auto RecognitionTestModelImpl::testComplete() -> bool {
