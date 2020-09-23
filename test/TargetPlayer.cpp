@@ -252,6 +252,19 @@ TARGET_PLAYER_TEST(switchBackToAllChannels) {
     assertRightChannelEquals({10, 11, 12});
 }
 
+TARGET_PLAYER_TEST(switchBackToAllChannelsAfterOnlyUsingSecondChannel) {
+    player.useSecondChannelOnly();
+    setLeftChannel({1, 2, 3});
+    setRightChannel({7, 8, 9});
+    fillAudioBufferStereo();
+    useAllChannels();
+    setLeftChannel({4, 5, 6});
+    setRightChannel({10, 11, 12});
+    fillAudioBufferStereo();
+    assertLeftChannelEquals({4, 5, 6});
+    assertRightChannelEquals({10, 11, 12});
+}
+
 TARGET_PLAYER_TEST(setAudioDeviceFindsIndex) {
     setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
     player.setAudioDevice("second");
