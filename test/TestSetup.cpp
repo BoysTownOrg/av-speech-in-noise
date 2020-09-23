@@ -335,6 +335,13 @@ class TestSetupControllerTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             1, useCase.calibration(model).level.dB_SPL);
     }
+
+    void assertPassesCalibrationAudioUrl(LevelUseCase &useCase) {
+        calibration.fileUrl.path = "a";
+        run(useCase);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"a"}, useCase.calibration(model).fileUrl.path);
+    }
 };
 
 class TestSetupPresenterTests : public ::testing::Test {
@@ -619,17 +626,11 @@ TEST_SETUP_CONTROLLER_TEST(
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFilePath) {
-    calibration.fileUrl.path = "a";
-    run(playingCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, av_speech_in_noise::calibration(model).fileUrl.path);
+    assertPassesCalibrationAudioUrl(playingCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesFilePath) {
-    calibration.fileUrl.path = "a";
-    run(playingLeftSpeakerCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"},
-        playingLeftSpeakerCalibration.calibration(model).fileUrl.path);
+    assertPassesCalibrationAudioUrl(playingLeftSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesAudioDevice) {
