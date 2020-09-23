@@ -342,6 +342,13 @@ class TestSetupControllerTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"a"}, useCase.calibration(model).fileUrl.path);
     }
+
+    void assertPassesCalibrationAudioDevice(LevelUseCase &useCase) {
+        setAudioDevice(sessionView, "b");
+        run(useCase);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"b"}, useCase.calibration(model).audioDevice);
+    }
 };
 
 class TestSetupPresenterTests : public ::testing::Test {
@@ -638,17 +645,11 @@ TEST_SETUP_CONTROLLER_TEST(playRightSpeakerCalibrationPassesFilePath) {
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesAudioDevice) {
-    setAudioDevice(sessionView, "b");
-    run(playingCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"b"}, av_speech_in_noise::calibration(model).audioDevice);
+    assertPassesCalibrationAudioDevice(playingCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playingLeftSpeakerCalibrationPassesAudioDevice) {
-    setAudioDevice(sessionView, "b");
-    run(playingLeftSpeakerCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"b"},
-        playingLeftSpeakerCalibration.calibration(model).audioDevice);
+    assertPassesCalibrationAudioDevice(playingLeftSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
