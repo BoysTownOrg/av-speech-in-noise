@@ -563,6 +563,13 @@ TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesLevel) {
         1, av_speech_in_noise::calibration(model).level.dB_SPL);
 }
 
+TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesLevel) {
+    calibration.level.dB_SPL = 1;
+    run(playingLeftSpeakerCalibration);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        1, model.leftSpeakerCalibration().level.dB_SPL);
+}
+
 TEST_SETUP_CONTROLLER_TEST(
     playingCalibrationPassesTestSettingsFileToTextFileReader) {
     assertPassesTestSettingsFileToTextFileReader(playingCalibration);
