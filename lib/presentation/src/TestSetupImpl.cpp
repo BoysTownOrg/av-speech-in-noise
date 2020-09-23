@@ -30,27 +30,30 @@ void TestSetupControllerImpl::notifyThatConfirmButtonHasBeenClicked() {
     }
 }
 
-void TestSetupControllerImpl::notifyThatPlayCalibrationButtonHasBeenClicked() {
-    auto p{testSettingsInterpreter.calibration(
+static auto calibration(TestSettingsInterpreter &testSettingsInterpreter,
+    TextFileReader &textFileReader, TestSetupControl &control,
+    SessionView &sessionView) -> Calibration {
+    auto calibration{testSettingsInterpreter.calibration(
         textFileReader.read({control.testSettingsFile()}))};
-    p.audioDevice = sessionView.audioDevice();
-    model.playCalibration(p);
+    calibration.audioDevice = sessionView.audioDevice();
+    return calibration;
+}
+
+void TestSetupControllerImpl::notifyThatPlayCalibrationButtonHasBeenClicked() {
+    model.playCalibration(calibration(
+        testSettingsInterpreter, textFileReader, control, sessionView));
 }
 
 void TestSetupControllerImpl::
     notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() {
-    auto p{testSettingsInterpreter.calibration(
-        textFileReader.read({control.testSettingsFile()}))};
-    p.audioDevice = sessionView.audioDevice();
-    model.playLeftSpeakerCalibration(p);
+    model.playLeftSpeakerCalibration(calibration(
+        testSettingsInterpreter, textFileReader, control, sessionView));
 }
 
 void TestSetupControllerImpl::
     notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() {
-    auto p{testSettingsInterpreter.calibration(
-        textFileReader.read({control.testSettingsFile()}))};
-    p.audioDevice = sessionView.audioDevice();
-    model.playRightSpeakerCalibration(p);
+    model.playRightSpeakerCalibration(calibration(
+        testSettingsInterpreter, textFileReader, control, sessionView));
 }
 
 void TestSetupControllerImpl::
