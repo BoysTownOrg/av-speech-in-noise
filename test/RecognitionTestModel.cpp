@@ -998,6 +998,16 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPlaysTarget) {
     assertPlayed(targetPlayer);
 }
 
+RECOGNITION_TEST_MODEL_TEST(playLeftSpeakerCalibrationPlaysTarget) {
+    run(playingLeftSpeakerCalibration, model);
+    assertPlayed(targetPlayer);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationPlaysTarget) {
+    run(playingRightSpeakerCalibration, model);
+    assertPlayed(targetPlayer);
+}
+
 RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
     run(initializingTestWithEyeTracking, model);
     setSystemTime(fadeInCompleteTime, 1);
