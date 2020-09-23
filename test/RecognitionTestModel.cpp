@@ -994,13 +994,13 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioDeviceToTargetPlayer) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    playLeftSpeakerCalibrationPassesAudioDeviceToTargetPlayer) {
-    assertDevicePassedToTargetPlayer(playingLeftSpeakerCalibration);
+    playLeftSpeakerCalibrationPassesAudioDeviceToMaskerPlayer) {
+    assertDevicePassedToMaskerPlayer(playingLeftSpeakerCalibration);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    playRightSpeakerCalibrationPassesAudioDeviceToTargetPlayer) {
-    assertDevicePassedToTargetPlayer(playingRightSpeakerCalibration);
+    playRightSpeakerCalibrationPassesAudioDeviceToMaskerPlayer) {
+    assertDevicePassedToMaskerPlayer(playingRightSpeakerCalibration);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToMaskerPlayer) {
