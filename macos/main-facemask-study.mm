@@ -25,7 +25,8 @@ class FacemaskStudySetupView : public TestSetupUI {
     auto transducer() -> std::string override { return {}; }
     void notifyThatConfirmButtonHasBeenClicked();
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
-    void notifyThatPlayCalibrationButtonHasBeenClicked();
+    void notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked();
+    void notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
 
   private:
     NSTextField *testSettingsField;
@@ -58,14 +59,18 @@ class FacemaskStudySetupViewFactory : public MacOsTestSetupViewFactory {
     controller->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
 }
 
-- (void)notifyThatPlayCalibrationButtonHasBeenClicked {
-    controller->notifyThatPlayCalibrationButtonHasBeenClicked();
+- (void)notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked {
+    controller->notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked();
+}
+
+- (void)notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked {
+    controller->notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
 }
 @end
 
 namespace av_speech_in_noise {
 class EyeTrackerStub : public EyeTracker {
-    void allocateRecordingTimeSeconds(double s) override {}
+    void allocateRecordingTimeSeconds(double) override {}
     void start() override {}
     void stop() override {}
     auto gazeSamples() -> BinocularGazeSamples override { return {}; }
@@ -134,20 +139,6 @@ static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
     return stack;
 }
 
-// https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CocoaDrawingGuide/Images/Images.html#//apple_ref/doc/uid/TP40003290-CH208-BCIBBFGJ
-static auto simpleRoundedRectImage(NSColor *color) -> NSImage * {
-    const auto rect{CGRectMake(0, 0, 128, 128)};
-    const auto image{[[NSImage alloc] initWithSize:rect.size]};
-    [image lockFocus];
-    auto path{[NSBezierPath bezierPathWithRoundedRect:rect
-                                              xRadius:2
-                                              yRadius:2]};
-    [color setFill];
-    [path fill];
-    [image unlockFocus];
-    return image;
-}
-
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : testSettingsField{[NSTextField textFieldWithString:@""]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
@@ -171,9 +162,14 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     const auto confirmButton {
         button("", actions, @selector(notifyThatConfirmButtonHasBeenClicked))
     };
-    const auto playCalibrationButton {
-        button("play calibration", actions,
-            @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
+    const auto playLeftSpeakerCalibrationButton {
+        button("play left speaker", actions,
+            @selector(notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked))
+    };
+    const auto playRightSpeakerCalibrationButton {
+        button("play right speaker", actions,
+            @selector
+            (notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked))
     };
 
     setAttributedTitle(browseForTestSettingsButton, "Browse");
@@ -220,13 +216,18 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
         setContentCompressionResistancePriority:751
                                  forOrientation:
                                      NSLayoutConstraintOrientationHorizontal];
+    const auto playCalibrationButtonsStack {
+        verticalStackView(@[
+            playLeftSpeakerCalibrationButton, playRightSpeakerCalibrationButton
+        ])
+    };
     addAutolayoutEnabledSubview(controller.view, layoutStack);
-    addAutolayoutEnabledSubview(controller.view, playCalibrationButton);
+    addAutolayoutEnabledSubview(controller.view, playCalibrationButtonsStack);
     [NSLayoutConstraint activateConstraints:@[
         [layoutStack.topAnchor constraintEqualToAnchor:controller.view.topAnchor
                                               constant:8],
         [layoutStack.bottomAnchor
-            constraintEqualToAnchor:playCalibrationButton.topAnchor
+            constraintEqualToAnchor:playCalibrationButtonsStack.topAnchor
                            constant:-8],
         [layoutStack.leadingAnchor
             constraintEqualToAnchor:controller.view.leadingAnchor
@@ -234,10 +235,10 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
         [layoutStack.trailingAnchor
             constraintEqualToAnchor:controller.view.trailingAnchor
                            constant:-8],
-        [playCalibrationButton.trailingAnchor
+        [playCalibrationButtonsStack.trailingAnchor
             constraintEqualToAnchor:controller.view.trailingAnchor
                            constant:-8],
-        [playCalibrationButton.bottomAnchor
+        [playCalibrationButtonsStack.bottomAnchor
             constraintEqualToAnchor:controller.view.bottomAnchor
                            constant:-8],
         [browseForTestSettingsButton.widthAnchor
@@ -282,9 +283,16 @@ void FacemaskStudySetupView::
     listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
 }
 
-void FacemaskStudySetupView::notifyThatPlayCalibrationButtonHasBeenClicked() {
-    listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
+void FacemaskStudySetupView::
+    notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() {
+    listener_->notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked();
 }
+
+void FacemaskStudySetupView::
+    notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() {
+    listener_->notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
+}
+
 }
 
 int main() {
