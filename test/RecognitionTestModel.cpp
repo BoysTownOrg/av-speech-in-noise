@@ -446,6 +446,10 @@ void assertLevelEquals_dB(TargetPlayerStub &player, double x) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, player.level_dB());
 }
 
+void assertLevelEquals_dB(MaskerPlayerStub &player, double x) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, player.level_dB());
+}
+
 auto testComplete(RecognitionTestModelImpl &model) -> bool {
     return model.testComplete();
 }
@@ -1436,6 +1440,22 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
     targetPlayer.setDigitalLevel(DigitalLevel{3});
     run(playingCalibration, model);
     assertLevelEquals_dB(targetPlayer, 1 - 2 - 3);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playLeftSpeakerCalibrationSetsTargetPlayerLevel) {
+    calibration.level.dB_SPL = 1;
+    calibration.fullScaleLevel.dB_SPL = 2;
+    maskerPlayer.setDigitalLevel(DigitalLevel{3});
+    run(playingLeftSpeakerCalibration, model);
+    assertLevelEquals_dB(maskerPlayer, 1 - 2 - 3);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationSetsTargetPlayerLevel) {
+    calibration.level.dB_SPL = 1;
+    calibration.fullScaleLevel.dB_SPL = 2;
+    maskerPlayer.setDigitalLevel(DigitalLevel{3});
+    run(playingRightSpeakerCalibration, model);
+    assertLevelEquals_dB(maskerPlayer, 1 - 2 - 3);
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {

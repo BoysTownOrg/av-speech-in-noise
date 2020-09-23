@@ -86,6 +86,10 @@ static void apply(TargetPlayer &player, LevelAmplification x) {
     player.apply(x);
 }
 
+static void apply(MaskerPlayer &player, LevelAmplification x) {
+    player.apply(x);
+}
+
 static void loadFile(TargetPlayer &player, const LocalUrl &s) {
     player.loadFile(s);
 }
@@ -125,6 +129,12 @@ static constexpr auto operator-(
 }
 
 static auto levelAmplification(TargetPlayer &player, const Calibration &p)
+    -> LevelAmplification {
+    return LevelAmplification{
+        DigitalLevel{p.level - p.fullScaleLevel - player.digitalLevel()}.dBov};
+}
+
+static auto levelAmplification(MaskerPlayer &player, const Calibration &p)
     -> LevelAmplification {
     return LevelAmplification{
         DigitalLevel{p.level - p.fullScaleLevel - player.digitalLevel()}.dBov};
@@ -405,7 +415,7 @@ void RecognitionTestModelImpl::playLeftSpeakerCalibration(
     throwRequestFailureOnInvalidAudioFile(
         [&](auto file) {
             loadFile(maskerPlayer, file);
-            apply(targetPlayer, levelAmplification(targetPlayer, calibration));
+            apply(maskerPlayer, levelAmplification(maskerPlayer, calibration));
         },
         calibration.fileUrl);
     play(maskerPlayer);
@@ -421,7 +431,7 @@ void RecognitionTestModelImpl::playRightSpeakerCalibration(
     throwRequestFailureOnInvalidAudioFile(
         [&](auto file) {
             loadFile(maskerPlayer, file);
-            apply(targetPlayer, levelAmplification(targetPlayer, calibration));
+            apply(maskerPlayer, levelAmplification(maskerPlayer, calibration));
         },
         calibration.fileUrl);
     play(maskerPlayer);
