@@ -178,12 +178,12 @@ class UseCase {
 
 void run(UseCase &useCase) { useCase.run(); }
 
-class LevelUseCase : public virtual UseCase {
+class CalibrationUseCase : public virtual UseCase {
   public:
     virtual auto calibration(ModelStub &) -> Calibration = 0;
 };
 
-class PlayingCalibration : public LevelUseCase {
+class PlayingCalibration : public CalibrationUseCase {
   public:
     explicit PlayingCalibration(TestSetupControlStub &control)
         : control{control} {}
@@ -198,7 +198,7 @@ class PlayingCalibration : public LevelUseCase {
     TestSetupControlStub &control;
 };
 
-class PlayingLeftSpeakerCalibration : public LevelUseCase {
+class PlayingLeftSpeakerCalibration : public CalibrationUseCase {
   public:
     explicit PlayingLeftSpeakerCalibration(TestSetupControlStub &control)
         : control{control} {}
@@ -213,7 +213,7 @@ class PlayingLeftSpeakerCalibration : public LevelUseCase {
     TestSetupControlStub &control;
 };
 
-class PlayingRightSpeakerCalibration : public LevelUseCase {
+class PlayingRightSpeakerCalibration : public CalibrationUseCase {
   public:
     explicit PlayingRightSpeakerCalibration(TestSetupControlStub &control)
         : control{control} {}
@@ -245,10 +245,6 @@ class ConfirmingTestSetupImpl : public UseCase {
 
 auto errorMessage(SessionViewStub &view) -> std::string {
     return view.errorMessage();
-}
-
-auto calibration(ModelStub &model) -> const Calibration & {
-    return model.calibration();
 }
 
 void setAudioDevice(SessionViewStub &view, std::string s) {
@@ -329,28 +325,28 @@ class TestSetupControllerTests : public ::testing::Test {
             std::string{"a"}, testSettingsInterpreter.text());
     }
 
-    void assertPassesCalibrationLevel(LevelUseCase &useCase) {
+    void assertPassesCalibrationLevel(CalibrationUseCase &useCase) {
         calibration.level.dB_SPL = 1;
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             1, useCase.calibration(model).level.dB_SPL);
     }
 
-    void assertPassesCalibrationAudioUrl(LevelUseCase &useCase) {
+    void assertPassesCalibrationAudioUrl(CalibrationUseCase &useCase) {
         calibration.fileUrl.path = "a";
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"a"}, useCase.calibration(model).fileUrl.path);
     }
 
-    void assertPassesCalibrationAudioDevice(LevelUseCase &useCase) {
+    void assertPassesCalibrationAudioDevice(CalibrationUseCase &useCase) {
         setAudioDevice(sessionView, "b");
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"b"}, useCase.calibration(model).audioDevice);
     }
 
-    void assertPassesCalibrationFullScaleLevel(LevelUseCase &useCase) {
+    void assertPassesCalibrationFullScaleLevel(CalibrationUseCase &useCase) {
         calibration.fullScaleLevel.dB_SPL = 1;
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
