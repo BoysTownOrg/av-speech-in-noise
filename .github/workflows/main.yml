@@ -13,12 +13,18 @@ jobs:
       - uses: actions/checkout@v2
       - name: generate build system
         run: cmake -S . -B build -GXcode -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 -DAV_SPEECH_IN_NOISE_ENABLE_TESTS=1
-      - name: build tests
+      - name: build tests Release
         run: cmake --build build --target tests --config Release
-      - name: test library
+      - name: test library Release
         run: |
           cd ./build
           ctest -V -C Release
+      - name: build tests Debug
+        run: cmake --build build --target tests --config Debug
+      - name: test library Debug
+        run: |
+          cd ./build
+          ctest -V -C Debug
       - name: build app Release
         run: cmake --build build --target AvSpeechInNoise --config Release
       - name: build app Debug
