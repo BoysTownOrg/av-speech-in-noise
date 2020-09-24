@@ -89,7 +89,7 @@ void assertPassesSimpleAdaptiveSettings(
 
 void assertPassesSimpleFixedLevelSettings(
     TestSettingsInterpreterImpl &interpreter, ModelStub &model, Method m,
-    const std::function<const FixedLevelTest &(ModelStub &)> &fixedLevelTest) {
+    const std::function<FixedLevelTest(ModelStub &)> &fixedLevelTest) {
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::targets, "a"),
