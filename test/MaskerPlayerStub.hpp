@@ -35,6 +35,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool usingSecondChannelOnly_{};
     bool channelDelaysCleared_{};
     bool played_{};
+    bool stopped_{};
 
   public:
     [[nodiscard]] auto played() const -> bool { return played_; }
@@ -130,6 +131,10 @@ class MaskerPlayerStub : public MaskerPlayer {
     }
 
     [[nodiscard]] auto fadeOutCalled() const -> bool { return fadeOutCalled_; }
+
+    auto stopped() -> bool { return stopped_; }
+
+    void stop() { stopped_ = true; }
 
     void attach(Observer *e) override { listener_ = e; }
 

@@ -1510,6 +1510,11 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestHidesTargetPlayer) {
     assertOnlyHidden(targetPlayer);
 }
 
+RECOGNITION_TEST_MODEL_TEST(initializeTestStopsTargetPlayer) {
+    run(initializingTest, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(maskerPlayer.stopped());
+}
+
 RECOGNITION_TEST_MODEL_TEST(targetPlaybackCompleteFadesOutMasker) {
     targetPlayer.playbackComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(maskerPlayer.fadeOutCalled());

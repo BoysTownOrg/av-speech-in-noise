@@ -188,6 +188,7 @@ void RecognitionTestModelImpl::initialize_(
         return;
 
     tryOpening(outputFile, test.identity);
+    maskerPlayer.stop();
     throwRequestFailureOnInvalidAudioFile(
         [&](auto file) { maskerPlayer.loadFile(file); }, maskerFileUrl(test));
 
