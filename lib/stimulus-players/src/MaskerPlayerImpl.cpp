@@ -268,6 +268,8 @@ void MaskerPlayerImpl::fadeIn() { mainThread.fadeIn(); }
 
 void MaskerPlayerImpl::play() { mainThread.play(); }
 
+void MaskerPlayerImpl::stop() { mainThread.stop(); }
+
 void MaskerPlayerImpl::fadeOut() { mainThread.fadeOut(); }
 
 void MaskerPlayerImpl::callback() { mainThread.callback(); }
@@ -316,6 +318,8 @@ void MaskerPlayerImpl::MainThread::fadeIn() {
 }
 
 void MaskerPlayerImpl::MainThread::play() { player->play(); }
+
+void MaskerPlayerImpl::MainThread::stop() { player->stop(); }
 
 void MaskerPlayerImpl::MainThread::scheduleCallbackAfterSeconds(double x) {
     timer->scheduleCallbackAfterSeconds(x);

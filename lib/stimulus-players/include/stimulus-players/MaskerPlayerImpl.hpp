@@ -79,7 +79,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     void useFirstChannelOnly() override;
     void useSecondChannelOnly() override;
     void play() override;
-    void stop() override {}
+    void stop() override;
     void clearChannelDelays() override;
     void useAllChannels() override;
     auto nanoseconds(PlayerTime) -> std::uintmax_t override;
@@ -131,6 +131,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         void attach(MaskerPlayer::Observer *);
         void fadeIn();
         void play();
+        void stop();
         void fadeOut();
         void setChannelDelaySeconds(channel_index_type channel, double seconds);
         void clearChannelDelays();

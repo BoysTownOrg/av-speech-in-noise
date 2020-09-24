@@ -735,6 +735,11 @@ MASKER_PLAYER_TEST(playPlaysAudioPlayer) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioPlayer.played());
 }
 
+MASKER_PLAYER_TEST(stopStopsAudioPlayer) {
+    player.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioPlayer.stopped());
+}
+
 MASKER_PLAYER_TEST(twentydBMultipliesSignalByTen) {
     player.apply(LevelAmplification{20});
     loadMonoAudio({1, 2, 3});
