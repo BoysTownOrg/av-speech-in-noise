@@ -101,7 +101,7 @@ class MaskerPlayer {
     virtual auto nanoseconds(PlayerTime) -> std::uintmax_t = 0;
     virtual auto currentSystemTime() -> PlayerTime = 0;
     virtual void play() = 0;
-    virtual void stop() {}
+    virtual void stop() = 0;
 };
 
 class EyeTracker {

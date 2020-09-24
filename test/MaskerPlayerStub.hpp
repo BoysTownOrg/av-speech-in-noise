@@ -132,9 +132,9 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     [[nodiscard]] auto fadeOutCalled() const -> bool { return fadeOutCalled_; }
 
-    auto stopped() -> bool { return stopped_; }
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
 
-    void stop() { stopped_ = true; }
+    void stop() override { stopped_ = true; }
 
     void attach(Observer *e) override { listener_ = e; }
 
