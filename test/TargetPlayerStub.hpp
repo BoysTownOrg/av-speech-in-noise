@@ -9,6 +9,8 @@
 namespace av_speech_in_noise {
 class TargetPlayerStub : public TargetPlayer {
   public:
+    auto timesSetDeviceCalled() const -> int { return timesSetDeviceCalled_; }
+
     void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
 
     void useAllChannels() override { usingAllChannels_ = true; }
@@ -34,6 +36,7 @@ class TargetPlayerStub : public TargetPlayer {
     void setAudioDevice(std::string s) override {
         setDeviceCalled_ = true;
         device_ = std::move(s);
+        ++timesSetDeviceCalled_;
         if (throwInvalidAudioDeviceWhenDeviceSet_)
             throw InvalidAudioDevice{};
     }
@@ -111,6 +114,7 @@ class TargetPlayerStub : public TargetPlayer {
     double level_dB_{};
     double durationSeconds_{};
     Observer *listener_{};
+    int timesSetDeviceCalled_{};
     bool played_{};
     bool videoHidden_{};
     bool videoShown_{};

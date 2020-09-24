@@ -23,6 +23,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     PlayerTime currentSystemTime_{};
     std::vector<player_system_time_type> toNanosecondsSystemTime_{};
     std::uintmax_t nanoseconds_{};
+    int timesFadedIn_{};
     bool fadeInCalled_{};
     bool fadeOutCalled_{};
     bool playing_{};
@@ -111,6 +112,8 @@ class MaskerPlayerStub : public MaskerPlayer {
         return setDeviceCalled_;
     }
 
+    [[nodiscard]] auto timesFadedIn() const -> int { return timesFadedIn_; }
+
     auto playing() -> bool override { return playing_; }
 
     void setPlaying() { playing_ = true; }
@@ -121,7 +124,10 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     [[nodiscard]] auto fadeInCalled() const -> bool { return fadeInCalled_; }
 
-    void fadeIn() override { fadeInCalled_ = true; }
+    void fadeIn() override {
+        fadeInCalled_ = true;
+        ++timesFadedIn_;
+    }
 
     [[nodiscard]] auto fadeOutCalled() const -> bool { return fadeOutCalled_; }
 

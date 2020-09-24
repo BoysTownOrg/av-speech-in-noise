@@ -77,8 +77,8 @@ static void throwRequestFailureOnInvalidAudioDevice(
     }
 }
 
-static void throwRequestFailureIfTrialInProgress(MaskerPlayer &player) {
-    if (trialInProgress(player))
+static void throwRequestFailureIfTrialInProgress(bool f) {
+    if (f)
         throw Model::RequestFailure{"Trial in progress."};
 }
 
@@ -182,7 +182,7 @@ void RecognitionTestModelImpl::initialize(
 
 void RecognitionTestModelImpl::initialize_(
     TestMethod *testMethod_, const Test &test) {
-    throwRequestFailureIfTrialInProgress(maskerPlayer);
+    throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     if (testMethod_->complete())
         return;
@@ -284,6 +284,7 @@ void RecognitionTestModelImpl::fadeOutComplete() {
     if (eyeTracking)
         eyeTracker.stop();
     listener_->trialComplete();
+    trialInProgress_ = false;
 }
 
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
@@ -312,7 +313,7 @@ void RecognitionTestModelImpl::seekRandomMaskerPosition() {
 }
 
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
-    throwRequestFailureIfTrialInProgress(maskerPlayer);
+    throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     throwRequestFailureOnInvalidAudioDevice(
         [&](auto device) {
@@ -329,6 +330,7 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     if (condition == Condition::audioVisual)
         show(targetPlayer);
     maskerPlayer.fadeIn();
+    trialInProgress_ = true;
 }
 
 void RecognitionTestModelImpl::submitCorrectResponse() {
@@ -413,19 +415,21 @@ static void play(MaskerPlayer &maskerPlayer, const Calibration &calibration) {
 }
 
 void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
-    throwRequestFailureIfTrialInProgress(maskerPlayer);
+    throwRequestFailureIfTrialInProgress(trialInProgress_);
     targetPlayer.useAllChannels();
     play(targetPlayer, calibration);
 }
 
 void RecognitionTestModelImpl::playLeftSpeakerCalibration(
     const Calibration &calibration) {
+    throwRequestFailureIfTrialInProgress(trialInProgress_);
     maskerPlayer.useFirstChannelOnly();
     play(maskerPlayer, calibration);
 }
 
 void RecognitionTestModelImpl::playRightSpeakerCalibration(
     const Calibration &calibration) {
+    throwRequestFailureIfTrialInProgress(trialInProgress_);
     maskerPlayer.useSecondChannelOnly();
     play(maskerPlayer, calibration);
 }

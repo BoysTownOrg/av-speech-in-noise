@@ -694,12 +694,12 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 
     void runIgnoringFailureWithTrialInProgress(UseCase &useCase) {
-        setTrialInProgress(maskerPlayer);
+        model.playTrial({});
         runIgnoringFailure(useCase, model);
     }
 
     void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
-        setTrialInProgress(maskerPlayer);
+        model.playTrial({});
         assertCallThrowsRequestFailure(useCase, "Trial in progress.");
     }
 
@@ -1589,12 +1589,12 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     playCalibrationDoesNotChangeAudioDeviceWhenTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(targetPlayer.setDeviceCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, targetPlayer.timesSetDeviceCalled());
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialDoesNotPlayIfTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingTrial);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(fadedIn(maskerPlayer));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, maskerPlayer.timesFadedIn());
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationDoesNotPlayIfTrialInProgress) {

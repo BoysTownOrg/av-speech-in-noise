@@ -168,6 +168,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     int trialNumber_{};
     Condition condition{};
     bool eyeTracking{};
+    bool trialInProgress_{};
 };
 }
 
