@@ -273,6 +273,24 @@ auto fillAudioBufferMono(AudioPlayer::Observer *observer, gsl::index channels,
     return audio;
 }
 
+auto fillAudioBufferMonoAsync(AudioPlayerStub &audioPlayer, gsl::index frames)
+    -> std::future<std::vector<std::vector<float>>> {
+    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
+        task{[=](AudioPlayer::Observer *observer) {
+            return ::av_speech_in_noise::fillAudioBufferMono(
+                observer, 1, frames);
+        }};
+    auto result{task.get_future()};
+    audioPlayer.setOnPlayTask(std::move(task));
+    audioPlayer.play();
+    return result;
+}
+
+void assertChannelEqual(
+    const std::vector<float> &channel, const std::vector<float> &x) {
+    assertEqual(x, channel, 1e-29F);
+}
+
 using channel_index_type = gsl::index;
 
 class MaskerPlayerTests : public ::testing::Test {
@@ -409,11 +427,6 @@ class MaskerPlayerTests : public ::testing::Test {
         assertChannelEqual(leftChannel, x);
     }
 
-    static void assertChannelEqual(
-        const std::vector<float> &channel, const std::vector<float> &x) {
-        assertEqual(x, channel, 1e-29F);
-    }
-
     void assertRightChannelEquals(const std::vector<float> &x) {
         assertChannelEqual(rightChannel, x);
     }
@@ -530,20 +543,6 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     auto digitalLevel() -> DigitalLevel { return player.digitalLevel(); }
-
-    auto fillAudioBufferMonoAsync(gsl::index frames)
-        -> std::future<std::vector<std::vector<float>>> {
-        std::packaged_task<std::vector<std::vector<float>>(
-            AudioPlayer::Observer *)>
-            task{[=](AudioPlayer::Observer *observer) {
-                return ::av_speech_in_noise::fillAudioBufferMono(
-                    observer, 1, frames);
-            }};
-        auto result{task.get_future()};
-        audioPlayer.setOnPlayTask(std::move(task));
-        audioPlayer.play();
-        return result;
-    }
 };
 
 #define MASKER_PLAYER_TEST(a) TEST_F(MaskerPlayerTests, a)
@@ -571,7 +570,8 @@ MASKER_PLAYER_TEST(seekSeeksAudioAsync) {
     setSampleRateHz(3);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
     seekSeconds(2);
-    assertChannelEqual(fillAudioBufferMonoAsync(4).get().front(), {7, 8, 9, 1});
+    assertChannelEqual(
+        fillAudioBufferMonoAsync(audioPlayer, 4).get().front(), {7, 8, 9, 1});
 }
 
 MASKER_PLAYER_TEST(seekNegativeTime) {
@@ -634,11 +634,11 @@ MASKER_PLAYER_TEST(setChannelDelayMonoWithSeekAsync) {
     setSampleRateHz(3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
-    assertChannelEqual(
-        fillAudioBufferMonoAsync(6).get().front(), {0, 0, 0, 1, 2, 3});
+    assertChannelEqual(fillAudioBufferMonoAsync(audioPlayer, 6).get().front(),
+        {0, 0, 0, 1, 2, 3});
     seekSeconds(2);
-    assertChannelEqual(
-        fillAudioBufferMonoAsync(6).get().front(), {0, 0, 0, 7, 8, 9});
+    assertChannelEqual(fillAudioBufferMonoAsync(audioPlayer, 6).get().front(),
+        {0, 0, 0, 7, 8, 9});
 }
 
 MASKER_PLAYER_TEST(clearChannelDelaysMono) {
