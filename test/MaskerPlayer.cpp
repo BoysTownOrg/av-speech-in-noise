@@ -291,6 +291,13 @@ void assertChannelEqual(
     assertEqual(x, channel, 1e-29F);
 }
 
+void assertAsyncLoadedMonoChannelEquals(
+    AudioPlayerStub &audioPlayer, const std::vector<float> &expected) {
+    assertChannelEqual(
+        fillAudioBufferMonoAsync(audioPlayer, expected.size()).get().front(),
+        expected);
+}
+
 using channel_index_type = gsl::index;
 
 class MaskerPlayerTests : public ::testing::Test {
@@ -570,8 +577,7 @@ MASKER_PLAYER_TEST(seekSeeksAudioAsync) {
     setSampleRateHz(3);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
     seekSeconds(2);
-    assertChannelEqual(
-        fillAudioBufferMonoAsync(audioPlayer, 4).get().front(), {7, 8, 9, 1});
+    assertAsyncLoadedMonoChannelEquals(audioPlayer, {7, 8, 9, 1});
 }
 
 MASKER_PLAYER_TEST(seekNegativeTime) {
@@ -634,11 +640,9 @@ MASKER_PLAYER_TEST(setChannelDelayMonoWithSeekAsync) {
     setSampleRateHz(3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
-    assertChannelEqual(fillAudioBufferMonoAsync(audioPlayer, 6).get().front(),
-        {0, 0, 0, 1, 2, 3});
+    assertAsyncLoadedMonoChannelEquals(audioPlayer, {0, 0, 0, 1, 2, 3});
     seekSeconds(2);
-    assertChannelEqual(fillAudioBufferMonoAsync(audioPlayer, 6).get().front(),
-        {0, 0, 0, 7, 8, 9});
+    assertAsyncLoadedMonoChannelEquals(audioPlayer, {0, 0, 0, 7, 8, 9});
 }
 
 MASKER_PLAYER_TEST(clearChannelDelaysMono) {
