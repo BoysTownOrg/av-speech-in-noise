@@ -403,6 +403,7 @@ static void play(TargetPlayer &targetPlayer, const Calibration &calibration) {
 }
 
 static void play(MaskerPlayer &maskerPlayer, const Calibration &calibration) {
+    maskerPlayer.stop();
     throwRequestFailureOnInvalidAudioDevice(
         [&](auto device) { setAudioDevice(maskerPlayer, device); },
         calibration.audioDevice);
