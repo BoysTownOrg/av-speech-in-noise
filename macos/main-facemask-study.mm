@@ -19,7 +19,9 @@ class FacemaskStudySetupView : public TestSetupUI {
     void populateTransducerMenu(std::vector<std::string>) override {}
     auto startingSnr() -> std::string override { return "0"; }
     auto testerId() -> std::string override { return {}; }
-    auto subjectId() -> std::string override { return {}; }
+    auto subjectId() -> std::string override {
+        return subjectIdField.stringValue.UTF8String;
+    }
     auto session() -> std::string override { return {}; }
     auto rmeSetting() -> std::string override { return {}; }
     auto transducer() -> std::string override { return {}; }
@@ -30,6 +32,7 @@ class FacemaskStudySetupView : public TestSetupUI {
 
   private:
     NSTextField *testSettingsField;
+    NSTextField *subjectIdField;
     FacemaskStudySetupViewActions *actions;
     Observer *listener_{};
     NSViewController *controller;
@@ -141,6 +144,7 @@ static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
 
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : testSettingsField{[NSTextField textFieldWithString:@""]},
+      subjectIdField{[NSTextField textFieldWithString:@""]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
                                                                  controller} {
     actions->controller = this;
@@ -205,13 +209,18 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
             instructionsLabel, browseForTestSettingsButton,
-            labeledView(testSettingsField, "Session file:"), confirmButton
+            labeledView(testSettingsField, "Session file:"),
+            labeledView(subjectIdField, "Subject ID:"), confirmButton
         ])
     };
     [testSettingsField setFont:[NSFont systemFontOfSize:30]];
     [testSettingsField setTextColor:NSColor.blackColor];
     testSettingsField.wantsLayer = YES;
     testSettingsField.layer.backgroundColor = NSColor.whiteColor.CGColor;
+    [subjectIdField setFont:[NSFont systemFontOfSize:30]];
+    [subjectIdField setTextColor:NSColor.blackColor];
+    subjectIdField.wantsLayer = YES;
+    subjectIdField.layer.backgroundColor = NSColor.whiteColor.CGColor;
     [instructionsLabel
         setContentCompressionResistancePriority:751
                                  forOrientation:
