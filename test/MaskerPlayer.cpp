@@ -6,6 +6,7 @@
 #include <gsl/gsl>
 #include <cmath>
 #include <utility>
+#include <future>
 
 namespace av_speech_in_noise {
 constexpr auto operator==(const PlayerTime &a, const PlayerTime &b) -> bool {
@@ -66,7 +67,13 @@ class AudioPlayerStub : public AudioPlayer {
         return at(audioDeviceDescriptions_, index);
     }
 
-    void play() override { played_ = true; }
+    void play() override {
+        played_ = true;
+        if (onPlayTask.valid()) {
+            std::thread t{std::move(onPlayTask), listener_};
+            t.detach();
+        }
+    }
 
     void attach(Observer *listener) override { listener_ = listener; }
 
@@ -91,7 +98,13 @@ class AudioPlayerStub : public AudioPlayer {
         return systemTimeForNanoseconds_;
     }
 
+    void setOnPlayTask(
+        std::packaged_task<std::vector<std::vector<float>>(Observer *)> task) {
+        onPlayTask = std::move(task);
+    }
+
   private:
+    std::packaged_task<std::vector<std::vector<float>>(Observer *)> onPlayTask;
     audio_type audioRead_;
     std::vector<std::string> audioDeviceDescriptions_{10};
     std::string filePath_;
@@ -245,6 +258,19 @@ auto currentSystemTime(MaskerPlayerImpl &player) -> PlayerTime {
 auto systemTimeForNanoseconds(AudioPlayerStub &player)
     -> player_system_time_type {
     return player.systemTimeForNanoseconds();
+}
+
+auto fillAudioBufferMono(AudioPlayer::Observer *observer, gsl::index channels,
+    gsl::index frames, player_system_time_type t = {})
+    -> std::vector<std::vector<float>> {
+    std::vector<std::vector<float>> audio(channels);
+    std::vector<gsl::span<float>> adapted;
+    for (auto &channel : audio) {
+        channel.resize(frames);
+        adapted.emplace_back(channel);
+    }
+    observer->fillAudioBuffer(adapted, t);
+    return audio;
 }
 
 using channel_index_type = gsl::index;
@@ -525,6 +551,20 @@ MASKER_PLAYER_TEST(seekSeeksAudio) {
     seekSeconds(2);
     fillAudioBufferMono(4);
     assertLeftChannelEquals({7, 8, 9, 1});
+}
+
+MASKER_PLAYER_TEST(seekSeeksAudioAsync) {
+    setSampleRateHz(3);
+    loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
+    seekSeconds(2);
+    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
+        task{[](AudioPlayer::Observer *observer) {
+            return ::av_speech_in_noise::fillAudioBufferMono(observer, 1, 4);
+        }};
+    auto result{task.get_future()};
+    audioPlayer.setOnPlayTask(std::move(task));
+    audioPlayer.play();
+    assertChannelEqual(result.get().front(), {7, 8, 9, 1});
 }
 
 MASKER_PLAYER_TEST(seekNegativeTime) {
