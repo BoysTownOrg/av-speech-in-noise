@@ -156,10 +156,18 @@ class AudioDeviceUseCase : public virtual UseCase {
     virtual void setAudioDevice(std::string) = 0;
 };
 
-class PlayingCalibration : public AudioDeviceUseCase {
+class PlayerLevelUseCase : public virtual UseCase {
   public:
-    explicit PlayingCalibration(Calibration &calibration)
-        : calibration{calibration} {}
+    virtual void set(DigitalLevel) = 0;
+    virtual auto levelAmplification() -> LevelAmplification = 0;
+};
+
+class PlayingCalibration : public AudioDeviceUseCase,
+                           public PlayerLevelUseCase {
+  public:
+    explicit PlayingCalibration(
+        Calibration &calibration, TargetPlayerStub &player)
+        : calibration{calibration}, player{player} {}
 
     void setAudioDevice(std::string s) override {
         calibration.audioDevice = std::move(s);
@@ -169,8 +177,67 @@ class PlayingCalibration : public AudioDeviceUseCase {
         model.playCalibration(calibration);
     }
 
+    void set(DigitalLevel x) override { player.setDigitalLevel(x); }
+
+    auto levelAmplification() -> LevelAmplification override {
+        return player.levelAmplification();
+    }
+
   private:
     Calibration &calibration;
+    TargetPlayerStub &player;
+};
+
+class PlayingLeftSpeakerCalibration : public AudioDeviceUseCase,
+                                      public PlayerLevelUseCase {
+  public:
+    explicit PlayingLeftSpeakerCalibration(
+        Calibration &calibration, MaskerPlayerStub &player)
+        : calibration{calibration}, player{player} {}
+
+    void setAudioDevice(std::string s) override {
+        calibration.audioDevice = std::move(s);
+    }
+
+    void run(RecognitionTestModelImpl &model) override {
+        model.playLeftSpeakerCalibration(calibration);
+    }
+
+    void set(DigitalLevel x) override { player.setDigitalLevel(x); }
+
+    auto levelAmplification() -> LevelAmplification override {
+        return player.levelAmplification();
+    }
+
+  private:
+    Calibration &calibration;
+    MaskerPlayerStub &player;
+};
+
+class PlayingRightSpeakerCalibration : public AudioDeviceUseCase,
+                                       public PlayerLevelUseCase {
+  public:
+    explicit PlayingRightSpeakerCalibration(
+        Calibration &calibration, MaskerPlayerStub &player)
+        : calibration{calibration}, player{player} {}
+
+    void setAudioDevice(std::string s) override {
+        calibration.audioDevice = std::move(s);
+    }
+
+    void run(RecognitionTestModelImpl &model) override {
+        model.playRightSpeakerCalibration(calibration);
+    }
+
+    void set(DigitalLevel x) override { player.setDigitalLevel(x); }
+
+    auto levelAmplification() -> LevelAmplification override {
+        return player.levelAmplification();
+    }
+
+  private:
+    Calibration &calibration;
+    MaskerPlayerStub &player;
 };
 
 class PlayingTrial : public AudioDeviceUseCase {
@@ -370,10 +437,18 @@ void assertPlayed(TargetPlayerStub &player) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(played(player));
 }
 
+void assertPlayed(MaskerPlayerStub &player) {
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.played());
+}
+
 auto filePath(TargetPlayerStub &player) { return player.filePath(); }
 
 void assertFilePathEquals(TargetPlayerStub &player, const std::string &what) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, filePath(player));
+}
+
+void assertFilePathEquals(MaskerPlayerStub &player, const std::string &what) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, player.filePath());
 }
 
 auto playbackCompletionSubscribed(TargetPlayerStub &player) -> bool {
@@ -404,6 +479,10 @@ void assertLevelEquals_dB(TargetPlayerStub &player, double x) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, player.level_dB());
 }
 
+void assertLevelEquals_dB(MaskerPlayerStub &player, double x) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, player.level_dB());
+}
+
 auto testComplete(RecognitionTestModelImpl &model) -> bool {
     return model.testComplete();
 }
@@ -414,6 +493,14 @@ auto freeResponseTrial(OutputFileStub &file) {
 
 void assertOnlyUsingFirstChannel(TargetPlayerStub &player) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.usingFirstChannelOnly());
+}
+
+void assertOnlyUsingFirstChannel(MaskerPlayerStub &player) {
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.usingFirstChannelOnly());
+}
+
+void assertOnlyUsingSecondChannel(MaskerPlayerStub &player) {
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.usingSecondChannelOnly());
 }
 
 void assertUsingAllChannels(MaskerPlayerStub &player) {
@@ -500,7 +587,11 @@ class RecognitionTestModelTests : public ::testing::Test {
         outputFile, randomizer, eyeTracker};
     TestMethodStub testMethod;
     Calibration calibration{};
-    PlayingCalibration playingCalibration{calibration};
+    PlayingCalibration playingCalibration{calibration, targetPlayer};
+    PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{
+        calibration, maskerPlayer};
+    PlayingRightSpeakerCalibration playingRightSpeakerCalibration{
+        calibration, maskerPlayer};
     av_speech_in_noise::Test test{};
     InitializingTest initializingTest{&testMethod, test};
     InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
@@ -603,12 +694,12 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 
     void runIgnoringFailureWithTrialInProgress(UseCase &useCase) {
-        setTrialInProgress(maskerPlayer);
+        model.playTrial({});
         runIgnoringFailure(useCase, model);
     }
 
     void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
-        setTrialInProgress(maskerPlayer);
+        model.playTrial({});
         assertCallThrowsRequestFailure(useCase, "Trial in progress.");
     }
 
@@ -757,6 +848,11 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetPlayer.usingAllChannels());
 }
 
+RECOGNITION_TEST_MODEL_TEST(playingCalibrationUsesAllTargetPlayerChannels) {
+    run(playingCalibration, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetPlayer.usingAllChannels());
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllMaskerPlayerChannels) {
     run(initializingTest, model);
     assertUsingAllChannels(maskerPlayer);
@@ -792,6 +888,18 @@ RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithSingleSpeakerUsesFirstChannelOnlyOfTargetPlayer) {
     run(initializingTestWithSingleSpeaker, model);
     assertOnlyUsingFirstChannel(targetPlayer);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playingLeftSpeakerCalibrationUsesFirstChannelOnlyOfMaskerPlayer) {
+    run(playingLeftSpeakerCalibration, model);
+    assertOnlyUsingFirstChannel(maskerPlayer);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playingRightSpeakerCalibrationUsesSecondChannelOnlyOfTargetPlayer) {
+    run(playingRightSpeakerCalibration, model);
+    assertOnlyUsingSecondChannel(maskerPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -928,6 +1036,16 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioDeviceToTargetPlayer) {
     assertDevicePassedToTargetPlayer(playingCalibration);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    playLeftSpeakerCalibrationPassesAudioDeviceToMaskerPlayer) {
+    assertDevicePassedToMaskerPlayer(playingLeftSpeakerCalibration);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playRightSpeakerCalibrationPassesAudioDeviceToMaskerPlayer) {
+    assertDevicePassedToMaskerPlayer(playingRightSpeakerCalibration);
+}
+
 RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToMaskerPlayer) {
     assertDevicePassedToMaskerPlayer(playingTrial);
 }
@@ -940,6 +1058,16 @@ RECOGNITION_TEST_MODEL_TEST(playTrialFadesInMasker) {
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPlaysTarget) {
     run(playingCalibration, model);
     assertPlayed(targetPlayer);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playLeftSpeakerCalibrationPlaysMasker) {
+    run(playingLeftSpeakerCalibration, model);
+    assertPlayed(maskerPlayer);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationPlaysMasker) {
+    run(playingRightSpeakerCalibration, model);
+    assertPlayed(maskerPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
@@ -1150,6 +1278,20 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    playLeftSpeakerCalibrationPassesAudioFileToMaskerPlayer) {
+    calibration.fileUrl.path = "a";
+    run(playingLeftSpeakerCalibration, model);
+    assertFilePathEquals(maskerPlayer, "a");
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playRightSpeakerCalibrationPassesAudioFileToMaskerPlayer) {
+    calibration.fileUrl.path = "a";
+    run(playingRightSpeakerCalibration, model);
+    assertFilePathEquals(maskerPlayer, "a");
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestPassesMaskerFilePathToMaskerPlayer) {
     assertPassesMaskerFilePathToMaskerPlayer(initializingTest);
 }
@@ -1323,12 +1465,25 @@ RECOGNITION_TEST_MODEL_TEST(submitIncorrectResponseSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingIncorrectResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
+void assertLevelSet(Calibration &calibration, PlayerLevelUseCase &useCase,
+    RecognitionTestModelImpl &model) {
     calibration.level.dB_SPL = 1;
     calibration.fullScaleLevel.dB_SPL = 2;
-    targetPlayer.setDigitalLevel(DigitalLevel{3});
-    run(playingCalibration, model);
-    assertLevelEquals_dB(targetPlayer, 1 - 2 - 3);
+    useCase.set(DigitalLevel{3});
+    run(useCase, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1 - 2 - 3, useCase.levelAmplification().dB);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
+    assertLevelSet(calibration, playingCalibration, model);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playLeftSpeakerCalibrationSetsTargetPlayerLevel) {
+    assertLevelSet(calibration, playingLeftSpeakerCalibration, model);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationSetsTargetPlayerLevel) {
+    assertLevelSet(calibration, playingRightSpeakerCalibration, model);
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {
@@ -1353,6 +1508,11 @@ RECOGNITION_TEST_MODEL_TEST(startTrialDoesNotShowTargetPlayerWhenAuditoryOnly) {
 RECOGNITION_TEST_MODEL_TEST(initializeTestHidesTargetPlayer) {
     run(initializingTest, model);
     assertOnlyHidden(targetPlayer);
+}
+
+RECOGNITION_TEST_MODEL_TEST(initializeTestStopsTargetPlayer) {
+    run(initializingTest, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(maskerPlayer.stopped());
 }
 
 RECOGNITION_TEST_MODEL_TEST(targetPlaybackCompleteFadesOutMasker) {
@@ -1434,12 +1594,12 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     playCalibrationDoesNotChangeAudioDeviceWhenTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(targetPlayer.setDeviceCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, targetPlayer.timesSetDeviceCalled());
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialDoesNotPlayIfTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingTrial);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(fadedIn(maskerPlayer));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, maskerPlayer.timesFadedIn());
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationDoesNotPlayIfTrialInProgress) {

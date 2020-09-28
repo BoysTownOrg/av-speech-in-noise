@@ -58,6 +58,14 @@ class TestSetupControlStub : public TestSetupControl {
         listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
     }
 
+    void playLeftSpeakerCalibration() {
+        listener_->notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked();
+    }
+
+    void playRightSpeakerCalibration() {
+        listener_->notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
+    }
+
     auto session() -> std::string override { return session_; }
 
     void setSession(std::string s) { session_ = std::move(s); }
@@ -170,20 +178,50 @@ class UseCase {
 
 void run(UseCase &useCase) { useCase.run(); }
 
-class LevelUseCase : public virtual UseCase {
+class CalibrationUseCase : public virtual UseCase {
   public:
-    virtual auto fullScaleLevel(ModelStub &) -> int = 0;
+    virtual auto calibration(ModelStub &) -> Calibration = 0;
 };
 
-class PlayingCalibration : public LevelUseCase {
+class PlayingCalibration : public CalibrationUseCase {
   public:
     explicit PlayingCalibration(TestSetupControlStub &control)
         : control{control} {}
 
     void run() override { control.playCalibration(); }
 
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return m.calibration().fullScaleLevel.dB_SPL;
+    auto calibration(ModelStub &m) -> Calibration override {
+        return m.calibration();
+    }
+
+  private:
+    TestSetupControlStub &control;
+};
+
+class PlayingLeftSpeakerCalibration : public CalibrationUseCase {
+  public:
+    explicit PlayingLeftSpeakerCalibration(TestSetupControlStub &control)
+        : control{control} {}
+
+    void run() override { control.playLeftSpeakerCalibration(); }
+
+    auto calibration(ModelStub &m) -> Calibration override {
+        return m.leftSpeakerCalibration();
+    }
+
+  private:
+    TestSetupControlStub &control;
+};
+
+class PlayingRightSpeakerCalibration : public CalibrationUseCase {
+  public:
+    explicit PlayingRightSpeakerCalibration(TestSetupControlStub &control)
+        : control{control} {}
+
+    void run() override { control.playRightSpeakerCalibration(); }
+
+    auto calibration(ModelStub &m) -> Calibration override {
+        return m.rightSpeakerCalibration();
     }
 
   private:
@@ -207,10 +245,6 @@ class ConfirmingTestSetupImpl : public UseCase {
 
 auto errorMessage(SessionViewStub &view) -> std::string {
     return view.errorMessage();
-}
-
-auto calibration(ModelStub &model) -> const Calibration & {
-    return model.calibration();
 }
 
 void setAudioDevice(SessionViewStub &view, std::string s) {
@@ -265,6 +299,8 @@ class TestSetupControllerTests : public ::testing::Test {
     TestSetupControllerImpl controller{
         model, sessionView, control, testSettingsInterpreter, textFileReader};
     PlayingCalibration playingCalibration{control};
+    PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
+    PlayingRightSpeakerCalibration playingRightSpeakerCalibration{control};
     SessionControllerStub sessionController;
     TestSetupControllerObserverStub testSetupControllerObserver;
     ConfirmingTestSetupImpl confirmingTestSetup{control};
@@ -287,6 +323,34 @@ class TestSetupControllerTests : public ::testing::Test {
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"a"}, testSettingsInterpreter.text());
+    }
+
+    void assertPassesLevel(CalibrationUseCase &useCase) {
+        calibration.level.dB_SPL = 1;
+        run(useCase);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            1, useCase.calibration(model).level.dB_SPL);
+    }
+
+    void assertPassesAudioFileUrl(CalibrationUseCase &useCase) {
+        calibration.fileUrl.path = "a";
+        run(useCase);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"a"}, useCase.calibration(model).fileUrl.path);
+    }
+
+    void assertPassesAudioDevice(CalibrationUseCase &useCase) {
+        setAudioDevice(sessionView, "b");
+        run(useCase);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            std::string{"b"}, useCase.calibration(model).audioDevice);
+    }
+
+    void assertPassesFullScaleLevel(CalibrationUseCase &useCase) {
+        calibration.fullScaleLevel.dB_SPL = 1;
+        run(useCase);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            1, useCase.calibration(model).fullScaleLevel.dB_SPL);
     }
 };
 
@@ -379,6 +443,14 @@ class RequestFailingModel : public Model {
     }
 
     void playCalibration(const Calibration &) override {
+        throw RequestFailure{errorMessage};
+    }
+
+    void playLeftSpeakerCalibration(const Calibration &) override {
+        throw RequestFailure{errorMessage};
+    }
+
+    void playRightSpeakerCalibration(const Calibration &) override {
         throw RequestFailure{errorMessage};
     }
 
@@ -509,15 +581,31 @@ TEST_SETUP_CONTROLLER_TEST(
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesLevel) {
-    calibration.level.dB_SPL = 1;
-    run(playingCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        1, av_speech_in_noise::calibration(model).level.dB_SPL);
+    assertPassesLevel(playingCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesLevel) {
+    assertPassesLevel(playingLeftSpeakerCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(playRightSpeakerCalibrationPassesLevel) {
+    assertPassesLevel(playingRightSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(
     playingCalibrationPassesTestSettingsFileToTextFileReader) {
     assertPassesTestSettingsFileToTextFileReader(playingCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(
+    playingLeftSpeakerCalibrationPassesTestSettingsFileToTextFileReader) {
+    assertPassesTestSettingsFileToTextFileReader(playingLeftSpeakerCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(
+    playingRightSpeakerCalibrationPassesTestSettingsFileToTextFileReader) {
+    assertPassesTestSettingsFileToTextFileReader(
+        playingRightSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(
@@ -535,18 +623,40 @@ TEST_SETUP_CONTROLLER_TEST(
     assertPassesTestSettingsTextToTestSettingsInterpreter(playingCalibration);
 }
 
+TEST_SETUP_CONTROLLER_TEST(
+    playingLeftSpeakerCalibrationPassesTestSettingsTextToTestSettingsInterpreter) {
+    assertPassesTestSettingsTextToTestSettingsInterpreter(
+        playingLeftSpeakerCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(
+    playingRightSpeakerCalibrationPassesTestSettingsTextToTestSettingsInterpreter) {
+    assertPassesTestSettingsTextToTestSettingsInterpreter(
+        playingRightSpeakerCalibration);
+}
+
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFilePath) {
-    calibration.fileUrl.path = "a";
-    run(playingCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, av_speech_in_noise::calibration(model).fileUrl.path);
+    assertPassesAudioFileUrl(playingCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesFilePath) {
+    assertPassesAudioFileUrl(playingLeftSpeakerCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(playRightSpeakerCalibrationPassesFilePath) {
+    assertPassesAudioFileUrl(playingRightSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesAudioDevice) {
-    setAudioDevice(sessionView, "b");
-    run(playingCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"b"}, av_speech_in_noise::calibration(model).audioDevice);
+    assertPassesAudioDevice(playingCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(playingLeftSpeakerCalibrationPassesAudioDevice) {
+    assertPassesAudioDevice(playingLeftSpeakerCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(playingRightSpeakerCalibrationPassesAudioDevice) {
+    assertPassesAudioDevice(playingRightSpeakerCalibration);
 }
 
 TEST_SETUP_CONTROLLER_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
@@ -566,10 +676,15 @@ TEST_SETUP_CONTROLLER_TEST(
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFullScaleLevel) {
-    calibration.fullScaleLevel.dB_SPL = 1;
-    run(playingCalibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        1, av_speech_in_noise::calibration(model).fullScaleLevel.dB_SPL);
+    assertPassesFullScaleLevel(playingCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(playLeftSpeakerCalibrationPassesFullScaleLevel) {
+    assertPassesFullScaleLevel(playingLeftSpeakerCalibration);
+}
+
+TEST_SETUP_CONTROLLER_TEST(playRightSpeakerCalibrationPassesFullScaleLevel) {
+    assertPassesFullScaleLevel(playingRightSpeakerCalibration);
 }
 
 TEST_SETUP_PRESENTER_TEST(presenterShowsViewWhenStarted) {

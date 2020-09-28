@@ -56,9 +56,13 @@ static void setAudioDevice(TargetPlayer &player, const std::string &device) {
     player.setAudioDevice(device);
 }
 
+static void setAudioDevice(MaskerPlayer &player, const std::string &device) {
+    player.setAudioDevice(device);
+}
+
 static void setAudioDevices(MaskerPlayer &maskerPlayer,
     TargetPlayer &targetPlayer, const std::string &device) {
-    maskerPlayer.setAudioDevice(device);
+    setAudioDevice(maskerPlayer, device);
     setAudioDevice(targetPlayer, device);
 }
 
@@ -73,8 +77,8 @@ static void throwRequestFailureOnInvalidAudioDevice(
     }
 }
 
-static void throwRequestFailureIfTrialInProgress(MaskerPlayer &player) {
-    if (trialInProgress(player))
+static void throwRequestFailureIfTrialInProgress(bool f) {
+    if (f)
         throw Model::RequestFailure{"Trial in progress."};
 }
 
@@ -82,11 +86,21 @@ static void apply(TargetPlayer &player, LevelAmplification x) {
     player.apply(x);
 }
 
+static void apply(MaskerPlayer &player, LevelAmplification x) {
+    player.apply(x);
+}
+
 static void loadFile(TargetPlayer &player, const LocalUrl &s) {
     player.loadFile(s);
 }
 
+static void loadFile(MaskerPlayer &player, const LocalUrl &s) {
+    player.loadFile(s);
+}
+
 static void play(TargetPlayer &player) { player.play(); }
+
+static void play(MaskerPlayer &player) { player.play(); }
 
 static auto targetName(ResponseEvaluator &evaluator, TestMethod *testMethod)
     -> std::string {
@@ -115,6 +129,12 @@ static constexpr auto operator-(
 }
 
 static auto levelAmplification(TargetPlayer &player, const Calibration &p)
+    -> LevelAmplification {
+    return LevelAmplification{
+        DigitalLevel{p.level - p.fullScaleLevel - player.digitalLevel()}.dBov};
+}
+
+static auto levelAmplification(MaskerPlayer &player, const Calibration &p)
     -> LevelAmplification {
     return LevelAmplification{
         DigitalLevel{p.level - p.fullScaleLevel - player.digitalLevel()}.dBov};
@@ -162,12 +182,13 @@ void RecognitionTestModelImpl::initialize(
 
 void RecognitionTestModelImpl::initialize_(
     TestMethod *testMethod_, const Test &test) {
-    throwRequestFailureIfTrialInProgress(maskerPlayer);
+    throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     if (testMethod_->complete())
         return;
 
     tryOpening(outputFile, test.identity);
+    maskerPlayer.stop();
     throwRequestFailureOnInvalidAudioFile(
         [&](auto file) { maskerPlayer.loadFile(file); }, maskerFileUrl(test));
 
@@ -264,6 +285,7 @@ void RecognitionTestModelImpl::fadeOutComplete() {
     if (eyeTracking)
         eyeTracker.stop();
     listener_->trialComplete();
+    trialInProgress_ = false;
 }
 
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
@@ -292,7 +314,7 @@ void RecognitionTestModelImpl::seekRandomMaskerPosition() {
 }
 
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
-    throwRequestFailureIfTrialInProgress(maskerPlayer);
+    throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     throwRequestFailureOnInvalidAudioDevice(
         [&](auto device) {
@@ -309,6 +331,7 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     if (condition == Condition::audioVisual)
         show(targetPlayer);
     maskerPlayer.fadeIn();
+    trialInProgress_ = true;
 }
 
 void RecognitionTestModelImpl::submitCorrectResponse() {
@@ -365,9 +388,7 @@ void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
     }
 }
 
-void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
-    throwRequestFailureIfTrialInProgress(maskerPlayer);
-
+static void play(TargetPlayer &targetPlayer, const Calibration &calibration) {
     throwRequestFailureOnInvalidAudioDevice(
         [&](auto device) { setAudioDevice(targetPlayer, device); },
         calibration.audioDevice);
@@ -379,6 +400,40 @@ void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
         calibration.fileUrl);
     show(targetPlayer);
     play(targetPlayer);
+}
+
+static void play(MaskerPlayer &maskerPlayer, const Calibration &calibration) {
+    maskerPlayer.stop();
+    throwRequestFailureOnInvalidAudioDevice(
+        [&](auto device) { setAudioDevice(maskerPlayer, device); },
+        calibration.audioDevice);
+    throwRequestFailureOnInvalidAudioFile(
+        [&](auto file) {
+            loadFile(maskerPlayer, file);
+            apply(maskerPlayer, levelAmplification(maskerPlayer, calibration));
+        },
+        calibration.fileUrl);
+    play(maskerPlayer);
+}
+
+void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
+    throwRequestFailureIfTrialInProgress(trialInProgress_);
+    targetPlayer.useAllChannels();
+    play(targetPlayer, calibration);
+}
+
+void RecognitionTestModelImpl::playLeftSpeakerCalibration(
+    const Calibration &calibration) {
+    throwRequestFailureIfTrialInProgress(trialInProgress_);
+    maskerPlayer.useFirstChannelOnly();
+    play(maskerPlayer, calibration);
+}
+
+void RecognitionTestModelImpl::playRightSpeakerCalibration(
+    const Calibration &calibration) {
+    throwRequestFailureIfTrialInProgress(trialInProgress_);
+    maskerPlayer.useSecondChannelOnly();
+    play(maskerPlayer, calibration);
 }
 
 auto RecognitionTestModelImpl::testComplete() -> bool {

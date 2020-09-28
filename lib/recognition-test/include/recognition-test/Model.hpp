@@ -160,6 +160,8 @@ class RecognitionTestModel {
     virtual void initializeWithEyeTracking(TestMethod *, const Test &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
+    virtual void playLeftSpeakerCalibration(const Calibration &) = 0;
+    virtual void playRightSpeakerCalibration(const Calibration &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const CorrectKeywords &) = 0;
@@ -204,6 +206,8 @@ class ModelImpl : public Model {
         const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
+    void playLeftSpeakerCalibration(const Calibration &) override;
+    void playRightSpeakerCalibration(const Calibration &) override;
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const FreeResponse &) override;
     void submit(const CorrectKeywords &) override;

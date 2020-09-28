@@ -11,6 +11,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     std::string filePath_;
     std::string device_;
     DigitalLevel digitalLevel_{};
+    LevelAmplification levelAmplification_{};
     double level_dB_{};
     double fadeTimeSeconds_{};
     double durationSeconds_{};
@@ -22,6 +23,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     PlayerTime currentSystemTime_{};
     std::vector<player_system_time_type> toNanosecondsSystemTime_{};
     std::uintmax_t nanoseconds_{};
+    int timesFadedIn_{};
     bool fadeInCalled_{};
     bool fadeOutCalled_{};
     bool playing_{};
@@ -30,9 +32,16 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool throwInvalidAudioFileOnLoad_{};
     bool usingAllChannels_{};
     bool usingFirstChannelOnly_{};
+    bool usingSecondChannelOnly_{};
     bool channelDelaysCleared_{};
+    bool played_{};
+    bool stopped_{};
 
   public:
+    [[nodiscard]] auto played() const -> bool { return played_; }
+
+    void play() override { played_ = true; }
+
     auto currentSystemTime() -> PlayerTime override {
         return currentSystemTime_;
     }
@@ -66,8 +75,14 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
 
+    void useSecondChannelOnly() override { usingSecondChannelOnly_ = true; }
+
     [[nodiscard]] auto usingFirstChannelOnly() const {
         return usingFirstChannelOnly_;
+    }
+
+    [[nodiscard]] auto usingSecondChannelOnly() const {
+        return usingSecondChannelOnly_;
     }
 
     [[nodiscard]] auto channelDelaysCleared() const {
@@ -98,6 +113,8 @@ class MaskerPlayerStub : public MaskerPlayer {
         return setDeviceCalled_;
     }
 
+    [[nodiscard]] auto timesFadedIn() const -> int { return timesFadedIn_; }
+
     auto playing() -> bool override { return playing_; }
 
     void setPlaying() { playing_ = true; }
@@ -108,9 +125,16 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     [[nodiscard]] auto fadeInCalled() const -> bool { return fadeInCalled_; }
 
-    void fadeIn() override { fadeInCalled_ = true; }
+    void fadeIn() override {
+        fadeInCalled_ = true;
+        ++timesFadedIn_;
+    }
 
     [[nodiscard]] auto fadeOutCalled() const -> bool { return fadeOutCalled_; }
+
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+
+    void stop() override { stopped_ = true; }
 
     void attach(Observer *e) override { listener_ = e; }
 
@@ -140,9 +164,16 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     [[nodiscard]] auto level_dB() const -> double { return level_dB_; }
 
+    auto levelAmplification() -> LevelAmplification {
+        return levelAmplification_;
+    }
+
     auto digitalLevel() -> DigitalLevel override { return digitalLevel_; }
 
-    void apply(LevelAmplification x) override { level_dB_ = x.dB; }
+    void apply(LevelAmplification x) override {
+        level_dB_ = x.dB;
+        levelAmplification_ = x;
+    }
 
     auto duration() -> Duration override { return Duration{durationSeconds_}; }
 

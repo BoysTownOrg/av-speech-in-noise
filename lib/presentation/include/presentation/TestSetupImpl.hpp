@@ -45,6 +45,8 @@ class TestSetupControllerImpl : public TestSetupControl::Observer,
         TestSettingsInterpreter &, TextFileReader &);
     void notifyThatConfirmButtonHasBeenClicked() override;
     void notifyThatPlayCalibrationButtonHasBeenClicked() override;
+    void notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() override;
+    void notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() override;
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
     void attach(SessionController *p) override;
     void attach(TestSetupController::Observer *e) override;

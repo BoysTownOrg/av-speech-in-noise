@@ -91,6 +91,14 @@ class ModelStub : public Model {
 
     [[nodiscard]] auto calibration() const -> auto & { return calibration_; }
 
+    auto leftSpeakerCalibration() -> Calibration {
+        return leftSpeakerCalibration_;
+    }
+
+    auto rightSpeakerCalibration() -> Calibration {
+        return rightSpeakerCalibration_;
+    }
+
     [[nodiscard]] auto incorrectResponseSubmitted() const {
         return incorrectResponseSubmitted_;
     }
@@ -211,6 +219,14 @@ class ModelStub : public Model {
 
     void playCalibration(const Calibration &p) override { calibration_ = p; }
 
+    void playLeftSpeakerCalibration(const Calibration &p) override {
+        leftSpeakerCalibration_ = p;
+    }
+
+    void playRightSpeakerCalibration(const Calibration &p) override {
+        rightSpeakerCalibration_ = p;
+    }
+
     void submitCorrectResponse() override { correctResponseSubmitted_ = true; }
 
     void submitIncorrectResponse() override {
@@ -237,6 +253,8 @@ class ModelStub : public Model {
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest_{};
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes_{};
     Calibration calibration_{};
+    Calibration leftSpeakerCalibration_{};
+    Calibration rightSpeakerCalibration_{};
     AudioSettings trialParameters_{};
     coordinate_response_measure::Response responseParameters_{};
     std::vector<std::string> audioDevices_{};

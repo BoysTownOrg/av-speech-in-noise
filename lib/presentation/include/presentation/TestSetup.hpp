@@ -16,6 +16,10 @@ class TestSetupControl {
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatConfirmButtonHasBeenClicked() = 0;
         virtual void notifyThatPlayCalibrationButtonHasBeenClicked() = 0;
+        virtual void
+        notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() = 0;
+        virtual void
+        notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() = 0;
         virtual void notifyThatBrowseForTestSettingsButtonHasBeenClicked() = 0;
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestSetupControl);

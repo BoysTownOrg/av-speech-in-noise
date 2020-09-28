@@ -6,6 +6,7 @@
 #include <gsl/gsl>
 #include <cmath>
 #include <utility>
+#include <future>
 
 namespace av_speech_in_noise {
 constexpr auto operator==(const PlayerTime &a, const PlayerTime &b) -> bool {
@@ -66,7 +67,13 @@ class AudioPlayerStub : public AudioPlayer {
         return at(audioDeviceDescriptions_, index);
     }
 
-    void play() override { played_ = true; }
+    void play() override {
+        played_ = true;
+        if (onPlayTask.valid()) {
+            std::thread t{std::move(onPlayTask), listener_};
+            t.detach();
+        }
+    }
 
     void attach(Observer *listener) override { listener_ = listener; }
 
@@ -91,7 +98,13 @@ class AudioPlayerStub : public AudioPlayer {
         return systemTimeForNanoseconds_;
     }
 
+    void setOnPlayTask(
+        std::packaged_task<std::vector<std::vector<float>>(Observer *)> task) {
+        onPlayTask = std::move(task);
+    }
+
   private:
+    std::packaged_task<std::vector<std::vector<float>>(Observer *)> onPlayTask;
     audio_type audioRead_;
     std::vector<std::string> audioDeviceDescriptions_{10};
     std::string filePath_;
@@ -247,6 +260,53 @@ auto systemTimeForNanoseconds(AudioPlayerStub &player)
     return player.systemTimeForNanoseconds();
 }
 
+auto fillAudioBuffer(AudioPlayer::Observer *observer, gsl::index channels,
+    gsl::index frames, player_system_time_type t = {})
+    -> std::vector<std::vector<float>> {
+    std::vector<std::vector<float>> audio(channels);
+    std::vector<gsl::span<float>> adapted;
+    for (auto &channel : audio) {
+        channel.resize(frames);
+        adapted.emplace_back(channel);
+    }
+    observer->fillAudioBuffer(adapted, t);
+    return audio;
+}
+
+auto fillAudioBufferMonoAsync(AudioPlayerStub &audioPlayer, gsl::index channels,
+    gsl::index frames) -> std::future<std::vector<std::vector<float>>> {
+    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
+        task{[=](AudioPlayer::Observer *observer) {
+            return fillAudioBuffer(observer, channels, frames);
+        }};
+    auto result{task.get_future()};
+    audioPlayer.setOnPlayTask(std::move(task));
+    audioPlayer.play();
+    return result;
+}
+
+auto fillAudioBufferMonoAsync(AudioPlayerStub &audioPlayer, gsl::index frames)
+    -> std::future<std::vector<std::vector<float>>> {
+    return fillAudioBufferMonoAsync(audioPlayer, 1, frames);
+}
+
+auto fillAudioBufferStereoAsync(AudioPlayerStub &audioPlayer, gsl::index frames)
+    -> std::future<std::vector<std::vector<float>>> {
+    return fillAudioBufferMonoAsync(audioPlayer, 2, frames);
+}
+
+void assertChannelEqual(
+    const std::vector<float> &channel, const std::vector<float> &x) {
+    assertEqual(x, channel, 1e-29F);
+}
+
+void assertAsyncLoadedMonoChannelEquals(
+    AudioPlayerStub &audioPlayer, const std::vector<float> &expected) {
+    assertChannelEqual(
+        fillAudioBufferMonoAsync(audioPlayer, expected.size()).get().front(),
+        expected);
+}
+
 using channel_index_type = gsl::index;
 
 class MaskerPlayerTests : public ::testing::Test {
@@ -381,11 +441,6 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertLeftChannelEquals(const std::vector<float> &x) {
         assertChannelEqual(leftChannel, x);
-    }
-
-    static void assertChannelEqual(
-        const std::vector<float> &channel, const std::vector<float> &x) {
-        assertEqual(x, channel, 1e-29F);
     }
 
     void assertRightChannelEquals(const std::vector<float> &x) {
@@ -527,6 +582,13 @@ MASKER_PLAYER_TEST(seekSeeksAudio) {
     assertLeftChannelEquals({7, 8, 9, 1});
 }
 
+MASKER_PLAYER_TEST(seekSeeksAudioAsync) {
+    setSampleRateHz(3);
+    loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
+    seekSeconds(2);
+    assertAsyncLoadedMonoChannelEquals(audioPlayer, {7, 8, 9, 1});
+}
+
 MASKER_PLAYER_TEST(seekNegativeTime) {
     setSampleRateHz(3);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
@@ -581,6 +643,15 @@ MASKER_PLAYER_TEST(setChannelDelayMonoWithSeek) {
     seekSeconds(2);
     fillAudioBufferMono(6);
     assertLeftChannelEquals({0, 0, 0, 7, 8, 9});
+}
+
+MASKER_PLAYER_TEST(setChannelDelayMonoWithSeekAsync) {
+    setSampleRateHz(3);
+    setChannelDelaySeconds(0, 1);
+    loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
+    assertAsyncLoadedMonoChannelEquals(audioPlayer, {0, 0, 0, 1, 2, 3});
+    seekSeconds(2);
+    assertAsyncLoadedMonoChannelEquals(audioPlayer, {0, 0, 0, 7, 8, 9});
 }
 
 MASKER_PLAYER_TEST(clearChannelDelaysMono) {
@@ -653,12 +724,56 @@ MASKER_PLAYER_TEST(useFirstChannelOnlyMutesOtherChannels) {
     assertRightChannelEquals({0, 0, 0});
 }
 
+void useSecondChannelOnly(MaskerPlayerImpl &player) {
+    player.useSecondChannelOnly();
+}
+
+MASKER_PLAYER_TEST(
+    useFirstChannelOnlyAfterUsingSecondChannelOnlyMutesOtherChannels) {
+    useSecondChannelOnly(player);
+    useFirstChannelOnly();
+    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    fillAudioBufferStereo(3);
+    assertLeftChannelEquals({1, 2, 3});
+    assertRightChannelEquals({0, 0, 0});
+}
+
+MASKER_PLAYER_TEST(useSecondChannelOnlyMutesOtherChannels) {
+    useSecondChannelOnly(player);
+    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    fillAudioBufferStereo(3);
+    assertLeftChannelEquals({0, 0, 0});
+    assertRightChannelEquals({4, 5, 6});
+}
+
+MASKER_PLAYER_TEST(
+    useSecondChannelOnlyAfterUsingFirstChannelOnlyMutesOtherChannels) {
+    useFirstChannelOnly();
+    useSecondChannelOnly(player);
+    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    fillAudioBufferStereo(3);
+    assertLeftChannelEquals({0, 0, 0});
+    assertRightChannelEquals({4, 5, 6});
+}
+
 MASKER_PLAYER_TEST(useAllChannelsAfterUsingFirstChannelOnly) {
     useFirstChannelOnly();
     loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
     fillAudioBufferStereo(3);
     assertLeftChannelEquals({1, 2, 3});
     assertRightChannelEquals({0, 0, 0});
+    useAllChannels();
+    fillAudioBufferStereo(3);
+    assertLeftChannelEquals({4, 5, 6});
+    assertRightChannelEquals({10, 11, 12});
+}
+
+MASKER_PLAYER_TEST(useAllChannelsAfterUsingSecondChannelOnly) {
+    useSecondChannelOnly(player);
+    loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
+    fillAudioBufferStereo(3);
+    assertLeftChannelEquals({0, 0, 0});
+    assertRightChannelEquals({7, 8, 9});
     useAllChannels();
     fillAudioBufferStereo(3);
     assertLeftChannelEquals({4, 5, 6});
@@ -681,9 +796,19 @@ MASKER_PLAYER_TEST(loadFileLoadsAudioFile) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, audioPlayer.filePath());
 }
 
-MASKER_PLAYER_TEST(fadeInPlaysVideoPlayer) {
+MASKER_PLAYER_TEST(fadeInPlaysAudioPlayer) {
     fadeIn();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioPlayer.played());
+}
+
+MASKER_PLAYER_TEST(playPlaysAudioPlayer) {
+    player.play();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioPlayer.played());
+}
+
+MASKER_PLAYER_TEST(stopStopsAudioPlayer) {
+    player.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioPlayer.stopped());
 }
 
 MASKER_PLAYER_TEST(twentydBMultipliesSignalByTen) {
@@ -721,6 +846,13 @@ MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel) {
     fillAudioBufferStereo(4);
     assertLeftChannelEquals({1, 2, 3, 1});
     assertRightChannelEquals({4, 5, 6, 4});
+}
+
+MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannelAsync) {
+    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    auto result{fillAudioBufferStereoAsync(audioPlayer, 4).get()};
+    assertChannelEqual(result.at(0), {1, 2, 3, 1});
+    assertChannelEqual(result.at(1), {4, 5, 6, 4});
 }
 
 MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel_Buffered) {

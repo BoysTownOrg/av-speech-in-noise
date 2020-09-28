@@ -251,11 +251,24 @@ void MaskerPlayerImpl::clearChannelDelays() {
 
 void MaskerPlayerImpl::useFirstChannelOnly() {
     av_speech_in_noise::set(firstChannelOnly);
+    clear(secondChannelOnly);
 }
 
-void MaskerPlayerImpl::useAllChannels() { clear(firstChannelOnly); }
+void MaskerPlayerImpl::useSecondChannelOnly() {
+    av_speech_in_noise::set(secondChannelOnly);
+    clear(firstChannelOnly);
+}
+
+void MaskerPlayerImpl::useAllChannels() {
+    clear(firstChannelOnly);
+    clear(secondChannelOnly);
+}
 
 void MaskerPlayerImpl::fadeIn() { mainThread.fadeIn(); }
+
+void MaskerPlayerImpl::play() { mainThread.play(); }
+
+void MaskerPlayerImpl::stop() { mainThread.stop(); }
 
 void MaskerPlayerImpl::fadeOut() { mainThread.fadeOut(); }
 
@@ -303,6 +316,10 @@ void MaskerPlayerImpl::MainThread::fadeIn() {
     player->play();
     scheduleCallbackAfterSeconds(0.1);
 }
+
+void MaskerPlayerImpl::MainThread::play() { player->play(); }
+
+void MaskerPlayerImpl::MainThread::stop() { player->stop(); }
 
 void MaskerPlayerImpl::MainThread::scheduleCallbackAfterSeconds(double x) {
     timer->scheduleCallbackAfterSeconds(x);
@@ -361,6 +378,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
 void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const std::vector<channel_buffer_type> &audioBuffer) {
     auto usingFirstChannelOnly{sharedState->firstChannelOnly.load()};
+    auto usingSecondChannelOnly{sharedState->secondChannelOnly.load()};
     for (channel_index_type i{0}; i < channels(audioBuffer); ++i) {
         const auto samplesToWait{at(sharedState->samplesToWaitPerChannel, i)};
         const auto framesToMute =
@@ -386,6 +404,8 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
             framesLeftToFill -= framesAboutToFill;
         }
         if (usingFirstChannelOnly && i > 0)
+            mute(channel(audioBuffer, i));
+        if (usingSecondChannelOnly && i != 1)
             mute(channel(audioBuffer, i));
     }
 }

@@ -144,6 +144,8 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_{};
     const Model::Observer *listener_{};
     const Calibration *calibration_{};
+    const Calibration *leftSpeakerCalibration_{};
+    const Calibration *rightSpeakerCalibration_{};
     const AudioSettings *playTrialSettings_{};
     const Test *test_{};
     const TestMethod *testMethod_{};
@@ -230,6 +232,14 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void playCalibration(const Calibration &c) override { calibration_ = &c; }
 
+    void playLeftSpeakerCalibration(const Calibration &c) override {
+        leftSpeakerCalibration_ = &c;
+    }
+
+    void playRightSpeakerCalibration(const Calibration &c) override {
+        rightSpeakerCalibration_ = &c;
+    }
+
     [[nodiscard]] auto initializedWithSingleSpeaker() const -> bool {
         return initializedWithSingleSpeaker_;
     }
@@ -257,6 +267,14 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     [[nodiscard]] auto playTrialSettings() const { return playTrialSettings_; }
 
     [[nodiscard]] auto calibration() const { return calibration_; }
+
+    auto leftSpeakerCalibration() -> const Calibration * {
+        return leftSpeakerCalibration_;
+    }
+
+    auto rightSpeakerCalibration() -> const Calibration * {
+        return rightSpeakerCalibration_;
+    }
 
     [[nodiscard]] auto listener() const { return listener_; }
 
@@ -656,6 +674,49 @@ auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
     return m.initializedWithEyeTracking();
 }
 
+class PlayingCalibrationUseCase {
+  public:
+    virtual void run(Model &model, const Calibration &c) = 0;
+    virtual auto calibration(RecognitionTestModelStub &model)
+        -> const Calibration * = 0;
+};
+
+class PlayingCalibration : public PlayingCalibrationUseCase {
+  public:
+    void run(Model &model, const Calibration &c) override {
+        model.playCalibration(c);
+    }
+
+    auto calibration(RecognitionTestModelStub &model)
+        -> const Calibration * override {
+        return model.calibration();
+    }
+};
+
+class PlayingLeftSpeakerCalibration : public PlayingCalibrationUseCase {
+  public:
+    void run(Model &model, const Calibration &c) override {
+        model.playLeftSpeakerCalibration(c);
+    }
+
+    auto calibration(RecognitionTestModelStub &model)
+        -> const Calibration * override {
+        return model.leftSpeakerCalibration();
+    }
+};
+
+class PlayingRightSpeakerCalibration : public PlayingCalibrationUseCase {
+  public:
+    void run(Model &model, const Calibration &c) override {
+        model.playRightSpeakerCalibration(c);
+    }
+
+    auto calibration(RecognitionTestModelStub &model)
+        -> const Calibration * override {
+        return model.rightSpeakerCalibration();
+    }
+};
+
 class ModelTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub adaptiveMethod;
@@ -747,6 +808,13 @@ class ModelTests : public ::testing::Test {
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             &targetList, fixedLevelMethod.targetList());
+    }
+
+    void assertPassesCalibration(PlayingCalibrationUseCase &useCase) {
+        Calibration calibration;
+        useCase.run(model, calibration);
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+            &std::as_const(calibration), useCase.calibration(internalModel));
     }
 };
 
@@ -1077,10 +1145,18 @@ MODEL_TEST(playTrialPassesAudioSettings) {
 }
 
 MODEL_TEST(playCalibrationPassesCalibration) {
-    Calibration calibration;
-    model.playCalibration(calibration);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &std::as_const(calibration), internalModel.calibration());
+    PlayingCalibration useCase;
+    assertPassesCalibration(useCase);
+}
+
+MODEL_TEST(playLeftSpeakerCalibrationPassesCalibration) {
+    PlayingLeftSpeakerCalibration useCase;
+    assertPassesCalibration(useCase);
+}
+
+MODEL_TEST(playRightSpeakerCalibrationPassesCalibration) {
+    PlayingRightSpeakerCalibration useCase;
+    assertPassesCalibration(useCase);
 }
 
 MODEL_TEST(testCompleteWhenComplete) {
