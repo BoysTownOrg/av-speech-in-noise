@@ -260,7 +260,7 @@ auto systemTimeForNanoseconds(AudioPlayerStub &player)
     return player.systemTimeForNanoseconds();
 }
 
-auto fillAudioBufferMono(AudioPlayer::Observer *observer, gsl::index channels,
+auto fillAudioBuffer(AudioPlayer::Observer *observer, gsl::index channels,
     gsl::index frames, player_system_time_type t = {})
     -> std::vector<std::vector<float>> {
     std::vector<std::vector<float>> audio(channels);
@@ -273,17 +273,26 @@ auto fillAudioBufferMono(AudioPlayer::Observer *observer, gsl::index channels,
     return audio;
 }
 
-auto fillAudioBufferMonoAsync(AudioPlayerStub &audioPlayer, gsl::index frames)
-    -> std::future<std::vector<std::vector<float>>> {
+auto fillAudioBufferMonoAsync(AudioPlayerStub &audioPlayer, gsl::index channels,
+    gsl::index frames) -> std::future<std::vector<std::vector<float>>> {
     std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
         task{[=](AudioPlayer::Observer *observer) {
-            return ::av_speech_in_noise::fillAudioBufferMono(
-                observer, 1, frames);
+            return fillAudioBuffer(observer, channels, frames);
         }};
     auto result{task.get_future()};
     audioPlayer.setOnPlayTask(std::move(task));
     audioPlayer.play();
     return result;
+}
+
+auto fillAudioBufferMonoAsync(AudioPlayerStub &audioPlayer, gsl::index frames)
+    -> std::future<std::vector<std::vector<float>>> {
+    return fillAudioBufferMonoAsync(audioPlayer, 1, frames);
+}
+
+auto fillAudioBufferStereoAsync(AudioPlayerStub &audioPlayer, gsl::index frames)
+    -> std::future<std::vector<std::vector<float>>> {
+    return fillAudioBufferMonoAsync(audioPlayer, 2, frames);
 }
 
 void assertChannelEqual(
@@ -837,6 +846,13 @@ MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel) {
     fillAudioBufferStereo(4);
     assertLeftChannelEquals({1, 2, 3, 1});
     assertRightChannelEquals({4, 5, 6, 4});
+}
+
+MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannelAsync) {
+    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    auto result{fillAudioBufferStereoAsync(audioPlayer, 4).get()};
+    assertChannelEqual(result.at(0), {1, 2, 3, 1});
+    assertChannelEqual(result.at(1), {4, 5, 6, 4});
 }
 
 MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel_Buffered) {
