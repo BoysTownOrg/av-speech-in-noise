@@ -315,15 +315,23 @@ auto fillAudioBuffer(AudioPlayer::Observer *observer, gsl::index channels,
     return audio;
 }
 
+auto setOnPlayTask(AudioPlayerStub &audioPlayer,
+    std::function<std::vector<std::vector<float>>(AudioPlayer::Observer *)> f)
+    -> std::future<std::vector<std::vector<float>>> {
+    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
+        task{std::move(f)};
+    auto result{task.get_future()};
+    audioPlayer.setOnPlayTask(std::move(task));
+    return result;
+}
+
 auto fillAudioBufferAsync(MaskerPlayerImpl &player,
     AudioPlayerStub &audioPlayer, gsl::index channels, gsl::index frames)
     -> std::future<std::vector<std::vector<float>>> {
-    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
-        task{[=](AudioPlayer::Observer *observer) {
+    auto result{
+        setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
             return fillAudioBuffer(observer, channels, frames);
-        }};
-    auto result{task.get_future()};
-    audioPlayer.setOnPlayTask(std::move(task));
+        })};
     player.play();
     return result;
 }
@@ -512,9 +520,8 @@ class MaskerPlayerTests : public ::testing::Test {
         const std::vector<float> &multiplicand,
         const std::vector<float> &multiplier, int buffers,
         int framesPerBuffer) {
-        std::packaged_task<std::vector<std::vector<float>>(
-            AudioPlayer::Observer *)>
-            task{[=](AudioPlayer::Observer *observer) {
+        auto result{
+            setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
                 std::vector<std::vector<float>> result;
                 for (int i = 0; i < buffers; ++i) {
                     std::vector<float> mono(framesPerBuffer);
@@ -522,38 +529,8 @@ class MaskerPlayerTests : public ::testing::Test {
                     result.push_back(mono);
                 }
                 return result;
-            }};
-        auto result{task.get_future()};
-        audioPlayer.setOnPlayTask(std::move(task));
+            })};
         player.fadeIn();
-        auto audioBuffers{result.get()};
-        for (int i = 0; i < buffers; ++i) {
-            const auto offset = i * framesPerBuffer;
-            assertChannelEqual(audioBuffers.at(i),
-                elementWiseProduct(
-                    subvector(multiplicand, offset, framesPerBuffer),
-                    subvector(multiplier, offset, framesPerBuffer)));
-        }
-    }
-
-    void assertMonoAudioEqualsProductAfterFilling_BufferedAsyncFadeOut(
-        const std::vector<float> &multiplicand,
-        const std::vector<float> &multiplier, int buffers,
-        int framesPerBuffer) {
-        std::packaged_task<std::vector<std::vector<float>>(
-            AudioPlayer::Observer *)>
-            task{[=](AudioPlayer::Observer *observer) {
-                std::vector<std::vector<float>> result;
-                for (int i = 0; i < buffers; ++i) {
-                    std::vector<float> mono(framesPerBuffer);
-                    observer->fillAudioBuffer({mono}, {});
-                    result.push_back(mono);
-                }
-                return result;
-            }};
-        auto result{task.get_future()};
-        audioPlayer.setOnPlayTask(std::move(task));
-        player.fadeOut();
         auto audioBuffers{result.get()};
         for (int i = 0; i < buffers; ++i) {
             const auto offset = i * framesPerBuffer;
@@ -765,16 +742,14 @@ MASKER_PLAYER_TEST(setChannelDelayMono_Buffered) {
     setSampleRateHz(audioPlayer, 3);
     setChannelDelaySeconds(player, 0, 1);
     loadMonoAudio(player, audioReader, {4, 5, 6});
-    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
-        task{[=](AudioPlayer::Observer *observer) {
+    auto result{
+        setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
             std::vector<float> first(2);
             std::vector<float> second(4);
             observer->fillAudioBuffer({first}, {});
             observer->fillAudioBuffer({second}, {});
             return std::vector<std::vector<float>>{first, second};
-        }};
-    auto result{task.get_future()};
-    audioPlayer.setOnPlayTask(std::move(task));
+        })};
     player.play();
     auto twoMonoBuffers{result.get()};
     assertChannelEqual(twoMonoBuffers.at(0), {0, 0});
@@ -843,8 +818,8 @@ MASKER_PLAYER_TEST(setChannelDelayStereo_Buffered) {
     setChannelDelaySeconds(player, 1, 1);
     loadStereoAudio(
         player, audioReader, {1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
-    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
-        task{[=](AudioPlayer::Observer *observer) {
+    auto result{
+        setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
             std::vector<float> firstLeft(2);
             std::vector<float> firstRight(2);
             std::vector<float> secondLeft(2);
@@ -856,9 +831,7 @@ MASKER_PLAYER_TEST(setChannelDelayStereo_Buffered) {
             observer->fillAudioBuffer({thirdLeft, thirdRight}, {});
             return std::vector<std::vector<float>>{firstLeft, firstRight,
                 secondLeft, secondRight, thirdLeft, thirdRight};
-        }};
-    auto result{task.get_future()};
-    audioPlayer.setOnPlayTask(std::move(task));
+        })};
     player.play();
     auto sixMonoBuffers{result.get()};
     assertChannelEqual(sixMonoBuffers.at(0), {1, 2});
@@ -983,16 +956,14 @@ MASKER_PLAYER_TEST(fillAudioBufferWrapsMonoChannel) {
 
 MASKER_PLAYER_TEST(fillAudioBufferWrapsMonoChannel_Buffered) {
     loadMonoAudio(player, audioReader, {1, 2, 3});
-    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
-        task{[=](AudioPlayer::Observer *observer) {
+    auto result{
+        setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
             std::vector<float> first(4);
             std::vector<float> second(4);
             observer->fillAudioBuffer({first}, {});
             observer->fillAudioBuffer({second}, {});
             return std::vector<std::vector<float>>{first, second};
-        }};
-    auto result{task.get_future()};
-    audioPlayer.setOnPlayTask(std::move(task));
+        })};
     player.play();
     auto twoMonoBuffers{result.get()};
     assertChannelEqual(twoMonoBuffers.at(0), {1, 2, 3, 1});
@@ -1007,8 +978,8 @@ MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel) {
 
 MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel_Buffered) {
     loadStereoAudio(player, audioReader, {1, 2, 3}, {4, 5, 6});
-    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
-        task{[=](AudioPlayer::Observer *observer) {
+    auto result{
+        setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
             std::vector<float> firstLeft(2);
             std::vector<float> firstRight(2);
             std::vector<float> secondLeft(4);
@@ -1017,9 +988,7 @@ MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel_Buffered) {
             observer->fillAudioBuffer({secondLeft, secondRight}, {});
             return std::vector<std::vector<float>>{
                 firstLeft, firstRight, secondLeft, secondRight};
-        }};
-    auto result{task.get_future()};
-    audioPlayer.setOnPlayTask(std::move(task));
+        })};
     player.play();
     auto fourMonoBuffers{result.get()};
     assertChannelEqual(fourMonoBuffers.at(0), {1, 2});
@@ -1050,14 +1019,12 @@ MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionOneFill) {
     auto halfWindowLength = 2 * 3 + 1;
 
     loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
-    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
-        task{[=](AudioPlayer::Observer *observer) {
+    auto result{
+        setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
             std::vector<float> a(halfWindowLength);
             observer->fillAudioBuffer({a}, {});
             return std::vector<std::vector<float>>{a};
-        }};
-    auto result{task.get_future()};
-    audioPlayer.setOnPlayTask(std::move(task));
+        })};
     fadeIn();
     assertChannelEqual(result.get().at(0),
         elementWiseProduct(
