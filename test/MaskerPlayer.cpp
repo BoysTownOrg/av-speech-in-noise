@@ -386,6 +386,12 @@ void loadFile(MaskerPlayerImpl &player, const std::string &s = {}) {
     player.loadFile({s});
 }
 
+void loadAudio(
+    MaskerPlayerImpl &player, AudioReaderStub &audioReader, audio_type x) {
+    audioReader.set(std::move(x));
+    loadFile(player);
+}
+
 using channel_index_type = gsl::index;
 
 class MaskerPlayerTests : public ::testing::Test {
@@ -463,15 +469,12 @@ class MaskerPlayerTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_FALSE(callbackScheduled());
     }
 
-    void loadAudio(audio_type x) {
-        audioReader.set(std::move(x));
-        loadFile(player);
+    void loadMonoAudio(std::vector<float> x) {
+        loadAudio(player, audioReader, {std::move(x)});
     }
 
-    void loadMonoAudio(std::vector<float> x) { loadAudio({std::move(x)}); }
-
     void loadStereoAudio(std::vector<float> left, std::vector<float> right) {
-        loadAudio({std::move(left), std::move(right)});
+        loadAudio(player, audioReader, {std::move(left), std::move(right)});
     }
 
     void assertLeftChannelEqualsProductAfterFilling_Buffered(
@@ -807,7 +810,7 @@ MASKER_PLAYER_TEST(moreChannelsRequestedThanAvailableCopiesChannel) {
 }
 
 MASKER_PLAYER_TEST(moreChannelsAvailableThanRequestedTruncates) {
-    loadAudio({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+    loadAudio(player, audioReader, {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {1, 2, 3}, {4, 5, 6});
 }
@@ -1197,7 +1200,7 @@ MASKER_PLAYER_TEST(outputAudioDevicesReturnsDescriptions) {
 }
 
 MASKER_PLAYER_TEST(digitalLevelComputedFromFirstChannel) {
-    loadAudio({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+    loadAudio(player, audioReader, {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         20 * std::log10(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.F)),
         digitalLevel().dBov);
