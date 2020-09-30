@@ -706,15 +706,17 @@ MASKER_PLAYER_TEST(setChannelDelayMono_Buffered) {
     assertChannelEqual(twoMonoBuffers.at(1), {0, 4, 5, 6});
 }
 
-MASKER_PLAYER_TEST(DISABLED_setChannelDelayMonoLoadNewAudio) {
+MASKER_PLAYER_TEST(setChannelDelayMonoLoadNewAudio) {
     setSampleRateHz(3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({4, 5, 6});
-    fillAudioBufferMono(3); // => {0, 0, 0}
-
+    audioPlayer.setRealisticExecution();
+    player.play();
+    player.stop();
     loadMonoAudio({1, 2, 3});
-    fillAudioBufferMono(3);
-    assertLeftChannelEquals({0, 0, 0});
+    audioPlayer.clearRealisticExecution();
+    audioPlayer.joinAudioThread();
+    assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0});
 }
 
 MASKER_PLAYER_TEST(DISABLED_setChannelDelayMonoWithSeek) {
