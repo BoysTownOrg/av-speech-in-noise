@@ -808,11 +808,11 @@ MASKER_PLAYER_TEST(setChannelDelayStereo_Buffered) {
     assertChannelEqual(sixMonoBuffers.at(5), {8, 9});
 }
 
-MASKER_PLAYER_TEST(DISABLED_moreChannelsRequestedThanAvailableCopiesChannel) {
+MASKER_PLAYER_TEST(moreChannelsRequestedThanAvailableCopiesChannel) {
     loadMonoAudio({1, 2, 3});
-    fillAudioBufferStereo(3);
-    assertLeftChannelEquals({1, 2, 3});
-    assertRightChannelEquals({1, 2, 3});
+    auto result{fillAudioBufferStereoAsync(player, audioPlayer, 3).get()};
+    assertChannelEqual(result.at(0), {1, 2, 3});
+    assertChannelEqual(result.at(1), {1, 2, 3});
 }
 
 MASKER_PLAYER_TEST(DISABLED_moreChannelsAvailableThanRequestedTruncates) {
