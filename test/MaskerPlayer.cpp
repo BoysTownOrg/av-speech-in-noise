@@ -854,13 +854,12 @@ MASKER_PLAYER_TEST(useSecondChannelOnlyMutesOtherChannels) {
 }
 
 MASKER_PLAYER_TEST(
-    DISABLED_useSecondChannelOnlyAfterUsingFirstChannelOnlyMutesOtherChannels) {
+    useSecondChannelOnlyAfterUsingFirstChannelOnlyMutesOtherChannels) {
     useFirstChannelOnly();
     useSecondChannelOnly(player);
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
-    fillAudioBufferStereo(3);
-    assertLeftChannelEquals({0, 0, 0});
-    assertRightChannelEquals({4, 5, 6});
+    assertAsyncLoadedStereoChannelsEquals(
+        player, audioPlayer, {0, 0, 0}, {4, 5, 6});
 }
 
 MASKER_PLAYER_TEST(DISABLED_useAllChannelsAfterUsingFirstChannelOnly) {
