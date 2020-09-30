@@ -363,11 +363,10 @@ void assertChannelEqual(
     assertEqual(x, channel, 1e-29F);
 }
 
-void assertAsyncLoadedMonoChannelEquals(
-    AudioPlayerStub &audioPlayer, const std::vector<float> &expected) {
-    assertChannelEqual(
-        fillAudioBufferMonoAsync(audioPlayer, expected.size()).get().front(),
-        expected);
+void assertStereoChannelsEqual(const std::vector<std::vector<float>> &expected,
+    const std::vector<float> &left, const std::vector<float> &right) {
+    assertChannelEqual(left, expected.at(0));
+    assertChannelEqual(right, expected.at(1));
 }
 
 void assertAsyncLoadedMonoChannelEquals(MaskerPlayerImpl &player,
@@ -377,6 +376,14 @@ void assertAsyncLoadedMonoChannelEquals(MaskerPlayerImpl &player,
             .get()
             .front(),
         expected);
+}
+
+void assertAsyncLoadedStereoChannelsEquals(MaskerPlayerImpl &player,
+    AudioPlayerStub &audioPlayer, const std::vector<float> &left,
+    const std::vector<float> &right) {
+    assertStereoChannelsEqual(
+        fillAudioBufferStereoAsync(player, audioPlayer, left.size()).get(),
+        left, right);
 }
 
 void callInRealisticExecutionContext(MaskerPlayerImpl &player,
@@ -773,9 +780,8 @@ MASKER_PLAYER_TEST(setChannelDelayStereo) {
     setSampleRateHz(3);
     setChannelDelaySeconds(1, 1);
     loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
-    auto result{fillAudioBufferStereoAsync(player, audioPlayer, 6).get()};
-    assertChannelEqual(result.at(0), {1, 2, 3, 4, 5, 6});
-    assertChannelEqual(result.at(1), {0, 0, 0, 7, 8, 9});
+    assertAsyncLoadedStereoChannelsEquals(
+        player, audioPlayer, {1, 2, 3, 4, 5, 6}, {0, 0, 0, 7, 8, 9});
 }
 
 MASKER_PLAYER_TEST(setChannelDelayStereo_Buffered) {
@@ -810,9 +816,8 @@ MASKER_PLAYER_TEST(setChannelDelayStereo_Buffered) {
 
 MASKER_PLAYER_TEST(moreChannelsRequestedThanAvailableCopiesChannel) {
     loadMonoAudio({1, 2, 3});
-    auto result{fillAudioBufferStereoAsync(player, audioPlayer, 3).get()};
-    assertChannelEqual(result.at(0), {1, 2, 3});
-    assertChannelEqual(result.at(1), {1, 2, 3});
+    assertAsyncLoadedStereoChannelsEquals(
+        player, audioPlayer, {1, 2, 3}, {1, 2, 3});
 }
 
 MASKER_PLAYER_TEST(DISABLED_moreChannelsAvailableThanRequestedTruncates) {
