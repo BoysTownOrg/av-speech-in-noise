@@ -1021,9 +1021,8 @@ MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionOneFill) {
     loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
     auto result{
         setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
-            std::vector<float> a(halfWindowLength);
-            observer->fillAudioBuffer({a}, {});
-            return std::vector<std::vector<float>>{a};
+            return av_speech_in_noise::fillAudioBuffer(
+                observer, 1, halfWindowLength);
         })};
     fadeIn();
     assertChannelEqual(result.get().at(0),
