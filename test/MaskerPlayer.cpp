@@ -304,7 +304,7 @@ auto fillAudioBuffer(AudioPlayer::Observer *observer, gsl::index channels,
     std::vector<std::vector<float>> audio(channels);
     std::vector<gsl::span<float>> adapted;
     for (auto &channel : audio) {
-        channel.resize(frames);
+        channel.resize(frames, -1.F);
         adapted.emplace_back(channel);
     }
     observer->fillAudioBuffer(adapted, t);
@@ -878,10 +878,8 @@ MASKER_PLAYER_TEST(useAllChannelsAfterUsingSecondChannelOnly) {
         player, audioPlayer, {1, 2, 3}, {4, 5, 6});
 }
 
-MASKER_PLAYER_TEST(DISABLED_noAudioLoadedMutesChannel) {
-    leftChannel = {-1, -1, -1};
-    fillAudioBufferMono(3);
-    assertLeftChannelEquals({0, 0, 0});
+MASKER_PLAYER_TEST(noAudioLoadedMutesChannel) {
+    assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0});
 }
 
 MASKER_PLAYER_TEST(DISABLED_fadeTimeReturnsFadeTime) {
