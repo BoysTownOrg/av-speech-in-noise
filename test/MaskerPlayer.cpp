@@ -630,8 +630,7 @@ class MaskerPlayerTests : public ::testing::Test {
 #define MASKER_PLAYER_TEST(a) TEST_F(MaskerPlayerTests, a)
 
 MASKER_PLAYER_TEST(stopThenLoad) {
-    audioReader.set({std::vector<float>(9999999)});
-    player.loadFile({});
+    loadMonoAudio(std::vector<float>(9999999));
     std::vector<float> next(999);
     next.at(0) = 4;
     next.at(1) = 5;
