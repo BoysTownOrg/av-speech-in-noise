@@ -686,14 +686,24 @@ MASKER_PLAYER_TEST(setChannelDelayAfterLoadMono) {
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0, 1, 2, 3});
 }
 
-MASKER_PLAYER_TEST(DISABLED_setChannelDelayMono_Buffered) {
+MASKER_PLAYER_TEST(setChannelDelayMono_Buffered) {
     setSampleRateHz(3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({4, 5, 6});
-    fillAudioBufferMono(2);
-    assertLeftChannelEquals({0, 0});
-    fillAudioBufferMono(4);
-    assertLeftChannelEquals({0, 4, 5, 6});
+    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
+        task{[=](AudioPlayer::Observer *observer) {
+            std::vector<float> first(2);
+            std::vector<float> second(4);
+            observer->fillAudioBuffer({first}, {});
+            observer->fillAudioBuffer({second}, {});
+            return std::vector<std::vector<float>>{first, second};
+        }};
+    auto result{task.get_future()};
+    audioPlayer.setOnPlayTask(std::move(task));
+    player.play();
+    auto twoMonoBuffers{result.get()};
+    assertChannelEqual(twoMonoBuffers.at(0), {0, 0});
+    assertChannelEqual(twoMonoBuffers.at(1), {0, 4, 5, 6});
 }
 
 MASKER_PLAYER_TEST(DISABLED_setChannelDelayMonoLoadNewAudio) {
