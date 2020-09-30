@@ -414,6 +414,11 @@ void useAllChannels(MaskerPlayerImpl &player) { player.useAllChannels(); }
 
 void seekSeconds(MaskerPlayerImpl &player, double x) { player.seekSeconds(x); }
 
+void loadStereoAudio(MaskerPlayerImpl &player, AudioReaderStub &audioReader,
+    std::vector<float> left, std::vector<float> right) {
+    loadAudio(player, audioReader, {std::move(left), std::move(right)});
+}
+
 using channel_index_type = gsl::index;
 
 class MaskerPlayerTests : public ::testing::Test {
@@ -489,10 +494,6 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertCallbackNotScheduled() {
         AV_SPEECH_IN_NOISE_EXPECT_FALSE(callbackScheduled());
-    }
-
-    void loadStereoAudio(std::vector<float> left, std::vector<float> right) {
-        loadAudio(player, audioReader, {std::move(left), std::move(right)});
     }
 
     void assertLeftChannelEqualsProductAfterFilling_Buffered(
@@ -774,7 +775,8 @@ MASKER_PLAYER_TEST(clearChannelDelaysAfterLoadMono) {
 MASKER_PLAYER_TEST(setChannelDelayStereo) {
     setSampleRateHz(audioPlayer, 3);
     setChannelDelaySeconds(player, 1, 1);
-    loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
+    loadStereoAudio(
+        player, audioReader, {1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {1, 2, 3, 4, 5, 6}, {0, 0, 0, 7, 8, 9});
 }
@@ -782,7 +784,8 @@ MASKER_PLAYER_TEST(setChannelDelayStereo) {
 MASKER_PLAYER_TEST(setChannelDelayStereo_Buffered) {
     setSampleRateHz(audioPlayer, 3);
     setChannelDelaySeconds(player, 1, 1);
-    loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
+    loadStereoAudio(
+        player, audioReader, {1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
     std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
         task{[=](AudioPlayer::Observer *observer) {
             std::vector<float> firstLeft(2);
@@ -823,7 +826,7 @@ MASKER_PLAYER_TEST(moreChannelsAvailableThanRequestedTruncates) {
 
 MASKER_PLAYER_TEST(useFirstChannelOnlyMutesOtherChannels) {
     useFirstChannelOnly(player);
-    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    loadStereoAudio(player, audioReader, {1, 2, 3}, {4, 5, 6});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {1, 2, 3}, {0, 0, 0});
 }
@@ -836,14 +839,14 @@ MASKER_PLAYER_TEST(
     useFirstChannelOnlyAfterUsingSecondChannelOnlyMutesOtherChannels) {
     useSecondChannelOnly(player);
     useFirstChannelOnly(player);
-    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    loadStereoAudio(player, audioReader, {1, 2, 3}, {4, 5, 6});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {1, 2, 3}, {0, 0, 0});
 }
 
 MASKER_PLAYER_TEST(useSecondChannelOnlyMutesOtherChannels) {
     useSecondChannelOnly(player);
-    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    loadStereoAudio(player, audioReader, {1, 2, 3}, {4, 5, 6});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {0, 0, 0}, {4, 5, 6});
 }
@@ -852,7 +855,7 @@ MASKER_PLAYER_TEST(
     useSecondChannelOnlyAfterUsingFirstChannelOnlyMutesOtherChannels) {
     useFirstChannelOnly(player);
     useSecondChannelOnly(player);
-    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    loadStereoAudio(player, audioReader, {1, 2, 3}, {4, 5, 6});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {0, 0, 0}, {4, 5, 6});
 }
@@ -860,7 +863,7 @@ MASKER_PLAYER_TEST(
 MASKER_PLAYER_TEST(useAllChannelsAfterUsingFirstChannelOnly) {
     useFirstChannelOnly(player);
     useAllChannels(player);
-    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    loadStereoAudio(player, audioReader, {1, 2, 3}, {4, 5, 6});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {1, 2, 3}, {4, 5, 6});
 }
@@ -868,7 +871,7 @@ MASKER_PLAYER_TEST(useAllChannelsAfterUsingFirstChannelOnly) {
 MASKER_PLAYER_TEST(useAllChannelsAfterUsingSecondChannelOnly) {
     useSecondChannelOnly(player);
     useAllChannels(player);
-    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    loadStereoAudio(player, audioReader, {1, 2, 3}, {4, 5, 6});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {1, 2, 3}, {4, 5, 6});
 }
@@ -930,13 +933,13 @@ MASKER_PLAYER_TEST(DISABLED_fillAudioBufferWrapsMonoChannel_Buffered) {
 }
 
 MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel) {
-    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    loadStereoAudio(player, audioReader, {1, 2, 3}, {4, 5, 6});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {1, 2, 3, 1}, {4, 5, 6, 4});
 }
 
 MASKER_PLAYER_TEST(DISABLED_fillAudioBufferWrapsStereoChannel_Buffered) {
-    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    loadStereoAudio(player, audioReader, {1, 2, 3}, {4, 5, 6});
     fillAudioBufferStereo(2);
     assertLeftChannelEquals({1, 2});
     assertRightChannelEquals({4, 5});
@@ -982,7 +985,8 @@ MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionStereoMultipleFills) {
     auto halfWindowLength = 3 * 5 + 1;
     auto framesPerBuffer = 4;
 
-    loadStereoAudio(oneToN(halfWindowLength), NtoOne(halfWindowLength));
+    loadStereoAudio(player, audioReader, oneToN(halfWindowLength),
+        NtoOne(halfWindowLength));
     fadeIn();
     auto buffers = halfWindowLength / framesPerBuffer;
     assertStereoChannelsEqualProductAfterFilling_Buffered(
@@ -995,7 +999,8 @@ MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionStereoOneFill) {
     setSampleRateHz(audioPlayer, 3);
     auto halfWindowLength = 2 * 3 + 1;
 
-    loadStereoAudio(oneToN(halfWindowLength), NtoOne(halfWindowLength));
+    loadStereoAudio(player, audioReader, oneToN(halfWindowLength),
+        NtoOne(halfWindowLength));
     fadeIn();
     assertStereoChannelsEqualProductAfterFilling(
         halfHannWindow(halfWindowLength), oneToN(halfWindowLength),
