@@ -672,12 +672,11 @@ MASKER_PLAYER_TEST(seekNegativeTime) {
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {4, 5, 6, 7});
 }
 
-MASKER_PLAYER_TEST(DISABLED_setChannelDelayMono) {
+MASKER_PLAYER_TEST(setChannelDelayMono) {
     setSampleRateHz(3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({1, 2, 3});
-    fillAudioBufferMono(6);
-    assertLeftChannelEquals({0, 0, 0, 1, 2, 3});
+    assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0, 1, 2, 3});
 }
 
 MASKER_PLAYER_TEST(DISABLED_setChannelDelayAfterLoadMono) {
