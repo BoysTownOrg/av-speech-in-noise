@@ -626,12 +626,12 @@ MASKER_PLAYER_TEST(stopThenLoad) {
     assertChannelEqual(result.get().at(0), {4, 5, 6});
 }
 
-MASKER_PLAYER_TEST(DISABLED_playingWhenAudioPlayerPlaying) {
+MASKER_PLAYER_TEST(playingWhenAudioPlayerPlaying) {
     audioPlayer.setPlaying();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.playing());
 }
 
-MASKER_PLAYER_TEST(DISABLED_durationReturnsDuration) {
+MASKER_PLAYER_TEST(durationReturnsDuration) {
     setSampleRateHz(3);
     loadMonoAudio({1, 2, 3, 4, 5, 6});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6. / 3, player.duration().seconds);
