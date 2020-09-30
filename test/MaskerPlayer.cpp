@@ -892,17 +892,17 @@ MASKER_PLAYER_TEST(loadFileLoadsAudioFile) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, audioPlayer.filePath());
 }
 
-MASKER_PLAYER_TEST(DISABLED_fadeInPlaysAudioPlayer) {
+MASKER_PLAYER_TEST(fadeInPlaysAudioPlayer) {
     fadeIn();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioPlayer.played());
 }
 
-MASKER_PLAYER_TEST(DISABLED_playPlaysAudioPlayer) {
+MASKER_PLAYER_TEST(playPlaysAudioPlayer) {
     player.play();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioPlayer.played());
 }
 
-MASKER_PLAYER_TEST(DISABLED_stopStopsAudioPlayer) {
+MASKER_PLAYER_TEST(stopStopsAudioPlayer) {
     player.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioPlayer.stopped());
 }
