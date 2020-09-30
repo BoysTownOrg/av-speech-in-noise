@@ -741,25 +741,15 @@ MASKER_PLAYER_TEST(setChannelDelayMonoWithSeek2) {
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0, 7, 8, 9});
 }
 
-MASKER_PLAYER_TEST(DISABLED_setChannelDelayMonoWithSeekAsync) {
-    setSampleRateHz(3);
-    setChannelDelaySeconds(0, 1);
-    loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
-    assertAsyncLoadedMonoChannelEquals(audioPlayer, {0, 0, 0, 1, 2, 3});
-    seekSeconds(2);
-    assertAsyncLoadedMonoChannelEquals(audioPlayer, {0, 0, 0, 7, 8, 9});
-}
-
-MASKER_PLAYER_TEST(DISABLED_clearChannelDelaysMono) {
+MASKER_PLAYER_TEST(clearChannelDelaysMono) {
     setSampleRateHz(3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({4, 5, 6});
-    fillAudioBufferMono(3); // => {0, 0, 0}
-
-    clearChannelDelays();
-    loadMonoAudio({1, 2, 3});
-    fillAudioBufferMono(3);
-    assertLeftChannelEquals({1, 2, 3});
+    callInRealisticExecutionContext(player, audioPlayer, [&]() {
+        clearChannelDelays();
+        loadMonoAudio({1, 2, 3});
+    });
+    assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {1, 2, 3});
 }
 
 MASKER_PLAYER_TEST(DISABLED_clearChannelDelaysAfterLoadMono) {
