@@ -163,7 +163,7 @@ auto MaskerPlayerImpl::currentSystemTime() -> PlayerTime {
 }
 
 void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
-    if (playing())
+    if (mainThread.audioEnabled)
         return;
 
     player->loadFile(file.path);
@@ -318,21 +318,21 @@ void MaskerPlayerImpl::MainThread::fadeIn() {
 }
 
 void MaskerPlayerImpl::MainThread::play() {
-    if (!enabled) {
+    if (!audioEnabled) {
         set(sharedState->pleaseEnableAudio);
-        enabled = true;
+        audioEnabled = true;
     }
     player->play();
 }
 
 void MaskerPlayerImpl::MainThread::stop() {
-    if (enabled) {
+    if (audioEnabled) {
         set(sharedState->pleaseDisableAudio);
         auto expected{true};
         while (!sharedState->audioDisabledComplete.compare_exchange_weak(
             expected, false))
             expected = true;
-        enabled = false;
+        audioEnabled = false;
     }
     player->stop();
 }

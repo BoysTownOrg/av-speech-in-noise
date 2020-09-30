@@ -139,7 +139,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         auto channelDelaySeconds(channel_index_type channel) -> double;
         void setFadeInOutSeconds(double);
         auto fadeTime() -> Duration;
-        bool enabled{};
+        bool audioEnabled{};
 
       private:
         auto fading() -> bool;
