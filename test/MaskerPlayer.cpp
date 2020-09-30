@@ -637,12 +637,18 @@ MASKER_PLAYER_TEST(durationReturnsDuration) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6. / 3, player.duration().seconds);
 }
 
-MASKER_PLAYER_TEST(DISABLED_seekSeeksAudio) {
+MASKER_PLAYER_TEST(seekSeeksAudio) {
     setSampleRateHz(3);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
     seekSeconds(2);
-    fillAudioBufferMono(4);
-    assertLeftChannelEquals({7, 8, 9, 1});
+    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
+        task{[=](AudioPlayer::Observer *observer) {
+            return av_speech_in_noise::fillAudioBuffer(observer, 1, 4);
+        }};
+    auto result{task.get_future()};
+    audioPlayer.setOnPlayTask(std::move(task));
+    player.play();
+    assertChannelEqual(result.get().at(0), {7, 8, 9, 1});
 }
 
 MASKER_PLAYER_TEST(DISABLED_seekSeeksAudioAsync) {
