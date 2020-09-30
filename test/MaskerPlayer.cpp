@@ -913,13 +913,12 @@ MASKER_PLAYER_TEST(twentydBMultipliesSignalByTen) {
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {10, 20, 30});
 }
 
-MASKER_PLAYER_TEST(DISABLED_loadFileResetsSampleIndex) {
+MASKER_PLAYER_TEST(loadFileResetsSampleIndex) {
     loadMonoAudio({1, 2, 3});
-    fillAudioBufferMono(2);
-    assertLeftChannelEquals({1, 2});
-    loadMonoAudio({4, 5, 6});
-    fillAudioBufferMono(3);
-    assertLeftChannelEquals({4, 5, 6});
+    callInRealisticExecutionContext(player, audioPlayer, [&]() {
+        loadMonoAudio({4, 5, 6});
+    });
+    assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {4, 5, 6});
 }
 
 MASKER_PLAYER_TEST(DISABLED_fillAudioBufferWrapsMonoChannel) {
