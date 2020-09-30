@@ -397,6 +397,21 @@ void loadMonoAudio(MaskerPlayerImpl &player, AudioReaderStub &audioReader,
     loadAudio(player, audioReader, {std::move(x)});
 }
 
+void setChannelDelaySeconds(
+    MaskerPlayerImpl &player, channel_index_type channel, double seconds) {
+    player.setChannelDelaySeconds(channel, seconds);
+}
+
+void clearChannelDelays(MaskerPlayerImpl &player) {
+    player.clearChannelDelays();
+}
+
+void useFirstChannelOnly(MaskerPlayerImpl &player) {
+    player.useFirstChannelOnly();
+}
+
+void useAllChannels(MaskerPlayerImpl &player) { player.useAllChannels(); }
+
 void seekSeconds(MaskerPlayerImpl &player, double x) { player.seekSeconds(x); }
 
 using channel_index_type = gsl::index;
@@ -619,16 +634,6 @@ class MaskerPlayerTests : public ::testing::Test {
         fillAudioBufferMono(n);
     }
 
-    void setChannelDelaySeconds(channel_index_type channel, double seconds) {
-        player.setChannelDelaySeconds(channel, seconds);
-    }
-
-    void clearChannelDelays() { player.clearChannelDelays(); }
-
-    void useFirstChannelOnly() { player.useFirstChannelOnly(); }
-
-    void useAllChannels() { player.useAllChannels(); }
-
     void assertFadeInCompletions(int n) {
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(n, listener.fadeInCompletions());
     }
@@ -686,7 +691,7 @@ MASKER_PLAYER_TEST(seekNegativeTime) {
 
 MASKER_PLAYER_TEST(setChannelDelayMono) {
     setSampleRateHz(audioPlayer, 3);
-    setChannelDelaySeconds(0, 1);
+    setChannelDelaySeconds(player, 0, 1);
     loadMonoAudio(player, audioReader, {1, 2, 3});
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0, 1, 2, 3});
 }
@@ -694,13 +699,13 @@ MASKER_PLAYER_TEST(setChannelDelayMono) {
 MASKER_PLAYER_TEST(setChannelDelayAfterLoadMono) {
     setSampleRateHz(audioPlayer, 3);
     loadMonoAudio(player, audioReader, {1, 2, 3});
-    setChannelDelaySeconds(0, 1);
+    setChannelDelaySeconds(player, 0, 1);
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0, 1, 2, 3});
 }
 
 MASKER_PLAYER_TEST(setChannelDelayMono_Buffered) {
     setSampleRateHz(audioPlayer, 3);
-    setChannelDelaySeconds(0, 1);
+    setChannelDelaySeconds(player, 0, 1);
     loadMonoAudio(player, audioReader, {4, 5, 6});
     std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
         task{[=](AudioPlayer::Observer *observer) {
@@ -720,7 +725,7 @@ MASKER_PLAYER_TEST(setChannelDelayMono_Buffered) {
 
 MASKER_PLAYER_TEST(setChannelDelayMonoLoadNewAudio) {
     setSampleRateHz(audioPlayer, 3);
-    setChannelDelaySeconds(0, 1);
+    setChannelDelaySeconds(player, 0, 1);
     loadMonoAudio(player, audioReader, {4, 5, 6});
     callInRealisticExecutionContext(player, audioPlayer, [&]() {
         loadMonoAudio(player, audioReader, {1, 2, 3});
@@ -730,14 +735,14 @@ MASKER_PLAYER_TEST(setChannelDelayMonoLoadNewAudio) {
 
 MASKER_PLAYER_TEST(setChannelDelayMonoWithSeek) {
     setSampleRateHz(audioPlayer, 3);
-    setChannelDelaySeconds(0, 1);
+    setChannelDelaySeconds(player, 0, 1);
     loadMonoAudio(player, audioReader, {1, 2, 3, 4, 5, 6, 7, 8, 9});
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0, 1, 2, 3});
 }
 
 MASKER_PLAYER_TEST(setChannelDelayMonoWithSeek2) {
     setSampleRateHz(audioPlayer, 3);
-    setChannelDelaySeconds(0, 1);
+    setChannelDelaySeconds(player, 0, 1);
     loadMonoAudio(player, audioReader, {1, 2, 3, 4, 5, 6, 7, 8, 9});
     callInRealisticExecutionContext(
         player, audioPlayer, [&]() { seekSeconds(player, 2); });
@@ -746,10 +751,10 @@ MASKER_PLAYER_TEST(setChannelDelayMonoWithSeek2) {
 
 MASKER_PLAYER_TEST(clearChannelDelaysMono) {
     setSampleRateHz(audioPlayer, 3);
-    setChannelDelaySeconds(0, 1);
+    setChannelDelaySeconds(player, 0, 1);
     loadMonoAudio(player, audioReader, {4, 5, 6});
     callInRealisticExecutionContext(player, audioPlayer, [&]() {
-        clearChannelDelays();
+        clearChannelDelays(player);
         loadMonoAudio(player, audioReader, {1, 2, 3});
     });
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {1, 2, 3});
@@ -757,18 +762,18 @@ MASKER_PLAYER_TEST(clearChannelDelaysMono) {
 
 MASKER_PLAYER_TEST(clearChannelDelaysAfterLoadMono) {
     setSampleRateHz(audioPlayer, 3);
-    setChannelDelaySeconds(0, 1);
+    setChannelDelaySeconds(player, 0, 1);
     loadMonoAudio(player, audioReader, {4, 5, 6});
     callInRealisticExecutionContext(player, audioPlayer, [&]() {
         loadMonoAudio(player, audioReader, {1, 2, 3});
-        clearChannelDelays();
+        clearChannelDelays(player);
     });
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {1, 2, 3});
 }
 
 MASKER_PLAYER_TEST(setChannelDelayStereo) {
     setSampleRateHz(audioPlayer, 3);
-    setChannelDelaySeconds(1, 1);
+    setChannelDelaySeconds(player, 1, 1);
     loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {1, 2, 3, 4, 5, 6}, {0, 0, 0, 7, 8, 9});
@@ -776,7 +781,7 @@ MASKER_PLAYER_TEST(setChannelDelayStereo) {
 
 MASKER_PLAYER_TEST(setChannelDelayStereo_Buffered) {
     setSampleRateHz(audioPlayer, 3);
-    setChannelDelaySeconds(1, 1);
+    setChannelDelaySeconds(player, 1, 1);
     loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
     std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
         task{[=](AudioPlayer::Observer *observer) {
@@ -817,7 +822,7 @@ MASKER_PLAYER_TEST(moreChannelsAvailableThanRequestedTruncates) {
 }
 
 MASKER_PLAYER_TEST(useFirstChannelOnlyMutesOtherChannels) {
-    useFirstChannelOnly();
+    useFirstChannelOnly(player);
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {1, 2, 3}, {0, 0, 0});
@@ -830,7 +835,7 @@ void useSecondChannelOnly(MaskerPlayerImpl &player) {
 MASKER_PLAYER_TEST(
     useFirstChannelOnlyAfterUsingSecondChannelOnlyMutesOtherChannels) {
     useSecondChannelOnly(player);
-    useFirstChannelOnly();
+    useFirstChannelOnly(player);
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {1, 2, 3}, {0, 0, 0});
@@ -845,7 +850,7 @@ MASKER_PLAYER_TEST(useSecondChannelOnlyMutesOtherChannels) {
 
 MASKER_PLAYER_TEST(
     useSecondChannelOnlyAfterUsingFirstChannelOnlyMutesOtherChannels) {
-    useFirstChannelOnly();
+    useFirstChannelOnly(player);
     useSecondChannelOnly(player);
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
     assertAsyncLoadedStereoChannelsEquals(
@@ -853,8 +858,8 @@ MASKER_PLAYER_TEST(
 }
 
 MASKER_PLAYER_TEST(useAllChannelsAfterUsingFirstChannelOnly) {
-    useFirstChannelOnly();
-    useAllChannels();
+    useFirstChannelOnly(player);
+    useAllChannels(player);
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {1, 2, 3}, {4, 5, 6});
@@ -862,7 +867,7 @@ MASKER_PLAYER_TEST(useAllChannelsAfterUsingFirstChannelOnly) {
 
 MASKER_PLAYER_TEST(useAllChannelsAfterUsingSecondChannelOnly) {
     useSecondChannelOnly(player);
-    useAllChannels();
+    useAllChannels(player);
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
     assertAsyncLoadedStereoChannelsEquals(
         player, audioPlayer, {1, 2, 3}, {4, 5, 6});
