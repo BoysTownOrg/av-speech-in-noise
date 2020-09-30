@@ -79,39 +79,35 @@ class AudioPlayerStub : public AudioPlayer {
     void play() override {
         played_ = true;
         if (onPlayTask.valid()) {
-            std::thread t{std::move(onPlayTask), listener_};
+            std::thread t{std::move(onPlayTask), observer};
             t.detach();
         }
         if (realisticExecution_) {
             audioThread = std::thread{[&]() {
-                std::vector<std::vector<float>> audio(2);
-                std::vector<gsl::span<float>> adapted;
-                for (auto &channel : audio) {
-                    channel.resize(9999999);
-                    adapted.emplace_back(channel);
-                }
+                std::vector<float> left(9999999);
+                std::vector<float> right(9999999);
                 auto expected{true};
                 while (!pleaseStopAudioThread.compare_exchange_weak(
                     expected, false)) {
                     std::this_thread::sleep_for(std::chrono::milliseconds{10});
-                    listener_->fillAudioBuffer(adapted, {});
+                    observer->fillAudioBuffer({left, right}, {});
                     expected = true;
                 }
             }};
         }
     }
 
-    void attach(Observer *listener) override { listener_ = listener; }
+    void attach(Observer *a) override { observer = a; }
 
-    [[nodiscard]] auto filePath() const { return filePath_; }
+    [[nodiscard]] auto filePath() const -> std::string { return filePath_; }
 
-    [[nodiscard]] auto deviceIndex() const { return deviceIndex_; }
+    [[nodiscard]] auto deviceIndex() const -> int { return deviceIndex_; }
 
-    [[nodiscard]] auto played() const { return played_; }
+    [[nodiscard]] auto played() const -> bool { return played_; }
 
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio,
         player_system_time_type t = {}) {
-        listener_->fillAudioBuffer(audio, t);
+        observer->fillAudioBuffer(audio, t);
     }
 
     auto nanoseconds(PlayerTime t) -> std::uintmax_t override {
@@ -150,7 +146,7 @@ class AudioPlayerStub : public AudioPlayer {
     std::uintmax_t nanoseconds_{};
     player_system_time_type systemTimeForNanoseconds_{};
     player_system_time_type currentSystemTime_{};
-    Observer *listener_{};
+    Observer *observer{};
     double sampleRateHz_{};
     int deviceIndex_{};
     int deviceDescriptionDeviceIndex_{};
@@ -175,21 +171,29 @@ class MaskerPlayerListenerStub : public MaskerPlayer::Observer {
         fadeOutCompleted_ = true;
     }
 
-    [[nodiscard]] auto fadeInCompleteSystemTime() const {
+    [[nodiscard]] auto fadeInCompleteSystemTime() const
+        -> player_system_time_type {
         return fadeInCompleteSystemTime_;
     }
 
-    [[nodiscard]] auto fadeInCompleteSystemTimeSampleOffset() const {
+    [[nodiscard]] auto fadeInCompleteSystemTimeSampleOffset() const
+        -> gsl::index {
         return fadeInCompleteSystemTimeSampleOffset_;
     }
 
-    [[nodiscard]] auto fadeInCompleted() const { return fadeInCompleted_; }
+    [[nodiscard]] auto fadeInCompleted() const -> bool {
+        return fadeInCompleted_;
+    }
 
-    [[nodiscard]] auto fadeOutCompleted() const { return fadeOutCompleted_; }
+    [[nodiscard]] auto fadeOutCompleted() const -> bool {
+        return fadeOutCompleted_;
+    }
 
-    [[nodiscard]] auto fadeInCompletions() const { return fadeInCompletions_; }
+    [[nodiscard]] auto fadeInCompletions() const -> int {
+        return fadeInCompletions_;
+    }
 
-    [[nodiscard]] auto fadeOutCompletions() const {
+    [[nodiscard]] auto fadeOutCompletions() const -> int {
         return fadeOutCompletions_;
     }
 
@@ -227,12 +231,12 @@ class TimerStub : public Timer {
 
     void clearCallbackCount() { callbackScheduled_ = false; }
 
-    void callback() { listener_->callback(); }
+    void callback() { observer->callback(); }
 
-    void attach(Observer *listener) override { listener_ = listener; }
+    void attach(Observer *a) override { observer = a; }
 
   private:
-    Observer *listener_{};
+    Observer *observer{};
     bool callbackScheduled_{};
 };
 
