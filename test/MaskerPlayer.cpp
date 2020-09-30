@@ -1048,17 +1048,26 @@ MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionStereoMultipleFills) {
         NtoOne(halfWindowLength), buffers, framesPerBuffer);
 }
 
-MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionStereoOneFill) {
+MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionStereoOneFill) {
     setFadeInOutSeconds(2);
     setSampleRateHz(audioPlayer, 3);
     auto halfWindowLength = 2 * 3 + 1;
 
     loadStereoAudio(player, audioReader, oneToN(halfWindowLength),
         NtoOne(halfWindowLength));
+    auto result{
+        setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
+            return av_speech_in_noise::fillAudioBuffer(
+                observer, 2, halfWindowLength);
+        })};
     fadeIn();
-    assertStereoChannelsEqualProductAfterFilling(
-        halfHannWindow(halfWindowLength), oneToN(halfWindowLength),
-        NtoOne(halfWindowLength));
+    auto result_{result.get()};
+    assertChannelEqual(result_.at(0),
+        elementWiseProduct(
+            halfHannWindow(halfWindowLength), oneToN(halfWindowLength)));
+    assertChannelEqual(result_.at(1),
+        elementWiseProduct(
+            halfHannWindow(halfWindowLength), NtoOne(halfWindowLength)));
 }
 
 MASKER_PLAYER_TEST(DISABLED_steadyLevelFollowingFadeIn) {
