@@ -373,6 +373,16 @@ void assertAsyncLoadedMonoChannelEquals(MaskerPlayerImpl &player,
         expected);
 }
 
+void callInRealisticExecutionContext(MaskerPlayerImpl &player,
+    AudioPlayerStub &audioPlayer, const std::function<void()> &f) {
+    audioPlayer.setRealisticExecution();
+    player.play();
+    player.stop();
+    f();
+    audioPlayer.clearRealisticExecution();
+    audioPlayer.joinAudioThread();
+}
+
 using channel_index_type = gsl::index;
 
 class MaskerPlayerTests : public ::testing::Test {
@@ -709,12 +719,9 @@ MASKER_PLAYER_TEST(setChannelDelayMonoLoadNewAudio) {
     setSampleRateHz(3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({4, 5, 6});
-    audioPlayer.setRealisticExecution();
-    player.play();
-    player.stop();
-    loadMonoAudio({1, 2, 3});
-    audioPlayer.clearRealisticExecution();
-    audioPlayer.joinAudioThread();
+    callInRealisticExecutionContext(player, audioPlayer, [&]() {
+        loadMonoAudio({1, 2, 3});
+    });
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0});
 }
 
@@ -729,12 +736,8 @@ MASKER_PLAYER_TEST(setChannelDelayMonoWithSeek2) {
     setSampleRateHz(3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
-    audioPlayer.setRealisticExecution();
-    player.play();
-    player.stop();
-    seekSeconds(2);
-    audioPlayer.clearRealisticExecution();
-    audioPlayer.joinAudioThread();
+    callInRealisticExecutionContext(
+        player, audioPlayer, [&]() { seekSeconds(2); });
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0, 7, 8, 9});
 }
 
