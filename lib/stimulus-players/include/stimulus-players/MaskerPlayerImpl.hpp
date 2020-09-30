@@ -121,6 +121,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         int halfWindowLength{};
         bool fadingOut{};
         bool fadingIn{};
+        bool enabled{};
     };
 
     class MainThread {
@@ -138,6 +139,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         auto channelDelaySeconds(channel_index_type channel) -> double;
         void setFadeInOutSeconds(double);
         auto fadeTime() -> Duration;
+        bool enabled{};
 
       private:
         auto fading() -> bool;
@@ -170,6 +172,9 @@ class MaskerPlayerImpl : public MaskerPlayer,
     std::atomic<bool> fadeInComplete{};
     std::atomic<bool> pleaseFadeOut{};
     std::atomic<bool> pleaseFadeIn{};
+    std::atomic<bool> pleaseEnableAudio{};
+    std::atomic<bool> pleaseDisableAudio{};
+    std::atomic<bool> audioDisabledComplete{};
 };
 }
 

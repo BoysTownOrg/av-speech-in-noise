@@ -165,7 +165,8 @@ auto MaskerPlayerImpl::currentSystemTime() -> PlayerTime {
 void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     if (playing())
         return;
-
+    if (mainThread.enabled)
+        std::terminate();
     player->loadFile(file.path);
     recalculateSamplesToWaitPerChannel();
     write(levelTransitionSamples_,
@@ -317,9 +318,27 @@ void MaskerPlayerImpl::MainThread::fadeIn() {
     scheduleCallbackAfterSeconds(0.1);
 }
 
-void MaskerPlayerImpl::MainThread::play() { player->play(); }
+void MaskerPlayerImpl::MainThread::play() {
+    if (!enabled) {
+        set(sharedState->pleaseEnableAudio);
+        enabled = true;
+    } else
+        std::terminate();
+    player->play();
+}
 
-void MaskerPlayerImpl::MainThread::stop() { player->stop(); }
+void MaskerPlayerImpl::MainThread::stop() {
+    if (enabled) {
+        set(sharedState->pleaseDisableAudio);
+        auto expected{true};
+        while (!sharedState->audioDisabledComplete.compare_exchange_weak(
+            expected, false))
+            expected = true;
+        enabled = false;
+    } else
+        std::terminate();
+    player->stop();
+}
 
 void MaskerPlayerImpl::MainThread::scheduleCallbackAfterSeconds(double x) {
     timer->scheduleCallbackAfterSeconds(x);
@@ -364,15 +383,28 @@ void MaskerPlayerImpl::AudioThread::setSharedState(MaskerPlayerImpl *p) {
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
     player_system_time_type time) {
+    if (!enabled) {
+        if (thisCallClears(sharedState->pleaseEnableAudio))
+            enabled = true;
+        else
+            return;
+    }
+
     systemTime = time;
-    if (noChannels(sharedState->sourceAudio))
+    if (noChannels(sharedState->sourceAudio)) {
+        std::terminate();
         for (auto channel : audioBuffer)
             mute(channel);
-    else
+    } else
         copySourceAudio(audioBuffer);
     checkForFadeIn();
     checkForFadeOut();
     applyLevel(audioBuffer);
+
+    if (thisCallClears(sharedState->pleaseDisableAudio)) {
+        enabled = false;
+        set(sharedState->audioDisabledComplete);
+    }
 }
 
 void MaskerPlayerImpl::AudioThread::copySourceAudio(
