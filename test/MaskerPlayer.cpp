@@ -679,12 +679,11 @@ MASKER_PLAYER_TEST(setChannelDelayMono) {
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0, 1, 2, 3});
 }
 
-MASKER_PLAYER_TEST(DISABLED_setChannelDelayAfterLoadMono) {
+MASKER_PLAYER_TEST(setChannelDelayAfterLoadMono) {
     setSampleRateHz(3);
     loadMonoAudio({1, 2, 3});
     setChannelDelaySeconds(0, 1);
-    fillAudioBufferMono(6);
-    assertLeftChannelEquals({0, 0, 0, 1, 2, 3});
+    assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0, 1, 2, 3});
 }
 
 MASKER_PLAYER_TEST(DISABLED_setChannelDelayMono_Buffered) {
