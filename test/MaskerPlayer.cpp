@@ -924,12 +924,22 @@ MASKER_PLAYER_TEST(fillAudioBufferWrapsMonoChannel) {
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {1, 2, 3, 1});
 }
 
-MASKER_PLAYER_TEST(DISABLED_fillAudioBufferWrapsMonoChannel_Buffered) {
+MASKER_PLAYER_TEST(fillAudioBufferWrapsMonoChannel_Buffered) {
     loadMonoAudio(player, audioReader, {1, 2, 3});
-    fillAudioBufferMono(4);
-    assertLeftChannelEquals({1, 2, 3, 1});
-    fillAudioBufferMono(4);
-    assertLeftChannelEquals({2, 3, 1, 2});
+    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
+        task{[=](AudioPlayer::Observer *observer) {
+            std::vector<float> first(4);
+            std::vector<float> second(4);
+            observer->fillAudioBuffer({first}, {});
+            observer->fillAudioBuffer({second}, {});
+            return std::vector<std::vector<float>>{first, second};
+        }};
+    auto result{task.get_future()};
+    audioPlayer.setOnPlayTask(std::move(task));
+    player.play();
+    auto twoMonoBuffers{result.get()};
+    assertChannelEqual(twoMonoBuffers.at(0), {1, 2, 3, 1});
+    assertChannelEqual(twoMonoBuffers.at(1), {2, 3, 1, 2});
 }
 
 MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel) {
