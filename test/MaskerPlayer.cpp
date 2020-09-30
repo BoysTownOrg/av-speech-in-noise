@@ -948,14 +948,27 @@ MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel) {
         player, audioPlayer, {1, 2, 3, 1}, {4, 5, 6, 4});
 }
 
-MASKER_PLAYER_TEST(DISABLED_fillAudioBufferWrapsStereoChannel_Buffered) {
+MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel_Buffered) {
     loadStereoAudio(player, audioReader, {1, 2, 3}, {4, 5, 6});
-    fillAudioBufferStereo(2);
-    assertLeftChannelEquals({1, 2});
-    assertRightChannelEquals({4, 5});
-    fillAudioBufferStereo(4);
-    assertLeftChannelEquals({3, 1, 2, 3});
-    assertRightChannelEquals({6, 4, 5, 6});
+    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
+        task{[=](AudioPlayer::Observer *observer) {
+            std::vector<float> firstLeft(2);
+            std::vector<float> firstRight(2);
+            std::vector<float> secondLeft(4);
+            std::vector<float> secondRight(4);
+            observer->fillAudioBuffer({firstLeft, firstRight}, {});
+            observer->fillAudioBuffer({secondLeft, secondRight}, {});
+            return std::vector<std::vector<float>>{
+                firstLeft, firstRight, secondLeft, secondRight};
+        }};
+    auto result{task.get_future()};
+    audioPlayer.setOnPlayTask(std::move(task));
+    player.play();
+    auto fourMonoBuffers{result.get()};
+    assertChannelEqual(fourMonoBuffers.at(0), {1, 2});
+    assertChannelEqual(fourMonoBuffers.at(1), {4, 5});
+    assertChannelEqual(fourMonoBuffers.at(2), {3, 1, 2, 3});
+    assertChannelEqual(fourMonoBuffers.at(3), {6, 4, 5, 6});
 }
 
 MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionMultipleFills) {
