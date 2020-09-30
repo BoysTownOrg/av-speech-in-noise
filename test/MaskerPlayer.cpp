@@ -1044,15 +1044,24 @@ MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionMultipleFills) {
         framesPerBuffer);
 }
 
-MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionOneFill) {
+MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionOneFill) {
     setFadeInOutSeconds(2);
     setSampleRateHz(audioPlayer, 3);
     auto halfWindowLength = 2 * 3 + 1;
 
     loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
+    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
+        task{[=](AudioPlayer::Observer *observer) {
+            std::vector<float> a(halfWindowLength);
+            observer->fillAudioBuffer({a}, {});
+            return std::vector<std::vector<float>>{a};
+        }};
+    auto result{task.get_future()};
+    audioPlayer.setOnPlayTask(std::move(task));
     fadeIn();
-    assertLeftChannelEqualsProductAfterFilling(
-        halfHannWindow(halfWindowLength), oneToN(halfWindowLength));
+    assertChannelEqual(result.get().at(0),
+        elementWiseProduct(
+            halfHannWindow(halfWindowLength), oneToN(halfWindowLength)));
 }
 
 MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionStereoMultipleFills) {
