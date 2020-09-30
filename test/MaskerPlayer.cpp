@@ -1061,11 +1061,9 @@ MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionStereoOneFill) {
                 observer, 2, halfWindowLength);
         })};
     fadeIn();
-    auto result_{result.get()};
-    assertChannelEqual(result_.at(0),
+    assertStereoChannelsEqual(result.get(),
         elementWiseProduct(
-            halfHannWindow(halfWindowLength), oneToN(halfWindowLength)));
-    assertChannelEqual(result_.at(1),
+            halfHannWindow(halfWindowLength), oneToN(halfWindowLength)),
         elementWiseProduct(
             halfHannWindow(halfWindowLength), NtoOne(halfWindowLength)));
 }
