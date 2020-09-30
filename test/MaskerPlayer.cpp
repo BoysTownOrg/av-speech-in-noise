@@ -562,6 +562,38 @@ class MaskerPlayerTests : public ::testing::Test {
         }
     }
 
+    void assertStereoAudioEqualsProductAfterFilling_BufferedAsyncFadeIn(
+        const std::vector<float> &multiplicand,
+        const std::vector<float> &leftMultiplier,
+        const std::vector<float> &rightMultiplier, int buffers,
+        int framesPerBuffer) {
+        auto future{
+            setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
+                std::vector<std::vector<float>> result;
+                for (int i = 0; i < buffers; ++i) {
+                    std::vector<float> left(framesPerBuffer);
+                    std::vector<float> right(framesPerBuffer);
+                    observer->fillAudioBuffer({left, right}, {});
+                    result.push_back(left);
+                    result.push_back(right);
+                }
+                return result;
+            })};
+        player.fadeIn();
+        auto audioBuffers{future.get()};
+        for (int i = 0; i < buffers; ++i) {
+            const auto offset = i * framesPerBuffer;
+            assertChannelEqual(audioBuffers.at(2 * i),
+                elementWiseProduct(
+                    subvector(multiplicand, offset, framesPerBuffer),
+                    subvector(leftMultiplier, offset, framesPerBuffer)));
+            assertChannelEqual(audioBuffers.at(2 * i + 1),
+                elementWiseProduct(
+                    subvector(multiplicand, offset, framesPerBuffer),
+                    subvector(rightMultiplier, offset, framesPerBuffer)));
+        }
+    }
+
     void assertStereoChannelsEqualProductAfterFilling(
         std::vector<float> multiplicand,
         const std::vector<float> &leftMultiplier,
@@ -1030,7 +1062,7 @@ MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionOneFill) {
             halfHannWindow(halfWindowLength), oneToN(halfWindowLength)));
 }
 
-MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionStereoMultipleFills) {
+MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionStereoMultipleFills) {
     // For this test:
     // halfWindowLength is determined by fade time and sample rate...
     // but must be divisible by framesPerBuffer.
@@ -1041,9 +1073,8 @@ MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionStereoMultipleFills) {
 
     loadStereoAudio(player, audioReader, oneToN(halfWindowLength),
         NtoOne(halfWindowLength));
-    fadeIn();
     auto buffers = halfWindowLength / framesPerBuffer;
-    assertStereoChannelsEqualProductAfterFilling_Buffered(
+    assertStereoAudioEqualsProductAfterFilling_BufferedAsyncFadeIn(
         halfHannWindow(halfWindowLength), oneToN(halfWindowLength),
         NtoOne(halfWindowLength), buffers, framesPerBuffer);
 }
