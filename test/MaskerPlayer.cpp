@@ -311,7 +311,7 @@ auto fillAudioBuffer(AudioPlayer::Observer *observer, gsl::index channels,
     return audio;
 }
 
-auto fillAudioBufferMonoAsync(AudioPlayerStub &audioPlayer, gsl::index channels,
+auto fillAudioBufferAsync(AudioPlayerStub &audioPlayer, gsl::index channels,
     gsl::index frames) -> std::future<std::vector<std::vector<float>>> {
     std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
         task{[=](AudioPlayer::Observer *observer) {
@@ -323,14 +323,33 @@ auto fillAudioBufferMonoAsync(AudioPlayerStub &audioPlayer, gsl::index channels,
     return result;
 }
 
+auto fillAudioBufferAsync(MaskerPlayerImpl &player,
+    AudioPlayerStub &audioPlayer, gsl::index channels, gsl::index frames)
+    -> std::future<std::vector<std::vector<float>>> {
+    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
+        task{[=](AudioPlayer::Observer *observer) {
+            return fillAudioBuffer(observer, channels, frames);
+        }};
+    auto result{task.get_future()};
+    audioPlayer.setOnPlayTask(std::move(task));
+    player.play();
+    return result;
+}
+
 auto fillAudioBufferMonoAsync(AudioPlayerStub &audioPlayer, gsl::index frames)
     -> std::future<std::vector<std::vector<float>>> {
-    return fillAudioBufferMonoAsync(audioPlayer, 1, frames);
+    return fillAudioBufferAsync(audioPlayer, 1, frames);
+}
+
+auto fillAudioBufferMonoAsync(
+    MaskerPlayerImpl &player, AudioPlayerStub &audioPlayer, gsl::index frames)
+    -> std::future<std::vector<std::vector<float>>> {
+    return fillAudioBufferAsync(player, audioPlayer, 1, frames);
 }
 
 auto fillAudioBufferStereoAsync(AudioPlayerStub &audioPlayer, gsl::index frames)
     -> std::future<std::vector<std::vector<float>>> {
-    return fillAudioBufferMonoAsync(audioPlayer, 2, frames);
+    return fillAudioBufferAsync(audioPlayer, 2, frames);
 }
 
 void assertChannelEqual(
@@ -342,6 +361,15 @@ void assertAsyncLoadedMonoChannelEquals(
     AudioPlayerStub &audioPlayer, const std::vector<float> &expected) {
     assertChannelEqual(
         fillAudioBufferMonoAsync(audioPlayer, expected.size()).get().front(),
+        expected);
+}
+
+void assertAsyncLoadedMonoChannelEquals(MaskerPlayerImpl &player,
+    AudioPlayerStub &audioPlayer, const std::vector<float> &expected) {
+    assertChannelEqual(
+        fillAudioBufferMonoAsync(player, audioPlayer, expected.size())
+            .get()
+            .front(),
         expected);
 }
 
@@ -616,14 +644,7 @@ MASKER_PLAYER_TEST(stopThenLoad) {
     player.loadFile({});
     audioPlayer.clearRealisticExecution();
     audioPlayer.joinAudioThread();
-    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
-        task{[=](AudioPlayer::Observer *observer) {
-            return av_speech_in_noise::fillAudioBuffer(observer, 1, 3);
-        }};
-    auto result{task.get_future()};
-    audioPlayer.setOnPlayTask(std::move(task));
-    player.play();
-    assertChannelEqual(result.get().at(0), {4, 5, 6});
+    assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {4, 5, 6});
 }
 
 MASKER_PLAYER_TEST(playingWhenAudioPlayerPlaying) {
@@ -641,14 +662,7 @@ MASKER_PLAYER_TEST(seekSeeksAudio) {
     setSampleRateHz(3);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
     seekSeconds(2);
-    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
-        task{[=](AudioPlayer::Observer *observer) {
-            return av_speech_in_noise::fillAudioBuffer(observer, 1, 4);
-        }};
-    auto result{task.get_future()};
-    audioPlayer.setOnPlayTask(std::move(task));
-    player.play();
-    assertChannelEqual(result.get().at(0), {7, 8, 9, 1});
+    assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {7, 8, 9, 1});
 }
 
 MASKER_PLAYER_TEST(DISABLED_seekSeeksAudioAsync) {
