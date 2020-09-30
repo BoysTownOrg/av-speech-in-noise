@@ -910,8 +910,7 @@ MASKER_PLAYER_TEST(stopStopsAudioPlayer) {
 MASKER_PLAYER_TEST(DISABLED_twentydBMultipliesSignalByTen) {
     player.apply(LevelAmplification{20});
     loadMonoAudio({1, 2, 3});
-    fillAudioBufferMono(3);
-    assertLeftChannelEquals({10, 20, 30});
+    assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {10, 20, 30});
 }
 
 MASKER_PLAYER_TEST(DISABLED_loadFileResetsSampleIndex) {
