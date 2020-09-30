@@ -352,6 +352,12 @@ auto fillAudioBufferStereoAsync(AudioPlayerStub &audioPlayer, gsl::index frames)
     return fillAudioBufferAsync(audioPlayer, 2, frames);
 }
 
+auto fillAudioBufferStereoAsync(
+    MaskerPlayerImpl &player, AudioPlayerStub &audioPlayer, gsl::index frames)
+    -> std::future<std::vector<std::vector<float>>> {
+    return fillAudioBufferAsync(player, audioPlayer, 2, frames);
+}
+
 void assertChannelEqual(
     const std::vector<float> &channel, const std::vector<float> &x) {
     assertEqual(x, channel, 1e-29F);
@@ -763,13 +769,13 @@ MASKER_PLAYER_TEST(clearChannelDelaysAfterLoadMono) {
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {1, 2, 3});
 }
 
-MASKER_PLAYER_TEST(DISABLED_setChannelDelayStereo) {
+MASKER_PLAYER_TEST(setChannelDelayStereo) {
     setSampleRateHz(3);
     setChannelDelaySeconds(1, 1);
     loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
-    fillAudioBufferStereo(6);
-    assertLeftChannelEquals({1, 2, 3, 4, 5, 6});
-    assertRightChannelEquals({0, 0, 0, 7, 8, 9});
+    auto result{fillAudioBufferStereoAsync(player, audioPlayer, 6).get()};
+    assertChannelEqual(result.at(0), {1, 2, 3, 4, 5, 6});
+    assertChannelEqual(result.at(1), {0, 0, 0, 7, 8, 9});
 }
 
 MASKER_PLAYER_TEST(DISABLED_setChannelDelayStereo_Buffered) {
