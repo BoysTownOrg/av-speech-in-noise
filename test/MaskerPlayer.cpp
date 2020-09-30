@@ -1099,16 +1099,21 @@ MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionStereoOneFill) {
             halfHannWindow(halfWindowLength), NtoOne(halfWindowLength)));
 }
 
-MASKER_PLAYER_TEST(DISABLED_steadyLevelFollowingFadeIn) {
+MASKER_PLAYER_TEST(steadyLevelFollowingFadeIn) {
     setFadeInOutSeconds(2);
     setSampleRateHz(audioPlayer, 3);
     loadMonoAudio(player, audioReader, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
-    fadeIn();
     auto halfWindowLength = 2 * 3 + 1;
-    fillAudioBufferMono(halfWindowLength);
-
-    fillAudioBufferMono(3);
-    assertLeftChannelEquals({8, 9, 10});
+    auto future{
+        setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
+            std::vector<float> first(halfWindowLength);
+            std::vector<float> second(3);
+            observer->fillAudioBuffer({first}, {});
+            observer->fillAudioBuffer({second}, {});
+            return std::vector<std::vector<float>>{first, second};
+        })};
+    fadeIn();
+    assertChannelEqual(future.get().at(1), {8, 9, 10});
 }
 
 MASKER_PLAYER_TEST(DISABLED_fadesOutAccordingToHannFunctionMultipleFills) {
