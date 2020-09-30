@@ -397,6 +397,8 @@ void loadMonoAudio(MaskerPlayerImpl &player, AudioReaderStub &audioReader,
     loadAudio(player, audioReader, {std::move(x)});
 }
 
+void seekSeconds(MaskerPlayerImpl &player, double x) { player.seekSeconds(x); }
+
 using channel_index_type = gsl::index;
 
 class MaskerPlayerTests : public ::testing::Test {
@@ -627,8 +629,6 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void useAllChannels() { player.useAllChannels(); }
 
-    void seekSeconds(double x) { player.seekSeconds(x); }
-
     void assertFadeInCompletions(int n) {
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(n, listener.fadeInCompletions());
     }
@@ -673,14 +673,14 @@ MASKER_PLAYER_TEST(durationReturnsDuration) {
 MASKER_PLAYER_TEST(seekSeeksAudio) {
     setSampleRateHz(audioPlayer, 3);
     loadMonoAudio(player, audioReader, {1, 2, 3, 4, 5, 6, 7, 8, 9});
-    seekSeconds(2);
+    seekSeconds(player, 2);
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {7, 8, 9, 1});
 }
 
 MASKER_PLAYER_TEST(seekNegativeTime) {
     setSampleRateHz(audioPlayer, 3);
     loadMonoAudio(player, audioReader, {1, 2, 3, 4, 5, 6, 7, 8, 9});
-    seekSeconds(-2);
+    seekSeconds(player, -2);
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {4, 5, 6, 7});
 }
 
@@ -740,7 +740,7 @@ MASKER_PLAYER_TEST(setChannelDelayMonoWithSeek2) {
     setChannelDelaySeconds(0, 1);
     loadMonoAudio(player, audioReader, {1, 2, 3, 4, 5, 6, 7, 8, 9});
     callInRealisticExecutionContext(
-        player, audioPlayer, [&]() { seekSeconds(2); });
+        player, audioPlayer, [&]() { seekSeconds(player, 2); });
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0, 7, 8, 9});
 }
 
