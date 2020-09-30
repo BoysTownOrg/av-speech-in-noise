@@ -778,19 +778,34 @@ MASKER_PLAYER_TEST(setChannelDelayStereo) {
     assertChannelEqual(result.at(1), {0, 0, 0, 7, 8, 9});
 }
 
-MASKER_PLAYER_TEST(DISABLED_setChannelDelayStereo_Buffered) {
+MASKER_PLAYER_TEST(setChannelDelayStereo_Buffered) {
     setSampleRateHz(3);
     setChannelDelaySeconds(1, 1);
     loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
-    fillAudioBufferStereo(2);
-    assertLeftChannelEquals({1, 2});
-    assertRightChannelEquals({0, 0});
-    fillAudioBufferStereo(2);
-    assertLeftChannelEquals({3, 4});
-    assertRightChannelEquals({0, 7});
-    fillAudioBufferStereo(2);
-    assertLeftChannelEquals({5, 6});
-    assertRightChannelEquals({8, 9});
+    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
+        task{[=](AudioPlayer::Observer *observer) {
+            std::vector<float> firstLeft(2);
+            std::vector<float> firstRight(2);
+            std::vector<float> secondLeft(2);
+            std::vector<float> secondRight(2);
+            std::vector<float> thirdLeft(2);
+            std::vector<float> thirdRight(2);
+            observer->fillAudioBuffer({firstLeft, firstRight}, {});
+            observer->fillAudioBuffer({secondLeft, secondRight}, {});
+            observer->fillAudioBuffer({thirdLeft, thirdRight}, {});
+            return std::vector<std::vector<float>>{firstLeft, firstRight,
+                secondLeft, secondRight, thirdLeft, thirdRight};
+        }};
+    auto result{task.get_future()};
+    audioPlayer.setOnPlayTask(std::move(task));
+    player.play();
+    auto sixMonoBuffers{result.get()};
+    assertChannelEqual(sixMonoBuffers.at(0), {1, 2});
+    assertChannelEqual(sixMonoBuffers.at(1), {0, 0});
+    assertChannelEqual(sixMonoBuffers.at(2), {3, 4});
+    assertChannelEqual(sixMonoBuffers.at(3), {0, 7});
+    assertChannelEqual(sixMonoBuffers.at(4), {5, 6});
+    assertChannelEqual(sixMonoBuffers.at(5), {8, 9});
 }
 
 MASKER_PLAYER_TEST(DISABLED_moreChannelsRequestedThanAvailableCopiesChannel) {
