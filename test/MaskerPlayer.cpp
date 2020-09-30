@@ -382,6 +382,10 @@ void setSampleRateHz(AudioPlayerStub &player, double x) {
     player.setSampleRateHz(x);
 }
 
+void loadFile(MaskerPlayerImpl &player, const std::string &s = {}) {
+    player.loadFile({s});
+}
+
 using channel_index_type = gsl::index;
 
 class MaskerPlayerTests : public ::testing::Test {
@@ -461,7 +465,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void loadAudio(audio_type x) {
         audioReader.set(std::move(x));
-        loadFile();
+        loadFile(player);
     }
 
     void loadMonoAudio(std::vector<float> x) { loadAudio({std::move(x)}); }
@@ -594,8 +598,6 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void setFadeInOutSeconds(double x) { player.setFadeInOutSeconds(x); }
 
-    void loadFile(const std::string &s = {}) { player.loadFile({s}); }
-
     void fadeInFillAndCallback(channel_index_type n) {
         fadeIn();
         callbackAfterMonoFill(n);
@@ -647,7 +649,7 @@ MASKER_PLAYER_TEST(stopThenLoad) {
     player.play();
     std::this_thread::sleep_for(std::chrono::milliseconds{20});
     player.stop();
-    player.loadFile({});
+    loadFile(player);
     audioPlayer.clearRealisticExecution();
     audioPlayer.joinAudioThread();
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {4, 5, 6});
@@ -872,7 +874,7 @@ MASKER_PLAYER_TEST(fadeTimeReturnsFadeTime) {
 }
 
 MASKER_PLAYER_TEST(loadFileLoadsAudioFile) {
-    loadFile("a");
+    loadFile(player, "a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, audioPlayer.filePath());
 }
 
@@ -1202,7 +1204,7 @@ MASKER_PLAYER_TEST(digitalLevelComputedFromFirstChannel) {
 }
 
 MASKER_PLAYER_TEST(digitalLevelPassesLoadedFileToVideoPlayer) {
-    loadFile("a");
+    loadFile(player, "a");
     digitalLevel();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, audioReader.filePath());
 }
@@ -1228,7 +1230,7 @@ MASKER_PLAYER_TEST(passesSystemTimeToAudioPlayerForNanoseconds) {
 MASKER_PLAYER_TEST(loadFileThrowsInvalidAudioFileWhenAudioReaderThrows) {
     audioReader.throwOnRead();
     try {
-        loadFile();
+        loadFile(player);
         FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
     } catch (const InvalidAudioFile &) {
     }
