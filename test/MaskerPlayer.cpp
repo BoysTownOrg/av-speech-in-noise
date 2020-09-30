@@ -934,11 +934,10 @@ MASKER_PLAYER_TEST(DISABLED_fillAudioBufferWrapsMonoChannel_Buffered) {
     assertLeftChannelEquals({2, 3, 1, 2});
 }
 
-MASKER_PLAYER_TEST(DISABLED_fillAudioBufferWrapsStereoChannel) {
+MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel) {
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
-    fillAudioBufferStereo(4);
-    assertLeftChannelEquals({1, 2, 3, 1});
-    assertRightChannelEquals({4, 5, 6, 4});
+    assertAsyncLoadedStereoChannelsEquals(
+        player, audioPlayer, {1, 2, 3, 1}, {4, 5, 6, 4});
 }
 
 MASKER_PLAYER_TEST(DISABLED_fillAudioBufferWrapsStereoChannelAsync) {
