@@ -921,10 +921,9 @@ MASKER_PLAYER_TEST(loadFileResetsSampleIndex) {
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {4, 5, 6});
 }
 
-MASKER_PLAYER_TEST(DISABLED_fillAudioBufferWrapsMonoChannel) {
+MASKER_PLAYER_TEST(fillAudioBufferWrapsMonoChannel) {
     loadMonoAudio({1, 2, 3});
-    fillAudioBufferMono(4);
-    assertLeftChannelEquals({1, 2, 3, 1});
+    assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {1, 2, 3, 1});
 }
 
 MASKER_PLAYER_TEST(DISABLED_fillAudioBufferWrapsMonoChannel_Buffered) {
