@@ -940,13 +940,6 @@ MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel) {
         player, audioPlayer, {1, 2, 3, 1}, {4, 5, 6, 4});
 }
 
-MASKER_PLAYER_TEST(DISABLED_fillAudioBufferWrapsStereoChannelAsync) {
-    loadStereoAudio({1, 2, 3}, {4, 5, 6});
-    auto result{fillAudioBufferStereoAsync(audioPlayer, 4).get()};
-    assertChannelEqual(result.at(0), {1, 2, 3, 1});
-    assertChannelEqual(result.at(1), {4, 5, 6, 4});
-}
-
 MASKER_PLAYER_TEST(DISABLED_fillAudioBufferWrapsStereoChannel_Buffered) {
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
     fillAudioBufferStereo(2);
@@ -1143,9 +1136,7 @@ MASKER_PLAYER_TEST(DISABLED_audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(playerStopped());
 }
 
-MASKER_PLAYER_TEST(DISABLED_fadeInSchedulesCallback) {
-    assertFadeInSchedulesCallback();
-}
+MASKER_PLAYER_TEST(fadeInSchedulesCallback) { assertFadeInSchedulesCallback(); }
 
 MASKER_PLAYER_TEST(DISABLED_fadeInTwiceDoesNotScheduleAdditionalCallback) {
     fadeIn();
@@ -1179,7 +1170,7 @@ MASKER_PLAYER_TEST(DISABLED_fadeInAfterFadingOutSchedulesCallback) {
     assertFadeInSchedulesCallback();
 }
 
-MASKER_PLAYER_TEST(DISABLED_callbackSchedulesAdditionalCallback) {
+MASKER_PLAYER_TEST(callbackSchedulesAdditionalCallback) {
     timerCallback();
     assertCallbackScheduled();
 }
@@ -1197,14 +1188,13 @@ MASKER_PLAYER_TEST(
     assertTimerCallbackDoesNotScheduleAdditionalCallback();
 }
 
-MASKER_PLAYER_TEST(DISABLED_setAudioDeviceFindsIndex) {
+MASKER_PLAYER_TEST(setAudioDeviceFindsIndex) {
     setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
     setAudioDevice("second");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2, audioPlayer.deviceIndex());
 }
 
-MASKER_PLAYER_TEST(
-    DISABLED_setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
+MASKER_PLAYER_TEST(setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
     setAudioDeviceDescriptions({"zeroth", "first", "second"});
     try {
         setAudioDevice("third");
@@ -1213,46 +1203,45 @@ MASKER_PLAYER_TEST(
     }
 }
 
-MASKER_PLAYER_TEST(DISABLED_outputAudioDevicesReturnsDescriptions) {
+MASKER_PLAYER_TEST(outputAudioDevicesReturnsDescriptions) {
     setAudioDeviceDescriptions({"a", "b", "c"});
     setAsOutputDevice(0);
     setAsOutputDevice(2);
     assertEqual({"a", "c"}, player.outputAudioDeviceDescriptions());
 }
 
-MASKER_PLAYER_TEST(DISABLED_digitalLevelComputedFromFirstChannel) {
+MASKER_PLAYER_TEST(digitalLevelComputedFromFirstChannel) {
     loadAudio({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         20 * std::log10(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.F)),
         digitalLevel().dBov);
 }
 
-MASKER_PLAYER_TEST(DISABLED_digitalLevelPassesLoadedFileToVideoPlayer) {
+MASKER_PLAYER_TEST(digitalLevelPassesLoadedFileToVideoPlayer) {
     loadFile("a");
     digitalLevel();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, audioReader.filePath());
 }
 
-MASKER_PLAYER_TEST(DISABLED_returnsNanosecondConversion) {
+MASKER_PLAYER_TEST(returnsNanosecondConversion) {
     setNanoseconds(audioPlayer, 1);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::uintmax_t{1}, nanoseconds(player));
 }
 
-MASKER_PLAYER_TEST(DISABLED_returnsCurrentSystemTime) {
+MASKER_PLAYER_TEST(returnsCurrentSystemTime) {
     setCurrentSystemTime(audioPlayer, 1);
     PlayerTime expected{};
     expected.system = 1;
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected, currentSystemTime(player));
 }
 
-MASKER_PLAYER_TEST(DISABLED_passesSystemTimeToAudioPlayerForNanoseconds) {
+MASKER_PLAYER_TEST(passesSystemTimeToAudioPlayerForNanoseconds) {
     nanoseconds(player, 1);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         player_system_time_type{1}, systemTimeForNanoseconds(audioPlayer));
 }
 
-MASKER_PLAYER_TEST(
-    DISABLED_loadFileThrowsInvalidAudioFileWhenAudioReaderThrows) {
+MASKER_PLAYER_TEST(loadFileThrowsInvalidAudioFileWhenAudioReaderThrows) {
     audioReader.throwOnRead();
     try {
         loadFile();
