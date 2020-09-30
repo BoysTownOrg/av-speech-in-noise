@@ -313,7 +313,7 @@ void MaskerPlayerImpl::MainThread::fadeIn() {
 
     av_speech_in_noise::set(fadingIn);
     av_speech_in_noise::set(sharedState->pleaseFadeIn);
-    player->play();
+    play();
     scheduleCallbackAfterSeconds(0.1);
 }
 

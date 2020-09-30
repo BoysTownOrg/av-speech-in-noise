@@ -508,6 +508,34 @@ class MaskerPlayerTests : public ::testing::Test {
         }
     }
 
+    void assertLeftChannelEqualsProductAfterFilling_BufferedAsync(
+        const std::vector<float> &multiplicand,
+        const std::vector<float> &multiplier, int buffers,
+        int framesPerBuffer) {
+        std::packaged_task<std::vector<std::vector<float>>(
+            AudioPlayer::Observer *)>
+            task{[=](AudioPlayer::Observer *observer) {
+                std::vector<std::vector<float>> result;
+                for (int i = 0; i < buffers; ++i) {
+                    std::vector<float> mono(framesPerBuffer);
+                    observer->fillAudioBuffer({mono}, {});
+                    result.push_back(mono);
+                }
+                return result;
+            }};
+        auto result{task.get_future()};
+        audioPlayer.setOnPlayTask(std::move(task));
+        player.fadeIn();
+        auto audioBuffers{result.get()};
+        for (int i = 0; i < buffers; ++i) {
+            const auto offset = i * framesPerBuffer;
+            assertChannelEqual(audioBuffers.at(i),
+                elementWiseProduct(
+                    subvector(multiplicand, offset, framesPerBuffer),
+                    subvector(multiplier, offset, framesPerBuffer)));
+        }
+    }
+
     void assertLeftChannelEqualsProductAfterFilling(
         std::vector<float> multiplicand, const std::vector<float> &multiplier) {
         fillAudioBufferMono(size(multiplier));
@@ -971,7 +999,7 @@ MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel_Buffered) {
     assertChannelEqual(fourMonoBuffers.at(3), {6, 4, 5, 6});
 }
 
-MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionMultipleFills) {
+MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionMultipleFills) {
     // For this test:
     // halfWindowLength is determined by fade time and sample rate...
     // but must be divisible by framesPerBuffer.
@@ -981,9 +1009,8 @@ MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionMultipleFills) {
     auto framesPerBuffer = 4;
 
     loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
-    fadeIn();
     const auto buffers = halfWindowLength / framesPerBuffer;
-    assertLeftChannelEqualsProductAfterFilling_Buffered(
+    assertLeftChannelEqualsProductAfterFilling_BufferedAsync(
         halfHannWindow(halfWindowLength), oneToN(halfWindowLength), buffers,
         framesPerBuffer);
 }
