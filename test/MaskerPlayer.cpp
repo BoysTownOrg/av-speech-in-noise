@@ -882,12 +882,12 @@ MASKER_PLAYER_TEST(noAudioLoadedMutesChannel) {
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0});
 }
 
-MASKER_PLAYER_TEST(DISABLED_fadeTimeReturnsFadeTime) {
+MASKER_PLAYER_TEST(fadeTimeReturnsFadeTime) {
     player.setFadeInOutSeconds(1);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1., player.fadeTime().seconds);
 }
 
-MASKER_PLAYER_TEST(DISABLED_loadFileLoadsAudioFile) {
+MASKER_PLAYER_TEST(loadFileLoadsAudioFile) {
     loadFile("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, audioPlayer.filePath());
 }
