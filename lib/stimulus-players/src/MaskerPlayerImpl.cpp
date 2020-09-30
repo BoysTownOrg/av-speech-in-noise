@@ -165,8 +165,7 @@ auto MaskerPlayerImpl::currentSystemTime() -> PlayerTime {
 void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     if (playing())
         return;
-    if (mainThread.enabled)
-        std::terminate();
+
     player->loadFile(file.path);
     recalculateSamplesToWaitPerChannel();
     write(levelTransitionSamples_,
@@ -322,8 +321,7 @@ void MaskerPlayerImpl::MainThread::play() {
     if (!enabled) {
         set(sharedState->pleaseEnableAudio);
         enabled = true;
-    } else
-        std::terminate();
+    }
     player->play();
 }
 
@@ -335,8 +333,7 @@ void MaskerPlayerImpl::MainThread::stop() {
             expected, false))
             expected = true;
         enabled = false;
-    } else
-        std::terminate();
+    }
     player->stop();
 }
 
@@ -391,11 +388,10 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     }
 
     systemTime = time;
-    if (noChannels(sharedState->sourceAudio)) {
-        std::terminate();
+    if (noChannels(sharedState->sourceAudio))
         for (auto channel : audioBuffer)
             mute(channel);
-    } else
+    else
         copySourceAudio(audioBuffer);
     checkForFadeIn();
     checkForFadeOut();
