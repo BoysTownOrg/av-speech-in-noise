@@ -315,18 +315,6 @@ auto fillAudioBuffer(AudioPlayer::Observer *observer, gsl::index channels,
     return audio;
 }
 
-auto fillAudioBufferAsync(AudioPlayerStub &audioPlayer, gsl::index channels,
-    gsl::index frames) -> std::future<std::vector<std::vector<float>>> {
-    std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
-        task{[=](AudioPlayer::Observer *observer) {
-            return fillAudioBuffer(observer, channels, frames);
-        }};
-    auto result{task.get_future()};
-    audioPlayer.setOnPlayTask(std::move(task));
-    audioPlayer.play();
-    return result;
-}
-
 auto fillAudioBufferAsync(MaskerPlayerImpl &player,
     AudioPlayerStub &audioPlayer, gsl::index channels, gsl::index frames)
     -> std::future<std::vector<std::vector<float>>> {
@@ -340,20 +328,10 @@ auto fillAudioBufferAsync(MaskerPlayerImpl &player,
     return result;
 }
 
-auto fillAudioBufferMonoAsync(AudioPlayerStub &audioPlayer, gsl::index frames)
-    -> std::future<std::vector<std::vector<float>>> {
-    return fillAudioBufferAsync(audioPlayer, 1, frames);
-}
-
 auto fillAudioBufferMonoAsync(
     MaskerPlayerImpl &player, AudioPlayerStub &audioPlayer, gsl::index frames)
     -> std::future<std::vector<std::vector<float>>> {
     return fillAudioBufferAsync(player, audioPlayer, 1, frames);
-}
-
-auto fillAudioBufferStereoAsync(AudioPlayerStub &audioPlayer, gsl::index frames)
-    -> std::future<std::vector<std::vector<float>>> {
-    return fillAudioBufferAsync(audioPlayer, 2, frames);
 }
 
 auto fillAudioBufferStereoAsync(
@@ -398,6 +376,10 @@ void callInRealisticExecutionContext(MaskerPlayerImpl &player,
     f();
     audioPlayer.clearRealisticExecution();
     audioPlayer.joinAudioThread();
+}
+
+void setSampleRateHz(AudioPlayerStub &player, double x) {
+    player.setSampleRateHz(x);
 }
 
 using channel_index_type = gsl::index;
@@ -455,7 +437,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void completeOneFadeCycle(void (MaskerPlayerTests::*fade)()) {
         setFadeInOutSeconds(2);
-        setSampleRateHz(3);
+        setSampleRateHz(audioPlayer, 3);
         (this->*fade)();
         loadMonoAudio({0});
         fillAudioBufferMono(2 * 3 + 1);
@@ -612,8 +594,6 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void setFadeInOutSeconds(double x) { player.setFadeInOutSeconds(x); }
 
-    void setSampleRateHz(double x) { audioPlayer.setSampleRateHz(x); }
-
     void loadFile(const std::string &s = {}) { player.loadFile({s}); }
 
     void fadeInFillAndCallback(channel_index_type n) {
@@ -679,41 +659,41 @@ MASKER_PLAYER_TEST(playingWhenAudioPlayerPlaying) {
 }
 
 MASKER_PLAYER_TEST(durationReturnsDuration) {
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     loadMonoAudio({1, 2, 3, 4, 5, 6});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6. / 3, player.duration().seconds);
 }
 
 MASKER_PLAYER_TEST(seekSeeksAudio) {
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
     seekSeconds(2);
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {7, 8, 9, 1});
 }
 
 MASKER_PLAYER_TEST(seekNegativeTime) {
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
     seekSeconds(-2);
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {4, 5, 6, 7});
 }
 
 MASKER_PLAYER_TEST(setChannelDelayMono) {
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({1, 2, 3});
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0, 1, 2, 3});
 }
 
 MASKER_PLAYER_TEST(setChannelDelayAfterLoadMono) {
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     loadMonoAudio({1, 2, 3});
     setChannelDelaySeconds(0, 1);
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0, 1, 2, 3});
 }
 
 MASKER_PLAYER_TEST(setChannelDelayMono_Buffered) {
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({4, 5, 6});
     std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
@@ -733,7 +713,7 @@ MASKER_PLAYER_TEST(setChannelDelayMono_Buffered) {
 }
 
 MASKER_PLAYER_TEST(setChannelDelayMonoLoadNewAudio) {
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({4, 5, 6});
     callInRealisticExecutionContext(player, audioPlayer, [&]() {
@@ -743,14 +723,14 @@ MASKER_PLAYER_TEST(setChannelDelayMonoLoadNewAudio) {
 }
 
 MASKER_PLAYER_TEST(setChannelDelayMonoWithSeek) {
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {0, 0, 0, 1, 2, 3});
 }
 
 MASKER_PLAYER_TEST(setChannelDelayMonoWithSeek2) {
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
     callInRealisticExecutionContext(
@@ -759,7 +739,7 @@ MASKER_PLAYER_TEST(setChannelDelayMonoWithSeek2) {
 }
 
 MASKER_PLAYER_TEST(clearChannelDelaysMono) {
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({4, 5, 6});
     callInRealisticExecutionContext(player, audioPlayer, [&]() {
@@ -770,7 +750,7 @@ MASKER_PLAYER_TEST(clearChannelDelaysMono) {
 }
 
 MASKER_PLAYER_TEST(clearChannelDelaysAfterLoadMono) {
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({4, 5, 6});
     callInRealisticExecutionContext(player, audioPlayer, [&]() {
@@ -781,7 +761,7 @@ MASKER_PLAYER_TEST(clearChannelDelaysAfterLoadMono) {
 }
 
 MASKER_PLAYER_TEST(setChannelDelayStereo) {
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     setChannelDelaySeconds(1, 1);
     loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
     assertAsyncLoadedStereoChannelsEquals(
@@ -789,7 +769,7 @@ MASKER_PLAYER_TEST(setChannelDelayStereo) {
 }
 
 MASKER_PLAYER_TEST(setChannelDelayStereo_Buffered) {
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     setChannelDelaySeconds(1, 1);
     loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
     std::packaged_task<std::vector<std::vector<float>>(AudioPlayer::Observer *)>
@@ -959,7 +939,7 @@ MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionMultipleFills) {
     // halfWindowLength is determined by fade time and sample rate...
     // but must be divisible by framesPerBuffer.
     setFadeInOutSeconds(3);
-    setSampleRateHz(5);
+    setSampleRateHz(audioPlayer, 5);
     auto halfWindowLength = 3 * 5 + 1;
     auto framesPerBuffer = 4;
 
@@ -973,7 +953,7 @@ MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionMultipleFills) {
 
 MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionOneFill) {
     setFadeInOutSeconds(2);
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     auto halfWindowLength = 2 * 3 + 1;
 
     loadMonoAudio(oneToN(halfWindowLength));
@@ -987,7 +967,7 @@ MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionStereoMultipleFills) {
     // halfWindowLength is determined by fade time and sample rate...
     // but must be divisible by framesPerBuffer.
     setFadeInOutSeconds(3);
-    setSampleRateHz(5);
+    setSampleRateHz(audioPlayer, 5);
     auto halfWindowLength = 3 * 5 + 1;
     auto framesPerBuffer = 4;
 
@@ -1001,7 +981,7 @@ MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionStereoMultipleFills) {
 
 MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionStereoOneFill) {
     setFadeInOutSeconds(2);
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     auto halfWindowLength = 2 * 3 + 1;
 
     loadStereoAudio(oneToN(halfWindowLength), NtoOne(halfWindowLength));
@@ -1013,7 +993,7 @@ MASKER_PLAYER_TEST(DISABLED_fadesInAccordingToHannFunctionStereoOneFill) {
 
 MASKER_PLAYER_TEST(DISABLED_steadyLevelFollowingFadeIn) {
     setFadeInOutSeconds(2);
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
     fadeIn();
     auto halfWindowLength = 2 * 3 + 1;
@@ -1028,7 +1008,7 @@ MASKER_PLAYER_TEST(DISABLED_fadesOutAccordingToHannFunctionMultipleFills) {
     // halfWindowLength is determined by fade time and sample rate...
     // but must be divisible by framesPerBuffer.
     setFadeInOutSeconds(3);
-    setSampleRateHz(5);
+    setSampleRateHz(audioPlayer, 5);
     auto halfWindowLength = 3 * 5 + 1;
     auto framesPerBuffer = 4;
     loadMonoAudio(oneToN(halfWindowLength));
@@ -1042,7 +1022,7 @@ MASKER_PLAYER_TEST(DISABLED_fadesOutAccordingToHannFunctionMultipleFills) {
 
 MASKER_PLAYER_TEST(DISABLED_fadesOutAccordingToHannFunctionOneFill) {
     setFadeInOutSeconds(2);
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     auto halfWindowLength = 2 * 3 + 1;
 
     loadMonoAudio(oneToN(halfWindowLength));
@@ -1054,7 +1034,7 @@ MASKER_PLAYER_TEST(DISABLED_fadesOutAccordingToHannFunctionOneFill) {
 
 MASKER_PLAYER_TEST(DISABLED_steadyLevelFollowingFadeOut) {
     setFadeInOutSeconds(2);
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     auto halfWindowLength = 2 * 3 + 1;
 
     loadMonoAudio({4, 5, 6});
@@ -1067,7 +1047,7 @@ MASKER_PLAYER_TEST(DISABLED_steadyLevelFollowingFadeOut) {
 
 MASKER_PLAYER_TEST(DISABLED_fadeInCompleteOnlyAfterFadeTime) {
     setFadeInOutSeconds(3);
-    setSampleRateHz(4);
+    setSampleRateHz(audioPlayer, 4);
 
     loadMonoAudio({0});
     fadeIn();
@@ -1078,7 +1058,7 @@ MASKER_PLAYER_TEST(DISABLED_fadeInCompleteOnlyAfterFadeTime) {
 
 MASKER_PLAYER_TEST(DISABLED_fadeInCompletePassesSystemTimeAndSampleOffset) {
     setFadeInOutSeconds(3);
-    setSampleRateHz(4);
+    setSampleRateHz(audioPlayer, 4);
 
     loadMonoAudio({0});
     fadeIn();
@@ -1101,7 +1081,7 @@ MASKER_PLAYER_TEST(DISABLED_observerNotifiedOnlyOnceForFadeIn) {
 
 MASKER_PLAYER_TEST(DISABLED_fadeOutCompleteOnlyAfterFadeTime) {
     setFadeInOutSeconds(3);
-    setSampleRateHz(4);
+    setSampleRateHz(audioPlayer, 4);
     loadMonoAudio({0});
     fadeInFillAndCallback(3 * 4 + 1);
 
@@ -1113,7 +1093,7 @@ MASKER_PLAYER_TEST(DISABLED_fadeOutCompleteOnlyAfterFadeTime) {
 
 MASKER_PLAYER_TEST(DISABLED_observerNotifiedOnceForFadeOut) {
     setFadeInOutSeconds(2);
-    setSampleRateHz(3);
+    setSampleRateHz(audioPlayer, 3);
     auto halfWindowLength = 2 * 3 + 1;
     loadMonoAudio({0});
     fadeInFillAndCallback(halfWindowLength);
@@ -1126,7 +1106,7 @@ MASKER_PLAYER_TEST(DISABLED_observerNotifiedOnceForFadeOut) {
 
 MASKER_PLAYER_TEST(DISABLED_audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
     setFadeInOutSeconds(3);
-    setSampleRateHz(4);
+    setSampleRateHz(audioPlayer, 4);
     auto halfWindowLength = 3 * 4 + 1;
     loadMonoAudio({0});
     fadeInFillAndCallback(halfWindowLength);
