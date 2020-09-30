@@ -508,7 +508,7 @@ class MaskerPlayerTests : public ::testing::Test {
         }
     }
 
-    void assertLeftChannelEqualsProductAfterFilling_BufferedAsync(
+    void assertMonoAudioEqualsProductAfterFilling_BufferedAsyncFadeIn(
         const std::vector<float> &multiplicand,
         const std::vector<float> &multiplier, int buffers,
         int framesPerBuffer) {
@@ -526,6 +526,34 @@ class MaskerPlayerTests : public ::testing::Test {
         auto result{task.get_future()};
         audioPlayer.setOnPlayTask(std::move(task));
         player.fadeIn();
+        auto audioBuffers{result.get()};
+        for (int i = 0; i < buffers; ++i) {
+            const auto offset = i * framesPerBuffer;
+            assertChannelEqual(audioBuffers.at(i),
+                elementWiseProduct(
+                    subvector(multiplicand, offset, framesPerBuffer),
+                    subvector(multiplier, offset, framesPerBuffer)));
+        }
+    }
+
+    void assertMonoAudioEqualsProductAfterFilling_BufferedAsyncFadeOut(
+        const std::vector<float> &multiplicand,
+        const std::vector<float> &multiplier, int buffers,
+        int framesPerBuffer) {
+        std::packaged_task<std::vector<std::vector<float>>(
+            AudioPlayer::Observer *)>
+            task{[=](AudioPlayer::Observer *observer) {
+                std::vector<std::vector<float>> result;
+                for (int i = 0; i < buffers; ++i) {
+                    std::vector<float> mono(framesPerBuffer);
+                    observer->fillAudioBuffer({mono}, {});
+                    result.push_back(mono);
+                }
+                return result;
+            }};
+        auto result{task.get_future()};
+        audioPlayer.setOnPlayTask(std::move(task));
+        player.fadeOut();
         auto audioBuffers{result.get()};
         for (int i = 0; i < buffers; ++i) {
             const auto offset = i * framesPerBuffer;
@@ -650,7 +678,8 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void fadeInFillAndCallback(channel_index_type n) {
         fadeIn();
-        callbackAfterMonoFill(n);
+        fillAudioBufferMono(n);
+        timerCallback();
     }
 
     void fadeOutFillAndCallback(channel_index_type n) {
@@ -1010,7 +1039,7 @@ MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionMultipleFills) {
 
     loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
     const auto buffers = halfWindowLength / framesPerBuffer;
-    assertLeftChannelEqualsProductAfterFilling_BufferedAsync(
+    assertMonoAudioEqualsProductAfterFilling_BufferedAsyncFadeIn(
         halfHannWindow(halfWindowLength), oneToN(halfWindowLength), buffers,
         framesPerBuffer);
 }
