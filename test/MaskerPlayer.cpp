@@ -820,11 +820,10 @@ MASKER_PLAYER_TEST(moreChannelsRequestedThanAvailableCopiesChannel) {
         player, audioPlayer, {1, 2, 3}, {1, 2, 3});
 }
 
-MASKER_PLAYER_TEST(DISABLED_moreChannelsAvailableThanRequestedTruncates) {
+MASKER_PLAYER_TEST(moreChannelsAvailableThanRequestedTruncates) {
     loadAudio({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-    fillAudioBufferStereo(3);
-    assertLeftChannelEquals({1, 2, 3});
-    assertRightChannelEquals({4, 5, 6});
+    assertAsyncLoadedStereoChannelsEquals(
+        player, audioPlayer, {1, 2, 3}, {4, 5, 6});
 }
 
 MASKER_PLAYER_TEST(DISABLED_useFirstChannelOnlyMutesOtherChannels) {
