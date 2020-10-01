@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 #include <cmath>
+#include <algorithm>
 #include <utility>
 #include <future>
 #include <mutex>
@@ -1092,12 +1093,12 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
     assertOnPlayTaskAfterFadeOut(
         player, audioPlayer, timer, halfWindowLength,
         [=](AudioPlayer::Observer *observer) {
-            std::vector<std::vector<float>> result;
-            for (int i = 0; i < halfWindowLength / framesPerBuffer; ++i) {
-                std::vector<float> mono(framesPerBuffer);
-                observer->fillAudioBuffer({mono}, {});
-                result.push_back(mono);
-            }
+            std::vector<std::vector<float>> result(
+                halfWindowLength / framesPerBuffer);
+            std::generate(result.begin(), result.end(), [=] {
+                return av_speech_in_noise::fillAudioBufferMono(
+                    observer, framesPerBuffer);
+            });
             return result;
         },
         [=](std::future<std::vector<std::vector<float>>> future) {
