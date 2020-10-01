@@ -1128,22 +1128,22 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
     auto halfWindowLength = 3 * 5 + 1;
     auto framesPerBuffer = 4;
     loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
-    bool firstAudioBufferFilled_{};
-    bool finish_{};
+    bool fadeInComplete{};
+    bool fadeOutCalled{};
     std::mutex mutex{};
     std::condition_variable condition{};
     auto future{
         setOnPlayTask(audioPlayer, [&](AudioPlayer::Observer *observer) {
-            std::vector<float> first(halfWindowLength);
-            observer->fillAudioBuffer({first}, {});
+            std::vector<float> fadeInBuffer(halfWindowLength);
+            observer->fillAudioBuffer({fadeInBuffer}, {});
             {
                 std::lock_guard<std::mutex> lock{mutex};
-                firstAudioBufferFilled_ = true;
+                fadeInComplete = true;
             }
             condition.notify_one();
             {
                 std::unique_lock<std::mutex> lock{mutex};
-                condition.wait(lock, [&] { return finish_; });
+                condition.wait(lock, [&] { return fadeOutCalled; });
             }
             std::vector<std::vector<float>> result;
             for (int i = 0; i < halfWindowLength / framesPerBuffer; ++i) {
@@ -1156,13 +1156,13 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
     fadeIn();
     {
         std::unique_lock<std::mutex> lock{mutex};
-        condition.wait(lock, [&] { return firstAudioBufferFilled_; });
+        condition.wait(lock, [&] { return fadeInComplete; });
     }
     timerCallback();
     fadeOut();
     {
         std::lock_guard<std::mutex> lock{mutex};
-        finish_ = true;
+        fadeOutCalled = true;
     }
     condition.notify_one();
     auto audioBuffers{future.get()};
@@ -1173,25 +1173,6 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
                                    offset, framesPerBuffer),
                 subvector(oneToN(halfWindowLength), offset, framesPerBuffer)));
     }
-}
-
-MASKER_PLAYER_TEST(DISABLED_fadesOutAccordingToHannFunctionMultipleFills2) {
-    // For this test:
-    // halfWindowLength is determined by fade time and sample rate...
-    // but must be divisible by framesPerBuffer.
-    setFadeInOutSeconds(3);
-    setSampleRateHz(audioPlayer, 5);
-    auto halfWindowLength = 3 * 5 + 1;
-    auto framesPerBuffer = 4;
-    loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
-    fadeIn();
-    fillAudioBufferMono(halfWindowLength);
-    timerCallback();
-
-    fadeOut();
-    assertLeftChannelEqualsProductAfterFilling_Buffered(
-        backHalfHannWindow(halfWindowLength), oneToN(halfWindowLength),
-        halfWindowLength / framesPerBuffer, framesPerBuffer);
 }
 
 MASKER_PLAYER_TEST(DISABLED_fadesOutAccordingToHannFunctionOneFill) {
