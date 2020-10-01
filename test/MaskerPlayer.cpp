@@ -781,17 +781,14 @@ MASKER_PLAYER_TEST(setChannelDelayStereo_Buffered) {
         player, audioReader, {1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
     auto future{
         setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
-            std::vector<float> firstLeft(2);
-            std::vector<float> firstRight(2);
-            std::vector<float> secondLeft(2);
-            std::vector<float> secondRight(2);
-            std::vector<float> thirdLeft(2);
-            std::vector<float> thirdRight(2);
-            observer->fillAudioBuffer({firstLeft, firstRight}, {});
-            observer->fillAudioBuffer({secondLeft, secondRight}, {});
-            observer->fillAudioBuffer({thirdLeft, thirdRight}, {});
-            return std::vector<std::vector<float>>{firstLeft, firstRight,
-                secondLeft, secondRight, thirdLeft, thirdRight};
+            const auto first{
+                av_speech_in_noise::fillAudioBuffer(observer, 2, 2)};
+            const auto second{
+                av_speech_in_noise::fillAudioBuffer(observer, 2, 2)};
+            const auto third{
+                av_speech_in_noise::fillAudioBuffer(observer, 2, 2)};
+            return std::vector<std::vector<float>>{first.at(0), first.at(1),
+                second.at(0), second.at(1), third.at(0), third.at(1)};
         })};
     player.play();
     auto sixMonoBuffers{future.get()};
