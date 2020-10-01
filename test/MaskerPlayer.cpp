@@ -1294,8 +1294,7 @@ MASKER_PLAYER_TEST(DISABLED_fadeOutTwiceDoesNotScheduleAdditionalCallback) {
     assertFadeOutDoesNotScheduleAdditionalCallback();
 }
 
-MASKER_PLAYER_TEST(
-    DISABLED_fadeOutWhileFadingInDoesNotScheduleAdditionalCallback) {
+MASKER_PLAYER_TEST(fadeOutWhileFadingInDoesNotScheduleAdditionalCallback) {
     fadeIn();
     assertFadeOutDoesNotScheduleAdditionalCallback();
 }
