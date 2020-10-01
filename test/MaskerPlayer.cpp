@@ -434,7 +434,7 @@ void fadeIn(MaskerPlayerImpl &player) { player.fadeIn(); }
 
 void fadeOut(MaskerPlayerImpl &player) { player.fadeOut(); }
 
-void timerCallback(TimerStub &timer) { timer.callback(); }
+void callback(TimerStub &timer) { timer.callback(); }
 
 using channel_index_type = gsl::index;
 
@@ -1075,7 +1075,7 @@ MASKER_PLAYER_TEST(steadyLevelFollowingFadeIn) {
 void assertOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
     AudioPlayerStub &audioPlayer, TimerStub &timer, gsl::index halfWindowLength,
     const std::function<std::vector<std::vector<float>>(
-        AudioPlayer::Observer *)> &f,
+        AudioPlayer::Observer *)> &afterFadeOut,
     const std::function<void(std::future<std::vector<std::vector<float>>>)>
         &assertion) {
     bool fadeInComplete{};
@@ -1095,14 +1095,14 @@ void assertOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
                 std::unique_lock<std::mutex> lock{mutex};
                 condition.wait(lock, [&] { return fadeOutCalled; });
             }
-            return f(observer);
+            return afterFadeOut(observer);
         })};
     fadeIn(player);
     {
         std::unique_lock<std::mutex> lock{mutex};
         condition.wait(lock, [&] { return fadeInComplete; });
     }
-    timerCallback(timer);
+    callback(timer);
     fadeOut(player);
     {
         std::lock_guard<std::mutex> lock{mutex};
