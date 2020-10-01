@@ -495,60 +495,6 @@ class MaskerPlayerTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_FALSE(callbackScheduled());
     }
 
-    void assertMonoAudioEqualsProductAfterFilling_BufferedAsyncFadeIn(
-        const std::vector<float> &multiplicand,
-        const std::vector<float> &multiplier, int buffers,
-        int framesPerBuffer) {
-        auto future{
-            setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
-                std::vector<std::vector<float>> result(buffers);
-                for (int i = 0; i < buffers; ++i)
-                    result.at(i) = av_speech_in_noise::fillAudioBufferMono(
-                        observer, framesPerBuffer);
-                return result;
-            })};
-        player.fadeIn();
-        auto audioBuffers{future.get()};
-        for (int i = 0; i < buffers; ++i) {
-            const auto offset = i * framesPerBuffer;
-            assertChannelEqual(audioBuffers.at(i),
-                elementWiseProduct(
-                    subvector(multiplicand, offset, framesPerBuffer),
-                    subvector(multiplier, offset, framesPerBuffer)));
-        }
-    }
-
-    void assertStereoAudioEqualsProductAfterFilling_BufferedAsyncFadeIn(
-        const std::vector<float> &multiplicand,
-        const std::vector<float> &leftMultiplier,
-        const std::vector<float> &rightMultiplier, int buffers,
-        int framesPerBuffer) {
-        auto future{
-            setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
-                std::vector<std::vector<float>> result;
-                for (int i = 0; i < buffers; ++i) {
-                    const auto stereo{av_speech_in_noise::fillAudioBuffer(
-                        observer, 2, framesPerBuffer)};
-                    result.push_back(stereo.at(0));
-                    result.push_back(stereo.at(1));
-                }
-                return result;
-            })};
-        player.fadeIn();
-        auto audioBuffers{future.get()};
-        for (int i = 0; i < buffers; ++i) {
-            const auto offset = i * framesPerBuffer;
-            assertChannelEqual(audioBuffers.at(2 * i),
-                elementWiseProduct(
-                    subvector(multiplicand, offset, framesPerBuffer),
-                    subvector(leftMultiplier, offset, framesPerBuffer)));
-            assertChannelEqual(audioBuffers.at(2 * i + 1),
-                elementWiseProduct(
-                    subvector(multiplicand, offset, framesPerBuffer),
-                    subvector(rightMultiplier, offset, framesPerBuffer)));
-        }
-    }
-
     void callbackAfterMonoFill(channel_index_type n = 0) {
         fillAudioBufferMono(n);
         timerCallback();
@@ -941,9 +887,23 @@ MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionMultipleFills) {
 
     loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
     const auto buffers = halfWindowLength / framesPerBuffer;
-    assertMonoAudioEqualsProductAfterFilling_BufferedAsyncFadeIn(
-        halfHannWindow(halfWindowLength), oneToN(halfWindowLength), buffers,
-        framesPerBuffer);
+    auto future{
+        setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
+            std::vector<std::vector<float>> result(buffers);
+            for (int i = 0; i < buffers; ++i)
+                result.at(i) = av_speech_in_noise::fillAudioBufferMono(
+                    observer, framesPerBuffer);
+            return result;
+        })};
+    player.fadeIn();
+    const auto audioBuffers{future.get()};
+    for (int i = 0; i < buffers; ++i) {
+        const auto offset = i * framesPerBuffer;
+        assertChannelEqual(audioBuffers.at(i),
+            elementWiseProduct(subvector(halfHannWindow(halfWindowLength),
+                                   offset, framesPerBuffer),
+                subvector(oneToN(halfWindowLength), offset, framesPerBuffer)));
+    }
 }
 
 MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionOneFill) {
