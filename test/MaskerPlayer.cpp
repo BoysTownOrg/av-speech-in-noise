@@ -279,8 +279,6 @@ auto oneToN(int N) -> std::vector<float> { return mToN(1, N); }
 
 auto NtoOne(int N) -> std::vector<float> { return reverse(oneToN(N)); }
 
-auto size(const std::vector<float> &v) -> gsl::index { return v.size(); }
-
 void resize(std::vector<float> &v, gsl::index n) { v.resize(n); }
 
 void setNanoseconds(AudioPlayerStub &player, std::uintmax_t t) {
@@ -446,7 +444,6 @@ class MaskerPlayerTests : public ::testing::Test {
     TimerStub timer;
     MaskerPlayerImpl player{&audioPlayer, &audioReader, &timer};
     std::vector<float> leftChannel;
-    std::vector<float> rightChannel;
 
     MaskerPlayerTests() { player.attach(&listener); }
 
@@ -558,21 +555,9 @@ class MaskerPlayerTests : public ::testing::Test {
         }
     }
 
-    void assertFadeInNotCompletedAfterMonoFill(channel_index_type n) {
-        fillAudioBufferMono(n);
-        timerCallback();
-        AV_SPEECH_IN_NOISE_EXPECT_FALSE(listener.fadeInCompleted());
-    }
-
     void callbackAfterMonoFill(channel_index_type n = 0) {
         fillAudioBufferMono(n);
         timerCallback();
-    }
-
-    void assertFadeInCompletedAfterMonoFill(channel_index_type n) {
-        fillAudioBufferMono(n);
-        timerCallback();
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(listener.fadeInCompleted());
     }
 
     void assertFadeOutNotCompletedAfterMonoFill(channel_index_type n) {
@@ -954,14 +939,12 @@ MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel_Buffered) {
     loadStereoAudio(player, audioReader, {1, 2, 3}, {4, 5, 6});
     auto future{
         setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
-            std::vector<float> firstLeft(2);
-            std::vector<float> firstRight(2);
-            std::vector<float> secondLeft(4);
-            std::vector<float> secondRight(4);
-            observer->fillAudioBuffer({firstLeft, firstRight}, {});
-            observer->fillAudioBuffer({secondLeft, secondRight}, {});
+            const auto first{
+                av_speech_in_noise::fillAudioBuffer(observer, 2, 2)};
+            const auto second{
+                av_speech_in_noise::fillAudioBuffer(observer, 2, 4)};
             return std::vector<std::vector<float>>{
-                firstLeft, firstRight, secondLeft, secondRight};
+                first.at(0), first.at(1), second.at(0), second.at(1)};
         })};
     player.play();
     auto fourMonoBuffers{future.get()};
