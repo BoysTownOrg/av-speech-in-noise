@@ -1306,17 +1306,7 @@ MASKER_PLAYER_TEST(
     assertFadeInDoesNotScheduleAdditionalCallback();
 }
 
-MASKER_PLAYER_TEST(DISABLED_fadeInAfterFadingOutSchedulesCallback) {
-    setFadeInOutSeconds(2);
-    setSampleRateHz(audioPlayer, 3);
-    loadMonoAudio(player, audioReader, {0});
-    fadeOut();
-    fillAudioBufferMono(2 * 3 + 1);
-    timerCallback();
-    assertFadeInSchedulesCallback();
-}
-
-MASKER_PLAYER_TEST(fadeInAfterFadingOutSchedulesCallback2) {
+MASKER_PLAYER_TEST(fadeInAfterFadingOutSchedulesCallback) {
     setFadeInOutSeconds(2);
     setSampleRateHz(audioPlayer, 3);
     loadMonoAudio(player, audioReader, {0});
