@@ -1052,7 +1052,7 @@ void assertOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
     AudioPlayerStub &audioPlayer, TimerStub &timer, gsl::index halfWindowLength,
     const std::function<std::vector<std::vector<float>>(
         AudioPlayer::Observer *)> &afterFadeOut,
-    const std::function<void(std::future<std::vector<std::vector<float>>>)>
+    const std::function<void(const std::vector<std::vector<float>> &)>
         &assertion) {
     bool fadeInComplete{};
     bool fadeOutCalled{};
@@ -1085,7 +1085,7 @@ void assertOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
         fadeOutCalled = true;
     }
     condition.notify_one();
-    assertion(std::move(future));
+    assertion(future.get());
 }
 
 MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
@@ -1108,8 +1108,7 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
             });
             return result;
         },
-        [=](std::future<std::vector<std::vector<float>>> future) {
-            auto audioBuffers{future.get()};
+        [=](const std::vector<std::vector<float>> &audioBuffers) {
             for (int i = 0; i < halfWindowLength / framesPerBuffer; ++i) {
                 const auto offset = i * framesPerBuffer;
                 assertChannelEqual(audioBuffers.at(i),
@@ -1134,8 +1133,8 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionOneFill) {
             return av_speech_in_noise::fillAudioBuffer(
                 observer, 1, halfWindowLength);
         },
-        [=](std::future<std::vector<std::vector<float>>> future) {
-            assertChannelEqual(future.get().at(0),
+        [=](const std::vector<std::vector<float>> &audioBuffers) {
+            assertChannelEqual(audioBuffers.at(0),
                 elementWiseProduct(backHalfHannWindow(halfWindowLength),
                     oneToN(halfWindowLength)));
         });
@@ -1153,8 +1152,8 @@ MASKER_PLAYER_TEST(steadyLevelFollowingFadeOut) {
             av_speech_in_noise::fillAudioBuffer(observer, 1, halfWindowLength);
             return av_speech_in_noise::fillAudioBuffer(observer, 1, 3);
         },
-        [=](std::future<std::vector<std::vector<float>>> future) {
-            assertChannelEqual(future.get().at(0), {0, 0, 0});
+        [=](const std::vector<std::vector<float>> &audioBuffers) {
+            assertChannelEqual(audioBuffers.at(0), {0, 0, 0});
         });
 }
 
@@ -1300,8 +1299,7 @@ MASKER_PLAYER_TEST(fadeOutSchedulesCallback) {
         [](AudioPlayer::Observer *observer) {
             return av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
         },
-        [=](std::future<std::vector<std::vector<float>>> future) {
-            auto audioBuffers{future.get()};
+        [=](const std::vector<std::vector<float>> &) {
             AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2, timer.callbacksScheduled());
         });
 }
@@ -1315,8 +1313,7 @@ MASKER_PLAYER_TEST(fadeOutTwiceDoesNotScheduleAdditionalCallback) {
         [](AudioPlayer::Observer *observer) {
             return av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
         },
-        [=](std::future<std::vector<std::vector<float>>> future) {
-            auto audioBuffers{future.get()};
+        [=](const std::vector<std::vector<float>> &) {
             assertFadeOutDoesNotScheduleAdditionalCallback();
         });
 }
@@ -1335,8 +1332,7 @@ MASKER_PLAYER_TEST(fadeInWhileFadingOutDoesNotScheduleAdditionalCallback) {
         [=](AudioPlayer::Observer *observer) {
             return av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
         },
-        [=](std::future<std::vector<std::vector<float>>> future) {
-            auto audioBuffers{future.get()};
+        [=](const std::vector<std::vector<float>> &) {
             assertFadeInDoesNotScheduleAdditionalCallback();
         });
 }
@@ -1350,8 +1346,7 @@ MASKER_PLAYER_TEST(fadeInAfterFadingOutSchedulesCallback) {
         [=](AudioPlayer::Observer *observer) {
             return av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
         },
-        [=](std::future<std::vector<std::vector<float>>> future) {
-            auto audioBuffers{future.get()};
+        [=](const std::vector<std::vector<float>> &) {
             timerCallback();
             assertFadeInSchedulesCallback();
         });
