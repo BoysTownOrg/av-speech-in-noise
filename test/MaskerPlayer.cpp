@@ -1300,10 +1300,19 @@ MASKER_PLAYER_TEST(
     assertFadeOutDoesNotScheduleAdditionalCallback();
 }
 
-MASKER_PLAYER_TEST(
-    DISABLED_fadeInWhileFadingOutDoesNotScheduleAdditionalCallback) {
-    fadeOut();
-    assertFadeInDoesNotScheduleAdditionalCallback();
+MASKER_PLAYER_TEST(fadeInWhileFadingOutDoesNotScheduleAdditionalCallback) {
+    setFadeInOutSeconds(2);
+    setSampleRateHz(audioPlayer, 3);
+    loadMonoAudio(player, audioReader, {0});
+    assertOnPlayTaskAfterFadeOut(
+        player, audioPlayer, timer, 2 * 3 + 1,
+        [=](AudioPlayer::Observer *observer) {
+            return av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
+        },
+        [=](std::future<std::vector<std::vector<float>>> future) {
+            auto audioBuffers{future.get()};
+            assertFadeInDoesNotScheduleAdditionalCallback();
+        });
 }
 
 MASKER_PLAYER_TEST(fadeInAfterFadingOutSchedulesCallback) {
