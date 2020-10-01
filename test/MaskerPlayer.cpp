@@ -1317,8 +1317,12 @@ MASKER_PLAYER_TEST(callbackSchedulesAdditionalCallback) {
 }
 
 MASKER_PLAYER_TEST(
-    DISABLED_callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
-    fadeInToFullLevel();
+    callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
+    setFadeInOutSeconds(2);
+    setSampleRateHz(audioPlayer, 3);
+    loadMonoAudio(player, audioReader, {0});
+    fadeIn();
+    fillAudioBufferMono(2 * 3 + 1);
     assertTimerCallbackDoesNotScheduleAdditionalCallback();
 }
 
