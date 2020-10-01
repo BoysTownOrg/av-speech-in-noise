@@ -535,11 +535,10 @@ class MaskerPlayerTests : public ::testing::Test {
             setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
                 std::vector<std::vector<float>> result;
                 for (int i = 0; i < buffers; ++i) {
-                    std::vector<float> left(framesPerBuffer);
-                    std::vector<float> right(framesPerBuffer);
-                    observer->fillAudioBuffer({left, right}, {});
-                    result.push_back(left);
-                    result.push_back(right);
+                    const auto stereo{av_speech_in_noise::fillAudioBuffer(
+                        observer, 2, framesPerBuffer)};
+                    result.push_back(stereo.at(0));
+                    result.push_back(stereo.at(1));
                 }
                 return result;
             })};
