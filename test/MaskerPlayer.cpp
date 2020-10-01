@@ -430,6 +430,12 @@ void loadStereoAudio(MaskerPlayerImpl &player, AudioReaderStub &audioReader,
     loadAudio(player, audioReader, {std::move(left), std::move(right)});
 }
 
+void fadeIn(MaskerPlayerImpl &player) { player.fadeIn(); }
+
+void fadeOut(MaskerPlayerImpl &player) { player.fadeOut(); }
+
+void timerCallback(TimerStub &timer) { timer.callback(); }
+
 using channel_index_type = gsl::index;
 
 class MaskerPlayerTests : public ::testing::Test {
@@ -1066,15 +1072,11 @@ MASKER_PLAYER_TEST(steadyLevelFollowingFadeIn) {
     assertChannelEqual(future.get().at(1), {8, 9, 10});
 }
 
-MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
-    // For this test:
-    // halfWindowLength is determined by fade time and sample rate...
-    // but must be divisible by framesPerBuffer.
-    setFadeInOutSeconds(3);
-    setSampleRateHz(audioPlayer, 5);
-    auto halfWindowLength = 3 * 5 + 1;
-    auto framesPerBuffer = 4;
-    loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
+auto setOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
+    AudioPlayerStub &audioPlayer, TimerStub &timer, gsl::index halfWindowLength,
+    const std::function<std::vector<std::vector<float>>(
+        AudioPlayer::Observer *)> &f)
+    -> std::future<std::vector<std::vector<float>>> {
     bool fadeInComplete{};
     bool fadeOutCalled{};
     std::mutex mutex{};
@@ -1092,6 +1094,34 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
                 std::unique_lock<std::mutex> lock{mutex};
                 condition.wait(lock, [&] { return fadeOutCalled; });
             }
+            return f(observer);
+        })};
+    fadeIn(player);
+    {
+        std::unique_lock<std::mutex> lock{mutex};
+        condition.wait(lock, [&] { return fadeInComplete; });
+    }
+    timerCallback(timer);
+    fadeOut(player);
+    {
+        std::lock_guard<std::mutex> lock{mutex};
+        fadeOutCalled = true;
+    }
+    condition.notify_one();
+    return future;
+}
+
+MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
+    // For this test:
+    // halfWindowLength is determined by fade time and sample rate...
+    // but must be divisible by framesPerBuffer.
+    setFadeInOutSeconds(3);
+    setSampleRateHz(audioPlayer, 5);
+    auto halfWindowLength = 3 * 5 + 1;
+    auto framesPerBuffer = 4;
+    loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
+    auto future{setOnPlayTaskAfterFadeOut(player, audioPlayer, timer,
+        halfWindowLength, [&](AudioPlayer::Observer *observer) {
             std::vector<std::vector<float>> result;
             for (int i = 0; i < halfWindowLength / framesPerBuffer; ++i) {
                 std::vector<float> mono(framesPerBuffer);
@@ -1100,18 +1130,6 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
             }
             return result;
         })};
-    fadeIn();
-    {
-        std::unique_lock<std::mutex> lock{mutex};
-        condition.wait(lock, [&] { return fadeInComplete; });
-    }
-    timerCallback();
-    fadeOut();
-    {
-        std::lock_guard<std::mutex> lock{mutex};
-        fadeOutCalled = true;
-    }
-    condition.notify_one();
     auto audioBuffers{future.get()};
     for (int i = 0; i < halfWindowLength / framesPerBuffer; ++i) {
         const auto offset = i * framesPerBuffer;
