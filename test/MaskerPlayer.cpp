@@ -507,18 +507,6 @@ class MaskerPlayerTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_FALSE(callbackScheduled());
     }
 
-    void assertLeftChannelEqualsProductAfterFilling_Buffered(
-        const std::vector<float> &multiplicand,
-        const std::vector<float> &multiplier, int buffers,
-        int framesPerBuffer) {
-        for (int i = 0; i < buffers; ++i) {
-            const auto offset = i * framesPerBuffer;
-            assertLeftChannelEqualsProductAfterFilling(
-                subvector(multiplicand, offset, framesPerBuffer),
-                subvector(multiplier, offset, framesPerBuffer));
-        }
-    }
-
     void assertMonoAudioEqualsProductAfterFilling_BufferedAsyncFadeIn(
         const std::vector<float> &multiplicand,
         const std::vector<float> &multiplier, int buffers,
@@ -549,20 +537,6 @@ class MaskerPlayerTests : public ::testing::Test {
         fillAudioBufferMono(size(multiplier));
         assertLeftChannelEquals(
             elementWiseProduct(std::move(multiplicand), multiplier));
-    }
-
-    void assertStereoChannelsEqualProductAfterFilling_Buffered(
-        const std::vector<float> &multiplicand,
-        const std::vector<float> &leftMultiplier,
-        const std::vector<float> &rightMultiplier, int buffers,
-        int framesPerBuffer) {
-        for (int i = 0; i < buffers; ++i) {
-            auto offset = i * framesPerBuffer;
-            assertStereoChannelsEqualProductAfterFilling(
-                subvector(multiplicand, offset, framesPerBuffer),
-                subvector(leftMultiplier, offset, framesPerBuffer),
-                subvector(rightMultiplier, offset, framesPerBuffer));
-        }
     }
 
     void assertStereoAudioEqualsProductAfterFilling_BufferedAsyncFadeIn(
