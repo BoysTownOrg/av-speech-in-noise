@@ -1261,7 +1261,7 @@ MASKER_PLAYER_TEST(observerNotifiedOnceForFadeOut) {
     assertFadeOutCompletions(1);
 }
 
-MASKER_PLAYER_TEST(DISABLED_audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
+MASKER_PLAYER_TEST(audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
     setFadeInOutSeconds(3);
     setSampleRateHz(audioPlayer, 4);
     auto halfWindowLength = 3 * 4 + 1;
