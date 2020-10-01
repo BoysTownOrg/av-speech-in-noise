@@ -917,10 +917,10 @@ MASKER_PLAYER_TEST(fillAudioBufferWrapsMonoChannel_Buffered) {
     auto future{
         setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
             const auto first{
-                av_speech_in_noise::fillAudioBuffer(observer, 1, 4)};
+                av_speech_in_noise::fillAudioBufferMono(observer, 4)};
             const auto second{
-                av_speech_in_noise::fillAudioBuffer(observer, 1, 4)};
-            return std::vector<std::vector<float>>{first.at(0), second.at(0)};
+                av_speech_in_noise::fillAudioBufferMono(observer, 4)};
+            return std::vector<std::vector<float>>{first, second};
         })};
     player.play();
     auto twoMonoBuffers{future.get()};
