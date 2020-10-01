@@ -526,13 +526,6 @@ class MaskerPlayerTests : public ::testing::Test {
         }
     }
 
-    void assertLeftChannelEqualsProductAfterFilling(
-        std::vector<float> multiplicand, const std::vector<float> &multiplier) {
-        fillAudioBufferMono(size(multiplier));
-        assertLeftChannelEquals(
-            elementWiseProduct(std::move(multiplicand), multiplier));
-    }
-
     void assertStereoAudioEqualsProductAfterFilling_BufferedAsyncFadeIn(
         const std::vector<float> &multiplicand,
         const std::vector<float> &leftMultiplier,
@@ -563,10 +556,6 @@ class MaskerPlayerTests : public ::testing::Test {
                     subvector(multiplicand, offset, framesPerBuffer),
                     subvector(rightMultiplier, offset, framesPerBuffer)));
         }
-    }
-
-    void assertLeftChannelEquals(const std::vector<float> &x) {
-        assertChannelEqual(leftChannel, x);
     }
 
     void assertFadeInNotCompletedAfterMonoFill(channel_index_type n) {
@@ -650,11 +639,6 @@ class MaskerPlayerTests : public ::testing::Test {
     void fadeOutFillAndCallback(channel_index_type n) {
         fadeOut();
         callbackAfterMonoFill(n);
-    }
-
-    void fadeOutAndFill(channel_index_type n) {
-        fadeOut();
-        fillAudioBufferMono(n);
     }
 
     void assertFadeInCompletions(int n) {
