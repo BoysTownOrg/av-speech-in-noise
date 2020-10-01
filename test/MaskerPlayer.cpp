@@ -705,10 +705,10 @@ MASKER_PLAYER_TEST(setChannelDelayMono_Buffered) {
     loadMonoAudio(player, audioReader, {4, 5, 6});
     auto future{
         setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
-            std::vector<float> first(2);
-            std::vector<float> second(4);
-            observer->fillAudioBuffer({first}, {});
-            observer->fillAudioBuffer({second}, {});
+            const auto first{
+                av_speech_in_noise::fillAudioBufferMono(observer, 2)};
+            const auto second{
+                av_speech_in_noise::fillAudioBufferMono(observer, 4)};
             return std::vector<std::vector<float>>{first, second};
         })};
     player.play();
