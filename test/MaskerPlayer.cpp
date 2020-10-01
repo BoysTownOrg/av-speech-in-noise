@@ -469,33 +469,15 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void fillAudioBufferMono(
         channel_index_type n, player_system_time_type t = {}) {
-        resizeLeftChannel(n);
+        resize(leftChannel, n);
         fillAudioBuffer({leftChannel}, t);
     }
-
-    void resizeLeftChannel(channel_index_type n) { resize(leftChannel, n); }
 
     void setAudioDeviceDescriptions(std::vector<std::string> v) {
         audioPlayer.setAudioDeviceDescriptions(std::move(v));
     }
 
     void setAsOutputDevice(int i) { audioPlayer.setAsOutputDevice(i); }
-
-    void fadeInToFullLevel() {
-        completeOneFadeCycle(&MaskerPlayerTests::fadeIn);
-    }
-
-    void fadeOutToSilence() {
-        completeOneFadeCycle(&MaskerPlayerTests::fadeOut);
-    }
-
-    void completeOneFadeCycle(void (MaskerPlayerTests::*fade)()) {
-        setFadeInOutSeconds(2);
-        setSampleRateHz(audioPlayer, 3);
-        (this->*fade)();
-        loadMonoAudio(player, audioReader, {0});
-        fillAudioBufferMono(2 * 3 + 1);
-    }
 
     void fadeIn() { player.fadeIn(); }
 
