@@ -975,9 +975,30 @@ MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionStereoMultipleFills) {
     loadStereoAudio(player, audioReader, oneToN(halfWindowLength),
         NtoOne(halfWindowLength));
     auto buffers = halfWindowLength / framesPerBuffer;
-    assertStereoAudioEqualsProductAfterFilling_BufferedAsyncFadeIn(
-        halfHannWindow(halfWindowLength), oneToN(halfWindowLength),
-        NtoOne(halfWindowLength), buffers, framesPerBuffer);
+    auto future{
+        setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
+            std::vector<std::vector<float>> result;
+            for (int i = 0; i < buffers; ++i) {
+                const auto stereo{av_speech_in_noise::fillAudioBuffer(
+                    observer, 2, framesPerBuffer)};
+                result.push_back(stereo.at(0));
+                result.push_back(stereo.at(1));
+            }
+            return result;
+        })};
+    player.fadeIn();
+    const auto audioBuffers{future.get()};
+    for (int i = 0; i < buffers; ++i) {
+        const auto offset = i * framesPerBuffer;
+        assertChannelEqual(audioBuffers.at(2 * i),
+            elementWiseProduct(subvector(halfHannWindow(halfWindowLength),
+                                   offset, framesPerBuffer),
+                subvector(oneToN(halfWindowLength), offset, framesPerBuffer)));
+        assertChannelEqual(audioBuffers.at(2 * i + 1),
+            elementWiseProduct(subvector(halfHannWindow(halfWindowLength),
+                                   offset, framesPerBuffer),
+                subvector(NtoOne(halfWindowLength), offset, framesPerBuffer)));
+    }
 }
 
 MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionStereoOneFill) {
