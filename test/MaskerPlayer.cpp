@@ -1279,7 +1279,7 @@ MASKER_PLAYER_TEST(audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
 
 MASKER_PLAYER_TEST(fadeInSchedulesCallback) { assertFadeInSchedulesCallback(); }
 
-MASKER_PLAYER_TEST(DISABLED_fadeInTwiceDoesNotScheduleAdditionalCallback) {
+MASKER_PLAYER_TEST(fadeInTwiceDoesNotScheduleAdditionalCallback) {
     fadeIn();
     assertFadeInDoesNotScheduleAdditionalCallback();
 }
