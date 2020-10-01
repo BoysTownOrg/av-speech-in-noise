@@ -7,6 +7,9 @@
 #include <cmath>
 #include <utility>
 #include <future>
+#include <mutex>
+#include <atomic>
+#include <condition_variable>
 
 namespace av_speech_in_noise {
 constexpr auto operator==(const PlayerTime &a, const PlayerTime &b) -> bool {
@@ -1125,16 +1128,23 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
     auto halfWindowLength = 3 * 5 + 1;
     auto framesPerBuffer = 4;
     loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
-    std::atomic<bool> firstAudioBufferFilled{};
-    std::atomic<bool> finish{};
+    bool firstAudioBufferFilled_{};
+    bool finish_{};
+    std::mutex mutex{};
+    std::condition_variable condition{};
     auto future{
         setOnPlayTask(audioPlayer, [&](AudioPlayer::Observer *observer) {
             std::vector<float> first(halfWindowLength);
             observer->fillAudioBuffer({first}, {});
-            firstAudioBufferFilled.store(true);
-            auto expected{true};
-            while (!finish.compare_exchange_weak(expected, false))
-                expected = true;
+            {
+                std::lock_guard<std::mutex> lock{mutex};
+                firstAudioBufferFilled_ = true;
+            }
+            condition.notify_one();
+            {
+                std::unique_lock<std::mutex> lock{mutex};
+                condition.wait(lock, [&] { return finish_; });
+            }
             std::vector<std::vector<float>> result;
             for (int i = 0; i < halfWindowLength / framesPerBuffer; ++i) {
                 std::vector<float> mono(framesPerBuffer);
@@ -1144,12 +1154,17 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
             return result;
         })};
     fadeIn();
-    auto expected{true};
-    while (!firstAudioBufferFilled.compare_exchange_weak(expected, false))
-        expected = true;
+    {
+        std::unique_lock<std::mutex> lock{mutex};
+        condition.wait(lock, [&] { return firstAudioBufferFilled_; });
+    }
     timerCallback();
     fadeOut();
-    finish.store(true);
+    {
+        std::lock_guard<std::mutex> lock{mutex};
+        finish_ = true;
+    }
+    condition.notify_one();
     auto audioBuffers{future.get()};
     for (int i = 0; i < halfWindowLength / framesPerBuffer; ++i) {
         const auto offset = i * framesPerBuffer;
