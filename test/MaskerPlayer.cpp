@@ -1307,8 +1307,29 @@ MASKER_PLAYER_TEST(
 }
 
 MASKER_PLAYER_TEST(DISABLED_fadeInAfterFadingOutSchedulesCallback) {
-    fadeOutCompletely();
+    setFadeInOutSeconds(2);
+    setSampleRateHz(audioPlayer, 3);
+    loadMonoAudio(player, audioReader, {0});
+    fadeOut();
+    fillAudioBufferMono(2 * 3 + 1);
+    timerCallback();
     assertFadeInSchedulesCallback();
+}
+
+MASKER_PLAYER_TEST(fadeInAfterFadingOutSchedulesCallback2) {
+    setFadeInOutSeconds(2);
+    setSampleRateHz(audioPlayer, 3);
+    loadMonoAudio(player, audioReader, {0});
+    assertOnPlayTaskAfterFadeOut(
+        player, audioPlayer, timer, 2 * 3 + 1,
+        [=](AudioPlayer::Observer *observer) {
+            return av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
+        },
+        [=](std::future<std::vector<std::vector<float>>> future) {
+            auto audioBuffers{future.get()};
+            timerCallback();
+            assertFadeInSchedulesCallback();
+        });
 }
 
 MASKER_PLAYER_TEST(callbackSchedulesAdditionalCallback) {
