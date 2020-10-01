@@ -455,19 +455,7 @@ class MaskerPlayerTests : public ::testing::Test {
         fillAudioBuffer({leftChannel}, t);
     }
 
-    void fillAudioBufferStereo(channel_index_type n) {
-        resizeChannels(n);
-        fillAudioBuffer({leftChannel, rightChannel});
-    }
-
     void resizeLeftChannel(channel_index_type n) { resize(leftChannel, n); }
-
-    void resizeRightChannel(channel_index_type n) { resize(rightChannel, n); }
-
-    void resizeChannels(channel_index_type n) {
-        resizeLeftChannel(n);
-        resizeRightChannel(n);
-    }
 
     void setAudioDeviceDescriptions(std::vector<std::string> v) {
         audioPlayer.setAudioDeviceDescriptions(std::move(v));
@@ -571,23 +559,8 @@ class MaskerPlayerTests : public ::testing::Test {
         }
     }
 
-    void assertStereoChannelsEqualProductAfterFilling(
-        std::vector<float> multiplicand,
-        const std::vector<float> &leftMultiplier,
-        const std::vector<float> &rightMultiplier) {
-        fillAudioBufferStereo(size(leftMultiplier));
-        assertLeftChannelEquals(
-            elementWiseProduct(multiplicand, leftMultiplier));
-        assertRightChannelEquals(
-            elementWiseProduct(std::move(multiplicand), rightMultiplier));
-    }
-
     void assertLeftChannelEquals(const std::vector<float> &x) {
         assertChannelEqual(leftChannel, x);
-    }
-
-    void assertRightChannelEquals(const std::vector<float> &x) {
-        assertChannelEqual(rightChannel, x);
     }
 
     void assertFadeInNotCompletedAfterMonoFill(channel_index_type n) {
