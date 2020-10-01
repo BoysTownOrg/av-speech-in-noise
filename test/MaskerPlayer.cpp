@@ -1221,9 +1221,13 @@ MASKER_PLAYER_TEST(fadeInCompletePassesSystemTimeAndSampleOffset) {
         listener.fadeInCompleteSystemTimeSampleOffset());
 }
 
-MASKER_PLAYER_TEST(DISABLED_observerNotifiedOnlyOnceForFadeIn) {
-    assertFadeInCompletions(0);
-    fadeInCompletely();
+MASKER_PLAYER_TEST(observerNotifiedOnlyOnceForFadeIn) {
+    setFadeInOutSeconds(2);
+    setSampleRateHz(audioPlayer, 3);
+    loadMonoAudio(player, audioReader, {0});
+    fadeIn();
+    fillAudioBufferMono(2 * 3 + 1);
+    timerCallback();
     assertFadeInCompletions(1);
     callbackAfterMonoFill();
     assertFadeInCompletions(1);
