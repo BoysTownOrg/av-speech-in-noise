@@ -229,18 +229,25 @@ class TimerStub : public Timer {
   public:
     void scheduleCallbackAfterSeconds(double) override {
         callbackScheduled_ = true;
+        ++callbacksScheduled_;
     }
 
     [[nodiscard]] auto callbackScheduled() const { return callbackScheduled_; }
 
-    void clearCallbackCount() { callbackScheduled_ = false; }
+    void clearCallbackCount() {
+        callbackScheduled_ = false;
+        callbacksScheduled_ = 0;
+    }
 
     void callback() { observer->callback(); }
 
     void attach(Observer *a) override { observer = a; }
 
+    auto callbacksScheduled() -> int { return callbacksScheduled_; }
+
   private:
     Observer *observer{};
+    int callbacksScheduled_{};
     bool callbackScheduled_{};
 };
 
@@ -1284,9 +1291,19 @@ MASKER_PLAYER_TEST(fadeInTwiceDoesNotScheduleAdditionalCallback) {
     assertFadeInDoesNotScheduleAdditionalCallback();
 }
 
-MASKER_PLAYER_TEST(DISABLED_fadeOutSchedulesCallback) {
-    fadeOut();
-    assertCallbackScheduled();
+MASKER_PLAYER_TEST(fadeOutSchedulesCallback) {
+    setFadeInOutSeconds(2);
+    setSampleRateHz(audioPlayer, 3);
+    loadMonoAudio(player, audioReader, {0});
+    assertOnPlayTaskAfterFadeOut(
+        player, audioPlayer, timer, 2 * 3 + 1,
+        [](AudioPlayer::Observer *observer) {
+            return av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
+        },
+        [=](std::future<std::vector<std::vector<float>>> future) {
+            auto audioBuffers{future.get()};
+            AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2, timer.callbacksScheduled());
+        });
 }
 
 MASKER_PLAYER_TEST(fadeOutTwiceDoesNotScheduleAdditionalCallback) {
@@ -1295,7 +1312,7 @@ MASKER_PLAYER_TEST(fadeOutTwiceDoesNotScheduleAdditionalCallback) {
     loadMonoAudio(player, audioReader, {0});
     assertOnPlayTaskAfterFadeOut(
         player, audioPlayer, timer, 2 * 3 + 1,
-        [=](AudioPlayer::Observer *observer) {
+        [](AudioPlayer::Observer *observer) {
             return av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
         },
         [=](std::future<std::vector<std::vector<float>>> future) {
