@@ -316,6 +316,11 @@ auto fillAudioBuffer(AudioPlayer::Observer *observer, gsl::index channels,
     return audio;
 }
 
+auto fillAudioBufferMono(AudioPlayer::Observer *observer, gsl::index frames,
+    player_system_time_type t = {}) -> std::vector<float> {
+    return fillAudioBuffer(observer, 1, frames, t).front();
+}
+
 auto setOnPlayTask(AudioPlayerStub &audioPlayer,
     std::function<std::vector<std::vector<float>>(AudioPlayer::Observer *)> f)
     -> std::future<std::vector<std::vector<float>>> {
@@ -504,12 +509,10 @@ class MaskerPlayerTests : public ::testing::Test {
         int framesPerBuffer) {
         auto future{
             setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
-                std::vector<std::vector<float>> result;
-                for (int i = 0; i < buffers; ++i) {
-                    std::vector<float> mono(framesPerBuffer);
-                    observer->fillAudioBuffer({mono}, {});
-                    result.push_back(mono);
-                }
+                std::vector<std::vector<float>> result(buffers);
+                for (int i = 0; i < buffers; ++i)
+                    result.at(i) = av_speech_in_noise::fillAudioBufferMono(
+                        observer, framesPerBuffer);
                 return result;
             })};
         player.fadeIn();
@@ -917,11 +920,11 @@ MASKER_PLAYER_TEST(fillAudioBufferWrapsMonoChannel_Buffered) {
     loadMonoAudio(player, audioReader, {1, 2, 3});
     auto future{
         setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
-            std::vector<float> first(4);
-            std::vector<float> second(4);
-            observer->fillAudioBuffer({first}, {});
-            observer->fillAudioBuffer({second}, {});
-            return std::vector<std::vector<float>>{first, second};
+            const auto first{
+                av_speech_in_noise::fillAudioBuffer(observer, 1, 4)};
+            const auto second{
+                av_speech_in_noise::fillAudioBuffer(observer, 1, 4)};
+            return std::vector<std::vector<float>>{first.at(0), second.at(0)};
         })};
     player.play();
     auto twoMonoBuffers{future.get()};
