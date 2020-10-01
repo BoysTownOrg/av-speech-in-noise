@@ -243,7 +243,9 @@ class TimerStub : public Timer {
 
     void attach(Observer *a) override { observer = a; }
 
-    auto callbacksScheduled() -> int { return callbacksScheduled_; }
+    [[nodiscard]] auto callbacksScheduled() const -> int {
+        return callbacksScheduled_;
+    }
 
   private:
     Observer *observer{};
@@ -266,7 +268,7 @@ auto halfHannWindow(gsl::index length) -> std::vector<float> {
     return window;
 }
 
-auto reverse(std::vector<float> x) {
+auto reverse(std::vector<float> x) -> std::vector<float> {
     std::reverse(x.begin(), x.end());
     return x;
 }
@@ -582,11 +584,6 @@ class MaskerPlayerTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_TRUE(fadeOutCompleted());
     }
 
-    void fadeInCompletely() {
-        fadeInToFullLevel();
-        timerCallback();
-    }
-
     void clearCallbackCount() { timer.clearCallbackCount(); }
 
     void setAudioDevice(std::string s) { player.setAudioDevice(std::move(s)); }
@@ -620,22 +617,12 @@ class MaskerPlayerTests : public ::testing::Test {
 
     auto playerStopped() -> bool { return audioPlayer.stopped(); }
 
-    void fadeOutCompletely() {
-        fadeOutToSilence();
-        timerCallback();
-    }
-
     void setFadeInOutSeconds(double x) { player.setFadeInOutSeconds(x); }
 
     void fadeInFillAndCallback(channel_index_type n) {
         fadeIn();
         fillAudioBufferMono(n);
         timerCallback();
-    }
-
-    void fadeOutFillAndCallback(channel_index_type n) {
-        fadeOut();
-        callbackAfterMonoFill(n);
     }
 
     void assertFadeInCompletions(int n) {
