@@ -1233,12 +1233,13 @@ MASKER_PLAYER_TEST(observerNotifiedOnlyOnceForFadeIn) {
     assertFadeInCompletions(1);
 }
 
-MASKER_PLAYER_TEST(DISABLED_fadeOutCompleteOnlyAfterFadeTime) {
+MASKER_PLAYER_TEST(fadeOutCompleteOnlyAfterFadeTime) {
     setFadeInOutSeconds(3);
     setSampleRateHz(audioPlayer, 4);
     loadMonoAudio(player, audioReader, {0});
-    fadeInFillAndCallback(3 * 4 + 1);
-
+    fadeIn();
+    fillAudioBufferMono(3 * 4 + 1);
+    timerCallback();
     fadeOut();
     for (int i = 0; i < 3 * 4; ++i)
         assertFadeOutNotCompletedAfterMonoFill(1);
