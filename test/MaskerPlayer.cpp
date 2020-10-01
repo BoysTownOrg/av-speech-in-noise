@@ -1206,7 +1206,7 @@ MASKER_PLAYER_TEST(fadeInCompleteOnlyAfterFadeTime) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(listener.fadeInCompleted());
 }
 
-MASKER_PLAYER_TEST(DISABLED_fadeInCompletePassesSystemTimeAndSampleOffset) {
+MASKER_PLAYER_TEST(fadeInCompletePassesSystemTimeAndSampleOffset) {
     setFadeInOutSeconds(3);
     setSampleRateHz(audioPlayer, 4);
 
