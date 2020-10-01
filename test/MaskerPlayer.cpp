@@ -1030,10 +1030,10 @@ MASKER_PLAYER_TEST(steadyLevelFollowingFadeIn) {
     auto halfWindowLength = 2 * 3 + 1;
     auto future{
         setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
-            std::vector<float> first(halfWindowLength);
-            std::vector<float> second(3);
-            observer->fillAudioBuffer({first}, {});
-            observer->fillAudioBuffer({second}, {});
+            const auto first{av_speech_in_noise::fillAudioBufferMono(
+                observer, halfWindowLength)};
+            const auto second{
+                av_speech_in_noise::fillAudioBufferMono(observer, 3)};
             return std::vector<std::vector<float>>{first, second};
         })};
     fadeIn();
