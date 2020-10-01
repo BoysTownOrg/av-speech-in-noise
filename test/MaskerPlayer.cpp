@@ -559,7 +559,8 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     void assertFadeInNotCompletedAfterMonoFill(channel_index_type n) {
-        callbackAfterMonoFill(n);
+        fillAudioBufferMono(n);
+        timerCallback();
         AV_SPEECH_IN_NOISE_EXPECT_FALSE(listener.fadeInCompleted());
     }
 
@@ -569,7 +570,8 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     void assertFadeInCompletedAfterMonoFill(channel_index_type n) {
-        callbackAfterMonoFill(n);
+        fillAudioBufferMono(n);
+        timerCallback();
         AV_SPEECH_IN_NOISE_EXPECT_TRUE(listener.fadeInCompleted());
     }
 
@@ -1166,15 +1168,59 @@ MASKER_PLAYER_TEST(steadyLevelFollowingFadeOut) {
         });
 }
 
-MASKER_PLAYER_TEST(DISABLED_fadeInCompleteOnlyAfterFadeTime) {
+MASKER_PLAYER_TEST(fadeInCompleteOnlyAfterFadeTime) {
     setFadeInOutSeconds(3);
     setSampleRateHz(audioPlayer, 4);
 
     loadMonoAudio(player, audioReader, {0});
+    bool fillOnce{};
+    bool filledOnce{};
+    std::mutex mutex{};
+    std::condition_variable condition{};
+    auto future{
+        setOnPlayTask(audioPlayer, [&](AudioPlayer::Observer *observer) {
+            for (int i = 0; i < 3 * 4 + 1; ++i) {
+                {
+                    std::unique_lock<std::mutex> lock{mutex};
+                    condition.wait(lock, [&] { return fillOnce; });
+                    fillOnce = false;
+                }
+                av_speech_in_noise::fillAudioBuffer(observer, 1, 1);
+                {
+                    std::lock_guard<std::mutex> lock{mutex};
+                    filledOnce = true;
+                }
+                condition.notify_one();
+            }
+            return std::vector<std::vector<float>>{};
+        })};
     fadeIn();
-    for (int i = 0; i < 3 * 4; ++i)
-        assertFadeInNotCompletedAfterMonoFill(1);
-    assertFadeInCompletedAfterMonoFill(1);
+    for (int i = 0; i < 3 * 4; ++i) {
+        {
+            std::lock_guard<std::mutex> lock{mutex};
+            fillOnce = true;
+        }
+        condition.notify_one();
+        {
+            std::unique_lock<std::mutex> lock{mutex};
+            condition.wait(lock, [&] { return filledOnce; });
+            filledOnce = false;
+        }
+        timerCallback();
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(listener.fadeInCompleted());
+    }
+    {
+        std::lock_guard<std::mutex> lock{mutex};
+        fillOnce = true;
+    }
+    condition.notify_one();
+    {
+        std::unique_lock<std::mutex> lock{mutex};
+        condition.wait(lock, [&] { return filledOnce; });
+    }
+    timerCallback();
+    future.get();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(listener.fadeInCompleted());
 }
 
 MASKER_PLAYER_TEST(DISABLED_fadeInCompletePassesSystemTimeAndSampleOffset) {
