@@ -1193,13 +1193,16 @@ MASKER_PLAYER_TEST(fadeOutCompleteOnlyAfterFadeTime) {
     setFadeInOutSeconds(3);
     setSampleRateHz(audioPlayer, 4);
     loadMonoAudio(player, audioReader, {0});
-    fadeIn();
-    fillAudioBufferMono(3 * 4 + 1);
-    timerCallback();
-    fadeOut();
-    for (int i = 0; i < 3 * 4; ++i)
-        assertFadeOutNotCompletedAfterMonoFill(1);
-    assertFadeOutCompletedAfterMonoFill(1);
+    assertOnPlayTaskAfterFadeOut(
+        player, audioPlayer, timer, 3 * 4 + 1,
+        [](AudioPlayer::Observer *) {
+            return std::vector<std::vector<float>>{};
+        },
+        [=](const std::vector<std::vector<float>> &) {
+            for (int i = 0; i < 3 * 4; ++i)
+                assertFadeOutNotCompletedAfterMonoFill(1);
+            assertFadeOutCompletedAfterMonoFill(1);
+        });
 }
 
 MASKER_PLAYER_TEST(observerNotifiedOnceForFadeOut) {
