@@ -1165,17 +1165,21 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionOneFill) {
         });
 }
 
-MASKER_PLAYER_TEST(DISABLED_steadyLevelFollowingFadeOut) {
+MASKER_PLAYER_TEST(steadyLevelFollowingFadeOut) {
     setFadeInOutSeconds(2);
     setSampleRateHz(audioPlayer, 3);
     auto halfWindowLength = 2 * 3 + 1;
 
     loadMonoAudio(player, audioReader, {4, 5, 6});
-    fadeInFillAndCallback(halfWindowLength);
-    fadeOutAndFill(halfWindowLength);
-
-    fillAudioBufferMono(3);
-    assertLeftChannelEquals({0, 0, 0});
+    assertOnPlayTaskAfterFadeOut(
+        player, audioPlayer, timer, halfWindowLength,
+        [=](AudioPlayer::Observer *observer) {
+            av_speech_in_noise::fillAudioBuffer(observer, 1, halfWindowLength);
+            return av_speech_in_noise::fillAudioBuffer(observer, 1, 3);
+        },
+        [=](std::future<std::vector<std::vector<float>>> future) {
+            assertChannelEqual(future.get().at(0), {0, 0, 0});
+        });
 }
 
 MASKER_PLAYER_TEST(DISABLED_fadeInCompleteOnlyAfterFadeTime) {
