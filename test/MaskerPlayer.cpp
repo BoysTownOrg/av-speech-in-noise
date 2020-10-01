@@ -1246,14 +1246,16 @@ MASKER_PLAYER_TEST(fadeOutCompleteOnlyAfterFadeTime) {
     assertFadeOutCompletedAfterMonoFill(1);
 }
 
-MASKER_PLAYER_TEST(DISABLED_observerNotifiedOnceForFadeOut) {
+MASKER_PLAYER_TEST(observerNotifiedOnceForFadeOut) {
     setFadeInOutSeconds(2);
     setSampleRateHz(audioPlayer, 3);
     auto halfWindowLength = 2 * 3 + 1;
     loadMonoAudio(player, audioReader, {0});
-    fadeInFillAndCallback(halfWindowLength);
-    fadeOutFillAndCallback(halfWindowLength);
-
+    fadeIn();
+    fillAudioBufferMono(halfWindowLength);
+    timerCallback();
+    fadeOut();
+    callbackAfterMonoFill(halfWindowLength);
     assertFadeOutCompletions(1);
     callbackAfterMonoFill();
     assertFadeOutCompletions(1);
