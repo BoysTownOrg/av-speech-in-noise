@@ -1072,11 +1072,12 @@ MASKER_PLAYER_TEST(steadyLevelFollowingFadeIn) {
     assertChannelEqual(future.get().at(1), {8, 9, 10});
 }
 
-auto setOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
+void assertOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
     AudioPlayerStub &audioPlayer, TimerStub &timer, gsl::index halfWindowLength,
     const std::function<std::vector<std::vector<float>>(
-        AudioPlayer::Observer *)> &f)
-    -> std::future<std::vector<std::vector<float>>> {
+        AudioPlayer::Observer *)> &f,
+    const std::function<void(std::future<std::vector<std::vector<float>>>)>
+        &assertion) {
     bool fadeInComplete{};
     bool fadeOutCalled{};
     std::mutex mutex{};
@@ -1108,7 +1109,7 @@ auto setOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
         fadeOutCalled = true;
     }
     condition.notify_one();
-    return future;
+    assertion(std::move(future));
 }
 
 MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
@@ -1120,8 +1121,9 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
     auto halfWindowLength = 3 * 5 + 1;
     auto framesPerBuffer = 4;
     loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
-    auto future{setOnPlayTaskAfterFadeOut(player, audioPlayer, timer,
-        halfWindowLength, [&](AudioPlayer::Observer *observer) {
+    assertOnPlayTaskAfterFadeOut(
+        player, audioPlayer, timer, halfWindowLength,
+        [=](AudioPlayer::Observer *observer) {
             std::vector<std::vector<float>> result;
             for (int i = 0; i < halfWindowLength / framesPerBuffer; ++i) {
                 std::vector<float> mono(framesPerBuffer);
@@ -1129,15 +1131,19 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
                 result.push_back(mono);
             }
             return result;
-        })};
-    auto audioBuffers{future.get()};
-    for (int i = 0; i < halfWindowLength / framesPerBuffer; ++i) {
-        const auto offset = i * framesPerBuffer;
-        assertChannelEqual(audioBuffers.at(i),
-            elementWiseProduct(subvector(backHalfHannWindow(halfWindowLength),
-                                   offset, framesPerBuffer),
-                subvector(oneToN(halfWindowLength), offset, framesPerBuffer)));
-    }
+        },
+        [=](std::future<std::vector<std::vector<float>>> future) {
+            auto audioBuffers{future.get()};
+            for (int i = 0; i < halfWindowLength / framesPerBuffer; ++i) {
+                const auto offset = i * framesPerBuffer;
+                assertChannelEqual(audioBuffers.at(i),
+                    elementWiseProduct(
+                        subvector(backHalfHannWindow(halfWindowLength), offset,
+                            framesPerBuffer),
+                        subvector(oneToN(halfWindowLength), offset,
+                            framesPerBuffer)));
+            }
+        });
 }
 
 MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionOneFill) {
@@ -1146,42 +1152,17 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionOneFill) {
     auto halfWindowLength = 2 * 3 + 1;
 
     loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
-    bool fadeInComplete{};
-    bool fadeOutCalled{};
-    std::mutex mutex{};
-    std::condition_variable condition{};
-    auto future{
-        setOnPlayTask(audioPlayer, [&](AudioPlayer::Observer *observer) {
-            std::vector<float> fadeInBuffer(halfWindowLength);
-            observer->fillAudioBuffer({fadeInBuffer}, {});
-            {
-                std::lock_guard<std::mutex> lock{mutex};
-                fadeInComplete = true;
-            }
-            condition.notify_one();
-            {
-                std::unique_lock<std::mutex> lock{mutex};
-                condition.wait(lock, [&] { return fadeOutCalled; });
-            }
-            std::vector<float> fadeOutBuffer(halfWindowLength);
-            observer->fillAudioBuffer({fadeOutBuffer}, {});
-            return std::vector<std::vector<float>>{fadeOutBuffer};
-        })};
-    fadeIn();
-    {
-        std::unique_lock<std::mutex> lock{mutex};
-        condition.wait(lock, [&] { return fadeInComplete; });
-    }
-    timerCallback();
-    fadeOut();
-    {
-        std::lock_guard<std::mutex> lock{mutex};
-        fadeOutCalled = true;
-    }
-    condition.notify_one();
-    assertChannelEqual(future.get().at(0),
-        elementWiseProduct(
-            backHalfHannWindow(halfWindowLength), oneToN(halfWindowLength)));
+    assertOnPlayTaskAfterFadeOut(
+        player, audioPlayer, timer, halfWindowLength,
+        [=](AudioPlayer::Observer *observer) {
+            return av_speech_in_noise::fillAudioBuffer(
+                observer, 1, halfWindowLength);
+        },
+        [=](std::future<std::vector<std::vector<float>>> future) {
+            assertChannelEqual(future.get().at(0),
+                elementWiseProduct(backHalfHannWindow(halfWindowLength),
+                    oneToN(halfWindowLength)));
+        });
 }
 
 MASKER_PLAYER_TEST(DISABLED_steadyLevelFollowingFadeOut) {
