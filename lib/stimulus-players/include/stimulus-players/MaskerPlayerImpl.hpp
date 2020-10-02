@@ -122,6 +122,11 @@ class MaskerPlayerImpl : public MaskerPlayer,
         bool enabled{};
     };
 
+    struct LockFreeMessage {
+        std::atomic<bool> execute{};
+        std::atomic<bool> complete{};
+    };
+
     AudioThread audioThread;
     audio_type sourceAudio{};
     std::vector<sample_index_type> samplesToWaitPerChannel;
@@ -138,13 +143,10 @@ class MaskerPlayerImpl : public MaskerPlayer,
     std::atomic<int> levelTransitionSamples{};
     std::atomic<bool> firstChannelOnly{};
     std::atomic<bool> secondChannelOnly{};
-    std::atomic<bool> fadeOutComplete{};
-    std::atomic<bool> fadeInComplete{};
-    std::atomic<bool> pleaseFadeOut{};
-    std::atomic<bool> pleaseFadeIn{};
+    LockFreeMessage toFadeIn{};
+    LockFreeMessage toFadeOut{};
+    LockFreeMessage toDisableAudio{};
     std::atomic<bool> pleaseEnableAudio{};
-    std::atomic<bool> pleaseDisableAudio{};
-    std::atomic<bool> audioDisabledComplete{};
     bool fadingIn{};
     bool fadingOut{};
     bool audioEnabled{};
