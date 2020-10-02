@@ -365,8 +365,8 @@ void MaskerPlayerImpl::MainThread::callback() {
 
     if (thisCallClears(sharedState->fadeOutComplete)) {
         clear(fadingOut);
+        stop();
         listener->fadeOutComplete();
-        player->stop();
         return;
     }
 
