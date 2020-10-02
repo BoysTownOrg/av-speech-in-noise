@@ -1249,19 +1249,56 @@ MASKER_PLAYER_TEST(DISABLED_observerNotifiedOnceForFadeOut) {
     assertFadeOutCompletions(1);
 }
 
-MASKER_PLAYER_TEST(DISABLED_audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
+MASKER_PLAYER_TEST(audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
     setFadeInOutSeconds(player, 3);
     setSampleRateHz(audioPlayer, 4);
     auto halfWindowLength = 3 * 4 + 1;
     loadMonoAudio(player, audioReader, {0});
-    fadeInFillAndCallback(halfWindowLength);
-
+    bool fillOnce{};
+    bool filledOnce{};
+    bool fadeInComplete{};
+    bool finish{};
+    std::mutex mutex{};
+    std::condition_variable condition{};
+    auto future{
+        setOnPlayTask(audioPlayer, [&](AudioPlayer::Observer *observer) {
+            std::vector<float> fadeInBuffer(halfWindowLength);
+            observer->fillAudioBuffer({fadeInBuffer}, {});
+            set(mutex, fadeInComplete);
+            condition.notify_one();
+            for (int i = 0; i < halfWindowLength; ++i) {
+                waitThenClear(mutex, condition, fillOnce);
+                av_speech_in_noise::fillAudioBuffer(observer, 1, 1);
+                set(mutex, filledOnce);
+                condition.notify_one();
+            }
+            bool done{};
+            while (!done) {
+                av_speech_in_noise::fillAudioBuffer(observer, 1, 1);
+                {
+                    std::lock_guard<std::mutex> lock{mutex};
+                    done = finish;
+                }
+            }
+            return std::vector<std::vector<float>>{};
+        })};
+    fadeIn(player);
+    wait(mutex, condition, fadeInComplete);
+    callback(timer);
     fadeOut(player);
     for (int i = 0; i < 3 * 4; ++i) {
-        callbackAfterMonoFill(1);
+        set(mutex, fillOnce);
+        condition.notify_one();
+        waitThenClear(mutex, condition, filledOnce);
+        callback(timer);
         AV_SPEECH_IN_NOISE_EXPECT_FALSE(playerStopped());
     }
-    callbackAfterMonoFill(1);
+    set(mutex, fillOnce);
+    condition.notify_one();
+    wait(mutex, condition, filledOnce);
+    callback(timer);
+    set(mutex, finish);
+    future.get();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(playerStopped());
 }
 
