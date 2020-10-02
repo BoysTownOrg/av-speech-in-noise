@@ -176,13 +176,6 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
         audioFrameHeadsPerChannel.begin(), audioFrameHeadsPerChannel.end(), 0);
 }
 
-// real-time audio thread
-void MaskerPlayerImpl::fillAudioBuffer(
-    const std::vector<channel_buffer_type> &audioBuffer,
-    player_system_time_type time) {
-    audioThread.fillAudioBuffer(audioBuffer, time);
-}
-
 static_assert(std::numeric_limits<double>::is_iec559, "IEEE 754 required");
 
 auto MaskerPlayerImpl::digitalLevel() -> DigitalLevel {
@@ -329,6 +322,13 @@ void MaskerPlayerImpl::scheduleCallbackAfterSeconds(double x) {
 }
 
 auto MaskerPlayerImpl::fading() -> bool { return fadingIn || fadingOut; }
+
+// real-time audio thread
+void MaskerPlayerImpl::fillAudioBuffer(
+    const std::vector<channel_buffer_type> &audioBuffer,
+    player_system_time_type time) {
+    audioThread.fillAudioBuffer(audioBuffer, time);
+}
 
 void MaskerPlayerImpl::AudioThread::setSharedState(MaskerPlayerImpl *p) {
     sharedState = p;
