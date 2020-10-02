@@ -52,6 +52,11 @@ using cpp_core_guidelines_index_type = gsl::index;
 using channel_index_type = cpp_core_guidelines_index_type;
 using sample_index_type = cpp_core_guidelines_index_type;
 
+struct LockFreeMessage {
+    std::atomic<bool> execute{};
+    std::atomic<bool> complete{};
+};
+
 class MaskerPlayerImpl : public MaskerPlayer,
                          public AudioPlayer::Observer,
                          public Timer::Observer {
@@ -87,13 +92,28 @@ class MaskerPlayerImpl : public MaskerPlayer,
 
   private:
     auto readAudio(std::string) -> audio_type;
-    auto audioDeviceDescriptions_() -> std::vector<std::string>;
-    auto findDeviceIndex(const std::string &device) -> int;
-    void recalculateSamplesToWaitPerChannel();
+    auto fading() -> bool;
+
+    struct SharedState {
+        audio_type sourceAudio{};
+        std::vector<sample_index_type> samplesToWaitPerChannel;
+        std::vector<sample_index_type> audioFrameHeadsPerChannel;
+        std::atomic<double> levelScalar{1};
+        std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
+        std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
+        std::atomic<int> fadeSamples{};
+        std::atomic<bool> firstChannelOnly{};
+        std::atomic<bool> secondChannelOnly{};
+        LockFreeMessage fadeIn{};
+        LockFreeMessage fadeOut{};
+        LockFreeMessage disableAudio{};
+        std::atomic<bool> pleaseEnableAudio{};
+    };
 
     class AudioThread {
       public:
-        void setSharedState(MaskerPlayerImpl *);
+        explicit AudioThread(SharedState &sharedState)
+            : sharedState{sharedState} {}
         void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
             player_system_time_type);
 
@@ -115,61 +135,26 @@ class MaskerPlayerImpl : public MaskerPlayer,
         auto nextFadeScalar() -> double;
         auto sourceFrames() -> sample_index_type;
 
-        MaskerPlayerImpl *sharedState{};
+        SharedState &sharedState;
         player_system_time_type systemTime{};
         int hannCounter{};
         int halfWindowLength{};
         bool fadingOut{};
         bool fadingIn{};
+        bool enabled{};
     };
 
-    class MainThread {
-      public:
-        MainThread(AudioPlayer *, Timer *);
-        void setSharedState(MaskerPlayerImpl *);
-        void callback();
-        void attach(MaskerPlayer::Observer *);
-        void fadeIn();
-        void play();
-        void stop();
-        void fadeOut();
-        void setChannelDelaySeconds(channel_index_type channel, double seconds);
-        void clearChannelDelays();
-        auto channelDelaySeconds(channel_index_type channel) -> double;
-        void setFadeInOutSeconds(double);
-        auto fadeTime() -> Duration;
-
-      private:
-        auto fading() -> bool;
-        void scheduleCallbackAfterSeconds(double);
-
-        std::vector<double> channelDelaySeconds_;
-        MaskerPlayerImpl *sharedState{};
-        AudioPlayer *player;
-        MaskerPlayer::Observer *listener{};
-        Timer *timer;
-        double fadeInOutSeconds{};
-        bool fadingIn{};
-        bool fadingOut{};
-    };
-
+    SharedState sharedState{};
     AudioThread audioThread;
-    MainThread mainThread;
-    audio_type sourceAudio{};
-    std::vector<sample_index_type> samplesToWaitPerChannel;
-    std::vector<sample_index_type> audioFrameHeadsPerChannel;
+    std::vector<double> channelDelaySeconds;
     AudioPlayer *player;
     AudioReader *reader;
-    std::atomic<double> levelScalar{1};
-    std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
-    std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
-    std::atomic<int> levelTransitionSamples_{};
-    std::atomic<bool> firstChannelOnly{};
-    std::atomic<bool> secondChannelOnly{};
-    std::atomic<bool> fadeOutComplete{};
-    std::atomic<bool> fadeInComplete{};
-    std::atomic<bool> pleaseFadeOut{};
-    std::atomic<bool> pleaseFadeIn{};
+    Timer *timer;
+    MaskerPlayer::Observer *listener{};
+    double fadeInOutSeconds{};
+    bool fadingIn{};
+    bool fadingOut{};
+    bool audioEnabled{};
 };
 }
 

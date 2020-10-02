@@ -10,6 +10,10 @@ static auto at(std::vector<double> &x, gsl::index n) -> double & {
     return x.at(n);
 }
 
+static auto at(const std::vector<double> &x, gsl::index n) -> double {
+    return x.at(n);
+}
+
 static auto at(std::vector<sample_index_type> &x, gsl::index n)
     -> sample_index_type & {
     return x.at(n);
@@ -71,6 +75,10 @@ static auto read(std::atomic<int> &x) -> int { return x.load(); }
 
 static void set(std::atomic<bool> &x) { x.store(true); }
 
+static void postForExecution(LockFreeMessage &x) { set(x.execute); }
+
+static void postCompletion(LockFreeMessage &x) { set(x.complete); }
+
 static void clear(std::atomic<bool> &x) { x.store(false); }
 
 static void set(bool &x) { x = true; }
@@ -100,55 +108,80 @@ static auto framesToFill(const std::vector<channel_buffer_type> &audioBuffer)
     return noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
 }
 
-constexpr auto maxChannels{128};
-
-MaskerPlayerImpl::MaskerPlayerImpl(
-    AudioPlayer *player, AudioReader *reader, Timer *timer)
-    : mainThread{player, timer}, samplesToWaitPerChannel(maxChannels),
-      audioFrameHeadsPerChannel(maxChannels), player{player}, reader{reader} {
-    player->attach(this);
-    timer->attach(this);
-    mainThread.setSharedState(this);
-    audioThread.setSharedState(this);
-}
-
-void MaskerPlayerImpl::attach(MaskerPlayer::Observer *e) {
-    mainThread.attach(e);
-}
-
-auto MaskerPlayerImpl::duration() -> Duration {
-    return Duration{
-        samples(sourceAudio) / av_speech_in_noise::sampleRateHz(player)};
-}
-
 static auto mathModulus(sample_index_type a, sample_index_type b)
     -> sample_index_type {
     auto result{a % b};
     return result > 0 ? result : result + b;
 }
 
-void MaskerPlayerImpl::seekSeconds(double x) {
-    if (playing())
-        return;
-
-    recalculateSamplesToWaitPerChannel();
-    std::fill(audioFrameHeadsPerChannel.begin(),
-        audioFrameHeadsPerChannel.end(),
-        mathModulus(gsl::narrow_cast<sample_index_type>(
-                        x * av_speech_in_noise::sampleRateHz(player)),
-            samples(sourceAudio)));
-}
-
-void MaskerPlayerImpl::recalculateSamplesToWaitPerChannel() {
+static void recalculateSamplesToWaitPerChannel(
+    std::vector<sample_index_type> &samplesToWaitPerChannel,
+    AudioPlayer *player, const std::vector<double> &channelDelaySeconds) {
     std::generate(samplesToWaitPerChannel.begin(),
         samplesToWaitPerChannel.end(), [&, n = 0]() mutable {
             return gsl::narrow_cast<channel_index_type>(
                 av_speech_in_noise::sampleRateHz(player) *
-                mainThread.channelDelaySeconds(n++));
+                at(channelDelaySeconds, n++));
         });
 }
 
-auto MaskerPlayerImpl::fadeTime() -> Duration { return mainThread.fadeTime(); }
+static void scheduleCallbackAfterSeconds(Timer *timer, double x) {
+    timer->scheduleCallbackAfterSeconds(x);
+}
+
+static auto audioDeviceDescriptions(AudioPlayer *player)
+    -> std::vector<std::string> {
+    std::vector<std::string> descriptions(
+        gsl::narrow<std::size_t>(player->deviceCount()));
+    std::generate(descriptions.begin(), descriptions.end(),
+        [&, n = 0]() mutable { return player->deviceDescription(n++); });
+    return descriptions;
+}
+
+static auto findDeviceIndex(AudioPlayer *player, const std::string &device)
+    -> int {
+    auto devices{audioDeviceDescriptions(player)};
+    auto found{std::find(devices.begin(), devices.end(), device)};
+    if (found == devices.end())
+        throw InvalidAudioDevice{};
+    return gsl::narrow<int>(std::distance(devices.begin(), found));
+}
+
+constexpr auto maxChannels{128};
+
+MaskerPlayerImpl::MaskerPlayerImpl(
+    AudioPlayer *player, AudioReader *reader, Timer *timer)
+    : audioThread{sharedState}, channelDelaySeconds(maxChannels),
+      player{player}, reader{reader}, timer{timer} {
+    sharedState.samplesToWaitPerChannel.resize(maxChannels);
+    sharedState.audioFrameHeadsPerChannel.resize(maxChannels);
+    player->attach(this);
+    timer->attach(this);
+}
+
+void MaskerPlayerImpl::attach(MaskerPlayer::Observer *e) { listener = e; }
+
+auto MaskerPlayerImpl::duration() -> Duration {
+    return Duration{samples(sharedState.sourceAudio) /
+        av_speech_in_noise::sampleRateHz(player)};
+}
+
+void MaskerPlayerImpl::seekSeconds(double x) {
+    if (audioEnabled)
+        return;
+
+    recalculateSamplesToWaitPerChannel(
+        sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
+    std::fill(sharedState.audioFrameHeadsPerChannel.begin(),
+        sharedState.audioFrameHeadsPerChannel.end(),
+        mathModulus(gsl::narrow_cast<sample_index_type>(
+                        x * av_speech_in_noise::sampleRateHz(player)),
+            samples(sharedState.sourceAudio)));
+}
+
+auto MaskerPlayerImpl::fadeTime() -> Duration {
+    return Duration{fadeInOutSeconds};
+}
 
 auto MaskerPlayerImpl::sampleRateHz() -> double {
     return av_speech_in_noise::sampleRateHz(player);
@@ -163,54 +196,39 @@ auto MaskerPlayerImpl::currentSystemTime() -> PlayerTime {
 }
 
 void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
-    if (playing())
+    if (audioEnabled)
         return;
 
     player->loadFile(file.path);
-    recalculateSamplesToWaitPerChannel();
-    write(levelTransitionSamples_,
-        gsl::narrow_cast<int>(mainThread.fadeTime().seconds *
-            av_speech_in_noise::sampleRateHz(player)));
-    sourceAudio = readAudio(file.path);
-    std::fill(
-        audioFrameHeadsPerChannel.begin(), audioFrameHeadsPerChannel.end(), 0);
-}
-
-// real-time audio thread
-void MaskerPlayerImpl::fillAudioBuffer(
-    const std::vector<channel_buffer_type> &audioBuffer,
-    player_system_time_type time) {
-    audioThread.fillAudioBuffer(audioBuffer, time);
+    recalculateSamplesToWaitPerChannel(
+        sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
+    write(sharedState.fadeSamples,
+        gsl::narrow_cast<int>(
+            fadeInOutSeconds * av_speech_in_noise::sampleRateHz(player)));
+    sharedState.sourceAudio = readAudio(file.path);
+    std::fill(sharedState.audioFrameHeadsPerChannel.begin(),
+        sharedState.audioFrameHeadsPerChannel.end(), 0);
 }
 
 static_assert(std::numeric_limits<double>::is_iec559, "IEEE 754 required");
 
 auto MaskerPlayerImpl::digitalLevel() -> DigitalLevel {
-    return noChannels(sourceAudio)
+    return noChannels(sharedState.sourceAudio)
         ? DigitalLevel{-std::numeric_limits<double>::infinity()}
-        : DigitalLevel{20 * std::log10(rms(firstChannel(sourceAudio)))};
+        : DigitalLevel{
+              20 * std::log10(rms(firstChannel(sharedState.sourceAudio)))};
 }
 
 auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }
 
 void MaskerPlayerImpl::apply(LevelAmplification x) {
-    write(levelScalar, std::pow(10, x.dB / 20));
+    write(sharedState.levelScalar, std::pow(10, x.dB / 20));
 }
 
-void MaskerPlayerImpl::setFadeInOutSeconds(double x) {
-    mainThread.setFadeInOutSeconds(x);
-}
+void MaskerPlayerImpl::setFadeInOutSeconds(double x) { fadeInOutSeconds = x; }
 
 void MaskerPlayerImpl::setAudioDevice(std::string device) {
-    player->setDevice(findDeviceIndex(device));
-}
-
-auto MaskerPlayerImpl::findDeviceIndex(const std::string &device) -> int {
-    auto devices{audioDeviceDescriptions_()};
-    auto found{std::find(devices.begin(), devices.end(), device)};
-    if (found == devices.end())
-        throw InvalidAudioDevice{};
-    return gsl::narrow<int>(std::distance(devices.begin(), found));
+    player->setDevice(findDeviceIndex(player, device));
 }
 
 auto MaskerPlayerImpl::readAudio(std::string filePath) -> audio_type {
@@ -219,14 +237,6 @@ auto MaskerPlayerImpl::readAudio(std::string filePath) -> audio_type {
     } catch (const AudioReader::InvalidFile &) {
         throw InvalidAudioFile{};
     }
-}
-
-auto MaskerPlayerImpl::audioDeviceDescriptions_() -> std::vector<std::string> {
-    std::vector<std::string> descriptions(
-        gsl::narrow<std::size_t>(player->deviceCount()));
-    std::generate(descriptions.begin(), descriptions.end(),
-        [&, n = 0]() mutable { return player->deviceDescription(n++); });
-    return descriptions;
 }
 
 auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
@@ -240,132 +250,116 @@ auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
 
 void MaskerPlayerImpl::setChannelDelaySeconds(
     channel_index_type channel, double seconds) {
-    mainThread.setChannelDelaySeconds(channel, seconds);
-    recalculateSamplesToWaitPerChannel();
+    if (audioEnabled)
+        return;
+
+    at(channelDelaySeconds, channel) = seconds;
+    recalculateSamplesToWaitPerChannel(
+        sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
 }
 
 void MaskerPlayerImpl::clearChannelDelays() {
-    mainThread.clearChannelDelays();
-    recalculateSamplesToWaitPerChannel();
+    if (audioEnabled)
+        return;
+
+    std::fill(channelDelaySeconds.begin(), channelDelaySeconds.end(), 0);
+    recalculateSamplesToWaitPerChannel(
+        sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
 }
 
 void MaskerPlayerImpl::useFirstChannelOnly() {
-    av_speech_in_noise::set(firstChannelOnly);
-    clear(secondChannelOnly);
+    set(sharedState.firstChannelOnly);
+    clear(sharedState.secondChannelOnly);
 }
 
 void MaskerPlayerImpl::useSecondChannelOnly() {
-    av_speech_in_noise::set(secondChannelOnly);
-    clear(firstChannelOnly);
+    set(sharedState.secondChannelOnly);
+    clear(sharedState.firstChannelOnly);
 }
 
 void MaskerPlayerImpl::useAllChannels() {
-    clear(firstChannelOnly);
-    clear(secondChannelOnly);
+    clear(sharedState.firstChannelOnly);
+    clear(sharedState.secondChannelOnly);
 }
 
-void MaskerPlayerImpl::fadeIn() { mainThread.fadeIn(); }
-
-void MaskerPlayerImpl::play() { mainThread.play(); }
-
-void MaskerPlayerImpl::stop() { mainThread.stop(); }
-
-void MaskerPlayerImpl::fadeOut() { mainThread.fadeOut(); }
-
-void MaskerPlayerImpl::callback() { mainThread.callback(); }
-
-MaskerPlayerImpl::MainThread::MainThread(AudioPlayer *player, Timer *timer)
-    : channelDelaySeconds_(maxChannels), player{player}, timer{timer} {}
-
-void MaskerPlayerImpl::MainThread::setSharedState(MaskerPlayerImpl *p) {
-    sharedState = p;
-}
-
-void MaskerPlayerImpl::MainThread::attach(MaskerPlayer::Observer *e) {
-    listener = e;
-}
-
-void MaskerPlayerImpl::MainThread::setChannelDelaySeconds(
-    channel_index_type channel, double seconds) {
-    at(channelDelaySeconds_, channel) = seconds;
-}
-
-void MaskerPlayerImpl::MainThread::clearChannelDelays() {
-    std::fill(channelDelaySeconds_.begin(), channelDelaySeconds_.end(), 0);
-}
-
-auto MaskerPlayerImpl::MainThread::channelDelaySeconds(
-    channel_index_type channel) -> double {
-    return at(channelDelaySeconds_, channel);
-}
-
-void MaskerPlayerImpl::MainThread::setFadeInOutSeconds(double x) {
-    fadeInOutSeconds = x;
-}
-
-auto MaskerPlayerImpl::MainThread::fadeTime() -> Duration {
-    return Duration{fadeInOutSeconds};
-}
-
-void MaskerPlayerImpl::MainThread::fadeIn() {
+void MaskerPlayerImpl::fadeIn() {
     if (fading())
         return;
 
-    av_speech_in_noise::set(fadingIn);
-    av_speech_in_noise::set(sharedState->pleaseFadeIn);
+    set(fadingIn);
+    postForExecution(sharedState.fadeIn);
+    play();
+    scheduleCallbackAfterSeconds(timer, 0.1);
+}
+
+void MaskerPlayerImpl::play() {
+    if (!audioEnabled) {
+        set(sharedState.pleaseEnableAudio);
+        audioEnabled = true;
+    }
     player->play();
-    scheduleCallbackAfterSeconds(0.1);
 }
 
-void MaskerPlayerImpl::MainThread::play() { player->play(); }
-
-void MaskerPlayerImpl::MainThread::stop() { player->stop(); }
-
-void MaskerPlayerImpl::MainThread::scheduleCallbackAfterSeconds(double x) {
-    timer->scheduleCallbackAfterSeconds(x);
+void MaskerPlayerImpl::stop() {
+    if (audioEnabled) {
+        postForExecution(sharedState.disableAudio);
+        auto expected{true};
+        while (!sharedState.disableAudio.complete.compare_exchange_weak(
+            expected, false))
+            expected = true;
+        audioEnabled = false;
+    }
+    player->stop();
 }
 
-auto MaskerPlayerImpl::MainThread::fading() -> bool {
-    return fadingIn || fadingOut;
-}
-
-void MaskerPlayerImpl::MainThread::fadeOut() {
+void MaskerPlayerImpl::fadeOut() {
     if (fading())
         return;
 
-    av_speech_in_noise::set(fadingOut);
-    av_speech_in_noise::set(sharedState->pleaseFadeOut);
-    scheduleCallbackAfterSeconds(0.1);
+    set(fadingOut);
+    postForExecution(sharedState.fadeOut);
+    scheduleCallbackAfterSeconds(timer, 0.1);
 }
 
-void MaskerPlayerImpl::MainThread::callback() {
-    if (thisCallClears(sharedState->fadeInComplete)) {
+void MaskerPlayerImpl::callback() {
+    if (thisCallClears(sharedState.fadeIn.complete)) {
         clear(fadingIn);
-        listener->fadeInComplete(
-            {{sharedState->fadeInCompleteSystemTime.load()},
-                sharedState->fadeInCompleteSystemTimeSampleOffset.load()});
+        listener->fadeInComplete({{sharedState.fadeInCompleteSystemTime.load()},
+            sharedState.fadeInCompleteSystemTimeSampleOffset.load()});
         return;
     }
 
-    if (thisCallClears(sharedState->fadeOutComplete)) {
+    if (thisCallClears(sharedState.fadeOut.complete)) {
         clear(fadingOut);
+        stop();
         listener->fadeOutComplete();
-        player->stop();
         return;
     }
 
-    scheduleCallbackAfterSeconds(0.1);
+    scheduleCallbackAfterSeconds(timer, 0.1);
 }
 
-void MaskerPlayerImpl::AudioThread::setSharedState(MaskerPlayerImpl *p) {
-    sharedState = p;
+auto MaskerPlayerImpl::fading() -> bool { return fadingIn || fadingOut; }
+
+// real-time audio thread
+void MaskerPlayerImpl::fillAudioBuffer(
+    const std::vector<channel_buffer_type> &audioBuffer,
+    player_system_time_type time) {
+    audioThread.fillAudioBuffer(audioBuffer, time);
 }
 
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
     player_system_time_type time) {
+    if (!enabled) {
+        if (thisCallClears(sharedState.pleaseEnableAudio))
+            enabled = true;
+        else
+            return;
+    }
+
     systemTime = time;
-    if (noChannels(sharedState->sourceAudio))
+    if (noChannels(sharedState.sourceAudio))
         for (auto channel : audioBuffer)
             mute(channel);
     else
@@ -373,29 +367,34 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     checkForFadeIn();
     checkForFadeOut();
     applyLevel(audioBuffer);
+
+    if (thisCallClears(sharedState.disableAudio.execute)) {
+        enabled = false;
+        postCompletion(sharedState.disableAudio);
+    }
 }
 
 void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const std::vector<channel_buffer_type> &audioBuffer) {
-    auto usingFirstChannelOnly{sharedState->firstChannelOnly.load()};
-    auto usingSecondChannelOnly{sharedState->secondChannelOnly.load()};
+    auto usingFirstChannelOnly{sharedState.firstChannelOnly.load()};
+    auto usingSecondChannelOnly{sharedState.secondChannelOnly.load()};
     for (channel_index_type i{0}; i < channels(audioBuffer); ++i) {
-        const auto samplesToWait{at(sharedState->samplesToWaitPerChannel, i)};
+        const auto samplesToWait{at(sharedState.samplesToWaitPerChannel, i)};
         const auto framesToMute =
             std::min(samplesToWait, framesToFill(audioBuffer));
         mute(channel(audioBuffer, i).first(framesToMute));
-        at(sharedState->samplesToWaitPerChannel, i) =
+        at(sharedState.samplesToWaitPerChannel, i) =
             samplesToWait - framesToMute;
-        auto frameHead{at(sharedState->audioFrameHeadsPerChannel, i)};
+        auto frameHead{at(sharedState.audioFrameHeadsPerChannel, i)};
         auto framesLeftToFill{framesToFill(audioBuffer) - framesToMute};
-        at(sharedState->audioFrameHeadsPerChannel, i) =
+        at(sharedState.audioFrameHeadsPerChannel, i) =
             (frameHead + framesLeftToFill) % sourceFrames();
         while (framesLeftToFill != 0) {
             const auto framesAboutToFill =
                 std::min(sourceFrames() - frameHead, framesLeftToFill);
-            const auto &source = channels(sharedState->sourceAudio) > i
-                ? channel(sharedState->sourceAudio, i)
-                : firstChannel(sharedState->sourceAudio);
+            const auto &source = channels(sharedState.sourceAudio) > i
+                ? channel(sharedState.sourceAudio, i)
+                : firstChannel(sharedState.sourceAudio);
             const auto sourceBeginning{source.begin() + frameHead};
             std::copy(sourceBeginning, sourceBeginning + framesAboutToFill,
                 channel(audioBuffer, i).begin() + framesToFill(audioBuffer) -
@@ -411,12 +410,12 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
 }
 
 auto MaskerPlayerImpl::AudioThread::sourceFrames() -> sample_index_type {
-    return samples(firstChannel(sharedState->sourceAudio));
+    return samples(firstChannel(sharedState.sourceAudio));
 }
 
 void MaskerPlayerImpl::AudioThread::applyLevel(
     const std::vector<channel_buffer_type> &audioBuffer) {
-    const auto levelScalar_{read(sharedState->levelScalar)};
+    const auto levelScalar_{read(sharedState.levelScalar)};
     for (auto i{sample_index_type{0}}; i < framesToFill(audioBuffer); ++i) {
         const auto fadeScalar{nextFadeScalar()};
         updateFadeState(i);
@@ -427,29 +426,29 @@ void MaskerPlayerImpl::AudioThread::applyLevel(
 }
 
 void MaskerPlayerImpl::AudioThread::checkForFadeIn() {
-    if (thisCallClears(sharedState->pleaseFadeIn))
+    if (thisCallClears(sharedState.fadeIn.execute))
         prepareToFadeIn();
 }
 
 void MaskerPlayerImpl::AudioThread::prepareToFadeIn() {
     updateWindowLength();
     hannCounter = 0;
-    av_speech_in_noise::set(fadingIn);
+    set(fadingIn);
 }
 
 void MaskerPlayerImpl::AudioThread::updateWindowLength() {
-    halfWindowLength = read(sharedState->levelTransitionSamples_);
+    halfWindowLength = read(sharedState.fadeSamples);
 }
 
 void MaskerPlayerImpl::AudioThread::checkForFadeOut() {
-    if (thisCallClears(sharedState->pleaseFadeOut))
+    if (thisCallClears(sharedState.fadeOut.execute))
         prepareToFadeOut();
 }
 
 void MaskerPlayerImpl::AudioThread::prepareToFadeOut() {
     updateWindowLength();
     hannCounter = halfWindowLength;
-    av_speech_in_noise::set(fadingOut);
+    set(fadingOut);
 }
 
 auto MaskerPlayerImpl::AudioThread::nextFadeScalar() -> double {
@@ -468,9 +467,9 @@ void MaskerPlayerImpl::AudioThread::updateFadeState(sample_index_type offset) {
 void MaskerPlayerImpl::AudioThread::checkForFadeInComplete(
     sample_index_type offset) {
     if (doneFadingIn()) {
-        sharedState->fadeInCompleteSystemTime.store(systemTime);
-        sharedState->fadeInCompleteSystemTimeSampleOffset.store(offset + 1);
-        av_speech_in_noise::set(sharedState->fadeInComplete);
+        sharedState.fadeInCompleteSystemTime.store(systemTime);
+        sharedState.fadeInCompleteSystemTimeSampleOffset.store(offset + 1);
+        postCompletion(sharedState.fadeIn);
         clear(fadingIn);
     }
 }
@@ -485,7 +484,7 @@ auto MaskerPlayerImpl::AudioThread::doneFadingOut() -> bool {
 
 void MaskerPlayerImpl::AudioThread::checkForFadeOutComplete() {
     if (doneFadingOut()) {
-        av_speech_in_noise::set(sharedState->fadeOutComplete);
+        postCompletion(sharedState.fadeOut);
         clear(fadingOut);
     }
 }
