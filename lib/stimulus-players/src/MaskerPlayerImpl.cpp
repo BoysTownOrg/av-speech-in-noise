@@ -125,6 +125,24 @@ static void scheduleCallbackAfterSeconds(Timer *timer, double x) {
     timer->scheduleCallbackAfterSeconds(x);
 }
 
+static auto audioDeviceDescriptions(AudioPlayer *player)
+    -> std::vector<std::string> {
+    std::vector<std::string> descriptions(
+        gsl::narrow<std::size_t>(player->deviceCount()));
+    std::generate(descriptions.begin(), descriptions.end(),
+        [&, n = 0]() mutable { return player->deviceDescription(n++); });
+    return descriptions;
+}
+
+static auto findDeviceIndex(AudioPlayer *player, const std::string &device)
+    -> int {
+    auto devices{audioDeviceDescriptions(player)};
+    auto found{std::find(devices.begin(), devices.end(), device)};
+    if (found == devices.end())
+        throw InvalidAudioDevice{};
+    return gsl::narrow<int>(std::distance(devices.begin(), found));
+}
+
 constexpr auto maxChannels{128};
 
 MaskerPlayerImpl::MaskerPlayerImpl(
@@ -180,7 +198,7 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     player->loadFile(file.path);
     recalculateSamplesToWaitPerChannel(
         samplesToWaitPerChannel, player, channelDelaySeconds);
-    write(levelTransitionSamples_,
+    write(levelTransitionSamples,
         gsl::narrow_cast<int>(
             fadeInOutSeconds * av_speech_in_noise::sampleRateHz(player)));
     sourceAudio = readAudio(file.path);
@@ -205,15 +223,7 @@ void MaskerPlayerImpl::apply(LevelAmplification x) {
 void MaskerPlayerImpl::setFadeInOutSeconds(double x) { fadeInOutSeconds = x; }
 
 void MaskerPlayerImpl::setAudioDevice(std::string device) {
-    player->setDevice(findDeviceIndex(device));
-}
-
-auto MaskerPlayerImpl::findDeviceIndex(const std::string &device) -> int {
-    auto devices{audioDeviceDescriptions_()};
-    auto found{std::find(devices.begin(), devices.end(), device)};
-    if (found == devices.end())
-        throw InvalidAudioDevice{};
-    return gsl::narrow<int>(std::distance(devices.begin(), found));
+    player->setDevice(findDeviceIndex(player, device));
 }
 
 auto MaskerPlayerImpl::readAudio(std::string filePath) -> audio_type {
@@ -222,14 +232,6 @@ auto MaskerPlayerImpl::readAudio(std::string filePath) -> audio_type {
     } catch (const AudioReader::InvalidFile &) {
         throw InvalidAudioFile{};
     }
-}
-
-auto MaskerPlayerImpl::audioDeviceDescriptions_() -> std::vector<std::string> {
-    std::vector<std::string> descriptions(
-        gsl::narrow<std::size_t>(player->deviceCount()));
-    std::generate(descriptions.begin(), descriptions.end(),
-        [&, n = 0]() mutable { return player->deviceDescription(n++); });
-    return descriptions;
 }
 
 auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
@@ -433,7 +435,7 @@ void MaskerPlayerImpl::AudioThread::prepareToFadeIn() {
 }
 
 void MaskerPlayerImpl::AudioThread::updateWindowLength() {
-    halfWindowLength = read(sharedState->levelTransitionSamples_);
+    halfWindowLength = read(sharedState->levelTransitionSamples);
 }
 
 void MaskerPlayerImpl::AudioThread::checkForFadeOut() {

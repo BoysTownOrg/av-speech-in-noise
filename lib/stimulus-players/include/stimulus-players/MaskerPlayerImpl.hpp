@@ -87,8 +87,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
 
   private:
     auto readAudio(std::string) -> audio_type;
-    auto audioDeviceDescriptions_() -> std::vector<std::string>;
-    auto findDeviceIndex(const std::string &device) -> int;
     auto fading() -> bool;
 
     class AudioThread {
@@ -137,7 +135,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     std::atomic<double> levelScalar{1};
     std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
     std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
-    std::atomic<int> levelTransitionSamples_{};
+    std::atomic<int> levelTransitionSamples{};
     std::atomic<bool> firstChannelOnly{};
     std::atomic<bool> secondChannelOnly{};
     std::atomic<bool> fadeOutComplete{};
