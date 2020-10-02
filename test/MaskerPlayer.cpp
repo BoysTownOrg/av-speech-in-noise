@@ -1369,15 +1369,12 @@ MASKER_PLAYER_TEST(
             av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
             set(mutex, fadeOutComplete);
             condition.notify_one();
-            bool done{};
-            while (!done) {
+            while (true) {
                 av_speech_in_noise::fillAudioBuffer(observer, 1, 1);
-                {
-                    std::lock_guard<std::mutex> lock{mutex};
-                    done = finish;
-                }
+                std::lock_guard<std::mutex> lock{mutex};
+                if (finish)
+                    return std::vector<std::vector<float>>{};
             }
-            return std::vector<std::vector<float>>{};
         })};
     fadeIn(player);
     wait(mutex, condition, fadeInComplete);
