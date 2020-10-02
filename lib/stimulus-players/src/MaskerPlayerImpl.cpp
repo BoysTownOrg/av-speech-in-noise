@@ -106,7 +106,7 @@ MaskerPlayerImpl::MaskerPlayerImpl(
     AudioPlayer *player, AudioReader *reader, Timer *timer)
     : mainThread{player, timer}, samplesToWaitPerChannel(maxChannels),
       audioFrameHeadsPerChannel(maxChannels), channelDelaySeconds_(maxChannels),
-      player{player}, timer{timer}, reader{reader} {
+      player{player}, reader{reader}, timer{timer} {
     player->attach(this);
     timer->attach(this);
     mainThread.setSharedState(this);
@@ -273,8 +273,8 @@ void MaskerPlayerImpl::fadeIn() {
     if (fading())
         return;
 
-    av_speech_in_noise::set(fadingIn);
-    av_speech_in_noise::set(pleaseFadeIn);
+    set(fadingIn);
+    set(pleaseFadeIn);
     play();
     scheduleCallbackAfterSeconds(0.1);
 }
@@ -302,8 +302,8 @@ void MaskerPlayerImpl::fadeOut() {
     if (fading())
         return;
 
-    av_speech_in_noise::set(fadingOut);
-    av_speech_in_noise::set(pleaseFadeOut);
+    set(fadingOut);
+    set(pleaseFadeOut);
     scheduleCallbackAfterSeconds(0.1);
 }
 
@@ -427,7 +427,7 @@ void MaskerPlayerImpl::AudioThread::checkForFadeIn() {
 void MaskerPlayerImpl::AudioThread::prepareToFadeIn() {
     updateWindowLength();
     hannCounter = 0;
-    av_speech_in_noise::set(fadingIn);
+    set(fadingIn);
 }
 
 void MaskerPlayerImpl::AudioThread::updateWindowLength() {
@@ -442,7 +442,7 @@ void MaskerPlayerImpl::AudioThread::checkForFadeOut() {
 void MaskerPlayerImpl::AudioThread::prepareToFadeOut() {
     updateWindowLength();
     hannCounter = halfWindowLength;
-    av_speech_in_noise::set(fadingOut);
+    set(fadingOut);
 }
 
 auto MaskerPlayerImpl::AudioThread::nextFadeScalar() -> double {
@@ -463,7 +463,7 @@ void MaskerPlayerImpl::AudioThread::checkForFadeInComplete(
     if (doneFadingIn()) {
         sharedState->fadeInCompleteSystemTime.store(systemTime);
         sharedState->fadeInCompleteSystemTimeSampleOffset.store(offset + 1);
-        av_speech_in_noise::set(sharedState->fadeInComplete);
+        set(sharedState->fadeInComplete);
         clear(fadingIn);
     }
 }
@@ -478,7 +478,7 @@ auto MaskerPlayerImpl::AudioThread::doneFadingOut() -> bool {
 
 void MaskerPlayerImpl::AudioThread::checkForFadeOutComplete() {
     if (doneFadingOut()) {
-        av_speech_in_noise::set(sharedState->fadeOutComplete);
+        set(sharedState->fadeOutComplete);
         clear(fadingOut);
     }
 }
