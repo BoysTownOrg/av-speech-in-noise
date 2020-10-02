@@ -105,7 +105,8 @@ constexpr auto maxChannels{128};
 MaskerPlayerImpl::MaskerPlayerImpl(
     AudioPlayer *player, AudioReader *reader, Timer *timer)
     : mainThread{player, timer}, samplesToWaitPerChannel(maxChannels),
-      audioFrameHeadsPerChannel(maxChannels), player{player}, reader{reader} {
+      audioFrameHeadsPerChannel(maxChannels),
+      channelDelaySeconds_(maxChannels), player{player}, reader{reader} {
     player->attach(this);
     timer->attach(this);
     mainThread.setSharedState(this);
@@ -144,7 +145,7 @@ void MaskerPlayerImpl::recalculateSamplesToWaitPerChannel() {
         samplesToWaitPerChannel.end(), [&, n = 0]() mutable {
             return gsl::narrow_cast<channel_index_type>(
                 av_speech_in_noise::sampleRateHz(player) *
-                mainThread.channelDelaySeconds(n++));
+                at(channelDelaySeconds_, n++));
         });
 }
 
@@ -243,7 +244,7 @@ void MaskerPlayerImpl::setChannelDelaySeconds(
     if (mainThread.audioEnabled)
         return;
 
-    mainThread.setChannelDelaySeconds(channel, seconds);
+    at(channelDelaySeconds_, channel) = seconds;
     recalculateSamplesToWaitPerChannel();
 }
 
@@ -251,7 +252,7 @@ void MaskerPlayerImpl::clearChannelDelays() {
     if (mainThread.audioEnabled)
         return;
 
-    mainThread.clearChannelDelays();
+    std::fill(channelDelaySeconds_.begin(), channelDelaySeconds_.end(), 0);
     recalculateSamplesToWaitPerChannel();
 }
 
@@ -281,7 +282,7 @@ void MaskerPlayerImpl::fadeOut() { mainThread.fadeOut(); }
 void MaskerPlayerImpl::callback() { mainThread.callback(); }
 
 MaskerPlayerImpl::MainThread::MainThread(AudioPlayer *player, Timer *timer)
-    : channelDelaySeconds_(maxChannels), player{player}, timer{timer} {}
+    : player{player}, timer{timer} {}
 
 void MaskerPlayerImpl::MainThread::setSharedState(MaskerPlayerImpl *p) {
     sharedState = p;
@@ -289,20 +290,6 @@ void MaskerPlayerImpl::MainThread::setSharedState(MaskerPlayerImpl *p) {
 
 void MaskerPlayerImpl::MainThread::attach(MaskerPlayer::Observer *e) {
     listener = e;
-}
-
-void MaskerPlayerImpl::MainThread::setChannelDelaySeconds(
-    channel_index_type channel, double seconds) {
-    at(channelDelaySeconds_, channel) = seconds;
-}
-
-void MaskerPlayerImpl::MainThread::clearChannelDelays() {
-    std::fill(channelDelaySeconds_.begin(), channelDelaySeconds_.end(), 0);
-}
-
-auto MaskerPlayerImpl::MainThread::channelDelaySeconds(
-    channel_index_type channel) -> double {
-    return at(channelDelaySeconds_, channel);
 }
 
 void MaskerPlayerImpl::MainThread::fadeIn() {

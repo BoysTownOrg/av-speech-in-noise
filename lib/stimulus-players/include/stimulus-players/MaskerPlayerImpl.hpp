@@ -134,16 +134,12 @@ class MaskerPlayerImpl : public MaskerPlayer,
         void play();
         void stop();
         void fadeOut();
-        void setChannelDelaySeconds(channel_index_type channel, double seconds);
-        void clearChannelDelays();
-        auto channelDelaySeconds(channel_index_type channel) -> double;
         bool audioEnabled{};
 
       private:
         auto fading() -> bool;
         void scheduleCallbackAfterSeconds(double);
 
-        std::vector<double> channelDelaySeconds_;
         MaskerPlayerImpl *sharedState{};
         AudioPlayer *player;
         MaskerPlayer::Observer *listener{};
@@ -157,6 +153,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     audio_type sourceAudio{};
     std::vector<sample_index_type> samplesToWaitPerChannel;
     std::vector<sample_index_type> audioFrameHeadsPerChannel;
+    std::vector<double> channelDelaySeconds_;
     AudioPlayer *player;
     AudioReader *reader;
     double fadeInOutSeconds{};
