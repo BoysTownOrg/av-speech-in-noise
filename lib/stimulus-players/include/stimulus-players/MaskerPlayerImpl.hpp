@@ -89,7 +89,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
     auto readAudio(std::string) -> audio_type;
     auto audioDeviceDescriptions_() -> std::vector<std::string>;
     auto findDeviceIndex(const std::string &device) -> int;
-    void recalculateSamplesToWaitPerChannel();
     auto fading() -> bool;
     void scheduleCallbackAfterSeconds(double);
 

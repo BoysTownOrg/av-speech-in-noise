@@ -10,6 +10,10 @@ static auto at(std::vector<double> &x, gsl::index n) -> double & {
     return x.at(n);
 }
 
+static auto at(const std::vector<double> &x, gsl::index n) -> double {
+    return x.at(n);
+}
+
 static auto at(std::vector<sample_index_type> &x, gsl::index n)
     -> sample_index_type & {
     return x.at(n);
@@ -125,25 +129,28 @@ static auto mathModulus(sample_index_type a, sample_index_type b)
     return result > 0 ? result : result + b;
 }
 
-void MaskerPlayerImpl::seekSeconds(double x) {
-    if (audioEnabled)
-        return;
-
-    recalculateSamplesToWaitPerChannel();
-    std::fill(audioFrameHeadsPerChannel.begin(),
-        audioFrameHeadsPerChannel.end(),
-        mathModulus(gsl::narrow_cast<sample_index_type>(
-                        x * av_speech_in_noise::sampleRateHz(player)),
-            samples(sourceAudio)));
-}
-
-void MaskerPlayerImpl::recalculateSamplesToWaitPerChannel() {
+static void recalculateSamplesToWaitPerChannel(
+    std::vector<sample_index_type> &samplesToWaitPerChannel,
+    AudioPlayer *player, const std::vector<double> &channelDelaySeconds_) {
     std::generate(samplesToWaitPerChannel.begin(),
         samplesToWaitPerChannel.end(), [&, n = 0]() mutable {
             return gsl::narrow_cast<channel_index_type>(
                 av_speech_in_noise::sampleRateHz(player) *
                 at(channelDelaySeconds_, n++));
         });
+}
+
+void MaskerPlayerImpl::seekSeconds(double x) {
+    if (audioEnabled)
+        return;
+
+    recalculateSamplesToWaitPerChannel(
+        samplesToWaitPerChannel, player, channelDelaySeconds_);
+    std::fill(audioFrameHeadsPerChannel.begin(),
+        audioFrameHeadsPerChannel.end(),
+        mathModulus(gsl::narrow_cast<sample_index_type>(
+                        x * av_speech_in_noise::sampleRateHz(player)),
+            samples(sourceAudio)));
 }
 
 auto MaskerPlayerImpl::fadeTime() -> Duration {
@@ -167,7 +174,8 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
         return;
 
     player->loadFile(file.path);
-    recalculateSamplesToWaitPerChannel();
+    recalculateSamplesToWaitPerChannel(
+        samplesToWaitPerChannel, player, channelDelaySeconds_);
     write(levelTransitionSamples_,
         gsl::narrow_cast<int>(
             fadeInOutSeconds * av_speech_in_noise::sampleRateHz(player)));
@@ -235,7 +243,8 @@ void MaskerPlayerImpl::setChannelDelaySeconds(
         return;
 
     at(channelDelaySeconds_, channel) = seconds;
-    recalculateSamplesToWaitPerChannel();
+    recalculateSamplesToWaitPerChannel(
+        samplesToWaitPerChannel, player, channelDelaySeconds_);
 }
 
 void MaskerPlayerImpl::clearChannelDelays() {
@@ -243,7 +252,8 @@ void MaskerPlayerImpl::clearChannelDelays() {
         return;
 
     std::fill(channelDelaySeconds_.begin(), channelDelaySeconds_.end(), 0);
-    recalculateSamplesToWaitPerChannel();
+    recalculateSamplesToWaitPerChannel(
+        samplesToWaitPerChannel, player, channelDelaySeconds_);
 }
 
 void MaskerPlayerImpl::useFirstChannelOnly() {
