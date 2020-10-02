@@ -517,29 +517,29 @@ class MaskerPlayerTests : public ::testing::Test {
     void setAudioDevice(std::string s) { player.setAudioDevice(std::move(s)); }
 
     void assertTimerCallbackDoesNotScheduleAdditionalCallback() {
-        assertCallDoesNotScheduleAdditionalCallback(
-            &MaskerPlayerTests::timerCallback);
+        assertCallDoesNotScheduleAdditionalCallback([&] { callback(timer); });
     }
 
     void assertCallDoesNotScheduleAdditionalCallback(
-        void (MaskerPlayerTests::*f)()) {
+        const std::function<void()> &f) {
         clearCallbackCount();
-        (this->*f)();
+        f();
         assertCallbackNotScheduled();
     }
 
     void assertFadeInDoesNotScheduleAdditionalCallback() {
-        assertCallDoesNotScheduleAdditionalCallback(&MaskerPlayerTests::fadeIn);
+        assertCallDoesNotScheduleAdditionalCallback(
+            [&] { av_speech_in_noise::fadeIn(player); });
     }
 
     void assertFadeOutDoesNotScheduleAdditionalCallback() {
         assertCallDoesNotScheduleAdditionalCallback(
-            &MaskerPlayerTests::fadeOut);
+            [&] { av_speech_in_noise::fadeOut(player); });
     }
 
     void assertFadeInSchedulesCallback() {
         clearCallbackCount();
-        fadeIn();
+        av_speech_in_noise::fadeIn(player);
         assertCallbackScheduled();
     }
 
@@ -548,7 +548,7 @@ class MaskerPlayerTests : public ::testing::Test {
     void setFadeInOutSeconds(double x) { player.setFadeInOutSeconds(x); }
 
     void fadeInFillAndCallback(channel_index_type n) {
-        fadeIn();
+        av_speech_in_noise::fadeIn(player);
         fillAudioBufferMono(n);
         timerCallback();
     }
