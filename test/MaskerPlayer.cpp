@@ -479,8 +479,6 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void setAsOutputDevice(int i) { audioPlayer.setAsOutputDevice(i); }
 
-    void fadeOut() { player.fadeOut(); }
-
     void timerCallback() { timer.callback(); }
 
     void assertCallbackScheduled() {
@@ -530,8 +528,7 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     void assertFadeOutDoesNotScheduleAdditionalCallback() {
-        assertCallDoesNotScheduleAdditionalCallback(
-            [&] { av_speech_in_noise::fadeOut(player); });
+        assertCallDoesNotScheduleAdditionalCallback([&] { fadeOut(player); });
     }
 
     void assertFadeInSchedulesCallback() {
@@ -616,7 +613,7 @@ MASKER_PLAYER_TEST(fadeOutThenLoad) {
         timerCallback();
         std::this_thread::sleep_for(std::chrono::milliseconds{20});
     }
-    player.fadeOut();
+    fadeOut(player);
     while (!listener.fadeOutCompleted()) {
         timerCallback();
         std::this_thread::sleep_for(std::chrono::milliseconds{20});
@@ -1257,7 +1254,7 @@ MASKER_PLAYER_TEST(DISABLED_observerNotifiedOnceForFadeOut) {
     fadeIn(player);
     fillAudioBufferMono(halfWindowLength);
     timerCallback();
-    fadeOut();
+    fadeOut(player);
     callbackAfterMonoFill(halfWindowLength);
     assertFadeOutCompletions(1);
     callbackAfterMonoFill();
@@ -1271,7 +1268,7 @@ MASKER_PLAYER_TEST(DISABLED_audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
     loadMonoAudio(player, audioReader, {0});
     fadeInFillAndCallback(halfWindowLength);
 
-    fadeOut();
+    fadeOut(player);
     for (int i = 0; i < 3 * 4; ++i) {
         callbackAfterMonoFill(1);
         AV_SPEECH_IN_NOISE_EXPECT_FALSE(playerStopped());
@@ -1372,7 +1369,7 @@ MASKER_PLAYER_TEST(
     fadeIn(player);
     fillAudioBufferMono(2 * 3 + 1);
     timerCallback();
-    fadeOut();
+    fadeOut(player);
     fillAudioBufferMono(2 * 3 + 1);
     assertTimerCallbackDoesNotScheduleAdditionalCallback();
 }
