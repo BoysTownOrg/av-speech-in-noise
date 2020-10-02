@@ -101,7 +101,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         std::atomic<double> levelScalar{1};
         std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
         std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
-        std::atomic<int> levelTransitionSamples{};
+        std::atomic<int> fadeSamples{};
         std::atomic<bool> firstChannelOnly{};
         std::atomic<bool> secondChannelOnly{};
         LockFreeMessage fadeIn{};

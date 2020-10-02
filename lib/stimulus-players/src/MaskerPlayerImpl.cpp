@@ -202,7 +202,7 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     player->loadFile(file.path);
     recalculateSamplesToWaitPerChannel(
         sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
-    write(sharedState.levelTransitionSamples,
+    write(sharedState.fadeSamples,
         gsl::narrow_cast<int>(
             fadeInOutSeconds * av_speech_in_noise::sampleRateHz(player)));
     sharedState.sourceAudio = readAudio(file.path);
@@ -437,7 +437,7 @@ void MaskerPlayerImpl::AudioThread::prepareToFadeIn() {
 }
 
 void MaskerPlayerImpl::AudioThread::updateWindowLength() {
-    halfWindowLength = read(sharedState.levelTransitionSamples);
+    halfWindowLength = read(sharedState.fadeSamples);
 }
 
 void MaskerPlayerImpl::AudioThread::checkForFadeOut() {
