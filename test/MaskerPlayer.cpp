@@ -1234,21 +1234,6 @@ MASKER_PLAYER_TEST(fadeOutCompleteOnlyAfterFadeTime) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(listener.fadeOutCompleted());
 }
 
-MASKER_PLAYER_TEST(DISABLED_observerNotifiedOnceForFadeOut) {
-    setFadeInOutSeconds(player, 2);
-    setSampleRateHz(audioPlayer, 3);
-    auto halfWindowLength = 2 * 3 + 1;
-    loadMonoAudio(player, audioReader, {0});
-    fadeIn(player);
-    fillAudioBufferMono(halfWindowLength);
-    callback(timer);
-    fadeOut(player);
-    callbackAfterMonoFill(halfWindowLength);
-    assertFadeOutCompletions(1);
-    callbackAfterMonoFill();
-    assertFadeOutCompletions(1);
-}
-
 MASKER_PLAYER_TEST(audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
     setFadeInOutSeconds(player, 3);
     setSampleRateHz(audioPlayer, 4);
