@@ -283,7 +283,7 @@ void MaskerPlayerImpl::fadeIn() {
         return;
 
     set(fadingIn);
-    set(sharedState.toFadeIn.execute);
+    set(sharedState.fadeIn.execute);
     play();
     scheduleCallbackAfterSeconds(timer, 0.1);
 }
@@ -298,9 +298,9 @@ void MaskerPlayerImpl::play() {
 
 void MaskerPlayerImpl::stop() {
     if (audioEnabled) {
-        set(sharedState.toDisableAudio.execute);
+        set(sharedState.disableAudio.execute);
         auto expected{true};
-        while (!sharedState.toDisableAudio.complete.compare_exchange_weak(
+        while (!sharedState.disableAudio.complete.compare_exchange_weak(
             expected, false))
             expected = true;
         audioEnabled = false;
@@ -313,19 +313,19 @@ void MaskerPlayerImpl::fadeOut() {
         return;
 
     set(fadingOut);
-    set(sharedState.toFadeOut.execute);
+    set(sharedState.fadeOut.execute);
     scheduleCallbackAfterSeconds(timer, 0.1);
 }
 
 void MaskerPlayerImpl::callback() {
-    if (thisCallClears(sharedState.toFadeIn.complete)) {
+    if (thisCallClears(sharedState.fadeIn.complete)) {
         clear(fadingIn);
         listener->fadeInComplete({{sharedState.fadeInCompleteSystemTime.load()},
             sharedState.fadeInCompleteSystemTimeSampleOffset.load()});
         return;
     }
 
-    if (thisCallClears(sharedState.toFadeOut.complete)) {
+    if (thisCallClears(sharedState.fadeOut.complete)) {
         clear(fadingOut);
         stop();
         listener->fadeOutComplete();
@@ -364,9 +364,9 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     checkForFadeOut();
     applyLevel(audioBuffer);
 
-    if (thisCallClears(sharedState.toDisableAudio.execute)) {
+    if (thisCallClears(sharedState.disableAudio.execute)) {
         enabled = false;
-        set(sharedState.toDisableAudio.complete);
+        set(sharedState.disableAudio.complete);
     }
 }
 
@@ -422,7 +422,7 @@ void MaskerPlayerImpl::AudioThread::applyLevel(
 }
 
 void MaskerPlayerImpl::AudioThread::checkForFadeIn() {
-    if (thisCallClears(sharedState.toFadeIn.execute))
+    if (thisCallClears(sharedState.fadeIn.execute))
         prepareToFadeIn();
 }
 
@@ -437,7 +437,7 @@ void MaskerPlayerImpl::AudioThread::updateWindowLength() {
 }
 
 void MaskerPlayerImpl::AudioThread::checkForFadeOut() {
-    if (thisCallClears(sharedState.toFadeOut.execute))
+    if (thisCallClears(sharedState.fadeOut.execute))
         prepareToFadeOut();
 }
 
@@ -465,7 +465,7 @@ void MaskerPlayerImpl::AudioThread::checkForFadeInComplete(
     if (doneFadingIn()) {
         sharedState.fadeInCompleteSystemTime.store(systemTime);
         sharedState.fadeInCompleteSystemTimeSampleOffset.store(offset + 1);
-        set(sharedState.toFadeIn.complete);
+        set(sharedState.fadeIn.complete);
         clear(fadingIn);
     }
 }
@@ -480,7 +480,7 @@ auto MaskerPlayerImpl::AudioThread::doneFadingOut() -> bool {
 
 void MaskerPlayerImpl::AudioThread::checkForFadeOutComplete() {
     if (doneFadingOut()) {
-        set(sharedState.toFadeOut.complete);
+        set(sharedState.fadeOut.complete);
         clear(fadingOut);
     }
 }

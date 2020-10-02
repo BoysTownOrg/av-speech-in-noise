@@ -104,9 +104,9 @@ class MaskerPlayerImpl : public MaskerPlayer,
         std::atomic<int> levelTransitionSamples{};
         std::atomic<bool> firstChannelOnly{};
         std::atomic<bool> secondChannelOnly{};
-        LockFreeMessage toFadeIn{};
-        LockFreeMessage toFadeOut{};
-        LockFreeMessage toDisableAudio{};
+        LockFreeMessage fadeIn{};
+        LockFreeMessage fadeOut{};
+        LockFreeMessage disableAudio{};
         std::atomic<bool> pleaseEnableAudio{};
     };
 
