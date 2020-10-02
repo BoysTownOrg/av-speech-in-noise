@@ -148,7 +148,9 @@ void MaskerPlayerImpl::recalculateSamplesToWaitPerChannel() {
         });
 }
 
-auto MaskerPlayerImpl::fadeTime() -> Duration { return mainThread.fadeTime(); }
+auto MaskerPlayerImpl::fadeTime() -> Duration {
+    return Duration{fadeInOutSeconds};
+}
 
 auto MaskerPlayerImpl::sampleRateHz() -> double {
     return av_speech_in_noise::sampleRateHz(player);
@@ -169,8 +171,8 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     player->loadFile(file.path);
     recalculateSamplesToWaitPerChannel();
     write(levelTransitionSamples_,
-        gsl::narrow_cast<int>(mainThread.fadeTime().seconds *
-            av_speech_in_noise::sampleRateHz(player)));
+        gsl::narrow_cast<int>(
+            fadeInOutSeconds * av_speech_in_noise::sampleRateHz(player)));
     sourceAudio = readAudio(file.path);
     std::fill(
         audioFrameHeadsPerChannel.begin(), audioFrameHeadsPerChannel.end(), 0);
@@ -197,9 +199,7 @@ void MaskerPlayerImpl::apply(LevelAmplification x) {
     write(levelScalar, std::pow(10, x.dB / 20));
 }
 
-void MaskerPlayerImpl::setFadeInOutSeconds(double x) {
-    mainThread.setFadeInOutSeconds(x);
-}
+void MaskerPlayerImpl::setFadeInOutSeconds(double x) { fadeInOutSeconds = x; }
 
 void MaskerPlayerImpl::setAudioDevice(std::string device) {
     player->setDevice(findDeviceIndex(device));
@@ -303,14 +303,6 @@ void MaskerPlayerImpl::MainThread::clearChannelDelays() {
 auto MaskerPlayerImpl::MainThread::channelDelaySeconds(
     channel_index_type channel) -> double {
     return at(channelDelaySeconds_, channel);
-}
-
-void MaskerPlayerImpl::MainThread::setFadeInOutSeconds(double x) {
-    fadeInOutSeconds = x;
-}
-
-auto MaskerPlayerImpl::MainThread::fadeTime() -> Duration {
-    return Duration{fadeInOutSeconds};
 }
 
 void MaskerPlayerImpl::MainThread::fadeIn() {

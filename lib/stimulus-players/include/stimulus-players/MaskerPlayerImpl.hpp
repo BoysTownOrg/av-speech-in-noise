@@ -137,8 +137,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
         void setChannelDelaySeconds(channel_index_type channel, double seconds);
         void clearChannelDelays();
         auto channelDelaySeconds(channel_index_type channel) -> double;
-        void setFadeInOutSeconds(double);
-        auto fadeTime() -> Duration;
         bool audioEnabled{};
 
       private:
@@ -150,7 +148,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
         AudioPlayer *player;
         MaskerPlayer::Observer *listener{};
         Timer *timer;
-        double fadeInOutSeconds{};
         bool fadingIn{};
         bool fadingOut{};
     };
@@ -162,6 +159,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     std::vector<sample_index_type> audioFrameHeadsPerChannel;
     AudioPlayer *player;
     AudioReader *reader;
+    double fadeInOutSeconds{};
     std::atomic<double> levelScalar{1};
     std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
     std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
