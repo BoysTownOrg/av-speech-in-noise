@@ -1319,19 +1319,43 @@ MASKER_PLAYER_TEST(fadeInWhileFadingOutDoesNotScheduleAdditionalCallback) {
         });
 }
 
-MASKER_PLAYER_TEST(DISABLED_fadeInAfterFadingOutSchedulesCallback) {
+MASKER_PLAYER_TEST(fadeInAfterFadingOutSchedulesCallback) {
     setFadeInOutSeconds(player, 2);
     setSampleRateHz(audioPlayer, 3);
     loadMonoAudio(player, audioReader, {0});
-    assertOnPlayTaskAfterFadeOut(
-        player, audioPlayer, timer, 2 * 3 + 1,
-        [=](AudioPlayer::Observer *observer) {
-            return av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
-        },
-        [=](const std::vector<std::vector<float>> &) {
-            callback(timer);
-            assertFadeInSchedulesCallback();
-        });
+    bool fadeInComplete{};
+    bool fadeOutComplete{};
+    bool fadeOutCalled{};
+    bool finish{};
+    std::mutex mutex{};
+    std::condition_variable condition{};
+    auto future{
+        setOnPlayTask(audioPlayer, [&](AudioPlayer::Observer *observer) {
+            av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
+            set(mutex, fadeInComplete);
+            condition.notify_one();
+            wait(mutex, condition, fadeOutCalled);
+            av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
+            set(mutex, fadeOutComplete);
+            condition.notify_one();
+            while (true) {
+                av_speech_in_noise::fillAudioBuffer(observer, 1, 1);
+                std::lock_guard<std::mutex> lock{mutex};
+                if (finish)
+                    return std::vector<std::vector<float>>{};
+            }
+        })};
+    fadeIn(player);
+    wait(mutex, condition, fadeInComplete);
+    callback(timer);
+    fadeOut(player);
+    set(mutex, fadeOutCalled);
+    condition.notify_one();
+    wait(mutex, condition, fadeOutComplete);
+    callback(timer);
+    set(mutex, finish);
+    future.get();
+    assertFadeInSchedulesCallback();
 }
 
 MASKER_PLAYER_TEST(callbackSchedulesAdditionalCallback) {
