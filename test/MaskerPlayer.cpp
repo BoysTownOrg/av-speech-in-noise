@@ -479,8 +479,6 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void setAsOutputDevice(int i) { audioPlayer.setAsOutputDevice(i); }
 
-    void timerCallback() { timer.callback(); }
-
     void assertCallbackScheduled() {
         AV_SPEECH_IN_NOISE_EXPECT_TRUE(callbackScheduled());
     }
@@ -493,7 +491,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void callbackAfterMonoFill(channel_index_type n = 0) {
         fillAudioBufferMono(n);
-        timerCallback();
+        callback(timer);
     }
 
     void assertFadeOutNotCompletedAfterMonoFill(channel_index_type n) {
@@ -544,7 +542,7 @@ class MaskerPlayerTests : public ::testing::Test {
     void fadeInFillAndCallback(channel_index_type n) {
         fadeIn(player);
         fillAudioBufferMono(n);
-        timerCallback();
+        callback(timer);
     }
 
     void assertFadeInCompletions(int n) {
@@ -610,12 +608,12 @@ MASKER_PLAYER_TEST(fadeOutThenLoad) {
     audioPlayer.setRealisticExecution();
     fadeIn(player);
     while (!listener.fadeInCompleted()) {
-        timerCallback();
+        callback(timer);
         std::this_thread::sleep_for(std::chrono::milliseconds{20});
     }
     fadeOut(player);
     while (!listener.fadeOutCompleted()) {
-        timerCallback();
+        callback(timer);
         std::this_thread::sleep_for(std::chrono::milliseconds{20});
     }
     loadFile(player);
@@ -1186,7 +1184,7 @@ MASKER_PLAYER_TEST(fadeInCompleteOnlyAfterFadeTime) {
             condition.wait(lock, [&] { return filledOnce; });
             filledOnce = false;
         }
-        timerCallback();
+        callback(timer);
         AV_SPEECH_IN_NOISE_EXPECT_FALSE(listener.fadeInCompleted());
     }
     {
@@ -1198,7 +1196,7 @@ MASKER_PLAYER_TEST(fadeInCompleteOnlyAfterFadeTime) {
         std::unique_lock<std::mutex> lock{mutex};
         condition.wait(lock, [&] { return filledOnce; });
     }
-    timerCallback();
+    callback(timer);
     future.get();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(listener.fadeInCompleted());
 }
@@ -1211,7 +1209,7 @@ MASKER_PLAYER_TEST(fadeInCompletePassesSystemTimeAndSampleOffset) {
     fadeIn(player);
     fillAudioBufferMono(5);
     fillAudioBufferMono(3 * 4 - 5 + 1, 6);
-    timerCallback();
+    callback(timer);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         player_system_time_type{6}, listener.fadeInCompleteSystemTime());
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(gsl::index{3 * 4 - 5 + 1},
@@ -1224,7 +1222,7 @@ MASKER_PLAYER_TEST(observerNotifiedOnlyOnceForFadeIn) {
     loadMonoAudio(player, audioReader, {0});
     fadeIn(player);
     fillAudioBufferMono(2 * 3 + 1);
-    timerCallback();
+    callback(timer);
     assertFadeInCompletions(1);
     callbackAfterMonoFill();
     assertFadeInCompletions(1);
@@ -1253,7 +1251,7 @@ MASKER_PLAYER_TEST(DISABLED_observerNotifiedOnceForFadeOut) {
     loadMonoAudio(player, audioReader, {0});
     fadeIn(player);
     fillAudioBufferMono(halfWindowLength);
-    timerCallback();
+    callback(timer);
     fadeOut(player);
     callbackAfterMonoFill(halfWindowLength);
     assertFadeOutCompletions(1);
@@ -1341,13 +1339,13 @@ MASKER_PLAYER_TEST(DISABLED_fadeInAfterFadingOutSchedulesCallback) {
             return av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
         },
         [=](const std::vector<std::vector<float>> &) {
-            timerCallback();
+            callback(timer);
             assertFadeInSchedulesCallback();
         });
 }
 
 MASKER_PLAYER_TEST(callbackSchedulesAdditionalCallback) {
-    timerCallback();
+    callback(timer);
     assertCallbackScheduled();
 }
 
@@ -1368,7 +1366,7 @@ MASKER_PLAYER_TEST(
     loadMonoAudio(player, audioReader, {0});
     fadeIn(player);
     fillAudioBufferMono(2 * 3 + 1);
-    timerCallback();
+    callback(timer);
     fadeOut(player);
     fillAudioBufferMono(2 * 3 + 1);
     assertTimerCallbackDoesNotScheduleAdditionalCallback();
