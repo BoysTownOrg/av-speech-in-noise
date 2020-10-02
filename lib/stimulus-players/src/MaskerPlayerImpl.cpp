@@ -77,6 +77,8 @@ static void set(std::atomic<bool> &x) { x.store(true); }
 
 static void postForExecution(LockFreeMessage &x) { set(x.execute); }
 
+static void postCompletion(LockFreeMessage &x) { set(x.complete); }
+
 static void clear(std::atomic<bool> &x) { x.store(false); }
 
 static void set(bool &x) { x = true; }
@@ -368,7 +370,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
 
     if (thisCallClears(sharedState.disableAudio.execute)) {
         enabled = false;
-        set(sharedState.disableAudio.complete);
+        postCompletion(sharedState.disableAudio);
     }
 }
 
@@ -467,7 +469,7 @@ void MaskerPlayerImpl::AudioThread::checkForFadeInComplete(
     if (doneFadingIn()) {
         sharedState.fadeInCompleteSystemTime.store(systemTime);
         sharedState.fadeInCompleteSystemTimeSampleOffset.store(offset + 1);
-        set(sharedState.fadeIn.complete);
+        postCompletion(sharedState.fadeIn);
         clear(fadingIn);
     }
 }
@@ -482,7 +484,7 @@ auto MaskerPlayerImpl::AudioThread::doneFadingOut() -> bool {
 
 void MaskerPlayerImpl::AudioThread::checkForFadeOutComplete() {
     if (doneFadingOut()) {
-        set(sharedState.fadeOut.complete);
+        postCompletion(sharedState.fadeOut);
         clear(fadingOut);
     }
 }
