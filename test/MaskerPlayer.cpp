@@ -449,6 +449,12 @@ void fadeOut(MaskerPlayerImpl &player) { player.fadeOut(); }
 
 void callback(TimerStub &timer) { timer.callback(); }
 
+void clearCallbackCount(TimerStub &timer) { timer.clearCallbackCount(); }
+
+void setAudioDevice(MaskerPlayerImpl &player, std::string s) {
+    player.setAudioDevice(std::move(s));
+}
+
 using channel_index_type = gsl::index;
 
 class MaskerPlayerTests : public ::testing::Test {
@@ -507,8 +513,6 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     void clearCallbackCount() { timer.clearCallbackCount(); }
-
-    void setAudioDevice(std::string s) { player.setAudioDevice(std::move(s)); }
 
     void assertTimerCallbackDoesNotScheduleAdditionalCallback() {
         assertCallDoesNotScheduleAdditionalCallback([&] { callback(timer); });
@@ -1374,14 +1378,14 @@ MASKER_PLAYER_TEST(
 
 MASKER_PLAYER_TEST(setAudioDeviceFindsIndex) {
     setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
-    setAudioDevice("second");
+    setAudioDevice(player, "second");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2, audioPlayer.deviceIndex());
 }
 
 MASKER_PLAYER_TEST(setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
     setAudioDeviceDescriptions({"zeroth", "first", "second"});
     try {
-        setAudioDevice("third");
+        setAudioDevice(player, "third");
         FAIL() << "Expected recognition_test::InvalidAudioDevice";
     } catch (const InvalidAudioDevice &) {
     }
