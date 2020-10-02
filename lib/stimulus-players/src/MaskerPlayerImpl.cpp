@@ -75,6 +75,8 @@ static auto read(std::atomic<int> &x) -> int { return x.load(); }
 
 static void set(std::atomic<bool> &x) { x.store(true); }
 
+static void postForExecution(LockFreeMessage &x) { set(x.execute); }
+
 static void clear(std::atomic<bool> &x) { x.store(false); }
 
 static void set(bool &x) { x = true; }
@@ -283,7 +285,7 @@ void MaskerPlayerImpl::fadeIn() {
         return;
 
     set(fadingIn);
-    set(sharedState.fadeIn.execute);
+    postForExecution(sharedState.fadeIn);
     play();
     scheduleCallbackAfterSeconds(timer, 0.1);
 }
@@ -298,7 +300,7 @@ void MaskerPlayerImpl::play() {
 
 void MaskerPlayerImpl::stop() {
     if (audioEnabled) {
-        set(sharedState.disableAudio.execute);
+        postForExecution(sharedState.disableAudio);
         auto expected{true};
         while (!sharedState.disableAudio.complete.compare_exchange_weak(
             expected, false))
@@ -313,7 +315,7 @@ void MaskerPlayerImpl::fadeOut() {
         return;
 
     set(fadingOut);
-    set(sharedState.fadeOut.execute);
+    postForExecution(sharedState.fadeOut);
     scheduleCallbackAfterSeconds(timer, 0.1);
 }
 

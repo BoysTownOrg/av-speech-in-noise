@@ -52,6 +52,11 @@ using cpp_core_guidelines_index_type = gsl::index;
 using channel_index_type = cpp_core_guidelines_index_type;
 using sample_index_type = cpp_core_guidelines_index_type;
 
+struct LockFreeMessage {
+    std::atomic<bool> execute{};
+    std::atomic<bool> complete{};
+};
+
 class MaskerPlayerImpl : public MaskerPlayer,
                          public AudioPlayer::Observer,
                          public Timer::Observer {
@@ -88,11 +93,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
   private:
     auto readAudio(std::string) -> audio_type;
     auto fading() -> bool;
-
-    struct LockFreeMessage {
-        std::atomic<bool> execute{};
-        std::atomic<bool> complete{};
-    };
 
     struct SharedState {
         audio_type sourceAudio{};
