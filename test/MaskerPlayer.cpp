@@ -1350,16 +1350,56 @@ MASKER_PLAYER_TEST(
 }
 
 MASKER_PLAYER_TEST(
-    DISABLED_callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
+    callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
     setFadeInOutSeconds(player, 2);
     setSampleRateHz(audioPlayer, 3);
     loadMonoAudio(player, audioReader, {0});
+    bool fillOnce{};
+    bool filledOnce{};
+    bool fadeInComplete{};
+    bool finish{};
+    std::mutex mutex{};
+    std::condition_variable condition{};
+    auto future{
+        setOnPlayTask(audioPlayer, [&](AudioPlayer::Observer *observer) {
+            std::vector<float> fadeInBuffer(2 * 3 + 1);
+            observer->fillAudioBuffer({fadeInBuffer}, {});
+            set(mutex, fadeInComplete);
+            condition.notify_one();
+            for (int i = 0; i < 2 * 3 + 1; ++i) {
+                waitThenClear(mutex, condition, fillOnce);
+                av_speech_in_noise::fillAudioBuffer(observer, 1, 1);
+                set(mutex, filledOnce);
+                condition.notify_one();
+            }
+            bool done{};
+            while (!done) {
+                av_speech_in_noise::fillAudioBuffer(observer, 1, 1);
+                {
+                    std::lock_guard<std::mutex> lock{mutex};
+                    done = finish;
+                }
+            }
+            return std::vector<std::vector<float>>{};
+        })};
     fadeIn(player);
-    fillAudioBufferMono(2 * 3 + 1);
+    wait(mutex, condition, fadeInComplete);
     callback(timer);
     fadeOut(player);
-    fillAudioBufferMono(2 * 3 + 1);
-    assertTimerCallbackDoesNotScheduleAdditionalCallback();
+    for (int i = 0; i < 2 * 3; ++i) {
+        set(mutex, fillOnce);
+        condition.notify_one();
+        waitThenClear(mutex, condition, filledOnce);
+        callback(timer);
+    }
+    set(mutex, fillOnce);
+    condition.notify_one();
+    wait(mutex, condition, filledOnce);
+    clearCallbackCount();
+    callback(timer);
+    set(mutex, finish);
+    future.get();
+    assertCallbackNotScheduled();
 }
 
 MASKER_PLAYER_TEST(setAudioDeviceFindsIndex) {
