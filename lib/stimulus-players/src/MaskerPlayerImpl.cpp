@@ -105,17 +105,15 @@ constexpr auto maxChannels{128};
 MaskerPlayerImpl::MaskerPlayerImpl(
     AudioPlayer *player, AudioReader *reader, Timer *timer)
     : mainThread{player, timer}, samplesToWaitPerChannel(maxChannels),
-      audioFrameHeadsPerChannel(maxChannels),
-      channelDelaySeconds_(maxChannels), player{player}, reader{reader} {
+      audioFrameHeadsPerChannel(maxChannels), channelDelaySeconds_(maxChannels),
+      player{player}, timer{timer}, reader{reader} {
     player->attach(this);
     timer->attach(this);
     mainThread.setSharedState(this);
     audioThread.setSharedState(this);
 }
 
-void MaskerPlayerImpl::attach(MaskerPlayer::Observer *e) {
-    mainThread.attach(e);
-}
+void MaskerPlayerImpl::attach(MaskerPlayer::Observer *e) { listener = e; }
 
 auto MaskerPlayerImpl::duration() -> Duration {
     return Duration{
@@ -129,7 +127,7 @@ static auto mathModulus(sample_index_type a, sample_index_type b)
 }
 
 void MaskerPlayerImpl::seekSeconds(double x) {
-    if (mainThread.audioEnabled)
+    if (audioEnabled)
         return;
 
     recalculateSamplesToWaitPerChannel();
@@ -166,7 +164,7 @@ auto MaskerPlayerImpl::currentSystemTime() -> PlayerTime {
 }
 
 void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
-    if (mainThread.audioEnabled)
+    if (audioEnabled)
         return;
 
     player->loadFile(file.path);
@@ -241,7 +239,7 @@ auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
 
 void MaskerPlayerImpl::setChannelDelaySeconds(
     channel_index_type channel, double seconds) {
-    if (mainThread.audioEnabled)
+    if (audioEnabled)
         return;
 
     at(channelDelaySeconds_, channel) = seconds;
@@ -249,7 +247,7 @@ void MaskerPlayerImpl::setChannelDelaySeconds(
 }
 
 void MaskerPlayerImpl::clearChannelDelays() {
-    if (mainThread.audioEnabled)
+    if (audioEnabled)
         return;
 
     std::fill(channelDelaySeconds_.begin(), channelDelaySeconds_.end(), 0);
@@ -271,84 +269,53 @@ void MaskerPlayerImpl::useAllChannels() {
     clear(secondChannelOnly);
 }
 
-void MaskerPlayerImpl::fadeIn() { mainThread.fadeIn(); }
-
-void MaskerPlayerImpl::play() { mainThread.play(); }
-
-void MaskerPlayerImpl::stop() { mainThread.stop(); }
-
-void MaskerPlayerImpl::fadeOut() { mainThread.fadeOut(); }
-
-void MaskerPlayerImpl::callback() { mainThread.callback(); }
-
-MaskerPlayerImpl::MainThread::MainThread(AudioPlayer *player, Timer *timer)
-    : player{player}, timer{timer} {}
-
-void MaskerPlayerImpl::MainThread::setSharedState(MaskerPlayerImpl *p) {
-    sharedState = p;
-}
-
-void MaskerPlayerImpl::MainThread::attach(MaskerPlayer::Observer *e) {
-    listener = e;
-}
-
-void MaskerPlayerImpl::MainThread::fadeIn() {
+void MaskerPlayerImpl::fadeIn() {
     if (fading())
         return;
 
     av_speech_in_noise::set(fadingIn);
-    av_speech_in_noise::set(sharedState->pleaseFadeIn);
+    av_speech_in_noise::set(pleaseFadeIn);
     play();
     scheduleCallbackAfterSeconds(0.1);
 }
 
-void MaskerPlayerImpl::MainThread::play() {
+void MaskerPlayerImpl::play() {
     if (!audioEnabled) {
-        set(sharedState->pleaseEnableAudio);
+        set(pleaseEnableAudio);
         audioEnabled = true;
     }
     player->play();
 }
 
-void MaskerPlayerImpl::MainThread::stop() {
+void MaskerPlayerImpl::stop() {
     if (audioEnabled) {
-        set(sharedState->pleaseDisableAudio);
+        set(pleaseDisableAudio);
         auto expected{true};
-        while (!sharedState->audioDisabledComplete.compare_exchange_weak(
-            expected, false))
+        while (!audioDisabledComplete.compare_exchange_weak(expected, false))
             expected = true;
         audioEnabled = false;
     }
     player->stop();
 }
 
-void MaskerPlayerImpl::MainThread::scheduleCallbackAfterSeconds(double x) {
-    timer->scheduleCallbackAfterSeconds(x);
-}
-
-auto MaskerPlayerImpl::MainThread::fading() -> bool {
-    return fadingIn || fadingOut;
-}
-
-void MaskerPlayerImpl::MainThread::fadeOut() {
+void MaskerPlayerImpl::fadeOut() {
     if (fading())
         return;
 
     av_speech_in_noise::set(fadingOut);
-    av_speech_in_noise::set(sharedState->pleaseFadeOut);
+    av_speech_in_noise::set(pleaseFadeOut);
     scheduleCallbackAfterSeconds(0.1);
 }
 
-void MaskerPlayerImpl::MainThread::callback() {
-    if (thisCallClears(sharedState->fadeInComplete)) {
+void MaskerPlayerImpl::callback() {
+    if (thisCallClears(fadeInComplete)) {
         clear(fadingIn);
-        listener->fadeInComplete(
-            {{sharedState->fadeInCompleteSystemTime.load()},
-                sharedState->fadeInCompleteSystemTimeSampleOffset.load()});
+        listener->fadeInComplete({{fadeInCompleteSystemTime.load()},
+            fadeInCompleteSystemTimeSampleOffset.load()});
         return;
     }
 
-    if (thisCallClears(sharedState->fadeOutComplete)) {
+    if (thisCallClears(fadeOutComplete)) {
         clear(fadingOut);
         stop();
         listener->fadeOutComplete();
@@ -357,6 +324,19 @@ void MaskerPlayerImpl::MainThread::callback() {
 
     scheduleCallbackAfterSeconds(0.1);
 }
+
+MaskerPlayerImpl::MainThread::MainThread(AudioPlayer *player, Timer *timer)
+    : player{player} {}
+
+void MaskerPlayerImpl::MainThread::setSharedState(MaskerPlayerImpl *p) {
+    sharedState = p;
+}
+
+void MaskerPlayerImpl::scheduleCallbackAfterSeconds(double x) {
+    timer->scheduleCallbackAfterSeconds(x);
+}
+
+auto MaskerPlayerImpl::fading() -> bool { return fadingIn || fadingOut; }
 
 void MaskerPlayerImpl::AudioThread::setSharedState(MaskerPlayerImpl *p) {
     sharedState = p;

@@ -128,25 +128,14 @@ class MaskerPlayerImpl : public MaskerPlayer,
       public:
         MainThread(AudioPlayer *, Timer *);
         void setSharedState(MaskerPlayerImpl *);
-        void callback();
-        void attach(MaskerPlayer::Observer *);
-        void fadeIn();
-        void play();
-        void stop();
-        void fadeOut();
-        bool audioEnabled{};
 
       private:
-        auto fading() -> bool;
-        void scheduleCallbackAfterSeconds(double);
-
         MaskerPlayerImpl *sharedState{};
         AudioPlayer *player;
-        MaskerPlayer::Observer *listener{};
-        Timer *timer;
-        bool fadingIn{};
-        bool fadingOut{};
     };
+
+    auto fading() -> bool;
+    void scheduleCallbackAfterSeconds(double);
 
     AudioThread audioThread;
     MainThread mainThread;
@@ -156,6 +145,8 @@ class MaskerPlayerImpl : public MaskerPlayer,
     std::vector<double> channelDelaySeconds_;
     AudioPlayer *player;
     AudioReader *reader;
+    Timer *timer;
+    MaskerPlayer::Observer *listener{};
     double fadeInOutSeconds{};
     std::atomic<double> levelScalar{1};
     std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
@@ -170,6 +161,9 @@ class MaskerPlayerImpl : public MaskerPlayer,
     std::atomic<bool> pleaseEnableAudio{};
     std::atomic<bool> pleaseDisableAudio{};
     std::atomic<bool> audioDisabledComplete{};
+    bool fadingIn{};
+    bool fadingOut{};
+    bool audioEnabled{};
 };
 }
 
