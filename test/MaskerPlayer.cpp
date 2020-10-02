@@ -1209,6 +1209,11 @@ MASKER_PLAYER_TEST(observerNotifiedOnlyOnceForFadeIn) {
     assertFadeInCompletions(1);
 }
 
+void set(std::mutex &mutex, bool &b) {
+    std::lock_guard<std::mutex> lock{mutex};
+    b = true;
+}
+
 MASKER_PLAYER_TEST(fadeOutCompleteOnlyAfterFadeTime) {
     setFadeInOutSeconds(player, 3);
     setSampleRateHz(audioPlayer, 4);
@@ -1223,10 +1228,7 @@ MASKER_PLAYER_TEST(fadeOutCompleteOnlyAfterFadeTime) {
         setOnPlayTask(audioPlayer, [&](AudioPlayer::Observer *observer) {
             std::vector<float> fadeInBuffer(3 * 4 + 1);
             observer->fillAudioBuffer({fadeInBuffer}, {});
-            {
-                std::lock_guard<std::mutex> lock{mutex};
-                fadeInComplete = true;
-            }
+            set(mutex, fadeInComplete);
             condition.notify_one();
             for (int i = 0; i < 3 * 4 + 1; ++i) {
                 {
@@ -1235,10 +1237,7 @@ MASKER_PLAYER_TEST(fadeOutCompleteOnlyAfterFadeTime) {
                     fillOnce = false;
                 }
                 av_speech_in_noise::fillAudioBuffer(observer, 1, 1);
-                {
-                    std::lock_guard<std::mutex> lock{mutex};
-                    filledOnce = true;
-                }
+                set(mutex, filledOnce);
                 condition.notify_one();
             }
             bool done{};
@@ -1259,10 +1258,7 @@ MASKER_PLAYER_TEST(fadeOutCompleteOnlyAfterFadeTime) {
     callback(timer);
     fadeOut(player);
     for (int i = 0; i < 3 * 4; ++i) {
-        {
-            std::lock_guard<std::mutex> lock{mutex};
-            fillOnce = true;
-        }
+        set(mutex, fillOnce);
         condition.notify_one();
         {
             std::unique_lock<std::mutex> lock{mutex};
@@ -1272,20 +1268,14 @@ MASKER_PLAYER_TEST(fadeOutCompleteOnlyAfterFadeTime) {
         callback(timer);
         AV_SPEECH_IN_NOISE_EXPECT_FALSE(listener.fadeOutCompleted());
     }
-    {
-        std::lock_guard<std::mutex> lock{mutex};
-        fillOnce = true;
-    }
+    set(mutex, fillOnce);
     condition.notify_one();
     {
         std::unique_lock<std::mutex> lock{mutex};
         condition.wait(lock, [&] { return filledOnce; });
     }
     callback(timer);
-    {
-        std::lock_guard<std::mutex> lock{mutex};
-        finish = true;
-    }
+    set(mutex, finish);
     future.get();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(listener.fadeOutCompleted());
 }
