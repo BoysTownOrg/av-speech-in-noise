@@ -104,12 +104,33 @@ static auto framesToFill(const std::vector<channel_buffer_type> &audioBuffer)
     return noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
 }
 
+static auto mathModulus(sample_index_type a, sample_index_type b)
+    -> sample_index_type {
+    auto result{a % b};
+    return result > 0 ? result : result + b;
+}
+
+static void recalculateSamplesToWaitPerChannel(
+    std::vector<sample_index_type> &samplesToWaitPerChannel,
+    AudioPlayer *player, const std::vector<double> &channelDelaySeconds) {
+    std::generate(samplesToWaitPerChannel.begin(),
+        samplesToWaitPerChannel.end(), [&, n = 0]() mutable {
+            return gsl::narrow_cast<channel_index_type>(
+                av_speech_in_noise::sampleRateHz(player) *
+                at(channelDelaySeconds, n++));
+        });
+}
+
+static void scheduleCallbackAfterSeconds(Timer *timer, double x) {
+    timer->scheduleCallbackAfterSeconds(x);
+}
+
 constexpr auto maxChannels{128};
 
 MaskerPlayerImpl::MaskerPlayerImpl(
     AudioPlayer *player, AudioReader *reader, Timer *timer)
     : samplesToWaitPerChannel(maxChannels),
-      audioFrameHeadsPerChannel(maxChannels), channelDelaySeconds_(maxChannels),
+      audioFrameHeadsPerChannel(maxChannels), channelDelaySeconds(maxChannels),
       player{player}, reader{reader}, timer{timer} {
     player->attach(this);
     timer->attach(this);
@@ -123,29 +144,12 @@ auto MaskerPlayerImpl::duration() -> Duration {
         samples(sourceAudio) / av_speech_in_noise::sampleRateHz(player)};
 }
 
-static auto mathModulus(sample_index_type a, sample_index_type b)
-    -> sample_index_type {
-    auto result{a % b};
-    return result > 0 ? result : result + b;
-}
-
-static void recalculateSamplesToWaitPerChannel(
-    std::vector<sample_index_type> &samplesToWaitPerChannel,
-    AudioPlayer *player, const std::vector<double> &channelDelaySeconds_) {
-    std::generate(samplesToWaitPerChannel.begin(),
-        samplesToWaitPerChannel.end(), [&, n = 0]() mutable {
-            return gsl::narrow_cast<channel_index_type>(
-                av_speech_in_noise::sampleRateHz(player) *
-                at(channelDelaySeconds_, n++));
-        });
-}
-
 void MaskerPlayerImpl::seekSeconds(double x) {
     if (audioEnabled)
         return;
 
     recalculateSamplesToWaitPerChannel(
-        samplesToWaitPerChannel, player, channelDelaySeconds_);
+        samplesToWaitPerChannel, player, channelDelaySeconds);
     std::fill(audioFrameHeadsPerChannel.begin(),
         audioFrameHeadsPerChannel.end(),
         mathModulus(gsl::narrow_cast<sample_index_type>(
@@ -175,7 +179,7 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
 
     player->loadFile(file.path);
     recalculateSamplesToWaitPerChannel(
-        samplesToWaitPerChannel, player, channelDelaySeconds_);
+        samplesToWaitPerChannel, player, channelDelaySeconds);
     write(levelTransitionSamples_,
         gsl::narrow_cast<int>(
             fadeInOutSeconds * av_speech_in_noise::sampleRateHz(player)));
@@ -242,18 +246,18 @@ void MaskerPlayerImpl::setChannelDelaySeconds(
     if (audioEnabled)
         return;
 
-    at(channelDelaySeconds_, channel) = seconds;
+    at(channelDelaySeconds, channel) = seconds;
     recalculateSamplesToWaitPerChannel(
-        samplesToWaitPerChannel, player, channelDelaySeconds_);
+        samplesToWaitPerChannel, player, channelDelaySeconds);
 }
 
 void MaskerPlayerImpl::clearChannelDelays() {
     if (audioEnabled)
         return;
 
-    std::fill(channelDelaySeconds_.begin(), channelDelaySeconds_.end(), 0);
+    std::fill(channelDelaySeconds.begin(), channelDelaySeconds.end(), 0);
     recalculateSamplesToWaitPerChannel(
-        samplesToWaitPerChannel, player, channelDelaySeconds_);
+        samplesToWaitPerChannel, player, channelDelaySeconds);
 }
 
 void MaskerPlayerImpl::useFirstChannelOnly() {
@@ -278,7 +282,7 @@ void MaskerPlayerImpl::fadeIn() {
     set(fadingIn);
     set(pleaseFadeIn);
     play();
-    scheduleCallbackAfterSeconds(0.1);
+    scheduleCallbackAfterSeconds(timer, 0.1);
 }
 
 void MaskerPlayerImpl::play() {
@@ -306,7 +310,7 @@ void MaskerPlayerImpl::fadeOut() {
 
     set(fadingOut);
     set(pleaseFadeOut);
-    scheduleCallbackAfterSeconds(0.1);
+    scheduleCallbackAfterSeconds(timer, 0.1);
 }
 
 void MaskerPlayerImpl::callback() {
@@ -324,11 +328,7 @@ void MaskerPlayerImpl::callback() {
         return;
     }
 
-    scheduleCallbackAfterSeconds(0.1);
-}
-
-void MaskerPlayerImpl::scheduleCallbackAfterSeconds(double x) {
-    timer->scheduleCallbackAfterSeconds(x);
+    scheduleCallbackAfterSeconds(timer, 0.1);
 }
 
 auto MaskerPlayerImpl::fading() -> bool { return fadingIn || fadingOut; }

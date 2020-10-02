@@ -90,7 +90,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
     auto audioDeviceDescriptions_() -> std::vector<std::string>;
     auto findDeviceIndex(const std::string &device) -> int;
     auto fading() -> bool;
-    void scheduleCallbackAfterSeconds(double);
 
     class AudioThread {
       public:
@@ -129,7 +128,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     audio_type sourceAudio{};
     std::vector<sample_index_type> samplesToWaitPerChannel;
     std::vector<sample_index_type> audioFrameHeadsPerChannel;
-    std::vector<double> channelDelaySeconds_;
+    std::vector<double> channelDelaySeconds;
     AudioPlayer *player;
     AudioReader *reader;
     Timer *timer;
