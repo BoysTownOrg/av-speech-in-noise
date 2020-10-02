@@ -1354,24 +1354,21 @@ MASKER_PLAYER_TEST(
     setFadeInOutSeconds(player, 2);
     setSampleRateHz(audioPlayer, 3);
     loadMonoAudio(player, audioReader, {0});
-    bool fillOnce{};
-    bool filledOnce{};
     bool fadeInComplete{};
+    bool fadeOutComplete{};
+    bool fadeOutCalled{};
     bool finish{};
     std::mutex mutex{};
     std::condition_variable condition{};
     auto future{
         setOnPlayTask(audioPlayer, [&](AudioPlayer::Observer *observer) {
-            std::vector<float> fadeInBuffer(2 * 3 + 1);
-            observer->fillAudioBuffer({fadeInBuffer}, {});
+            av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
             set(mutex, fadeInComplete);
             condition.notify_one();
-            for (int i = 0; i < 2 * 3 + 1; ++i) {
-                waitThenClear(mutex, condition, fillOnce);
-                av_speech_in_noise::fillAudioBuffer(observer, 1, 1);
-                set(mutex, filledOnce);
-                condition.notify_one();
-            }
+            wait(mutex, condition, fadeOutCalled);
+            av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
+            set(mutex, fadeOutComplete);
+            condition.notify_one();
             bool done{};
             while (!done) {
                 av_speech_in_noise::fillAudioBuffer(observer, 1, 1);
@@ -1386,15 +1383,9 @@ MASKER_PLAYER_TEST(
     wait(mutex, condition, fadeInComplete);
     callback(timer);
     fadeOut(player);
-    for (int i = 0; i < 2 * 3; ++i) {
-        set(mutex, fillOnce);
-        condition.notify_one();
-        waitThenClear(mutex, condition, filledOnce);
-        callback(timer);
-    }
-    set(mutex, fillOnce);
+    set(mutex, fadeOutCalled);
     condition.notify_one();
-    wait(mutex, condition, filledOnce);
+    wait(mutex, condition, fadeOutComplete);
     clearCallbackCount();
     callback(timer);
     set(mutex, finish);
