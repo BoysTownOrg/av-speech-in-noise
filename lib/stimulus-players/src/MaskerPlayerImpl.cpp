@@ -128,7 +128,7 @@ static auto mathModulus(sample_index_type a, sample_index_type b)
 }
 
 void MaskerPlayerImpl::seekSeconds(double x) {
-    if (playing())
+    if (mainThread.audioEnabled)
         return;
 
     recalculateSamplesToWaitPerChannel();
@@ -240,11 +240,17 @@ auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
 
 void MaskerPlayerImpl::setChannelDelaySeconds(
     channel_index_type channel, double seconds) {
+    if (mainThread.audioEnabled)
+        return;
+
     mainThread.setChannelDelaySeconds(channel, seconds);
     recalculateSamplesToWaitPerChannel();
 }
 
 void MaskerPlayerImpl::clearChannelDelays() {
+    if (mainThread.audioEnabled)
+        return;
+
     mainThread.clearChannelDelays();
     recalculateSamplesToWaitPerChannel();
 }
