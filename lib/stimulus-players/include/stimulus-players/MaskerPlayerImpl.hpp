@@ -89,9 +89,31 @@ class MaskerPlayerImpl : public MaskerPlayer,
     auto readAudio(std::string) -> audio_type;
     auto fading() -> bool;
 
+    struct LockFreeMessage {
+        std::atomic<bool> execute{};
+        std::atomic<bool> complete{};
+    };
+
+    struct SharedState {
+        audio_type sourceAudio{};
+        std::vector<sample_index_type> samplesToWaitPerChannel;
+        std::vector<sample_index_type> audioFrameHeadsPerChannel;
+        std::atomic<double> levelScalar{1};
+        std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
+        std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
+        std::atomic<int> levelTransitionSamples{};
+        std::atomic<bool> firstChannelOnly{};
+        std::atomic<bool> secondChannelOnly{};
+        LockFreeMessage toFadeIn{};
+        LockFreeMessage toFadeOut{};
+        LockFreeMessage toDisableAudio{};
+        std::atomic<bool> pleaseEnableAudio{};
+    };
+
     class AudioThread {
       public:
-        void setSharedState(MaskerPlayerImpl *);
+        explicit AudioThread(SharedState &sharedState)
+            : sharedState{sharedState} {}
         void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
             player_system_time_type);
 
@@ -113,7 +135,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         auto nextFadeScalar() -> double;
         auto sourceFrames() -> sample_index_type;
 
-        MaskerPlayerImpl *sharedState{};
+        SharedState &sharedState;
         player_system_time_type systemTime{};
         int hannCounter{};
         int halfWindowLength{};
@@ -122,31 +144,14 @@ class MaskerPlayerImpl : public MaskerPlayer,
         bool enabled{};
     };
 
-    struct LockFreeMessage {
-        std::atomic<bool> execute{};
-        std::atomic<bool> complete{};
-    };
-
+    SharedState sharedState{};
     AudioThread audioThread;
-    audio_type sourceAudio{};
-    std::vector<sample_index_type> samplesToWaitPerChannel;
-    std::vector<sample_index_type> audioFrameHeadsPerChannel;
     std::vector<double> channelDelaySeconds;
     AudioPlayer *player;
     AudioReader *reader;
     Timer *timer;
     MaskerPlayer::Observer *listener{};
     double fadeInOutSeconds{};
-    std::atomic<double> levelScalar{1};
-    std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
-    std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
-    std::atomic<int> levelTransitionSamples{};
-    std::atomic<bool> firstChannelOnly{};
-    std::atomic<bool> secondChannelOnly{};
-    LockFreeMessage toFadeIn{};
-    LockFreeMessage toFadeOut{};
-    LockFreeMessage toDisableAudio{};
-    std::atomic<bool> pleaseEnableAudio{};
     bool fadingIn{};
     bool fadingOut{};
     bool audioEnabled{};
