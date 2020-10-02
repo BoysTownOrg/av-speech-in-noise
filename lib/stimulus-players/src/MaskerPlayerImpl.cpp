@@ -104,12 +104,11 @@ constexpr auto maxChannels{128};
 
 MaskerPlayerImpl::MaskerPlayerImpl(
     AudioPlayer *player, AudioReader *reader, Timer *timer)
-    : mainThread{player, timer}, samplesToWaitPerChannel(maxChannels),
+    : samplesToWaitPerChannel(maxChannels),
       audioFrameHeadsPerChannel(maxChannels), channelDelaySeconds_(maxChannels),
       player{player}, reader{reader}, timer{timer} {
     player->attach(this);
     timer->attach(this);
-    mainThread.setSharedState(this);
     audioThread.setSharedState(this);
 }
 
@@ -255,12 +254,12 @@ void MaskerPlayerImpl::clearChannelDelays() {
 }
 
 void MaskerPlayerImpl::useFirstChannelOnly() {
-    av_speech_in_noise::set(firstChannelOnly);
+    set(firstChannelOnly);
     clear(secondChannelOnly);
 }
 
 void MaskerPlayerImpl::useSecondChannelOnly() {
-    av_speech_in_noise::set(secondChannelOnly);
+    set(secondChannelOnly);
     clear(firstChannelOnly);
 }
 
@@ -323,13 +322,6 @@ void MaskerPlayerImpl::callback() {
     }
 
     scheduleCallbackAfterSeconds(0.1);
-}
-
-MaskerPlayerImpl::MainThread::MainThread(AudioPlayer *player, Timer *timer)
-    : player{player} {}
-
-void MaskerPlayerImpl::MainThread::setSharedState(MaskerPlayerImpl *p) {
-    sharedState = p;
 }
 
 void MaskerPlayerImpl::scheduleCallbackAfterSeconds(double x) {

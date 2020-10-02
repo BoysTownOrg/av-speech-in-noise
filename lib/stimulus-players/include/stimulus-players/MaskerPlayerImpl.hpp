@@ -90,6 +90,8 @@ class MaskerPlayerImpl : public MaskerPlayer,
     auto audioDeviceDescriptions_() -> std::vector<std::string>;
     auto findDeviceIndex(const std::string &device) -> int;
     void recalculateSamplesToWaitPerChannel();
+    auto fading() -> bool;
+    void scheduleCallbackAfterSeconds(double);
 
     class AudioThread {
       public:
@@ -124,21 +126,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         bool enabled{};
     };
 
-    class MainThread {
-      public:
-        MainThread(AudioPlayer *, Timer *);
-        void setSharedState(MaskerPlayerImpl *);
-
-      private:
-        MaskerPlayerImpl *sharedState{};
-        AudioPlayer *player;
-    };
-
-    auto fading() -> bool;
-    void scheduleCallbackAfterSeconds(double);
-
     AudioThread audioThread;
-    MainThread mainThread;
     audio_type sourceAudio{};
     std::vector<sample_index_type> samplesToWaitPerChannel;
     std::vector<sample_index_type> audioFrameHeadsPerChannel;
