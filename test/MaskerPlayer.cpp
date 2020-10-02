@@ -457,6 +457,11 @@ void setFadeInOutSeconds(MaskerPlayerImpl &player, double x) {
     player.setFadeInOutSeconds(x);
 }
 
+void set(std::mutex &mutex, bool &b) {
+    std::lock_guard<std::mutex> lock{mutex};
+    b = true;
+}
+
 using channel_index_type = gsl::index;
 
 class MaskerPlayerTests : public ::testing::Test {
@@ -1032,10 +1037,7 @@ void assertOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
         setOnPlayTask(audioPlayer, [&](AudioPlayer::Observer *observer) {
             std::vector<float> fadeInBuffer(halfWindowLength);
             observer->fillAudioBuffer({fadeInBuffer}, {});
-            {
-                std::lock_guard<std::mutex> lock{mutex};
-                fadeInComplete = true;
-            }
+            set(mutex, fadeInComplete);
             condition.notify_one();
             {
                 std::unique_lock<std::mutex> lock{mutex};
@@ -1050,10 +1052,7 @@ void assertOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
     }
     callback(timer);
     fadeOut(player);
-    {
-        std::lock_guard<std::mutex> lock{mutex};
-        fadeOutCalled = true;
-    }
+    set(mutex, fadeOutCalled);
     condition.notify_one();
     assertion(future.get());
 }
@@ -1145,20 +1144,14 @@ MASKER_PLAYER_TEST(fadeInCompleteOnlyAfterFadeTime) {
                     fillOnce = false;
                 }
                 av_speech_in_noise::fillAudioBuffer(observer, 1, 1);
-                {
-                    std::lock_guard<std::mutex> lock{mutex};
-                    filledOnce = true;
-                }
+                set(mutex, filledOnce);
                 condition.notify_one();
             }
             return std::vector<std::vector<float>>{};
         })};
     fadeIn(player);
     for (int i = 0; i < 3 * 4; ++i) {
-        {
-            std::lock_guard<std::mutex> lock{mutex};
-            fillOnce = true;
-        }
+        set(mutex, fillOnce);
         condition.notify_one();
         {
             std::unique_lock<std::mutex> lock{mutex};
@@ -1168,10 +1161,7 @@ MASKER_PLAYER_TEST(fadeInCompleteOnlyAfterFadeTime) {
         callback(timer);
         AV_SPEECH_IN_NOISE_EXPECT_FALSE(listener.fadeInCompleted());
     }
-    {
-        std::lock_guard<std::mutex> lock{mutex};
-        fillOnce = true;
-    }
+    set(mutex, fillOnce);
     condition.notify_one();
     {
         std::unique_lock<std::mutex> lock{mutex};
@@ -1207,11 +1197,6 @@ MASKER_PLAYER_TEST(observerNotifiedOnlyOnceForFadeIn) {
     assertFadeInCompletions(1);
     callbackAfterMonoFill();
     assertFadeInCompletions(1);
-}
-
-void set(std::mutex &mutex, bool &b) {
-    std::lock_guard<std::mutex> lock{mutex};
-    b = true;
 }
 
 MASKER_PLAYER_TEST(fadeOutCompleteOnlyAfterFadeTime) {
