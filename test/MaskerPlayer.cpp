@@ -449,8 +449,6 @@ void fadeOut(MaskerPlayerImpl &player) { player.fadeOut(); }
 
 void callback(TimerStub &timer) { timer.callback(); }
 
-void clearCallbackCount(TimerStub &timer) { timer.clearCallbackCount(); }
-
 void setAudioDevice(MaskerPlayerImpl &player, std::string s) {
     player.setAudioDevice(std::move(s));
 }
@@ -581,30 +579,7 @@ MASKER_PLAYER_TEST(stopThenLoad) {
     assertAsyncLoadedMonoChannelEquals(player, audioPlayer, {4, 5, 6});
 }
 
-class MaskerPlayerListenerStub2 : public MaskerPlayer::Observer {
-  public:
-    void fadeInComplete(const AudioSampleTimeWithOffset &t) override {
-        fadeInCompleted_ = true;
-    }
-
-    void fadeOutComplete() override { fadeOutCompleted_ = true; }
-
-    [[nodiscard]] auto fadeInCompleted() const -> bool {
-        return fadeInCompleted_;
-    }
-
-    [[nodiscard]] auto fadeOutCompleted() const -> bool {
-        return fadeOutCompleted_;
-    }
-
-  private:
-    bool fadeInCompleted_{};
-    bool fadeOutCompleted_{};
-};
-
 MASKER_PLAYER_TEST(fadeOutThenLoad) {
-    MaskerPlayerListenerStub2 listener;
-    player.attach(&listener);
     loadMonoAudio(player, audioReader, std::vector<float>(9999999));
     std::vector<float> next(999);
     next.at(0) = 4;
