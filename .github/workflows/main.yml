@@ -1,5 +1,3 @@
-name: build and test
-
 on:
   pull_request:
     branches: [master]
@@ -7,29 +5,27 @@ on:
 
 jobs:
   build-and-test:
-    name: build using cmake/Xcode for macOS 10.13 and ctest library
+    name: build apps using cmake/Xcode for macOS 10.13 and ctest library
     runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v2
       - name: generate build system
         run: cmake -S . -B build -GXcode -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 -DAV_SPEECH_IN_NOISE_ENABLE_TESTS=1
-      - name: build tests Release
-        run: cmake --build build --target tests --config Release
-      - name: test library Release
-        run: |
-          cd ./build
-          ctest -V -C Release
-      - name: build tests Debug
-        run: cmake --build build --target tests --config Debug
-      - name: test library Debug
-        run: |
-          cd ./build
-          ctest -V -C Debug
-      - name: build app Release
-        run: cmake --build build --target AvSpeechInNoise --config Release
-      - name: build app Debug
-        run: cmake --build build --target AvSpeechInNoise --config Debug
-      - name: build facemask study Release
+      - name: build tests -- Release
+        run: cmake --build build --target av-speech-in-noise-tests --config Release
+      - name: test library -- Release
+        run: ctest -V -C Release
+        working-directory: ./build
+      - name: build tests -- Debug
+        run: cmake --build build --target av-speech-in-noise-tests --config Debug
+      - name: test library -- Debug
+        run: ctest -V -C Debug
+        working-directory: ./build
+      - name: build app -- Release
+        run: cmake --build build --target av-speech-in-noise-bundle --config Release
+      - name: build app -- Debug
+        run: cmake --build build --target av-speech-in-noise-bundle --config Debug
+      - name: build facemask study -- Release
         run: cmake --build build --target av-speech-in-noise-facemask-study --config Release
-      - name: build facemask study Debug
+      - name: build facemask study -- Debug
         run: cmake --build build --target av-speech-in-noise-facemask-study --config Debug

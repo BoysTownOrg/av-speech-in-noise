@@ -1,5 +1,5 @@
 add_executable(
-  tests
+  av-speech-in-noise-tests
   AdaptiveMethod.cpp
   AdaptiveTrack.cpp
   AudioReader.cpp
@@ -22,11 +22,12 @@ add_executable(
   Test.cpp
   TestSetup.cpp
   SessionController.cpp)
-target_compile_features(tests PRIVATE cxx_std_17)
-set_target_properties(tests PROPERTIES CXX_EXTENSIONS OFF)
-target_compile_options(tests PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})
+target_compile_features(av-speech-in-noise-tests PRIVATE cxx_std_17)
+set_target_properties(av-speech-in-noise-tests PROPERTIES CXX_EXTENSIONS OFF)
+target_compile_options(av-speech-in-noise-tests
+                       PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})
 target_link_libraries(
-  tests
+  av-speech-in-noise-tests
   recognition-test
   adaptive-track
   presentation
@@ -34,4 +35,4 @@ target_link_libraries(
   target-playlists
   gtest_main
   GSL)
-add_test(NAME tests COMMAND tests)
+add_test(NAME av-speech-in-noise-tests COMMAND av-speech-in-noise-tests)
