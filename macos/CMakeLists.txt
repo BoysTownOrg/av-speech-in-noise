@@ -39,7 +39,8 @@ add_executable(
   AvFoundationPlayers.mm CocoaView.mm ${MAIN_IMPL_FILE} main.mm
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
 target_compile_features(AvSpeechInNoise PRIVATE cxx_std_17)
-target_compile_options(AvSpeechInNoise PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})
+target_compile_options(AvSpeechInNoise PRIVATE "-fobjc-arc"
+                                               ${AV_SPEECH_IN_NOISE_WARNINGS})
 target_link_libraries(
   AvSpeechInNoise
   recognition-test

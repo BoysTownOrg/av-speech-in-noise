@@ -330,7 +330,7 @@ static auto resourcePath(const std::string &stem, const std::string &extension)
 }
 
 static auto consonantImageButton(
-    std::unordered_map<id, std::string> &consonants,
+    std::unordered_map<void *, std::string> &consonants,
     ConsonantViewActions *actions, const std::string &consonant) -> NSButton * {
     const auto image{[[NSImage alloc]
         initWithContentsOfFile:nsString(resourcePath(consonant, "bmp"))]};
@@ -340,7 +340,7 @@ static auto consonantImageButton(
                      target:actions
                      action:@selector(notifyThatResponseButtonHasBeenClicked:)]
     };
-    consonants[button] = consonant;
+    consonants[(__bridge void *)button] = consonant;
     button.bordered = NO;
     button.imageScaling = NSImageScaleProportionallyUpOrDown;
     return button;
@@ -486,7 +486,7 @@ void CocoaConsonantView::hideResponseButtons() {
 }
 
 auto CocoaConsonantView::consonant() -> std::string {
-    return consonants.at(lastButtonPressed);
+    return consonants.at((__bridge void *)lastButtonPressed);
 }
 
 void CocoaConsonantView::hideCursor() { [NSCursor hide]; }

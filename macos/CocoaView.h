@@ -143,7 +143,7 @@ class CocoaConsonantView : public ConsonantTaskView,
     void showCursor() override;
 
   private:
-    std::unordered_map<id, std::string> consonants;
+    std::unordered_map<void *, std::string> consonants;
     NSWindow *window;
     NSStackView *responseButtons;
     NSView *readyButton;
