@@ -22,9 +22,9 @@ jobs:
         run: ctest -V -C Debug
         working_directory: ./build
       - name: build app -- Release
-        run: cmake --build build --target AvSpeechInNoise --config Release
+        run: cmake --build build --target av-speech-in-noise-bundle --config Release
       - name: build app -- Debug
-        run: cmake --build build --target AvSpeechInNoise --config Debug
+        run: cmake --build build --target av-speech-in-noise-bundle --config Debug
       - name: build facemask study -- Release
         run: cmake --build build --target av-speech-in-noise-facemask-study --config Release
       - name: build facemask study -- Debug

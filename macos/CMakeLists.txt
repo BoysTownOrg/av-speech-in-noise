@@ -51,7 +51,7 @@ set(AV_SPEECH_IN_NOISE_MACOS_OTHER_CODE_SIGN_FLAGS
     ""
     CACHE STRING "Xcode Other Code Signing Flags")
 
-add_macos_bundle(AvSpeechInNoise ${MAIN_IMPL_FILE}
+add_macos_bundle(av-speech-in-noise-bundle ${MAIN_IMPL_FILE}
                  org.boystown.av-speech-in-noise "AV Speech in Noise")
 add_macos_bundle(
   av-speech-in-noise-facemask-study main-facemask-study.mm
