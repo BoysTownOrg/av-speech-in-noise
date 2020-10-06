@@ -16,15 +16,13 @@ jobs:
       - name: build tests Release
         run: cmake --build build --target tests --config Release
       - name: test library Release
-        run: |
-          cd ./build
-          ctest -V -C Release
+        run: ctest -V -C Release
+        working_directory: ./build
       - name: build tests Debug
         run: cmake --build build --target tests --config Debug
       - name: test library Debug
-        run: |
-          cd ./build
-          ctest -V -C Debug
+        run: ctest -V -C Debug
+        working_directory: ./build
       - name: build app Release
         run: cmake --build build --target AvSpeechInNoise --config Release
       - name: build app Debug
