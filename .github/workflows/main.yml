@@ -15,12 +15,12 @@ jobs:
         run: cmake --build build --target av-speech-in-noise-tests --config Release
       - name: test library -- Release
         run: ctest -V -C Release
-        working_directory: ./build
+        working-directory: ./build
       - name: build tests -- Debug
         run: cmake --build build --target av-speech-in-noise-tests --config Debug
       - name: test library -- Debug
         run: ctest -V -C Debug
-        working_directory: ./build
+        working-directory: ./build
       - name: build app -- Release
         run: cmake --build build --target av-speech-in-noise-bundle --config Release
       - name: build app -- Debug
