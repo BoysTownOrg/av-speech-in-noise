@@ -726,5 +726,14 @@ TEST_F(TestSetupFailureTests,
     useFailingModel();
     assertConfirmTestSetupDoesNotHideSetupView();
 }
+
+TEST_F(TestSetupFailureTests,
+    playingCalibrationShowsErrorMessageWhenModelFailsRequest) {
+    useFailingModel("a");
+    TestSetupControllerImpl controller{
+        *model, sessionView, control, testSettingsInterpreter, textFileReader};
+    control.playCalibration();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", errorMessage(sessionView));
+}
 }
 }
