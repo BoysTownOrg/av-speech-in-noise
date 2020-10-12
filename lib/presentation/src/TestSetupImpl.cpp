@@ -48,12 +48,10 @@ static auto calibration(TestSettingsInterpreter &testSettingsInterpreter,
 }
 
 void TestSetupControllerImpl::notifyThatPlayCalibrationButtonHasBeenClicked() {
-    try {
+    showErrorMessageOnRuntimeError(sessionView, [&] {
         model.playCalibration(calibration(
             testSettingsInterpreter, textFileReader, control, sessionView));
-    } catch (const Model::RequestFailure &e) {
-        sessionView.showErrorMessage(e.what());
-    }
+    });
 }
 
 void TestSetupControllerImpl::
