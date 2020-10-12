@@ -1577,6 +1577,14 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    playingRightSpeakerCalibrationThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile) {
+    calibration.fileUrl.path = "a";
+    maskerPlayer.throwInvalidAudioFileOnLoad();
+    assertCallThrowsRequestFailure(
+        playingRightSpeakerCalibration, "unable to read a");
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     initializeTestThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile) {
     setMaskerFilePath(test, "a");
     maskerPlayer.throwInvalidAudioFileOnLoad();
