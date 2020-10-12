@@ -118,16 +118,65 @@ class ConsonantResponseEvaluatorTests : public ::testing::Test {
 #define CONSONANT_RESPONSE_EVALUATOR_TEST(a)                                   \
     TEST_F(ConsonantResponseEvaluatorTests, a)
 
-CONSONANT_RESPONSE_EVALUATOR_TEST(b) { assertCorrect("b.wav", 'b'); }
+CONSONANT_RESPONSE_EVALUATOR_TEST(b) {
+    assertCorrect("choose_bi_1-25_Communicator.mp4", 'b');
+}
 
-CONSONANT_RESPONSE_EVALUATOR_TEST(notB) { assertIncorrect("a.wav", 'b'); }
+CONSONANT_RESPONSE_EVALUATOR_TEST(c) {
+    assertCorrect("choose_si_2-25_FabricMask.mp4", 'c');
+}
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(d) {
+    assertCorrect("choose_di_2-25_Communicator.mp4", 'd');
+}
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(h) {
+    assertCorrect("choose_hi_1-25_Clear.mp4", 'h');
+}
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(k) {
+    assertCorrect("choose_ki_2-25_FabricMask.mp4", 'k');
+}
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(m) {
+    assertCorrect("choose_mi_1-25_HospitalMask.mp4", 'm');
+}
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(n) {
+    assertCorrect("choose_ni_3-25_HospitalMask.mp4", 'n');
+}
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(p) {
+    assertCorrect("choose_pi_2-25_NoMask.mp4", 'p');
+}
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(s) {
+    assertCorrect("choose_shi_2-25_Clear.mp4", 's');
+}
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(t) {
+    assertCorrect("choose_ti_3-25_Communicator.mp4", 't');
+}
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(v) {
+    assertCorrect("choose_vi_3-25_FabricMask.mp4", 'v');
+}
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(z) {
+    assertCorrect("choose_zi_3-25_NoMask.mp4", 'z');
+}
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(notB) {
+    assertIncorrect("choose_zi_3-25_NoMask.mp4", 'b');
+}
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(invalidFormatIsAlwaysIncorrect) {
-    assertIncorrect("bwav", 'b');
+    assertIncorrect("idontknowb", 'b');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(parsesConsonant) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL('b', evaluator.correctConsonant({"b.wav"}));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        'b', evaluator.correctConsonant({"choose_bi_1-25_Communicator.mp4"}));
 }
 }
 }

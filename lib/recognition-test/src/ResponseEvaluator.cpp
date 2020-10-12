@@ -2,6 +2,7 @@
 #include <gsl/gsl>
 #include <algorithm>
 #include <cctype>
+#include <regex>
 
 namespace av_speech_in_noise {
 static auto leadingPathLength(const std::string &filePath) -> gsl::index {
@@ -38,10 +39,41 @@ static auto stem(const LocalUrl &file) -> std::string {
     return fileName.substr(0, dot);
 }
 
+static auto consonant(const std::string &match) -> char {
+    if (match == "bi")
+        return 'b';
+    if (match == "si")
+        return 'c';
+    if (match == "di")
+        return 'd';
+    if (match == "hi")
+        return 'h';
+    if (match == "ki")
+        return 'k';
+    if (match == "mi")
+        return 'm';
+    if (match == "ni")
+        return 'n';
+    if (match == "pi")
+        return 'p';
+    if (match == "shi")
+        return 's';
+    if (match == "ti")
+        return 't';
+    if (match == "vi")
+        return 'v';
+    if (match == "zi")
+        return 'z';
+    return '\0';
+}
+
 auto ResponseEvaluatorImpl::correct(
     const LocalUrl &file, const ConsonantResponse &r) -> bool {
     auto stem{av_speech_in_noise::stem(file)};
-    return stem.size() == 1 && stem.front() == r.consonant;
+    std::regex pattern{"choose_(.*?)_.*"};
+    std::smatch match;
+    std::regex_search(stem, match, pattern);
+    return match.size() > 1 && consonant(match[1]) == r.consonant;
 }
 
 static auto colorNameLength(
@@ -68,7 +100,13 @@ auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &filePath) -> int {
 }
 
 auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &file) -> char {
-    return av_speech_in_noise::stem(file).front();
+    auto stem{av_speech_in_noise::stem(file)};
+    std::regex pattern{"choose_(.*?)_.*"};
+    std::smatch match;
+    std::regex_search(stem, match, pattern);
+    if (match.size() > 1)
+        return consonant(match[1]);
+    return '\0';
 }
 
 auto ResponseEvaluatorImpl::fileName(const LocalUrl &file) -> std::string {
