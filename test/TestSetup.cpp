@@ -739,5 +739,13 @@ TEST_SETUP_FAILURE_TEST(
     control.playLeftSpeakerCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
+
+TEST_SETUP_FAILURE_TEST(
+    playingRightSpeakerCalibrationShowsErrorMessageWhenModelFailsRequest) {
+    useFailingModel("a");
+    auto controller{construct()};
+    control.playRightSpeakerCalibration();
+    AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
+}
 }
 }

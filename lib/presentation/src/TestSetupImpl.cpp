@@ -64,8 +64,10 @@ void TestSetupControllerImpl::
 
 void TestSetupControllerImpl::
     notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() {
-    model.playRightSpeakerCalibration(calibration(
-        testSettingsInterpreter, textFileReader, control, sessionView));
+    showErrorMessageOnRuntimeError(sessionView, [&] {
+        model.playRightSpeakerCalibration(calibration(
+            testSettingsInterpreter, textFileReader, control, sessionView));
+    });
 }
 
 void TestSetupControllerImpl::
