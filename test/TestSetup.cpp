@@ -485,11 +485,6 @@ class TestSetupFailureTests : public ::testing::Test {
         return TestSetupControllerImpl{*model, sessionView, control,
             testSettingsInterpreter, textFileReader};
     }
-
-    void confirmTestSetup() {
-        auto controller{construct()};
-        control.confirmTestSetup();
-    }
 };
 
 #define TEST_SETUP_CONTROLLER_TEST(a) TEST_F(TestSetupControllerTests, a)
@@ -716,14 +711,16 @@ TEST_SETUP_PRESENTER_TEST(presenterPopulatesTransducerMenu) {
 
 TEST_SETUP_FAILURE_TEST(initializeTestShowsErrorMessageWhenModelFailsRequest) {
     useFailingModel("a");
-    confirmTestSetup();
+    auto controller{construct()};
+    control.confirmTestSetup();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
 
 TEST_SETUP_FAILURE_TEST(
     initializeTestDoesNotHideSetupViewWhenModelFailsRequest) {
     useFailingModel();
-    confirmTestSetup();
+    auto controller{construct()};
+    control.confirmTestSetup();
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.hidden());
 }
 
