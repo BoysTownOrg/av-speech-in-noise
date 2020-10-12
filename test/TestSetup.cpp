@@ -472,6 +472,8 @@ class TestSetupFailureTests : public ::testing::Test {
     TestSettingsInterpreterStub testSettingsInterpreter;
     TestSetupPresenterImpl testSetupPresenterRefactored{view};
     TextFileReaderStub textFileReader;
+    TestSetupControllerImpl controller{failingModel, sessionView, control,
+        testSettingsInterpreter, textFileReader};
 
     auto construct() -> TestSetupControllerImpl {
         return TestSetupControllerImpl{failingModel, sessionView, control,
@@ -704,23 +706,20 @@ TEST_SETUP_PRESENTER_TEST(presenterPopulatesTransducerMenu) {
 TEST_SETUP_FAILURE_TEST(initializeTestShowsErrorMessageWhenModelFailsRequest) {
     testSettingsInterpreter.initializeAnyTestOnApply();
     failingModel.setErrorMessage("a");
-    auto controller{construct()};
-    control.confirmTestSetup();
+    confirmTestSetup(control);
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
 
 TEST_SETUP_FAILURE_TEST(
     initializeTestDoesNotHideSetupViewWhenModelFailsRequest) {
     testSettingsInterpreter.initializeAnyTestOnApply();
-    auto controller{construct()};
-    control.confirmTestSetup();
+    confirmTestSetup(control);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.hidden());
 }
 
 TEST_SETUP_FAILURE_TEST(
     playingCalibrationShowsErrorMessageWhenModelFailsRequest) {
     failingModel.setErrorMessage("a");
-    auto controller{construct()};
     control.playCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
@@ -728,7 +727,6 @@ TEST_SETUP_FAILURE_TEST(
 TEST_SETUP_FAILURE_TEST(
     playingLeftSpeakerCalibrationShowsErrorMessageWhenModelFailsRequest) {
     failingModel.setErrorMessage("a");
-    auto controller{construct()};
     control.playLeftSpeakerCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
@@ -736,7 +734,6 @@ TEST_SETUP_FAILURE_TEST(
 TEST_SETUP_FAILURE_TEST(
     playingRightSpeakerCalibrationShowsErrorMessageWhenModelFailsRequest) {
     failingModel.setErrorMessage("a");
-    auto controller{construct()};
     control.playRightSpeakerCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
