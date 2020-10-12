@@ -475,6 +475,8 @@ class TestSetupFailureTests : public ::testing::Test {
     TestSetupPresenterImpl testSetupPresenterRefactored{view};
     TextFileReaderStub textFileReader;
 
+    TestSetupFailureTests() { model = &failingModel; }
+
     void useFailingModel() { model = &failingModel; }
 
     auto construct() -> TestSetupControllerImpl {
@@ -706,7 +708,6 @@ TEST_SETUP_PRESENTER_TEST(presenterPopulatesTransducerMenu) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(a, errorMessage(sessionView))
 
 TEST_SETUP_FAILURE_TEST(initializeTestShowsErrorMessageWhenModelFailsRequest) {
-    useFailingModel();
     testSettingsInterpreter.initializeAnyTestOnApply();
     failingModel.setErrorMessage("a");
     auto controller{construct()};
@@ -716,7 +717,6 @@ TEST_SETUP_FAILURE_TEST(initializeTestShowsErrorMessageWhenModelFailsRequest) {
 
 TEST_SETUP_FAILURE_TEST(
     initializeTestDoesNotHideSetupViewWhenModelFailsRequest) {
-    useFailingModel();
     testSettingsInterpreter.initializeAnyTestOnApply();
     auto controller{construct()};
     control.confirmTestSetup();
@@ -725,7 +725,6 @@ TEST_SETUP_FAILURE_TEST(
 
 TEST_SETUP_FAILURE_TEST(
     playingCalibrationShowsErrorMessageWhenModelFailsRequest) {
-    useFailingModel();
     failingModel.setErrorMessage("a");
     auto controller{construct()};
     control.playCalibration();
@@ -734,7 +733,6 @@ TEST_SETUP_FAILURE_TEST(
 
 TEST_SETUP_FAILURE_TEST(
     playingLeftSpeakerCalibrationShowsErrorMessageWhenModelFailsRequest) {
-    useFailingModel();
     failingModel.setErrorMessage("a");
     auto controller{construct()};
     control.playLeftSpeakerCalibration();
@@ -743,7 +741,6 @@ TEST_SETUP_FAILURE_TEST(
 
 TEST_SETUP_FAILURE_TEST(
     playingRightSpeakerCalibrationShowsErrorMessageWhenModelFailsRequest) {
-    useFailingModel();
     failingModel.setErrorMessage("a");
     auto controller{construct()};
     control.playRightSpeakerCalibration();
