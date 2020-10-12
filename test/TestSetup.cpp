@@ -475,10 +475,7 @@ class TestSetupFailureTests : public ::testing::Test {
     TestSetupPresenterImpl testSetupPresenterRefactored{view};
     TextFileReaderStub textFileReader;
 
-    void useFailingModel() {
-        model = &failingModel;
-        testSettingsInterpreter.initializeAnyTestOnApply();
-    }
+    void useFailingModel() { model = &failingModel; }
 
     auto construct() -> TestSetupControllerImpl {
         return TestSetupControllerImpl{*model, sessionView, control,
@@ -710,6 +707,7 @@ TEST_SETUP_PRESENTER_TEST(presenterPopulatesTransducerMenu) {
 
 TEST_SETUP_FAILURE_TEST(initializeTestShowsErrorMessageWhenModelFailsRequest) {
     useFailingModel();
+    testSettingsInterpreter.initializeAnyTestOnApply();
     failingModel.setErrorMessage("a");
     auto controller{construct()};
     control.confirmTestSetup();
@@ -719,6 +717,7 @@ TEST_SETUP_FAILURE_TEST(initializeTestShowsErrorMessageWhenModelFailsRequest) {
 TEST_SETUP_FAILURE_TEST(
     initializeTestDoesNotHideSetupViewWhenModelFailsRequest) {
     useFailingModel();
+    testSettingsInterpreter.initializeAnyTestOnApply();
     auto controller{construct()};
     control.confirmTestSetup();
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.hidden());
