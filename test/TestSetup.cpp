@@ -475,8 +475,7 @@ class TestSetupFailureTests : public ::testing::Test {
     TestSetupPresenterImpl testSetupPresenterRefactored{view};
     TextFileReaderStub textFileReader;
 
-    void useFailingModel(std::string s = {}) {
-        failingModel.setErrorMessage(std::move(s));
+    void useFailingModel() {
         model = &failingModel;
         testSettingsInterpreter.initializeAnyTestOnApply();
     }
@@ -710,7 +709,8 @@ TEST_SETUP_PRESENTER_TEST(presenterPopulatesTransducerMenu) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(a, errorMessage(sessionView))
 
 TEST_SETUP_FAILURE_TEST(initializeTestShowsErrorMessageWhenModelFailsRequest) {
-    useFailingModel("a");
+    useFailingModel();
+    failingModel.setErrorMessage("a");
     auto controller{construct()};
     control.confirmTestSetup();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
@@ -726,7 +726,8 @@ TEST_SETUP_FAILURE_TEST(
 
 TEST_SETUP_FAILURE_TEST(
     playingCalibrationShowsErrorMessageWhenModelFailsRequest) {
-    useFailingModel("a");
+    useFailingModel();
+    failingModel.setErrorMessage("a");
     auto controller{construct()};
     control.playCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
@@ -734,7 +735,8 @@ TEST_SETUP_FAILURE_TEST(
 
 TEST_SETUP_FAILURE_TEST(
     playingLeftSpeakerCalibrationShowsErrorMessageWhenModelFailsRequest) {
-    useFailingModel("a");
+    useFailingModel();
+    failingModel.setErrorMessage("a");
     auto controller{construct()};
     control.playLeftSpeakerCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
@@ -742,7 +744,8 @@ TEST_SETUP_FAILURE_TEST(
 
 TEST_SETUP_FAILURE_TEST(
     playingRightSpeakerCalibrationShowsErrorMessageWhenModelFailsRequest) {
-    useFailingModel("a");
+    useFailingModel();
+    failingModel.setErrorMessage("a");
     auto controller{construct()};
     control.playRightSpeakerCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
