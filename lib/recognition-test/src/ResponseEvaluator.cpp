@@ -42,13 +42,35 @@ static auto stem(const LocalUrl &file) -> std::string {
 static auto consonant(const std::string &match) -> char {
     if (match == "bi")
         return 'b';
+    if (match == "si")
+        return 'c';
+    if (match == "di")
+        return 'd';
+    if (match == "hi")
+        return 'h';
+    if (match == "ki")
+        return 'k';
+    if (match == "mi")
+        return 'm';
+    if (match == "ni")
+        return 'n';
+    if (match == "pi")
+        return 'p';
+    if (match == "shi")
+        return 's';
+    if (match == "ti")
+        return 't';
+    if (match == "vi")
+        return 'v';
+    if (match == "zi")
+        return 'z';
     return '\0';
 }
 
 auto ResponseEvaluatorImpl::correct(
     const LocalUrl &file, const ConsonantResponse &r) -> bool {
     auto stem{av_speech_in_noise::stem(file)};
-    std::regex pattern{"choose_(.*)_.*"};
+    std::regex pattern{"choose_(.*?)_.*"};
     std::smatch match;
     std::regex_search(stem, match, pattern);
     return match.size() > 1 && consonant(match[1]) == r.consonant;
