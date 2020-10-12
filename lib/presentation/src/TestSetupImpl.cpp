@@ -1,4 +1,5 @@
 #include "TestSetupImpl.hpp"
+#include <functional>
 
 namespace av_speech_in_noise {
 TestSetupControllerImpl::TestSetupControllerImpl(Model &model,
@@ -11,8 +12,17 @@ TestSetupControllerImpl::TestSetupControllerImpl(Model &model,
     control.attach(this);
 }
 
-void TestSetupControllerImpl::notifyThatConfirmButtonHasBeenClicked() {
+static void showErrorMessageOnRuntimeError(
+    SessionView &view, const std::function<void()> &f) {
     try {
+        f();
+    } catch (const std::runtime_error &e) {
+        view.showErrorMessage(e.what());
+    }
+}
+
+void TestSetupControllerImpl::notifyThatConfirmButtonHasBeenClicked() {
+    showErrorMessageOnRuntimeError(sessionView, [&] {
         const auto testSettings{
             textFileReader.read({control.testSettingsFile()})};
         TestIdentity p;
@@ -25,9 +35,7 @@ void TestSetupControllerImpl::notifyThatConfirmButtonHasBeenClicked() {
             SNR{readInteger(control.startingSnr(), "starting SNR")});
         if (!model.testComplete())
             controller->prepare(testSettingsInterpreter.method(testSettings));
-    } catch (const std::runtime_error &e) {
-        sessionView.showErrorMessage(e.what());
-    }
+    });
 }
 
 static auto calibration(TestSettingsInterpreter &testSettingsInterpreter,
@@ -40,20 +48,26 @@ static auto calibration(TestSettingsInterpreter &testSettingsInterpreter,
 }
 
 void TestSetupControllerImpl::notifyThatPlayCalibrationButtonHasBeenClicked() {
-    model.playCalibration(calibration(
-        testSettingsInterpreter, textFileReader, control, sessionView));
+    showErrorMessageOnRuntimeError(sessionView, [&] {
+        model.playCalibration(calibration(
+            testSettingsInterpreter, textFileReader, control, sessionView));
+    });
 }
 
 void TestSetupControllerImpl::
     notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() {
-    model.playLeftSpeakerCalibration(calibration(
-        testSettingsInterpreter, textFileReader, control, sessionView));
+    showErrorMessageOnRuntimeError(sessionView, [&] {
+        model.playLeftSpeakerCalibration(calibration(
+            testSettingsInterpreter, textFileReader, control, sessionView));
+    });
 }
 
 void TestSetupControllerImpl::
     notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() {
-    model.playRightSpeakerCalibration(calibration(
-        testSettingsInterpreter, textFileReader, control, sessionView));
+    showErrorMessageOnRuntimeError(sessionView, [&] {
+        model.playRightSpeakerCalibration(calibration(
+            testSettingsInterpreter, textFileReader, control, sessionView));
+    });
 }
 
 void TestSetupControllerImpl::

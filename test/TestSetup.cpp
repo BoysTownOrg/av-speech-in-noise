@@ -466,41 +466,21 @@ class RequestFailingModel : public Model {
 class TestSetupFailureTests : public ::testing::Test {
   protected:
     RequestFailingModel failingModel;
-    ModelStub defaultModel;
-    Model *model{&defaultModel};
     SessionViewStub sessionView;
     TestSetupViewStub view;
     TestSetupControlStub control;
     TestSettingsInterpreterStub testSettingsInterpreter;
-    TestSetupPresenterImpl testSetupPresenterRefactored{view};
+    TestSetupPresenterImpl testSetupPresenter{view};
     TextFileReaderStub textFileReader;
-
-    void useFailingModel(std::string s = {}) {
-        failingModel.setErrorMessage(std::move(s));
-        model = &failingModel;
-        testSettingsInterpreter.initializeAnyTestOnApply();
-    }
-
-    void confirmTestSetup() {
-        TestSetupControllerImpl controller{*model, sessionView, control,
-            testSettingsInterpreter, textFileReader};
-        control.confirmTestSetup();
-    }
-
-    void assertConfirmTestSetupShowsErrorMessage(const std::string &s) {
-        confirmTestSetup();
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, errorMessage(sessionView));
-    }
-
-    void assertConfirmTestSetupDoesNotHideSetupView() {
-        confirmTestSetup();
-        AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.hidden());
-    }
+    TestSetupControllerImpl controller{failingModel, sessionView, control,
+        testSettingsInterpreter, textFileReader};
 };
 
 #define TEST_SETUP_CONTROLLER_TEST(a) TEST_F(TestSetupControllerTests, a)
 
 #define TEST_SETUP_PRESENTER_TEST(a) TEST_F(TestSetupPresenterTests, a)
+
+#define TEST_SETUP_FAILURE_TEST(a) TEST_F(TestSetupFailureTests, a)
 
 TEST_SETUP_CONTROLLER_TEST(controllerPreparesTestAfterConfirmButtonIsClicked) {
     testSettingsInterpreter.setMethod(Method::adaptivePassFail);
@@ -715,16 +695,42 @@ TEST_SETUP_PRESENTER_TEST(presenterPopulatesTransducerMenu) {
         contains(view.transducers(), name(Transducer::twoSpeakers)));
 }
 
-TEST_F(TestSetupFailureTests,
-    initializeTestShowsErrorMessageWhenModelFailsRequest) {
-    useFailingModel("a");
-    assertConfirmTestSetupShowsErrorMessage("a");
+#define AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, a)                \
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(a, errorMessage(sessionView))
+
+TEST_SETUP_FAILURE_TEST(initializeTestShowsErrorMessageWhenModelFailsRequest) {
+    testSettingsInterpreter.initializeAnyTestOnApply();
+    failingModel.setErrorMessage("a");
+    confirmTestSetup(control);
+    AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
 
-TEST_F(TestSetupFailureTests,
+TEST_SETUP_FAILURE_TEST(
     initializeTestDoesNotHideSetupViewWhenModelFailsRequest) {
-    useFailingModel();
-    assertConfirmTestSetupDoesNotHideSetupView();
+    testSettingsInterpreter.initializeAnyTestOnApply();
+    confirmTestSetup(control);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.hidden());
+}
+
+TEST_SETUP_FAILURE_TEST(
+    playingCalibrationShowsErrorMessageWhenModelFailsRequest) {
+    failingModel.setErrorMessage("a");
+    control.playCalibration();
+    AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
+}
+
+TEST_SETUP_FAILURE_TEST(
+    playingLeftSpeakerCalibrationShowsErrorMessageWhenModelFailsRequest) {
+    failingModel.setErrorMessage("a");
+    control.playLeftSpeakerCalibration();
+    AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
+}
+
+TEST_SETUP_FAILURE_TEST(
+    playingRightSpeakerCalibrationShowsErrorMessageWhenModelFailsRequest) {
+    failingModel.setErrorMessage("a");
+    control.playRightSpeakerCalibration();
+    AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
 }
 }

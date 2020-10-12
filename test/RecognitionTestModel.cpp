@@ -1564,8 +1564,24 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     playCalibrationThrowsRequestFailureWhenTargetPlayerThrowsInvalidAudioFile) {
     calibration.fileUrl.path = "a";
-    targetPlayer.throwInvalidAudioFileOnRms();
+    targetPlayer.throwInvalidAudioFileOnDigitalLevel();
     assertCallThrowsRequestFailure(playingCalibration, "unable to read a");
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playingLeftSpeakerCalibrationThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile) {
+    calibration.fileUrl.path = "a";
+    maskerPlayer.throwInvalidAudioFileOnLoad();
+    assertCallThrowsRequestFailure(
+        playingLeftSpeakerCalibration, "unable to read a");
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playingRightSpeakerCalibrationThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile) {
+    calibration.fileUrl.path = "a";
+    maskerPlayer.throwInvalidAudioFileOnLoad();
+    assertCallThrowsRequestFailure(
+        playingRightSpeakerCalibration, "unable to read a");
 }
 
 RECOGNITION_TEST_MODEL_TEST(

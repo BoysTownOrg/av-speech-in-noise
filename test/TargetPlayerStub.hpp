@@ -72,7 +72,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     auto digitalLevel() -> DigitalLevel override {
         addToLog("digitalLevel ");
-        if (throwInvalidAudioFileOnRms_)
+        if (throwInvalidAudioFileOnDigitalLevel_)
             throw InvalidAudioFile{};
         return digitalLevel_;
     }
@@ -100,7 +100,9 @@ class TargetPlayerStub : public TargetPlayer {
 
     void setDurationSeconds(double x) { durationSeconds_ = x; }
 
-    void throwInvalidAudioFileOnRms() { throwInvalidAudioFileOnRms_ = true; }
+    void throwInvalidAudioFileOnDigitalLevel() {
+        throwInvalidAudioFileOnDigitalLevel_ = true;
+    }
 
     auto timePlayedAt() -> PlayerTimeWithDelay { return timePlayedAt_; }
 
@@ -119,7 +121,7 @@ class TargetPlayerStub : public TargetPlayer {
     bool videoHidden_{};
     bool videoShown_{};
     bool throwInvalidAudioDeviceWhenDeviceSet_{};
-    bool throwInvalidAudioFileOnRms_{};
+    bool throwInvalidAudioFileOnDigitalLevel_{};
     bool setDeviceCalled_{};
     bool playing_{};
     bool playbackCompletionSubscribedTo_{};
