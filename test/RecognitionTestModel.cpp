@@ -1564,7 +1564,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     playCalibrationThrowsRequestFailureWhenTargetPlayerThrowsInvalidAudioFile) {
     calibration.fileUrl.path = "a";
-    targetPlayer.throwInvalidAudioFileOnRms();
+    targetPlayer.throwInvalidAudioFileOnDigitalLevel();
     assertCallThrowsRequestFailure(playingCalibration, "unable to read a");
 }
 
