@@ -486,16 +486,6 @@ class TestSetupFailureTests : public ::testing::Test {
             testSettingsInterpreter, textFileReader};
         control.confirmTestSetup();
     }
-
-    void assertConfirmTestSetupShowsErrorMessage(const std::string &s) {
-        confirmTestSetup();
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(s, errorMessage(sessionView));
-    }
-
-    void assertConfirmTestSetupDoesNotHideSetupView() {
-        confirmTestSetup();
-        AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.hidden());
-    }
 };
 
 #define TEST_SETUP_CONTROLLER_TEST(a) TEST_F(TestSetupControllerTests, a)
@@ -718,13 +708,15 @@ TEST_SETUP_PRESENTER_TEST(presenterPopulatesTransducerMenu) {
 TEST_F(TestSetupFailureTests,
     initializeTestShowsErrorMessageWhenModelFailsRequest) {
     useFailingModel("a");
-    assertConfirmTestSetupShowsErrorMessage("a");
+    confirmTestSetup();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", errorMessage(sessionView));
 }
 
 TEST_F(TestSetupFailureTests,
     initializeTestDoesNotHideSetupViewWhenModelFailsRequest) {
     useFailingModel();
-    assertConfirmTestSetupDoesNotHideSetupView();
+    confirmTestSetup();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.hidden());
 }
 
 TEST_F(TestSetupFailureTests,
