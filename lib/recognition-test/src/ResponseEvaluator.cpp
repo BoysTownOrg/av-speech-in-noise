@@ -2,6 +2,7 @@
 #include <gsl/gsl>
 #include <algorithm>
 #include <cctype>
+#include <regex>
 
 namespace av_speech_in_noise {
 static auto leadingPathLength(const std::string &filePath) -> gsl::index {
@@ -38,10 +39,19 @@ static auto stem(const LocalUrl &file) -> std::string {
     return fileName.substr(0, dot);
 }
 
+static auto consonant(const std::string &match) -> char {
+    if (match == "bi")
+        return 'b';
+    return '\0';
+}
+
 auto ResponseEvaluatorImpl::correct(
     const LocalUrl &file, const ConsonantResponse &r) -> bool {
     auto stem{av_speech_in_noise::stem(file)};
-    return stem.size() == 1 && stem.front() == r.consonant;
+    std::regex pattern{"choose_(.*)_.*"};
+    std::smatch match;
+    std::regex_search(stem, match, pattern);
+    return match.size() > 1 && consonant(match[1]) == r.consonant;
 }
 
 static auto colorNameLength(

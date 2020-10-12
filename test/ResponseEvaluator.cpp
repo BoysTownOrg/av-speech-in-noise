@@ -118,7 +118,9 @@ class ConsonantResponseEvaluatorTests : public ::testing::Test {
 #define CONSONANT_RESPONSE_EVALUATOR_TEST(a)                                   \
     TEST_F(ConsonantResponseEvaluatorTests, a)
 
-CONSONANT_RESPONSE_EVALUATOR_TEST(b) { assertCorrect("b.wav", 'b'); }
+CONSONANT_RESPONSE_EVALUATOR_TEST(b) {
+    assertCorrect("choose_bi_anything.mp4", 'b');
+}
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(notB) { assertIncorrect("a.wav", 'b'); }
 
