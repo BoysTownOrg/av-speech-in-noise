@@ -707,10 +707,13 @@ TEST_SETUP_PRESENTER_TEST(presenterPopulatesTransducerMenu) {
         contains(view.transducers(), name(Transducer::twoSpeakers)));
 }
 
+#define AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, a)                \
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(a, errorMessage(sessionView))
+
 TEST_SETUP_FAILURE_TEST(initializeTestShowsErrorMessageWhenModelFailsRequest) {
     useFailingModel("a");
     confirmTestSetup();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", errorMessage(sessionView));
+    AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
 
 TEST_SETUP_FAILURE_TEST(
@@ -726,7 +729,7 @@ TEST_SETUP_FAILURE_TEST(
     TestSetupControllerImpl controller{
         *model, sessionView, control, testSettingsInterpreter, textFileReader};
     control.playCalibration();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", errorMessage(sessionView));
+    AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
 }
 }
