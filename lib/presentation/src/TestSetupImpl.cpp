@@ -56,8 +56,10 @@ void TestSetupControllerImpl::notifyThatPlayCalibrationButtonHasBeenClicked() {
 
 void TestSetupControllerImpl::
     notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() {
-    model.playLeftSpeakerCalibration(calibration(
-        testSettingsInterpreter, textFileReader, control, sessionView));
+    showErrorMessageOnRuntimeError(sessionView, [&] {
+        model.playLeftSpeakerCalibration(calibration(
+            testSettingsInterpreter, textFileReader, control, sessionView));
+    });
 }
 
 void TestSetupControllerImpl::
