@@ -466,8 +466,6 @@ class RequestFailingModel : public Model {
 class TestSetupFailureTests : public ::testing::Test {
   protected:
     RequestFailingModel failingModel;
-    ModelStub defaultModel;
-    Model *model{&defaultModel};
     SessionViewStub sessionView;
     TestSetupViewStub view;
     TestSetupControlStub control;
@@ -475,12 +473,8 @@ class TestSetupFailureTests : public ::testing::Test {
     TestSetupPresenterImpl testSetupPresenterRefactored{view};
     TextFileReaderStub textFileReader;
 
-    TestSetupFailureTests() { model = &failingModel; }
-
-    void useFailingModel() { model = &failingModel; }
-
     auto construct() -> TestSetupControllerImpl {
-        return TestSetupControllerImpl{*model, sessionView, control,
+        return TestSetupControllerImpl{failingModel, sessionView, control,
             testSettingsInterpreter, textFileReader};
     }
 };
