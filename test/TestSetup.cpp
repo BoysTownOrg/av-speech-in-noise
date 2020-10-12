@@ -470,15 +470,10 @@ class TestSetupFailureTests : public ::testing::Test {
     TestSetupViewStub view;
     TestSetupControlStub control;
     TestSettingsInterpreterStub testSettingsInterpreter;
-    TestSetupPresenterImpl testSetupPresenterRefactored{view};
+    TestSetupPresenterImpl testSetupPresenter{view};
     TextFileReaderStub textFileReader;
     TestSetupControllerImpl controller{failingModel, sessionView, control,
         testSettingsInterpreter, textFileReader};
-
-    auto construct() -> TestSetupControllerImpl {
-        return TestSetupControllerImpl{failingModel, sessionView, control,
-            testSettingsInterpreter, textFileReader};
-    }
 };
 
 #define TEST_SETUP_CONTROLLER_TEST(a) TEST_F(TestSetupControllerTests, a)
