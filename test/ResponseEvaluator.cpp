@@ -166,14 +166,17 @@ CONSONANT_RESPONSE_EVALUATOR_TEST(z) {
     assertCorrect("choose_zi_3-25_NoMask.mp4", 'z');
 }
 
-CONSONANT_RESPONSE_EVALUATOR_TEST(notB) { assertIncorrect("a.wav", 'b'); }
+CONSONANT_RESPONSE_EVALUATOR_TEST(notB) {
+    assertIncorrect("choose_zi_3-25_NoMask.mp4", 'b');
+}
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(invalidFormatIsAlwaysIncorrect) {
-    assertIncorrect("bwav", 'b');
+    assertIncorrect("idontknowb", 'b');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(parsesConsonant) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL('b', evaluator.correctConsonant({"b.wav"}));
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        'b', evaluator.correctConsonant({"choose_bi_1-25_Communicator.mp4"}));
 }
 }
 }

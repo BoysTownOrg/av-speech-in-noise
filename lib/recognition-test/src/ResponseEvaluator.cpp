@@ -100,7 +100,13 @@ auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &filePath) -> int {
 }
 
 auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &file) -> char {
-    return av_speech_in_noise::stem(file).front();
+    auto stem{av_speech_in_noise::stem(file)};
+    std::regex pattern{"choose_(.*?)_.*"};
+    std::smatch match;
+    std::regex_search(stem, match, pattern);
+    if (match.size() > 1)
+        return consonant(match[1]);
+    return '\0';
 }
 
 auto ResponseEvaluatorImpl::fileName(const LocalUrl &file) -> std::string {
