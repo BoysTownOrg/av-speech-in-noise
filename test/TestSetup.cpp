@@ -481,9 +481,13 @@ class TestSetupFailureTests : public ::testing::Test {
         testSettingsInterpreter.initializeAnyTestOnApply();
     }
 
-    void confirmTestSetup() {
-        TestSetupControllerImpl controller{*model, sessionView, control,
+    auto construct() -> TestSetupControllerImpl {
+        return TestSetupControllerImpl{*model, sessionView, control,
             testSettingsInterpreter, textFileReader};
+    }
+
+    void confirmTestSetup() {
+        auto controller{construct()};
         control.confirmTestSetup();
     }
 };
@@ -726,8 +730,7 @@ TEST_SETUP_FAILURE_TEST(
 TEST_SETUP_FAILURE_TEST(
     playingCalibrationShowsErrorMessageWhenModelFailsRequest) {
     useFailingModel("a");
-    TestSetupControllerImpl controller{
-        *model, sessionView, control, testSettingsInterpreter, textFileReader};
+    auto controller{construct()};
     control.playCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
