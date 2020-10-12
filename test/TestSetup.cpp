@@ -492,6 +492,8 @@ class TestSetupFailureTests : public ::testing::Test {
 
 #define TEST_SETUP_PRESENTER_TEST(a) TEST_F(TestSetupPresenterTests, a)
 
+#define TEST_SETUP_FAILURE_TEST(a) TEST_F(TestSetupFailureTests, a)
+
 TEST_SETUP_CONTROLLER_TEST(controllerPreparesTestAfterConfirmButtonIsClicked) {
     testSettingsInterpreter.setMethod(Method::adaptivePassFail);
     run(confirmingTestSetup);
@@ -705,21 +707,20 @@ TEST_SETUP_PRESENTER_TEST(presenterPopulatesTransducerMenu) {
         contains(view.transducers(), name(Transducer::twoSpeakers)));
 }
 
-TEST_F(TestSetupFailureTests,
-    initializeTestShowsErrorMessageWhenModelFailsRequest) {
+TEST_SETUP_FAILURE_TEST(initializeTestShowsErrorMessageWhenModelFailsRequest) {
     useFailingModel("a");
     confirmTestSetup();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", errorMessage(sessionView));
 }
 
-TEST_F(TestSetupFailureTests,
+TEST_SETUP_FAILURE_TEST(
     initializeTestDoesNotHideSetupViewWhenModelFailsRequest) {
     useFailingModel();
     confirmTestSetup();
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.hidden());
 }
 
-TEST_F(TestSetupFailureTests,
+TEST_SETUP_FAILURE_TEST(
     playingCalibrationShowsErrorMessageWhenModelFailsRequest) {
     useFailingModel("a");
     TestSetupControllerImpl controller{
