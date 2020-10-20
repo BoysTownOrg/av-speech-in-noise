@@ -3,4 +3,4 @@
 /.vscode/
 /.clangd/
 /.clang-tidy
-/compile_commands.json
+/.cache/
