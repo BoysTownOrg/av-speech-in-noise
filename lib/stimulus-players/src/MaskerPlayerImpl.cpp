@@ -419,13 +419,11 @@ void MaskerPlayerImpl::AudioThread::applyLevel(
     const std::vector<channel_buffer_type> &audioBuffer) {
     const auto levelScalar_{read(sharedState.levelScalar)};
     for (auto i{sample_index_type{0}}; i < framesToFill(audioBuffer); ++i) {
-        const auto fadeScalar{halfWindowLength != 0
-                ? squared(
-                      std::sin((pi() * hannCounter) / (2 * halfWindowLength)))
-                : 1};
         for (auto channel : audioBuffer)
-            at(channel, i) *=
-                gsl::narrow_cast<sample_type>(fadeScalar * levelScalar_);
+            at(channel, i) *= gsl::narrow_cast<sample_type>(
+                halfWindowLength != 0 ? squared(std::sin((pi() * hannCounter) /
+                                            (2 * halfWindowLength)))
+                                      : 1 * levelScalar_);
         if (doneFadingIn()) {
             sharedState.fadeInCompleteSystemTime.store(systemTime);
             sharedState.fadeInCompleteSystemTimeSampleOffset.store(i + 1);
