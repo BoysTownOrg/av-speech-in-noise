@@ -644,11 +644,14 @@ class RecognitionTestModelTests : public ::testing::Test {
         UseCase &useCase) {
         setDurationSeconds(targetPlayer, 1);
         setFadeTimeSeconds(maskerPlayer, 2);
-        maskerPlayer.setDurationSeconds(3);
+        maskerPlayer.setDurationSeconds(10);
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0., randomizer.lowerFloatBound());
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            3. - 2 - 1 - 2, randomizer.upperFloatBound());
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(10. - 2 - 1 - 2 -
+                RecognitionTestModelImpl::fringeTargetDelay.seconds -
+                RecognitionTestModelImpl::offsetFringeTargetDelayUpperBound
+                    .seconds,
+            randomizer.upperFloatBound());
     }
 
     void assertMaskerPlayerSeekedToRandomTime(UseCase &useCase) {

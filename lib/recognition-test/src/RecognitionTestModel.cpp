@@ -308,8 +308,9 @@ static constexpr auto operator-(const Duration &a, const Duration &b)
 }
 
 void RecognitionTestModelImpl::seekRandomMaskerPosition() {
-    const auto upperLimit{
-        maskerPlayer.duration() - trialDuration(targetPlayer, maskerPlayer)};
+    const auto upperLimit{maskerPlayer.duration() -
+        trialDuration(targetPlayer, maskerPlayer) - fringeTargetDelay -
+        offsetFringeTargetDelayUpperBound};
     maskerPlayer.seekSeconds(
         randomizer.betweenInclusive(0., upperLimit.seconds));
 }

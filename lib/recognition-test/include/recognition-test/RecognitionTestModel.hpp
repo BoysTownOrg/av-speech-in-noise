@@ -149,6 +149,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     static constexpr Delay maskerChannelDelay{0.004};
     static constexpr Delay additionalTargetDelay{0.5};
     static constexpr Delay fringeTargetDelay{0.166};
+    static constexpr Delay offsetFringeTargetDelayUpperBound{0.1};
 
   private:
     void initialize_(TestMethod *, const Test &);
