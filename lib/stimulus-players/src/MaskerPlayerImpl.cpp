@@ -355,7 +355,7 @@ static void assignFadeSamples(
     halfWindowLength = read(sharedState.fadeSamples);
 }
 
-auto sourceFrames(MaskerPlayerImpl::SharedState &sharedState)
+static auto sourceFrames(MaskerPlayerImpl::SharedState &sharedState)
     -> sample_index_type {
     return samples(firstChannel(sharedState.sourceAudio));
 }
@@ -444,10 +444,6 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
         enabled = false;
         postCompletion(sharedState.disableAudio);
     }
-}
-
-auto MaskerPlayerImpl::AudioThread::sourceFrames() -> sample_index_type {
-    return samples(firstChannel(sharedState.sourceAudio));
 }
 
 auto MaskerPlayerImpl::AudioThread::doneFadingIn() -> bool {

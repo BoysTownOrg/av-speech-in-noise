@@ -121,7 +121,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
       private:
         auto doneFadingIn() -> bool;
         auto doneFadingOut() -> bool;
-        auto sourceFrames() -> sample_index_type;
 
         SharedState &sharedState;
         int hannCounter{};
