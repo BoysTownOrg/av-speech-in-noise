@@ -62,7 +62,7 @@ class TargetPlayer {
     virtual auto duration() -> Duration = 0;
     virtual void useAllChannels() = 0;
     virtual void useFirstChannelOnly() = 0;
-    virtual void preRoll() {}
+    virtual void preRoll() = 0;
 };
 
 struct AudioSampleTimeWithOffset {

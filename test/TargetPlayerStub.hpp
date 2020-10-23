@@ -11,7 +11,7 @@ class TargetPlayerStub : public TargetPlayer {
   public:
     auto preRolling() const -> bool { return preRolling_; }
 
-    void preRoll() { preRolling_ = true; }
+    void preRoll() override { preRolling_ = true; }
 
     auto timesSetDeviceCalled() const -> int { return timesSetDeviceCalled_; }
 

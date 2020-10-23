@@ -10,9 +10,7 @@ TargetPlayerImpl::TargetPlayerImpl(VideoPlayer *player, AudioReader *reader)
     player->attach(this);
 }
 
-void TargetPlayerImpl::attach(TargetPlayer::Observer *e) {
-    listener_ = e;
-}
+void TargetPlayerImpl::attach(TargetPlayer::Observer *e) { listener_ = e; }
 
 void TargetPlayerImpl::play() { player->play(); }
 
@@ -116,4 +114,6 @@ void TargetPlayerImpl::subscribeToPlaybackCompletion() {
 auto TargetPlayerImpl::duration() -> Duration {
     return {player->durationSeconds()};
 }
+
+void TargetPlayerImpl::preRoll() { player->preRoll(); }
 }

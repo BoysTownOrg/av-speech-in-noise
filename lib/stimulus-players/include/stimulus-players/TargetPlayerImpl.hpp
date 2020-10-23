@@ -55,7 +55,7 @@ class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
     auto audioDevices() -> std::vector<std::string>;
     void useFirstChannelOnly() override;
     void useAllChannels() override;
-    void preRoll() override { player->preRoll(); }
+    void preRoll() override;
 
   private:
     auto readAudio_() -> audio_type;

@@ -11,7 +11,7 @@ class VideoPlayerStub : public VideoPlayer {
   public:
     [[nodiscard]] auto preRolled() const -> bool { return preRolled_; }
 
-    void preRoll() { preRolled_ = true; }
+    void preRoll() override { preRolled_ = true; }
 
     auto durationSeconds() -> double override { return durationSeconds_; }
 
