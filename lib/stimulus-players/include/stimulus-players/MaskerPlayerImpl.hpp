@@ -123,8 +123,8 @@ class MaskerPlayerImpl : public MaskerPlayer,
         auto doneFadingOut() -> bool;
 
         SharedState &sharedState;
-        int hannCounter{};
-        int halfWindowLength{};
+        int rampCounter{};
+        int rampLength{};
         bool fadingOut{};
         bool fadingIn{};
         bool enabled{};
