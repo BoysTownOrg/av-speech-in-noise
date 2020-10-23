@@ -128,12 +128,8 @@ class MaskerPlayerImpl : public MaskerPlayer,
         void prepareToFadeOut();
         void checkForFadeOut();
         auto doneFadingIn() -> bool;
-        void checkForFadeInComplete(sample_index_type);
         auto doneFadingOut() -> bool;
-        void checkForFadeOutComplete();
         void advanceCounterIfStillFading();
-        void updateFadeState(sample_index_type);
-        auto nextFadeScalar() -> double;
         auto sourceFrames() -> sample_index_type;
 
         SharedState &sharedState;
