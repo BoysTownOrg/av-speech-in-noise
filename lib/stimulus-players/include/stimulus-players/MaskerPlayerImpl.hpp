@@ -89,6 +89,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     void useAllChannels() override;
     auto nanoseconds(PlayerTime) -> std::uintmax_t override;
     auto currentSystemTime() -> PlayerTime override;
+    static constexpr Delay callbackDelay{1. / 30};
 
   private:
     auto readAudio(std::string) -> audio_type;

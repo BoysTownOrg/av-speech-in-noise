@@ -125,8 +125,8 @@ static void recalculateSamplesToWaitPerChannel(
         });
 }
 
-static void scheduleCallbackAfterSeconds(Timer *timer, double x) {
-    timer->scheduleCallbackAfterSeconds(x);
+static void scheduleCallback(Timer *timer, Delay x) {
+    timer->scheduleCallbackAfterSeconds(x.seconds);
 }
 
 static auto audioDeviceDescriptions(AudioPlayer *player)
@@ -289,7 +289,7 @@ void MaskerPlayerImpl::fadeIn() {
     set(fadingIn);
     postForExecution(sharedState.fadeIn);
     play();
-    scheduleCallbackAfterSeconds(timer, 1. / 30);
+    scheduleCallback(timer, callbackDelay);
 }
 
 void MaskerPlayerImpl::play() {
@@ -318,7 +318,7 @@ void MaskerPlayerImpl::fadeOut() {
 
     set(fadingOut);
     postForExecution(sharedState.fadeOut);
-    scheduleCallbackAfterSeconds(timer, 1. / 30);
+    scheduleCallback(timer, callbackDelay);
 }
 
 void MaskerPlayerImpl::callback() {
@@ -336,7 +336,7 @@ void MaskerPlayerImpl::callback() {
         return;
     }
 
-    scheduleCallbackAfterSeconds(timer, 1. / 30);
+    scheduleCallback(timer, callbackDelay);
 }
 
 auto MaskerPlayerImpl::fading() -> bool { return fadingIn || fadingOut; }
