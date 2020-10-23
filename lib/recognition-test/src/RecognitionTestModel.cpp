@@ -446,4 +446,7 @@ auto RecognitionTestModelImpl::trialNumber() -> int { return trialNumber_; }
 auto RecognitionTestModelImpl::targetFileName() -> std::string {
     return targetName(evaluator, testMethod);
 }
+void RecognitionTestModelImpl::notifyThatPreRollHasCompleted() {
+    maskerPlayer.fadeIn();
+}
 }
