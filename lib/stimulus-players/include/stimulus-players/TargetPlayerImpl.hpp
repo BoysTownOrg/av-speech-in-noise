@@ -15,6 +15,7 @@ class VideoPlayer {
       public:
         virtual ~Observer() = default;
         virtual void playbackComplete() = 0;
+        virtual void notifyThatPreRollHasCompleted() {}
         virtual void fillAudioBuffer(
             const std::vector<gsl::span<float>> &audio) = 0;
     };
@@ -56,6 +57,9 @@ class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
     void useFirstChannelOnly() override;
     void useAllChannels() override;
     void preRoll() override;
+    void notifyThatPreRollHasCompleted() override {
+        listener_->notifyThatPreRollHasCompleted();
+    }
 
   private:
     auto readAudio_() -> audio_type;

@@ -9,6 +9,8 @@ namespace av_speech_in_noise {
 namespace {
 class VideoPlayerStub : public VideoPlayer {
   public:
+    void preRollComplete() { listener_->notifyThatPreRollHasCompleted(); }
+
     [[nodiscard]] auto preRolled() const -> bool { return preRolled_; }
 
     void preRoll() override { preRolled_ = true; }
@@ -101,12 +103,26 @@ class VideoPlayerStub : public VideoPlayer {
 };
 
 class TargetPlayerListenerStub : public TargetPlayer::Observer {
-    bool notified_{};
-
   public:
-    void playbackComplete() override { notified_ = true; }
+    void playbackComplete() override {
+        notifiedThatPlaybackHasCompleted_ = true;
+    }
 
-    [[nodiscard]] auto notified() const { return notified_; }
+    void notifyThatPreRollHasCompleted() override {
+        notifiedThatPreRollHasCompleted_ = true;
+    }
+
+    [[nodiscard]] auto notifiedThatPlaybackHasCompleted() const -> bool {
+        return notifiedThatPlaybackHasCompleted_;
+    }
+
+    [[nodiscard]] auto notifiedThatPreRollHasCompleted() const -> bool {
+        return notifiedThatPreRollHasCompleted_;
+    }
+
+  private:
+    bool notifiedThatPlaybackHasCompleted_{};
+    bool notifiedThatPreRollHasCompleted_{};
 };
 
 class TargetPlayerTests : public ::testing::Test {
@@ -212,7 +228,12 @@ TARGET_PLAYER_TEST(loadFileLoadsFile) {
 
 TARGET_PLAYER_TEST(videoPlaybackCompleteNotifiesSubscriber) {
     videoPlayer.playbackComplete();
-    EXPECT_TRUE(listener.notified());
+    EXPECT_TRUE(listener.notifiedThatPlaybackHasCompleted());
+}
+
+TARGET_PLAYER_TEST(videoPreRollCompleteNotifiesSubscriber) {
+    videoPlayer.preRollComplete();
+    EXPECT_TRUE(listener.notifiedThatPreRollHasCompleted());
 }
 
 TARGET_PLAYER_TEST(twentydBMultipliesSignalByTen) {
