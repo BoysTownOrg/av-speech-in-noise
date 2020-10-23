@@ -355,6 +355,46 @@ static void assignFadeSamples(
     halfWindowLength = read(sharedState.fadeSamples);
 }
 
+auto sourceFrames(MaskerPlayerImpl::SharedState &sharedState)
+    -> sample_index_type {
+    return samples(firstChannel(sharedState.sourceAudio));
+}
+
+static void copySourceAudio(const std::vector<channel_buffer_type> &audioBuffer,
+    MaskerPlayerImpl::SharedState &sharedState) {
+    auto usingFirstChannelOnly{sharedState.firstChannelOnly.load()};
+    auto usingSecondChannelOnly{sharedState.secondChannelOnly.load()};
+    for (channel_index_type i{0}; i < channels(audioBuffer); ++i) {
+        const auto samplesToWait{at(sharedState.samplesToWaitPerChannel, i)};
+        const auto framesToMute =
+            std::min(samplesToWait, framesToFill(audioBuffer));
+        mute(channel(audioBuffer, i).first(framesToMute));
+        at(sharedState.samplesToWaitPerChannel, i) =
+            samplesToWait - framesToMute;
+        auto frameHead{at(sharedState.audioFrameHeadsPerChannel, i)};
+        auto framesLeftToFill{framesToFill(audioBuffer) - framesToMute};
+        at(sharedState.audioFrameHeadsPerChannel, i) =
+            (frameHead + framesLeftToFill) % sourceFrames(sharedState);
+        while (framesLeftToFill != 0) {
+            const auto framesAboutToFill = std::min(
+                sourceFrames(sharedState) - frameHead, framesLeftToFill);
+            const auto &source = channels(sharedState.sourceAudio) > i
+                ? channel(sharedState.sourceAudio, i)
+                : firstChannel(sharedState.sourceAudio);
+            const auto sourceBeginning{source.begin() + frameHead};
+            std::copy(sourceBeginning, sourceBeginning + framesAboutToFill,
+                channel(audioBuffer, i).begin() + framesToFill(audioBuffer) -
+                    framesLeftToFill);
+            frameHead = 0;
+            framesLeftToFill -= framesAboutToFill;
+        }
+        if (usingFirstChannelOnly && i > 0)
+            mute(channel(audioBuffer, i));
+        if (usingSecondChannelOnly && i != 1)
+            mute(channel(audioBuffer, i));
+    }
+}
+
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
     player_system_time_type time) {
@@ -364,12 +404,11 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
         else
             return;
     }
-
     if (noChannels(sharedState.sourceAudio))
         for (auto channel : audioBuffer)
             mute(channel);
     else
-        copySourceAudio(audioBuffer);
+        copySourceAudio(audioBuffer, sharedState);
     if (thisCallClears(sharedState.fadeIn.execute)) {
         assignFadeSamples(halfWindowLength, sharedState);
         hannCounter = 0;
@@ -404,41 +443,6 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     if (thisCallClears(sharedState.disableAudio.execute)) {
         enabled = false;
         postCompletion(sharedState.disableAudio);
-    }
-}
-
-void MaskerPlayerImpl::AudioThread::copySourceAudio(
-    const std::vector<channel_buffer_type> &audioBuffer) {
-    auto usingFirstChannelOnly{sharedState.firstChannelOnly.load()};
-    auto usingSecondChannelOnly{sharedState.secondChannelOnly.load()};
-    for (channel_index_type i{0}; i < channels(audioBuffer); ++i) {
-        const auto samplesToWait{at(sharedState.samplesToWaitPerChannel, i)};
-        const auto framesToMute =
-            std::min(samplesToWait, framesToFill(audioBuffer));
-        mute(channel(audioBuffer, i).first(framesToMute));
-        at(sharedState.samplesToWaitPerChannel, i) =
-            samplesToWait - framesToMute;
-        auto frameHead{at(sharedState.audioFrameHeadsPerChannel, i)};
-        auto framesLeftToFill{framesToFill(audioBuffer) - framesToMute};
-        at(sharedState.audioFrameHeadsPerChannel, i) =
-            (frameHead + framesLeftToFill) % sourceFrames();
-        while (framesLeftToFill != 0) {
-            const auto framesAboutToFill =
-                std::min(sourceFrames() - frameHead, framesLeftToFill);
-            const auto &source = channels(sharedState.sourceAudio) > i
-                ? channel(sharedState.sourceAudio, i)
-                : firstChannel(sharedState.sourceAudio);
-            const auto sourceBeginning{source.begin() + frameHead};
-            std::copy(sourceBeginning, sourceBeginning + framesAboutToFill,
-                channel(audioBuffer, i).begin() + framesToFill(audioBuffer) -
-                    framesLeftToFill);
-            frameHead = 0;
-            framesLeftToFill -= framesAboutToFill;
-        }
-        if (usingFirstChannelOnly && i > 0)
-            mute(channel(audioBuffer, i));
-        if (usingSecondChannelOnly && i != 1)
-            mute(channel(audioBuffer, i));
     }
 }
 

@@ -119,8 +119,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
             player_system_time_type);
 
       private:
-        void copySourceAudio(
-            const std::vector<channel_buffer_type> &audioBuffer);
         auto doneFadingIn() -> bool;
         auto doneFadingOut() -> bool;
         auto sourceFrames() -> sample_index_type;
