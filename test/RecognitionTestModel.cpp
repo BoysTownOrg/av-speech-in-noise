@@ -1166,12 +1166,6 @@ RECOGNITION_TEST_MODEL_TEST(passesCurrentMaskerTimeForNanosecondConversion) {
         maskerPlayer.toNanosecondsSystemTime().at(1));
 }
 
-RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetWhenDefaultTest) {
-    run(initializingTest, model);
-    maskerPlayer.fadeInComplete();
-    assertPlayed(targetPlayer);
-}
-
 RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestPassesNextTargetToTargetPlayer) {
     assertPassesNextTargetToPlayer(initializingTest);

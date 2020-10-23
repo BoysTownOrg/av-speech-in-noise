@@ -276,7 +276,6 @@ void RecognitionTestModelImpl::fadeInComplete(
             Delay{Duration{offsetDuration(maskerPlayer, t) + fringeTargetDelay}
                       .seconds};
         targetPlayer.playAt(timeToPlayWithDelay);
-        play(targetPlayer);
     }
 }
 
