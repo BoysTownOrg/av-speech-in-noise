@@ -148,6 +148,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     void notifyThatPreRollHasCompleted() override;
     static constexpr Delay maskerChannelDelay{0.004};
     static constexpr Delay additionalTargetDelay{0.5};
+    static constexpr Delay fringeTargetDelay{0.166};
 
   private:
     void initialize_(TestMethod *, const Test &);

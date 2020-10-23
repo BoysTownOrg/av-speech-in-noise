@@ -270,6 +270,12 @@ void RecognitionTestModelImpl::fadeInComplete(
             TargetPlayerSystemTime{
                 nanoseconds(maskerPlayer, maskerPlayer.currentSystemTime())};
     } else {
+        PlayerTimeWithDelay timeToPlayWithDelay{};
+        timeToPlayWithDelay.playerTime = t.playerTime;
+        timeToPlayWithDelay.delay =
+            Delay{Duration{offsetDuration(maskerPlayer, t) + fringeTargetDelay}
+                      .seconds};
+        targetPlayer.playAt(timeToPlayWithDelay);
         play(targetPlayer);
     }
 }

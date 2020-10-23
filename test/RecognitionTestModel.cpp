@@ -1082,6 +1082,19 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
         targetPlayer.timePlayedAt().delay.seconds);
 }
 
+RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenNotEyeTracking) {
+    run(initializingTest, model);
+    setSystemTime(fadeInCompleteTime, 1);
+    setSampleOffset(fadeInCompleteTime, 2);
+    setSampleRateHz(maskerPlayer, 3);
+    fadeInComplete(maskerPlayer, fadeInCompleteTime);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
+        targetPlayer.timePlayedAt().playerTime.system);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        2 / 3. + RecognitionTestModelImpl::fringeTargetDelay.seconds,
+        targetPlayer.timePlayedAt().delay.seconds);
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     fadeInCompletePassesTargetStartSystemTimeForConversionWhenEyeTracking) {
     run(initializingTestWithEyeTracking, model);
