@@ -1612,9 +1612,9 @@ RECOGNITION_TEST_MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, targetPlayer.timesSetDeviceCalled());
 }
 
-RECOGNITION_TEST_MODEL_TEST(playTrialDoesNotPlayIfTrialInProgress) {
+RECOGNITION_TEST_MODEL_TEST(playTrialDoesNotPreRollTargetIfTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingTrial);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, maskerPlayer.timesFadedIn());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, targetPlayer.timesPreRolled());
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationDoesNotPlayIfTrialInProgress) {

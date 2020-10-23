@@ -9,11 +9,16 @@
 namespace av_speech_in_noise {
 class TargetPlayerStub : public TargetPlayer {
   public:
+    auto timesPreRolled() const -> int { return timesPreRolled_; }
+
     void preRollComplete() { listener_->notifyThatPreRollHasCompleted(); }
 
     auto preRolling() const -> bool { return preRolling_; }
 
-    void preRoll() override { preRolling_ = true; }
+    void preRoll() override {
+        preRolling_ = true;
+        ++timesPreRolled_;
+    }
 
     auto timesSetDeviceCalled() const -> int { return timesSetDeviceCalled_; }
 
@@ -123,6 +128,7 @@ class TargetPlayerStub : public TargetPlayer {
     double durationSeconds_{};
     Observer *listener_{};
     int timesSetDeviceCalled_{};
+    int timesPreRolled_{};
     bool played_{};
     bool videoHidden_{};
     bool videoShown_{};
