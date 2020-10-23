@@ -648,7 +648,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0., randomizer.lowerFloatBound());
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(10. - 2 - 1 - 2 -
-                RecognitionTestModelImpl::targetOnsetFringeDelay.seconds -
+                RecognitionTestModelImpl::targetOnsetFringeDuration.seconds -
                 RecognitionTestModelImpl::targetOffsetFringeDelayUpperBound
                     .seconds,
             randomizer.upperFloatBound());
@@ -1094,7 +1094,7 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenNotEyeTracking) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
         targetPlayer.timePlayedAt().playerTime.system);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        2 / 3. + RecognitionTestModelImpl::targetOnsetFringeDelay.seconds,
+        2 / 3. + RecognitionTestModelImpl::targetOnsetFringeDuration.seconds,
         targetPlayer.timePlayedAt().delay.seconds);
 }
 
@@ -1102,8 +1102,8 @@ RECOGNITION_TEST_MODEL_TEST(playTrialSchedulesMaskerFadeOut) {
     setDurationSeconds(targetPlayer, 1);
     run(playingTrial, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        RecognitionTestModelImpl::targetOnsetFringeDelay.seconds +
-            RecognitionTestModelImpl::targetOffsetFringeDelay.seconds + 1,
+        RecognitionTestModelImpl::targetOnsetFringeDuration.seconds +
+            RecognitionTestModelImpl::targetOffsetFringeDuration.seconds + 1,
         maskerPlayer.delayAfterFadeInToFadeOut().seconds);
 }
 

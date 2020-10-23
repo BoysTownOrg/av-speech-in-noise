@@ -272,9 +272,9 @@ void RecognitionTestModelImpl::fadeInComplete(
     } else {
         PlayerTimeWithDelay timeToPlayWithDelay{};
         timeToPlayWithDelay.playerTime = t.playerTime;
-        timeToPlayWithDelay.delay = Delay{
-            Duration{offsetDuration(maskerPlayer, t) + targetOnsetFringeDelay}
-                .seconds};
+        timeToPlayWithDelay.delay = Delay{Duration{
+            offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
+                                              .seconds};
         targetPlayer.playAt(timeToPlayWithDelay);
     }
 }
@@ -309,7 +309,7 @@ static constexpr auto operator-(const Duration &a, const Duration &b)
 
 void RecognitionTestModelImpl::seekRandomMaskerPosition() {
     const auto upperLimit{maskerPlayer.duration() -
-        trialDuration(targetPlayer, maskerPlayer) - targetOnsetFringeDelay -
+        trialDuration(targetPlayer, maskerPlayer) - targetOnsetFringeDuration -
         targetOffsetFringeDelayUpperBound};
     maskerPlayer.seekSeconds(
         randomizer.betweenInclusive(0., upperLimit.seconds));
@@ -332,8 +332,9 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     }
     if (condition == Condition::audioVisual)
         show(targetPlayer);
-    maskerPlayer.fadeOutAfterFadeIn(Delay{targetOnsetFringeDelay.seconds +
-        targetOffsetFringeDelay.seconds + targetPlayer.duration().seconds});
+    maskerPlayer.fadeOutAfterFadeIn(Delay{Duration{targetOnsetFringeDuration +
+        targetOffsetFringeDuration + targetPlayer.duration()}
+                                              .seconds});
     targetPlayer.preRoll();
     trialInProgress_ = true;
 }
