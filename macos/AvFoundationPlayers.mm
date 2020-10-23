@@ -559,4 +559,9 @@ auto AvFoundationAudioPlayer::nanoseconds(PlayerTime t) -> std::uintmax_t {
 auto AvFoundationAudioPlayer::currentSystemTime() -> PlayerTime {
     return PlayerTime{mach_absolute_time()};
 }
+void AvFoundationVideoPlayer::preRoll() {
+    [player prerollAtRate:1.
+        completionHandler:^(BOOL finished){
+        }];
+}
 }

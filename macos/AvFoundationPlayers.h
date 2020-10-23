@@ -58,6 +58,7 @@ class AvFoundationVideoPlayer : public VideoPlayer {
     auto playing() -> bool override;
     void subscribeToPlaybackCompletion() override;
     auto durationSeconds() -> double override;
+    void preRoll() override;
 
   private:
     void addPlayerLayer();

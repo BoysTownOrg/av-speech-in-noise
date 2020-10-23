@@ -32,7 +32,7 @@ class VideoPlayer {
     virtual auto deviceDescription(int index) -> std::string = 0;
     virtual void setDevice(int index) = 0;
     virtual auto durationSeconds() -> double = 0;
-    virtual void preRoll() {}
+    virtual void preRoll() = 0;
 };
 
 class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {

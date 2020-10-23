@@ -1044,8 +1044,8 @@ RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToMaskerPlayer) {
     assertDevicePassedToMaskerPlayer(playingTrial);
 }
 
-RECOGNITION_TEST_MODEL_TEST(playTrialFadesInMasker) {
-    run(playingTrial, model);
+RECOGNITION_TEST_MODEL_TEST(targetPrerollCompleteFadesInMasker) {
+    targetPlayer.preRollComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(fadedIn(maskerPlayer));
 }
 

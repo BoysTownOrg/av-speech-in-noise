@@ -45,6 +45,7 @@ class TargetPlayer {
       public:
         virtual ~Observer() = default;
         virtual void playbackComplete() = 0;
+        virtual void notifyThatPreRollHasCompleted() {}
     };
 
     virtual ~TargetPlayer() = default;
@@ -144,6 +145,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     void fadeOutComplete() override;
     void playbackComplete() override;
     void prepareNextTrialIfNeeded() override;
+    void notifyThatPreRollHasCompleted() override { maskerPlayer.fadeIn(); }
     static constexpr Delay maskerChannelDelay{0.004};
     static constexpr Delay additionalTargetDelay{0.5};
 

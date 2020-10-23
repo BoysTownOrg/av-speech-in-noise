@@ -9,6 +9,8 @@
 namespace av_speech_in_noise {
 class TargetPlayerStub : public TargetPlayer {
   public:
+    void preRollComplete() { listener_->notifyThatPreRollHasCompleted(); }
+
     auto preRolling() const -> bool { return preRolling_; }
 
     void preRoll() override { preRolling_ = true; }
