@@ -289,7 +289,7 @@ void MaskerPlayerImpl::fadeIn() {
     set(fadingIn);
     postForExecution(sharedState.fadeIn);
     play();
-    scheduleCallbackAfterSeconds(timer, 0.1);
+    scheduleCallbackAfterSeconds(timer, 1. / 30);
 }
 
 void MaskerPlayerImpl::play() {
@@ -318,7 +318,7 @@ void MaskerPlayerImpl::fadeOut() {
 
     set(fadingOut);
     postForExecution(sharedState.fadeOut);
-    scheduleCallbackAfterSeconds(timer, 0.1);
+    scheduleCallbackAfterSeconds(timer, 1. / 30);
 }
 
 void MaskerPlayerImpl::callback() {
@@ -336,7 +336,7 @@ void MaskerPlayerImpl::callback() {
         return;
     }
 
-    scheduleCallbackAfterSeconds(timer, 0.1);
+    scheduleCallbackAfterSeconds(timer, 1. / 30);
 }
 
 auto MaskerPlayerImpl::fading() -> bool { return fadingIn || fadingOut; }
