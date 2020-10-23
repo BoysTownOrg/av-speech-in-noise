@@ -272,9 +272,9 @@ void RecognitionTestModelImpl::fadeInComplete(
     } else {
         PlayerTimeWithDelay timeToPlayWithDelay{};
         timeToPlayWithDelay.playerTime = t.playerTime;
-        timeToPlayWithDelay.delay =
-            Delay{Duration{offsetDuration(maskerPlayer, t) + fringeTargetDelay}
-                      .seconds};
+        timeToPlayWithDelay.delay = Delay{
+            Duration{offsetDuration(maskerPlayer, t) + targetOnsetFringeDelay}
+                .seconds};
         targetPlayer.playAt(timeToPlayWithDelay);
     }
 }
@@ -309,8 +309,8 @@ static constexpr auto operator-(const Duration &a, const Duration &b)
 
 void RecognitionTestModelImpl::seekRandomMaskerPosition() {
     const auto upperLimit{maskerPlayer.duration() -
-        trialDuration(targetPlayer, maskerPlayer) - fringeTargetDelay -
-        offsetFringeTargetDelayUpperBound};
+        trialDuration(targetPlayer, maskerPlayer) - targetOnsetFringeDelay -
+        targetOffsetFringeDelayUpperBound};
     maskerPlayer.seekSeconds(
         randomizer.betweenInclusive(0., upperLimit.seconds));
 }
