@@ -1,14 +1,18 @@
 #include "AudioReaderStub.hpp"
 #include "assert-utility.hpp"
 #include "recognition-test/RecognitionTestModel.hpp"
-#include <cmath>
-#include <gtest/gtest.h>
 #include <stimulus-players/TargetPlayerImpl.hpp>
+#include <gtest/gtest.h>
+#include <cmath>
 
 namespace av_speech_in_noise {
 namespace {
 class VideoPlayerStub : public VideoPlayer {
   public:
+    [[nodiscard]] auto preRolled() const -> bool { return preRolled_; }
+
+    void preRoll() { preRolled_ = true; }
+
     auto durationSeconds() -> double override { return durationSeconds_; }
 
     void subscribeToPlaybackCompletion() override {
@@ -93,6 +97,7 @@ class VideoPlayerStub : public VideoPlayer {
     bool played_{};
     bool playing_{};
     bool playbackCompletionSubscribedTo_{};
+    bool preRolled_{};
 };
 
 class TargetPlayerListenerStub : public TargetPlayer::Observer {
@@ -186,6 +191,11 @@ TEST_F(TargetPlayerTests, durationReturnsDuration) {
 TEST_F(TargetPlayerTests, showVideoShowsVideo) {
     player.showVideo();
     EXPECT_TRUE(videoPlayer.shown());
+}
+
+TEST_F(TargetPlayerTests, preRollPreRollsVideo) {
+    player.preRoll();
+    EXPECT_TRUE(videoPlayer.preRolled());
 }
 
 TEST_F(TargetPlayerTests, hideVideoHidesVideo) {

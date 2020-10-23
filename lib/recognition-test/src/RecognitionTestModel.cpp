@@ -48,10 +48,6 @@ static void useFirstChannelOnly(TargetPlayer &player) {
     player.useFirstChannelOnly();
 }
 
-static auto trialInProgress(MaskerPlayer &player) -> bool {
-    return player.playing();
-}
-
 static void setAudioDevice(TargetPlayer &player, const std::string &device) {
     player.setAudioDevice(device);
 }

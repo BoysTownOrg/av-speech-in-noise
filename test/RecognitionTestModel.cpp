@@ -473,13 +473,7 @@ void setSnr_dB(TestMethodStub &method, int x) { method.setSnr_dB(x); }
 
 void fadeOutComplete(MaskerPlayerStub &player) { player.fadeOutComplete(); }
 
-void setTrialInProgress(MaskerPlayerStub &player) { player.setPlaying(); }
-
 void assertLevelEquals_dB(TargetPlayerStub &player, double x) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, player.level_dB());
-}
-
-void assertLevelEquals_dB(MaskerPlayerStub &player, double x) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, player.level_dB());
 }
 
