@@ -413,14 +413,16 @@ auto MaskerPlayerImpl::AudioThread::sourceFrames() -> sample_index_type {
     return samples(firstChannel(sharedState.sourceAudio));
 }
 
+static auto squared(double x) -> double { return x * x; }
+
 void MaskerPlayerImpl::AudioThread::applyLevel(
     const std::vector<channel_buffer_type> &audioBuffer) {
     const auto levelScalar_{read(sharedState.levelScalar)};
     for (auto i{sample_index_type{0}}; i < framesToFill(audioBuffer); ++i) {
-        const auto squareRoot = halfWindowLength != 0
-            ? std::sin((pi() * hannCounter) / (2 * halfWindowLength))
-            : 1;
-        const auto fadeScalar{squareRoot * squareRoot};
+        const auto fadeScalar{halfWindowLength != 0
+                ? squared(
+                      std::sin((pi() * hannCounter) / (2 * halfWindowLength)))
+                : 1};
         for (auto channel : audioBuffer)
             at(channel, i) *=
                 gsl::narrow_cast<sample_type>(fadeScalar * levelScalar_);
