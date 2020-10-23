@@ -21,6 +21,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     gsl::index channelDelayed_{};
     Observer *listener_{};
     PlayerTime currentSystemTime_{};
+    Delay delayAfterFadeInToFadeOut_{};
     std::vector<player_system_time_type> toNanosecondsSystemTime_{};
     std::uintmax_t nanoseconds_{};
     int timesFadedIn_{};
@@ -38,6 +39,12 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool stopped_{};
 
   public:
+    auto delayAfterFadeInToFadeOut() -> Delay {
+        return delayAfterFadeInToFadeOut_;
+    }
+
+    void fadeOutAfterFadeIn(Delay delay) { delayAfterFadeInToFadeOut_ = delay; }
+
     [[nodiscard]] auto played() const -> bool { return played_; }
 
     void play() override { played_ = true; }

@@ -332,6 +332,8 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     }
     if (condition == Condition::audioVisual)
         show(targetPlayer);
+    maskerPlayer.fadeOutAfterFadeIn(Delay{targetOnsetFringeDelay.seconds +
+        targetOffsetFringeDelay.seconds + targetPlayer.duration().seconds});
     targetPlayer.preRoll();
     trialInProgress_ = true;
 }

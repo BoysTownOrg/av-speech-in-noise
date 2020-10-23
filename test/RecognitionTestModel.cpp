@@ -1098,6 +1098,15 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenNotEyeTracking) {
         targetPlayer.timePlayedAt().delay.seconds);
 }
 
+RECOGNITION_TEST_MODEL_TEST(playTrialSchedulesMaskerFadeOut) {
+    setDurationSeconds(targetPlayer, 1);
+    run(playingTrial, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        RecognitionTestModelImpl::targetOnsetFringeDelay.seconds +
+            RecognitionTestModelImpl::targetOffsetFringeDelay.seconds + 1,
+        maskerPlayer.delayAfterFadeInToFadeOut().seconds);
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     fadeInCompletePassesTargetStartSystemTimeForConversionWhenEyeTracking) {
     run(initializingTestWithEyeTracking, model);

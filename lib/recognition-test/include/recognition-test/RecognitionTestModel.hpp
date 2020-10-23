@@ -104,6 +104,7 @@ class MaskerPlayer {
     virtual auto currentSystemTime() -> PlayerTime = 0;
     virtual void play() = 0;
     virtual void stop() = 0;
+    virtual void fadeOutAfterFadeIn(Delay) {}
 };
 
 class EyeTracker {
@@ -149,6 +150,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     static constexpr Delay maskerChannelDelay{0.004};
     static constexpr Delay additionalTargetDelay{0.5};
     static constexpr Delay targetOnsetFringeDelay{0.166};
+    static constexpr Delay targetOffsetFringeDelay{targetOnsetFringeDelay};
     static constexpr Delay targetOffsetFringeDelayUpperBound{0.1};
 
   private:
