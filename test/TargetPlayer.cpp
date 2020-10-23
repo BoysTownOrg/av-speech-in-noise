@@ -164,17 +164,19 @@ class TargetPlayerTests : public ::testing::Test {
     void playAt() { player.playAt(systemTimeWithDelay); }
 };
 
-TEST_F(TargetPlayerTests, playingWhenVideoPlayerPlaying) {
+#define TARGET_PLAYER_TEST(a) TEST_F(TargetPlayerTests, a)
+
+TARGET_PLAYER_TEST(playingWhenVideoPlayerPlaying) {
     videoPlayer.setPlaying();
     EXPECT_TRUE(player.playing());
 }
 
-TEST_F(TargetPlayerTests, playPlaysVideo) {
+TARGET_PLAYER_TEST(playPlaysVideo) {
     player.play();
     EXPECT_TRUE(videoPlayer.played());
 }
 
-TEST_F(TargetPlayerTests, playAtPlaysVideoAt) {
+TARGET_PLAYER_TEST(playAtPlaysVideoAt) {
     setBaseSystemTimeToPlayAt(1);
     setSecondsDelayedToPlayAt(2);
     playAt();
@@ -183,44 +185,44 @@ TEST_F(TargetPlayerTests, playAtPlaysVideoAt) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2., videoPlayer.secondsDelayedPlayedAt());
 }
 
-TEST_F(TargetPlayerTests, durationReturnsDuration) {
+TARGET_PLAYER_TEST(durationReturnsDuration) {
     videoPlayer.setDurationSeconds(1);
     EXPECT_EQ(1, player.duration().seconds);
 }
 
-TEST_F(TargetPlayerTests, showVideoShowsVideo) {
+TARGET_PLAYER_TEST(showVideoShowsVideo) {
     player.showVideo();
     EXPECT_TRUE(videoPlayer.shown());
 }
 
-TEST_F(TargetPlayerTests, preRollPreRollsVideo) {
+TARGET_PLAYER_TEST(preRollPreRollsVideo) {
     player.preRoll();
     EXPECT_TRUE(videoPlayer.preRolled());
 }
 
-TEST_F(TargetPlayerTests, hideVideoHidesVideo) {
+TARGET_PLAYER_TEST(hideVideoHidesVideo) {
     player.hideVideo();
     EXPECT_TRUE(videoPlayer.hidden());
 }
 
-TEST_F(TargetPlayerTests, loadFileLoadsFile) {
+TARGET_PLAYER_TEST(loadFileLoadsFile) {
     player.loadFile({"a"});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, videoPlayer.filePath());
 }
 
-TEST_F(TargetPlayerTests, videoPlaybackCompleteNotifiesSubscriber) {
+TARGET_PLAYER_TEST(videoPlaybackCompleteNotifiesSubscriber) {
     videoPlayer.playbackComplete();
     EXPECT_TRUE(listener.notified());
 }
 
-TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen) {
+TARGET_PLAYER_TEST(twentydBMultipliesSignalByTen) {
     setLevel_dB(20);
     setLeftChannel({1, 2, 3});
     fillAudioBufferMono();
     assertLeftChannelEquals({10, 20, 30});
 }
 
-TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen_Stereo) {
+TARGET_PLAYER_TEST(twentydBMultipliesSignalByTen_Stereo) {
     setLevel_dB(20);
     setLeftChannel({1, 2, 3});
     setRightChannel({4, 5, 6});
@@ -229,7 +231,7 @@ TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen_Stereo) {
     assertRightChannelEquals({40, 50, 60});
 }
 
-TEST_F(TargetPlayerTests, onlyPlayFirstChannel) {
+TARGET_PLAYER_TEST(onlyPlayFirstChannel) {
     setFirstChannelOnly();
     setLeftChannel({1, 2, 3});
     setRightChannel({4, 5, 6});
@@ -238,7 +240,7 @@ TEST_F(TargetPlayerTests, onlyPlayFirstChannel) {
     assertRightChannelEquals({0, 0, 0});
 }
 
-TEST_F(TargetPlayerTests, switchBackToAllChannels) {
+TARGET_PLAYER_TEST(switchBackToAllChannels) {
     setFirstChannelOnly();
     setLeftChannel({1, 2, 3});
     setRightChannel({7, 8, 9});
@@ -251,13 +253,13 @@ TEST_F(TargetPlayerTests, switchBackToAllChannels) {
     assertRightChannelEquals({10, 11, 12});
 }
 
-TEST_F(TargetPlayerTests, setAudioDeviceFindsIndex) {
+TARGET_PLAYER_TEST(setAudioDeviceFindsIndex) {
     setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
     player.setAudioDevice("second");
     EXPECT_EQ(2, videoPlayer.deviceIndex());
 }
 
-TEST_F(TargetPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
+TARGET_PLAYER_TEST(setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
     setAudioDeviceDescriptions({"zeroth", "first", "second"});
     try {
         player.setAudioDevice("third");
@@ -266,31 +268,30 @@ TEST_F(TargetPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
     }
 }
 
-TEST_F(TargetPlayerTests, audioDevicesReturnsDescriptions) {
+TARGET_PLAYER_TEST(audioDevicesReturnsDescriptions) {
     setAudioDeviceDescriptions({"a", "b", "c"});
     assertEqual({"a", "b", "c"}, player.audioDevices());
 }
 
-TEST_F(TargetPlayerTests, digitalLevelComputesFirstChannel) {
+TARGET_PLAYER_TEST(digitalLevelComputesFirstChannel) {
     audioReader.set({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         20 * std::log10(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.F)),
         player.digitalLevel().dBov);
 }
 
-TEST_F(TargetPlayerTests, digitalLevelPassesLoadedFileToVideoPlayer) {
+TARGET_PLAYER_TEST(digitalLevelPassesLoadedFileToVideoPlayer) {
     player.loadFile({"a"});
     player.digitalLevel();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, audioReader.filePath());
 }
 
-TEST_F(TargetPlayerTests, subscribesToTargetPlaybackCompletionNotification) {
+TARGET_PLAYER_TEST(subscribesToTargetPlaybackCompletionNotification) {
     player.subscribeToPlaybackCompletion();
     EXPECT_TRUE(videoPlayer.playbackCompletionSubscribedTo());
 }
 
-TEST_F(TargetPlayerTests,
-    digitalLevelThrowsInvalidAudioFileWhenAudioReaderThrows) {
+TARGET_PLAYER_TEST(digitalLevelThrowsInvalidAudioFileWhenAudioReaderThrows) {
     audioReader.throwOnRead();
     try {
         player.digitalLevel();
