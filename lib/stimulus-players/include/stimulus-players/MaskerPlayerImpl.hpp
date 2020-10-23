@@ -91,10 +91,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
     auto currentSystemTime() -> PlayerTime override;
     static constexpr Delay callbackDelay{1. / 30};
 
-  private:
-    auto readAudio(std::string) -> audio_type;
-    auto fading() -> bool;
-
     struct SharedState {
         audio_type sourceAudio{};
         std::vector<sample_index_type> samplesToWaitPerChannel;
@@ -110,6 +106,10 @@ class MaskerPlayerImpl : public MaskerPlayer,
         LockFreeMessage disableAudio{};
         std::atomic<bool> pleaseEnableAudio{};
     };
+
+  private:
+    auto readAudio(std::string) -> audio_type;
+    auto fading() -> bool;
 
     class AudioThread {
       public:

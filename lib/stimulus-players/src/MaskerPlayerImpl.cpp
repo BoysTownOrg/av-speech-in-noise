@@ -350,6 +350,11 @@ void MaskerPlayerImpl::fillAudioBuffer(
 
 static auto squared(double x) -> double { return x * x; }
 
+static void assignFadeSamples(
+    int &halfWindowLength, MaskerPlayerImpl::SharedState &sharedState) {
+    halfWindowLength = read(sharedState.fadeSamples);
+}
+
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
     player_system_time_type time) {
@@ -367,12 +372,12 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     else
         copySourceAudio(audioBuffer);
     if (thisCallClears(sharedState.fadeIn.execute)) {
-        updateWindowLength();
+        assignFadeSamples(halfWindowLength, sharedState);
         hannCounter = 0;
         set(fadingIn);
     }
     if (thisCallClears(sharedState.fadeOut.execute)) {
-        updateWindowLength();
+        assignFadeSamples(halfWindowLength, sharedState);
         hannCounter = halfWindowLength;
         set(fadingOut);
     }
@@ -440,10 +445,6 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
 
 auto MaskerPlayerImpl::AudioThread::sourceFrames() -> sample_index_type {
     return samples(firstChannel(sharedState.sourceAudio));
-}
-
-void MaskerPlayerImpl::AudioThread::updateWindowLength() {
-    halfWindowLength = read(sharedState.fadeSamples);
 }
 
 auto MaskerPlayerImpl::AudioThread::doneFadingIn() -> bool {
