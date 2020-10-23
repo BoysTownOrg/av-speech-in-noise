@@ -43,7 +43,9 @@ class MaskerPlayerStub : public MaskerPlayer {
         return delayAfterFadeInToFadeOut_;
     }
 
-    void fadeOutAfterFadeIn(Delay delay) { delayAfterFadeInToFadeOut_ = delay; }
+    void fadeOutAfterFadeIn(Delay delay) override {
+        delayAfterFadeInToFadeOut_ = delay;
+    }
 
     [[nodiscard]] auto played() const -> bool { return played_; }
 
