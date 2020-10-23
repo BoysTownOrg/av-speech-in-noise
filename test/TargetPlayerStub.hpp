@@ -9,6 +9,10 @@
 namespace av_speech_in_noise {
 class TargetPlayerStub : public TargetPlayer {
   public:
+    auto preRolling() const -> bool { return preRolling_; }
+
+    void preRoll() { preRolling_ = true; }
+
     auto timesSetDeviceCalled() const -> int { return timesSetDeviceCalled_; }
 
     void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
@@ -127,6 +131,7 @@ class TargetPlayerStub : public TargetPlayer {
     bool playbackCompletionSubscribedTo_{};
     bool usingAllChannels_{};
     bool usingFirstChannelOnly_{};
+    bool preRolling_{};
 };
 }
 

@@ -1055,6 +1055,11 @@ RECOGNITION_TEST_MODEL_TEST(playTrialFadesInMasker) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(fadedIn(maskerPlayer));
 }
 
+RECOGNITION_TEST_MODEL_TEST(playTrialPrerollsTarget) {
+    run(playingTrial, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetPlayer.preRolling());
+}
+
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPlaysTarget) {
     run(playingCalibration, model);
     assertPlayed(targetPlayer);

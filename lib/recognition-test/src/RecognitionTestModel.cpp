@@ -331,6 +331,7 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     if (condition == Condition::audioVisual)
         show(targetPlayer);
     maskerPlayer.fadeIn();
+    targetPlayer.preRoll();
     trialInProgress_ = true;
 }
 
