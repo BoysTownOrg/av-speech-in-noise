@@ -365,7 +365,6 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
             return;
     }
 
-    systemTime = time;
     if (noChannels(sharedState.sourceAudio))
         for (auto channel : audioBuffer)
             mute(channel);
@@ -389,7 +388,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
                                             (2 * halfWindowLength)))
                                       : 1 * levelScalar_);
         if (doneFadingIn()) {
-            sharedState.fadeInCompleteSystemTime.store(systemTime);
+            sharedState.fadeInCompleteSystemTime.store(time);
             sharedState.fadeInCompleteSystemTimeSampleOffset.store(i + 1);
             postCompletion(sharedState.fadeIn);
             clear(fadingIn);
