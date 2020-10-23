@@ -45,7 +45,7 @@ class TargetPlayer {
       public:
         virtual ~Observer() = default;
         virtual void playbackComplete() = 0;
-        virtual void notifyThatPreRollHasCompleted() {}
+        virtual void notifyThatPreRollHasCompleted() = 0;
     };
 
     virtual ~TargetPlayer() = default;

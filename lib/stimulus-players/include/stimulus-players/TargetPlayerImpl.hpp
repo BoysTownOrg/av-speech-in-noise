@@ -15,7 +15,7 @@ class VideoPlayer {
       public:
         virtual ~Observer() = default;
         virtual void playbackComplete() = 0;
-        virtual void notifyThatPreRollHasCompleted() {}
+        virtual void notifyThatPreRollHasCompleted() = 0;
         virtual void fillAudioBuffer(
             const std::vector<gsl::span<float>> &audio) = 0;
     };
