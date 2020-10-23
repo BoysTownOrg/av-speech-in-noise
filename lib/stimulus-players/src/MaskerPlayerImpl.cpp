@@ -417,8 +417,13 @@ void MaskerPlayerImpl::AudioThread::applyLevel(
     const std::vector<channel_buffer_type> &audioBuffer) {
     const auto levelScalar_{read(sharedState.levelScalar)};
     for (auto i{sample_index_type{0}}; i < framesToFill(audioBuffer); ++i) {
-        const auto fadeScalar{nextFadeScalar()};
-        updateFadeState(i);
+        const auto squareRoot = halfWindowLength != 0
+            ? std::sin((pi() * hannCounter) / (2 * halfWindowLength))
+            : 1;
+        const auto fadeScalar{squareRoot * squareRoot};
+        checkForFadeInComplete(i);
+        checkForFadeOutComplete();
+        advanceCounterIfStillFading();
         for (auto channel : audioBuffer)
             at(channel, i) *=
                 gsl::narrow_cast<sample_type>(fadeScalar * levelScalar_);
@@ -449,19 +454,6 @@ void MaskerPlayerImpl::AudioThread::prepareToFadeOut() {
     updateWindowLength();
     hannCounter = halfWindowLength;
     set(fadingOut);
-}
-
-auto MaskerPlayerImpl::AudioThread::nextFadeScalar() -> double {
-    const auto squareRoot = halfWindowLength != 0
-        ? std::sin((pi() * hannCounter) / (2 * halfWindowLength))
-        : 1;
-    return squareRoot * squareRoot;
-}
-
-void MaskerPlayerImpl::AudioThread::updateFadeState(sample_index_type offset) {
-    checkForFadeInComplete(offset);
-    checkForFadeOutComplete();
-    advanceCounterIfStillFading();
 }
 
 void MaskerPlayerImpl::AudioThread::checkForFadeInComplete(
