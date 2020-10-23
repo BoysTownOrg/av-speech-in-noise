@@ -57,9 +57,7 @@ class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
     void useFirstChannelOnly() override;
     void useAllChannels() override;
     void preRoll() override;
-    void notifyThatPreRollHasCompleted() override {
-        listener_->notifyThatPreRollHasCompleted();
-    }
+    void notifyThatPreRollHasCompleted() override;
 
   private:
     auto readAudio_() -> audio_type;

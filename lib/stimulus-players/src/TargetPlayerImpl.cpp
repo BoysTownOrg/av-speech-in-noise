@@ -116,4 +116,7 @@ auto TargetPlayerImpl::duration() -> Duration {
 }
 
 void TargetPlayerImpl::preRoll() { player->preRoll(); }
+void TargetPlayerImpl::notifyThatPreRollHasCompleted() {
+    listener_->notifyThatPreRollHasCompleted();
+}
 }
