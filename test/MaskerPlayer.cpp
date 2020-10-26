@@ -548,18 +548,8 @@ class MaskerPlayerTests : public ::testing::Test {
 
     auto playerStopped() -> bool { return audioPlayer.stopped(); }
 
-    void fadeInFillAndCallback(channel_index_type n) {
-        fadeIn(player);
-        fillAudioBufferMono(n);
-        callback(timer);
-    }
-
     void assertFadeInCompletions(int n) {
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(n, listener.fadeInCompletions());
-    }
-
-    void assertFadeOutCompletions(int n) {
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(n, listener.fadeOutCompletions());
     }
 
     auto digitalLevel() -> DigitalLevel { return player.digitalLevel(); }
