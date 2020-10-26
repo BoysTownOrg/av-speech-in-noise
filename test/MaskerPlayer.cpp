@@ -1358,6 +1358,7 @@ MASKER_PLAYER_TEST(fadeInWhileFadingOutDoesNotScheduleAdditionalCallback) {
 MASKER_PLAYER_TEST(fadeInAfterFadingOutSchedulesCallback) {
     setFadeInOutSeconds(player, 2);
     setSampleRateHz(audioPlayer, 3);
+    setSteadyLevelSeconds(player, 5);
     loadMonoAudio(player, audioReader, {0});
     bool fadeInComplete{};
     bool fadeOutComplete{};
@@ -1370,6 +1371,7 @@ MASKER_PLAYER_TEST(fadeInAfterFadingOutSchedulesCallback) {
             av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
             set(mutex, fadeInComplete);
             condition.notify_one();
+            av_speech_in_noise::fillAudioBuffer(observer, 1, 3 * 5 + 1);
             wait(mutex, condition, fadeOutCalled);
             av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
             set(mutex, fadeOutComplete);
@@ -1384,7 +1386,6 @@ MASKER_PLAYER_TEST(fadeInAfterFadingOutSchedulesCallback) {
     fadeIn(player);
     wait(mutex, condition, fadeInComplete);
     callback(timer);
-    fadeOut(player);
     set(mutex, fadeOutCalled);
     condition.notify_one();
     wait(mutex, condition, fadeOutComplete);
