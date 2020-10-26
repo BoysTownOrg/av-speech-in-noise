@@ -1041,12 +1041,17 @@ void assertOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
     assertion(future.get());
 }
 
+void setSteadyLevelSeconds(MaskerPlayerImpl &player, double seconds) {
+    player.setSteadyLevelFor(Duration{seconds});
+}
+
 MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
     // For this test:
     // halfWindowLength is determined by fade time and sample rate...
     // but must be divisible by framesPerBuffer.
     setFadeInOutSeconds(player, 3);
     setSampleRateHz(audioPlayer, 5);
+    setSteadyLevelSeconds(player, 7);
     auto halfWindowLength = 3 * 5 + 1;
     auto framesPerBuffer = 4;
     loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
@@ -1077,6 +1082,7 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
 MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionOneFill) {
     setFadeInOutSeconds(player, 2);
     setSampleRateHz(audioPlayer, 3);
+    setSteadyLevelSeconds(player, 5);
     auto halfWindowLength = 2 * 3 + 1;
 
     loadMonoAudio(player, audioReader, oneToN(halfWindowLength));
@@ -1096,6 +1102,7 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionOneFill) {
 MASKER_PLAYER_TEST(steadyLevelFollowingFadeOut) {
     setFadeInOutSeconds(player, 2);
     setSampleRateHz(audioPlayer, 3);
+    setSteadyLevelSeconds(player, 5);
     auto halfWindowLength = 2 * 3 + 1;
 
     loadMonoAudio(player, audioReader, {4, 5, 6});
@@ -1287,6 +1294,7 @@ MASKER_PLAYER_TEST(fadeInTwiceDoesNotScheduleAdditionalCallback) {
 MASKER_PLAYER_TEST(fadeOutSchedulesCallback) {
     setFadeInOutSeconds(player, 2);
     setSampleRateHz(audioPlayer, 3);
+    setSteadyLevelSeconds(player, 5);
     loadMonoAudio(player, audioReader, {0});
     assertOnPlayTaskAfterFadeOut(
         player, audioPlayer, timer, 2 * 3 + 1,
@@ -1301,6 +1309,7 @@ MASKER_PLAYER_TEST(fadeOutSchedulesCallback) {
 MASKER_PLAYER_TEST(fadeOutTwiceDoesNotScheduleAdditionalCallback) {
     setFadeInOutSeconds(player, 2);
     setSampleRateHz(audioPlayer, 3);
+    setSteadyLevelSeconds(player, 5);
     loadMonoAudio(player, audioReader, {0});
     assertOnPlayTaskAfterFadeOut(
         player, audioPlayer, timer, 2 * 3 + 1,
@@ -1320,6 +1329,7 @@ MASKER_PLAYER_TEST(fadeOutWhileFadingInDoesNotScheduleAdditionalCallback) {
 MASKER_PLAYER_TEST(fadeInWhileFadingOutDoesNotScheduleAdditionalCallback) {
     setFadeInOutSeconds(player, 2);
     setSampleRateHz(audioPlayer, 3);
+    setSteadyLevelSeconds(player, 5);
     loadMonoAudio(player, audioReader, {0});
     assertOnPlayTaskAfterFadeOut(
         player, audioPlayer, timer, 2 * 3 + 1,
