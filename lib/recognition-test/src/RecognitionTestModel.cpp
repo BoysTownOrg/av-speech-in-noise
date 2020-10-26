@@ -279,8 +279,6 @@ void RecognitionTestModelImpl::fadeInComplete(
     }
 }
 
-void RecognitionTestModelImpl::playbackComplete() {}
-
 void RecognitionTestModelImpl::fadeOutComplete() {
     hide(targetPlayer);
     if (eyeTracking)
