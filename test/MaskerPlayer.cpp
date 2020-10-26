@@ -994,6 +994,25 @@ MASKER_PLAYER_TEST(steadyLevelFollowingFadeIn) {
     assertChannelEqual(future.get().at(1), {8, 9, 10});
 }
 
+MASKER_PLAYER_TEST(steadyLevelFollowingFadeInAmplified) {
+    setRampSeconds(player, 2);
+    setSampleRateHz(audioPlayer, 3);
+    setSteadyLevelSeconds(player, 1);
+    player.apply(LevelAmplification{20});
+    loadMonoAudio(player, audioReader, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+    auto halfWindowLength = 2 * 3 + 1;
+    auto future{
+        setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
+            const auto first{av_speech_in_noise::fillAudioBufferMono(
+                observer, halfWindowLength)};
+            const auto second{
+                av_speech_in_noise::fillAudioBufferMono(observer, 3)};
+            return std::vector<std::vector<float>>{first, second};
+        })};
+    fadeIn(player);
+    assertChannelEqual(future.get().at(1), {80, 90, 100});
+}
+
 void assertOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
     AudioPlayerStub &audioPlayer, TimerStub &timer, gsl::index halfWindowLength,
     const std::function<std::vector<std::vector<float>>(
