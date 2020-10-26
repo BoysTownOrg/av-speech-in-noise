@@ -453,8 +453,6 @@ void loadStereoAudio(MaskerPlayerImpl &player, AudioReaderStub &audioReader,
 
 void fadeIn(MaskerPlayerImpl &player) { player.fadeIn(); }
 
-void fadeOut(MaskerPlayerImpl &player) { player.fadeOut(); }
-
 void callback(TimerStub &timer) { timer.callback(); }
 
 void setAudioDevice(MaskerPlayerImpl &player, std::string s) {
@@ -545,7 +543,7 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     void assertFadeOutDoesNotScheduleAdditionalCallback() {
-        assertCallDoesNotScheduleAdditionalCallback([&] { fadeOut(player); });
+        assertCallDoesNotScheduleAdditionalCallback([&] { player.fadeOut(); });
     }
 
     void assertFadeInSchedulesCallback() {
