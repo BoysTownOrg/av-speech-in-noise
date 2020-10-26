@@ -108,7 +108,7 @@ class TestSetupControlStub : public TestSetupControl {
 
 class TestSettingsInterpreterStub : public TestSettingsInterpreter {
   public:
-    explicit TestSettingsInterpreterStub(const Calibration &calibration_ = {})
+    explicit TestSettingsInterpreterStub(const Calibration &calibration_)
         : calibration_{calibration_} {}
 
     auto calibration(const std::string &t) -> Calibration override {
@@ -469,7 +469,8 @@ class TestSetupFailureTests : public ::testing::Test {
     SessionViewStub sessionView;
     TestSetupViewStub view;
     TestSetupControlStub control;
-    TestSettingsInterpreterStub testSettingsInterpreter;
+    Calibration calibration;
+    TestSettingsInterpreterStub testSettingsInterpreter{calibration};
     TestSetupPresenterImpl testSetupPresenter{view};
     TextFileReaderStub textFileReader;
     TestSetupControllerImpl controller{failingModel, sessionView, control,

@@ -451,10 +451,6 @@ void assertFilePathEquals(MaskerPlayerStub &player, const std::string &what) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, player.filePath());
 }
 
-auto playbackCompletionSubscribed(TargetPlayerStub &player) -> bool {
-    return player.playbackCompletionSubscribedTo();
-}
-
 auto secondsSeeked(MaskerPlayerStub &player) { return player.secondsSeeked(); }
 
 void setFullScaleLevel_dB_SPL(Test &test, int x) {
@@ -473,13 +469,7 @@ void setSnr_dB(TestMethodStub &method, int x) { method.setSnr_dB(x); }
 
 void fadeOutComplete(MaskerPlayerStub &player) { player.fadeOutComplete(); }
 
-void setTrialInProgress(MaskerPlayerStub &player) { player.setPlaying(); }
-
 void assertLevelEquals_dB(TargetPlayerStub &player, double x) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, player.level_dB());
-}
-
-void assertLevelEquals_dB(MaskerPlayerStub &player, double x) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, player.level_dB());
 }
 
@@ -640,21 +630,17 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertFilePathEquals(targetPlayer, "a");
     }
 
-    void assertTargetPlayerPlaybackCompletionSubscribed(UseCase &useCase) {
-        run(useCase, model);
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-            playbackCompletionSubscribed(targetPlayer));
-    }
-
     void assertSeeksToRandomMaskerPositionWithinTrialDuration(
         UseCase &useCase) {
         setDurationSeconds(targetPlayer, 1);
         setFadeTimeSeconds(maskerPlayer, 2);
-        maskerPlayer.setDurationSeconds(3);
+        maskerPlayer.setDurationSeconds(10);
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0., randomizer.lowerFloatBound());
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            3. - 2 - 1 - 2, randomizer.upperFloatBound());
+        assertEqual(10. - 2 - 1 - 2 -
+                RecognitionTestModelImpl::targetOnsetFringeDuration.seconds -
+                RecognitionTestModelImpl::targetOffsetFringeDuration.seconds,
+            randomizer.upperFloatBound(), 1e-15);
     }
 
     void assertMaskerPlayerSeekedToRandomTime(UseCase &useCase) {
@@ -794,7 +780,8 @@ class RecognitionTestModelTests : public ::testing::Test {
         setFadeTimeSeconds(maskerPlayer, 4);
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3 + 2 * 4. +
-                RecognitionTestModelImpl::additionalTargetDelay.seconds,
+                RecognitionTestModelImpl::targetOnsetFringeDuration.seconds +
+                RecognitionTestModelImpl::targetOffsetFringeDuration.seconds,
             eyeTracker.recordingTimeAllocatedSeconds());
     }
 
@@ -1050,9 +1037,14 @@ RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToMaskerPlayer) {
     assertDevicePassedToMaskerPlayer(playingTrial);
 }
 
-RECOGNITION_TEST_MODEL_TEST(playTrialFadesInMasker) {
-    run(playingTrial, model);
+RECOGNITION_TEST_MODEL_TEST(targetPrerollCompleteFadesInMasker) {
+    targetPlayer.preRollComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(fadedIn(maskerPlayer));
+}
+
+RECOGNITION_TEST_MODEL_TEST(playTrialPrerollsTarget) {
+    run(playingTrial, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetPlayer.preRolling());
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPlaysTarget) {
@@ -1079,7 +1071,20 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
         targetPlayer.timePlayedAt().playerTime.system);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        2 / 3. + RecognitionTestModelImpl::additionalTargetDelay.seconds,
+        2 / 3. + RecognitionTestModelImpl::targetOnsetFringeDuration.seconds,
+        targetPlayer.timePlayedAt().delay.seconds);
+}
+
+RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenNotEyeTracking) {
+    run(initializingTest, model);
+    setSystemTime(fadeInCompleteTime, 1);
+    setSampleOffset(fadeInCompleteTime, 2);
+    setSampleRateHz(maskerPlayer, 3);
+    fadeInComplete(maskerPlayer, fadeInCompleteTime);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
+        targetPlayer.timePlayedAt().playerTime.system);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        2 / 3. + RecognitionTestModelImpl::targetOnsetFringeDuration.seconds,
         targetPlayer.timePlayedAt().delay.seconds);
 }
 
@@ -1119,7 +1124,8 @@ RECOGNITION_TEST_MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1 +
             gsl::narrow_cast<std::uintmax_t>(
                 (2 / 3. +
-                    RecognitionTestModelImpl::additionalTargetDelay.seconds) *
+                    RecognitionTestModelImpl::targetOnsetFringeDuration
+                        .seconds) *
                 1e9),
         outputFile.targetStartTime().nanoseconds);
 }
@@ -1152,12 +1158,6 @@ RECOGNITION_TEST_MODEL_TEST(passesCurrentMaskerTimeForNanosecondConversion) {
     fadeInComplete(maskerPlayer, fadeInCompleteTime);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
         maskerPlayer.toNanosecondsSystemTime().at(1));
-}
-
-RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetWhenDefaultTest) {
-    run(initializingTest, model);
-    maskerPlayer.fadeInComplete();
-    assertPlayed(targetPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1301,10 +1301,6 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesMaskerFilePathToMaskerPlayer(initializingTestWithEyeTracking);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeDefaultTestSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(initializingTest);
-}
 RECOGNITION_TEST_MODEL_TEST(initializeTestPassesMaskerFilePathToMaskerPlayer) {
     setMaskerFilePath(test, "a");
     run(initializingTest, model);
@@ -1312,40 +1308,12 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestPassesMaskerFilePathToMaskerPlayer) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(
-        initializingTestWithEyeTracking);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitCoordinateResponseSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(
-        submittingCoordinateResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitFreeResponseSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(submittingFreeResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitConsonantSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(submittingConsonant);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectKeywordsSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectKeywords);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectResponseSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitIncorrectResponseSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(submittingIncorrectResponse);
+    initializeDefaultTestSetsMaskerSteadyLevelDuration) {
+    setDurationSeconds(targetPlayer, 1);
+    run(initializingTest, model);
+    assertEqual(RecognitionTestModelImpl::targetOnsetFringeDuration.seconds +
+            RecognitionTestModelImpl::targetOffsetFringeDuration.seconds + 1,
+        maskerPlayer.steadyLevelDuration().seconds, 1e-15);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1515,11 +1483,6 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestStopsTargetPlayer) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(maskerPlayer.stopped());
 }
 
-RECOGNITION_TEST_MODEL_TEST(targetPlaybackCompleteFadesOutMasker) {
-    targetPlayer.playbackComplete();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(maskerPlayer.fadeOutCalled());
-}
-
 RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteNotifiesTrialComplete) {
     fadeOutComplete(maskerPlayer);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(listener.notified());
@@ -1613,9 +1576,9 @@ RECOGNITION_TEST_MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, targetPlayer.timesSetDeviceCalled());
 }
 
-RECOGNITION_TEST_MODEL_TEST(playTrialDoesNotPlayIfTrialInProgress) {
+RECOGNITION_TEST_MODEL_TEST(playTrialDoesNotPreRollTargetIfTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingTrial);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, maskerPlayer.timesFadedIn());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, targetPlayer.timesPreRolled());
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationDoesNotPlayIfTrialInProgress) {

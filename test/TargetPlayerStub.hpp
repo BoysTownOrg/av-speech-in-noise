@@ -9,6 +9,17 @@
 namespace av_speech_in_noise {
 class TargetPlayerStub : public TargetPlayer {
   public:
+    auto timesPreRolled() const -> int { return timesPreRolled_; }
+
+    void preRollComplete() { listener_->notifyThatPreRollHasCompleted(); }
+
+    auto preRolling() const -> bool { return preRolling_; }
+
+    void preRoll() override {
+        preRolling_ = true;
+        ++timesPreRolled_;
+    }
+
     auto timesSetDeviceCalled() const -> int { return timesSetDeviceCalled_; }
 
     void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
@@ -18,10 +29,6 @@ class TargetPlayerStub : public TargetPlayer {
     auto usingAllChannels() const { return usingAllChannels_; }
 
     auto usingFirstChannelOnly() const { return usingFirstChannelOnly_; }
-
-    void subscribeToPlaybackCompletion() override {
-        playbackCompletionSubscribedTo_ = true;
-    }
 
     auto playing() -> bool override { return playing_; }
 
@@ -94,10 +101,6 @@ class TargetPlayerStub : public TargetPlayer {
 
     auto filePath() const { return filePath_; }
 
-    auto playbackCompletionSubscribedTo() const {
-        return playbackCompletionSubscribedTo_;
-    }
-
     void setDurationSeconds(double x) { durationSeconds_ = x; }
 
     void throwInvalidAudioFileOnDigitalLevel() {
@@ -117,6 +120,7 @@ class TargetPlayerStub : public TargetPlayer {
     double durationSeconds_{};
     Observer *listener_{};
     int timesSetDeviceCalled_{};
+    int timesPreRolled_{};
     bool played_{};
     bool videoHidden_{};
     bool videoShown_{};
@@ -124,9 +128,9 @@ class TargetPlayerStub : public TargetPlayer {
     bool throwInvalidAudioFileOnDigitalLevel_{};
     bool setDeviceCalled_{};
     bool playing_{};
-    bool playbackCompletionSubscribedTo_{};
     bool usingAllChannels_{};
     bool usingFirstChannelOnly_{};
+    bool preRolling_{};
 };
 }
 

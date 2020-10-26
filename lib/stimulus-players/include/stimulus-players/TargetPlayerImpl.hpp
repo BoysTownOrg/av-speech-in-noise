@@ -15,6 +15,7 @@ class VideoPlayer {
       public:
         virtual ~Observer() = default;
         virtual void playbackComplete() = 0;
+        virtual void notifyThatPreRollHasCompleted() = 0;
         virtual void fillAudioBuffer(
             const std::vector<gsl::span<float>> &audio) = 0;
     };
@@ -32,10 +33,10 @@ class VideoPlayer {
     virtual auto deviceDescription(int index) -> std::string = 0;
     virtual void setDevice(int index) = 0;
     virtual auto durationSeconds() -> double = 0;
+    virtual void preRoll() = 0;
 };
 
-class TargetPlayerImpl : public TargetPlayer,
-                         public VideoPlayer::Observer {
+class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
   public:
     TargetPlayerImpl(VideoPlayer *, AudioReader *);
     void attach(TargetPlayer::Observer *) override;
@@ -55,6 +56,8 @@ class TargetPlayerImpl : public TargetPlayer,
     auto audioDevices() -> std::vector<std::string>;
     void useFirstChannelOnly() override;
     void useAllChannels() override;
+    void preRoll() override;
+    void notifyThatPreRollHasCompleted() override;
 
   private:
     auto readAudio_() -> audio_type;

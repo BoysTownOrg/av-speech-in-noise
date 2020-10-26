@@ -228,7 +228,7 @@ void main(
     AvFoundationAudioPlayer audioPlayer;
     TimerImpl timer;
     MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader, &timer};
-    maskerPlayer.setFadeInOutSeconds(0.5);
+    maskerPlayer.setRampFor(Duration{0.02});
     FileWriter fileWriter;
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;

@@ -44,7 +44,8 @@ class TargetPlayer {
     class Observer {
       public:
         virtual ~Observer() = default;
-        virtual void playbackComplete() = 0;
+        virtual void playbackComplete() {}
+        virtual void notifyThatPreRollHasCompleted() = 0;
     };
 
     virtual ~TargetPlayer() = default;
@@ -58,10 +59,11 @@ class TargetPlayer {
     virtual void showVideo() = 0;
     virtual auto digitalLevel() -> DigitalLevel = 0;
     virtual void apply(LevelAmplification) = 0;
-    virtual void subscribeToPlaybackCompletion() = 0;
+    virtual void subscribeToPlaybackCompletion() {}
     virtual auto duration() -> Duration = 0;
     virtual void useAllChannels() = 0;
     virtual void useFirstChannelOnly() = 0;
+    virtual void preRoll() = 0;
 };
 
 struct AudioSampleTimeWithOffset {
@@ -84,7 +86,6 @@ class MaskerPlayer {
         -> std::vector<std::string> = 0;
     virtual void setAudioDevice(std::string) = 0;
     virtual void fadeIn() = 0;
-    virtual void fadeOut() = 0;
     virtual void loadFile(const LocalUrl &) = 0;
     virtual auto playing() -> bool = 0;
     virtual auto digitalLevel() -> DigitalLevel = 0;
@@ -92,7 +93,7 @@ class MaskerPlayer {
     virtual auto duration() -> Duration = 0;
     virtual auto sampleRateHz() -> double = 0;
     virtual void seekSeconds(double) = 0;
-    virtual auto fadeTime() -> Duration = 0;
+    virtual auto rampDuration() -> Duration = 0;
     virtual void useAllChannels() = 0;
     virtual void useFirstChannelOnly() = 0;
     virtual void useSecondChannelOnly() = 0;
@@ -102,6 +103,7 @@ class MaskerPlayer {
     virtual auto currentSystemTime() -> PlayerTime = 0;
     virtual void play() = 0;
     virtual void stop() = 0;
+    virtual void setSteadyLevelFor(Duration) {}
 };
 
 class EyeTracker {
@@ -141,10 +143,12 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     auto targetFileName() -> std::string override;
     void fadeInComplete(const AudioSampleTimeWithOffset &) override;
     void fadeOutComplete() override;
-    void playbackComplete() override;
     void prepareNextTrialIfNeeded() override;
+    void notifyThatPreRollHasCompleted() override;
     static constexpr Delay maskerChannelDelay{0.004};
-    static constexpr Delay additionalTargetDelay{0.5};
+    static constexpr Duration targetOnsetFringeDuration{0.166};
+    static constexpr Duration targetOffsetFringeDuration{
+        targetOnsetFringeDuration};
 
   private:
     void initialize_(TestMethod *, const Test &);

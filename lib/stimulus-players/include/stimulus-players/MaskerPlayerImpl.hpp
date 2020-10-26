@@ -64,19 +64,19 @@ class MaskerPlayerImpl : public MaskerPlayer,
     MaskerPlayerImpl(AudioPlayer *, AudioReader *, Timer *);
     void attach(MaskerPlayer::Observer *) override;
     void fadeIn() override;
-    void fadeOut() override;
     void loadFile(const LocalUrl &) override;
     auto playing() -> bool override;
     void setAudioDevice(std::string) override;
     void apply(LevelAmplification) override;
     void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
         player_system_time_type) override;
-    void setFadeInOutSeconds(double);
+    void setRampFor(Duration);
+    void setSteadyLevelFor(Duration) override;
     auto outputAudioDeviceDescriptions() -> std::vector<std::string> override;
     auto digitalLevel() -> DigitalLevel override;
     auto duration() -> Duration override;
     void seekSeconds(double) override;
-    auto fadeTime() -> Duration override;
+    auto rampDuration() -> Duration override;
     auto sampleRateHz() -> double override;
     void callback() override;
     void setChannelDelaySeconds(
@@ -89,10 +89,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     void useAllChannels() override;
     auto nanoseconds(PlayerTime) -> std::uintmax_t override;
     auto currentSystemTime() -> PlayerTime override;
-
-  private:
-    auto readAudio(std::string) -> audio_type;
-    auto fading() -> bool;
+    static constexpr Delay callbackDelay{1. / 30};
 
     struct SharedState {
         audio_type sourceAudio{};
@@ -101,59 +98,51 @@ class MaskerPlayerImpl : public MaskerPlayer,
         std::atomic<double> levelScalar{1};
         std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
         std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
-        std::atomic<int> fadeSamples{};
+        std::atomic<gsl::index> rampSamples{};
+        std::atomic<gsl::index> steadyLevelSamples{};
         std::atomic<bool> firstChannelOnly{};
         std::atomic<bool> secondChannelOnly{};
-        LockFreeMessage fadeIn{};
-        LockFreeMessage fadeOut{};
-        LockFreeMessage disableAudio{};
-        std::atomic<bool> pleaseEnableAudio{};
+        LockFreeMessage fadeInMessage{};
+        LockFreeMessage fadeOutMessage{};
+        LockFreeMessage disableAudioMessage{};
+        LockFreeMessage enableAudioMessage{};
     };
 
-    class AudioThread {
+  private:
+    auto readAudio(std::string) -> audio_type;
+    auto fading() -> bool;
+
+    class AudioThreadContext {
       public:
-        explicit AudioThread(SharedState &sharedState)
+        explicit AudioThreadContext(SharedState &sharedState)
             : sharedState{sharedState} {}
         void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
             player_system_time_type);
 
       private:
-        void copySourceAudio(
-            const std::vector<channel_buffer_type> &audioBuffer);
-        void applyLevel(const std::vector<channel_buffer_type> &audioBuffer);
-        void updateWindowLength();
-        void prepareToFadeIn();
-        void checkForFadeIn();
-        void prepareToFadeOut();
-        void checkForFadeOut();
         auto doneFadingIn() -> bool;
-        void checkForFadeInComplete(sample_index_type);
         auto doneFadingOut() -> bool;
-        void checkForFadeOutComplete();
-        void advanceCounterIfStillFading();
-        void updateFadeState(sample_index_type);
-        auto nextFadeScalar() -> double;
-        auto sourceFrames() -> sample_index_type;
 
         SharedState &sharedState;
-        player_system_time_type systemTime{};
-        int hannCounter{};
-        int halfWindowLength{};
+        gsl::index rampCounter{};
+        gsl::index rampSamples{};
+        gsl::index steadyLevelCounter{};
+        gsl::index steadyLevelSamples{};
         bool fadingOut{};
         bool fadingIn{};
+        bool steadyingLevel{};
         bool enabled{};
     };
 
     SharedState sharedState{};
-    AudioThread audioThread;
+    AudioThreadContext audioThreadContext;
     std::vector<double> channelDelaySeconds;
     AudioPlayer *player;
     AudioReader *reader;
     Timer *timer;
     MaskerPlayer::Observer *listener{};
-    double fadeInOutSeconds{};
-    bool fadingIn{};
-    bool fadingOut{};
+    Duration rampDuration_{};
+    bool playingFiniteSection{};
     bool audioEnabled{};
 };
 }

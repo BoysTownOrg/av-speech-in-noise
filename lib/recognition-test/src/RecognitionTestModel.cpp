@@ -28,8 +28,8 @@ static void clearChannelDelays(MaskerPlayer &player) {
 
 static void useAllChannels(TargetPlayer &player) { player.useAllChannels(); }
 
-static auto totalFadeTime(MaskerPlayer &player) -> Duration {
-    return Duration{2 * player.fadeTime().seconds};
+static auto totalrampDuration(MaskerPlayer &player) -> Duration {
+    return Duration{2 * player.rampDuration().seconds};
 }
 
 static constexpr auto operator+(const Duration &a, const Duration &b)
@@ -37,19 +37,21 @@ static constexpr auto operator+(const Duration &a, const Duration &b)
     return Duration{a.seconds + b.seconds};
 }
 
+static auto steadyLevelDuration(TargetPlayer &player) -> Duration {
+    return player.duration() +
+        RecognitionTestModelImpl::targetOnsetFringeDuration +
+        RecognitionTestModelImpl::targetOffsetFringeDuration;
+}
+
 static auto trialDuration(TargetPlayer &target, MaskerPlayer &masker)
     -> Duration {
-    return totalFadeTime(masker) + target.duration();
+    return totalrampDuration(masker) + steadyLevelDuration(target);
 }
 
 static void turnOff(bool &b) { b = false; }
 
 static void useFirstChannelOnly(TargetPlayer &player) {
     player.useFirstChannelOnly();
-}
-
-static auto trialInProgress(MaskerPlayer &player) -> bool {
-    return player.playing();
 }
 
 static void setAudioDevice(TargetPlayer &player, const std::string &device) {
@@ -157,6 +159,28 @@ static void throwRequestFailureOnInvalidAudioFile(
     }
 }
 
+static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }
+
+static auto nanoseconds(MaskerPlayer &player, const PlayerTime &t)
+    -> std::uintmax_t {
+    return player.nanoseconds(t);
+}
+
+static auto nanoseconds(MaskerPlayer &player, const PlayerTimeWithDelay &t)
+    -> std::uintmax_t {
+    return nanoseconds(player, t.playerTime) + nanoseconds(t.delay);
+}
+
+static auto offsetDuration(
+    MaskerPlayer &player, const AudioSampleTimeWithOffset &t) -> Duration {
+    return Duration{t.sampleOffset / player.sampleRateHz()};
+}
+
+static constexpr auto operator-(const Duration &a, const Duration &b)
+    -> Duration {
+    return Duration{a.seconds - b.seconds};
+}
+
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer, EyeTracker &eyeTracker)
@@ -238,79 +262,20 @@ auto RecognitionTestModelImpl::maskerLevelAmplification()
                                   .dBov};
 }
 
-static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }
-
-static auto nanoseconds(MaskerPlayer &player, const PlayerTime &t)
-    -> std::uintmax_t {
-    return player.nanoseconds(t);
-}
-
-static auto nanoseconds(MaskerPlayer &player, const PlayerTimeWithDelay &t)
-    -> std::uintmax_t {
-    return nanoseconds(player, t.playerTime) + nanoseconds(t.delay);
-}
-
-static auto offsetDuration(
-    MaskerPlayer &player, const AudioSampleTimeWithOffset &t) -> Duration {
-    return Duration{t.sampleOffset / player.sampleRateHz()};
-}
-
-void RecognitionTestModelImpl::fadeInComplete(
-    const AudioSampleTimeWithOffset &t) {
-    if (eyeTracking) {
-        PlayerTimeWithDelay timeToPlayWithDelay{};
-        timeToPlayWithDelay.playerTime = t.playerTime;
-        timeToPlayWithDelay.delay = Delay{
-            Duration{offsetDuration(maskerPlayer, t) + additionalTargetDelay}
-                .seconds};
-        targetPlayer.playAt(timeToPlayWithDelay);
-
-        lastTargetStartTime.nanoseconds =
-            nanoseconds(maskerPlayer, timeToPlayWithDelay);
-
-        lastEyeTrackerTargetPlayerSynchronization.eyeTrackerSystemTime =
-            eyeTracker.currentSystemTime();
-        lastEyeTrackerTargetPlayerSynchronization.targetPlayerSystemTime =
-            TargetPlayerSystemTime{
-                nanoseconds(maskerPlayer, maskerPlayer.currentSystemTime())};
-    } else {
-        play(targetPlayer);
-    }
-}
-
-void RecognitionTestModelImpl::playbackComplete() { maskerPlayer.fadeOut(); }
-
-void RecognitionTestModelImpl::fadeOutComplete() {
-    hide(targetPlayer);
-    if (eyeTracking)
-        eyeTracker.stop();
-    listener_->trialComplete();
-    trialInProgress_ = false;
-}
-
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
     loadFile(targetPlayer, testMethod->nextTarget());
     apply(targetPlayer, targetLevelAmplification());
-    targetPlayer.subscribeToPlaybackCompletion();
-    seekRandomMaskerPosition();
+    const auto maskerPlayerSeekTimeUpperLimit{
+        maskerPlayer.duration() - trialDuration(targetPlayer, maskerPlayer)};
+    maskerPlayer.seekSeconds(randomizer.betweenInclusive(
+        0., maskerPlayerSeekTimeUpperLimit.seconds));
+    maskerPlayer.setSteadyLevelFor(steadyLevelDuration(targetPlayer));
 }
 
 auto RecognitionTestModelImpl::targetLevelAmplification()
     -> LevelAmplification {
     return LevelAmplification{
         maskerLevelAmplification().dB + testMethod->snr().dB};
-}
-
-static constexpr auto operator-(const Duration &a, const Duration &b)
-    -> Duration {
-    return Duration{a.seconds - b.seconds};
-}
-
-void RecognitionTestModelImpl::seekRandomMaskerPosition() {
-    const auto upperLimit{
-        maskerPlayer.duration() - trialDuration(targetPlayer, maskerPlayer)};
-    maskerPlayer.seekSeconds(
-        randomizer.betweenInclusive(0., upperLimit.seconds));
 }
 
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
@@ -323,15 +288,54 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
         settings.audioDevice);
 
     if (eyeTracking) {
-        eyeTracker.allocateRecordingTimeSeconds(Duration{
-            trialDuration(targetPlayer, maskerPlayer) + additionalTargetDelay}
-                                                    .seconds);
+        eyeTracker.allocateRecordingTimeSeconds(
+            Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);
         eyeTracker.start();
     }
     if (condition == Condition::audioVisual)
         show(targetPlayer);
-    maskerPlayer.fadeIn();
+    targetPlayer.preRoll();
     trialInProgress_ = true;
+}
+
+void RecognitionTestModelImpl::notifyThatPreRollHasCompleted() {
+    maskerPlayer.fadeIn();
+}
+
+void RecognitionTestModelImpl::fadeInComplete(
+    const AudioSampleTimeWithOffset &t) {
+    if (eyeTracking) {
+        PlayerTimeWithDelay timeToPlayWithDelay{};
+        timeToPlayWithDelay.playerTime = t.playerTime;
+        timeToPlayWithDelay.delay = Delay{Duration{
+            offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
+                                              .seconds};
+        targetPlayer.playAt(timeToPlayWithDelay);
+
+        lastTargetStartTime.nanoseconds =
+            nanoseconds(maskerPlayer, timeToPlayWithDelay);
+
+        lastEyeTrackerTargetPlayerSynchronization.eyeTrackerSystemTime =
+            eyeTracker.currentSystemTime();
+        lastEyeTrackerTargetPlayerSynchronization.targetPlayerSystemTime =
+            TargetPlayerSystemTime{
+                nanoseconds(maskerPlayer, maskerPlayer.currentSystemTime())};
+    } else {
+        PlayerTimeWithDelay timeToPlayWithDelay{};
+        timeToPlayWithDelay.playerTime = t.playerTime;
+        timeToPlayWithDelay.delay = Delay{Duration{
+            offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
+                                              .seconds};
+        targetPlayer.playAt(timeToPlayWithDelay);
+    }
+}
+
+void RecognitionTestModelImpl::fadeOutComplete() {
+    hide(targetPlayer);
+    if (eyeTracking)
+        eyeTracker.stop();
+    listener_->trialComplete();
+    trialInProgress_ = false;
 }
 
 void RecognitionTestModelImpl::submitCorrectResponse() {
@@ -368,7 +372,7 @@ void RecognitionTestModelImpl::submit(const FreeResponse &response) {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::submit(const CorrectKeywords &correctKeywords) {
+void RecognitionTestModelImpl::submit(const CorrectKeywords &) {
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
