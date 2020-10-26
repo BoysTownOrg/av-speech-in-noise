@@ -292,8 +292,6 @@ void MaskerPlayerImpl::fadeIn() {
     if (playingFiniteSection)
         return;
 
-    set(fadingIn);
-    set(fadingOut);
     set(playingFiniteSection);
     postForExecution(sharedState.fadeIn);
     play();
@@ -321,14 +319,11 @@ void MaskerPlayerImpl::stop() {
 }
 
 void MaskerPlayerImpl::callback() {
-    if (thisCallClears(sharedState.fadeIn.complete)) {
-        clear(fadingIn);
+    if (thisCallClears(sharedState.fadeIn.complete))
         listener->fadeInComplete({{sharedState.fadeInCompleteSystemTime.load()},
             sharedState.fadeInCompleteSystemTimeSampleOffset.load()});
-    }
 
     if (thisCallClears(sharedState.fadeOut.complete)) {
-        clear(fadingOut);
         clear(playingFiniteSection);
         stop();
         listener->fadeOutComplete();
@@ -337,8 +332,6 @@ void MaskerPlayerImpl::callback() {
 
     scheduleCallback(timer, callbackDelay);
 }
-
-auto MaskerPlayerImpl::fading() -> bool { return fadingIn || fadingOut; }
 
 // real-time audio thread
 void MaskerPlayerImpl::fillAudioBuffer(
