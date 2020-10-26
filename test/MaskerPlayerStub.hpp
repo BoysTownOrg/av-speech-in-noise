@@ -151,7 +151,9 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     [[nodiscard]] auto secondsSeeked() const { return secondsSeeked_; }
 
-    auto fadeTime() -> Duration override { return Duration{fadeTimeSeconds_}; }
+    auto rampDuration() -> Duration override {
+        return Duration{fadeTimeSeconds_};
+    }
 
     void setFadeTimeSeconds(double x) { fadeTimeSeconds_ = x; }
 

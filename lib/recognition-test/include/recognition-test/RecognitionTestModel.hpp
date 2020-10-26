@@ -93,7 +93,7 @@ class MaskerPlayer {
     virtual auto duration() -> Duration = 0;
     virtual auto sampleRateHz() -> double = 0;
     virtual void seekSeconds(double) = 0;
-    virtual auto fadeTime() -> Duration = 0;
+    virtual auto rampDuration() -> Duration = 0;
     virtual void useAllChannels() = 0;
     virtual void useFirstChannelOnly() = 0;
     virtual void useSecondChannelOnly() = 0;

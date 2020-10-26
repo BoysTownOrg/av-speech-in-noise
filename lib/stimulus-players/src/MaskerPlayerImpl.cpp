@@ -179,7 +179,7 @@ void MaskerPlayerImpl::seekSeconds(double x) {
             samples(sharedState.sourceAudio)));
 }
 
-auto MaskerPlayerImpl::fadeTime() -> Duration {
+auto MaskerPlayerImpl::rampDuration() -> Duration {
     return Duration{fadeInOutSeconds};
 }
 

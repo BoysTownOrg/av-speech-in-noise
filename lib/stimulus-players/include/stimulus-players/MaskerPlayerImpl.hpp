@@ -76,7 +76,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     auto digitalLevel() -> DigitalLevel override;
     auto duration() -> Duration override;
     void seekSeconds(double) override;
-    auto fadeTime() -> Duration override;
+    auto rampDuration() -> Duration override;
     auto sampleRateHz() -> double override;
     void callback() override;
     void setChannelDelaySeconds(

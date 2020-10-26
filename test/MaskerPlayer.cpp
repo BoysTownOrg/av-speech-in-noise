@@ -784,7 +784,7 @@ MASKER_PLAYER_TEST(noAudioLoadedMutesChannel) {
 
 MASKER_PLAYER_TEST(fadeTimeReturnsFadeTime) {
     setFadeInOutSeconds(player, 1);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1., player.fadeTime().seconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1., player.rampDuration().seconds);
 }
 
 MASKER_PLAYER_TEST(loadFileLoadsAudioFile) {

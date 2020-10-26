@@ -28,8 +28,8 @@ static void clearChannelDelays(MaskerPlayer &player) {
 
 static void useAllChannels(TargetPlayer &player) { player.useAllChannels(); }
 
-static auto totalFadeTime(MaskerPlayer &player) -> Duration {
-    return Duration{2 * player.fadeTime().seconds};
+static auto totalrampDuration(MaskerPlayer &player) -> Duration {
+    return Duration{2 * player.rampDuration().seconds};
 }
 
 static constexpr auto operator+(const Duration &a, const Duration &b)
@@ -45,7 +45,7 @@ static auto steadyLevelDuration(TargetPlayer &player) -> Duration {
 
 static auto trialDuration(TargetPlayer &target, MaskerPlayer &masker)
     -> Duration {
-    return totalFadeTime(masker) + steadyLevelDuration(target);
+    return totalrampDuration(masker) + steadyLevelDuration(target);
 }
 
 static void turnOff(bool &b) { b = false; }
