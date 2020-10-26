@@ -37,11 +37,15 @@ static constexpr auto operator+(const Duration &a, const Duration &b)
     return Duration{a.seconds + b.seconds};
 }
 
-static auto trialDuration(TargetPlayer &target, MaskerPlayer &masker)
-    -> Duration {
-    return totalFadeTime(masker) + target.duration() +
+static auto steadyLevelDuration(TargetPlayer &player) -> Duration {
+    return player.duration() +
         RecognitionTestModelImpl::targetOnsetFringeDuration +
         RecognitionTestModelImpl::targetOffsetFringeDuration;
+}
+
+static auto trialDuration(TargetPlayer &target, MaskerPlayer &masker)
+    -> Duration {
+    return totalFadeTime(masker) + steadyLevelDuration(target);
 }
 
 static void turnOff(bool &b) { b = false; }
@@ -155,6 +159,28 @@ static void throwRequestFailureOnInvalidAudioFile(
     }
 }
 
+static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }
+
+static auto nanoseconds(MaskerPlayer &player, const PlayerTime &t)
+    -> std::uintmax_t {
+    return player.nanoseconds(t);
+}
+
+static auto nanoseconds(MaskerPlayer &player, const PlayerTimeWithDelay &t)
+    -> std::uintmax_t {
+    return nanoseconds(player, t.playerTime) + nanoseconds(t.delay);
+}
+
+static auto offsetDuration(
+    MaskerPlayer &player, const AudioSampleTimeWithOffset &t) -> Duration {
+    return Duration{t.sampleOffset / player.sampleRateHz()};
+}
+
+static constexpr auto operator-(const Duration &a, const Duration &b)
+    -> Duration {
+    return Duration{a.seconds - b.seconds};
+}
+
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer, EyeTracker &eyeTracker)
@@ -236,47 +262,20 @@ auto RecognitionTestModelImpl::maskerLevelAmplification()
                                   .dBov};
 }
 
-static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }
-
-static auto nanoseconds(MaskerPlayer &player, const PlayerTime &t)
-    -> std::uintmax_t {
-    return player.nanoseconds(t);
-}
-
-static auto nanoseconds(MaskerPlayer &player, const PlayerTimeWithDelay &t)
-    -> std::uintmax_t {
-    return nanoseconds(player, t.playerTime) + nanoseconds(t.delay);
-}
-
-static auto offsetDuration(
-    MaskerPlayer &player, const AudioSampleTimeWithOffset &t) -> Duration {
-    return Duration{t.sampleOffset / player.sampleRateHz()};
-}
-
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
     loadFile(targetPlayer, testMethod->nextTarget());
     apply(targetPlayer, targetLevelAmplification());
-    seekRandomMaskerPosition();
-    maskerPlayer.setSteadyLevelFor(targetOnsetFringeDuration +
-        targetOffsetFringeDuration + targetPlayer.duration());
+    const auto maskerPlayerSeekTimeUpperLimit{
+        maskerPlayer.duration() - trialDuration(targetPlayer, maskerPlayer)};
+    maskerPlayer.seekSeconds(randomizer.betweenInclusive(
+        0., maskerPlayerSeekTimeUpperLimit.seconds));
+    maskerPlayer.setSteadyLevelFor(steadyLevelDuration(targetPlayer));
 }
 
 auto RecognitionTestModelImpl::targetLevelAmplification()
     -> LevelAmplification {
     return LevelAmplification{
         maskerLevelAmplification().dB + testMethod->snr().dB};
-}
-
-static constexpr auto operator-(const Duration &a, const Duration &b)
-    -> Duration {
-    return Duration{a.seconds - b.seconds};
-}
-
-void RecognitionTestModelImpl::seekRandomMaskerPosition() {
-    const auto upperLimit{
-        maskerPlayer.duration() - trialDuration(targetPlayer, maskerPlayer)};
-    maskerPlayer.seekSeconds(
-        randomizer.betweenInclusive(0., upperLimit.seconds));
 }
 
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {

@@ -647,10 +647,10 @@ class RecognitionTestModelTests : public ::testing::Test {
         maskerPlayer.setDurationSeconds(10);
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0., randomizer.lowerFloatBound());
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(10. - 2 - 1 - 2 -
+        assertEqual(10. - 2 - 1 - 2 -
                 RecognitionTestModelImpl::targetOnsetFringeDuration.seconds -
                 RecognitionTestModelImpl::targetOffsetFringeDuration.seconds,
-            randomizer.upperFloatBound());
+            randomizer.upperFloatBound(), 1e-15);
     }
 
     void assertMaskerPlayerSeekedToRandomTime(UseCase &useCase) {
@@ -1321,10 +1321,9 @@ RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestSetsMaskerSteadyLevelDuration) {
     setDurationSeconds(targetPlayer, 1);
     run(initializingTest, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        RecognitionTestModelImpl::targetOnsetFringeDuration.seconds +
+    assertEqual(RecognitionTestModelImpl::targetOnsetFringeDuration.seconds +
             RecognitionTestModelImpl::targetOffsetFringeDuration.seconds + 1,
-        maskerPlayer.steadyLevelDuration().seconds);
+        maskerPlayer.steadyLevelDuration().seconds, 1e-15);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
