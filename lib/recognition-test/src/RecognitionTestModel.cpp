@@ -279,7 +279,7 @@ void RecognitionTestModelImpl::fadeInComplete(
     }
 }
 
-void RecognitionTestModelImpl::playbackComplete() { maskerPlayer.fadeOut(); }
+void RecognitionTestModelImpl::playbackComplete() {}
 
 void RecognitionTestModelImpl::fadeOutComplete() {
     hide(targetPlayer);
