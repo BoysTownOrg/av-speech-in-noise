@@ -301,14 +301,14 @@ void MaskerPlayerImpl::fadeIn() {
         return;
 
     set(playingFiniteSection);
-    postForExecution(sharedState.fadeIn);
+    postForExecution(sharedState.fadeInMessage);
     play();
     scheduleCallback(timer, callbackDelay);
 }
 
 void MaskerPlayerImpl::play() {
     if (!audioEnabled) {
-        postForExecution(sharedState.enableAudio);
+        postForExecution(sharedState.enableAudioMessage);
         audioEnabled = true;
     }
     player->play();
@@ -316,9 +316,9 @@ void MaskerPlayerImpl::play() {
 
 void MaskerPlayerImpl::stop() {
     if (audioEnabled) {
-        postForExecution(sharedState.disableAudio);
+        postForExecution(sharedState.disableAudioMessage);
         auto expected{true};
-        while (!sharedState.disableAudio.complete.compare_exchange_weak(
+        while (!sharedState.disableAudioMessage.complete.compare_exchange_weak(
             expected, false))
             expected = true;
         audioEnabled = false;
@@ -327,11 +327,11 @@ void MaskerPlayerImpl::stop() {
 }
 
 void MaskerPlayerImpl::callback() {
-    if (thisCallConsumesCompletionMessage(sharedState.fadeIn))
+    if (thisCallConsumesCompletionMessage(sharedState.fadeInMessage))
         listener->fadeInComplete({{sharedState.fadeInCompleteSystemTime.load()},
             sharedState.fadeInCompleteSystemTimeSampleOffset.load()});
 
-    if (thisCallConsumesCompletionMessage(sharedState.fadeOut)) {
+    if (thisCallConsumesCompletionMessage(sharedState.fadeOutMessage)) {
         clear(playingFiniteSection);
         stop();
         listener->fadeOutComplete();
@@ -399,7 +399,7 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
     player_system_time_type time) {
     if (!enabled) {
-        if (thisCallConsumesExecutionMessage(sharedState.enableAudio))
+        if (thisCallConsumesExecutionMessage(sharedState.enableAudioMessage))
             enabled = true;
         else
             return;
@@ -409,7 +409,7 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
             mute(channel);
     else
         copySourceAudio(audioBuffer, sharedState);
-    if (thisCallConsumesExecutionMessage(sharedState.fadeIn)) {
+    if (thisCallConsumesExecutionMessage(sharedState.fadeInMessage)) {
         assignFadeSamples(rampSamples, sharedState);
         steadyLevelSamples = read(sharedState.steadyLevelSamples);
         rampCounter = 0;
@@ -426,7 +426,7 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
         if (fadingIn && rampCounter == rampSamples) {
             sharedState.fadeInCompleteSystemTime.store(time);
             sharedState.fadeInCompleteSystemTimeSampleOffset.store(i + 1);
-            postCompletion(sharedState.fadeIn);
+            postCompletion(sharedState.fadeInMessage);
             clear(fadingIn);
             steadyLevelCounter = 0;
             set(steadyingLevel);
@@ -438,7 +438,7 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
             stateTransition = true;
         }
         if (fadingOut && rampCounter == 2 * rampSamples) {
-            postCompletion(sharedState.fadeOut);
+            postCompletion(sharedState.fadeOutMessage);
             clear(fadingOut);
         }
         if (!stateTransition && (fadingIn || fadingOut))
@@ -446,9 +446,9 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
         if (!stateTransition && steadyingLevel)
             ++steadyLevelCounter;
     }
-    if (thisCallConsumesExecutionMessage(sharedState.disableAudio)) {
+    if (thisCallConsumesExecutionMessage(sharedState.disableAudioMessage)) {
         enabled = false;
-        postCompletion(sharedState.disableAudio);
+        postCompletion(sharedState.disableAudioMessage);
     }
 }
 }

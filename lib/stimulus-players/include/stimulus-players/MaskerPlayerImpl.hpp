@@ -102,10 +102,10 @@ class MaskerPlayerImpl : public MaskerPlayer,
         std::atomic<gsl::index> steadyLevelSamples{};
         std::atomic<bool> firstChannelOnly{};
         std::atomic<bool> secondChannelOnly{};
-        LockFreeMessage fadeIn{};
-        LockFreeMessage fadeOut{};
-        LockFreeMessage disableAudio{};
-        LockFreeMessage enableAudio{};
+        LockFreeMessage fadeInMessage{};
+        LockFreeMessage fadeOutMessage{};
+        LockFreeMessage disableAudioMessage{};
+        LockFreeMessage enableAudioMessage{};
     };
 
   private:
