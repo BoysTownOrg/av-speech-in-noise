@@ -98,7 +98,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         std::atomic<double> levelScalar{1};
         std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
         std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
-        std::atomic<gsl::index> fadeSamples{};
+        std::atomic<gsl::index> rampSamples{};
         std::atomic<gsl::index> steadyLevelSamples{};
         std::atomic<bool> firstChannelOnly{};
         std::atomic<bool> secondChannelOnly{};
@@ -125,9 +125,9 @@ class MaskerPlayerImpl : public MaskerPlayer,
 
         SharedState &sharedState;
         gsl::index rampCounter{};
-        gsl::index rampLength{};
-        gsl::index steadyLevelLength{};
+        gsl::index rampSamples{};
         gsl::index steadyLevelCounter{};
+        gsl::index steadyLevelSamples{};
         bool fadingOut{};
         bool fadingIn{};
         bool steadyingLevel{};

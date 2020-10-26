@@ -210,7 +210,7 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     player->loadFile(file.path);
     recalculateSamplesToWaitPerChannel(
         sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
-    write(sharedState.fadeSamples,
+    write(sharedState.rampSamples,
         gsl::narrow_cast<gsl::index>(
             rampDuration_.seconds * av_speech_in_noise::sampleRateHz(player)));
     sharedState.sourceAudio = readAudio(file.path);
@@ -352,7 +352,7 @@ static auto squared(double x) -> double { return x * x; }
 
 static void assignFadeSamples(
     gsl::index &halfWindowLength, MaskerPlayerImpl::SharedState &sharedState) {
-    halfWindowLength = read(sharedState.fadeSamples);
+    halfWindowLength = read(sharedState.rampSamples);
 }
 
 static auto sourceFrames(MaskerPlayerImpl::SharedState &sharedState)
@@ -410,52 +410,45 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
     else
         copySourceAudio(audioBuffer, sharedState);
     if (thisCallConsumesExecutionMessage(sharedState.fadeIn)) {
-        assignFadeSamples(rampLength, sharedState);
-        steadyLevelLength = read(sharedState.steadyLevelSamples);
+        assignFadeSamples(rampSamples, sharedState);
+        steadyLevelSamples = read(sharedState.steadyLevelSamples);
         rampCounter = 0;
         set(fadingIn);
     }
     const auto levelScalar_{read(sharedState.levelScalar)};
     for (auto i{sample_index_type{0}}; i < framesToFill(audioBuffer); ++i) {
         for (auto channel : audioBuffer)
-            at(channel, i) *= gsl::narrow_cast<sample_type>(rampLength != 0
-                    ? squared(std::sin((pi() * rampCounter) / (2 * rampLength)))
+            at(channel, i) *= gsl::narrow_cast<sample_type>(rampSamples != 0
+                    ? squared(
+                          std::sin((pi() * rampCounter) / (2 * rampSamples)))
                     : 1 * levelScalar_);
-        bool transitioning{};
-        if (doneFadingIn()) {
+        bool stateTransition{};
+        if (fadingIn && rampCounter == rampSamples) {
             sharedState.fadeInCompleteSystemTime.store(time);
             sharedState.fadeInCompleteSystemTimeSampleOffset.store(i + 1);
             postCompletion(sharedState.fadeIn);
             clear(fadingIn);
             steadyLevelCounter = 0;
             set(steadyingLevel);
-            transitioning = true;
+            stateTransition = true;
         }
-        if (steadyingLevel && steadyLevelCounter == steadyLevelLength) {
+        if (steadyingLevel && steadyLevelCounter == steadyLevelSamples) {
             clear(steadyingLevel);
             set(fadingOut);
-            transitioning = true;
+            stateTransition = true;
         }
-        if (doneFadingOut()) {
+        if (fadingOut && rampCounter == 2 * rampSamples) {
             postCompletion(sharedState.fadeOut);
             clear(fadingOut);
         }
-        if (!transitioning && (fadingIn || fadingOut))
+        if (!stateTransition && (fadingIn || fadingOut))
             ++rampCounter;
-        if (!transitioning && steadyingLevel)
+        if (!stateTransition && steadyingLevel)
             ++steadyLevelCounter;
     }
     if (thisCallConsumesExecutionMessage(sharedState.disableAudio)) {
         enabled = false;
         postCompletion(sharedState.disableAudio);
     }
-}
-
-auto MaskerPlayerImpl::AudioThreadContext::doneFadingIn() -> bool {
-    return fadingIn && rampCounter == rampLength;
-}
-
-auto MaskerPlayerImpl::AudioThreadContext::doneFadingOut() -> bool {
-    return fadingOut && rampCounter == 2 * rampLength;
 }
 }
