@@ -1239,7 +1239,9 @@ MASKER_PLAYER_TEST(fadeOutCompleteOnlyAfterFadeTime) {
 MASKER_PLAYER_TEST(audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
     setFadeInOutSeconds(player, 3);
     setSampleRateHz(audioPlayer, 4);
+    setSteadyLevelSeconds(player, 5);
     auto halfWindowLength = 3 * 4 + 1;
+    auto steadyLevelLength = 4 * 5 + 1;
     loadMonoAudio(player, audioReader, {0});
     bool fillOnce{};
     bool filledOnce{};
@@ -1253,6 +1255,8 @@ MASKER_PLAYER_TEST(audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
             observer->fillAudioBuffer({fadeInBuffer}, {});
             set(mutex, fadeInComplete);
             condition.notify_one();
+            std::vector<float> steadyLevelBuffer(steadyLevelLength);
+            observer->fillAudioBuffer({steadyLevelBuffer}, {});
             for (int i = 0; i < halfWindowLength; ++i) {
                 waitThenClear(mutex, condition, fillOnce);
                 av_speech_in_noise::fillAudioBuffer(observer, 1, 1);
@@ -1272,7 +1276,6 @@ MASKER_PLAYER_TEST(audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
     fadeIn(player);
     wait(mutex, condition, fadeInComplete);
     callback(timer);
-    fadeOut(player);
     for (int i = 0; i < 3 * 4; ++i) {
         set(mutex, fillOnce);
         condition.notify_one();
