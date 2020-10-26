@@ -92,6 +92,14 @@ static auto thisCallClears(std::atomic<bool> &x) -> bool {
     return x.compare_exchange_strong(expected, false);
 }
 
+static auto thisCallConsumesExecutionMessage(LockFreeMessage &x) -> bool {
+    return thisCallClears(x.execute);
+}
+
+static auto thisCallConsumesCompletionMessage(LockFreeMessage &x) -> bool {
+    return thisCallClears(x.complete);
+}
+
 static auto rms(const channel_type &channel) -> sample_type {
     return std::sqrt(
         std::accumulate(channel.begin(), channel.end(), sample_type{0},
@@ -319,11 +327,11 @@ void MaskerPlayerImpl::stop() {
 }
 
 void MaskerPlayerImpl::callback() {
-    if (thisCallClears(sharedState.fadeIn.complete))
+    if (thisCallConsumesCompletionMessage(sharedState.fadeIn))
         listener->fadeInComplete({{sharedState.fadeInCompleteSystemTime.load()},
             sharedState.fadeInCompleteSystemTimeSampleOffset.load()});
 
-    if (thisCallClears(sharedState.fadeOut.complete)) {
+    if (thisCallConsumesCompletionMessage(sharedState.fadeOut)) {
         clear(playingFiniteSection);
         stop();
         listener->fadeOutComplete();
@@ -391,7 +399,7 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
     player_system_time_type time) {
     if (!enabled) {
-        if (thisCallClears(sharedState.enableAudio.execute))
+        if (thisCallConsumesExecutionMessage(sharedState.enableAudio))
             enabled = true;
         else
             return;
@@ -401,7 +409,7 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
             mute(channel);
     else
         copySourceAudio(audioBuffer, sharedState);
-    if (thisCallClears(sharedState.fadeIn.execute)) {
+    if (thisCallConsumesExecutionMessage(sharedState.fadeIn)) {
         assignFadeSamples(rampLength, sharedState);
         steadyLevelLength = read(sharedState.steadyLevelSamples);
         rampCounter = 0;
@@ -437,7 +445,7 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
         if (!transitioning && steadyingLevel)
             ++steadyLevelCounter;
     }
-    if (thisCallClears(sharedState.disableAudio.execute)) {
+    if (thisCallConsumesExecutionMessage(sharedState.disableAudio)) {
         enabled = false;
         postCompletion(sharedState.disableAudio);
     }
