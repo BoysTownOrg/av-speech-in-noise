@@ -1310,51 +1310,10 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesMaskerFilePathToMaskerPlayer(initializingTestWithEyeTracking);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeDefaultTestSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(initializingTest);
-}
 RECOGNITION_TEST_MODEL_TEST(initializeTestPassesMaskerFilePathToMaskerPlayer) {
     setMaskerFilePath(test, "a");
     run(initializingTest, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, maskerPlayer.filePath());
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(
-        initializingTestWithEyeTracking);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitCoordinateResponseSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(
-        submittingCoordinateResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitFreeResponseSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(submittingFreeResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitConsonantSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(submittingConsonant);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectKeywordsSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectKeywords);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectResponseSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitIncorrectResponseSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(submittingIncorrectResponse);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

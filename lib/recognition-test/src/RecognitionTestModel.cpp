@@ -292,7 +292,6 @@ void RecognitionTestModelImpl::fadeOutComplete() {
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
     loadFile(targetPlayer, testMethod->nextTarget());
     apply(targetPlayer, targetLevelAmplification());
-    targetPlayer.subscribeToPlaybackCompletion();
     seekRandomMaskerPosition();
     maskerPlayer.setSteadyLevelFor(targetOnsetFringeDuration +
         targetOffsetFringeDuration + targetPlayer.duration());
