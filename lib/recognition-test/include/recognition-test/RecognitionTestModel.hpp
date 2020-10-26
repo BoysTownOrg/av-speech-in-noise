@@ -86,7 +86,6 @@ class MaskerPlayer {
         -> std::vector<std::string> = 0;
     virtual void setAudioDevice(std::string) = 0;
     virtual void fadeIn() = 0;
-    virtual void fadeOut() {}
     virtual void loadFile(const LocalUrl &) = 0;
     virtual auto playing() -> bool = 0;
     virtual auto digitalLevel() -> DigitalLevel = 0;

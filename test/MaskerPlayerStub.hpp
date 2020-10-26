@@ -110,8 +110,6 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     void attach(Observer *e) override { listener_ = e; }
 
-    void fadeOut() override {}
-
     void loadFile(const LocalUrl &filePath) override {
         filePath_ = filePath.path;
         if (throwInvalidAudioFileOnLoad_)
