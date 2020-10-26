@@ -67,11 +67,13 @@ static auto sampleRateHz(AudioPlayer *player) -> double {
 
 static void write(std::atomic<double> &to, double value) { to.store(value); }
 
-static void write(std::atomic<int> &to, int value) { to.store(value); }
+static void write(std::atomic<gsl::index> &to, gsl::index value) {
+    to.store(value);
+}
 
 static auto read(std::atomic<double> &x) -> double { return x.load(); }
 
-static auto read(std::atomic<int> &x) -> int { return x.load(); }
+static auto read(std::atomic<gsl::index> &x) -> gsl::index { return x.load(); }
 
 static void set(std::atomic<bool> &x) { x.store(true); }
 
@@ -203,7 +205,7 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     recalculateSamplesToWaitPerChannel(
         sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
     write(sharedState.fadeSamples,
-        gsl::narrow_cast<int>(
+        gsl::narrow_cast<gsl::index>(
             fadeInOutSeconds * av_speech_in_noise::sampleRateHz(player)));
     sharedState.sourceAudio = readAudio(file.path);
     std::fill(sharedState.audioFrameHeadsPerChannel.begin(),
@@ -229,7 +231,7 @@ void MaskerPlayerImpl::setFadeInOutSeconds(double x) { fadeInOutSeconds = x; }
 
 void MaskerPlayerImpl::setSteadyLevelFor(Duration x) {
     write(sharedState.steadyLevelSamples,
-        gsl::narrow_cast<int>(
+        gsl::narrow_cast<gsl::index>(
             x.seconds * av_speech_in_noise::sampleRateHz(player)));
 }
 
@@ -348,7 +350,7 @@ void MaskerPlayerImpl::fillAudioBuffer(
 static auto squared(double x) -> double { return x * x; }
 
 static void assignFadeSamples(
-    int &halfWindowLength, MaskerPlayerImpl::SharedState &sharedState) {
+    gsl::index &halfWindowLength, MaskerPlayerImpl::SharedState &sharedState) {
     halfWindowLength = read(sharedState.fadeSamples);
 }
 
