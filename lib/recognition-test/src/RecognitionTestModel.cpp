@@ -258,9 +258,9 @@ void RecognitionTestModelImpl::fadeInComplete(
     if (eyeTracking) {
         PlayerTimeWithDelay timeToPlayWithDelay{};
         timeToPlayWithDelay.playerTime = t.playerTime;
-        timeToPlayWithDelay.delay = Delay{
-            Duration{offsetDuration(maskerPlayer, t) + additionalTargetDelay}
-                .seconds};
+        timeToPlayWithDelay.delay = Delay{Duration{
+            offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
+                                              .seconds};
         targetPlayer.playAt(timeToPlayWithDelay);
 
         lastTargetStartTime.nanoseconds =

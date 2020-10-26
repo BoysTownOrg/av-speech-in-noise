@@ -1081,7 +1081,7 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
         targetPlayer.timePlayedAt().playerTime.system);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        2 / 3. + RecognitionTestModelImpl::additionalTargetDelay.seconds,
+        2 / 3. + RecognitionTestModelImpl::targetOnsetFringeDuration.seconds,
         targetPlayer.timePlayedAt().delay.seconds);
 }
 
@@ -1134,7 +1134,8 @@ RECOGNITION_TEST_MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1 +
             gsl::narrow_cast<std::uintmax_t>(
                 (2 / 3. +
-                    RecognitionTestModelImpl::additionalTargetDelay.seconds) *
+                    RecognitionTestModelImpl::targetOnsetFringeDuration
+                        .seconds) *
                 1e9),
         outputFile.targetStartTime().nanoseconds);
 }
