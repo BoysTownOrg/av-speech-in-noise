@@ -253,42 +253,6 @@ static auto offsetDuration(
     return Duration{t.sampleOffset / player.sampleRateHz()};
 }
 
-void RecognitionTestModelImpl::fadeInComplete(
-    const AudioSampleTimeWithOffset &t) {
-    if (eyeTracking) {
-        PlayerTimeWithDelay timeToPlayWithDelay{};
-        timeToPlayWithDelay.playerTime = t.playerTime;
-        timeToPlayWithDelay.delay = Delay{Duration{
-            offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
-                                              .seconds};
-        targetPlayer.playAt(timeToPlayWithDelay);
-
-        lastTargetStartTime.nanoseconds =
-            nanoseconds(maskerPlayer, timeToPlayWithDelay);
-
-        lastEyeTrackerTargetPlayerSynchronization.eyeTrackerSystemTime =
-            eyeTracker.currentSystemTime();
-        lastEyeTrackerTargetPlayerSynchronization.targetPlayerSystemTime =
-            TargetPlayerSystemTime{
-                nanoseconds(maskerPlayer, maskerPlayer.currentSystemTime())};
-    } else {
-        PlayerTimeWithDelay timeToPlayWithDelay{};
-        timeToPlayWithDelay.playerTime = t.playerTime;
-        timeToPlayWithDelay.delay = Delay{Duration{
-            offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
-                                              .seconds};
-        targetPlayer.playAt(timeToPlayWithDelay);
-    }
-}
-
-void RecognitionTestModelImpl::fadeOutComplete() {
-    hide(targetPlayer);
-    if (eyeTracking)
-        eyeTracker.stop();
-    listener_->trialComplete();
-    trialInProgress_ = false;
-}
-
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
     loadFile(targetPlayer, testMethod->nextTarget());
     apply(targetPlayer, targetLevelAmplification());
@@ -333,6 +297,42 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
         show(targetPlayer);
     targetPlayer.preRoll();
     trialInProgress_ = true;
+}
+
+void RecognitionTestModelImpl::fadeInComplete(
+    const AudioSampleTimeWithOffset &t) {
+    if (eyeTracking) {
+        PlayerTimeWithDelay timeToPlayWithDelay{};
+        timeToPlayWithDelay.playerTime = t.playerTime;
+        timeToPlayWithDelay.delay = Delay{Duration{
+            offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
+                                              .seconds};
+        targetPlayer.playAt(timeToPlayWithDelay);
+
+        lastTargetStartTime.nanoseconds =
+            nanoseconds(maskerPlayer, timeToPlayWithDelay);
+
+        lastEyeTrackerTargetPlayerSynchronization.eyeTrackerSystemTime =
+            eyeTracker.currentSystemTime();
+        lastEyeTrackerTargetPlayerSynchronization.targetPlayerSystemTime =
+            TargetPlayerSystemTime{
+                nanoseconds(maskerPlayer, maskerPlayer.currentSystemTime())};
+    } else {
+        PlayerTimeWithDelay timeToPlayWithDelay{};
+        timeToPlayWithDelay.playerTime = t.playerTime;
+        timeToPlayWithDelay.delay = Delay{Duration{
+            offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
+                                              .seconds};
+        targetPlayer.playAt(timeToPlayWithDelay);
+    }
+}
+
+void RecognitionTestModelImpl::fadeOutComplete() {
+    hide(targetPlayer);
+    if (eyeTracking)
+        eyeTracker.stop();
+    listener_->trialComplete();
+    trialInProgress_ = false;
 }
 
 void RecognitionTestModelImpl::submitCorrectResponse() {
