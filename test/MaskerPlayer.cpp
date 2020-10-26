@@ -170,10 +170,7 @@ class MaskerPlayerListenerStub : public MaskerPlayer::Observer {
         ++fadeInCompletions_;
     }
 
-    void fadeOutComplete() override {
-        ++fadeOutCompletions_;
-        fadeOutCompleted_ = true;
-    }
+    void fadeOutComplete() override { fadeOutCompleted_ = true; }
 
     [[nodiscard]] auto fadeInCompleteSystemTime() const
         -> player_system_time_type {
@@ -197,15 +194,10 @@ class MaskerPlayerListenerStub : public MaskerPlayer::Observer {
         return fadeInCompletions_;
     }
 
-    [[nodiscard]] auto fadeOutCompletions() const -> int {
-        return fadeOutCompletions_;
-    }
-
   private:
     player_system_time_type fadeInCompleteSystemTime_{};
     gsl::index fadeInCompleteSystemTimeSampleOffset_{};
     int fadeInCompletions_{};
-    int fadeOutCompletions_{};
     bool fadeInCompleted_{};
     bool fadeOutCompleted_{};
 };
