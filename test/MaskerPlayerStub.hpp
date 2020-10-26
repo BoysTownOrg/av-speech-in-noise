@@ -22,6 +22,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     Observer *listener_{};
     PlayerTime currentSystemTime_{};
     Delay delayAfterFadeInToFadeOut_{};
+    Duration fullLevelDuration_{};
     std::vector<player_system_time_type> toNanosecondsSystemTime_{};
     std::uintmax_t nanoseconds_{};
     int timesFadedIn_{};
@@ -39,6 +40,10 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool stopped_{};
 
   public:
+    auto fullLevelDuration() -> Duration { return fullLevelDuration_; }
+
+    void setFullLevelFor(Duration x) { fullLevelDuration_ = x; }
+
     auto delayAfterFadeInToFadeOut() -> Delay {
         return delayAfterFadeInToFadeOut_;
     }

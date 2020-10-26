@@ -294,6 +294,8 @@ void RecognitionTestModelImpl::preparePlayersForNextTrial() {
     apply(targetPlayer, targetLevelAmplification());
     targetPlayer.subscribeToPlaybackCompletion();
     seekRandomMaskerPosition();
+    maskerPlayer.setFullLevelFor(targetOnsetFringeDuration +
+        targetOffsetFringeDuration + targetPlayer.duration());
 }
 
 auto RecognitionTestModelImpl::targetLevelAmplification()
@@ -332,9 +334,6 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     }
     if (condition == Condition::audioVisual)
         show(targetPlayer);
-    maskerPlayer.fadeOutAfterFadeIn(Delay{Duration{targetOnsetFringeDuration +
-        targetOffsetFringeDuration + targetPlayer.duration()}
-                                              .seconds});
     targetPlayer.preRoll();
     trialInProgress_ = true;
 }

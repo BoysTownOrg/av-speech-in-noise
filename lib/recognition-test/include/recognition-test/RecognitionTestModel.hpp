@@ -105,6 +105,7 @@ class MaskerPlayer {
     virtual void play() = 0;
     virtual void stop() = 0;
     virtual void fadeOutAfterFadeIn(Delay) {}
+    virtual void setFullLevelFor(Duration) {}
 };
 
 class EyeTracker {
