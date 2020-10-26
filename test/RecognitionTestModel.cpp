@@ -649,8 +649,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0., randomizer.lowerFloatBound());
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(10. - 2 - 1 - 2 -
                 RecognitionTestModelImpl::targetOnsetFringeDuration.seconds -
-                RecognitionTestModelImpl::targetOffsetFringeDelayUpperBound
-                    .seconds,
+                RecognitionTestModelImpl::targetOffsetFringeDuration.seconds,
             randomizer.upperFloatBound());
     }
 
@@ -791,7 +790,8 @@ class RecognitionTestModelTests : public ::testing::Test {
         setFadeTimeSeconds(maskerPlayer, 4);
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3 + 2 * 4. +
-                RecognitionTestModelImpl::additionalTargetDelay.seconds,
+                RecognitionTestModelImpl::targetOnsetFringeDuration.seconds +
+                RecognitionTestModelImpl::targetOffsetFringeDuration.seconds,
             eyeTracker.recordingTimeAllocatedSeconds());
     }
 

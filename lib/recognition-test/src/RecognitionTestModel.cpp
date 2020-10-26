@@ -39,7 +39,9 @@ static constexpr auto operator+(const Duration &a, const Duration &b)
 
 static auto trialDuration(TargetPlayer &target, MaskerPlayer &masker)
     -> Duration {
-    return totalFadeTime(masker) + target.duration();
+    return totalFadeTime(masker) + target.duration() +
+        RecognitionTestModelImpl::targetOnsetFringeDuration +
+        RecognitionTestModelImpl::targetOffsetFringeDuration;
 }
 
 static void turnOff(bool &b) { b = false; }
@@ -307,9 +309,8 @@ static constexpr auto operator-(const Duration &a, const Duration &b)
 }
 
 void RecognitionTestModelImpl::seekRandomMaskerPosition() {
-    const auto upperLimit{maskerPlayer.duration() -
-        trialDuration(targetPlayer, maskerPlayer) - targetOnsetFringeDuration -
-        targetOffsetFringeDelayUpperBound};
+    const auto upperLimit{
+        maskerPlayer.duration() - trialDuration(targetPlayer, maskerPlayer)};
     maskerPlayer.seekSeconds(
         randomizer.betweenInclusive(0., upperLimit.seconds));
 }
@@ -324,9 +325,8 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
         settings.audioDevice);
 
     if (eyeTracking) {
-        eyeTracker.allocateRecordingTimeSeconds(Duration{
-            trialDuration(targetPlayer, maskerPlayer) + additionalTargetDelay}
-                                                    .seconds);
+        eyeTracker.allocateRecordingTimeSeconds(
+            Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);
         eyeTracker.start();
     }
     if (condition == Condition::audioVisual)
