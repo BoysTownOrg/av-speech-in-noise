@@ -142,6 +142,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     Timer *timer;
     MaskerPlayer::Observer *listener{};
     Duration rampDuration_{};
+    bool playingFiniteSection{};
     bool fadingIn{};
     bool fadingOut{};
     bool audioEnabled{};

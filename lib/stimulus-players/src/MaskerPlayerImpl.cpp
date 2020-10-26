@@ -289,11 +289,12 @@ void MaskerPlayerImpl::useAllChannels() {
 }
 
 void MaskerPlayerImpl::fadeIn() {
-    if (fading())
+    if (playingFiniteSection)
         return;
 
     set(fadingIn);
     set(fadingOut);
+    set(playingFiniteSection);
     postForExecution(sharedState.fadeIn);
     play();
     scheduleCallback(timer, callbackDelay);
@@ -328,6 +329,7 @@ void MaskerPlayerImpl::callback() {
 
     if (thisCallClears(sharedState.fadeOut.complete)) {
         clear(fadingOut);
+        clear(playingFiniteSection);
         stop();
         listener->fadeOutComplete();
         return;
