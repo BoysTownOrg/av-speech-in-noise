@@ -70,7 +70,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     void apply(LevelAmplification) override;
     void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
         player_system_time_type) override;
-    void setFadeInOutSeconds(double);
+    void setRampFor(Duration);
     void setSteadyLevelFor(Duration) override;
     auto outputAudioDeviceDescriptions() -> std::vector<std::string> override;
     auto digitalLevel() -> DigitalLevel override;
@@ -141,7 +141,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     AudioReader *reader;
     Timer *timer;
     MaskerPlayer::Observer *listener{};
-    double fadeInOutSeconds{};
+    Duration rampDuration_{};
     bool fadingIn{};
     bool fadingOut{};
     bool audioEnabled{};

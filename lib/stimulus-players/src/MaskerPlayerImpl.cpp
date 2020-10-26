@@ -181,9 +181,7 @@ void MaskerPlayerImpl::seekSeconds(double x) {
             samples(sharedState.sourceAudio)));
 }
 
-auto MaskerPlayerImpl::rampDuration() -> Duration {
-    return Duration{fadeInOutSeconds};
-}
+auto MaskerPlayerImpl::rampDuration() -> Duration { return rampDuration_; }
 
 auto MaskerPlayerImpl::sampleRateHz() -> double {
     return av_speech_in_noise::sampleRateHz(player);
@@ -206,7 +204,7 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
         sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
     write(sharedState.fadeSamples,
         gsl::narrow_cast<gsl::index>(
-            fadeInOutSeconds * av_speech_in_noise::sampleRateHz(player)));
+            rampDuration_.seconds * av_speech_in_noise::sampleRateHz(player)));
     sharedState.sourceAudio = readAudio(file.path);
     std::fill(sharedState.audioFrameHeadsPerChannel.begin(),
         sharedState.audioFrameHeadsPerChannel.end(), 0);
@@ -227,7 +225,7 @@ void MaskerPlayerImpl::apply(LevelAmplification x) {
     write(sharedState.levelScalar, std::pow(10, x.dB / 20));
 }
 
-void MaskerPlayerImpl::setFadeInOutSeconds(double x) { fadeInOutSeconds = x; }
+void MaskerPlayerImpl::setRampFor(Duration x) { rampDuration_ = x; }
 
 void MaskerPlayerImpl::setSteadyLevelFor(Duration x) {
     write(sharedState.steadyLevelSamples,

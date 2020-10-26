@@ -443,7 +443,7 @@ void setAudioDevice(MaskerPlayerImpl &player, std::string s) {
 }
 
 void setFadeInOutSeconds(MaskerPlayerImpl &player, double x) {
-    player.setFadeInOutSeconds(x);
+    player.setRampFor(Duration{x});
 }
 
 void set(std::mutex &mutex, bool &b) {
