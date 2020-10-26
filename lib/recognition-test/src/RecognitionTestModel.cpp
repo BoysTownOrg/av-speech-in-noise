@@ -298,6 +298,10 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     trialInProgress_ = true;
 }
 
+void RecognitionTestModelImpl::notifyThatPreRollHasCompleted() {
+    maskerPlayer.fadeIn();
+}
+
 void RecognitionTestModelImpl::fadeInComplete(
     const AudioSampleTimeWithOffset &t) {
     if (eyeTracking) {
@@ -368,7 +372,7 @@ void RecognitionTestModelImpl::submit(const FreeResponse &response) {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::submit(const CorrectKeywords &correctKeywords) {
+void RecognitionTestModelImpl::submit(const CorrectKeywords &) {
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
@@ -448,8 +452,5 @@ auto RecognitionTestModelImpl::trialNumber() -> int { return trialNumber_; }
 
 auto RecognitionTestModelImpl::targetFileName() -> std::string {
     return targetName(evaluator, testMethod);
-}
-void RecognitionTestModelImpl::notifyThatPreRollHasCompleted() {
-    maskerPlayer.fadeIn();
 }
 }
