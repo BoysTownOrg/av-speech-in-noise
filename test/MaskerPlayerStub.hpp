@@ -7,37 +7,6 @@
 
 namespace av_speech_in_noise {
 class MaskerPlayerStub : public MaskerPlayer {
-    std::vector<std::string> outputAudioDeviceDescriptions_;
-    std::string filePath_;
-    std::string device_;
-    DigitalLevel digitalLevel_{};
-    LevelAmplification levelAmplification_{};
-    double level_dB_{};
-    double fadeTimeSeconds_{};
-    double durationSeconds_{};
-    double secondsSeeked_{};
-    double channelDelaySeconds_{};
-    double sampleRateHz_{};
-    gsl::index channelDelayed_{};
-    Observer *listener_{};
-    PlayerTime currentSystemTime_{};
-    Duration steadyLevelDuration_{};
-    std::vector<player_system_time_type> toNanosecondsSystemTime_{};
-    std::uintmax_t nanoseconds_{};
-    int timesFadedIn_{};
-    bool fadeInCalled_{};
-    bool fadeOutCalled_{};
-    bool playing_{};
-    bool setDeviceCalled_{};
-    bool throwInvalidAudioDeviceWhenDeviceSet_{};
-    bool throwInvalidAudioFileOnLoad_{};
-    bool usingAllChannels_{};
-    bool usingFirstChannelOnly_{};
-    bool usingSecondChannelOnly_{};
-    bool channelDelaysCleared_{};
-    bool played_{};
-    bool stopped_{};
-
   public:
     auto steadyLevelDuration() -> Duration { return steadyLevelDuration_; }
 
@@ -135,15 +104,13 @@ class MaskerPlayerStub : public MaskerPlayer {
         ++timesFadedIn_;
     }
 
-    [[nodiscard]] auto fadeOutCalled() const -> bool { return fadeOutCalled_; }
-
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
 
     void stop() override { stopped_ = true; }
 
     void attach(Observer *e) override { listener_ = e; }
 
-    void fadeOut() override { fadeOutCalled_ = true; }
+    void fadeOut() override {}
 
     void loadFile(const LocalUrl &filePath) override {
         filePath_ = filePath.path;
@@ -195,6 +162,37 @@ class MaskerPlayerStub : public MaskerPlayer {
     void setNanosecondsFromPlayerTime(std::uintmax_t t) { nanoseconds_ = t; }
 
     void setCurrentSystemTime(PlayerTime t) { currentSystemTime_ = t; }
+
+  private:
+    std::vector<std::string> outputAudioDeviceDescriptions_;
+    std::string filePath_;
+    std::string device_;
+    DigitalLevel digitalLevel_{};
+    LevelAmplification levelAmplification_{};
+    double level_dB_{};
+    double fadeTimeSeconds_{};
+    double durationSeconds_{};
+    double secondsSeeked_{};
+    double channelDelaySeconds_{};
+    double sampleRateHz_{};
+    gsl::index channelDelayed_{};
+    Observer *listener_{};
+    PlayerTime currentSystemTime_{};
+    Duration steadyLevelDuration_{};
+    std::vector<player_system_time_type> toNanosecondsSystemTime_{};
+    std::uintmax_t nanoseconds_{};
+    int timesFadedIn_{};
+    bool fadeInCalled_{};
+    bool playing_{};
+    bool setDeviceCalled_{};
+    bool throwInvalidAudioDeviceWhenDeviceSet_{};
+    bool throwInvalidAudioFileOnLoad_{};
+    bool usingAllChannels_{};
+    bool usingFirstChannelOnly_{};
+    bool usingSecondChannelOnly_{};
+    bool channelDelaysCleared_{};
+    bool played_{};
+    bool stopped_{};
 };
 }
 

@@ -30,8 +30,6 @@ class TargetPlayerStub : public TargetPlayer {
 
     auto usingFirstChannelOnly() const { return usingFirstChannelOnly_; }
 
-    void subscribeToPlaybackCompletion() override {}
-
     auto playing() -> bool override { return playing_; }
 
     auto log() const -> const std::stringstream & { return log_; }

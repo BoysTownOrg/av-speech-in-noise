@@ -59,7 +59,7 @@ class TargetPlayer {
     virtual void showVideo() = 0;
     virtual auto digitalLevel() -> DigitalLevel = 0;
     virtual void apply(LevelAmplification) = 0;
-    virtual void subscribeToPlaybackCompletion() = 0;
+    virtual void subscribeToPlaybackCompletion() {}
     virtual auto duration() -> Duration = 0;
     virtual void useAllChannels() = 0;
     virtual void useFirstChannelOnly() = 0;
