@@ -21,8 +21,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     gsl::index channelDelayed_{};
     Observer *listener_{};
     PlayerTime currentSystemTime_{};
-    Delay delayAfterFadeInToFadeOut_{};
-    Duration fullLevelDuration_{};
+    Duration steadyLevelDuration_{};
     std::vector<player_system_time_type> toNanosecondsSystemTime_{};
     std::uintmax_t nanoseconds_{};
     int timesFadedIn_{};
@@ -40,17 +39,9 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool stopped_{};
 
   public:
-    auto fullLevelDuration() -> Duration { return fullLevelDuration_; }
+    auto steadyLevelDuration() -> Duration { return steadyLevelDuration_; }
 
-    void setFullLevelFor(Duration x) { fullLevelDuration_ = x; }
-
-    auto delayAfterFadeInToFadeOut() -> Delay {
-        return delayAfterFadeInToFadeOut_;
-    }
-
-    void fadeOutAfterFadeIn(Delay delay) override {
-        delayAfterFadeInToFadeOut_ = delay;
-    }
+    void setSteadyLevelFor(Duration x) override { steadyLevelDuration_ = x; }
 
     [[nodiscard]] auto played() const -> bool { return played_; }
 

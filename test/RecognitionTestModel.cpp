@@ -1357,13 +1357,14 @@ RECOGNITION_TEST_MODEL_TEST(
     assertTargetPlayerPlaybackCompletionSubscribed(submittingIncorrectResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsMaskerFullLevelDuration) {
+RECOGNITION_TEST_MODEL_TEST(
+    initializeDefaultTestSetsMaskerSteadyLevelDuration) {
     setDurationSeconds(targetPlayer, 1);
     run(initializingTest, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         RecognitionTestModelImpl::targetOnsetFringeDuration.seconds +
             RecognitionTestModelImpl::targetOffsetFringeDuration.seconds + 1,
-        maskerPlayer.fullLevelDuration().seconds);
+        maskerPlayer.steadyLevelDuration().seconds);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

@@ -104,8 +104,7 @@ class MaskerPlayer {
     virtual auto currentSystemTime() -> PlayerTime = 0;
     virtual void play() = 0;
     virtual void stop() = 0;
-    virtual void fadeOutAfterFadeIn(Delay) {}
-    virtual void setFullLevelFor(Duration) {}
+    virtual void setSteadyLevelFor(Duration) {}
 };
 
 class EyeTracker {

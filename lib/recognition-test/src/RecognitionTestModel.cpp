@@ -294,7 +294,7 @@ void RecognitionTestModelImpl::preparePlayersForNextTrial() {
     apply(targetPlayer, targetLevelAmplification());
     targetPlayer.subscribeToPlaybackCompletion();
     seekRandomMaskerPosition();
-    maskerPlayer.setFullLevelFor(targetOnsetFringeDuration +
+    maskerPlayer.setSteadyLevelFor(targetOnsetFringeDuration +
         targetOffsetFringeDuration + targetPlayer.duration());
 }
 
