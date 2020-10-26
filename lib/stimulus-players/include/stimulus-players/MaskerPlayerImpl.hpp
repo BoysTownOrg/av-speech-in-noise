@@ -72,6 +72,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
         player_system_time_type) override;
     void setFadeInOutSeconds(double);
+    void setSteadyLevelFor(Duration) override;
     auto outputAudioDeviceDescriptions() -> std::vector<std::string> override;
     auto digitalLevel() -> DigitalLevel override;
     auto duration() -> Duration override;
@@ -99,6 +100,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
         std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
         std::atomic<int> fadeSamples{};
+        std::atomic<int> steadyLevelSamples{};
         std::atomic<bool> firstChannelOnly{};
         std::atomic<bool> secondChannelOnly{};
         LockFreeMessage fadeIn{};
@@ -125,8 +127,11 @@ class MaskerPlayerImpl : public MaskerPlayer,
         SharedState &sharedState;
         int rampCounter{};
         int rampLength{};
+        int steadyLevelLength{};
+        int steadyLevelCounter{};
         bool fadingOut{};
         bool fadingIn{};
+        bool steadyingLevel{};
         bool enabled{};
     };
 

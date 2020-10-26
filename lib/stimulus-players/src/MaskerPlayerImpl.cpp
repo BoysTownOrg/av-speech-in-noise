@@ -227,6 +227,12 @@ void MaskerPlayerImpl::apply(LevelAmplification x) {
 
 void MaskerPlayerImpl::setFadeInOutSeconds(double x) { fadeInOutSeconds = x; }
 
+void MaskerPlayerImpl::setSteadyLevelFor(Duration x) {
+    write(sharedState.steadyLevelSamples,
+        gsl::narrow_cast<int>(
+            x.seconds * av_speech_in_noise::sampleRateHz(player)));
+}
+
 void MaskerPlayerImpl::setAudioDevice(std::string device) {
     player->setDevice(findDeviceIndex(player, device));
 }
@@ -411,13 +417,9 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
         copySourceAudio(audioBuffer, sharedState);
     if (thisCallClears(sharedState.fadeIn.execute)) {
         assignFadeSamples(rampLength, sharedState);
+        steadyLevelLength = read(sharedState.steadyLevelSamples);
         rampCounter = 0;
         set(fadingIn);
-    }
-    if (thisCallClears(sharedState.fadeOut.execute)) {
-        assignFadeSamples(rampLength, sharedState);
-        rampCounter = rampLength;
-        set(fadingOut);
     }
     const auto levelScalar_{read(sharedState.levelScalar)};
     for (auto i{sample_index_type{0}}; i < framesToFill(audioBuffer); ++i) {
@@ -425,18 +427,29 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
             at(channel, i) *= gsl::narrow_cast<sample_type>(rampLength != 0
                     ? squared(std::sin((pi() * rampCounter) / (2 * rampLength)))
                     : 1 * levelScalar_);
+        bool transitioning{};
         if (doneFadingIn()) {
             sharedState.fadeInCompleteSystemTime.store(time);
             sharedState.fadeInCompleteSystemTimeSampleOffset.store(i + 1);
             postCompletion(sharedState.fadeIn);
             clear(fadingIn);
+            steadyLevelCounter = 0;
+            set(steadyingLevel);
+            transitioning = true;
+        }
+        if (steadyingLevel && steadyLevelCounter == steadyLevelLength) {
+            clear(steadyingLevel);
+            set(fadingOut);
+            transitioning = true;
         }
         if (doneFadingOut()) {
             postCompletion(sharedState.fadeOut);
             clear(fadingOut);
         }
-        if (fadingIn || fadingOut)
+        if (!transitioning && (fadingIn || fadingOut))
             ++rampCounter;
+        if (!transitioning && steadyingLevel)
+            ++steadyLevelCounter;
     }
     if (thisCallClears(sharedState.disableAudio.execute)) {
         enabled = false;
