@@ -105,7 +105,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         LockFreeMessage fadeIn{};
         LockFreeMessage fadeOut{};
         LockFreeMessage disableAudio{};
-        std::atomic<bool> pleaseEnableAudio{};
+        LockFreeMessage enableAudio{};
     };
 
   private:

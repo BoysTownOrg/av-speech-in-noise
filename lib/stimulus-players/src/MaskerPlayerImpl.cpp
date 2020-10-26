@@ -300,7 +300,7 @@ void MaskerPlayerImpl::fadeIn() {
 
 void MaskerPlayerImpl::play() {
     if (!audioEnabled) {
-        set(sharedState.pleaseEnableAudio);
+        postForExecution(sharedState.enableAudio);
         audioEnabled = true;
     }
     player->play();
@@ -391,7 +391,7 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
     player_system_time_type time) {
     if (!enabled) {
-        if (thisCallClears(sharedState.pleaseEnableAudio))
+        if (thisCallClears(sharedState.enableAudio.execute))
             enabled = true;
         else
             return;
