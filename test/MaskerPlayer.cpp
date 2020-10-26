@@ -591,11 +591,6 @@ MASKER_PLAYER_TEST(fadeOutThenLoad) {
     audioReader.set({next});
     audioPlayer.setRealisticExecution();
     fadeIn(player);
-    while (!listener.fadeInCompleted()) {
-        callback(timer);
-        std::this_thread::sleep_for(std::chrono::milliseconds{20});
-    }
-    fadeOut(player);
     while (!listener.fadeOutCompleted()) {
         callback(timer);
         std::this_thread::sleep_for(std::chrono::milliseconds{20});
