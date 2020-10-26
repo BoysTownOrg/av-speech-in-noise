@@ -229,27 +229,18 @@ class TimerStub : public Timer {
   public:
     void scheduleCallbackAfterSeconds(double) override {
         callbackScheduled_ = true;
-        ++callbacksScheduled_;
     }
 
     [[nodiscard]] auto callbackScheduled() const { return callbackScheduled_; }
 
-    void clearCallbackCount() {
-        callbackScheduled_ = false;
-        callbacksScheduled_ = 0;
-    }
+    void clearCallbackCount() { callbackScheduled_ = false; }
 
     void callback() { observer->callback(); }
 
     void attach(Observer *a) override { observer = a; }
 
-    [[nodiscard]] auto callbacksScheduled() const -> int {
-        return callbacksScheduled_;
-    }
-
   private:
     Observer *observer{};
-    int callbacksScheduled_{};
     bool callbackScheduled_{};
 };
 
@@ -526,10 +517,6 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     void clearCallbackCount() { timer.clearCallbackCount(); }
-
-    void assertTimerCallbackDoesNotScheduleAdditionalCallback() {
-        assertCallDoesNotScheduleAdditionalCallback([&] { callback(timer); });
-    }
 
     void assertCallDoesNotScheduleAdditionalCallback(
         const std::function<void()> &f) {
