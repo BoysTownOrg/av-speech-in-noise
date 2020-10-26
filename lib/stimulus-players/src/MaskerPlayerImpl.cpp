@@ -153,7 +153,7 @@ constexpr auto maxChannels{128};
 
 MaskerPlayerImpl::MaskerPlayerImpl(
     AudioPlayer *player, AudioReader *reader, Timer *timer)
-    : audioThread{sharedState}, channelDelaySeconds(maxChannels),
+    : audioThreadContext{sharedState}, channelDelaySeconds(maxChannels),
       player{player}, reader{reader}, timer{timer} {
     sharedState.samplesToWaitPerChannel.resize(maxChannels);
     sharedState.audioFrameHeadsPerChannel.resize(maxChannels);
@@ -337,7 +337,7 @@ void MaskerPlayerImpl::callback() {
 void MaskerPlayerImpl::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
     player_system_time_type time) {
-    audioThread.fillAudioBuffer(audioBuffer, time);
+    audioThreadContext.fillAudioBuffer(audioBuffer, time);
 }
 
 static auto squared(double x) -> double { return x * x; }
@@ -387,7 +387,7 @@ static void copySourceAudio(const std::vector<channel_buffer_type> &audioBuffer,
     }
 }
 
-void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
+void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
     player_system_time_type time) {
     if (!enabled) {
@@ -443,11 +443,11 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     }
 }
 
-auto MaskerPlayerImpl::AudioThread::doneFadingIn() -> bool {
+auto MaskerPlayerImpl::AudioThreadContext::doneFadingIn() -> bool {
     return fadingIn && rampCounter == rampLength;
 }
 
-auto MaskerPlayerImpl::AudioThread::doneFadingOut() -> bool {
+auto MaskerPlayerImpl::AudioThreadContext::doneFadingOut() -> bool {
     return fadingOut && rampCounter == 2 * rampLength;
 }
 }

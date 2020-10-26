@@ -112,9 +112,9 @@ class MaskerPlayerImpl : public MaskerPlayer,
     auto readAudio(std::string) -> audio_type;
     auto fading() -> bool;
 
-    class AudioThread {
+    class AudioThreadContext {
       public:
-        explicit AudioThread(SharedState &sharedState)
+        explicit AudioThreadContext(SharedState &sharedState)
             : sharedState{sharedState} {}
         void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
             player_system_time_type);
@@ -135,7 +135,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     };
 
     SharedState sharedState{};
-    AudioThread audioThread;
+    AudioThreadContext audioThreadContext;
     std::vector<double> channelDelaySeconds;
     AudioPlayer *player;
     AudioReader *reader;
