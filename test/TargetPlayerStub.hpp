@@ -30,9 +30,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     auto usingFirstChannelOnly() const { return usingFirstChannelOnly_; }
 
-    void subscribeToPlaybackCompletion() override {
-        playbackCompletionSubscribedTo_ = true;
-    }
+    void subscribeToPlaybackCompletion() override {}
 
     auto playing() -> bool override { return playing_; }
 
@@ -105,10 +103,6 @@ class TargetPlayerStub : public TargetPlayer {
 
     auto filePath() const { return filePath_; }
 
-    auto playbackCompletionSubscribedTo() const {
-        return playbackCompletionSubscribedTo_;
-    }
-
     void setDurationSeconds(double x) { durationSeconds_ = x; }
 
     void throwInvalidAudioFileOnDigitalLevel() {
@@ -136,7 +130,6 @@ class TargetPlayerStub : public TargetPlayer {
     bool throwInvalidAudioFileOnDigitalLevel_{};
     bool setDeviceCalled_{};
     bool playing_{};
-    bool playbackCompletionSubscribedTo_{};
     bool usingAllChannels_{};
     bool usingFirstChannelOnly_{};
     bool preRolling_{};
