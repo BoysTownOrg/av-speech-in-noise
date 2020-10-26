@@ -293,6 +293,7 @@ void MaskerPlayerImpl::fadeIn() {
         return;
 
     set(fadingIn);
+    set(fadingOut);
     postForExecution(sharedState.fadeIn);
     play();
     scheduleCallback(timer, callbackDelay);
