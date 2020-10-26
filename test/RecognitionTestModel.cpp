@@ -451,10 +451,6 @@ void assertFilePathEquals(MaskerPlayerStub &player, const std::string &what) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, player.filePath());
 }
 
-auto playbackCompletionSubscribed(TargetPlayerStub &player) -> bool {
-    return player.playbackCompletionSubscribedTo();
-}
-
 auto secondsSeeked(MaskerPlayerStub &player) { return player.secondsSeeked(); }
 
 void setFullScaleLevel_dB_SPL(Test &test, int x) {
@@ -632,12 +628,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         testMethod.setNextTarget("a");
         run(useCase, model);
         assertFilePathEquals(targetPlayer, "a");
-    }
-
-    void assertTargetPlayerPlaybackCompletionSubscribed(UseCase &useCase) {
-        run(useCase, model);
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-            playbackCompletionSubscribed(targetPlayer));
     }
 
     void assertSeeksToRandomMaskerPositionWithinTrialDuration(
