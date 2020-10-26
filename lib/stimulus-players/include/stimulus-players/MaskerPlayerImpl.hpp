@@ -64,7 +64,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
     MaskerPlayerImpl(AudioPlayer *, AudioReader *, Timer *);
     void attach(MaskerPlayer::Observer *) override;
     void fadeIn() override;
-    void fadeOut() override;
     void loadFile(const LocalUrl &) override;
     auto playing() -> bool override;
     void setAudioDevice(std::string) override;

@@ -319,8 +319,6 @@ void MaskerPlayerImpl::stop() {
     player->stop();
 }
 
-void MaskerPlayerImpl::fadeOut() {}
-
 void MaskerPlayerImpl::callback() {
     if (thisCallClears(sharedState.fadeIn.complete)) {
         clear(fadingIn);
