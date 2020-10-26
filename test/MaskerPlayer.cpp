@@ -1398,14 +1398,15 @@ MASKER_PLAYER_TEST(callbackSchedulesAdditionalCallback) {
     assertCallbackScheduled();
 }
 
-MASKER_PLAYER_TEST(
-    callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
+MASKER_PLAYER_TEST(callbackSchedulesAdditionalCallbackEvenWhenFadeInComplete) {
     setFadeInOutSeconds(player, 2);
     setSampleRateHz(audioPlayer, 3);
     loadMonoAudio(player, audioReader, {0});
     fadeIn(player);
     fillAudioBufferMono(2 * 3 + 1);
-    assertTimerCallbackDoesNotScheduleAdditionalCallback();
+    clearCallbackCount();
+    callback(timer);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(callbackScheduled());
 }
 
 MASKER_PLAYER_TEST(
