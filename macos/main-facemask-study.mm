@@ -147,6 +147,13 @@ static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
     return stack;
 }
 
+static auto resourcePath(const std::string &stem, const std::string &extension)
+    -> std::string {
+    return [[NSBundle mainBundle] pathForResource:nsString(stem)
+                                           ofType:nsString(extension)]
+        .UTF8String;
+}
+
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : subjectIdField{[NSTextField textFieldWithString:@""]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
@@ -260,16 +267,26 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             conditionF, conditionG, conditionH, conditionI, conditionJ
         ])
     };
-    conditionSelections.emplace_back(conditionA, "");
-    conditionSelections.emplace_back(conditionB, "");
-    conditionSelections.emplace_back(conditionC, "");
-    conditionSelections.emplace_back(conditionD, "");
-    conditionSelections.emplace_back(conditionE, "");
-    conditionSelections.emplace_back(conditionF, "");
-    conditionSelections.emplace_back(conditionG, "");
-    conditionSelections.emplace_back(conditionH, "");
-    conditionSelections.emplace_back(conditionI, "");
-    conditionSelections.emplace_back(conditionJ, "");
+    conditionSelections.emplace_back(
+        conditionA, resourcePath("NoMask_AO", "txt"));
+    conditionSelections.emplace_back(
+        conditionB, resourcePath("NoMask_AV", "txt"));
+    conditionSelections.emplace_back(
+        conditionC, resourcePath("ClearMask_AO", "txt"));
+    conditionSelections.emplace_back(
+        conditionD, resourcePath("ClearMask_AV", "txt"));
+    conditionSelections.emplace_back(
+        conditionE, resourcePath("CommunicatorMask_AO", "txt"));
+    conditionSelections.emplace_back(
+        conditionF, resourcePath("CommunicatorMask_AV", "txt"));
+    conditionSelections.emplace_back(
+        conditionG, resourcePath("FabricMask_AO", "txt"));
+    conditionSelections.emplace_back(
+        conditionH, resourcePath("FabricMask_AV", "txt"));
+    conditionSelections.emplace_back(
+        conditionI, resourcePath("HospitalMask_AO", "txt"));
+    conditionSelections.emplace_back(
+        conditionJ, resourcePath("HospitalMask_AV", "txt"));
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
