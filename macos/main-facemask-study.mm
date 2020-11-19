@@ -196,61 +196,61 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     logo.layer.backgroundColor = NSColor.whiteColor.CGColor;
     const auto conditionA {
         [NSButton
-            radioButtonWithTitle:nsString("A = No mask AUDIO ONLY")
+            radioButtonWithTitle:nsString("A")
                           target:actions
                           action:@selector(notifyThatRadioButtonHasBeenClicked)]
     };
     const auto conditionB {
         [NSButton
-            radioButtonWithTitle:nsString("B = No mask AV")
+            radioButtonWithTitle:nsString("B")
                           target:actions
                           action:@selector(notifyThatRadioButtonHasBeenClicked)]
     };
     const auto conditionC {
         [NSButton
-            radioButtonWithTitle:nsString("C = Clear Mask AO")
+            radioButtonWithTitle:nsString("C")
                           target:actions
                           action:@selector(notifyThatRadioButtonHasBeenClicked)]
     };
     const auto conditionD {
         [NSButton
-            radioButtonWithTitle:nsString("D = Clear mask AV")
+            radioButtonWithTitle:nsString("D")
                           target:actions
                           action:@selector(notifyThatRadioButtonHasBeenClicked)]
     };
     const auto conditionE {
         [NSButton
-            radioButtonWithTitle:nsString("E = Communicator AO")
+            radioButtonWithTitle:nsString("E")
                           target:actions
                           action:@selector(notifyThatRadioButtonHasBeenClicked)]
     };
     const auto conditionF {
         [NSButton
-            radioButtonWithTitle:nsString("F = Communicator AV")
+            radioButtonWithTitle:nsString("F")
                           target:actions
                           action:@selector(notifyThatRadioButtonHasBeenClicked)]
     };
     const auto conditionG {
         [NSButton
-            radioButtonWithTitle:nsString("G = Fabric mask AO")
+            radioButtonWithTitle:nsString("G")
                           target:actions
                           action:@selector(notifyThatRadioButtonHasBeenClicked)]
     };
     const auto conditionH {
         [NSButton
-            radioButtonWithTitle:nsString("H = Fabric mask AV")
+            radioButtonWithTitle:nsString("H")
                           target:actions
                           action:@selector(notifyThatRadioButtonHasBeenClicked)]
     };
     const auto conditionI {
         [NSButton
-            radioButtonWithTitle:nsString("I = Hospital mask AO")
+            radioButtonWithTitle:nsString("I")
                           target:actions
                           action:@selector(notifyThatRadioButtonHasBeenClicked)]
     };
     const auto conditionJ {
         [NSButton
-            radioButtonWithTitle:nsString("J = Hospital mask AV")
+            radioButtonWithTitle:nsString("J")
                           target:actions
                           action:@selector(notifyThatRadioButtonHasBeenClicked)]
     };
