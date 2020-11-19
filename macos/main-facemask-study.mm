@@ -183,6 +183,46 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     logo.imageScaling = NSImageScaleProportionallyDown;
     logo.wantsLayer = YES;
     logo.layer.backgroundColor = NSColor.whiteColor.CGColor;
+    const auto conditionA{
+        [NSButton radioButtonWithTitle:nsString("A = No mask AUDIO ONLY")
+                                target:actions
+                                action:nil]};
+    const auto conditionB{
+        [NSButton radioButtonWithTitle:nsString("B = No mask AV")
+                                target:actions
+                                action:nil]};
+    const auto conditionC{
+        [NSButton radioButtonWithTitle:nsString("C = Clear Mask AO")
+                                target:actions
+                                action:nil]};
+    const auto conditionD{
+        [NSButton radioButtonWithTitle:nsString("D = Clear mask AV")
+                                target:actions
+                                action:nil]};
+    const auto conditionE{
+        [NSButton radioButtonWithTitle:nsString("E = Communicator AO")
+                                target:actions
+                                action:nil]};
+    const auto conditionF{
+        [NSButton radioButtonWithTitle:nsString("F = Communicator AV")
+                                target:actions
+                                action:nil]};
+    const auto conditionG{
+        [NSButton radioButtonWithTitle:nsString("G = Fabric mask AO")
+                                target:actions
+                                action:nil]};
+    const auto conditionH{
+        [NSButton radioButtonWithTitle:nsString("H = Fabric mask AV")
+                                target:actions
+                                action:nil]};
+    const auto conditionI{
+        [NSButton radioButtonWithTitle:nsString("I = Hospital mask AO")
+                                target:actions
+                                action:nil]};
+    const auto conditionJ{
+        [NSButton radioButtonWithTitle:nsString("J = Hospital mask AV")
+                                target:actions
+                                action:nil]};
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
