@@ -30,7 +30,6 @@ class FacemaskStudySetupView : public TestSetupUI {
     void notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
 
   private:
-    NSTextField *testSettingsField;
     NSTextField *subjectIdField;
     FacemaskStudySetupViewActions *actions;
     Observer *listener_{};
@@ -138,8 +137,7 @@ static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
 }
 
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
-    : testSettingsField{[NSTextField textFieldWithString:@""]},
-      subjectIdField{[NSTextField textFieldWithString:@""]},
+    : subjectIdField{[NSTextField textFieldWithString:@""]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
                                                                  controller} {
     actions->controller = this;
@@ -192,10 +190,6 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             confirmButton
         ])
     };
-    [testSettingsField setFont:[NSFont systemFontOfSize:30]];
-    [testSettingsField setTextColor:NSColor.blackColor];
-    testSettingsField.wantsLayer = YES;
-    testSettingsField.layer.backgroundColor = NSColor.whiteColor.CGColor;
     [subjectIdField setFont:[NSFont systemFontOfSize:30]];
     [subjectIdField setTextColor:NSColor.blackColor];
     subjectIdField.wantsLayer = YES;
@@ -246,13 +240,9 @@ void FacemaskStudySetupView::hide() {
     [controller.view.window orderOut:nil];
 }
 
-auto FacemaskStudySetupView::testSettingsFile() -> std::string {
-    return testSettingsField.stringValue.UTF8String;
-}
+auto FacemaskStudySetupView::testSettingsFile() -> std::string { return {}; }
 
-void FacemaskStudySetupView::setTestSettingsFile(std::string s) {
-    [testSettingsField setStringValue:nsString(s)];
-}
+void FacemaskStudySetupView::setTestSettingsFile(std::string) {}
 
 void FacemaskStudySetupView::attach(Observer *e) { listener_ = e; }
 
@@ -269,7 +259,6 @@ void FacemaskStudySetupView::
     notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() {
     listener_->notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
 }
-
 }
 
 int main() {
