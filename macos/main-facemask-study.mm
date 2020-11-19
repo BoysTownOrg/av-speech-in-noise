@@ -26,7 +26,6 @@ class FacemaskStudySetupView : public TestSetupUI {
     auto rmeSetting() -> std::string override { return {}; }
     auto transducer() -> std::string override { return {}; }
     void notifyThatConfirmButtonHasBeenClicked();
-    void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
     void notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked();
     void notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
 
@@ -56,10 +55,6 @@ class FacemaskStudySetupViewFactory : public MacOsTestSetupViewFactory {
 
 - (void)notifyThatConfirmButtonHasBeenClicked {
     controller->notifyThatConfirmButtonHasBeenClicked();
-}
-
-- (void)notifyThatBrowseForTestSettingsButtonHasBeenClicked {
-    controller->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
 }
 
 - (void)notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked {
@@ -159,10 +154,6 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                                    NSForegroundColorAttributeName, nil]]]};
     const auto instructionsLabel{
         labelWithAttributedString("Click browse to choose the session file.")};
-    const auto browseForTestSettingsButton {
-        button("", actions,
-            @selector(notifyThatBrowseForTestSettingsButtonHasBeenClicked))
-    };
     const auto confirmButton {
         button("", actions, @selector(notifyThatConfirmButtonHasBeenClicked))
     };
@@ -175,8 +166,6 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             @selector
             (notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked))
     };
-
-    setAttributedTitle(browseForTestSettingsButton, "Browse");
     setAttributedTitle(confirmButton, "START");
     confirmButton.wantsLayer = YES;
     confirmButton.bordered = NO;
@@ -186,31 +175,21 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                                                              blue:77. / 255
                                                             alpha:1]
                                                 .CGColor];
-    browseForTestSettingsButton.wantsLayer = YES;
-    browseForTestSettingsButton.bordered = NO;
-    browseForTestSettingsButton.layer.cornerRadius = 8.0;
-    [browseForTestSettingsButton.layer
-        setBackgroundColor:[NSColor colorWithRed:247. / 255
-                                           green:191. / 255
-                                            blue:44. / 255
-                                           alpha:1]
-                               .CGColor];
     [controller.view.window setBackgroundColor:[NSColor colorWithRed:43. / 255
                                                                green:97. / 255
                                                                 blue:198. / 255
                                                                alpha:1]];
 
-    const auto logo{
-        [NSImageView imageViewWithImage:[NSImage imageNamed:@"btnrh.png"]]};
+    const auto logoImage{[NSImage imageNamed:@"btnrh.png"]};
+    const auto logo{[NSImageView imageViewWithImage:logoImage]};
     logo.imageScaling = NSImageScaleProportionallyDown;
     logo.wantsLayer = YES;
     logo.layer.backgroundColor = NSColor.whiteColor.CGColor;
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
-            instructionsLabel, browseForTestSettingsButton,
-            labeledView(testSettingsField, "Session file:"),
-            labeledView(subjectIdField, "Subject ID:"), confirmButton
+            instructionsLabel, labeledView(subjectIdField, "Subject ID:"),
+            confirmButton
         ])
     };
     [testSettingsField setFont:[NSFont systemFontOfSize:30]];
@@ -250,14 +229,8 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
         [playCalibrationButtonsStack.bottomAnchor
             constraintEqualToAnchor:controller.view.bottomAnchor
                            constant:-8],
-        [browseForTestSettingsButton.widthAnchor
-            constraintEqualToConstant:1.4 *
-            browseForTestSettingsButton.attributedTitle.size.width],
         [confirmButton.widthAnchor constraintEqualToConstant:1.4 *
                                    confirmButton.attributedTitle.size.width],
-        [browseForTestSettingsButton.heightAnchor
-            constraintEqualToConstant:1.5 *
-            browseForTestSettingsButton.attributedTitle.size.height],
         [confirmButton.heightAnchor constraintEqualToConstant:1.5 *
                                     confirmButton.attributedTitle.size.height]
     ]];
@@ -285,11 +258,6 @@ void FacemaskStudySetupView::attach(Observer *e) { listener_ = e; }
 
 void FacemaskStudySetupView::notifyThatConfirmButtonHasBeenClicked() {
     listener_->notifyThatConfirmButtonHasBeenClicked();
-}
-
-void FacemaskStudySetupView::
-    notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
-    listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
 }
 
 void FacemaskStudySetupView::
