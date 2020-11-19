@@ -2,12 +2,19 @@
 #include "MacOsTestSetupViewFactory.h"
 #include "common-objc.h"
 #include <presentation/SessionControllerImpl.hpp>
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 #include <string>
+#include <vector>
+#include <algorithm>
 
 @class FacemaskStudySetupViewActions;
 
 namespace av_speech_in_noise {
+struct ConditionSelection {
+    NSButton *button;
+    std::string filePath;
+};
+
 class FacemaskStudySetupView : public TestSetupUI {
   public:
     explicit FacemaskStudySetupView(NSViewController *);
@@ -30,6 +37,7 @@ class FacemaskStudySetupView : public TestSetupUI {
     void notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
 
   private:
+    std::vector<ConditionSelection> conditionSelections;
     NSTextField *subjectIdField;
     FacemaskStudySetupViewActions *actions;
     Observer *listener_{};
@@ -252,6 +260,16 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             conditionF, conditionG, conditionH, conditionI, conditionJ
         ])
     };
+    conditionSelections.emplace_back(conditionA, "");
+    conditionSelections.emplace_back(conditionB, "");
+    conditionSelections.emplace_back(conditionC, "");
+    conditionSelections.emplace_back(conditionD, "");
+    conditionSelections.emplace_back(conditionE, "");
+    conditionSelections.emplace_back(conditionF, "");
+    conditionSelections.emplace_back(conditionG, "");
+    conditionSelections.emplace_back(conditionH, "");
+    conditionSelections.emplace_back(conditionI, "");
+    conditionSelections.emplace_back(conditionJ, "");
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
@@ -329,7 +347,13 @@ void FacemaskStudySetupView::hide() {
     [controller.view.window orderOut:nil];
 }
 
-auto FacemaskStudySetupView::testSettingsFile() -> std::string { return {}; }
+auto FacemaskStudySetupView::testSettingsFile() -> std::string {
+    auto found{std::find_if(conditionSelections.begin(),
+        conditionSelections.end(), [](const ConditionSelection &selection) {
+            return selection.button.state == NSControlStateValueOn;
+        })};
+    return found != conditionSelections.end() ? found->filePath : "";
+}
 
 void FacemaskStudySetupView::setTestSettingsFile(std::string) {}
 
