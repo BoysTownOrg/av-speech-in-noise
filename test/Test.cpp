@@ -296,42 +296,59 @@ class DecliningContinuingTesting : public ControllerUseCase {
     TestControlStub &control;
 };
 
+class NotifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd
+    : public ControllerUseCase {
+  public:
+    explicit NotifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd(
+        TestControllerImpl &controller)
+        : controller{controller} {}
+
+    void run() override {
+        controller
+            .notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd();
+    }
+
+  private:
+    TestControllerImpl &controller;
+};
+
 class NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
     : public ControllerUseCase {
   public:
     explicit NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
-        TestControllerImpl &responder)
-        : responder{responder} {}
+        TestControllerImpl &controller)
+        : controller{controller} {}
 
     void run() override {
         notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
-            responder);
+            controller);
     }
 
   private:
-    TestControllerImpl &responder;
+    TestControllerImpl &controller;
 };
 
 class NotifyingThatUserIsDoneResponding : public ControllerUseCase {
   public:
-    explicit NotifyingThatUserIsDoneResponding(TestControllerImpl &responder)
-        : responder{responder} {}
+    explicit NotifyingThatUserIsDoneResponding(TestControllerImpl &controller)
+        : controller{controller} {}
 
-    void run() override { responder.notifyThatUserIsDoneResponding(); }
+    void run() override { controller.notifyThatUserIsDoneResponding(); }
 
   private:
-    TestControllerImpl &responder;
+    TestControllerImpl &controller;
 };
 
 class NotifyingThatUserIsReadyForNextTrial : public ControllerUseCase {
   public:
-    explicit NotifyingThatUserIsReadyForNextTrial(TestControllerImpl &responder)
-        : responder{responder} {}
+    explicit NotifyingThatUserIsReadyForNextTrial(
+        TestControllerImpl &controller)
+        : controller{controller} {}
 
-    void run() override { responder.notifyThatUserIsReadyForNextTrial(); }
+    void run() override { controller.notifyThatUserIsReadyForNextTrial(); }
 
   private:
-    TestControllerImpl &responder;
+    TestControllerImpl &controller;
 };
 
 class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
@@ -372,6 +389,9 @@ class TestControllerTests : public ::testing::Test {
     DecliningContinuingTesting decliningContinuingTesting{control};
     AcceptingContinuingTesting acceptingContinuingTesting{control};
     ExitingTest exitingTest{control};
+    NotifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd
+        notifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd{
+            controller};
     NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion{
             controller};
@@ -466,27 +486,25 @@ class TestPresenterTests : public ::testing::Test {
 
 #define TEST_PRESENTER_TEST(a) TEST_F(TestPresenterTests, a)
 
-TEST_CONTROLLER_TEST(
-    responderNotifiesThatTestIsCompleteAfterExitTestButtonClicked) {
+TEST_CONTROLLER_TEST(notifiesThatTestIsCompleteAfterExitTestButtonClicked) {
     exitTest(control);
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
 }
 
 TEST_CONTROLLER_TEST(
-    responderNotifiesThatTestIsCompleteAfterContinueTestingDialogIsDeclined) {
+    notifiesThatTestIsCompleteAfterContinueTestingDialogIsDeclined) {
     declineContinuingTesting(control);
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
 }
 
-TEST_CONTROLLER_TEST(
-    responderNotifiesThatTestIsCompleteAfterUserIsDoneResponding) {
+TEST_CONTROLLER_TEST(notifiesThatTestIsCompleteAfterUserIsDoneResponding) {
     setTestComplete(model);
     controller.notifyThatUserIsDoneResponding();
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
 }
 
 TEST_CONTROLLER_TEST(
-    responderNotifiesThatTestIsCompleteAfterNotifyingThatUserIsReadyForNextTrial) {
+    notifiesThatTestIsCompleteAfterNotifyingThatUserIsReadyForNextTrial) {
     setTestComplete(model);
     controller.notifyThatUserIsReadyForNextTrial();
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
@@ -507,15 +525,14 @@ TEST_CONTROLLER_TEST(
         std::string{"a"}, model.trialParameters().audioDevice);
 }
 
-TEST_CONTROLLER_TEST(
-    responderNotifiesThatTrialHasStartedAfterPlayTrialButtonClicked) {
+TEST_CONTROLLER_TEST(notifiesThatTrialHasStartedAfterPlayTrialButtonClicked) {
     playTrial(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterControllerListener.notifiedThatTrialHasStarted());
 }
 
 TEST_CONTROLLER_TEST(
-    responderNotifiesThatTrialHasStartedAfterNotifyingThatUserIsReadyForNextTrial) {
+    notifiesThatTrialHasStartedAfterNotifyingThatUserIsReadyForNextTrial) {
     controller.notifyThatUserIsReadyForNextTrial();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterControllerListener.notifiedThatTrialHasStarted());
@@ -529,19 +546,26 @@ TEST_CONTROLLER_TEST(
 }
 
 TEST_CONTROLLER_TEST(
-    responderNotifiesThatNextTrialIsReadyAfterContinueTestingDialogIsAccepted) {
+    notifiesThatNextTrialIsReadyAfterContinueTestingDialogIsAccepted) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
         acceptingContinuingTesting, experimenterControllerListener);
 }
 
 TEST_CONTROLLER_TEST(
-    responderNotifiesThatNextTrialIsReadyAfterNotifyingThatUserIsDoneResponding) {
+    notifiesThatNextTrialIsReadyAfterNotifyingThatUserIsDoneResponding) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
         notifyingThatUserIsDoneResponding, experimenterControllerListener);
 }
 
 TEST_CONTROLLER_TEST(
-    responderNotifiesThatNextTrialIsReadyAfterNotShowingContinueTestingDialogWithResults) {
+    notifiesThatNextTrialIsReadyAfterNotShowingCongratulations) {
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
+        notifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd,
+        experimenterControllerListener);
+}
+
+TEST_CONTROLLER_TEST(
+    notifiesThatNextTrialIsReadyAfterNotShowingContinueTestingDialogWithResults) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
         experimenterControllerListener);

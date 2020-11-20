@@ -79,6 +79,11 @@ void TestControllerImpl::
     });
 }
 
+void TestControllerImpl::
+    notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd() {
+    readyNextTrialIfTestIncompleteElse(model, observer, [&] {});
+}
+
 void TestControllerImpl::notifyThatUserIsDoneResponding() {
     notifyIfTestIsCompleteElse(
         model, controller, [&]() { readyNextTrial(model, observer); });
