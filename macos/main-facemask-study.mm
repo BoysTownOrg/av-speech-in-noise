@@ -210,86 +210,76 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     logo.imageScaling = NSImageScaleProportionallyDown;
     logo.wantsLayer = YES;
     logo.layer.backgroundColor = NSColor.whiteColor.CGColor;
-    const auto conditionA {
-        [NSButton
-            radioButtonWithTitle:nsString("A")
-                          target:actions
-                          action:@selector(notifyThatRadioButtonHasBeenClicked)]
-    };
-    const auto conditionB {
-        [NSButton
-            radioButtonWithTitle:nsString("B")
-                          target:actions
-                          action:@selector(notifyThatRadioButtonHasBeenClicked)]
-    };
-    const auto conditionC {
-        [NSButton
-            radioButtonWithTitle:nsString("C")
-                          target:actions
-                          action:@selector(notifyThatRadioButtonHasBeenClicked)]
-    };
-    const auto conditionD {
-        [NSButton
-            radioButtonWithTitle:nsString("D")
-                          target:actions
-                          action:@selector(notifyThatRadioButtonHasBeenClicked)]
-    };
-    const auto conditionE {
-        [NSButton
-            radioButtonWithTitle:nsString("E")
-                          target:actions
-                          action:@selector(notifyThatRadioButtonHasBeenClicked)]
-    };
-    const auto conditionF {
-        [NSButton
-            radioButtonWithTitle:nsString("F")
-                          target:actions
-                          action:@selector(notifyThatRadioButtonHasBeenClicked)]
-    };
-    const auto conditionG {
-        [NSButton
-            radioButtonWithTitle:nsString("G")
-                          target:actions
-                          action:@selector(notifyThatRadioButtonHasBeenClicked)]
-    };
-    const auto conditionH {
-        [NSButton
-            radioButtonWithTitle:nsString("H")
-                          target:actions
-                          action:@selector(notifyThatRadioButtonHasBeenClicked)]
-    };
-    const auto conditionI {
-        [NSButton
-            radioButtonWithTitle:nsString("I")
-                          target:actions
-                          action:@selector(notifyThatRadioButtonHasBeenClicked)]
-    };
-    const auto conditionJ {
-        [NSButton
-            radioButtonWithTitle:nsString("J")
-                          target:actions
-                          action:@selector(notifyThatRadioButtonHasBeenClicked)]
-    };
-    conditionSelections.push_back(
-        ConditionSelection{conditionA, resourcePath("NoMask_AO", "txt")});
-    conditionSelections.push_back(
-        ConditionSelection{conditionB, resourcePath("NoMask_AV", "txt")});
-    conditionSelections.push_back(
-        ConditionSelection{conditionC, resourcePath("ClearMask_AO", "txt")});
-    conditionSelections.push_back(
-        ConditionSelection{conditionD, resourcePath("ClearMask_AV", "txt")});
-    conditionSelections.push_back(ConditionSelection{
-        conditionE, resourcePath("CommunicatorMask_AO", "txt")});
-    conditionSelections.push_back(ConditionSelection{
-        conditionF, resourcePath("CommunicatorMask_AV", "txt")});
-    conditionSelections.push_back(
-        ConditionSelection{conditionG, resourcePath("FabricMask_AO", "txt")});
-    conditionSelections.push_back(
-        ConditionSelection{conditionH, resourcePath("FabricMask_AV", "txt")});
-    conditionSelections.push_back(
-        ConditionSelection{conditionI, resourcePath("HospitalMask_AO", "txt")});
-    conditionSelections.push_back(
-        ConditionSelection{conditionJ, resourcePath("HospitalMask_AV", "txt")});
+    conditionSelections.push_back(ConditionSelection {
+        [NSButton radioButtonWithTitle:nsString("A")
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourcePath("NoMask_AO", "txt")
+    });
+    conditionSelections.push_back(ConditionSelection {
+        [NSButton radioButtonWithTitle:nsString("B")
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourcePath("NoMask_AV", "txt")
+    });
+    conditionSelections.push_back(ConditionSelection {
+        [NSButton radioButtonWithTitle:nsString("C")
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourcePath("ClearMask_AO", "txt")
+    });
+    conditionSelections.push_back(ConditionSelection {
+        [NSButton radioButtonWithTitle:nsString("D")
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourcePath("ClearMask_AV", "txt")
+    });
+    conditionSelections.push_back(ConditionSelection {
+        [NSButton radioButtonWithTitle:nsString("E")
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourcePath("CommunicatorMask_AO", "txt")
+    });
+    conditionSelections.push_back(ConditionSelection {
+        [NSButton radioButtonWithTitle:nsString("F")
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourcePath("CommunicatorMask_AV", "txt")
+    });
+    conditionSelections.push_back(ConditionSelection {
+        [NSButton radioButtonWithTitle:nsString("G")
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourcePath("FabricMask_AO", "txt")
+    });
+    conditionSelections.push_back(ConditionSelection {
+        [NSButton radioButtonWithTitle:nsString("H")
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourcePath("FabricMask_AV", "txt")
+    });
+    conditionSelections.push_back(ConditionSelection {
+        [NSButton radioButtonWithTitle:nsString("I")
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourcePath("HospitalMask_AO", "txt")
+    });
+    conditionSelections.push_back(ConditionSelection {
+        [NSButton radioButtonWithTitle:nsString("J")
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourcePath("HospitalMask_AV", "txt")
+    });
     const auto conditionRadioButtons{
         verticalStackView(nsButtonArray(conditionSelections))};
     const auto layoutStack {
@@ -314,6 +304,11 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     };
     addAutolayoutEnabledSubview(controller.view, layoutStack);
     addAutolayoutEnabledSubview(controller.view, playCalibrationButtonsStack);
+    for (const auto &x : conditionSelections)
+        [NSLayoutConstraint activateConstraints:@[
+            [conditionSelections.front().button.leadingAnchor
+                constraintEqualToAnchor:x.button.leadingAnchor],
+        ]];
     [NSLayoutConstraint activateConstraints:@[
         [layoutStack.topAnchor constraintEqualToAnchor:controller.view.topAnchor
                                               constant:8],
@@ -326,26 +321,6 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
         [layoutStack.trailingAnchor
             constraintEqualToAnchor:controller.view.trailingAnchor
                            constant:-8],
-        [conditionA.leadingAnchor
-            constraintEqualToAnchor:conditionA.leadingAnchor],
-        [conditionA.leadingAnchor
-            constraintEqualToAnchor:conditionB.leadingAnchor],
-        [conditionA.leadingAnchor
-            constraintEqualToAnchor:conditionC.leadingAnchor],
-        [conditionA.leadingAnchor
-            constraintEqualToAnchor:conditionD.leadingAnchor],
-        [conditionA.leadingAnchor
-            constraintEqualToAnchor:conditionE.leadingAnchor],
-        [conditionA.leadingAnchor
-            constraintEqualToAnchor:conditionF.leadingAnchor],
-        [conditionA.leadingAnchor
-            constraintEqualToAnchor:conditionG.leadingAnchor],
-        [conditionA.leadingAnchor
-            constraintEqualToAnchor:conditionH.leadingAnchor],
-        [conditionA.leadingAnchor
-            constraintEqualToAnchor:conditionI.leadingAnchor],
-        [conditionA.leadingAnchor
-            constraintEqualToAnchor:conditionJ.leadingAnchor],
         [playCalibrationButtonsStack.trailingAnchor
             constraintEqualToAnchor:controller.view.trailingAnchor
                            constant:-8],
