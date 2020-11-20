@@ -51,9 +51,14 @@ static void notifyThatUserIsReadyForNextTrial(TestController *c) {
     c->notifyThatUserIsReadyForNextTrial();
 }
 
+static void notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd(
+    TestController *c) {
+    c->notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd();
+}
+
 void ConsonantTaskController::notifyThatReadyButtonHasBeenClicked() {
     observer->notifyThatTaskHasStarted();
-    notifyThatUserIsReadyForNextTrial(controller);
+    notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd(controller);
 }
 
 void ConsonantTaskController::notifyThatResponseButtonHasBeenClicked() {
