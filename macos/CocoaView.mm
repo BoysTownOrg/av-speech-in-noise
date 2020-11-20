@@ -788,6 +788,8 @@ void CocoaExperimenterView::secondaryDisplay(std::string s) {
     set(secondaryTextField, s);
 }
 
+void CocoaExperimenterView::tellSubject(const std::string &) {}
+
 void CocoaExperimenterView::showNextTrialButton() {
     av_speech_in_noise::show(nextTrialButton);
 }
