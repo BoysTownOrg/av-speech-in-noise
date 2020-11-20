@@ -18,6 +18,7 @@ class TestPresenterStub : public TestPresenter {
     void showContinueTestingDialog() override {}
     void display(const std::string &) override {}
     void secondaryDisplay(const std::string &) override {}
+    void tellSubject(const std::string &) override {}
     void notifyThatNextTrialIsReady() override {}
     [[nodiscard]] auto started() const -> bool { return started_; }
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
