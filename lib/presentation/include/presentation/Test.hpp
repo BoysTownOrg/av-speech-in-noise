@@ -46,6 +46,7 @@ class TestController {
         virtual void display(const std::string &) = 0;
         virtual void secondaryDisplay(const std::string &) = 0;
         virtual void notifyThatNextTrialIsReady() = 0;
+        virtual void tellSubject(const std::string &) {}
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestController);
     virtual void attach(Observer *) = 0;

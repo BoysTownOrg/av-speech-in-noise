@@ -248,11 +248,14 @@ class TestControllerListenerStub : public TestController::Observer {
         displayedSecondary_ = s;
     }
     auto displayedSecondary() -> std::string { return displayedSecondary_; }
+    auto messageToSubject() -> std::string { return messageToSubject_; }
+    void tellSubject(const std::string &s) { messageToSubject_ = s; }
 
   private:
     std::string displayed_;
     std::string displayedSecondary_;
     std::string continueTestingDialogMessage_;
+    std::string messageToSubject_;
     bool notifiedThatTrialHasStarted_{};
     bool notifiedThatNextTrialIsReady_{};
     bool continueTestingDialogShown_{};
@@ -631,7 +634,7 @@ TEST_CONTROLLER_TEST(
         notifyingThatUserIsReadyForNextTrial, experimenterControllerListener);
 }
 
-TEST_CONTROLLER_TEST(responderShowsContinueTestingDialog) {
+TEST_CONTROLLER_TEST(showsContinueTestingDialog) {
     setTestComplete(model);
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
         controller);
@@ -639,7 +642,7 @@ TEST_CONTROLLER_TEST(responderShowsContinueTestingDialog) {
         experimenterControllerListener.continueTestingDialogShown());
 }
 
-TEST_CONTROLLER_TEST(responderShowsAdaptiveTestResults) {
+TEST_CONTROLLER_TEST(showsAdaptiveTestResults) {
     setTestComplete(model);
     model.setAdaptiveTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
@@ -649,84 +652,93 @@ TEST_CONTROLLER_TEST(responderShowsAdaptiveTestResults) {
         experimenterControllerListener.continueTestingDialogMessage());
 }
 
-TEST_PRESENTER_TEST(presenterShowsViewAfterStarting) {
+TEST_CONTROLLER_TEST(showsCongratulations) {
+    setTestComplete(model);
+    controller
+        .notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"Condition complete, great work!"},
+        experimenterControllerListener.messageToSubject());
+}
+
+TEST_PRESENTER_TEST(showsViewAfterStarting) {
     presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
 }
 
-TEST_PRESENTER_TEST(presenterHidesViewAfterStopping) {
+TEST_PRESENTER_TEST(hidesViewAfterStopping) {
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-TEST_PRESENTER_TEST(presenterHidesContinueTestingDialogAfterStopping) {
+TEST_PRESENTER_TEST(hidesContinueTestingDialogAfterStopping) {
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.continueTestingDialogHidden());
 }
 
-TEST_PRESENTER_TEST(presenterStopsTaskAfterStopping) {
+TEST_PRESENTER_TEST(stopsTaskAfterStopping) {
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.stopped());
 }
 
-TEST_PRESENTER_TEST(presenterHidesExitTestButtonAfterTrialStarts) {
+TEST_PRESENTER_TEST(hidesExitTestButtonAfterTrialStarts) {
     presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.exitTestButtonHidden());
 }
 
-TEST_PRESENTER_TEST(presenterHidesNextTrialButtonAfterTrialStarts) {
+TEST_PRESENTER_TEST(hidesNextTrialButtonAfterTrialStarts) {
     presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonHidden());
 }
 
-TEST_PRESENTER_TEST(presenterNotifiesTaskPresenterThatTrialHasStarted) {
+TEST_PRESENTER_TEST(notifiesTaskPresenterThatTrialHasStarted) {
     presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.notifiedThatTrialHasStarted());
 }
 
-TEST_PRESENTER_TEST(presenterShowsExitTestButtonWhenTrialCompletes) {
+TEST_PRESENTER_TEST(showsExitTestButtonWhenTrialCompletes) {
     model.completeTrial();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.exitTestButtonShown());
 }
 
-TEST_PRESENTER_TEST(presenterShowsTaskResponseSubmissionWhenTrialCompletes) {
+TEST_PRESENTER_TEST(showsTaskResponseSubmissionWhenTrialCompletes) {
     model.completeTrial();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionShown());
 }
 
-TEST_PRESENTER_TEST(presenterHidesContinueTestingDialogAfterNextTrialIsReady) {
+TEST_PRESENTER_TEST(hidesContinueTestingDialogAfterNextTrialIsReady) {
     presenter.notifyThatNextTrialIsReady();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.continueTestingDialogHidden());
 }
 
-TEST_PRESENTER_TEST(presenterShowsNextTrialButtonAfterNextTrialIsReady) {
+TEST_PRESENTER_TEST(showsNextTrialButtonAfterNextTrialIsReady) {
     presenter.notifyThatNextTrialIsReady();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonShown());
 }
 
-TEST_PRESENTER_TEST(presenterDisplaysMessage) {
+TEST_PRESENTER_TEST(displaysMessage) {
     presenter.display("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, view.displayed());
 }
 
-TEST_PRESENTER_TEST(presenterDisplaysSecondaryMessage) {
+TEST_PRESENTER_TEST(displaysSecondaryMessage) {
     presenter.secondaryDisplay("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.secondaryDisplayed());
 }
 
-TEST_PRESENTER_TEST(presenterShowsContinueTestingDialog) {
+TEST_PRESENTER_TEST(showsContinueTestingDialog) {
     presenter.showContinueTestingDialog();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.continueTestingDialogShown());
 }
 
-TEST_PRESENTER_TEST(presenterSetsContinueTestingDialogMessage) {
+TEST_PRESENTER_TEST(setsContinueTestingDialogMessage) {
     presenter.setContinueTestingDialogMessage("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.continueTestingDialogMessage());
 }
 
-TEST_PRESENTER_TEST(presenterStartsTaskPresenterWhenInitializing) {
+TEST_PRESENTER_TEST(startsTaskPresenterWhenInitializing) {
     presenter.initialize(Method::unknown);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.started());
 }
@@ -838,13 +850,13 @@ TEST_PRESENTER_TEST(
         passFailPresenter);
 }
 
-TEST_PRESENTER_TEST(presenterDisplaysTrialNumberWhenInitializing) {
+TEST_PRESENTER_TEST(displaysTrialNumberWhenInitializing) {
     model.setTrialNumber(1);
     presenter.initialize(Method::unknown);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"Trial 1"}, view.displayed());
 }
 
-TEST_PRESENTER_TEST(presenterDisplaysTargetWhenInitializing) {
+TEST_PRESENTER_TEST(displaysTargetWhenInitializing) {
     model.setTargetFileName("a");
     presenter.initialize(Method::unknown);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(

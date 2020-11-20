@@ -81,7 +81,8 @@ void TestControllerImpl::
 
 void TestControllerImpl::
     notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd() {
-    readyNextTrialIfTestIncompleteElse(model, observer, [&] {});
+    readyNextTrialIfTestIncompleteElse(model, observer,
+        [&] { observer->tellSubject("Condition complete, great work!"); });
 }
 
 void TestControllerImpl::notifyThatUserIsDoneResponding() {
@@ -196,4 +197,6 @@ auto TestPresenterImpl::taskPresenter(Method m) -> TaskPresenter * {
         return correctKeywordsPresenter;
     return passFailPresenter;
 }
+
+void TestPresenterImpl::tellSubject(const std::string &) {}
 }

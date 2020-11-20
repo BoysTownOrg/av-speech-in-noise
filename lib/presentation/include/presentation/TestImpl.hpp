@@ -84,6 +84,7 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
     void showContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &s) override;
     void initialize(Method) override;
+    void tellSubject(const std::string &) override;
 
   private:
     auto taskPresenter(Method m) -> TaskPresenter *;
