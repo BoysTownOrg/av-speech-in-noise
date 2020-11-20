@@ -8,13 +8,14 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
+#include <sstream>
 
 @class FacemaskStudySetupViewActions;
 
 namespace av_speech_in_noise {
 struct ConditionSelection {
     NSButton *button;
-    std::string filePath;
+    LocalUrl url;
 };
 
 class FacemaskStudySetupView : public TestSetupUI {
@@ -165,25 +166,24 @@ static auto nsButtonArray(const std::vector<ConditionSelection> &v)
     return [NSArray arrayWithObjects:&buttons.front() count:buttons.size()];
 }
 
-static auto readContents(const std::string &resourcePath) -> std::string {
-    std::ifstream file{resourcePath};
+static auto readContents(const LocalUrl &resourceUrl) -> std::string {
+    std::ifstream file{resourceUrl.path};
     std::stringstream stream;
     stream << file.rdbuf();
     return stream.str();
 }
 
-static auto meta(const std::string &resourcePath) -> std::string {
-    return TestSettingsInterpreterImpl::meta(readContents(resourcePath));
+static auto meta(const LocalUrl &resourceUrl) -> std::string {
+    return TestSettingsInterpreterImpl::meta(readContents(resourceUrl));
 }
 
 static void push_back(std::vector<ConditionSelection> &conditionSelections,
     FacemaskStudySetupViewActions *actions, const std::string &stem) {
     conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle:nsString(meta(resourcePath(stem, "txt")))
-                                target:actions
-                                action:@selector
-                                (notifyThatRadioButtonHasBeenClicked)],
-            resourcePath(stem, "txt")
+        [NSButton radioButtonWithTitle : nsString(
+            meta(LocalUrl{resourcePath(stem, "txt")})) target : actions action :
+            @selector(notifyThatRadioButtonHasBeenClicked)],
+            LocalUrl { resourcePath(stem, "txt") }
     });
 }
 
@@ -311,7 +311,7 @@ auto FacemaskStudySetupView::testSettingsFile() -> std::string {
         conditionSelections.end(), [](const ConditionSelection &selection) {
             return selection.button.state == NSControlStateValueOn;
         })};
-    return found != conditionSelections.end() ? found->filePath : "";
+    return found != conditionSelections.end() ? found->url.path : "";
 }
 
 void FacemaskStudySetupView::setTestSettingsFile(std::string) {}
