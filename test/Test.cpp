@@ -577,9 +577,15 @@ TEST_CONTROLLER_TEST(responderDisplaysTargetAfterUserIsDoneResponding) {
 }
 
 TEST_CONTROLLER_TEST(
-    responderDisplaysTargetFileNameAfterNotShowingContinueTestingDialogWithResults) {
+    displaysTargetFileNameAfterNotShowingContinueTestingDialogWithResults) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
+        experimenterControllerListener);
+}
+
+TEST_CONTROLLER_TEST(displaysTargetFileNameAfterNotShowingCongratulations) {
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
+        notifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd,
         experimenterControllerListener);
 }
 
