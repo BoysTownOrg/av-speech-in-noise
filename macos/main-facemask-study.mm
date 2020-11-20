@@ -2,10 +2,12 @@
 #include "MacOsTestSetupViewFactory.h"
 #include "common-objc.h"
 #include <presentation/SessionControllerImpl.hpp>
+#include <presentation/TestSettingsInterpreter.hpp>
 #import <AppKit/AppKit.h>
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 
 @class FacemaskStudySetupViewActions;
 
@@ -163,24 +165,21 @@ static auto nsButtonArray(const std::vector<ConditionSelection> &v)
     return [NSArray arrayWithObjects:&buttons.front() count:buttons.size()];
 }
 
-static auto meta(const std::string &resourcePath) -> std::string { return {}; }
+static auto readContents(const std::string &resourcePath) -> std::string {
+    std::ifstream file{resourcePath};
+    std::stringstream stream;
+    stream << file.rdbuf();
+    return stream.str();
+}
+
+static auto meta(const std::string &resourcePath) -> std::string {
+    return TestSettingsInterpreterImpl::meta(readContents(resourcePath));
+}
 
 static void push_back(std::vector<ConditionSelection> &conditionSelections,
     FacemaskStudySetupViewActions *actions, const std::string &stem) {
     conditionSelections.push_back(ConditionSelection {
         [NSButton radioButtonWithTitle:nsString(meta(resourcePath(stem, "txt")))
-                                target:actions
-                                action:@selector
-                                (notifyThatRadioButtonHasBeenClicked)],
-            resourcePath(stem, "txt")
-    });
-}
-
-static void push_back(std::vector<ConditionSelection> &conditionSelections,
-    FacemaskStudySetupViewActions *actions, const std::string &title,
-    const std::string &stem) {
-    conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle:nsString(title)
                                 target:actions
                                 action:@selector
                                 (notifyThatRadioButtonHasBeenClicked)],
@@ -235,16 +234,16 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     logo.imageScaling = NSImageScaleProportionallyDown;
     logo.wantsLayer = YES;
     logo.layer.backgroundColor = NSColor.whiteColor.CGColor;
-    push_back(conditionSelections, actions, "A", "NoMask_AO");
-    push_back(conditionSelections, actions, "B", "NoMask_AV");
-    push_back(conditionSelections, actions, "C", "ClearMask_AO");
-    push_back(conditionSelections, actions, "D", "ClearMask_AV");
-    push_back(conditionSelections, actions, "E", "CommunicatorMask_AO");
-    push_back(conditionSelections, actions, "F", "CommunicatorMask_AV");
-    push_back(conditionSelections, actions, "G", "FabricMask_AO");
-    push_back(conditionSelections, actions, "H", "FabricMask_AV");
-    push_back(conditionSelections, actions, "I", "HospitalMask_AO");
-    push_back(conditionSelections, actions, "J", "HospitalMask_AV");
+    push_back(conditionSelections, actions, "NoMask_AO");
+    push_back(conditionSelections, actions, "NoMask_AV");
+    push_back(conditionSelections, actions, "ClearMask_AO");
+    push_back(conditionSelections, actions, "ClearMask_AV");
+    push_back(conditionSelections, actions, "CommunicatorMask_AO");
+    push_back(conditionSelections, actions, "CommunicatorMask_AV");
+    push_back(conditionSelections, actions, "FabricMask_AO");
+    push_back(conditionSelections, actions, "FabricMask_AV");
+    push_back(conditionSelections, actions, "HospitalMask_AO");
+    push_back(conditionSelections, actions, "HospitalMask_AV");
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
