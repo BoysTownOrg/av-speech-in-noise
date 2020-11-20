@@ -84,20 +84,20 @@ auto generateFileName(OutputFilePathImpl &path, const TestIdentity &identity)
     return path.generateFileName(identity);
 }
 
+void setHomeDirectory(FileSystemPathStub &systemPath, std::string s) {
+    systemPath.setHomeDirectory(std::move(s));
+}
+
+void setRelativeOutputDirectory(OutputFilePathImpl &path, std::string s) {
+    path.setRelativeOutputDirectory(std::move(s));
+}
+
 class OutputFilePathTests : public ::testing::Test {
   protected:
     TimeStampStub timeStamp;
     FileSystemPathStub systemPath;
     OutputFilePathImpl path{timeStamp, systemPath};
     TestIdentity identity{};
-
-    void setHomeDirectory(std::string s) {
-        systemPath.setHomeDirectory(std::move(s));
-    }
-
-    void setRelativeOutputDirectory(std::string s) {
-        path.setRelativeOutputDirectory(std::move(s));
-    }
 };
 
 TEST_F(OutputFilePathTests, generateFileNameFormatsTestInformationAndTime) {
@@ -121,14 +121,14 @@ TEST_F(OutputFilePathTests, generateFileNameCapturesTimePriorToQueries) {
 }
 
 TEST_F(OutputFilePathTests, outputDirectoryReturnsFullPath) {
-    setHomeDirectory("a");
-    setRelativeOutputDirectory("b");
+    setHomeDirectory(systemPath, "a");
+    setRelativeOutputDirectory(path, "b");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a/b"}, path.outputDirectory());
 }
 
 TEST_F(OutputFilePathTests, setRelativeOutputDirectoryCreatesDirectory) {
-    setHomeDirectory("a");
-    setRelativeOutputDirectory("b");
+    setHomeDirectory(systemPath, "a");
+    setRelativeOutputDirectory(path, "b");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a/b"}, systemPath.directoryCreated());
 }
