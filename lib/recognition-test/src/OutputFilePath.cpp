@@ -3,8 +3,8 @@
 
 namespace av_speech_in_noise {
 OutputFilePathImpl::OutputFilePathImpl(
-    TimeStamp &timeStamp, FileSystemPath &systemPath)
-    : outputFileName{timeStamp}, systemPath{systemPath} {}
+    IOutputFileName &outputFileName, FileSystemPath &systemPath)
+    : outputFileName{outputFileName}, systemPath{systemPath} {}
 
 static auto format(const TestIdentity &test) -> std::string {
     std::stringstream stream;

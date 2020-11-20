@@ -79,6 +79,22 @@ class FileSystemPathStub : public FileSystemPath {
     }
 };
 
+class OutputFileNameStub : public IOutputFileName {
+  public:
+    auto generate(const TestIdentity &identity) -> std::string override {
+        testIdentity_ = &identity;
+        return name;
+    }
+
+    void setName(std::string s) { name = std::move(s); }
+
+    auto testIdentity() -> const TestIdentity * { return testIdentity_; }
+
+  private:
+    const TestIdentity *testIdentity_;
+    std::string name;
+};
+
 auto generate(IOutputFileName &fileName, const TestIdentity &identity)
     -> std::string {
     return fileName.generate(identity);
@@ -94,9 +110,9 @@ void setRelativeOutputDirectory(OutputFilePathImpl &path, std::string s) {
 
 class OutputFilePathTests : public ::testing::Test {
   protected:
-    TimeStampStub timeStamp;
+    OutputFileNameStub fileName;
     FileSystemPathStub systemPath;
-    OutputFilePathImpl path{timeStamp, systemPath};
+    OutputFilePathImpl path{fileName, systemPath};
 };
 
 class OutputFileNameTests : public ::testing::Test {
@@ -151,6 +167,18 @@ TEST_F(MetaConditionOutputFileNameTests,
     generateFileNameCapturesTimePriorToQueries) {
     generate(fileName, identity);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(beginsWith(timeStamp.log(), "capture"));
+}
+
+TEST_F(OutputFilePathTests, generateFileNamePassesTestIdentity) {
+    TestIdentity identity;
+    path.generateFileName(identity);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(&identity, fileName.testIdentity());
+}
+
+TEST_F(OutputFilePathTests, generateFileNameReturnsFileName) {
+    fileName.setName("a");
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
+        std::string{"a"}, path.generateFileName({}));
 }
 
 TEST_F(OutputFilePathTests, outputDirectoryReturnsFullPath) {

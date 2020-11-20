@@ -49,7 +49,7 @@ class MetaConditionOutputFileName : public IOutputFileName {
 
 class OutputFilePathImpl : public OutputFilePath {
   public:
-    OutputFilePathImpl(TimeStamp &, FileSystemPath &);
+    OutputFilePathImpl(IOutputFileName &, FileSystemPath &);
     auto generateFileName(const TestIdentity &) -> std::string override;
     auto homeDirectory() -> std::string override;
     auto outputDirectory() -> std::string override;
@@ -59,8 +59,8 @@ class OutputFilePathImpl : public OutputFilePath {
     auto homeDirectory_() -> std::string;
     auto outputDirectory_() -> std::string;
 
-    OutputFileName outputFileName;
     std::string relativePath_{};
+    IOutputFileName &outputFileName;
     FileSystemPath &systemPath;
 };
 }
