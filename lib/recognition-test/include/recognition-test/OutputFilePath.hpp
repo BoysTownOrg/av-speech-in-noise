@@ -23,10 +23,25 @@ class FileSystemPath {
     virtual void createDirectory(std::string) = 0;
 };
 
-class OutputFileName {
+class IOutputFileName {
+  public:
+    virtual ~IOutputFileName() = default;
+    virtual auto generate(const TestIdentity &) -> std::string = 0;
+};
+
+class OutputFileName : public IOutputFileName {
   public:
     OutputFileName(TimeStamp &timeStamp);
-    auto generate(const TestIdentity &identity) -> std::string;
+    auto generate(const TestIdentity &identity) -> std::string override;
+
+  private:
+    TimeStamp &timeStamp;
+};
+
+class MetaConditionOutputFileName : public IOutputFileName {
+  public:
+    MetaConditionOutputFileName(TimeStamp &timeStamp);
+    auto generate(const TestIdentity &identity) -> std::string override;
 
   private:
     TimeStamp &timeStamp;

@@ -44,6 +44,18 @@ auto OutputFileName::generate(const TestIdentity &identity) -> std::string {
     return stream.str();
 }
 
+MetaConditionOutputFileName::MetaConditionOutputFileName(TimeStamp &timeStamp)
+    : timeStamp{timeStamp} {}
+
+auto MetaConditionOutputFileName::generate(const TestIdentity &identity)
+    -> std::string {
+    std::stringstream stream;
+    stream << "condition" << identity.meta << "_" << identity.subjectId;
+    stream << '_';
+    stream << format(timeStamp);
+    return stream.str();
+}
+
 auto OutputFilePathImpl::generateFileName(const TestIdentity &identity)
     -> std::string {
     return outputFileName.generate(identity);

@@ -79,7 +79,7 @@ class FileSystemPathStub : public FileSystemPath {
     }
 };
 
-auto generate(OutputFileName &fileName, const TestIdentity &identity)
+auto generate(IOutputFileName &fileName, const TestIdentity &identity)
     -> std::string {
     return fileName.generate(identity);
 }
@@ -106,6 +106,13 @@ class OutputFileNameTests : public ::testing::Test {
     TestIdentity identity{};
 };
 
+class MetaConditionOutputFileNameTests : public ::testing::Test {
+  protected:
+    TimeStampStub timeStamp;
+    MetaConditionOutputFileName fileName{timeStamp};
+    TestIdentity identity{};
+};
+
 TEST_F(OutputFileNameTests, generateFileNameFormatsTestInformationAndTime) {
     identity.subjectId = "a";
     identity.session = "b";
@@ -122,6 +129,26 @@ TEST_F(OutputFileNameTests, generateFileNameFormatsTestInformationAndTime) {
 }
 
 TEST_F(OutputFileNameTests, generateFileNameCapturesTimePriorToQueries) {
+    generate(fileName, identity);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(beginsWith(timeStamp.log(), "capture"));
+}
+
+TEST_F(MetaConditionOutputFileNameTests,
+    generateFileNameFormatsTestInformationAndTime) {
+    identity.subjectId = "a";
+    identity.meta = "b";
+    timeStamp.setYear(1);
+    timeStamp.setMonth(2);
+    timeStamp.setDayOfMonth(3);
+    timeStamp.setHour(4);
+    timeStamp.setMinute(5);
+    timeStamp.setSecond(6);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"conditionb_a_1-2-3-4-5-6"}, generate(fileName, identity));
+}
+
+TEST_F(MetaConditionOutputFileNameTests,
+    generateFileNameCapturesTimePriorToQueries) {
     generate(fileName, identity);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(beginsWith(timeStamp.log(), "capture"));
 }
