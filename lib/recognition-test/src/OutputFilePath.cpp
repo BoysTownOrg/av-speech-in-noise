@@ -4,7 +4,7 @@
 namespace av_speech_in_noise {
 OutputFilePathImpl::OutputFilePathImpl(
     TimeStamp *timeStamp, FileSystemPath *systemPath)
-    : timeStamp{timeStamp}, systemPath{systemPath} {}
+    : outputFileName{*timeStamp}, systemPath{systemPath} {}
 
 static auto formatTestIdentity(const TestIdentity &test) -> std::string {
     std::stringstream stream;
@@ -17,30 +17,36 @@ static auto formatTestIdentity(const TestIdentity &test) -> std::string {
     return stream.str();
 }
 
-auto OutputFilePathImpl::generateFileName(const TestIdentity &test)
-    -> std::string {
+static auto format(TimeStamp &timeStamp) -> std::string {
+    timeStamp.capture();
     std::stringstream stream;
-    stream << formatTestIdentity(test);
-    stream << '_';
-    stream << formatTimeStamp();
+    stream << timeStamp.year();
+    stream << '-';
+    stream << timeStamp.month();
+    stream << '-';
+    stream << timeStamp.dayOfMonth();
+    stream << '-';
+    stream << timeStamp.hour();
+    stream << '-';
+    stream << timeStamp.minute();
+    stream << '-';
+    stream << timeStamp.second();
     return stream.str();
 }
 
-auto OutputFilePathImpl::formatTimeStamp() -> std::string {
-    timeStamp->capture();
+OutputFileName::OutputFileName(TimeStamp &timeStamp) : timeStamp{timeStamp} {}
+
+auto OutputFileName::generate(const TestIdentity &identity) -> std::string {
     std::stringstream stream;
-    stream << timeStamp->year();
-    stream << '-';
-    stream << timeStamp->month();
-    stream << '-';
-    stream << timeStamp->dayOfMonth();
-    stream << '-';
-    stream << timeStamp->hour();
-    stream << '-';
-    stream << timeStamp->minute();
-    stream << '-';
-    stream << timeStamp->second();
+    stream << formatTestIdentity(identity);
+    stream << '_';
+    stream << format(timeStamp);
     return stream.str();
+}
+
+auto OutputFilePathImpl::generateFileName(const TestIdentity &test)
+    -> std::string {
+    return outputFileName.generate(test);
 }
 
 auto OutputFilePathImpl::homeDirectory() -> std::string {

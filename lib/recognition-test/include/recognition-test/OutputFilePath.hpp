@@ -23,6 +23,15 @@ class FileSystemPath {
     virtual void createDirectory(std::string) = 0;
 };
 
+class OutputFileName {
+  public:
+    OutputFileName(TimeStamp &timeStamp);
+    auto generate(const TestIdentity &identity) -> std::string;
+
+  private:
+    TimeStamp &timeStamp;
+};
+
 class OutputFilePathImpl : public OutputFilePath {
   public:
     OutputFilePathImpl(TimeStamp *, FileSystemPath *);
@@ -34,10 +43,9 @@ class OutputFilePathImpl : public OutputFilePath {
   private:
     auto homeDirectory_() -> std::string;
     auto outputDirectory_() -> std::string;
-    auto formatTimeStamp() -> std::string;
 
+    OutputFileName outputFileName;
     std::string relativePath_{};
-    TimeStamp *timeStamp;
     FileSystemPath *systemPath;
 };
 }
