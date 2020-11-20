@@ -34,7 +34,7 @@ class OutputFileName {
 
 class OutputFilePathImpl : public OutputFilePath {
   public:
-    OutputFilePathImpl(TimeStamp *, FileSystemPath *);
+    OutputFilePathImpl(TimeStamp &, FileSystemPath &);
     auto generateFileName(const TestIdentity &) -> std::string override;
     auto homeDirectory() -> std::string override;
     auto outputDirectory() -> std::string override;
@@ -46,7 +46,7 @@ class OutputFilePathImpl : public OutputFilePath {
 
     OutputFileName outputFileName;
     std::string relativePath_{};
-    FileSystemPath *systemPath;
+    FileSystemPath &systemPath;
 };
 }
 

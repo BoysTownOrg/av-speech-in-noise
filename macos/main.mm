@@ -233,7 +233,7 @@ void main(EyeTracker &eyeTracker,
     FileWriter fileWriter;
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;
-    OutputFilePathImpl outputFilePath{&timeStamp, &systemPath};
+    OutputFilePathImpl outputFilePath{timeStamp, systemPath};
     outputFilePath.setRelativeOutputDirectory(relativeOutputDirectory);
     OutputFileImpl outputFile{fileWriter, outputFilePath};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;

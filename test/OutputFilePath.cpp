@@ -82,7 +82,7 @@ class OutputFilePathTests : public ::testing::Test {
   protected:
     TimeStampStub timeStamp;
     FileSystemPathStub systemPath;
-    OutputFilePathImpl path{&timeStamp, &systemPath};
+    OutputFilePathImpl path{timeStamp, systemPath};
     TestIdentity test{};
 
     auto generateFileName() -> std::string {
