@@ -163,6 +163,18 @@ static auto nsButtonArray(const std::vector<ConditionSelection> &v)
     return [NSArray arrayWithObjects:&buttons.front() count:buttons.size()];
 }
 
+static void push_back(std::vector<ConditionSelection> &conditionSelections,
+    FacemaskStudySetupViewActions *actions, const std::string &title,
+    const std::string &stem) {
+    conditionSelections.push_back(ConditionSelection {
+        [NSButton radioButtonWithTitle:nsString(title)
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourcePath(stem, "txt")
+    });
+}
+
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : subjectIdField{[NSTextField textFieldWithString:@""]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
@@ -210,83 +222,21 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     logo.imageScaling = NSImageScaleProportionallyDown;
     logo.wantsLayer = YES;
     logo.layer.backgroundColor = NSColor.whiteColor.CGColor;
-    conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle:nsString("A")
-                                target:actions
-                                action:@selector
-                                (notifyThatRadioButtonHasBeenClicked)],
-            resourcePath("NoMask_AO", "txt")
-    });
-    conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle:nsString("B")
-                                target:actions
-                                action:@selector
-                                (notifyThatRadioButtonHasBeenClicked)],
-            resourcePath("NoMask_AV", "txt")
-    });
-    conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle:nsString("C")
-                                target:actions
-                                action:@selector
-                                (notifyThatRadioButtonHasBeenClicked)],
-            resourcePath("ClearMask_AO", "txt")
-    });
-    conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle:nsString("D")
-                                target:actions
-                                action:@selector
-                                (notifyThatRadioButtonHasBeenClicked)],
-            resourcePath("ClearMask_AV", "txt")
-    });
-    conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle:nsString("E")
-                                target:actions
-                                action:@selector
-                                (notifyThatRadioButtonHasBeenClicked)],
-            resourcePath("CommunicatorMask_AO", "txt")
-    });
-    conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle:nsString("F")
-                                target:actions
-                                action:@selector
-                                (notifyThatRadioButtonHasBeenClicked)],
-            resourcePath("CommunicatorMask_AV", "txt")
-    });
-    conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle:nsString("G")
-                                target:actions
-                                action:@selector
-                                (notifyThatRadioButtonHasBeenClicked)],
-            resourcePath("FabricMask_AO", "txt")
-    });
-    conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle:nsString("H")
-                                target:actions
-                                action:@selector
-                                (notifyThatRadioButtonHasBeenClicked)],
-            resourcePath("FabricMask_AV", "txt")
-    });
-    conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle:nsString("I")
-                                target:actions
-                                action:@selector
-                                (notifyThatRadioButtonHasBeenClicked)],
-            resourcePath("HospitalMask_AO", "txt")
-    });
-    conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle:nsString("J")
-                                target:actions
-                                action:@selector
-                                (notifyThatRadioButtonHasBeenClicked)],
-            resourcePath("HospitalMask_AV", "txt")
-    });
-    const auto conditionRadioButtons{
-        verticalStackView(nsButtonArray(conditionSelections))};
+    push_back(conditionSelections, actions, "A", "NoMask_AO");
+    push_back(conditionSelections, actions, "B", "NoMask_AV");
+    push_back(conditionSelections, actions, "C", "ClearMask_AO");
+    push_back(conditionSelections, actions, "D", "ClearMask_AV");
+    push_back(conditionSelections, actions, "E", "CommunicatorMask_AO");
+    push_back(conditionSelections, actions, "F", "CommunicatorMask_AV");
+    push_back(conditionSelections, actions, "G", "FabricMask_AO");
+    push_back(conditionSelections, actions, "H", "FabricMask_AV");
+    push_back(conditionSelections, actions, "I", "HospitalMask_AO");
+    push_back(conditionSelections, actions, "J", "HospitalMask_AV");
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
             instructionsLabel, labeledView(subjectIdField, "Subject ID:"),
-            conditionRadioButtons, confirmButton
+            verticalStackView(nsButtonArray(conditionSelections)), confirmButton
         ])
     };
     [subjectIdField setFont:[NSFont systemFontOfSize:30]];
