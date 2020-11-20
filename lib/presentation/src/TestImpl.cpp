@@ -81,8 +81,10 @@ void TestControllerImpl::
 
 void TestControllerImpl::
     notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd() {
-    readyNextTrialIfTestIncompleteElse(model, observer,
-        [&] { observer->tellSubject("Condition complete, great work!"); });
+    readyNextTrialIfTestIncompleteElse(model, observer, [&] {
+        observer->tellSubject("Condition complete, great work!");
+        notifyThatTestIsComplete(controller);
+    });
 }
 
 void TestControllerImpl::notifyThatUserIsDoneResponding() {

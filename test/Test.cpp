@@ -249,7 +249,7 @@ class TestControllerListenerStub : public TestController::Observer {
     }
     auto displayedSecondary() -> std::string { return displayedSecondary_; }
     auto messageToSubject() -> std::string { return messageToSubject_; }
-    void tellSubject(const std::string &s) { messageToSubject_ = s; }
+    void tellSubject(const std::string &s) override { messageToSubject_ = s; }
 
   private:
     std::string displayed_;
@@ -503,6 +503,14 @@ TEST_CONTROLLER_TEST(
 TEST_CONTROLLER_TEST(notifiesThatTestIsCompleteAfterUserIsDoneResponding) {
     setTestComplete(model);
     controller.notifyThatUserIsDoneResponding();
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
+}
+
+TEST_CONTROLLER_TEST(
+    notifiesThatTestIsCompleteAfterUserIsDoneRespondingForATestThatCongratulates) {
+    setTestComplete(model);
+    controller
+        .notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd();
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
 }
 
