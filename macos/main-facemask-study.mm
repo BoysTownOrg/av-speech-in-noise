@@ -267,26 +267,26 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             conditionF, conditionG, conditionH, conditionI, conditionJ
         ])
     };
-    conditionSelections.emplace_back(
-        conditionA, resourcePath("NoMask_AO", "txt"));
-    conditionSelections.emplace_back(
-        conditionB, resourcePath("NoMask_AV", "txt"));
-    conditionSelections.emplace_back(
-        conditionC, resourcePath("ClearMask_AO", "txt"));
-    conditionSelections.emplace_back(
-        conditionD, resourcePath("ClearMask_AV", "txt"));
-    conditionSelections.emplace_back(
-        conditionE, resourcePath("CommunicatorMask_AO", "txt"));
-    conditionSelections.emplace_back(
-        conditionF, resourcePath("CommunicatorMask_AV", "txt"));
-    conditionSelections.emplace_back(
-        conditionG, resourcePath("FabricMask_AO", "txt"));
-    conditionSelections.emplace_back(
-        conditionH, resourcePath("FabricMask_AV", "txt"));
-    conditionSelections.emplace_back(
-        conditionI, resourcePath("HospitalMask_AO", "txt"));
-    conditionSelections.emplace_back(
-        conditionJ, resourcePath("HospitalMask_AV", "txt"));
+    conditionSelections.push_back(
+        ConditionSelection{conditionA, resourcePath("NoMask_AO", "txt")});
+    conditionSelections.push_back(
+        ConditionSelection{conditionB, resourcePath("NoMask_AV", "txt")});
+    conditionSelections.push_back(
+        ConditionSelection{conditionC, resourcePath("ClearMask_AO", "txt")});
+    conditionSelections.push_back(
+        ConditionSelection{conditionD, resourcePath("ClearMask_AV", "txt")});
+    conditionSelections.push_back(ConditionSelection{
+        conditionE, resourcePath("CommunicatorMask_AO", "txt")});
+    conditionSelections.push_back(ConditionSelection{
+        conditionF, resourcePath("CommunicatorMask_AV", "txt")});
+    conditionSelections.push_back(
+        ConditionSelection{conditionG, resourcePath("FabricMask_AO", "txt")});
+    conditionSelections.push_back(
+        ConditionSelection{conditionH, resourcePath("FabricMask_AV", "txt")});
+    conditionSelections.push_back(
+        ConditionSelection{conditionI, resourcePath("HospitalMask_AO", "txt")});
+    conditionSelections.push_back(
+        ConditionSelection{conditionJ, resourcePath("HospitalMask_AV", "txt")});
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
