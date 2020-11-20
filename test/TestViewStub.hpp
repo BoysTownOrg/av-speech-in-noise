@@ -58,6 +58,10 @@ class TestViewStub : public TestView {
         return secondaryDisplayed_;
     }
 
+    void tellSubject(const std::string &s) { messageToSubject_ = s; }
+
+    auto messageToSubject() -> std::string { return messageToSubject_; }
+
     void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
     [[nodiscard]] auto nextTrialButtonShown() const {
@@ -87,6 +91,7 @@ class TestViewStub : public TestView {
     std::string secondaryDisplayed_;
     std::string continueTestingDialogMessage_;
     std::string response_;
+    std::string messageToSubject_;
     std::string correctKeywords_{"0"};
     TestControl::Observer *listener_{};
     bool exitTestButtonHidden_{};

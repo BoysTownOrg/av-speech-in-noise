@@ -468,13 +468,13 @@ class TestPresenterTests : public ::testing::Test {
     model.setTrialNumber(1);                                                   \
     (useCase).run();                                                           \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        std::string{"Trial 1"}, experimenterControllerListener.displayed())
+        std::string{"Trial 1"}, (experimenterControllerListener).displayed())
 
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(           \
     useCase, experimenterControllerListener)                                   \
     (useCase).run();                                                           \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(                                            \
-        experimenterControllerListener.notifiedThatNextTrialIsReady())
+        (experimenterControllerListener).notifiedThatNextTrialIsReady())
 
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(a)            \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).notifiedThatTestIsComplete())
@@ -483,7 +483,7 @@ class TestPresenterTests : public ::testing::Test {
     useCase, experimenterPresenter, expected)                                  \
     useCase.run(experimenterPresenter);                                        \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        static_cast<TaskPresenter *>(&expected), taskPresenter.presenter())
+        static_cast<TaskPresenter *>(&(expected)), taskPresenter.presenter())
 
 #define TEST_CONTROLLER_TEST(a) TEST_F(TestControllerTests, a)
 
@@ -733,6 +733,11 @@ TEST_PRESENTER_TEST(displaysSecondaryMessage) {
     presenter.secondaryDisplay("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.secondaryDisplayed());
+}
+
+TEST_PRESENTER_TEST(displaysMessageToSubject) {
+    presenter.tellSubject("a");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, view.messageToSubject());
 }
 
 TEST_PRESENTER_TEST(showsContinueTestingDialog) {

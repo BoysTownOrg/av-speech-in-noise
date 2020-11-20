@@ -200,5 +200,7 @@ auto TestPresenterImpl::taskPresenter(Method m) -> TaskPresenter * {
     return passFailPresenter;
 }
 
-void TestPresenterImpl::tellSubject(const std::string &) {}
+void TestPresenterImpl::tellSubject(const std::string &s) {
+    view.tellSubject(s);
+}
 }

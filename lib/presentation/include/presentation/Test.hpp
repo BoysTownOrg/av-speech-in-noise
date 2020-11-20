@@ -33,6 +33,7 @@ class TestView : public virtual View {
     virtual void hideNextTrialButton() = 0;
     virtual void display(std::string) = 0;
     virtual void secondaryDisplay(std::string) = 0;
+    virtual void tellSubject(const std::string &) {}
 };
 
 class TestController {
