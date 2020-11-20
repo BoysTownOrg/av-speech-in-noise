@@ -218,8 +218,9 @@ static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
     return controller;
 }
 
-void main(
-    EyeTracker &eyeTracker, MacOsTestSetupViewFactory *testSetupViewFactory) {
+void main(EyeTracker &eyeTracker,
+    MacOsTestSetupViewFactory *testSetupViewFactory,
+    const std::string &relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     CoreAudioBufferedReader bufferedReader;
@@ -233,7 +234,7 @@ void main(
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;
     OutputFilePathImpl outputFilePath{&timeStamp, &systemPath};
-    outputFilePath.setRelativeOutputDirectory("Documents/AvSpeechInNoise Data");
+    outputFilePath.setRelativeOutputDirectory(relativeOutputDirectory);
     OutputFileImpl outputFile{fileWriter, outputFilePath};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;

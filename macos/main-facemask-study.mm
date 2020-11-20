@@ -394,5 +394,6 @@ void FacemaskStudySetupView::
 int main() {
     av_speech_in_noise::EyeTrackerStub eyeTracker;
     av_speech_in_noise::FacemaskStudySetupViewFactory testSetupViewFactory;
-    av_speech_in_noise::main(eyeTracker, &testSetupViewFactory);
+    av_speech_in_noise::main(
+        eyeTracker, &testSetupViewFactory, "Desktop/check your data here");
 }

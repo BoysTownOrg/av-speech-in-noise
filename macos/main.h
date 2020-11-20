@@ -5,7 +5,9 @@
 #include <recognition-test/RecognitionTestModel.hpp>
 
 namespace av_speech_in_noise {
-void main(EyeTracker &, MacOsTestSetupViewFactory *);
+void main(EyeTracker &, MacOsTestSetupViewFactory *,
+    const std::string &relativeOutputDirectory =
+        "Documents/AvSpeechInNoise Data");
 }
 
 #endif
