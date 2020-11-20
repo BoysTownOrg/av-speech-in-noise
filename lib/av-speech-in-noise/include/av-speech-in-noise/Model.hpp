@@ -31,6 +31,7 @@ struct TestIdentity {
     std::string method;
     std::string rmeSetting;
     std::string transducer;
+    std::string meta;
 };
 
 struct ConsonantResponse {
