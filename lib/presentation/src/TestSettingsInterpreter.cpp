@@ -304,4 +304,13 @@ auto TestSettingsInterpreterImpl::calibration(const std::string &contents)
     calibration.fullScaleLevel = SessionControllerImpl::fullScaleLevel;
     return calibration;
 }
+
+auto TestSettingsInterpreterImpl::meta(const std::string &contents)
+    -> std::string {
+    std::stringstream stream{contents};
+    for (std::string line; std::getline(stream, line);)
+        if (entryName(line) == name(TestSetting::meta))
+            return entry(line);
+    return "";
+}
 }

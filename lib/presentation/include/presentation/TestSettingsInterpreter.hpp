@@ -62,7 +62,8 @@ enum class TestSetting {
     testerId,
     session,
     rmeSetting,
-    transducer
+    transducer,
+    meta
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -101,6 +102,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "RME setting";
     case TestSetting::transducer:
         return "transducer";
+    case TestSetting::meta:
+        return "meta";
     }
 }
 
@@ -109,6 +112,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     void initialize(
         Model &, const std::string &, const TestIdentity &, SNR) override;
     auto method(const std::string &) -> Method override;
+    static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
 };
 }

@@ -163,6 +163,19 @@ static auto nsButtonArray(const std::vector<ConditionSelection> &v)
     return [NSArray arrayWithObjects:&buttons.front() count:buttons.size()];
 }
 
+static auto meta(const std::string &resourcePath) -> std::string { return {}; }
+
+static void push_back(std::vector<ConditionSelection> &conditionSelections,
+    FacemaskStudySetupViewActions *actions, const std::string &stem) {
+    conditionSelections.push_back(ConditionSelection {
+        [NSButton radioButtonWithTitle:nsString(meta(resourcePath(stem, "txt")))
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourcePath(stem, "txt")
+    });
+}
+
 static void push_back(std::vector<ConditionSelection> &conditionSelections,
     FacemaskStudySetupViewActions *actions, const std::string &title,
     const std::string &stem) {

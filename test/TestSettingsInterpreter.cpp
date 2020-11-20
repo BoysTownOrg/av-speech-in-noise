@@ -301,6 +301,11 @@ TEST_SETTINGS_INTERPRETER_TEST(badMaskerLevelResolvesToZero) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0, adaptiveTest(model).maskerLevel.dB_SPL);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(meta) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "a", interpreter.meta(entryWithNewline(TestSetting::meta, "a")));
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailReturnsMethod) {
     assertMethod(interpreter, Method::adaptivePassFail);
 }
