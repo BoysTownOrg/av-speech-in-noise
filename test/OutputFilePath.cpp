@@ -79,9 +79,9 @@ class FileSystemPathStub : public FileSystemPath {
     }
 };
 
-auto generateFileName(OutputFilePathImpl &path, const TestIdentity &identity)
+auto generate(OutputFileName &fileName, const TestIdentity &identity)
     -> std::string {
-    return path.generateFileName(identity);
+    return fileName.generate(identity);
 }
 
 void setHomeDirectory(FileSystemPathStub &systemPath, std::string s) {
@@ -97,10 +97,16 @@ class OutputFilePathTests : public ::testing::Test {
     TimeStampStub timeStamp;
     FileSystemPathStub systemPath;
     OutputFilePathImpl path{timeStamp, systemPath};
+};
+
+class OutputFileNameTests : public ::testing::Test {
+  protected:
+    TimeStampStub timeStamp;
+    OutputFileName fileName{timeStamp};
     TestIdentity identity{};
 };
 
-TEST_F(OutputFilePathTests, generateFileNameFormatsTestInformationAndTime) {
+TEST_F(OutputFileNameTests, generateFileNameFormatsTestInformationAndTime) {
     identity.subjectId = "a";
     identity.session = "b";
     identity.testerId = "c";
@@ -112,11 +118,11 @@ TEST_F(OutputFilePathTests, generateFileNameFormatsTestInformationAndTime) {
     timeStamp.setSecond(6);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"Subject_a_Session_b_Experimenter_c_1-2-3-4-5-6"},
-        generateFileName(path, identity));
+        generate(fileName, identity));
 }
 
-TEST_F(OutputFilePathTests, generateFileNameCapturesTimePriorToQueries) {
-    generateFileName(path, identity);
+TEST_F(OutputFileNameTests, generateFileNameCapturesTimePriorToQueries) {
+    generate(fileName, identity);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(beginsWith(timeStamp.log(), "capture"));
 }
 
