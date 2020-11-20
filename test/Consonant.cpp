@@ -177,11 +177,10 @@ CONSONANT_TASK_PRESENTER_TEST(
 }
 
 CONSONANT_TASK_CONTROLLER_TEST(
-    notifiesThatUserIsReadyForNextTrialThatCongratulatesAtTheEndAfterReadyButtonIsClicked) {
+    notifiesThatUserIsReadyForNextTrialAfterReadyButtonIsClicked) {
     notifyThatReadyButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController
-            .notifiedThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd());
+        testController.notifiedThatUserIsReadyForNextTrial());
 }
 
 CONSONANT_TASK_CONTROLLER_TEST(
@@ -197,7 +196,7 @@ CONSONANT_TASK_CONTROLLER_TEST(submitsConsonantAfterResponseButtonIsClicked) {
 }
 
 CONSONANT_TASK_CONTROLLER_TEST(
-    notifiesThatUserIsReadyForNextTrialThatCongratulatesAtTheEndAfterResponseButtonIsClicked) {
+    notifiesThatUserIsDoneRespondingForATestThatCongratulatesAtTheEndAfterResponseButtonIsClicked) {
     notifyThatResponseButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController
