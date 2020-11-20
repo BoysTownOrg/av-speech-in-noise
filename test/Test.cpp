@@ -607,9 +607,15 @@ TEST_CONTROLLER_TEST(responderDisplaysTrialNumberAfterUserIsDoneResponding) {
 }
 
 TEST_CONTROLLER_TEST(
-    responderDisplaysTrialNumberAfterNotShowingContinueTestingDialogWithResults) {
+    displaysTrialNumberAfterNotShowingContinueTestingDialogWithResults) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
+        experimenterControllerListener);
+}
+
+TEST_CONTROLLER_TEST(displaysTrialNumberAfterNotShowingCongratulations) {
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
+        notifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd,
         experimenterControllerListener);
 }
 
