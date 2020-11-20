@@ -3,9 +3,25 @@
 
 #include "MacOsTestSetupViewFactory.h"
 #include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/OutputFilePath.hpp>
+#include <memory>
 
 namespace av_speech_in_noise {
-void main(EyeTracker &, MacOsTestSetupViewFactory *,
+class OutputFileNameFactory {
+  public:
+    virtual ~OutputFileNameFactory() = default;
+    virtual auto make(TimeStamp &) -> std::unique_ptr<IOutputFileName> = 0;
+};
+
+class DefaultOutputFileNameFactory : public OutputFileNameFactory {
+  public:
+    auto make(TimeStamp &timeStamp)
+        -> std::unique_ptr<IOutputFileName> override {
+        return std::make_unique<OutputFileName>(timeStamp);
+    }
+};
+
+void main(EyeTracker &, MacOsTestSetupViewFactory &, OutputFileNameFactory &,
     const std::string &relativeOutputDirectory =
         "Documents/AvSpeechInNoise Data");
 }

@@ -331,11 +331,21 @@ void FacemaskStudySetupView::
     notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() {
     listener_->notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
 }
+
+class MetaConditionOutputFileNameFactory : public OutputFileNameFactory {
+  public:
+    auto make(TimeStamp &timeStamp)
+        -> std::unique_ptr<IOutputFileName> override {
+        return std::make_unique<MetaConditionOutputFileName>(timeStamp);
+    }
+};
 }
 
 int main() {
     av_speech_in_noise::EyeTrackerStub eyeTracker;
     av_speech_in_noise::FacemaskStudySetupViewFactory testSetupViewFactory;
-    av_speech_in_noise::main(
-        eyeTracker, &testSetupViewFactory, "Desktop/check your data here");
+    av_speech_in_noise::MetaConditionOutputFileNameFactory
+        outputFileNameFactory;
+    av_speech_in_noise::main(eyeTracker, testSetupViewFactory,
+        outputFileNameFactory, "Desktop/check your data here");
 }

@@ -14,5 +14,7 @@ class EyeTrackerStub : public EyeTracker {
 int main() {
     av_speech_in_noise::EyeTrackerStub eyeTracker;
     av_speech_in_noise::CocoaTestSetupViewFactory testSetupViewFactory;
-    av_speech_in_noise::main(eyeTracker, &testSetupViewFactory);
+    av_speech_in_noise::DefaultOutputFileNameFactory outputFileNameFactory;
+    av_speech_in_noise::main(
+        eyeTracker, testSetupViewFactory, outputFileNameFactory);
 }

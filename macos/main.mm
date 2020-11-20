@@ -219,7 +219,8 @@ static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
 }
 
 void main(EyeTracker &eyeTracker,
-    MacOsTestSetupViewFactory *testSetupViewFactory,
+    MacOsTestSetupViewFactory &testSetupViewFactory,
+    OutputFileNameFactory &outputFileNameFactory,
     const std::string &relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
@@ -233,7 +234,8 @@ void main(EyeTracker &eyeTracker,
     FileWriter fileWriter;
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;
-    OutputFilePathImpl outputFilePath{timeStamp, systemPath};
+    const auto outputFileName{outputFileNameFactory.make(timeStamp)};
+    OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
     outputFilePath.setRelativeOutputDirectory(relativeOutputDirectory);
     OutputFileImpl outputFile{fileWriter, outputFilePath};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
@@ -353,7 +355,7 @@ void main(EyeTracker &eyeTracker,
                            constant:-8]
     ]];
     const auto testSetupView{
-        testSetupViewFactory->make(testSetupViewController)};
+        testSetupViewFactory.make(testSetupViewController)};
     const auto experimenterViewController{
         nsTabViewControllerWithoutTabControl()};
     addChild(viewController, experimenterViewController);
