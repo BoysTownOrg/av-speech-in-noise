@@ -6,14 +6,6 @@
 namespace av_speech_in_noise {
 namespace {
 class TimeStampStub : public TimeStamp {
-    std::stringstream log_{};
-    int year_{};
-    int month_{};
-    int dayOfMonth_{};
-    int hour_{};
-    int minute_{};
-    int second_{};
-
   public:
     void capture() override { insert(log_, "capture "); }
 
@@ -60,6 +52,15 @@ class TimeStampStub : public TimeStamp {
         insert(log_, "second ");
         return second_;
     }
+
+  private:
+    std::stringstream log_{};
+    int year_{};
+    int month_{};
+    int dayOfMonth_{};
+    int hour_{};
+    int minute_{};
+    int second_{};
 };
 
 class FileSystemPathStub : public FileSystemPath {
@@ -78,16 +79,17 @@ class FileSystemPathStub : public FileSystemPath {
     }
 };
 
+auto generateFileName(OutputFilePathImpl &path, const TestIdentity &identity)
+    -> std::string {
+    return path.generateFileName(identity);
+}
+
 class OutputFilePathTests : public ::testing::Test {
   protected:
     TimeStampStub timeStamp;
     FileSystemPathStub systemPath;
     OutputFilePathImpl path{timeStamp, systemPath};
-    TestIdentity test{};
-
-    auto generateFileName() -> std::string {
-        return path.generateFileName(test);
-    }
+    TestIdentity identity{};
 
     void setHomeDirectory(std::string s) {
         systemPath.setHomeDirectory(std::move(s));
@@ -99,9 +101,9 @@ class OutputFilePathTests : public ::testing::Test {
 };
 
 TEST_F(OutputFilePathTests, generateFileNameFormatsTestInformationAndTime) {
-    test.subjectId = "a";
-    test.session = "b";
-    test.testerId = "c";
+    identity.subjectId = "a";
+    identity.session = "b";
+    identity.testerId = "c";
     timeStamp.setYear(1);
     timeStamp.setMonth(2);
     timeStamp.setDayOfMonth(3);
@@ -110,11 +112,11 @@ TEST_F(OutputFilePathTests, generateFileNameFormatsTestInformationAndTime) {
     timeStamp.setSecond(6);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"Subject_a_Session_b_Experimenter_c_1-2-3-4-5-6"},
-        generateFileName());
+        generateFileName(path, identity));
 }
 
 TEST_F(OutputFilePathTests, generateFileNameCapturesTimePriorToQueries) {
-    generateFileName();
+    generateFileName(path, identity);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(beginsWith(timeStamp.log(), "capture"));
 }
 
