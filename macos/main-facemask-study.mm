@@ -154,6 +154,15 @@ static auto resourcePath(const std::string &stem, const std::string &extension)
         .UTF8String;
 }
 
+static auto nsButtonArray(const std::vector<ConditionSelection> &v)
+    -> NSArray<NSButton *> * {
+    std::vector<NSButton *> buttons;
+    buttons.reserve(v.size());
+    for (const auto &x : v)
+        buttons.push_back(x.button);
+    return [NSArray arrayWithObjects:&buttons.front() count:buttons.size()];
+}
+
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : subjectIdField{[NSTextField textFieldWithString:@""]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
@@ -261,12 +270,6 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                           target:actions
                           action:@selector(notifyThatRadioButtonHasBeenClicked)]
     };
-    const auto conditionRadioButtons {
-        verticalStackView(@[
-            conditionA, conditionB, conditionC, conditionD, conditionE,
-            conditionF, conditionG, conditionH, conditionI, conditionJ
-        ])
-    };
     conditionSelections.push_back(
         ConditionSelection{conditionA, resourcePath("NoMask_AO", "txt")});
     conditionSelections.push_back(
@@ -287,6 +290,8 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
         ConditionSelection{conditionI, resourcePath("HospitalMask_AO", "txt")});
     conditionSelections.push_back(
         ConditionSelection{conditionJ, resourcePath("HospitalMask_AV", "txt")});
+    const auto conditionRadioButtons{
+        verticalStackView(nsButtonArray(conditionSelections))};
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
