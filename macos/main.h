@@ -10,14 +10,14 @@ namespace av_speech_in_noise {
 class OutputFileNameFactory {
   public:
     virtual ~OutputFileNameFactory() = default;
-    virtual auto make(TimeStamp &) -> std::unique_ptr<IOutputFileName> = 0;
+    virtual auto make(TimeStamp &) -> std::unique_ptr<OutputFileName> = 0;
 };
 
 class DefaultOutputFileNameFactory : public OutputFileNameFactory {
   public:
     auto make(TimeStamp &timeStamp)
-        -> std::unique_ptr<IOutputFileName> override {
-        return std::make_unique<OutputFileName>(timeStamp);
+        -> std::unique_ptr<OutputFileName> override {
+        return std::make_unique<DefaultOutputFileName>(timeStamp);
     }
 };
 

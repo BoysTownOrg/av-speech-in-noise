@@ -79,7 +79,7 @@ class FileSystemPathStub : public FileSystemPath {
     }
 };
 
-class OutputFileNameStub : public IOutputFileName {
+class OutputFileNameStub : public OutputFileName {
   public:
     auto generate(const TestIdentity &identity) -> std::string override {
         testIdentity_ = &identity;
@@ -95,7 +95,7 @@ class OutputFileNameStub : public IOutputFileName {
     std::string name;
 };
 
-auto generate(IOutputFileName &fileName, const TestIdentity &identity)
+auto generate(OutputFileName &fileName, const TestIdentity &identity)
     -> std::string {
     return fileName.generate(identity);
 }
@@ -118,7 +118,7 @@ class OutputFilePathTests : public ::testing::Test {
 class OutputFileNameTests : public ::testing::Test {
   protected:
     TimeStampStub timeStamp;
-    OutputFileName fileName{timeStamp};
+    DefaultOutputFileName fileName{timeStamp};
     TestIdentity identity{};
 };
 

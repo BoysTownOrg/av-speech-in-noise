@@ -3,7 +3,7 @@
 
 namespace av_speech_in_noise {
 OutputFilePathImpl::OutputFilePathImpl(
-    IOutputFileName &outputFileName, FileSystemPath &systemPath)
+    OutputFileName &outputFileName, FileSystemPath &systemPath)
     : outputFileName{outputFileName}, systemPath{systemPath} {}
 
 static auto format(const TestIdentity &test) -> std::string {
@@ -34,9 +34,11 @@ static auto format(TimeStamp &timeStamp) -> std::string {
     return stream.str();
 }
 
-OutputFileName::OutputFileName(TimeStamp &timeStamp) : timeStamp{timeStamp} {}
+DefaultOutputFileName::DefaultOutputFileName(TimeStamp &timeStamp)
+    : timeStamp{timeStamp} {}
 
-auto OutputFileName::generate(const TestIdentity &identity) -> std::string {
+auto DefaultOutputFileName::generate(const TestIdentity &identity)
+    -> std::string {
     std::stringstream stream;
     stream << format(identity);
     stream << '_';

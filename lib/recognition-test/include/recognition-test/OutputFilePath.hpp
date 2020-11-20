@@ -23,22 +23,22 @@ class FileSystemPath {
     virtual void createDirectory(std::string) = 0;
 };
 
-class IOutputFileName {
+class OutputFileName {
   public:
-    virtual ~IOutputFileName() = default;
+    virtual ~OutputFileName() = default;
     virtual auto generate(const TestIdentity &) -> std::string = 0;
 };
 
-class OutputFileName : public IOutputFileName {
+class DefaultOutputFileName : public OutputFileName {
   public:
-    OutputFileName(TimeStamp &timeStamp);
+    DefaultOutputFileName(TimeStamp &timeStamp);
     auto generate(const TestIdentity &identity) -> std::string override;
 
   private:
     TimeStamp &timeStamp;
 };
 
-class MetaConditionOutputFileName : public IOutputFileName {
+class MetaConditionOutputFileName : public OutputFileName {
   public:
     MetaConditionOutputFileName(TimeStamp &timeStamp);
     auto generate(const TestIdentity &identity) -> std::string override;
@@ -49,7 +49,7 @@ class MetaConditionOutputFileName : public IOutputFileName {
 
 class OutputFilePathImpl : public OutputFilePath {
   public:
-    OutputFilePathImpl(IOutputFileName &, FileSystemPath &);
+    OutputFilePathImpl(OutputFileName &, FileSystemPath &);
     auto generateFileName(const TestIdentity &) -> std::string override;
     auto homeDirectory() -> std::string override;
     auto outputDirectory() -> std::string override;
@@ -60,7 +60,7 @@ class OutputFilePathImpl : public OutputFilePath {
     auto outputDirectory_() -> std::string;
 
     std::string relativePath_{};
-    IOutputFileName &outputFileName;
+    OutputFileName &outputFileName;
     FileSystemPath &systemPath;
 };
 }

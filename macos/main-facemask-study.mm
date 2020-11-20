@@ -335,7 +335,7 @@ void FacemaskStudySetupView::
 class MetaConditionOutputFileNameFactory : public OutputFileNameFactory {
   public:
     auto make(TimeStamp &timeStamp)
-        -> std::unique_ptr<IOutputFileName> override {
+        -> std::unique_ptr<OutputFileName> override {
         return std::make_unique<MetaConditionOutputFileName>(timeStamp);
     }
 };
