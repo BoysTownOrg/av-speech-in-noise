@@ -63,6 +63,7 @@ class CocoaExperimenterView : public TestView,
     void submitFailedTrial();
     void submitCorrectKeywords();
     void acceptContinuingTesting();
+    void notifyThatContinueButtonOfSubjectDialogClicked();
     void declineContinuingTesting();
 
   private:
@@ -71,7 +72,9 @@ class CocoaExperimenterView : public TestView,
     NSStackView *correctKeywordsView{};
     NSStackView *evaluationButtons{};
     NSWindow *continueTestingDialog;
+    NSWindow *subjectDialog;
     NSTextField *continueTestingDialogField;
+    NSTextField *subjectDialogField;
     NSTextField *primaryTextField;
     NSTextField *secondaryTextField;
     NSTextField *freeResponseField;
