@@ -18,8 +18,6 @@ class TestControllerImpl : public TestControl::Observer, public TestController {
     void acceptContinuingTesting() override;
     void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion()
         override;
-    void notifyThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd()
-        override;
     void notifyThatUserIsDoneResponding() override;
     void notifyThatUserIsReadyForNextTrial() override;
 
@@ -85,7 +83,6 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
     void showContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &s) override;
     void initialize(Method) override;
-    void informUser(const std::string &) override;
 
   private:
     auto taskPresenter(Method m) -> TaskPresenter *;

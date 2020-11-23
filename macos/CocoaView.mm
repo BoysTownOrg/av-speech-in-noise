@@ -94,10 +94,6 @@
     controller->acceptContinuingTesting();
 }
 
-- (void)notifyThatContinueButtonOfSubjectDialogClicked {
-    controller->notifyThatContinueButtonOfSubjectDialogClicked();
-}
-
 - (void)declineContinuingTesting {
     controller->declineContinuingTesting();
 }
@@ -647,8 +643,8 @@ static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
 
 CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
     : viewController{viewController}, continueTestingDialogField{label("")},
-      subjectDialogField{label("")}, primaryTextField{label("")},
-      secondaryTextField{label("")}, freeResponseField{emptyTextField()},
+      primaryTextField{label("")}, secondaryTextField{label("")},
+      freeResponseField{emptyTextField()},
       correctKeywordsField{emptyTextField()},
       freeResponseFlaggedButton{[NSButton checkboxWithTitle:@"flagged"
                                                      target:nil
@@ -660,10 +656,6 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
     continueTestingDialog = [NSWindow
         windowWithContentViewController:continueTestingDialogController];
     continueTestingDialog.styleMask = NSWindowStyleMaskBorderless;
-    const auto subjectDialogController{nsTabViewControllerWithoutTabControl()};
-    subjectDialog =
-        [NSWindow windowWithContentViewController:subjectDialogController];
-    subjectDialog.styleMask = NSWindowStyleMaskBorderless;
     exitTestButton = button("Exit Test", actions, @selector(exitTest));
     nextTrialButton = button("Play Trial", actions, @selector(playTrial));
     const auto submitFreeResponseButton {
@@ -717,19 +709,10 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
             ]]
         ]]
     };
-    const auto subjectDialogStack {
-        [NSStackView stackViewWithViews:@[
-            subjectDialogField,
-            button("Continue", actions,
-                @selector(notifyThatContinueButtonOfSubjectDialogClicked))
-        ]]
-    };
     continueTestingDialogStack.orientation =
         NSUserInterfaceLayoutOrientationVertical;
     addAutolayoutEnabledSubview(
         view(continueTestingDialogController), continueTestingDialogStack);
-    addAutolayoutEnabledSubview(
-        view(subjectDialogController), subjectDialogStack);
     addAutolayoutEnabledSubview(view(viewController), nextTrialButton);
     addAutolayoutEnabledSubview(view(viewController), freeResponseView);
     addAutolayoutEnabledSubview(view(viewController), correctKeywordsView);
@@ -852,13 +835,6 @@ void CocoaExperimenterView::setContinueTestingDialogMessage(
     set(continueTestingDialogField, s);
 }
 
-void CocoaExperimenterView::informUser(const std::string &s) {
-    set(subjectDialogField, s);
-    [view(viewController).window beginSheet:subjectDialog
-                          completionHandler:^(NSModalResponse){
-                          }];
-}
-
 void CocoaExperimenterView::clearFreeResponse() { set(freeResponseField, ""); }
 
 auto CocoaExperimenterView::freeResponse() -> std::string {
@@ -893,10 +869,6 @@ void CocoaExperimenterView::submitCorrectKeywords() {
 
 void CocoaExperimenterView::acceptContinuingTesting() {
     listener_->acceptContinuingTesting();
-}
-
-void CocoaExperimenterView::notifyThatContinueButtonOfSubjectDialogClicked() {
-    [view(viewController).window endSheet:subjectDialog];
 }
 
 void CocoaExperimenterView::declineContinuingTesting() {

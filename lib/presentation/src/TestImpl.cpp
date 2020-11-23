@@ -79,20 +79,6 @@ void TestControllerImpl::
     });
 }
 
-void TestControllerImpl::
-    notifyThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd() {
-    ifTestCompleteElse(
-        model,
-        [&]() {
-            observer->informUser("Condition complete, great work!");
-            notifyThatTestIsComplete(controller);
-        },
-        [&]() {
-            displayTrialInformation(model, observer);
-            av_speech_in_noise::playTrial(model, sessionView, observer);
-        });
-}
-
 void TestControllerImpl::notifyThatUserIsDoneResponding() {
     notifyIfTestIsCompleteElse(
         model, controller, [&]() { readyNextTrial(model, observer); });
@@ -204,9 +190,5 @@ auto TestPresenterImpl::taskPresenter(Method m) -> TaskPresenter * {
     if (correctKeywords(m))
         return correctKeywordsPresenter;
     return passFailPresenter;
-}
-
-void TestPresenterImpl::informUser(const std::string &s) {
-    view.informUser(s);
 }
 }

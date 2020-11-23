@@ -55,7 +55,6 @@ void ConsonantTaskController::notifyThatReadyButtonHasBeenClicked() {
 void ConsonantTaskController::notifyThatResponseButtonHasBeenClicked() {
     model.submit(ConsonantResponse{control.consonant().front()});
     observer->notifyThatUserIsDoneResponding();
-    controller
-        ->notifyThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd();
+    controller->notifyThatUserIsReadyForNextTrial();
 }
 }

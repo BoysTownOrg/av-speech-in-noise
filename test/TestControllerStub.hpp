@@ -30,24 +30,12 @@ class TestControllerStub : public TestController {
     [[nodiscard]] auto notifiedThatUserIsReadyForNextTrial() const -> bool {
         return notifiedThatUserIsReadyForNextTrial_;
     }
-    [[nodiscard]] auto
-    notifiedThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd() const
-        -> bool {
-        return notifiedThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd_;
-    }
-    void notifyThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd()
-        override {
-        notifiedThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd_ =
-            true;
-    }
 
   private:
     bool notifiedThatUserIsReadyForNextTrial_{};
     bool
         notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion_{};
     bool notifiedThatUserIsDoneResponding_{};
-    bool
-        notifiedThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd_{};
 };
 }
 
