@@ -221,6 +221,7 @@ static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
 void main(EyeTracker &eyeTracker,
     MacOsTestSetupViewFactory &testSetupViewFactory,
     OutputFileNameFactory &outputFileNameFactory,
+    SessionController::Observer *sessionControllerObserver,
     const std::string &relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
@@ -415,6 +416,7 @@ void main(EyeTracker &eyeTracker,
         &taskPresenter};
     SessionControllerImpl sessionController{
         model, view, &testSetupPresenter, &experimenterPresenter};
+    sessionController.attach(sessionControllerObserver);
     testSetupController.attach(&sessionController);
     testSetupController.attach(&testSetupPresenter);
     testController.attach(&sessionController);

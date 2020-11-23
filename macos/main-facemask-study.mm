@@ -334,6 +334,17 @@ class MetaConditionOutputFileNameFactory : public OutputFileNameFactory {
         return std::make_unique<MetaConditionOutputFileName>(timeStamp);
     }
 };
+
+class CongratulatesUserWhenTestCompletes : public SessionController::Observer {
+  public:
+    void notifyThatTestIsComplete() override {
+        const auto alert{[[NSAlert alloc] init]};
+        [alert setMessageText:@""];
+        [alert setInformativeText:@"Condition complete, great work!"];
+        [alert addButtonWithTitle:@"Continue"];
+        [alert runModal];
+    }
+};
 }
 
 int main() {
@@ -341,6 +352,9 @@ int main() {
     av_speech_in_noise::FacemaskStudySetupViewFactory testSetupViewFactory;
     av_speech_in_noise::MetaConditionOutputFileNameFactory
         outputFileNameFactory;
+    av_speech_in_noise::CongratulatesUserWhenTestCompletes
+        congratulatesUserWhenTestCompletes;
     av_speech_in_noise::main(eyeTracker, testSetupViewFactory,
-        outputFileNameFactory, "Desktop/check your data here");
+        outputFileNameFactory, &congratulatesUserWhenTestCompletes,
+        "Desktop/check your data here");
 }

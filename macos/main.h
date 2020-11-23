@@ -22,6 +22,7 @@ class DefaultOutputFileNameFactory : public OutputFileNameFactory {
 };
 
 void main(EyeTracker &, MacOsTestSetupViewFactory &, OutputFileNameFactory &,
+    SessionController::Observer * = nullptr,
     const std::string &relativeOutputDirectory =
         "Documents/AvSpeechInNoise Data");
 }
