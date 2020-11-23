@@ -201,8 +201,6 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                                        [NSFont systemFontOfSize:40],
                                    NSFontAttributeName, [NSColor whiteColor],
                                    NSForegroundColorAttributeName, nil]]]};
-    const auto instructionsLabel{
-        labelWithAttributedString("Click browse to choose the session file.")};
     const auto confirmButton {
         button("", actions, @selector(notifyThatConfirmButtonHasBeenClicked))
     };
@@ -247,7 +245,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
-            instructionsLabel, labeledView(subjectIdField, "Subject ID:"),
+            labeledView(subjectIdField, "Subject ID:"),
             verticalStackView(nsButtonArray(conditionSelections)), confirmButton
         ])
     };
@@ -255,7 +253,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     [subjectIdField setTextColor:NSColor.blackColor];
     subjectIdField.wantsLayer = YES;
     subjectIdField.layer.backgroundColor = NSColor.whiteColor.CGColor;
-    [instructionsLabel
+    [titleLabel
         setContentCompressionResistancePriority:751
                                  forOrientation:
                                      NSLayoutConstraintOrientationHorizontal];
