@@ -47,18 +47,14 @@ void ConsonantTaskController::attach(TaskController::Observer *e) {
 
 void ConsonantTaskController::attach(TestController *c) { controller = c; }
 
-static void notifyThatUserIsReadyForNextTrial(TestController *c) {
-    c->notifyThatUserIsReadyForNextTrial();
-}
-
 void ConsonantTaskController::notifyThatReadyButtonHasBeenClicked() {
     observer->notifyThatTaskHasStarted();
-    notifyThatUserIsReadyForNextTrial(controller);
+    controller->notifyThatUserIsReadyForNextTrial();
 }
 
 void ConsonantTaskController::notifyThatResponseButtonHasBeenClicked() {
     model.submit(ConsonantResponse{control.consonant().front()});
     observer->notifyThatUserIsDoneResponding();
-    notifyThatUserIsReadyForNextTrial(controller);
+    controller->notifyThatUserIsReadyForNextTrial();
 }
 }

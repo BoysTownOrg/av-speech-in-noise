@@ -1,6 +1,8 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_METHOD_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_METHOD_HPP_
 
+#include "Interface.hpp"
+
 namespace av_speech_in_noise {
 enum class Method {
     adaptivePassFail,
@@ -24,9 +26,15 @@ enum class Method {
 
 class SessionController {
   public:
-    virtual ~SessionController() = default;
+    class Observer {
+      public:
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
+        virtual void notifyThatTestIsComplete() = 0;
+    };
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SessionController);
     virtual void notifyThatTestIsComplete() = 0;
     virtual void prepare(Method) = 0;
+    virtual void attach(Observer *) {}
 };
 }
 

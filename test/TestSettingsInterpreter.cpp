@@ -213,19 +213,22 @@ void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     setSession(testIdentity, "c");
     testIdentity.rmeSetting = "g";
     testIdentity.transducer = "h";
+    testIdentity.meta = "k";
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::subjectId, "d"),
             entryWithNewline(TestSetting::testerId, "e"),
             entryWithNewline(TestSetting::session, "f"),
             entryWithNewline(TestSetting::rmeSetting, "i"),
-            entryWithNewline(TestSetting::transducer, "j")},
+            entryWithNewline(TestSetting::transducer, "j"),
+            entryWithNewline(TestSetting::meta, "m")},
         0, testIdentity);
     assertSubjectIdEquals("d", f(model));
     assertTesterIdEquals("e", f(model));
     assertSessionIdEquals("f", f(model));
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"i"}, f(model).rmeSetting);
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"j"}, f(model).transducer);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"m"}, f(model).meta);
 }
 
 void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter,
@@ -299,6 +302,11 @@ TEST_SETTINGS_INTERPRETER_TEST(badMaskerLevelResolvesToZero) {
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::maskerLevel, "a")});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0, adaptiveTest(model).maskerLevel.dB_SPL);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(meta) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "a", interpreter.meta(entryWithNewline(TestSetting::meta, "a")));
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailReturnsMethod) {

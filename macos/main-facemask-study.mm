@@ -2,12 +2,22 @@
 #include "MacOsTestSetupViewFactory.h"
 #include "common-objc.h"
 #include <presentation/SessionControllerImpl.hpp>
-#import <Cocoa/Cocoa.h>
+#include <presentation/TestSettingsInterpreter.hpp>
+#import <AppKit/AppKit.h>
 #include <string>
+#include <vector>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
 
 @class FacemaskStudySetupViewActions;
 
 namespace av_speech_in_noise {
+struct ConditionSelection {
+    NSButton *button;
+    LocalUrl url;
+};
+
 class FacemaskStudySetupView : public TestSetupUI {
   public:
     explicit FacemaskStudySetupView(NSViewController *);
@@ -26,12 +36,11 @@ class FacemaskStudySetupView : public TestSetupUI {
     auto rmeSetting() -> std::string override { return {}; }
     auto transducer() -> std::string override { return {}; }
     void notifyThatConfirmButtonHasBeenClicked();
-    void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
     void notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked();
     void notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
 
   private:
-    NSTextField *testSettingsField;
+    std::vector<ConditionSelection> conditionSelections;
     NSTextField *subjectIdField;
     FacemaskStudySetupViewActions *actions;
     Observer *listener_{};
@@ -54,12 +63,11 @@ class FacemaskStudySetupViewFactory : public MacOsTestSetupViewFactory {
     av_speech_in_noise::FacemaskStudySetupView *controller;
 }
 
-- (void)notifyThatConfirmButtonHasBeenClicked {
-    controller->notifyThatConfirmButtonHasBeenClicked();
+- (void)notifyThatRadioButtonHasBeenClicked {
 }
 
-- (void)notifyThatBrowseForTestSettingsButtonHasBeenClicked {
-    controller->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
+- (void)notifyThatConfirmButtonHasBeenClicked {
+    controller->notifyThatConfirmButtonHasBeenClicked();
 }
 
 - (void)notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked {
@@ -124,10 +132,6 @@ static auto labelWithAttributedString(
                                              nil]]];
 }
 
-static auto labelWithAttributedString(const std::string &s) -> NSTextField * {
-    return labelWithAttributedString(s, yellowColor(), 36);
-}
-
 static auto verticalStackView(NSArray<NSView *> *views) -> NSStackView * {
     const auto view{[NSStackView stackViewWithViews:views]};
     view.orientation = NSUserInterfaceLayoutOrientationVertical;
@@ -142,9 +146,45 @@ static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
     return stack;
 }
 
+static auto resourcePath(const std::string &stem, const std::string &extension)
+    -> std::string {
+    return [[NSBundle mainBundle] pathForResource:nsString(stem)
+                                           ofType:nsString(extension)]
+        .UTF8String;
+}
+
+static auto nsButtonArray(const std::vector<ConditionSelection> &v)
+    -> NSArray<NSButton *> * {
+    std::vector<NSButton *> buttons;
+    buttons.reserve(v.size());
+    for (const auto &x : v)
+        buttons.push_back(x.button);
+    return [NSArray arrayWithObjects:&buttons.front() count:buttons.size()];
+}
+
+static auto readContents(const LocalUrl &resourceUrl) -> std::string {
+    std::ifstream file{resourceUrl.path};
+    std::stringstream stream;
+    stream << file.rdbuf();
+    return stream.str();
+}
+
+static auto meta(const LocalUrl &resourceUrl) -> std::string {
+    return TestSettingsInterpreterImpl::meta(readContents(resourceUrl));
+}
+
+static void push_back(std::vector<ConditionSelection> &conditionSelections,
+    FacemaskStudySetupViewActions *actions, const std::string &stem) {
+    conditionSelections.push_back(ConditionSelection {
+        [NSButton radioButtonWithTitle : nsString(
+            meta(LocalUrl{resourcePath(stem, "txt")})) target : actions action :
+            @selector(notifyThatRadioButtonHasBeenClicked)],
+            LocalUrl { resourcePath(stem, "txt") }
+    });
+}
+
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
-    : testSettingsField{[NSTextField textFieldWithString:@""]},
-      subjectIdField{[NSTextField textFieldWithString:@""]},
+    : subjectIdField{[NSTextField textFieldWithString:@""]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
                                                                  controller} {
     actions->controller = this;
@@ -157,12 +197,6 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                                        [NSFont systemFontOfSize:40],
                                    NSFontAttributeName, [NSColor whiteColor],
                                    NSForegroundColorAttributeName, nil]]]};
-    const auto instructionsLabel{
-        labelWithAttributedString("Click browse to choose the session file.")};
-    const auto browseForTestSettingsButton {
-        button("", actions,
-            @selector(notifyThatBrowseForTestSettingsButtonHasBeenClicked))
-    };
     const auto confirmButton {
         button("", actions, @selector(notifyThatConfirmButtonHasBeenClicked))
     };
@@ -175,8 +209,6 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             @selector
             (notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked))
     };
-
-    setAttributedTitle(browseForTestSettingsButton, "Browse");
     setAttributedTitle(confirmButton, "START");
     confirmButton.wantsLayer = YES;
     confirmButton.bordered = NO;
@@ -186,42 +218,38 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                                                              blue:77. / 255
                                                             alpha:1]
                                                 .CGColor];
-    browseForTestSettingsButton.wantsLayer = YES;
-    browseForTestSettingsButton.bordered = NO;
-    browseForTestSettingsButton.layer.cornerRadius = 8.0;
-    [browseForTestSettingsButton.layer
-        setBackgroundColor:[NSColor colorWithRed:247. / 255
-                                           green:191. / 255
-                                            blue:44. / 255
-                                           alpha:1]
-                               .CGColor];
     [controller.view.window setBackgroundColor:[NSColor colorWithRed:43. / 255
                                                                green:97. / 255
                                                                 blue:198. / 255
                                                                alpha:1]];
 
-    const auto logo{
-        [NSImageView imageViewWithImage:[NSImage imageNamed:@"btnrh.png"]]};
+    const auto logoImage{[NSImage imageNamed:@"btnrh.png"]};
+    const auto logo{[NSImageView imageViewWithImage:logoImage]};
     logo.imageScaling = NSImageScaleProportionallyDown;
     logo.wantsLayer = YES;
     logo.layer.backgroundColor = NSColor.whiteColor.CGColor;
+    push_back(conditionSelections, actions, "NoMask_AO");
+    push_back(conditionSelections, actions, "NoMask_AV");
+    push_back(conditionSelections, actions, "ClearMask_AO");
+    push_back(conditionSelections, actions, "ClearMask_AV");
+    push_back(conditionSelections, actions, "CommunicatorMask_AO");
+    push_back(conditionSelections, actions, "CommunicatorMask_AV");
+    push_back(conditionSelections, actions, "FabricMask_AO");
+    push_back(conditionSelections, actions, "FabricMask_AV");
+    push_back(conditionSelections, actions, "HospitalMask_AO");
+    push_back(conditionSelections, actions, "HospitalMask_AV");
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
-            instructionsLabel, browseForTestSettingsButton,
-            labeledView(testSettingsField, "Session file:"),
-            labeledView(subjectIdField, "Subject ID:"), confirmButton
+            labeledView(subjectIdField, "Subject ID:"),
+            verticalStackView(nsButtonArray(conditionSelections)), confirmButton
         ])
     };
-    [testSettingsField setFont:[NSFont systemFontOfSize:30]];
-    [testSettingsField setTextColor:NSColor.blackColor];
-    testSettingsField.wantsLayer = YES;
-    testSettingsField.layer.backgroundColor = NSColor.whiteColor.CGColor;
     [subjectIdField setFont:[NSFont systemFontOfSize:30]];
     [subjectIdField setTextColor:NSColor.blackColor];
     subjectIdField.wantsLayer = YES;
     subjectIdField.layer.backgroundColor = NSColor.whiteColor.CGColor;
-    [instructionsLabel
+    [titleLabel
         setContentCompressionResistancePriority:751
                                  forOrientation:
                                      NSLayoutConstraintOrientationHorizontal];
@@ -232,6 +260,12 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     };
     addAutolayoutEnabledSubview(controller.view, layoutStack);
     addAutolayoutEnabledSubview(controller.view, playCalibrationButtonsStack);
+    for (const auto &x : conditionSelections)
+        [NSLayoutConstraint activateConstraints:@[
+            [conditionSelections.front().button.leadingAnchor
+                constraintEqualToAnchor:x.button.leadingAnchor],
+        ]];
+    [conditionSelections.front().button setState:NSControlStateValueOn];
     [NSLayoutConstraint activateConstraints:@[
         [layoutStack.topAnchor constraintEqualToAnchor:controller.view.topAnchor
                                               constant:8],
@@ -250,14 +284,8 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
         [playCalibrationButtonsStack.bottomAnchor
             constraintEqualToAnchor:controller.view.bottomAnchor
                            constant:-8],
-        [browseForTestSettingsButton.widthAnchor
-            constraintEqualToConstant:1.4 *
-            browseForTestSettingsButton.attributedTitle.size.width],
         [confirmButton.widthAnchor constraintEqualToConstant:1.4 *
                                    confirmButton.attributedTitle.size.width],
-        [browseForTestSettingsButton.heightAnchor
-            constraintEqualToConstant:1.5 *
-            browseForTestSettingsButton.attributedTitle.size.height],
         [confirmButton.heightAnchor constraintEqualToConstant:1.5 *
                                     confirmButton.attributedTitle.size.height]
     ]];
@@ -274,22 +302,19 @@ void FacemaskStudySetupView::hide() {
 }
 
 auto FacemaskStudySetupView::testSettingsFile() -> std::string {
-    return testSettingsField.stringValue.UTF8String;
+    auto found{std::find_if(conditionSelections.begin(),
+        conditionSelections.end(), [](const ConditionSelection &selection) {
+            return selection.button.state == NSControlStateValueOn;
+        })};
+    return found != conditionSelections.end() ? found->url.path : "";
 }
 
-void FacemaskStudySetupView::setTestSettingsFile(std::string s) {
-    [testSettingsField setStringValue:nsString(s)];
-}
+void FacemaskStudySetupView::setTestSettingsFile(std::string) {}
 
 void FacemaskStudySetupView::attach(Observer *e) { listener_ = e; }
 
 void FacemaskStudySetupView::notifyThatConfirmButtonHasBeenClicked() {
     listener_->notifyThatConfirmButtonHasBeenClicked();
-}
-
-void FacemaskStudySetupView::
-    notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
-    listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
 }
 
 void FacemaskStudySetupView::
@@ -302,10 +327,34 @@ void FacemaskStudySetupView::
     listener_->notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
 }
 
+class MetaConditionOutputFileNameFactory : public OutputFileNameFactory {
+  public:
+    auto make(TimeStamp &timeStamp)
+        -> std::unique_ptr<OutputFileName> override {
+        return std::make_unique<MetaConditionOutputFileName>(timeStamp);
+    }
+};
+
+class CongratulatesUserWhenTestCompletes : public SessionController::Observer {
+  public:
+    void notifyThatTestIsComplete() override {
+        const auto alert{[[NSAlert alloc] init]};
+        [alert setMessageText:@""];
+        [alert setInformativeText:@"Condition complete, great work!"];
+        [alert addButtonWithTitle:@"Continue"];
+        [alert runModal];
+    }
+};
 }
 
 int main() {
     av_speech_in_noise::EyeTrackerStub eyeTracker;
     av_speech_in_noise::FacemaskStudySetupViewFactory testSetupViewFactory;
-    av_speech_in_noise::main(eyeTracker, &testSetupViewFactory);
+    av_speech_in_noise::MetaConditionOutputFileNameFactory
+        outputFileNameFactory;
+    av_speech_in_noise::CongratulatesUserWhenTestCompletes
+        congratulatesUserWhenTestCompletes;
+    av_speech_in_noise::main(eyeTracker, testSetupViewFactory,
+        outputFileNameFactory, &congratulatesUserWhenTestCompletes,
+        "Desktop/check your data here");
 }

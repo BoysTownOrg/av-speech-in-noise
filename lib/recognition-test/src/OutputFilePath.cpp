@@ -3,10 +3,10 @@
 
 namespace av_speech_in_noise {
 OutputFilePathImpl::OutputFilePathImpl(
-    TimeStamp *timeStamp, FileSystemPath *systemPath)
-    : timeStamp{timeStamp}, systemPath{systemPath} {}
+    OutputFileName &outputFileName, FileSystemPath &systemPath)
+    : outputFileName{outputFileName}, systemPath{systemPath} {}
 
-static auto formatTestIdentity(const TestIdentity &test) -> std::string {
+static auto format(const TestIdentity &test) -> std::string {
     std::stringstream stream;
     stream << "Subject_";
     stream << test.subjectId;
@@ -17,30 +17,50 @@ static auto formatTestIdentity(const TestIdentity &test) -> std::string {
     return stream.str();
 }
 
-auto OutputFilePathImpl::generateFileName(const TestIdentity &test)
-    -> std::string {
+static auto format(TimeStamp &timeStamp) -> std::string {
+    timeStamp.capture();
     std::stringstream stream;
-    stream << formatTestIdentity(test);
-    stream << '_';
-    stream << formatTimeStamp();
+    stream << timeStamp.year();
+    stream << '-';
+    stream << timeStamp.month();
+    stream << '-';
+    stream << timeStamp.dayOfMonth();
+    stream << '-';
+    stream << timeStamp.hour();
+    stream << '-';
+    stream << timeStamp.minute();
+    stream << '-';
+    stream << timeStamp.second();
     return stream.str();
 }
 
-auto OutputFilePathImpl::formatTimeStamp() -> std::string {
-    timeStamp->capture();
+DefaultOutputFileName::DefaultOutputFileName(TimeStamp &timeStamp)
+    : timeStamp{timeStamp} {}
+
+auto DefaultOutputFileName::generate(const TestIdentity &identity)
+    -> std::string {
     std::stringstream stream;
-    stream << timeStamp->year();
-    stream << '-';
-    stream << timeStamp->month();
-    stream << '-';
-    stream << timeStamp->dayOfMonth();
-    stream << '-';
-    stream << timeStamp->hour();
-    stream << '-';
-    stream << timeStamp->minute();
-    stream << '-';
-    stream << timeStamp->second();
+    stream << format(identity);
+    stream << '_';
+    stream << format(timeStamp);
     return stream.str();
+}
+
+MetaConditionOutputFileName::MetaConditionOutputFileName(TimeStamp &timeStamp)
+    : timeStamp{timeStamp} {}
+
+auto MetaConditionOutputFileName::generate(const TestIdentity &identity)
+    -> std::string {
+    std::stringstream stream;
+    stream << "condition" << identity.meta << "_" << identity.subjectId;
+    stream << '_';
+    stream << format(timeStamp);
+    return stream.str();
+}
+
+auto OutputFilePathImpl::generateFileName(const TestIdentity &identity)
+    -> std::string {
+    return outputFileName.generate(identity);
 }
 
 auto OutputFilePathImpl::homeDirectory() -> std::string {
@@ -48,7 +68,7 @@ auto OutputFilePathImpl::homeDirectory() -> std::string {
 }
 
 auto OutputFilePathImpl::homeDirectory_() -> std::string {
-    return systemPath->homeDirectory();
+    return systemPath.homeDirectory();
 }
 
 auto OutputFilePathImpl::outputDirectory() -> std::string {
@@ -61,6 +81,6 @@ auto OutputFilePathImpl::outputDirectory_() -> std::string {
 
 void OutputFilePathImpl::setRelativeOutputDirectory(std::string s) {
     relativePath_ = std::move(s);
-    systemPath->createDirectory(outputDirectory_());
+    systemPath.createDirectory(outputDirectory_());
 }
 }

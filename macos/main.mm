@@ -218,8 +218,11 @@ static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
     return controller;
 }
 
-void main(
-    EyeTracker &eyeTracker, MacOsTestSetupViewFactory *testSetupViewFactory) {
+void main(EyeTracker &eyeTracker,
+    MacOsTestSetupViewFactory &testSetupViewFactory,
+    OutputFileNameFactory &outputFileNameFactory,
+    SessionController::Observer *sessionControllerObserver,
+    const std::string &relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     CoreAudioBufferedReader bufferedReader;
@@ -232,8 +235,9 @@ void main(
     FileWriter fileWriter;
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;
-    OutputFilePathImpl outputFilePath{&timeStamp, &systemPath};
-    outputFilePath.setRelativeOutputDirectory("Documents/AvSpeechInNoise Data");
+    const auto outputFileName{outputFileNameFactory.make(timeStamp)};
+    OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
+    outputFilePath.setRelativeOutputDirectory(relativeOutputDirectory);
     OutputFileImpl outputFile{fileWriter, outputFilePath};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
@@ -352,7 +356,7 @@ void main(
                            constant:-8]
     ]];
     const auto testSetupView{
-        testSetupViewFactory->make(testSetupViewController)};
+        testSetupViewFactory.make(testSetupViewController)};
     const auto experimenterViewController{
         nsTabViewControllerWithoutTabControl()};
     addChild(viewController, experimenterViewController);
@@ -412,6 +416,7 @@ void main(
         &taskPresenter};
     SessionControllerImpl sessionController{
         model, view, &testSetupPresenter, &experimenterPresenter};
+    sessionController.attach(sessionControllerObserver);
     testSetupController.attach(&sessionController);
     testSetupController.attach(&testSetupPresenter);
     testController.attach(&sessionController);

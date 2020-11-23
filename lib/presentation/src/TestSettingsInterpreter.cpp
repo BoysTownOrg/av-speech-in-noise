@@ -97,6 +97,8 @@ static void assign(
         test.identity.rmeSetting = entry;
     else if (entryName == name(TestSetting::transducer))
         test.identity.transducer = entry;
+    else if (entryName == name(TestSetting::meta))
+        test.identity.meta = entry;
     else if (entryName == name(TestSetting::condition))
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
             if (entry == name(c))
@@ -303,5 +305,14 @@ auto TestSettingsInterpreterImpl::calibration(const std::string &contents)
         contents);
     calibration.fullScaleLevel = SessionControllerImpl::fullScaleLevel;
     return calibration;
+}
+
+auto TestSettingsInterpreterImpl::meta(const std::string &contents)
+    -> std::string {
+    std::stringstream stream{contents};
+    for (std::string line; std::getline(stream, line);)
+        if (entryName(line) == name(TestSetting::meta))
+            return entry(line);
+    return "";
 }
 }
