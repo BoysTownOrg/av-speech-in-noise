@@ -497,10 +497,10 @@ void CocoaConsonantView::hideCursor() { [NSCursor hide]; }
 
 void CocoaConsonantView::showCursor() { [NSCursor unhide]; }
 
-static auto greenColor{NSColor.greenColor};
-static auto redColor{NSColor.redColor};
-static auto blueColor{NSColor.blueColor};
-static auto whiteColor{NSColor.whiteColor};
+static const auto greenColor{NSColor.greenColor};
+static const auto redColor{NSColor.redColor};
+static const auto blueColor{NSColor.blueColor};
+static const auto whiteColor{NSColor.whiteColor};
 constexpr std::array<int, 8> numbers{{1, 2, 3, 4, 5, 6, 8, 9}};
 constexpr auto responseNumbers{std::size(numbers)};
 constexpr auto responseColors{4};
@@ -719,17 +719,15 @@ CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
     };
     const auto subjectDialogStack {
         [NSStackView stackViewWithViews:@[
-            subjectDialogField, [NSStackView stackViewWithViews:@[
-                button("Continue", actions,
-                    @selector(notifyThatContinueButtonOfSubjectDialogClicked))
-            ]]
+            subjectDialogField,
+            button("Continue", actions,
+                @selector(notifyThatContinueButtonOfSubjectDialogClicked))
         ]]
     };
     continueTestingDialogStack.orientation =
         NSUserInterfaceLayoutOrientationVertical;
     addAutolayoutEnabledSubview(
         view(continueTestingDialogController), continueTestingDialogStack);
-    subjectDialogStack.orientation = NSUserInterfaceLayoutOrientationVertical;
     addAutolayoutEnabledSubview(
         view(subjectDialogController), subjectDialogStack);
     addAutolayoutEnabledSubview(view(viewController), nextTrialButton);
