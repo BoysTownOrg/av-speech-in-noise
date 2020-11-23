@@ -481,6 +481,12 @@ void run(ControllerUseCase &useCase) { useCase.run(); }
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(a)            \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).notifiedThatTestIsComplete())
 
+#define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE_WHEN_COMPLETE( \
+    useCase, sessionController)                                                 \
+    setTestComplete(model);                                                     \
+    run(useCase);                                                               \
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController)
+
 #define AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(                  \
     useCase, experimenterPresenter, expected)                                  \
     useCase.run(experimenterPresenter);                                        \
@@ -503,23 +509,21 @@ TEST_CONTROLLER_TEST(
 }
 
 TEST_CONTROLLER_TEST(notifiesThatTestIsCompleteAfterUserIsDoneResponding) {
-    setTestComplete(model);
-    controller.notifyThatUserIsDoneResponding();
-    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE_WHEN_COMPLETE(
+        notifyingThatUserIsDoneResponding, sessionController);
 }
 
 TEST_CONTROLLER_TEST(
     notifiesThatTestIsCompleteAfterUserReadyForNextTrialForATestThatCongratulates) {
-    setTestComplete(model);
-    run(notifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd);
-    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE_WHEN_COMPLETE(
+        notifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd,
+        sessionController);
 }
 
 TEST_CONTROLLER_TEST(
     notifiesThatTestIsCompleteAfterNotifyingThatUserIsReadyForNextTrial) {
-    setTestComplete(model);
-    controller.notifyThatUserIsReadyForNextTrial();
-    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE_WHEN_COMPLETE(
+        notifyingThatUserIsReadyForNextTrial, sessionController);
 }
 
 TEST_CONTROLLER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
