@@ -18,8 +18,8 @@ class TestControllerImpl : public TestControl::Observer, public TestController {
     void acceptContinuingTesting() override;
     void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion()
         override;
-    void
-    notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd() override;
+    void notifyThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd()
+        override;
     void notifyThatUserIsDoneResponding() override;
     void notifyThatUserIsReadyForNextTrial() override;
 

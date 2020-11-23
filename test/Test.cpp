@@ -299,16 +299,16 @@ class DecliningContinuingTesting : public ControllerUseCase {
     TestControlStub &control;
 };
 
-class NotifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd
+class NotifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd
     : public ControllerUseCase {
   public:
-    explicit NotifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd(
+    explicit NotifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd(
         TestControllerImpl &controller)
         : controller{controller} {}
 
     void run() override {
         controller
-            .notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd();
+            .notifyThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd();
     }
 
   private:
@@ -392,8 +392,8 @@ class TestControllerTests : public ::testing::Test {
     DecliningContinuingTesting decliningContinuingTesting{control};
     AcceptingContinuingTesting acceptingContinuingTesting{control};
     ExitingTest exitingTest{control};
-    NotifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd
-        notifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd{
+    NotifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd
+        notifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd{
             controller};
     NotifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion{
@@ -510,7 +510,7 @@ TEST_CONTROLLER_TEST(
     notifiesThatTestIsCompleteAfterUserIsDoneRespondingForATestThatCongratulates) {
     setTestComplete(model);
     controller
-        .notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd();
+        .notifyThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd();
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController);
 }
 
@@ -532,6 +532,15 @@ TEST_CONTROLLER_TEST(
     responderPlaysTrialAfterNotifyingThatUserIsReadyForNextTrial) {
     setAudioDevice(sessionView, "a");
     controller.notifyThatUserIsReadyForNextTrial();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, model.trialParameters().audioDevice);
+}
+
+TEST_CONTROLLER_TEST(
+    responderPlaysTrialAfterNotifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd) {
+    setAudioDevice(sessionView, "a");
+    controller
+        .notifyThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, model.trialParameters().audioDevice);
 }
@@ -569,13 +578,6 @@ TEST_CONTROLLER_TEST(
 }
 
 TEST_CONTROLLER_TEST(
-    notifiesThatNextTrialIsReadyAfterNotShowingCongratulations) {
-    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
-        notifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd,
-        experimenterControllerListener);
-}
-
-TEST_CONTROLLER_TEST(
     notifiesThatNextTrialIsReadyAfterNotShowingContinueTestingDialogWithResults) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
@@ -596,7 +598,7 @@ TEST_CONTROLLER_TEST(
 
 TEST_CONTROLLER_TEST(displaysTargetFileNameAfterNotShowingCongratulations) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
-        notifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd,
+        notifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd,
         experimenterControllerListener);
 }
 
@@ -626,7 +628,7 @@ TEST_CONTROLLER_TEST(
 
 TEST_CONTROLLER_TEST(displaysTrialNumberAfterNotShowingCongratulations) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
-        notifyingThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd,
+        notifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd,
         experimenterControllerListener);
 }
 
@@ -640,6 +642,13 @@ TEST_CONTROLLER_TEST(
     responderDisplaysTrialNumberAfterNotifyingThatUserIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
         notifyingThatUserIsReadyForNextTrial, experimenterControllerListener);
+}
+
+TEST_CONTROLLER_TEST(
+    responderDisplaysTrialNumberAfterNotifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd) {
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
+        notifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd,
+        experimenterControllerListener);
 }
 
 TEST_CONTROLLER_TEST(showsContinueTestingDialog) {
@@ -663,7 +672,7 @@ TEST_CONTROLLER_TEST(showsAdaptiveTestResults) {
 TEST_CONTROLLER_TEST(showsCongratulations) {
     setTestComplete(model);
     controller
-        .notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd();
+        .notifyThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"Condition complete, great work!"},
         experimenterControllerListener.messageToSubject());

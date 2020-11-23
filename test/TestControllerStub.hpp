@@ -31,13 +31,13 @@ class TestControllerStub : public TestController {
         return notifiedThatUserIsReadyForNextTrial_;
     }
     [[nodiscard]] auto
-    notifiedThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd() const
+    notifiedThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd() const
         -> bool {
-        return notifiedThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd_;
+        return notifiedThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd_;
     }
-    void
-    notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd() override {
-        notifiedThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd_ =
+    void notifyThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd()
+        override {
+        notifiedThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd_ =
             true;
     }
 
@@ -46,7 +46,8 @@ class TestControllerStub : public TestController {
     bool
         notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion_{};
     bool notifiedThatUserIsDoneResponding_{};
-    bool notifiedThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd_{};
+    bool
+        notifiedThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd_{};
 };
 }
 

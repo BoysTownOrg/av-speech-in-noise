@@ -200,7 +200,7 @@ CONSONANT_TASK_CONTROLLER_TEST(
     notifyThatResponseButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController
-            .notifiedThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd());
+            .notifiedThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd());
 }
 
 CONSONANT_TASK_CONTROLLER_TEST(

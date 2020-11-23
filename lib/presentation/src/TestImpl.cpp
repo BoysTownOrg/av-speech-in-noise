@@ -80,11 +80,17 @@ void TestControllerImpl::
 }
 
 void TestControllerImpl::
-    notifyThatUserIsDoneRespondingForATestThatCongratulatesAtTheEnd() {
-    readyNextTrialIfTestIncompleteElse(model, observer, [&] {
-        observer->tellSubject("Condition complete, great work!");
-        notifyThatTestIsComplete(controller);
-    });
+    notifyThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd() {
+    ifTestCompleteElse(
+        model,
+        [&]() {
+            observer->tellSubject("Condition complete, great work!");
+            notifyThatTestIsComplete(controller);
+        },
+        [&]() {
+            displayTrialInformation(model, observer);
+            av_speech_in_noise::playTrial(model, sessionView, observer);
+        });
 }
 
 void TestControllerImpl::notifyThatUserIsDoneResponding() {
