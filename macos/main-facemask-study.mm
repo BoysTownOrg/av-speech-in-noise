@@ -132,10 +132,6 @@ static auto labelWithAttributedString(
                                              nil]]];
 }
 
-static auto labelWithAttributedString(const std::string &s) -> NSTextField * {
-    return labelWithAttributedString(s, yellowColor(), 36);
-}
-
 static auto verticalStackView(NSArray<NSView *> *views) -> NSStackView * {
     const auto view{[NSStackView stackViewWithViews:views]};
     view.orientation = NSUserInterfaceLayoutOrientationVertical;
@@ -269,6 +265,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
             [conditionSelections.front().button.leadingAnchor
                 constraintEqualToAnchor:x.button.leadingAnchor],
         ]];
+    [conditionSelections.front().button setState:NSControlStateValueOn];
     [NSLayoutConstraint activateConstraints:@[
         [layoutStack.topAnchor constraintEqualToAnchor:controller.view.topAnchor
                                               constant:8],
