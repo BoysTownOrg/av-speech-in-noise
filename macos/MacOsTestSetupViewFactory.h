@@ -8,6 +8,7 @@
 namespace av_speech_in_noise {
 class TestSetupUI : public virtual TestSetupView,
                     public virtual TestSetupControl {};
+
 class MacOsTestSetupViewFactory {
   public:
     virtual ~MacOsTestSetupViewFactory() = default;

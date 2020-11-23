@@ -1,8 +1,4 @@
-function(add_macos_bundle target main_entry_file identifier output_name)
-  add_executable(
-    ${target} MACOSX_BUNDLE
-    AvFoundationPlayers.mm CocoaView.mm ${main_entry_file} main.mm
-    ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
+function(add_macos_bundle target identifier output_name)
   target_compile_features(${target} PRIVATE cxx_std_17)
   target_compile_options(${target} PRIVATE "-fobjc-arc"
                                            ${AV_SPEECH_IN_NOISE_WARNINGS})
@@ -16,8 +12,10 @@ function(add_macos_bundle target main_entry_file identifier output_name)
     GSL
     "-framework AppKit -framework AVFoundation -framework CoreMedia -framework MediaToolbox -framework AudioToolbox -framework CoreAudio"
   )
-  target_include_directories(${target}
-                             PRIVATE "/usr/local/include/tobii_research")
+  if(${AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING})
+    target_include_directories(${target}
+                               PRIVATE "/usr/local/include/tobii_research")
+  endif()
   set_target_properties(
     ${target}
     PROPERTIES MACOSX_BUNDLE_BUNDLE_VERSION ${CMAKE_PROJECT_VERSION}
@@ -51,8 +49,16 @@ set(AV_SPEECH_IN_NOISE_MACOS_OTHER_CODE_SIGN_FLAGS
     ""
     CACHE STRING "Xcode Other Code Signing Flags")
 
-add_macos_bundle(av-speech-in-noise-bundle ${MAIN_IMPL_FILE}
-                 org.boystown.av-speech-in-noise "AV Speech in Noise")
+add_executable(
+  av-speech-in-noise-bundle MACOSX_BUNDLE
+  AvFoundationPlayers.mm CocoaView.mm ${MAIN_IMPL_FILE} main.mm
+  ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
+add_macos_bundle(av-speech-in-noise-bundle org.boystown.av-speech-in-noise
+                 "AV Speech in Noise")
+add_executable(
+  av-speech-in-noise-facemask-study MACOSX_BUNDLE
+  AvFoundationPlayers.mm CocoaView.mm FacemaskStudySetupView.mm
+  main-facemask-study.mm main.mm ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
 add_macos_bundle(
-  av-speech-in-noise-facemask-study main-facemask-study.mm
+  av-speech-in-noise-facemask-study
   org.boystown.av-speech-in-noise-facemask-study "Facemask Study")
