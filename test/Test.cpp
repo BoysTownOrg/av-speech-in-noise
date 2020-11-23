@@ -288,6 +288,16 @@ class ExitingTest : public ControllerUseCase {
     TestControlStub &control;
 };
 
+class PlayingTrial : public ControllerUseCase {
+  public:
+    explicit PlayingTrial(TestControlStub &control) : control{control} {}
+
+    void run() override { control.playTrial(); }
+
+  private:
+    TestControlStub &control;
+};
+
 class DecliningContinuingTesting : public ControllerUseCase {
   public:
     explicit DecliningContinuingTesting(TestControlStub &control)
@@ -392,6 +402,7 @@ class TestControllerTests : public ::testing::Test {
     DecliningContinuingTesting decliningContinuingTesting{control};
     AcceptingContinuingTesting acceptingContinuingTesting{control};
     ExitingTest exitingTest{control};
+    PlayingTrial playingTrial{control};
     NotifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd
         notifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd{
             controller};
@@ -493,6 +504,12 @@ void run(ControllerUseCase &useCase) { useCase.run(); }
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         static_cast<TaskPresenter *>(&(expected)), taskPresenter.presenter())
 
+#define AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(useCase, sessionView, model)     \
+    setAudioDevice(sessionView, "a");                                          \
+    run(useCase);                                                              \
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
+        std::string{"a"}, (model).trialParameters().audioDevice)
+
 #define TEST_CONTROLLER_TEST(a) TEST_F(TestControllerTests, a)
 
 #define TEST_PRESENTER_TEST(a) TEST_F(TestPresenterTests, a)
@@ -527,26 +544,20 @@ TEST_CONTROLLER_TEST(
 }
 
 TEST_CONTROLLER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
-    setAudioDevice(sessionView, "a");
-    playTrial(control);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, model.trialParameters().audioDevice);
+    AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(playingTrial, sessionView, model);
 }
 
 TEST_CONTROLLER_TEST(
     responderPlaysTrialAfterNotifyingThatUserIsReadyForNextTrial) {
-    setAudioDevice(sessionView, "a");
-    controller.notifyThatUserIsReadyForNextTrial();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, model.trialParameters().audioDevice);
+    AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(
+        notifyingThatUserIsReadyForNextTrial, sessionView, model);
 }
 
 TEST_CONTROLLER_TEST(
     responderPlaysTrialAfterNotifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd) {
-    setAudioDevice(sessionView, "a");
-    run(notifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, model.trialParameters().audioDevice);
+    AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(
+        notifyingThatUserIsReadyForNextTrialForATestThatCongratulatesAtTheEnd,
+        sessionView, model);
 }
 
 TEST_CONTROLLER_TEST(notifiesThatTrialHasStartedAfterPlayTrialButtonClicked) {
