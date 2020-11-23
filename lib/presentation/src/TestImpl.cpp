@@ -84,7 +84,7 @@ void TestControllerImpl::
     ifTestCompleteElse(
         model,
         [&]() {
-            observer->tellSubject("Condition complete, great work!");
+            observer->informUser("Condition complete, great work!");
             notifyThatTestIsComplete(controller);
         },
         [&]() {
@@ -206,7 +206,7 @@ auto TestPresenterImpl::taskPresenter(Method m) -> TaskPresenter * {
     return passFailPresenter;
 }
 
-void TestPresenterImpl::tellSubject(const std::string &s) {
-    view.tellSubject(s);
+void TestPresenterImpl::informUser(const std::string &s) {
+    view.informUser(s);
 }
 }

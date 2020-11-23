@@ -854,7 +854,7 @@ void CocoaExperimenterView::setContinueTestingDialogMessage(
     set(continueTestingDialogField, s);
 }
 
-void CocoaExperimenterView::tellSubject(const std::string &s) {
+void CocoaExperimenterView::informUser(const std::string &s) {
     set(subjectDialogField, s);
     [view(viewController).window beginSheet:subjectDialog
                           completionHandler:^(NSModalResponse){

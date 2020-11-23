@@ -58,7 +58,7 @@ class TestViewStub : public TestView {
         return secondaryDisplayed_;
     }
 
-    void tellSubject(const std::string &s) { messageToSubject_ = s; }
+    void informUser(const std::string &s) { messageToSubject_ = s; }
 
     auto messageToSubject() -> std::string { return messageToSubject_; }
 

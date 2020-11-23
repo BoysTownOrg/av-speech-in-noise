@@ -33,7 +33,7 @@ class TestView : public virtual View {
     virtual void hideNextTrialButton() = 0;
     virtual void display(std::string) = 0;
     virtual void secondaryDisplay(std::string) = 0;
-    virtual void tellSubject(const std::string &) {}
+    virtual void informUser(const std::string &) {}
 };
 
 class TestController {
@@ -47,7 +47,7 @@ class TestController {
         virtual void display(const std::string &) = 0;
         virtual void secondaryDisplay(const std::string &) = 0;
         virtual void notifyThatNextTrialIsReady() = 0;
-        virtual void tellSubject(const std::string &) = 0;
+        virtual void informUser(const std::string &) = 0;
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestController);
     virtual void attach(Observer *) = 0;

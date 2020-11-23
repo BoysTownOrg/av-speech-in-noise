@@ -40,7 +40,7 @@ class CocoaExperimenterView : public TestView,
     void hide() override;
     void display(std::string) override;
     void secondaryDisplay(std::string) override;
-    void tellSubject(const std::string &) override;
+    void informUser(const std::string &) override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
     void showEvaluationButtons() override;

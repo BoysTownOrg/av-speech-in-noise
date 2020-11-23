@@ -249,7 +249,7 @@ class TestControllerListenerStub : public TestController::Observer {
     }
     auto displayedSecondary() -> std::string { return displayedSecondary_; }
     auto messageToSubject() -> std::string { return messageToSubject_; }
-    void tellSubject(const std::string &s) override { messageToSubject_ = s; }
+    void informUser(const std::string &s) override { messageToSubject_ = s; }
 
   private:
     std::string displayed_;
@@ -756,7 +756,7 @@ TEST_PRESENTER_TEST(displaysSecondaryMessage) {
 }
 
 TEST_PRESENTER_TEST(displaysMessageToSubject) {
-    presenter.tellSubject("a");
+    presenter.informUser("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, view.messageToSubject());
 }
 
