@@ -43,6 +43,18 @@ class TestSetupPresenterStub : public TestSetupPresenter {
     bool stopped_{};
 };
 
+class SessionControllerObserverStub : public SessionController::Observer {
+  public:
+    [[nodiscard]] auto notifiedThatTestIsComplete() const -> bool {
+        return notifiedThatTestIsComplete_;
+    }
+
+    void notifyThatTestIsComplete() { notifiedThatTestIsComplete_ = true; }
+
+  private:
+    bool notifiedThatTestIsComplete_{};
+};
+
 class SessionControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -80,6 +92,14 @@ SESSION_CONTROLLER_TEST(testSetupStartsAfterTestIsComplete) {
     controller.notifyThatTestIsComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.stopped());
 }
+
+SESSION_CONTROLLER_TEST(forwardsTestIsCompleteNotification) {
+    SessionControllerObserverStub observer;
+    controller.attach(&observer);
+    controller.notifyThatTestIsComplete();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatTestIsComplete());
+}
+
 class SessionControllerTBDTests : public ::testing::Test {};
 
 TEST_F(SessionControllerTBDTests, constructorPopulatesAudioDeviceMenu) {

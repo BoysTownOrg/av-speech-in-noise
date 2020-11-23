@@ -13,6 +13,7 @@ class SessionControllerImpl : public SessionController {
         Model &, SessionView &, TestSetupPresenter *, TestPresenter *);
     void notifyThatTestIsComplete() override;
     void prepare(Method m) override;
+    void attach(Observer *) override;
 
     static constexpr RealLevel fullScaleLevel{119};
     static constexpr SNR ceilingSnr{20};
@@ -22,6 +23,7 @@ class SessionControllerImpl : public SessionController {
   private:
     Presenter *testSetupPresenter;
     TestPresenter *experimenterPresenter;
+    Observer *observer{};
 };
 }
 

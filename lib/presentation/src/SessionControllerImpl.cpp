@@ -18,5 +18,9 @@ void SessionControllerImpl::prepare(Method m) {
 void SessionControllerImpl::notifyThatTestIsComplete() {
     experimenterPresenter->stop();
     testSetupPresenter->start();
+    if (observer != nullptr)
+        observer->notifyThatTestIsComplete();
 }
+
+void SessionControllerImpl::attach(Observer *e) { observer = e; }
 }
