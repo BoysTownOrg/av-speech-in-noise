@@ -510,6 +510,12 @@ void run(ControllerUseCase &useCase) { useCase.run(); }
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         std::string{"a"}, (model).trialParameters().audioDevice)
 
+#define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_TRIAL_HAS_STARTED(             \
+    useCase, experimenterControllerListener)                                   \
+    run(notifyingThatUserIsReadyForNextTrial);                                 \
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(                                            \
+        (experimenterControllerListener).notifiedThatTrialHasStarted())
+
 #define TEST_CONTROLLER_TEST(a) TEST_F(TestControllerTests, a)
 
 #define TEST_PRESENTER_TEST(a) TEST_F(TestPresenterTests, a)
@@ -561,16 +567,14 @@ TEST_CONTROLLER_TEST(
 }
 
 TEST_CONTROLLER_TEST(notifiesThatTrialHasStartedAfterPlayTrialButtonClicked) {
-    playTrial(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterControllerListener.notifiedThatTrialHasStarted());
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_TRIAL_HAS_STARTED(
+        playingTrial, experimenterControllerListener);
 }
 
 TEST_CONTROLLER_TEST(
     notifiesThatTrialHasStartedAfterNotifyingThatUserIsReadyForNextTrial) {
-    controller.notifyThatUserIsReadyForNextTrial();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterControllerListener.notifiedThatTrialHasStarted());
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_TRIAL_HAS_STARTED(
+        notifyingThatUserIsReadyForNextTrial, experimenterControllerListener);
 }
 
 TEST_CONTROLLER_TEST(
