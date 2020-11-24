@@ -345,6 +345,21 @@ static void addReadyButton(NSView *parent, ConsonantViewActions *actions) {
     addSubview(parent, button);
 }
 
+static auto equallyDistributedConsonantImageButtonRow(
+    std::unordered_map<void *, std::string> &consonants,
+    ConsonantViewActions *actions, const std::vector<std::string> &each)
+    -> NSStackView * {
+    std::vector<NSButton *> buttons;
+    buttons.reserve(each.size());
+    for (const auto &x : each)
+        buttons.push_back(consonantImageButton(consonants, actions, x));
+    auto row{[NSStackView
+        stackViewWithViews:[NSArray arrayWithObjects:&buttons.front()
+                                               count:buttons.size()]]};
+    row.distribution = NSStackViewDistributionFillEqually;
+    return row;
+}
+
 AppKitConsonantUI::AppKitConsonantUI(NSRect r)
     : // Defer may be critical here...
       window{[[NSWindow alloc] initWithContentRect:r
@@ -355,37 +370,16 @@ AppKitConsonantUI::AppKitConsonantUI(NSRect r)
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       actions{[[ConsonantViewActions alloc] init]} {
     actions->controller = this;
-    auto firstRow {
-        [NSStackView stackViewWithViews:@[
-            consonantImageButton(consonants, actions, "b"),
-            consonantImageButton(consonants, actions, "c"),
-            consonantImageButton(consonants, actions, "d"),
-            consonantImageButton(consonants, actions, "h")
-        ]]
-    };
-    auto secondRow {
-        [NSStackView stackViewWithViews:@[
-            consonantImageButton(consonants, actions, "k"),
-            consonantImageButton(consonants, actions, "m"),
-            consonantImageButton(consonants, actions, "n"),
-            consonantImageButton(consonants, actions, "p")
-        ]]
-    };
-    auto thirdRow {
-        [NSStackView stackViewWithViews:@[
-            consonantImageButton(consonants, actions, "s"),
-            consonantImageButton(consonants, actions, "t"),
-            consonantImageButton(consonants, actions, "v"),
-            consonantImageButton(consonants, actions, "z")
-        ]]
-    };
+    const auto firstRow{equallyDistributedConsonantImageButtonRow(
+        consonants, actions, {"b", "c", "d", "h"})};
+    const auto secondRow{equallyDistributedConsonantImageButtonRow(
+        consonants, actions, {"k", "m", "n", "p"})};
+    const auto thirdRow{equallyDistributedConsonantImageButtonRow(
+        consonants, actions, {"s", "t", "v", "z"})};
     responseButtons =
         [NSStackView stackViewWithViews:@[ firstRow, secondRow, thirdRow ]];
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
     responseButtons.distribution = NSStackViewDistributionFillEqually;
-    firstRow.distribution = NSStackViewDistributionFillEqually;
-    secondRow.distribution = NSStackViewDistributionFillEqually;
-    thirdRow.distribution = NSStackViewDistributionFillEqually;
     addReadyButton(readyButton, actions);
     addSubview(window.contentView, readyButton);
     addAutolayoutEnabledSubview(window.contentView, responseButtons);
