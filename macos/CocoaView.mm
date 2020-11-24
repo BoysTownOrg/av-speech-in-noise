@@ -1,6 +1,7 @@
 #include "CocoaView.h"
 #include "common-objc.h"
 #include "AppKit-utility.h"
+#include "Foundation-utility.h"
 #include <gsl/gsl>
 #include <iterator>
 #include <array>
@@ -321,13 +322,6 @@ void CocoaTestSetupView::notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
 
 void CocoaTestSetupView::notifyThatPlayCalibrationButtonHasBeenClicked() {
     listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
-}
-
-static auto resourcePath(const std::string &stem, const std::string &extension)
-    -> std::string {
-    return [[NSBundle mainBundle] pathForResource:nsString(stem)
-                                           ofType:nsString(extension)]
-        .UTF8String;
 }
 
 static auto consonantImageButton(

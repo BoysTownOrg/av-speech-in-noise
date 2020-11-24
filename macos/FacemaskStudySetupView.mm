@@ -1,5 +1,6 @@
 #include "FacemaskStudySetupView.h"
 #include "common-objc.h"
+#include "Foundation-utility.h"
 #include <presentation/TestSettingsInterpreter.hpp>
 #include <fstream>
 #include <sstream>
@@ -85,13 +86,6 @@ static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
                        forOrientation:NSLayoutConstraintOrientationHorizontal];
     const auto stack { [NSStackView stackViewWithViews:@[ label_, field ]] };
     return stack;
-}
-
-static auto resourcePath(const std::string &stem, const std::string &extension)
-    -> std::string {
-    return [[NSBundle mainBundle] pathForResource:nsString(stem)
-                                           ofType:nsString(extension)]
-        .UTF8String;
 }
 
 static auto nsButtonArray(const std::vector<ConditionSelection> &v)
