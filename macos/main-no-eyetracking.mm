@@ -1,4 +1,4 @@
-#include "main.h"
+#include "run.h"
 #include "AppKitView.h"
 
 namespace av_speech_in_noise {
@@ -15,6 +15,6 @@ int main() {
     av_speech_in_noise::EyeTrackerStub eyeTracker;
     av_speech_in_noise::AppKitTestSetupUIFactoryImpl testSetupViewFactory;
     av_speech_in_noise::DefaultOutputFileNameFactory outputFileNameFactory;
-    av_speech_in_noise::main(
+    av_speech_in_noise::initializeAppAndRunEventLoop(
         eyeTracker, testSetupViewFactory, outputFileNameFactory);
 }

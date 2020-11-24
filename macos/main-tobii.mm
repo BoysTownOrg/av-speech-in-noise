@@ -1,4 +1,4 @@
-#include "main.h"
+#include "run.h"
 #include "AppKitView.h"
 #include <tobii_research.h>
 #include <tobii_research_streams.h>

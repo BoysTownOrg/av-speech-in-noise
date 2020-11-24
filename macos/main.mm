@@ -1,4 +1,4 @@
-#include "main.h"
+#include "run.h"
 #include "MersenneTwisterRandomizer.hpp"
 #include "AvFoundationPlayers.h"
 #include "AppKitView.h"
@@ -213,7 +213,7 @@ static void addChild(NSTabViewController *parent, NSTabViewController *child) {
     [parent.view addSubview:child.view];
 }
 
-void main(EyeTracker &eyeTracker,
+void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     AppKitTestSetupUIFactory &testSetupViewFactory,
     OutputFileNameFactory &outputFileNameFactory,
     SessionController::Observer *sessionControllerObserver,

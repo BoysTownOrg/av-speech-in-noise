@@ -1,4 +1,4 @@
-#include "main.h"
+#include "run.h"
 #include "FacemaskStudySetupView.h"
 #include <presentation/Method.hpp>
 #import <AppKit/AppKit.h>
@@ -36,8 +36,9 @@ static void main() {
     FacemaskStudySetupViewFactory testSetupViewFactory;
     MetaConditionOutputFileNameFactory outputFileNameFactory;
     CongratulatesUserWhenTestCompletes congratulatesUserWhenTestCompletes;
-    main(eyeTracker, testSetupViewFactory, outputFileNameFactory,
-        &congratulatesUserWhenTestCompletes, "Desktop/check your data here");
+    initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
+        outputFileNameFactory, &congratulatesUserWhenTestCompletes,
+        "Desktop/check your data here");
 }
 }
 
