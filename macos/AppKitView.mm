@@ -129,10 +129,6 @@ constexpr auto width(const NSRect &r) -> CGFloat { return r.size.width; }
 
 constexpr auto height(const NSRect &r) -> CGFloat { return r.size.height; }
 
-static auto button(const std::string &s, id target, SEL action) -> NSButton * {
-    return [NSButton buttonWithTitle:nsString(s) target:target action:action];
-}
-
 static auto string(NSTextField *field) -> const char * {
     return field.stringValue.UTF8String;
 }

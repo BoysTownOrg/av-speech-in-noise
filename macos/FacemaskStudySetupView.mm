@@ -1,4 +1,5 @@
 #include "FacemaskStudySetupView.h"
+#include "AppKit-utility.h"
 #include "Foundation-utility.h"
 #include <presentation/TestSettingsInterpreter.hpp>
 #include <fstream>
@@ -29,10 +30,6 @@
 @end
 
 namespace av_speech_in_noise {
-static auto button(const std::string &s, id target, SEL action) -> NSButton * {
-    return [NSButton buttonWithTitle:nsString(s) target:target action:action];
-}
-
 static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
     child.translatesAutoresizingMaskIntoConstraints = NO;
     [parent addSubview:child];
