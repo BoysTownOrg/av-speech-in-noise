@@ -1,13 +1,7 @@
 #include "main.h"
-#include "MacOsTestSetupViewFactory.h"
 #include "FacemaskStudySetupView.h"
-#include "common-objc.h"
-#include <presentation/SessionControllerImpl.hpp>
-#include <presentation/TestSettingsInterpreter.hpp>
+#include <presentation/Method.hpp>
 #import <AppKit/AppKit.h>
-#include <string>
-#include <vector>
-#include <algorithm>
 
 namespace av_speech_in_noise {
 class EyeTrackerStub : public EyeTracker {
@@ -36,16 +30,15 @@ class CongratulatesUserWhenTestCompletes : public SessionController::Observer {
         [alert runModal];
     }
 };
+
+static void main() {
+    EyeTrackerStub eyeTracker;
+    FacemaskStudySetupViewFactory testSetupViewFactory;
+    MetaConditionOutputFileNameFactory outputFileNameFactory;
+    CongratulatesUserWhenTestCompletes congratulatesUserWhenTestCompletes;
+    main(eyeTracker, testSetupViewFactory, outputFileNameFactory,
+        &congratulatesUserWhenTestCompletes, "Desktop/check your data here");
+}
 }
 
-int main() {
-    av_speech_in_noise::EyeTrackerStub eyeTracker;
-    av_speech_in_noise::FacemaskStudySetupViewFactory testSetupViewFactory;
-    av_speech_in_noise::MetaConditionOutputFileNameFactory
-        outputFileNameFactory;
-    av_speech_in_noise::CongratulatesUserWhenTestCompletes
-        congratulatesUserWhenTestCompletes;
-    av_speech_in_noise::main(eyeTracker, testSetupViewFactory,
-        outputFileNameFactory, &congratulatesUserWhenTestCompletes,
-        "Desktop/check your data here");
-}
+int main() { av_speech_in_noise::main(); }
