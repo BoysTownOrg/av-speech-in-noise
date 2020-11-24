@@ -105,8 +105,8 @@
     av_speech_in_noise::AppKitTestUI *controller;
 }
 
-- (void)submitFreeResponse {
-    controller->submitFreeResponse();
+- (void)notifyThatSubmitFreeResponseButtonHasBeenClicked {
+    controller->notifyThatSubmitFreeResponseButtonHasBeenClicked();
 }
 @end
 
@@ -648,7 +648,8 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
     nextTrialButton = button("Play Trial", actions,
         @selector(notifyThatPlayTrialButtonHasBeenClicked));
     const auto submitFreeResponseButton {
-        button("Submit", freeResponseActions, @selector(submitFreeResponse))
+        button("Submit", freeResponseActions,
+            @selector(notifyThatSubmitFreeResponseButtonHasBeenClicked))
     };
     evaluationButtons = [NSStackView stackViewWithViews:@[
         button("Incorrect", actions,
@@ -845,7 +846,7 @@ void AppKitTestUI::notifyThatPlayTrialButtonHasBeenClicked() {
     listener_->playTrial();
 }
 
-void AppKitTestUI::submitFreeResponse() {
+void AppKitTestUI::notifyThatSubmitFreeResponseButtonHasBeenClicked() {
     freeResponseListener->notifyThatSubmitButtonHasBeenClicked();
 }
 

@@ -57,7 +57,7 @@ class AppKitTestUI : public TestView,
     void clearFreeResponse() override;
     void notifyThatExitTestButtonHasBeenClicked();
     void notifyThatPlayTrialButtonHasBeenClicked();
-    void submitFreeResponse();
+    void notifyThatSubmitFreeResponseButtonHasBeenClicked();
     void notifyThatCorrectButtonHasBeenClicked();
     void notifyThatIncorrectButtonHasBeenClicked();
     void notifyThatSubmitCorrectKeywordsButtonHasBeenClicked();
