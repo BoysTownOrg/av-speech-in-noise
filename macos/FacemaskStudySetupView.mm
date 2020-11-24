@@ -4,6 +4,7 @@
 #include <presentation/TestSettingsInterpreter.hpp>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 @interface FacemaskStudySetupViewActions : NSObject
 @end
@@ -81,10 +82,9 @@ static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
 
 static auto nsButtonArray(const std::vector<ConditionSelection> &v)
     -> NSArray<NSButton *> * {
-    std::vector<NSButton *> buttons;
-    buttons.reserve(v.size());
-    for (const auto &x : v)
-        buttons.push_back(x.button);
+    std::vector<NSButton *> buttons(v.size());
+    std::transform(v.begin(), v.end(), buttons.begin(),
+        [](const ConditionSelection &c) { return c.button; });
     return [NSArray arrayWithObjects:&buttons.front() count:buttons.size()];
 }
 
