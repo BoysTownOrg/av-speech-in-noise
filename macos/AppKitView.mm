@@ -492,31 +492,34 @@ void AppKitCoordinateResponseMeasureUI::addButtonRow(NSColor *color, int row) {
 
 void AppKitCoordinateResponseMeasureUI::addNumberButton(
     NSColor *color, int number, int row, std::size_t col) {
-    auto title{nsString(std::to_string(number))};
+    const auto title{nsString(std::to_string(number))};
     const auto button {
         [NSButton
             buttonWithTitle:title
                      target:actions
                      action:@selector(notifyThatResponseButtonHasBeenClicked:)]
     };
-    auto responseWidth{width(responseButtons.frame) / responseNumbers};
-    auto responseHeight{height(responseButtons.frame) / responseColors};
+    const auto responseWidth{width(responseButtons.frame) / responseNumbers};
+    const auto responseHeight{height(responseButtons.frame) / responseColors};
     [button setFrame:NSMakeRect(responseWidth * col, responseHeight * row,
                          responseWidth, responseHeight)];
     [button setBezelStyle:NSBezelStyleTexturedSquare];
-    auto style{[[NSMutableParagraphStyle alloc] init]};
+    const auto style{[[NSMutableParagraphStyle alloc] init]};
     [style setAlignment:NSTextAlignmentCenter];
-    auto attrsDictionary{[NSDictionary
-        dictionaryWithObjectsAndKeys:color, NSForegroundColorAttributeName,
-        [NSNumber numberWithFloat:-4.0], NSStrokeWidthAttributeName,
-        NSColor.blackColor, NSStrokeColorAttributeName, style,
-        NSParagraphStyleAttributeName,
-        [NSFont fontWithName:@"Arial-Black" size:48], NSFontAttributeName,
-        nil]};
-    auto attrString{
-        [[NSAttributedString alloc] initWithString:title
-                                        attributes:attrsDictionary]};
-    [button setAttributedTitle:attrString];
+    [button
+        setAttributedTitle:
+            [[NSAttributedString alloc]
+                initWithString:title
+                    attributes:[NSDictionary dictionaryWithObjectsAndKeys:color,
+                                             NSForegroundColorAttributeName,
+                                             [NSNumber numberWithFloat:-4.0],
+                                             NSStrokeWidthAttributeName,
+                                             NSColor.blackColor,
+                                             NSStrokeColorAttributeName, style,
+                                             NSParagraphStyleAttributeName,
+                                             [NSFont fontWithName:@"Arial-Black"
+                                                             size:48],
+                                             NSFontAttributeName, nil]]];
     addSubview(responseButtons, button);
 }
 
