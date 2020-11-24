@@ -71,31 +71,31 @@
     av_speech_in_noise::AppKitExperimenterUI *controller;
 }
 
-- (void)exitTest {
+- (void)notifyThatExitTestButtonHasBeenClicked {
     controller->exitTest();
 }
 
-- (void)playTrial {
+- (void)notifyThatPlayTrialButtonHasBeenClicked {
     controller->playTrial();
 }
 
-- (void)submitPassedTrial {
+- (void)notifyThatCorrectButtonHasBeenClicked {
     controller->submitPassedTrial();
 }
 
-- (void)submitFailedTrial {
+- (void)notifyThatIncorrectButtonHasBeenClicked {
     controller->submitFailedTrial();
 }
 
-- (void)submitCorrectKeywords {
+- (void)notifyThatSubmitCorrectKeywordsButtonHasBeenClicked {
     controller->submitCorrectKeywords();
 }
 
-- (void)acceptContinuingTesting {
+- (void)notifyThatContinueTestingButtonHasBeenClicked {
     controller->acceptContinuingTesting();
 }
 
-- (void)declineContinuingTesting {
+- (void)notifyThatDeclineContinueTestingButtonHasBeenClicked {
     controller->declineContinuingTesting();
 }
 @end
@@ -643,17 +643,22 @@ AppKitExperimenterUI::AppKitExperimenterUI(NSViewController *viewController)
     continueTestingDialog = [NSWindow
         windowWithContentViewController:continueTestingDialogController];
     continueTestingDialog.styleMask = NSWindowStyleMaskBorderless;
-    exitTestButton = button("Exit Test", actions, @selector(exitTest));
-    nextTrialButton = button("Play Trial", actions, @selector(playTrial));
+    exitTestButton = button("Exit Test", actions,
+        @selector(notifyThatExitTestButtonHasBeenClicked));
+    nextTrialButton = button("Play Trial", actions,
+        @selector(notifyThatPlayTrialButtonHasBeenClicked));
     const auto submitFreeResponseButton {
         button("Submit", freeResponseActions, @selector(submitFreeResponse))
     };
     evaluationButtons = [NSStackView stackViewWithViews:@[
-        button("Incorrect", actions, @selector(submitFailedTrial)),
-        button("Correct", actions, @selector(submitPassedTrial))
+        button("Incorrect", actions,
+            @selector(notifyThatIncorrectButtonHasBeenClicked)),
+        button("Correct", actions,
+            @selector(notifyThatCorrectButtonHasBeenClicked))
     ]];
     const auto submitCorrectKeywordsButton {
-        button("Submit", actions, @selector(submitCorrectKeywords))
+        button("Submit", actions,
+            @selector(notifyThatSubmitCorrectKeywordsButtonHasBeenClicked))
     };
     setPlaceholder(correctKeywordsField, "2");
     setPlaceholder(freeResponseField, "This is a sentence.");
@@ -691,8 +696,11 @@ AppKitExperimenterUI::AppKitExperimenterUI(NSViewController *viewController)
     const auto continueTestingDialogStack {
         [NSStackView stackViewWithViews:@[
             continueTestingDialogField, [NSStackView stackViewWithViews:@[
-                button("Exit", actions, @selector(declineContinuingTesting)),
-                button("Continue", actions, @selector(acceptContinuingTesting))
+                button("Exit", actions,
+                    @selector
+                    (notifyThatDeclineContinueTestingButtonHasBeenClicked)),
+                button("Continue", actions,
+                    @selector(notifyThatContinueTestingButtonHasBeenClicked))
             ]]
         ]]
     };
