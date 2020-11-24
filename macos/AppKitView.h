@@ -80,10 +80,10 @@ class AppKitTestUI : public TestView,
     NSButton *nextTrialButton;
     ExperimenterViewActions *actions;
     FreeResponseViewActions *freeResponseActions;
-    TestControl::Observer *listener_{};
-    FreeResponseControl::Observer *freeResponseListener{};
-    CorrectKeywordsControl::Observer *correctKeywordsListener{};
-    PassFailControl::Observer *passFailListener{};
+    TestControl::Observer *observer{};
+    FreeResponseControl::Observer *freeResponseObserver{};
+    CorrectKeywordsControl::Observer *correctKeywordsObserver{};
+    PassFailControl::Observer *passFailObserver{};
 };
 
 class AppKitTestSetupUI : public TestSetupUI {

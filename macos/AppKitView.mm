@@ -595,9 +595,11 @@ void AppKitCoordinateResponseMeasureUI::show() {
 
 void AppKitCoordinateResponseMeasureUI::hide() { [window orderOut:nil]; }
 
+static auto emptyLabel() -> NSTextField * { return label(""); }
+
 AppKitTestUI::AppKitTestUI(NSViewController *viewController)
-    : viewController{viewController}, continueTestingDialogField{label("")},
-      primaryTextField{label("")}, secondaryTextField{label("")},
+    : viewController{viewController}, continueTestingDialogField{emptyLabel()},
+      primaryTextField{emptyLabel()}, secondaryTextField{emptyLabel()},
       freeResponseField{emptyTextField()},
       correctKeywordsField{emptyTextField()},
       freeResponseFlaggedButton{[NSButton checkboxWithTitle:@"flagged"
@@ -713,18 +715,18 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
     freeResponseActions->controller = this;
 }
 
-void AppKitTestUI::attach(TestControl::Observer *e) { listener_ = e; }
+void AppKitTestUI::attach(TestControl::Observer *e) { observer = e; }
 
 void AppKitTestUI::attach(FreeResponseControl::Observer *e) {
-    freeResponseListener = e;
+    freeResponseObserver = e;
 }
 
 void AppKitTestUI::attach(CorrectKeywordsControl::Observer *e) {
-    correctKeywordsListener = e;
+    correctKeywordsObserver = e;
 }
 
 void AppKitTestUI::attach(PassFailControl::Observer *e) {
-    passFailListener = e;
+    passFailObserver = e;
 }
 
 void AppKitTestUI::showExitTestButton() {
@@ -740,7 +742,7 @@ void AppKitTestUI::show() { av_speech_in_noise::show(view(viewController)); }
 void AppKitTestUI::hide() { av_speech_in_noise::hide(view(viewController)); }
 
 void AppKitTestUI::notifyThatExitTestButtonHasBeenClicked() {
-    listener_->exitTest();
+    observer->exitTest();
 }
 
 void AppKitTestUI::display(std::string s) { set(primaryTextField, s); }
@@ -810,31 +812,31 @@ auto AppKitTestUI::flagged() -> bool {
 }
 
 void AppKitTestUI::notifyThatPlayTrialButtonHasBeenClicked() {
-    listener_->playTrial();
+    observer->playTrial();
 }
 
 void AppKitTestUI::notifyThatSubmitFreeResponseButtonHasBeenClicked() {
-    freeResponseListener->notifyThatSubmitButtonHasBeenClicked();
+    freeResponseObserver->notifyThatSubmitButtonHasBeenClicked();
 }
 
 void AppKitTestUI::notifyThatCorrectButtonHasBeenClicked() {
-    passFailListener->notifyThatCorrectButtonHasBeenClicked();
+    passFailObserver->notifyThatCorrectButtonHasBeenClicked();
 }
 
 void AppKitTestUI::notifyThatIncorrectButtonHasBeenClicked() {
-    passFailListener->notifyThatIncorrectButtonHasBeenClicked();
+    passFailObserver->notifyThatIncorrectButtonHasBeenClicked();
 }
 
 void AppKitTestUI::notifyThatSubmitCorrectKeywordsButtonHasBeenClicked() {
-    correctKeywordsListener->notifyThatSubmitButtonHasBeenClicked();
+    correctKeywordsObserver->notifyThatSubmitButtonHasBeenClicked();
 }
 
 void AppKitTestUI::notifyThatContinueTestingButtonHasBeenClicked() {
-    listener_->acceptContinuingTesting();
+    observer->acceptContinuingTesting();
 }
 
 void AppKitTestUI::notifyThatDeclineContinueTestingButtonHasBeenClicked() {
-    listener_->declineContinuingTesting();
+    observer->declineContinuingTesting();
 }
 
 AppKitView::AppKitView(NSApplication *app, NSViewController *viewController)
