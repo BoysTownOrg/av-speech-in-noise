@@ -1,6 +1,7 @@
 #include "AppKit-utility.h"
 #include "Foundation-utility.h"
 
+namespace av_speech_in_noise {
 auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
     const auto controller{[[NSTabViewController alloc] init]};
     [controller setTabStyle:NSTabViewControllerTabStyleUnspecified];
@@ -14,4 +15,5 @@ auto nsButton(const std::string &s, id target, SEL action) -> NSButton * {
 void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
     child.translatesAutoresizingMaskIntoConstraints = NO;
     [parent addSubview:child];
+}
 }

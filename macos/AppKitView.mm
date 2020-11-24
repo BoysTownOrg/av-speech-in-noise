@@ -314,7 +314,7 @@ static auto consonantImageButton(
     std::unordered_map<void *, std::string> &consonants,
     ConsonantViewActions *actions, const std::string &consonant) -> NSButton * {
     const auto image{[[NSImage alloc]
-        initWithContentsOfFile:nsString(resourcePath(consonant, "bmp"))]};
+        initWithContentsOfFile:nsString(resourceUrl(consonant, "bmp").path)]};
     const auto button {
         [NSButton
             buttonWithImage:image

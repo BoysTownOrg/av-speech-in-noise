@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <vector>
 
 @interface FacemaskStudySetupViewActions : NSObject
 @end
@@ -102,10 +103,11 @@ static auto meta(const LocalUrl &resourceUrl) -> std::string {
 static void push_back(std::vector<ConditionSelection> &conditionSelections,
     FacemaskStudySetupViewActions *actions, const std::string &stem) {
     conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle : nsString(
-            meta(LocalUrl{resourcePath(stem, "txt")})) target : actions action :
-            @selector(notifyThatRadioButtonHasBeenClicked)],
-            LocalUrl { resourcePath(stem, "txt") }
+        [NSButton radioButtonWithTitle:nsString(meta(resourceUrl(stem, "txt")))
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourceUrl(stem, "txt")
     });
 }
 
