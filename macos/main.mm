@@ -1,7 +1,7 @@
 #include "main.h"
 #include "MersenneTwisterRandomizer.hpp"
 #include "AvFoundationPlayers.h"
-#include "CocoaView.h"
+#include "AppKitView.h"
 #include "common-objc.h"
 #include "AppKit-utility.h"
 #include <presentation/SessionControllerImpl.hpp>
@@ -332,7 +332,7 @@ void main(EyeTracker &eyeTracker,
                    keyEquivalent:@"q"];
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
-    CocoaView view{app, preferencesViewController};
+    AppKitView view{app, preferencesViewController};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);
     testSetupViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -355,7 +355,7 @@ void main(EyeTracker &eyeTracker,
     const auto experimenterViewController{
         nsTabViewControllerWithoutTabControl()};
     addChild(viewController, experimenterViewController);
-    CocoaExperimenterView experimenterView{experimenterViewController};
+    AppKitExperimenterView experimenterView{experimenterViewController};
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
     const auto subjectScreenFrame{subjectScreen.frame};
@@ -366,11 +366,11 @@ void main(EyeTracker &eyeTracker,
     const auto subjectViewWidth{subjectScreenWidth / 3};
     auto subjectViewLeadingEdge =
         subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
-    CocoaConsonantView consonantView{
+    AppKitConsonantView consonantView{
         NSMakeRect(subjectScreenOrigin.x + subjectScreenWidth / 4,
             subjectScreenOrigin.y + subjectScreenSize.height / 12,
             subjectScreenWidth / 2, subjectScreenSize.height / 2)};
-    CocoaCoordinateResponseMeasureView coordinateResponseMeasureView{
+    AppKitCoordinateResponseMeasureView coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
     TestSettingsInterpreterImpl testSettingsInterpreter;

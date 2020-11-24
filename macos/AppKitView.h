@@ -20,7 +20,7 @@
 @class FreeResponseViewActions;
 
 namespace av_speech_in_noise {
-class CocoaExperimenterView : public TestView,
+class AppKitExperimenterView : public TestView,
                               public TestControl,
                               public FreeResponseControl,
                               public FreeResponseView,
@@ -29,7 +29,7 @@ class CocoaExperimenterView : public TestView,
                               public PassFailControl,
                               public PassFailView {
   public:
-    explicit CocoaExperimenterView(NSViewController *);
+    explicit AppKitExperimenterView(NSViewController *);
     void attach(TestControl::Observer *) override;
     void attach(FreeResponseControl::Observer *) override;
     void attach(CorrectKeywordsControl::Observer *) override;
@@ -86,9 +86,9 @@ class CocoaExperimenterView : public TestView,
     PassFailControl::Observer *passFailListener{};
 };
 
-class CocoaTestSetupView : public TestSetupUI {
+class AppKitTestSetupView : public TestSetupUI {
   public:
-    explicit CocoaTestSetupView(NSViewController *);
+    explicit AppKitTestSetupView(NSViewController *);
     void show() override;
     void hide() override;
     auto testerId() -> std::string override;
@@ -118,17 +118,17 @@ class CocoaTestSetupView : public TestSetupUI {
     Observer *listener_{};
 };
 
-class CocoaTestSetupViewFactory : public MacOsTestSetupViewFactory {
+class AppKitTestSetupViewFactory : public MacOsTestSetupViewFactory {
   public:
     auto make(NSViewController *c) -> std::unique_ptr<TestSetupUI> override {
-        return std::make_unique<CocoaTestSetupView>(c);
+        return std::make_unique<AppKitTestSetupView>(c);
     }
 };
 
-class CocoaConsonantView : public ConsonantTaskView,
+class AppKitConsonantView : public ConsonantTaskView,
                            public ConsonantTaskControl {
   public:
-    explicit CocoaConsonantView(NSRect);
+    explicit AppKitConsonantView(NSRect);
     void attach(Observer *) override;
     void show() override;
     void hide() override;
@@ -152,11 +152,11 @@ class CocoaConsonantView : public ConsonantTaskView,
     Observer *listener_{};
 };
 
-class CocoaCoordinateResponseMeasureView
+class AppKitCoordinateResponseMeasureView
     : public CoordinateResponseMeasureControl,
       public CoordinateResponseMeasureView {
   public:
-    CocoaCoordinateResponseMeasureView(NSRect);
+    AppKitCoordinateResponseMeasureView(NSRect);
     auto numberResponse() -> std::string override;
     auto greenResponse() -> bool override;
     auto blueResponse() -> bool override;
@@ -185,9 +185,9 @@ class CocoaCoordinateResponseMeasureView
     Observer *listener_{};
 };
 
-class CocoaView : public SessionView {
+class AppKitView : public SessionView {
   public:
-    explicit CocoaView(NSApplication *, NSViewController *);
+    explicit AppKitView(NSApplication *, NSViewController *);
     void eventLoop() override;
     void showErrorMessage(std::string) override;
     auto browseForDirectory() -> std::string override;

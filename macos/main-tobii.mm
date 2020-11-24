@@ -1,5 +1,5 @@
 #include "main.h"
-#include "CocoaView.h"
+#include "AppKitView.h"
 #include <tobii_research.h>
 #include <tobii_research_streams.h>
 #include <dlfcn.h>
@@ -168,7 +168,7 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
 
 int main() {
     av_speech_in_noise::TobiiEyeTracker eyeTracker;
-    av_speech_in_noise::CocoaTestSetupViewFactory testSetupViewFactory;
+    av_speech_in_noise::AppKitTestSetupViewFactory testSetupViewFactory;
     av_speech_in_noise::DefaultOutputFileNameFactory outputFileNameFactory;
     av_speech_in_noise::main(
         eyeTracker, testSetupViewFactory, outputFileNameFactory);
