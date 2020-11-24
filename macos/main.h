@@ -4,12 +4,14 @@
 #include "MacOsTestSetupViewFactory.h"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/OutputFilePath.hpp>
+#include <av-speech-in-noise/Interface.hpp>
 #include <memory>
 
 namespace av_speech_in_noise {
 class OutputFileNameFactory {
   public:
-    virtual ~OutputFileNameFactory() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        OutputFileNameFactory);
     virtual auto make(TimeStamp &) -> std::unique_ptr<OutputFileName> = 0;
 };
 
