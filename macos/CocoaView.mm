@@ -1,5 +1,6 @@
 #include "CocoaView.h"
 #include "common-objc.h"
+#include "AppKit-utility.h"
 #include <gsl/gsl>
 #include <iterator>
 #include <array>
@@ -634,12 +635,6 @@ void CocoaCoordinateResponseMeasureView::show() {
 }
 
 void CocoaCoordinateResponseMeasureView::hide() { [window orderOut:nil]; }
-
-static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
-    const auto controller{[[NSTabViewController alloc] init]};
-    [controller setTabStyle:NSTabViewControllerTabStyleUnspecified];
-    return controller;
-}
 
 CocoaExperimenterView::CocoaExperimenterView(NSViewController *viewController)
     : viewController{viewController}, continueTestingDialogField{label("")},

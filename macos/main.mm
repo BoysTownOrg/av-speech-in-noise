@@ -3,6 +3,7 @@
 #include "AvFoundationPlayers.h"
 #include "CocoaView.h"
 #include "common-objc.h"
+#include "AppKit-utility.h"
 #include <presentation/SessionControllerImpl.hpp>
 #include <presentation/TestSettingsInterpreter.hpp>
 #include <recognition-test/Model.hpp>
@@ -210,12 +211,6 @@ void TimerImpl::timerCallback() { listener->callback(); }
 
 static void addChild(NSTabViewController *parent, NSTabViewController *child) {
     [parent.view addSubview:child.view];
-}
-
-static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
-    const auto controller{[[NSTabViewController alloc] init]};
-    [controller setTabStyle:NSTabViewControllerTabStyleUnspecified];
-    return controller;
 }
 
 void main(EyeTracker &eyeTracker,
