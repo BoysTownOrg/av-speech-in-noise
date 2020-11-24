@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_MAIN_MACOS_MAIN_H_
 #define AV_SPEECH_IN_NOISE_MAIN_MACOS_MAIN_H_
 
-#include "MacOsTestSetupViewFactory.h"
+#include "AppKitTestSetupUIFactory.h"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/OutputFilePath.hpp>
 #include <av-speech-in-noise/Interface.hpp>
@@ -23,7 +23,7 @@ class DefaultOutputFileNameFactory : public OutputFileNameFactory {
     }
 };
 
-void main(EyeTracker &, MacOsTestSetupViewFactory &, OutputFileNameFactory &,
+void main(EyeTracker &, AppKitTestSetupUIFactory &, OutputFileNameFactory &,
     SessionController::Observer * = nullptr,
     const std::string &relativeOutputDirectory =
         "Documents/AvSpeechInNoise Data");

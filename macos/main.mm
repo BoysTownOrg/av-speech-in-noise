@@ -214,7 +214,7 @@ static void addChild(NSTabViewController *parent, NSTabViewController *child) {
 }
 
 void main(EyeTracker &eyeTracker,
-    MacOsTestSetupViewFactory &testSetupViewFactory,
+    AppKitTestSetupUIFactory &testSetupViewFactory,
     OutputFileNameFactory &outputFileNameFactory,
     SessionController::Observer *sessionControllerObserver,
     const std::string &relativeOutputDirectory) {

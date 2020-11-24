@@ -1,7 +1,7 @@
 #ifndef MACOS_MAIN_COCOAVIEW_H_
 #define MACOS_MAIN_COCOAVIEW_H_
 
-#include "MacOsTestSetupViewFactory.h"
+#include "AppKitTestSetupUIFactory.h"
 #include <presentation/Consonant.hpp>
 #include <presentation/CoordinateResponseMeasure.hpp>
 #include <presentation/FreeResponse.hpp>
@@ -118,7 +118,7 @@ class AppKitTestSetupView : public TestSetupUI {
     Observer *listener_{};
 };
 
-class AppKitTestSetupViewFactory : public MacOsTestSetupViewFactory {
+class AppKitTestSetupViewFactory : public AppKitTestSetupUIFactory {
   public:
     auto make(NSViewController *c) -> std::unique_ptr<TestSetupUI> override {
         return std::make_unique<AppKitTestSetupView>(c);

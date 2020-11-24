@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_MACOS_FACEMASKSTUDYSETUPVIEW_H_
 #define AV_SPEECH_IN_NOISE_MACOS_FACEMASKSTUDYSETUPVIEW_H_
 
-#include "MacOsTestSetupViewFactory.h"
+#include "AppKitTestSetupUIFactory.h"
 #include <av-speech-in-noise/Model.hpp>
 
 @class FacemaskStudySetupViewActions;
@@ -41,7 +41,7 @@ class FacemaskStudySetupView : public TestSetupUI {
     NSViewController *controller;
 };
 
-class FacemaskStudySetupViewFactory : public MacOsTestSetupViewFactory {
+class FacemaskStudySetupViewFactory : public AppKitTestSetupUIFactory {
   public:
     auto make(NSViewController *c) -> std::unique_ptr<TestSetupUI> override {
         return std::make_unique<FacemaskStudySetupView>(c);
