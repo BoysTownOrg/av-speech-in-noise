@@ -355,7 +355,7 @@ void main(EyeTracker &eyeTracker,
     const auto experimenterViewController{
         nsTabViewControllerWithoutTabControl()};
     addChild(viewController, experimenterViewController);
-    AppKitExperimenterView experimenterView{experimenterViewController};
+    AppKitExperimenterUI experimenterView{experimenterViewController};
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
     const auto subjectScreenFrame{subjectScreen.frame};
@@ -366,11 +366,11 @@ void main(EyeTracker &eyeTracker,
     const auto subjectViewWidth{subjectScreenWidth / 3};
     auto subjectViewLeadingEdge =
         subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
-    AppKitConsonantView consonantView{
+    AppKitConsonantUI consonantView{
         NSMakeRect(subjectScreenOrigin.x + subjectScreenWidth / 4,
             subjectScreenOrigin.y + subjectScreenSize.height / 12,
             subjectScreenWidth / 2, subjectScreenSize.height / 2)};
-    AppKitCoordinateResponseMeasureView coordinateResponseMeasureView{
+    AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
     TestSettingsInterpreterImpl testSettingsInterpreter;

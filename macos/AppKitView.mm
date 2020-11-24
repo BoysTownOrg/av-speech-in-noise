@@ -23,7 +23,7 @@
 
 @implementation SetupViewActions {
   @public
-    av_speech_in_noise::AppKitTestSetupView *controller;
+    av_speech_in_noise::AppKitTestSetupUI *controller;
 }
 
 - (void)notifyThatConfirmButtonHasBeenClicked {
@@ -41,7 +41,7 @@
 
 @implementation CoordinateResponseMeasureViewActions {
   @public
-    av_speech_in_noise::AppKitCoordinateResponseMeasureView *controller;
+    av_speech_in_noise::AppKitCoordinateResponseMeasureUI *controller;
 }
 
 - (void)notifyThatResponseButtonHasBeenClicked:(id)sender {
@@ -55,7 +55,7 @@
 
 @implementation ConsonantViewActions {
   @public
-    av_speech_in_noise::AppKitConsonantView *controller;
+    av_speech_in_noise::AppKitConsonantUI *controller;
 }
 
 - (void)notifyThatResponseButtonHasBeenClicked:(id)sender {
@@ -69,7 +69,7 @@
 
 @implementation ExperimenterViewActions {
   @public
-    av_speech_in_noise::AppKitExperimenterView *controller;
+    av_speech_in_noise::AppKitExperimenterUI *controller;
 }
 
 - (void)exitTest {
@@ -103,7 +103,7 @@
 
 @implementation FreeResponseViewActions {
   @public
-    av_speech_in_noise::AppKitExperimenterView *controller;
+    av_speech_in_noise::AppKitExperimenterUI *controller;
 }
 
 - (void)submitFreeResponse {
@@ -186,7 +186,7 @@ static auto view(NSViewController *viewController) -> NSView * {
     return viewController.view;
 }
 
-AppKitTestSetupView::AppKitTestSetupView(NSViewController *viewController)
+AppKitTestSetupUI::AppKitTestSetupUI(NSViewController *viewController)
     : viewController{viewController}, subjectIdField{emptyTextField()},
       testerIdField{emptyTextField()}, sessionField{emptyTextField()},
       rmeSettingField{emptyTextField()},
@@ -264,64 +264,62 @@ AppKitTestSetupView::AppKitTestSetupView(NSViewController *viewController)
     av_speech_in_noise::show(view(viewController));
 }
 
-void AppKitTestSetupView::show() {
+void AppKitTestSetupUI::show() {
     av_speech_in_noise::show(view(viewController));
 }
 
-void AppKitTestSetupView::hide() {
+void AppKitTestSetupUI::hide() {
     av_speech_in_noise::hide(view(viewController));
 }
 
-auto AppKitTestSetupView::testSettingsFile() -> std::string {
+auto AppKitTestSetupUI::testSettingsFile() -> std::string {
     return string(testSettingsField);
 }
 
-auto AppKitTestSetupView::testerId() -> std::string {
+auto AppKitTestSetupUI::testerId() -> std::string {
     return string(testerIdField);
 }
 
-auto AppKitTestSetupView::startingSnr() -> std::string {
+auto AppKitTestSetupUI::startingSnr() -> std::string {
     return string(startingSnrField);
 }
 
-auto AppKitTestSetupView::subjectId() -> std::string {
+auto AppKitTestSetupUI::subjectId() -> std::string {
     return string(subjectIdField);
 }
 
-auto AppKitTestSetupView::session() -> std::string {
+auto AppKitTestSetupUI::session() -> std::string {
     return string(sessionField);
 }
 
-auto AppKitTestSetupView::rmeSetting() -> std::string {
+auto AppKitTestSetupUI::rmeSetting() -> std::string {
     return string(rmeSettingField);
 }
 
-void AppKitTestSetupView::setTestSettingsFile(std::string s) {
+void AppKitTestSetupUI::setTestSettingsFile(std::string s) {
     set(testSettingsField, s);
 }
 
-void AppKitTestSetupView::populateTransducerMenu(
-    std::vector<std::string> items) {
+void AppKitTestSetupUI::populateTransducerMenu(std::vector<std::string> items) {
     for (const auto &item : items)
         [transducerMenu addItemWithTitle:nsString(item)];
 }
 
-auto AppKitTestSetupView::transducer() -> std::string {
+auto AppKitTestSetupUI::transducer() -> std::string {
     return transducerMenu.titleOfSelectedItem.UTF8String;
 }
 
-void AppKitTestSetupView::attach(Observer *listener) { listener_ = listener; }
+void AppKitTestSetupUI::attach(Observer *listener) { listener_ = listener; }
 
-void AppKitTestSetupView::notifyThatConfirmButtonHasBeenClicked() {
+void AppKitTestSetupUI::notifyThatConfirmButtonHasBeenClicked() {
     listener_->notifyThatConfirmButtonHasBeenClicked();
 }
 
-void AppKitTestSetupView::
-    notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
+void AppKitTestSetupUI::notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
     listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
 }
 
-void AppKitTestSetupView::notifyThatPlayCalibrationButtonHasBeenClicked() {
+void AppKitTestSetupUI::notifyThatPlayCalibrationButtonHasBeenClicked() {
     listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
 }
 
@@ -361,7 +359,7 @@ static void addReadyButton(NSView *parent, ConsonantViewActions *actions) {
     addSubview(parent, button_);
 }
 
-AppKitConsonantView::AppKitConsonantView(NSRect r)
+AppKitConsonantUI::AppKitConsonantUI(NSRect r)
     : // Defer may be critical here...
       window{[[NSWindow alloc] initWithContentRect:r
                                          styleMask:NSWindowStyleMaskBorderless
@@ -450,44 +448,44 @@ AppKitConsonantView::AppKitConsonantView(NSRect r)
     hideReadyButton();
 }
 
-void AppKitConsonantView::show() { [window makeKeyAndOrderFront:nil]; }
+void AppKitConsonantUI::show() { [window makeKeyAndOrderFront:nil]; }
 
-void AppKitConsonantView::hide() { [window orderOut:nil]; }
+void AppKitConsonantUI::hide() { [window orderOut:nil]; }
 
-void AppKitConsonantView::showReadyButton() {
+void AppKitConsonantUI::showReadyButton() {
     av_speech_in_noise::show(readyButton);
 }
 
-void AppKitConsonantView::hideReadyButton() {
+void AppKitConsonantUI::hideReadyButton() {
     av_speech_in_noise::hide(readyButton);
 }
 
-void AppKitConsonantView::attach(Observer *e) { listener_ = e; }
+void AppKitConsonantUI::attach(Observer *e) { listener_ = e; }
 
-void AppKitConsonantView::notifyThatReadyButtonHasBeenClicked() {
+void AppKitConsonantUI::notifyThatReadyButtonHasBeenClicked() {
     listener_->notifyThatReadyButtonHasBeenClicked();
 }
 
-void AppKitConsonantView::notifyThatResponseButtonHasBeenClicked(id sender) {
+void AppKitConsonantUI::notifyThatResponseButtonHasBeenClicked(id sender) {
     lastButtonPressed = sender;
     listener_->notifyThatResponseButtonHasBeenClicked();
 }
 
-void AppKitConsonantView::showResponseButtons() {
+void AppKitConsonantUI::showResponseButtons() {
     av_speech_in_noise::show(responseButtons);
 }
 
-void AppKitConsonantView::hideResponseButtons() {
+void AppKitConsonantUI::hideResponseButtons() {
     av_speech_in_noise::hide(responseButtons);
 }
 
-auto AppKitConsonantView::consonant() -> std::string {
+auto AppKitConsonantUI::consonant() -> std::string {
     return consonants.at((__bridge void *)lastButtonPressed);
 }
 
-void AppKitConsonantView::hideCursor() { [NSCursor hide]; }
+void AppKitConsonantUI::hideCursor() { [NSCursor hide]; }
 
-void AppKitConsonantView::showCursor() { [NSCursor unhide]; }
+void AppKitConsonantUI::showCursor() { [NSCursor unhide]; }
 
 static const auto greenColor{NSColor.greenColor};
 static const auto redColor{NSColor.redColor};
@@ -497,8 +495,7 @@ constexpr std::array<int, 8> numbers{{1, 2, 3, 4, 5, 6, 8, 9}};
 constexpr auto responseNumbers{std::size(numbers)};
 constexpr auto responseColors{4};
 
-AppKitCoordinateResponseMeasureView::AppKitCoordinateResponseMeasureView(
-    NSRect r)
+AppKitCoordinateResponseMeasureUI::AppKitCoordinateResponseMeasureUI(NSRect r)
     : // Defer may be critical here...
       window{[[NSWindow alloc] initWithContentRect:r
                                          styleMask:NSWindowStyleMaskBorderless
@@ -521,13 +518,12 @@ AppKitCoordinateResponseMeasureView::AppKitCoordinateResponseMeasureView(
     hideNextTrialButton();
 }
 
-void AppKitCoordinateResponseMeasureView::addButtonRow(
-    NSColor *color, int row) {
+void AppKitCoordinateResponseMeasureUI::addButtonRow(NSColor *color, int row) {
     for (std::size_t col{0}; col < responseNumbers; ++col)
         addNumberButton(color, numbers.at(col), row, col);
 }
 
-void AppKitCoordinateResponseMeasureView::addNumberButton(
+void AppKitCoordinateResponseMeasureUI::addNumberButton(
     NSColor *color, int number, int row, std::size_t col) {
     auto title{nsString(std::to_string(number))};
     const auto button {
@@ -557,7 +553,7 @@ void AppKitCoordinateResponseMeasureView::addNumberButton(
     addSubview(responseButtons, button);
 }
 
-void AppKitCoordinateResponseMeasureView::addNextTrialButton() {
+void AppKitCoordinateResponseMeasureUI::addNextTrialButton() {
     const auto button_ {
         button("", actions, @selector(notifyThatReadyButtonHasBeenClicked))
     };
@@ -576,65 +572,64 @@ void AppKitCoordinateResponseMeasureView::addNextTrialButton() {
     addSubview(nextTrialButton, button_);
 }
 
-auto AppKitCoordinateResponseMeasureView::numberResponse() -> std::string {
+auto AppKitCoordinateResponseMeasureUI::numberResponse() -> std::string {
     return lastButtonPressed.title.UTF8String;
 }
 
-auto AppKitCoordinateResponseMeasureView::greenResponse() -> bool {
+auto AppKitCoordinateResponseMeasureUI::greenResponse() -> bool {
     return lastPressedColor() == greenColor;
 }
 
-auto AppKitCoordinateResponseMeasureView::lastPressedColor() -> NSColor * {
+auto AppKitCoordinateResponseMeasureUI::lastPressedColor() -> NSColor * {
     return [lastButtonPressed.attributedTitle
              attribute:NSForegroundColorAttributeName
                atIndex:0
         effectiveRange:nil];
 }
 
-auto AppKitCoordinateResponseMeasureView::blueResponse() -> bool {
+auto AppKitCoordinateResponseMeasureUI::blueResponse() -> bool {
     return lastPressedColor() == blueColor;
 }
 
-auto AppKitCoordinateResponseMeasureView::whiteResponse() -> bool {
+auto AppKitCoordinateResponseMeasureUI::whiteResponse() -> bool {
     return lastPressedColor() == whiteColor;
 }
 
-void AppKitCoordinateResponseMeasureView::
-    notifyThatResponseButtonHasBeenClicked(id sender) {
+void AppKitCoordinateResponseMeasureUI::notifyThatResponseButtonHasBeenClicked(
+    id sender) {
     lastButtonPressed = sender;
     listener_->notifyThatResponseButtonHasBeenClicked();
 }
 
-void AppKitCoordinateResponseMeasureView::showResponseButtons() {
+void AppKitCoordinateResponseMeasureUI::showResponseButtons() {
     av_speech_in_noise::show(responseButtons);
 }
 
-void AppKitCoordinateResponseMeasureView::showNextTrialButton() {
+void AppKitCoordinateResponseMeasureUI::showNextTrialButton() {
     av_speech_in_noise::show(nextTrialButton);
 }
 
-void AppKitCoordinateResponseMeasureView::hideNextTrialButton() {
+void AppKitCoordinateResponseMeasureUI::hideNextTrialButton() {
     av_speech_in_noise::hide(nextTrialButton);
 }
 
-void AppKitCoordinateResponseMeasureView::
-    notifyThatReadyButtonHasBeenClicked() {
+void AppKitCoordinateResponseMeasureUI::notifyThatReadyButtonHasBeenClicked() {
     listener_->notifyThatReadyButtonHasBeenClicked();
 }
 
-void AppKitCoordinateResponseMeasureView::hideResponseButtons() {
+void AppKitCoordinateResponseMeasureUI::hideResponseButtons() {
     av_speech_in_noise::hide(responseButtons);
 }
 
-void AppKitCoordinateResponseMeasureView::attach(Observer *e) { listener_ = e; }
+void AppKitCoordinateResponseMeasureUI::attach(Observer *e) { listener_ = e; }
 
-void AppKitCoordinateResponseMeasureView::show() {
+void AppKitCoordinateResponseMeasureUI::show() {
     [window makeKeyAndOrderFront:nil];
 }
 
-void AppKitCoordinateResponseMeasureView::hide() { [window orderOut:nil]; }
+void AppKitCoordinateResponseMeasureUI::hide() { [window orderOut:nil]; }
 
-AppKitExperimenterView::AppKitExperimenterView(NSViewController *viewController)
+AppKitExperimenterUI::AppKitExperimenterUI(NSViewController *viewController)
     : viewController{viewController}, continueTestingDialogField{label("")},
       primaryTextField{label("")}, secondaryTextField{label("")},
       freeResponseField{emptyTextField()},
@@ -743,130 +738,128 @@ AppKitExperimenterView::AppKitExperimenterView(NSViewController *viewController)
     freeResponseActions->controller = this;
 }
 
-void AppKitExperimenterView::attach(TestControl::Observer *e) { listener_ = e; }
+void AppKitExperimenterUI::attach(TestControl::Observer *e) { listener_ = e; }
 
-void AppKitExperimenterView::attach(FreeResponseControl::Observer *e) {
+void AppKitExperimenterUI::attach(FreeResponseControl::Observer *e) {
     freeResponseListener = e;
 }
 
-void AppKitExperimenterView::attach(CorrectKeywordsControl::Observer *e) {
+void AppKitExperimenterUI::attach(CorrectKeywordsControl::Observer *e) {
     correctKeywordsListener = e;
 }
 
-void AppKitExperimenterView::attach(PassFailControl::Observer *e) {
+void AppKitExperimenterUI::attach(PassFailControl::Observer *e) {
     passFailListener = e;
 }
 
-void AppKitExperimenterView::showExitTestButton() {
+void AppKitExperimenterUI::showExitTestButton() {
     av_speech_in_noise::show(exitTestButton);
 }
 
-void AppKitExperimenterView::hideExitTestButton() {
+void AppKitExperimenterUI::hideExitTestButton() {
     av_speech_in_noise::hide(exitTestButton);
 }
 
-void AppKitExperimenterView::show() {
+void AppKitExperimenterUI::show() {
     av_speech_in_noise::show(view(viewController));
 }
 
-void AppKitExperimenterView::hide() {
+void AppKitExperimenterUI::hide() {
     av_speech_in_noise::hide(view(viewController));
 }
 
-void AppKitExperimenterView::exitTest() { listener_->exitTest(); }
+void AppKitExperimenterUI::exitTest() { listener_->exitTest(); }
 
-void AppKitExperimenterView::display(std::string s) {
-    set(primaryTextField, s);
-}
+void AppKitExperimenterUI::display(std::string s) { set(primaryTextField, s); }
 
-void AppKitExperimenterView::secondaryDisplay(std::string s) {
+void AppKitExperimenterUI::secondaryDisplay(std::string s) {
     set(secondaryTextField, s);
 }
 
-void AppKitExperimenterView::showNextTrialButton() {
+void AppKitExperimenterUI::showNextTrialButton() {
     av_speech_in_noise::show(nextTrialButton);
 }
 
-void AppKitExperimenterView::hideNextTrialButton() {
+void AppKitExperimenterUI::hideNextTrialButton() {
     av_speech_in_noise::hide(nextTrialButton);
 }
 
-void AppKitExperimenterView::showEvaluationButtons() {
+void AppKitExperimenterUI::showEvaluationButtons() {
     av_speech_in_noise::show(evaluationButtons);
 }
 
-void AppKitExperimenterView::showFreeResponseSubmission() {
+void AppKitExperimenterUI::showFreeResponseSubmission() {
     av_speech_in_noise::show(freeResponseView);
 }
 
-void AppKitExperimenterView::hideFreeResponseSubmission() {
+void AppKitExperimenterUI::hideFreeResponseSubmission() {
     av_speech_in_noise::hide(freeResponseView);
 }
 
-void AppKitExperimenterView::hideEvaluationButtons() {
+void AppKitExperimenterUI::hideEvaluationButtons() {
     av_speech_in_noise::hide(evaluationButtons);
 }
 
-void AppKitExperimenterView::showCorrectKeywordsSubmission() {
+void AppKitExperimenterUI::showCorrectKeywordsSubmission() {
     av_speech_in_noise::show(correctKeywordsView);
 }
 
-void AppKitExperimenterView::hideCorrectKeywordsSubmission() {
+void AppKitExperimenterUI::hideCorrectKeywordsSubmission() {
     av_speech_in_noise::hide(correctKeywordsView);
 }
 
-void AppKitExperimenterView::showContinueTestingDialog() {
+void AppKitExperimenterUI::showContinueTestingDialog() {
     [view(viewController).window beginSheet:continueTestingDialog
                           completionHandler:^(NSModalResponse){
                           }];
 }
 
-void AppKitExperimenterView::hideContinueTestingDialog() {
+void AppKitExperimenterUI::hideContinueTestingDialog() {
     [view(viewController).window endSheet:continueTestingDialog];
 }
 
-void AppKitExperimenterView::setContinueTestingDialogMessage(
+void AppKitExperimenterUI::setContinueTestingDialogMessage(
     const std::string &s) {
     set(continueTestingDialogField, s);
 }
 
-void AppKitExperimenterView::clearFreeResponse() { set(freeResponseField, ""); }
+void AppKitExperimenterUI::clearFreeResponse() { set(freeResponseField, ""); }
 
-auto AppKitExperimenterView::freeResponse() -> std::string {
+auto AppKitExperimenterUI::freeResponse() -> std::string {
     return string(freeResponseField);
 }
 
-auto AppKitExperimenterView::correctKeywords() -> std::string {
+auto AppKitExperimenterUI::correctKeywords() -> std::string {
     return string(correctKeywordsField);
 }
 
-auto AppKitExperimenterView::flagged() -> bool {
+auto AppKitExperimenterUI::flagged() -> bool {
     return freeResponseFlaggedButton.state == NSControlStateValueOn;
 }
 
-void AppKitExperimenterView::playTrial() { listener_->playTrial(); }
+void AppKitExperimenterUI::playTrial() { listener_->playTrial(); }
 
-void AppKitExperimenterView::submitFreeResponse() {
+void AppKitExperimenterUI::submitFreeResponse() {
     freeResponseListener->notifyThatSubmitButtonHasBeenClicked();
 }
 
-void AppKitExperimenterView::submitPassedTrial() {
+void AppKitExperimenterUI::submitPassedTrial() {
     passFailListener->notifyThatCorrectButtonHasBeenClicked();
 }
 
-void AppKitExperimenterView::submitFailedTrial() {
+void AppKitExperimenterUI::submitFailedTrial() {
     passFailListener->notifyThatIncorrectButtonHasBeenClicked();
 }
 
-void AppKitExperimenterView::submitCorrectKeywords() {
+void AppKitExperimenterUI::submitCorrectKeywords() {
     correctKeywordsListener->notifyThatSubmitButtonHasBeenClicked();
 }
 
-void AppKitExperimenterView::acceptContinuingTesting() {
+void AppKitExperimenterUI::acceptContinuingTesting() {
     listener_->acceptContinuingTesting();
 }
 
-void AppKitExperimenterView::declineContinuingTesting() {
+void AppKitExperimenterUI::declineContinuingTesting() {
     listener_->declineContinuingTesting();
 }
 

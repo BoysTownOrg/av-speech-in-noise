@@ -20,16 +20,16 @@
 @class FreeResponseViewActions;
 
 namespace av_speech_in_noise {
-class AppKitExperimenterView : public TestView,
-                               public TestControl,
-                               public FreeResponseControl,
-                               public FreeResponseView,
-                               public CorrectKeywordsControl,
-                               public CorrectKeywordsView,
-                               public PassFailControl,
-                               public PassFailView {
+class AppKitExperimenterUI : public TestView,
+                             public TestControl,
+                             public FreeResponseControl,
+                             public FreeResponseView,
+                             public CorrectKeywordsControl,
+                             public CorrectKeywordsView,
+                             public PassFailControl,
+                             public PassFailView {
   public:
-    explicit AppKitExperimenterView(NSViewController *);
+    explicit AppKitExperimenterUI(NSViewController *);
     void attach(TestControl::Observer *) override;
     void attach(FreeResponseControl::Observer *) override;
     void attach(CorrectKeywordsControl::Observer *) override;
@@ -86,9 +86,9 @@ class AppKitExperimenterView : public TestView,
     PassFailControl::Observer *passFailListener{};
 };
 
-class AppKitTestSetupView : public TestSetupUI {
+class AppKitTestSetupUI : public TestSetupUI {
   public:
-    explicit AppKitTestSetupView(NSViewController *);
+    explicit AppKitTestSetupUI(NSViewController *);
     void show() override;
     void hide() override;
     auto testerId() -> std::string override;
@@ -118,17 +118,17 @@ class AppKitTestSetupView : public TestSetupUI {
     Observer *listener_{};
 };
 
-class AppKitTestSetupViewFactory : public AppKitTestSetupUIFactory {
+class AppKitTestSetupUIFactoryImpl : public AppKitTestSetupUIFactory {
   public:
     auto make(NSViewController *c) -> std::unique_ptr<TestSetupUI> override {
-        return std::make_unique<AppKitTestSetupView>(c);
+        return std::make_unique<AppKitTestSetupUI>(c);
     }
 };
 
-class AppKitConsonantView : public ConsonantTaskView,
-                            public ConsonantTaskControl {
+class AppKitConsonantUI : public ConsonantTaskView,
+                          public ConsonantTaskControl {
   public:
-    explicit AppKitConsonantView(NSRect);
+    explicit AppKitConsonantUI(NSRect);
     void attach(Observer *) override;
     void show() override;
     void hide() override;
@@ -152,11 +152,11 @@ class AppKitConsonantView : public ConsonantTaskView,
     Observer *listener_{};
 };
 
-class AppKitCoordinateResponseMeasureView
+class AppKitCoordinateResponseMeasureUI
     : public CoordinateResponseMeasureControl,
       public CoordinateResponseMeasureView {
   public:
-    AppKitCoordinateResponseMeasureView(NSRect);
+    AppKitCoordinateResponseMeasureUI(NSRect);
     auto numberResponse() -> std::string override;
     auto greenResponse() -> bool override;
     auto blueResponse() -> bool override;
