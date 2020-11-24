@@ -55,8 +55,8 @@ add_executable(
   AppKitView.mm
   AppKit-utility.mm
   Foundation-utility.mm
+  run.mm
   ${MAIN_IMPL_FILE}
-  main.mm
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
 add_macos_bundle(av-speech-in-noise-bundle org.boystown.av-speech-in-noise
                  "AV Speech in Noise")
@@ -67,8 +67,8 @@ add_executable(
   AppKit-utility.mm
   Foundation-utility.mm
   FacemaskStudySetupView.mm
+  run.mm
   main-facemask-study.mm
-  main.mm
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
 add_macos_bundle(
   av-speech-in-noise-facemask-study
