@@ -4,6 +4,7 @@
 #include <gsl/gsl>
 #include <iterator>
 #include <array>
+#include <algorithm>
 
 @interface SetupViewActions : NSObject
 @end
@@ -351,28 +352,27 @@ static auto equallyDistributedConsonantImageButtonGrid(
     const std::vector<std::vector<std::string>> &consonantRows)
     -> NSStackView * {
     std::vector<NSView *> rows;
-    for (const auto &each : consonantRows) {
-        std::vector<NSButton *> buttons;
-        buttons.reserve(each.size());
-        for (const auto &x : each)
-            buttons.push_back(consonantImageButton(consonants, actions, x));
-        auto row{[NSStackView
+    for (const auto &consonantRow : consonantRows) {
+        std::vector<NSButton *> buttons(consonantRow.size());
+        std::transform(consonantRow.begin(), consonantRow.end(),
+            buttons.begin(), [&](const std::string &consonant) {
+                return consonantImageButton(consonants, actions, consonant);
+            });
+        const auto row{[NSStackView
             stackViewWithViews:[NSArray arrayWithObjects:&buttons.front()
                                                    count:buttons.size()]]};
         row.distribution = NSStackViewDistributionFillEqually;
         rows.push_back(row);
     }
-    auto buttonGrid{[NSStackView
+    const auto grid{[NSStackView
         stackViewWithViews:[NSArray arrayWithObjects:&rows.front()
                                                count:rows.size()]]};
     for (auto row : rows)
         [NSLayoutConstraint activateConstraints:@[
-            [row.leadingAnchor
-                constraintEqualToAnchor:buttonGrid.leadingAnchor],
-            [row.trailingAnchor
-                constraintEqualToAnchor:buttonGrid.trailingAnchor]
+            [row.leadingAnchor constraintEqualToAnchor:grid.leadingAnchor],
+            [row.trailingAnchor constraintEqualToAnchor:grid.trailingAnchor]
         ]];
-    return buttonGrid;
+    return grid;
 }
 
 AppKitConsonantUI::AppKitConsonantUI(NSRect r)
@@ -391,9 +391,9 @@ AppKitConsonantUI::AppKitConsonantUI(NSRect r)
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
     responseButtons.distribution = NSStackViewDistributionFillEqually;
     addReadyButton(readyButton, actions);
-    addSubview(window.contentView, readyButton);
-    addAutolayoutEnabledSubview(window.contentView, responseButtons);
     const auto contentView{window.contentView};
+    addSubview(contentView, readyButton);
+    addAutolayoutEnabledSubview(contentView, responseButtons);
     [NSLayoutConstraint activateConstraints:@[
         [responseButtons.topAnchor
             constraintEqualToAnchor:contentView.topAnchor],
