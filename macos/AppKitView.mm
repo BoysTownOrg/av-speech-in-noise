@@ -72,31 +72,31 @@
 }
 
 - (void)notifyThatExitTestButtonHasBeenClicked {
-    controller->exitTest();
+    controller->notifyThatExitTestButtonHasBeenClicked();
 }
 
 - (void)notifyThatPlayTrialButtonHasBeenClicked {
-    controller->playTrial();
+    controller->notifyThatPlayTrialButtonHasBeenClicked();
 }
 
 - (void)notifyThatCorrectButtonHasBeenClicked {
-    controller->submitPassedTrial();
+    controller->notifyThatCorrectButtonHasBeenClicked();
 }
 
 - (void)notifyThatIncorrectButtonHasBeenClicked {
-    controller->submitFailedTrial();
+    controller->notifyThatIncorrectButtonHasBeenClicked();
 }
 
 - (void)notifyThatSubmitCorrectKeywordsButtonHasBeenClicked {
-    controller->submitCorrectKeywords();
+    controller->notifyThatSubmitCorrectKeywordsButtonHasBeenClicked();
 }
 
 - (void)notifyThatContinueTestingButtonHasBeenClicked {
-    controller->acceptContinuingTesting();
+    controller->notifyThatContinueTestingButtonHasBeenClicked();
 }
 
 - (void)notifyThatDeclineContinueTestingButtonHasBeenClicked {
-    controller->declineContinuingTesting();
+    controller->notifyThatDeclineContinueTestingButtonHasBeenClicked();
 }
 @end
 
@@ -775,7 +775,9 @@ void AppKitExperimenterUI::hide() {
     av_speech_in_noise::hide(view(viewController));
 }
 
-void AppKitExperimenterUI::exitTest() { listener_->exitTest(); }
+void AppKitExperimenterUI::notifyThatExitTestButtonHasBeenClicked() {
+    listener_->exitTest();
+}
 
 void AppKitExperimenterUI::display(std::string s) { set(primaryTextField, s); }
 
@@ -844,29 +846,33 @@ auto AppKitExperimenterUI::flagged() -> bool {
     return freeResponseFlaggedButton.state == NSControlStateValueOn;
 }
 
-void AppKitExperimenterUI::playTrial() { listener_->playTrial(); }
+void AppKitExperimenterUI::notifyThatPlayTrialButtonHasBeenClicked() {
+    listener_->playTrial();
+}
 
 void AppKitExperimenterUI::submitFreeResponse() {
     freeResponseListener->notifyThatSubmitButtonHasBeenClicked();
 }
 
-void AppKitExperimenterUI::submitPassedTrial() {
+void AppKitExperimenterUI::notifyThatCorrectButtonHasBeenClicked() {
     passFailListener->notifyThatCorrectButtonHasBeenClicked();
 }
 
-void AppKitExperimenterUI::submitFailedTrial() {
+void AppKitExperimenterUI::notifyThatIncorrectButtonHasBeenClicked() {
     passFailListener->notifyThatIncorrectButtonHasBeenClicked();
 }
 
-void AppKitExperimenterUI::submitCorrectKeywords() {
+void AppKitExperimenterUI::
+    notifyThatSubmitCorrectKeywordsButtonHasBeenClicked() {
     correctKeywordsListener->notifyThatSubmitButtonHasBeenClicked();
 }
 
-void AppKitExperimenterUI::acceptContinuingTesting() {
+void AppKitExperimenterUI::notifyThatContinueTestingButtonHasBeenClicked() {
     listener_->acceptContinuingTesting();
 }
 
-void AppKitExperimenterUI::declineContinuingTesting() {
+void AppKitExperimenterUI::
+    notifyThatDeclineContinueTestingButtonHasBeenClicked() {
     listener_->declineContinuingTesting();
 }
 

@@ -55,14 +55,14 @@ class AppKitExperimenterUI : public TestView,
     void hideContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &) override;
     void clearFreeResponse() override;
-    void exitTest();
-    void playTrial();
+    void notifyThatExitTestButtonHasBeenClicked();
+    void notifyThatPlayTrialButtonHasBeenClicked();
     void submitFreeResponse();
-    void submitPassedTrial();
-    void submitFailedTrial();
-    void submitCorrectKeywords();
-    void acceptContinuingTesting();
-    void declineContinuingTesting();
+    void notifyThatCorrectButtonHasBeenClicked();
+    void notifyThatIncorrectButtonHasBeenClicked();
+    void notifyThatSubmitCorrectKeywordsButtonHasBeenClicked();
+    void notifyThatContinueTestingButtonHasBeenClicked();
+    void notifyThatDeclineContinueTestingButtonHasBeenClicked();
 
   private:
     NSViewController *viewController;
