@@ -124,14 +124,14 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                                    NSFontAttributeName, [NSColor whiteColor],
                                    NSForegroundColorAttributeName, nil]]]};
     const auto confirmButton {
-        button("", actions, @selector(notifyThatConfirmButtonHasBeenClicked))
+        nsButton("", actions, @selector(notifyThatConfirmButtonHasBeenClicked))
     };
     const auto playLeftSpeakerCalibrationButton {
-        button("play left speaker", actions,
+        nsButton("play left speaker", actions,
             @selector(notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked))
     };
     const auto playRightSpeakerCalibrationButton {
-        button("play right speaker", actions,
+        nsButton("play right speaker", actions,
             @selector
             (notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked))
     };

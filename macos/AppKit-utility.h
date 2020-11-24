@@ -5,7 +5,7 @@
 #include <string>
 
 auto nsTabViewControllerWithoutTabControl() -> NSTabViewController *;
-auto button(const std::string &s, id target, SEL action) -> NSButton *;
+auto nsButton(const std::string &s, id target, SEL action) -> NSButton *;
 void addAutolayoutEnabledSubview(NSView *parent, NSView *child);
 
 #endif

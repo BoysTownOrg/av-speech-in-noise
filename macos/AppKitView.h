@@ -115,7 +115,7 @@ class AppKitTestSetupUI : public TestSetupUI {
     NSTextField *testSettingsField;
     NSTextField *startingSnrField;
     SetupViewActions *actions;
-    Observer *listener_{};
+    Observer *observer{};
 };
 
 class AppKitTestSetupUIFactoryImpl : public AppKitTestSetupUIFactory {

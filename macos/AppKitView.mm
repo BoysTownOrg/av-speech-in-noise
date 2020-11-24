@@ -182,7 +182,7 @@ AppKitTestSetupUI::AppKitTestSetupUI(NSViewController *viewController)
       actions{[[SetupViewActions alloc] init]} {
     actions->controller = this;
     const auto confirmButton {
-        button("Confirm", actions,
+        nsButton("Confirm", actions,
             @selector(notifyThatConfirmButtonHasBeenClicked))
     };
     [confirmButton setKeyEquivalent:@"\r"];
@@ -195,10 +195,10 @@ AppKitTestSetupUI::AppKitTestSetupUI(NSViewController *viewController)
             labeledView(transducerMenu, "transducer:"),
             [NSStackView stackViewWithViews:@[
                 labeledView(testSettingsField, "test settings:"),
-                button("Browse...", actions,
+                nsButton("Browse...", actions,
                     @selector
                     (notifyThatBrowseForTestSettingsButtonHasBeenClicked)),
-                button("Play Calibration", actions,
+                nsButton("Play Calibration", actions,
                     @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
             ]],
             labeledView(startingSnrField, "starting SNR (dB):")
@@ -295,18 +295,18 @@ auto AppKitTestSetupUI::transducer() -> std::string {
     return transducerMenu.titleOfSelectedItem.UTF8String;
 }
 
-void AppKitTestSetupUI::attach(Observer *listener) { listener_ = listener; }
+void AppKitTestSetupUI::attach(Observer *e) { observer = e; }
 
 void AppKitTestSetupUI::notifyThatConfirmButtonHasBeenClicked() {
-    listener_->notifyThatConfirmButtonHasBeenClicked();
+    observer->notifyThatConfirmButtonHasBeenClicked();
 }
 
 void AppKitTestSetupUI::notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
-    listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
+    observer->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
 }
 
 void AppKitTestSetupUI::notifyThatPlayCalibrationButtonHasBeenClicked() {
-    listener_->notifyThatPlayCalibrationButtonHasBeenClicked();
+    observer->notifyThatPlayCalibrationButtonHasBeenClicked();
 }
 
 static auto consonantImageButton(
@@ -327,22 +327,22 @@ static auto consonantImageButton(
 }
 
 static void addReadyButton(NSView *parent, ConsonantViewActions *actions) {
-    const auto button_ {
-        button("", actions, @selector(notifyThatReadyButtonHasBeenClicked))
+    const auto button {
+        nsButton("", actions, @selector(notifyThatReadyButtonHasBeenClicked))
     };
-    [button_ setBezelStyle:NSBezelStyleTexturedSquare];
-    auto style{[[NSMutableParagraphStyle alloc] init]};
+    [button setBezelStyle:NSBezelStyleTexturedSquare];
+    const auto style{[[NSMutableParagraphStyle alloc] init]};
     [style setAlignment:NSTextAlignmentCenter];
-    auto font{[NSFont fontWithName:@"Courier" size:36]};
-    auto attrsDictionary{[NSDictionary
-        dictionaryWithObjectsAndKeys:font, NSFontAttributeName, nil]};
-    auto attrString{
-        [[NSAttributedString alloc] initWithString:@"Press when ready"
-                                        attributes:attrsDictionary]};
-    [button_ setAttributedTitle:attrString];
-    [button_
+    const auto font{[NSFont fontWithName:@"Courier" size:36]};
+    [button
+        setAttributedTitle:
+            [[NSAttributedString alloc]
+                initWithString:@"Press when ready"
+                    attributes:[NSDictionary dictionaryWithObjectsAndKeys:font,
+                                             NSFontAttributeName, nil]]];
+    [button
         setFrame:NSMakeRect(0, 0, width(parent.frame), height(parent.frame))];
-    addSubview(parent, button_);
+    addSubview(parent, button);
 }
 
 AppKitConsonantUI::AppKitConsonantUI(NSRect r)
@@ -541,7 +541,7 @@ void AppKitCoordinateResponseMeasureUI::addNumberButton(
 
 void AppKitCoordinateResponseMeasureUI::addNextTrialButton() {
     const auto button_ {
-        button("", actions, @selector(notifyThatReadyButtonHasBeenClicked))
+        nsButton("", actions, @selector(notifyThatReadyButtonHasBeenClicked))
     };
     [button_ setBezelStyle:NSBezelStyleTexturedSquare];
     auto style{[[NSMutableParagraphStyle alloc] init]};
@@ -630,22 +630,22 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
     continueTestingDialog = [NSWindow
         windowWithContentViewController:continueTestingDialogController];
     continueTestingDialog.styleMask = NSWindowStyleMaskBorderless;
-    exitTestButton = button("Exit Test", actions,
+    exitTestButton = nsButton("Exit Test", actions,
         @selector(notifyThatExitTestButtonHasBeenClicked));
-    nextTrialButton = button("Play Trial", actions,
+    nextTrialButton = nsButton("Play Trial", actions,
         @selector(notifyThatPlayTrialButtonHasBeenClicked));
     const auto submitFreeResponseButton {
-        button("Submit", freeResponseActions,
+        nsButton("Submit", freeResponseActions,
             @selector(notifyThatSubmitFreeResponseButtonHasBeenClicked))
     };
     evaluationButtons = [NSStackView stackViewWithViews:@[
-        button("Incorrect", actions,
+        nsButton("Incorrect", actions,
             @selector(notifyThatIncorrectButtonHasBeenClicked)),
-        button("Correct", actions,
+        nsButton("Correct", actions,
             @selector(notifyThatCorrectButtonHasBeenClicked))
     ]];
     const auto submitCorrectKeywordsButton {
-        button("Submit", actions,
+        nsButton("Submit", actions,
             @selector(notifyThatSubmitCorrectKeywordsButtonHasBeenClicked))
     };
     setPlaceholder(correctKeywordsField, "2");
@@ -684,10 +684,10 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
     const auto continueTestingDialogStack {
         [NSStackView stackViewWithViews:@[
             continueTestingDialogField, [NSStackView stackViewWithViews:@[
-                button("Exit", actions,
+                nsButton("Exit", actions,
                     @selector
                     (notifyThatDeclineContinueTestingButtonHasBeenClicked)),
-                button("Continue", actions,
+                nsButton("Continue", actions,
                     @selector(notifyThatContinueTestingButtonHasBeenClicked))
             ]]
         ]]

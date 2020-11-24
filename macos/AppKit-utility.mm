@@ -7,7 +7,7 @@ auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
     return controller;
 }
 
-auto button(const std::string &s, id target, SEL action) -> NSButton * {
+auto nsButton(const std::string &s, id target, SEL action) -> NSButton * {
     return [NSButton buttonWithTitle:nsString(s) target:target action:action];
 }
 
