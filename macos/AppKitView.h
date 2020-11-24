@@ -1,7 +1,7 @@
 #ifndef MACOS_MAIN_COCOAVIEW_H_
 #define MACOS_MAIN_COCOAVIEW_H_
 
-#include "MacOsTestSetupViewFactory.h"
+#include "AppKitTestSetupUIFactory.h"
 #include <presentation/Consonant.hpp>
 #include <presentation/CoordinateResponseMeasure.hpp>
 #include <presentation/FreeResponse.hpp>
@@ -10,7 +10,7 @@
 #include <presentation/TestSetupImpl.hpp>
 #include <presentation/TestImpl.hpp>
 #include <presentation/SessionControllerImpl.hpp>
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 #include <unordered_map>
 
 @class SetupViewActions;
@@ -20,16 +20,16 @@
 @class FreeResponseViewActions;
 
 namespace av_speech_in_noise {
-class CocoaExperimenterView : public TestView,
-                              public TestControl,
-                              public FreeResponseControl,
-                              public FreeResponseView,
-                              public CorrectKeywordsControl,
-                              public CorrectKeywordsView,
-                              public PassFailControl,
-                              public PassFailView {
+class AppKitTestUI : public TestView,
+                     public TestControl,
+                     public FreeResponseControl,
+                     public FreeResponseView,
+                     public CorrectKeywordsControl,
+                     public CorrectKeywordsView,
+                     public PassFailControl,
+                     public PassFailView {
   public:
-    explicit CocoaExperimenterView(NSViewController *);
+    explicit AppKitTestUI(NSViewController *);
     void attach(TestControl::Observer *) override;
     void attach(FreeResponseControl::Observer *) override;
     void attach(CorrectKeywordsControl::Observer *) override;
@@ -55,14 +55,14 @@ class CocoaExperimenterView : public TestView,
     void hideContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &) override;
     void clearFreeResponse() override;
-    void exitTest();
-    void playTrial();
-    void submitFreeResponse();
-    void submitPassedTrial();
-    void submitFailedTrial();
-    void submitCorrectKeywords();
-    void acceptContinuingTesting();
-    void declineContinuingTesting();
+    void notifyThatExitTestButtonHasBeenClicked();
+    void notifyThatPlayTrialButtonHasBeenClicked();
+    void notifyThatSubmitFreeResponseButtonHasBeenClicked();
+    void notifyThatCorrectButtonHasBeenClicked();
+    void notifyThatIncorrectButtonHasBeenClicked();
+    void notifyThatSubmitCorrectKeywordsButtonHasBeenClicked();
+    void notifyThatContinueTestingButtonHasBeenClicked();
+    void notifyThatDeclineContinueTestingButtonHasBeenClicked();
 
   private:
     NSViewController *viewController;
@@ -80,15 +80,15 @@ class CocoaExperimenterView : public TestView,
     NSButton *nextTrialButton;
     ExperimenterViewActions *actions;
     FreeResponseViewActions *freeResponseActions;
-    TestControl::Observer *listener_{};
-    FreeResponseControl::Observer *freeResponseListener{};
-    CorrectKeywordsControl::Observer *correctKeywordsListener{};
-    PassFailControl::Observer *passFailListener{};
+    TestControl::Observer *observer{};
+    FreeResponseControl::Observer *freeResponseObserver{};
+    CorrectKeywordsControl::Observer *correctKeywordsObserver{};
+    PassFailControl::Observer *passFailObserver{};
 };
 
-class CocoaTestSetupView : public TestSetupUI {
+class AppKitTestSetupUI : public TestSetupUI {
   public:
-    explicit CocoaTestSetupView(NSViewController *);
+    explicit AppKitTestSetupUI(NSViewController *);
     void show() override;
     void hide() override;
     auto testerId() -> std::string override;
@@ -115,20 +115,20 @@ class CocoaTestSetupView : public TestSetupUI {
     NSTextField *testSettingsField;
     NSTextField *startingSnrField;
     SetupViewActions *actions;
-    Observer *listener_{};
+    Observer *observer{};
 };
 
-class CocoaTestSetupViewFactory : public MacOsTestSetupViewFactory {
+class AppKitTestSetupUIFactoryImpl : public AppKitTestSetupUIFactory {
   public:
     auto make(NSViewController *c) -> std::unique_ptr<TestSetupUI> override {
-        return std::make_unique<CocoaTestSetupView>(c);
+        return std::make_unique<AppKitTestSetupUI>(c);
     }
 };
 
-class CocoaConsonantView : public ConsonantTaskView,
-                           public ConsonantTaskControl {
+class AppKitConsonantUI : public ConsonantTaskView,
+                          public ConsonantTaskControl {
   public:
-    explicit CocoaConsonantView(NSRect);
+    explicit AppKitConsonantUI(NSRect);
     void attach(Observer *) override;
     void show() override;
     void hide() override;
@@ -152,11 +152,11 @@ class CocoaConsonantView : public ConsonantTaskView,
     Observer *listener_{};
 };
 
-class CocoaCoordinateResponseMeasureView
+class AppKitCoordinateResponseMeasureUI
     : public CoordinateResponseMeasureControl,
       public CoordinateResponseMeasureView {
   public:
-    CocoaCoordinateResponseMeasureView(NSRect);
+    AppKitCoordinateResponseMeasureUI(NSRect);
     auto numberResponse() -> std::string override;
     auto greenResponse() -> bool override;
     auto blueResponse() -> bool override;
@@ -185,9 +185,9 @@ class CocoaCoordinateResponseMeasureView
     Observer *listener_{};
 };
 
-class CocoaView : public SessionView {
+class AppKitView : public SessionView {
   public:
-    explicit CocoaView(NSApplication *, NSViewController *);
+    explicit AppKitView(NSApplication *, NSViewController *);
     void eventLoop() override;
     void showErrorMessage(std::string) override;
     auto browseForDirectory() -> std::string override;

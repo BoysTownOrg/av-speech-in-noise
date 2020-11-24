@@ -1,8 +1,9 @@
-#include "main.h"
+#include "run.h"
 #include "MersenneTwisterRandomizer.hpp"
 #include "AvFoundationPlayers.h"
-#include "CocoaView.h"
-#include "common-objc.h"
+#include "AppKitView.h"
+#include "Foundation-utility.h"
+#include "AppKit-utility.h"
 #include <presentation/SessionControllerImpl.hpp>
 #include <presentation/TestSettingsInterpreter.hpp>
 #include <recognition-test/Model.hpp>
@@ -212,14 +213,8 @@ static void addChild(NSTabViewController *parent, NSTabViewController *child) {
     [parent.view addSubview:child.view];
 }
 
-static auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
-    const auto controller{[[NSTabViewController alloc] init]};
-    [controller setTabStyle:NSTabViewControllerTabStyleUnspecified];
-    return controller;
-}
-
-void main(EyeTracker &eyeTracker,
-    MacOsTestSetupViewFactory &testSetupViewFactory,
+void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
+    AppKitTestSetupUIFactory &testSetupViewFactory,
     OutputFileNameFactory &outputFileNameFactory,
     SessionController::Observer *sessionControllerObserver,
     const std::string &relativeOutputDirectory) {
@@ -337,7 +332,7 @@ void main(EyeTracker &eyeTracker,
                    keyEquivalent:@"q"];
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
-    CocoaView view{app, preferencesViewController};
+    AppKitView view{app, preferencesViewController};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);
     testSetupViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -360,7 +355,7 @@ void main(EyeTracker &eyeTracker,
     const auto experimenterViewController{
         nsTabViewControllerWithoutTabControl()};
     addChild(viewController, experimenterViewController);
-    CocoaExperimenterView experimenterView{experimenterViewController};
+    AppKitTestUI experimenterView{experimenterViewController};
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
     const auto subjectScreenFrame{subjectScreen.frame};
@@ -371,11 +366,11 @@ void main(EyeTracker &eyeTracker,
     const auto subjectViewWidth{subjectScreenWidth / 3};
     auto subjectViewLeadingEdge =
         subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
-    CocoaConsonantView consonantView{
+    AppKitConsonantUI consonantView{
         NSMakeRect(subjectScreenOrigin.x + subjectScreenWidth / 4,
             subjectScreenOrigin.y + subjectScreenSize.height / 12,
             subjectScreenWidth / 2, subjectScreenSize.height / 2)};
-    CocoaCoordinateResponseMeasureView coordinateResponseMeasureView{
+    AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
     TestSettingsInterpreterImpl testSettingsInterpreter;

@@ -1,59 +1,11 @@
-#include "main.h"
-#include "MacOsTestSetupViewFactory.h"
-#include "common-objc.h"
-#include <presentation/SessionControllerImpl.hpp>
+#include "FacemaskStudySetupView.h"
+#include "AppKit-utility.h"
+#include "Foundation-utility.h"
 #include <presentation/TestSettingsInterpreter.hpp>
-#import <AppKit/AppKit.h>
-#include <string>
-#include <vector>
-#include <algorithm>
 #include <fstream>
 #include <sstream>
-
-@class FacemaskStudySetupViewActions;
-
-namespace av_speech_in_noise {
-struct ConditionSelection {
-    NSButton *button;
-    LocalUrl url;
-};
-
-class FacemaskStudySetupView : public TestSetupUI {
-  public:
-    explicit FacemaskStudySetupView(NSViewController *);
-    void show() override;
-    void hide() override;
-    auto testSettingsFile() -> std::string override;
-    void setTestSettingsFile(std::string) override;
-    void attach(Observer *) override;
-    void populateTransducerMenu(std::vector<std::string>) override {}
-    auto startingSnr() -> std::string override { return "0"; }
-    auto testerId() -> std::string override { return {}; }
-    auto subjectId() -> std::string override {
-        return subjectIdField.stringValue.UTF8String;
-    }
-    auto session() -> std::string override { return {}; }
-    auto rmeSetting() -> std::string override { return {}; }
-    auto transducer() -> std::string override { return {}; }
-    void notifyThatConfirmButtonHasBeenClicked();
-    void notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked();
-    void notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
-
-  private:
-    std::vector<ConditionSelection> conditionSelections;
-    NSTextField *subjectIdField;
-    FacemaskStudySetupViewActions *actions;
-    Observer *listener_{};
-    NSViewController *controller;
-};
-
-class FacemaskStudySetupViewFactory : public MacOsTestSetupViewFactory {
-  public:
-    auto make(NSViewController *c) -> std::unique_ptr<TestSetupUI> override {
-        return std::make_unique<FacemaskStudySetupView>(c);
-    }
-};
-}
+#include <algorithm>
+#include <vector>
 
 @interface FacemaskStudySetupViewActions : NSObject
 @end
@@ -80,23 +32,6 @@ class FacemaskStudySetupViewFactory : public MacOsTestSetupViewFactory {
 @end
 
 namespace av_speech_in_noise {
-class EyeTrackerStub : public EyeTracker {
-    void allocateRecordingTimeSeconds(double) override {}
-    void start() override {}
-    void stop() override {}
-    auto gazeSamples() -> BinocularGazeSamples override { return {}; }
-    auto currentSystemTime() -> EyeTrackerSystemTime override { return {}; }
-};
-
-static auto button(const std::string &s, id target, SEL action) -> NSButton * {
-    return [NSButton buttonWithTitle:nsString(s) target:target action:action];
-}
-
-static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
-    child.translatesAutoresizingMaskIntoConstraints = NO;
-    [parent addSubview:child];
-}
-
 static void setAttributedTitle(NSButton *button, const std::string &s) {
     [button setAttributedTitle:
                 [[NSAttributedString alloc]
@@ -146,19 +81,11 @@ static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
     return stack;
 }
 
-static auto resourcePath(const std::string &stem, const std::string &extension)
-    -> std::string {
-    return [[NSBundle mainBundle] pathForResource:nsString(stem)
-                                           ofType:nsString(extension)]
-        .UTF8String;
-}
-
 static auto nsButtonArray(const std::vector<ConditionSelection> &v)
     -> NSArray<NSButton *> * {
-    std::vector<NSButton *> buttons;
-    buttons.reserve(v.size());
-    for (const auto &x : v)
-        buttons.push_back(x.button);
+    std::vector<NSButton *> buttons(v.size());
+    std::transform(v.begin(), v.end(), buttons.begin(),
+        [](const ConditionSelection &c) { return c.button; });
     return [NSArray arrayWithObjects:&buttons.front() count:buttons.size()];
 }
 
@@ -176,10 +103,11 @@ static auto meta(const LocalUrl &resourceUrl) -> std::string {
 static void push_back(std::vector<ConditionSelection> &conditionSelections,
     FacemaskStudySetupViewActions *actions, const std::string &stem) {
     conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle : nsString(
-            meta(LocalUrl{resourcePath(stem, "txt")})) target : actions action :
-            @selector(notifyThatRadioButtonHasBeenClicked)],
-            LocalUrl { resourcePath(stem, "txt") }
+        [NSButton radioButtonWithTitle:nsString(meta(resourceUrl(stem, "txt")))
+                                target:actions
+                                action:@selector
+                                (notifyThatRadioButtonHasBeenClicked)],
+            resourceUrl(stem, "txt")
     });
 }
 
@@ -198,14 +126,14 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                                    NSFontAttributeName, [NSColor whiteColor],
                                    NSForegroundColorAttributeName, nil]]]};
     const auto confirmButton {
-        button("", actions, @selector(notifyThatConfirmButtonHasBeenClicked))
+        nsButton("", actions, @selector(notifyThatConfirmButtonHasBeenClicked))
     };
     const auto playLeftSpeakerCalibrationButton {
-        button("play left speaker", actions,
+        nsButton("play left speaker", actions,
             @selector(notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked))
     };
     const auto playRightSpeakerCalibrationButton {
-        button("play right speaker", actions,
+        nsButton("play right speaker", actions,
             @selector
             (notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked))
     };
@@ -326,35 +254,4 @@ void FacemaskStudySetupView::
     notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() {
     listener_->notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
 }
-
-class MetaConditionOutputFileNameFactory : public OutputFileNameFactory {
-  public:
-    auto make(TimeStamp &timeStamp)
-        -> std::unique_ptr<OutputFileName> override {
-        return std::make_unique<MetaConditionOutputFileName>(timeStamp);
-    }
-};
-
-class CongratulatesUserWhenTestCompletes : public SessionController::Observer {
-  public:
-    void notifyThatTestIsComplete() override {
-        const auto alert{[[NSAlert alloc] init]};
-        [alert setMessageText:@""];
-        [alert setInformativeText:@"Condition complete, great work!"];
-        [alert addButtonWithTitle:@"Continue"];
-        [alert runModal];
-    }
-};
-}
-
-int main() {
-    av_speech_in_noise::EyeTrackerStub eyeTracker;
-    av_speech_in_noise::FacemaskStudySetupViewFactory testSetupViewFactory;
-    av_speech_in_noise::MetaConditionOutputFileNameFactory
-        outputFileNameFactory;
-    av_speech_in_noise::CongratulatesUserWhenTestCompletes
-        congratulatesUserWhenTestCompletes;
-    av_speech_in_noise::main(eyeTracker, testSetupViewFactory,
-        outputFileNameFactory, &congratulatesUserWhenTestCompletes,
-        "Desktop/check your data here");
 }

@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_VIEW_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_VIEW_HPP_
 
-#include "Interface.hpp"
+#include <av-speech-in-noise/Interface.hpp>
 
 namespace av_speech_in_noise {
 class View {

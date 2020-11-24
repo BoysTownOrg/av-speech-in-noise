@@ -184,8 +184,6 @@ void declineContinuingTesting(TestControlStub &c) {
     c.declineContinuingTesting();
 }
 
-void playTrial(TestControlStub &c) { c.playTrial(); }
-
 void acceptContinuingTesting(TestControlStub &c) {
     c.acceptContinuingTesting();
 }
