@@ -355,7 +355,7 @@ void main(EyeTracker &eyeTracker,
     const auto experimenterViewController{
         nsTabViewControllerWithoutTabControl()};
     addChild(viewController, experimenterViewController);
-    AppKitExperimenterUI experimenterView{experimenterViewController};
+    AppKitTestUI experimenterView{experimenterViewController};
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
     const auto subjectScreenFrame{subjectScreen.frame};

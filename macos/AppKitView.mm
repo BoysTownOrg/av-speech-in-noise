@@ -68,7 +68,7 @@
 
 @implementation ExperimenterViewActions {
   @public
-    av_speech_in_noise::AppKitExperimenterUI *controller;
+    av_speech_in_noise::AppKitTestUI *controller;
 }
 
 - (void)notifyThatExitTestButtonHasBeenClicked {
@@ -102,7 +102,7 @@
 
 @implementation FreeResponseViewActions {
   @public
-    av_speech_in_noise::AppKitExperimenterUI *controller;
+    av_speech_in_noise::AppKitTestUI *controller;
 }
 
 - (void)submitFreeResponse {
@@ -628,7 +628,7 @@ void AppKitCoordinateResponseMeasureUI::show() {
 
 void AppKitCoordinateResponseMeasureUI::hide() { [window orderOut:nil]; }
 
-AppKitExperimenterUI::AppKitExperimenterUI(NSViewController *viewController)
+AppKitTestUI::AppKitTestUI(NSViewController *viewController)
     : viewController{viewController}, continueTestingDialogField{label("")},
       primaryTextField{label("")}, secondaryTextField{label("")},
       freeResponseField{emptyTextField()},
@@ -745,134 +745,127 @@ AppKitExperimenterUI::AppKitExperimenterUI(NSViewController *viewController)
     freeResponseActions->controller = this;
 }
 
-void AppKitExperimenterUI::attach(TestControl::Observer *e) { listener_ = e; }
+void AppKitTestUI::attach(TestControl::Observer *e) { listener_ = e; }
 
-void AppKitExperimenterUI::attach(FreeResponseControl::Observer *e) {
+void AppKitTestUI::attach(FreeResponseControl::Observer *e) {
     freeResponseListener = e;
 }
 
-void AppKitExperimenterUI::attach(CorrectKeywordsControl::Observer *e) {
+void AppKitTestUI::attach(CorrectKeywordsControl::Observer *e) {
     correctKeywordsListener = e;
 }
 
-void AppKitExperimenterUI::attach(PassFailControl::Observer *e) {
+void AppKitTestUI::attach(PassFailControl::Observer *e) {
     passFailListener = e;
 }
 
-void AppKitExperimenterUI::showExitTestButton() {
+void AppKitTestUI::showExitTestButton() {
     av_speech_in_noise::show(exitTestButton);
 }
 
-void AppKitExperimenterUI::hideExitTestButton() {
+void AppKitTestUI::hideExitTestButton() {
     av_speech_in_noise::hide(exitTestButton);
 }
 
-void AppKitExperimenterUI::show() {
-    av_speech_in_noise::show(view(viewController));
-}
+void AppKitTestUI::show() { av_speech_in_noise::show(view(viewController)); }
 
-void AppKitExperimenterUI::hide() {
-    av_speech_in_noise::hide(view(viewController));
-}
+void AppKitTestUI::hide() { av_speech_in_noise::hide(view(viewController)); }
 
-void AppKitExperimenterUI::notifyThatExitTestButtonHasBeenClicked() {
+void AppKitTestUI::notifyThatExitTestButtonHasBeenClicked() {
     listener_->exitTest();
 }
 
-void AppKitExperimenterUI::display(std::string s) { set(primaryTextField, s); }
+void AppKitTestUI::display(std::string s) { set(primaryTextField, s); }
 
-void AppKitExperimenterUI::secondaryDisplay(std::string s) {
+void AppKitTestUI::secondaryDisplay(std::string s) {
     set(secondaryTextField, s);
 }
 
-void AppKitExperimenterUI::showNextTrialButton() {
+void AppKitTestUI::showNextTrialButton() {
     av_speech_in_noise::show(nextTrialButton);
 }
 
-void AppKitExperimenterUI::hideNextTrialButton() {
+void AppKitTestUI::hideNextTrialButton() {
     av_speech_in_noise::hide(nextTrialButton);
 }
 
-void AppKitExperimenterUI::showEvaluationButtons() {
+void AppKitTestUI::showEvaluationButtons() {
     av_speech_in_noise::show(evaluationButtons);
 }
 
-void AppKitExperimenterUI::showFreeResponseSubmission() {
+void AppKitTestUI::showFreeResponseSubmission() {
     av_speech_in_noise::show(freeResponseView);
 }
 
-void AppKitExperimenterUI::hideFreeResponseSubmission() {
+void AppKitTestUI::hideFreeResponseSubmission() {
     av_speech_in_noise::hide(freeResponseView);
 }
 
-void AppKitExperimenterUI::hideEvaluationButtons() {
+void AppKitTestUI::hideEvaluationButtons() {
     av_speech_in_noise::hide(evaluationButtons);
 }
 
-void AppKitExperimenterUI::showCorrectKeywordsSubmission() {
+void AppKitTestUI::showCorrectKeywordsSubmission() {
     av_speech_in_noise::show(correctKeywordsView);
 }
 
-void AppKitExperimenterUI::hideCorrectKeywordsSubmission() {
+void AppKitTestUI::hideCorrectKeywordsSubmission() {
     av_speech_in_noise::hide(correctKeywordsView);
 }
 
-void AppKitExperimenterUI::showContinueTestingDialog() {
+void AppKitTestUI::showContinueTestingDialog() {
     [view(viewController).window beginSheet:continueTestingDialog
                           completionHandler:^(NSModalResponse){
                           }];
 }
 
-void AppKitExperimenterUI::hideContinueTestingDialog() {
+void AppKitTestUI::hideContinueTestingDialog() {
     [view(viewController).window endSheet:continueTestingDialog];
 }
 
-void AppKitExperimenterUI::setContinueTestingDialogMessage(
-    const std::string &s) {
+void AppKitTestUI::setContinueTestingDialogMessage(const std::string &s) {
     set(continueTestingDialogField, s);
 }
 
-void AppKitExperimenterUI::clearFreeResponse() { set(freeResponseField, ""); }
+void AppKitTestUI::clearFreeResponse() { set(freeResponseField, ""); }
 
-auto AppKitExperimenterUI::freeResponse() -> std::string {
+auto AppKitTestUI::freeResponse() -> std::string {
     return string(freeResponseField);
 }
 
-auto AppKitExperimenterUI::correctKeywords() -> std::string {
+auto AppKitTestUI::correctKeywords() -> std::string {
     return string(correctKeywordsField);
 }
 
-auto AppKitExperimenterUI::flagged() -> bool {
+auto AppKitTestUI::flagged() -> bool {
     return freeResponseFlaggedButton.state == NSControlStateValueOn;
 }
 
-void AppKitExperimenterUI::notifyThatPlayTrialButtonHasBeenClicked() {
+void AppKitTestUI::notifyThatPlayTrialButtonHasBeenClicked() {
     listener_->playTrial();
 }
 
-void AppKitExperimenterUI::submitFreeResponse() {
+void AppKitTestUI::submitFreeResponse() {
     freeResponseListener->notifyThatSubmitButtonHasBeenClicked();
 }
 
-void AppKitExperimenterUI::notifyThatCorrectButtonHasBeenClicked() {
+void AppKitTestUI::notifyThatCorrectButtonHasBeenClicked() {
     passFailListener->notifyThatCorrectButtonHasBeenClicked();
 }
 
-void AppKitExperimenterUI::notifyThatIncorrectButtonHasBeenClicked() {
+void AppKitTestUI::notifyThatIncorrectButtonHasBeenClicked() {
     passFailListener->notifyThatIncorrectButtonHasBeenClicked();
 }
 
-void AppKitExperimenterUI::
-    notifyThatSubmitCorrectKeywordsButtonHasBeenClicked() {
+void AppKitTestUI::notifyThatSubmitCorrectKeywordsButtonHasBeenClicked() {
     correctKeywordsListener->notifyThatSubmitButtonHasBeenClicked();
 }
 
-void AppKitExperimenterUI::notifyThatContinueTestingButtonHasBeenClicked() {
+void AppKitTestUI::notifyThatContinueTestingButtonHasBeenClicked() {
     listener_->acceptContinuingTesting();
 }
 
-void AppKitExperimenterUI::
-    notifyThatDeclineContinueTestingButtonHasBeenClicked() {
+void AppKitTestUI::notifyThatDeclineContinueTestingButtonHasBeenClicked() {
     listener_->declineContinuingTesting();
 }
 

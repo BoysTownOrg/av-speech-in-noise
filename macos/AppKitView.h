@@ -20,16 +20,16 @@
 @class FreeResponseViewActions;
 
 namespace av_speech_in_noise {
-class AppKitExperimenterUI : public TestView,
-                             public TestControl,
-                             public FreeResponseControl,
-                             public FreeResponseView,
-                             public CorrectKeywordsControl,
-                             public CorrectKeywordsView,
-                             public PassFailControl,
-                             public PassFailView {
+class AppKitTestUI : public TestView,
+                     public TestControl,
+                     public FreeResponseControl,
+                     public FreeResponseView,
+                     public CorrectKeywordsControl,
+                     public CorrectKeywordsView,
+                     public PassFailControl,
+                     public PassFailView {
   public:
-    explicit AppKitExperimenterUI(NSViewController *);
+    explicit AppKitTestUI(NSViewController *);
     void attach(TestControl::Observer *) override;
     void attach(FreeResponseControl::Observer *) override;
     void attach(CorrectKeywordsControl::Observer *) override;
