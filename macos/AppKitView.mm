@@ -1,5 +1,4 @@
 #include "AppKitView.h"
-#include "common-objc.h"
 #include "AppKit-utility.h"
 #include "Foundation-utility.h"
 #include <gsl/gsl>

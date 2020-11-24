@@ -7,4 +7,6 @@
 auto resourcePath(const std::string &stem, const std::string &extension)
     -> std::string;
 
+auto nsString(const std::string &s) -> NSString *;
+
 #endif

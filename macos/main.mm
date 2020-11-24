@@ -2,7 +2,7 @@
 #include "MersenneTwisterRandomizer.hpp"
 #include "AvFoundationPlayers.h"
 #include "AppKitView.h"
-#include "common-objc.h"
+#include "Foundation-utility.h"
 #include "AppKit-utility.h"
 #include <presentation/SessionControllerImpl.hpp>
 #include <presentation/TestSettingsInterpreter.hpp>

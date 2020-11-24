@@ -1,5 +1,4 @@
 #include "FacemaskStudySetupView.h"
-#include "common-objc.h"
 #include "Foundation-utility.h"
 #include <presentation/TestSettingsInterpreter.hpp>
 #include <fstream>
