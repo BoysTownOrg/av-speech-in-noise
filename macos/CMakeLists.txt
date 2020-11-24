@@ -52,7 +52,7 @@ set(AV_SPEECH_IN_NOISE_MACOS_OTHER_CODE_SIGN_FLAGS
 add_executable(
   av-speech-in-noise-bundle MACOSX_BUNDLE
   AvFoundationPlayers.mm
-  CocoaView.mm
+  AppKitView.mm
   AppKit-utility.mm
   Foundation-utility.mm
   ${MAIN_IMPL_FILE}
@@ -63,7 +63,7 @@ add_macos_bundle(av-speech-in-noise-bundle org.boystown.av-speech-in-noise
 add_executable(
   av-speech-in-noise-facemask-study MACOSX_BUNDLE
   AvFoundationPlayers.mm
-  CocoaView.mm
+  AppKitView.mm
   AppKit-utility.mm
   Foundation-utility.mm
   FacemaskStudySetupView.mm

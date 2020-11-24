@@ -10,7 +10,7 @@
 #include <presentation/TestSetupImpl.hpp>
 #include <presentation/TestImpl.hpp>
 #include <presentation/SessionControllerImpl.hpp>
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 #include <unordered_map>
 
 @class SetupViewActions;
@@ -21,13 +21,13 @@
 
 namespace av_speech_in_noise {
 class AppKitExperimenterView : public TestView,
-                              public TestControl,
-                              public FreeResponseControl,
-                              public FreeResponseView,
-                              public CorrectKeywordsControl,
-                              public CorrectKeywordsView,
-                              public PassFailControl,
-                              public PassFailView {
+                               public TestControl,
+                               public FreeResponseControl,
+                               public FreeResponseView,
+                               public CorrectKeywordsControl,
+                               public CorrectKeywordsView,
+                               public PassFailControl,
+                               public PassFailView {
   public:
     explicit AppKitExperimenterView(NSViewController *);
     void attach(TestControl::Observer *) override;
@@ -126,7 +126,7 @@ class AppKitTestSetupViewFactory : public MacOsTestSetupViewFactory {
 };
 
 class AppKitConsonantView : public ConsonantTaskView,
-                           public ConsonantTaskControl {
+                            public ConsonantTaskControl {
   public:
     explicit AppKitConsonantView(NSRect);
     void attach(Observer *) override;
