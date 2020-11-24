@@ -133,15 +133,6 @@ static auto string(NSTextField *field) -> const char * {
     return field.stringValue.UTF8String;
 }
 
-static void enableAutoLayout(NSView *view) {
-    view.translatesAutoresizingMaskIntoConstraints = NO;
-}
-
-static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
-    enableAutoLayout(child);
-    [parent addSubview:child];
-}
-
 static void activateChildConstraintNestledInBottomRightCorner(
     NSView *child, NSView *parent, CGFloat x) {
 

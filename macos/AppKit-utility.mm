@@ -10,3 +10,8 @@ auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
 auto button(const std::string &s, id target, SEL action) -> NSButton * {
     return [NSButton buttonWithTitle:nsString(s) target:target action:action];
 }
+
+void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
+    child.translatesAutoresizingMaskIntoConstraints = NO;
+    [parent addSubview:child];
+}

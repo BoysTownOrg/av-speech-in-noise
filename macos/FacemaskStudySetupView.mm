@@ -30,11 +30,6 @@
 @end
 
 namespace av_speech_in_noise {
-static void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
-    child.translatesAutoresizingMaskIntoConstraints = NO;
-    [parent addSubview:child];
-}
-
 static void setAttributedTitle(NSButton *button, const std::string &s) {
     [button setAttributedTitle:
                 [[NSAttributedString alloc]
