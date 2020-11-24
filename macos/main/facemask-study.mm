@@ -1,17 +1,10 @@
-#include "run.h"
-#include "FacemaskStudySetupView.h"
+#include "../run.h"
+#include "../FacemaskStudySetupView.h"
+#include "../EyeTrackerStub.hpp"
 #include <presentation/Method.hpp>
 #import <AppKit/AppKit.h>
 
 namespace av_speech_in_noise {
-class EyeTrackerStub : public EyeTracker {
-    void allocateRecordingTimeSeconds(double) override {}
-    void start() override {}
-    void stop() override {}
-    auto gazeSamples() -> BinocularGazeSamples override { return {}; }
-    auto currentSystemTime() -> EyeTrackerSystemTime override { return {}; }
-};
-
 class MetaConditionOutputFileNameFactory : public OutputFileNameFactory {
   public:
     auto make(TimeStamp &timeStamp)

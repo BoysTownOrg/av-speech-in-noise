@@ -34,9 +34,9 @@ endfunction()
 option(AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING "Enables tobii eye tracking"
        OFF)
 if(${AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING})
-  set(MAIN_IMPL_FILE main-tobii.mm)
+  set(MAIN_IMPL_FILE main/with-tobii.mm)
 else()
-  set(MAIN_IMPL_FILE main-no-eyetracking.mm)
+  set(MAIN_IMPL_FILE main/no-eyetracking.mm)
 endif()
 
 set(AV_SPEECH_IN_NOISE_MACOS_RESOURCES
@@ -68,7 +68,7 @@ add_executable(
   Foundation-utility.mm
   FacemaskStudySetupView.mm
   run.mm
-  main-facemask-study.mm
+  main/facemask-study.mm
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
 add_macos_bundle(
   av-speech-in-noise-facemask-study
