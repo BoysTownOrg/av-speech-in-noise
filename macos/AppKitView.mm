@@ -345,19 +345,34 @@ static void addReadyButton(NSView *parent, ConsonantViewActions *actions) {
     addSubview(parent, button);
 }
 
-static auto equallyDistributedConsonantImageButtonRow(
+static auto equallyDistributedConsonantImageButtonGrid(
     std::unordered_map<void *, std::string> &consonants,
-    ConsonantViewActions *actions, const std::vector<std::string> &each)
+    ConsonantViewActions *actions,
+    const std::vector<std::vector<std::string>> &consonantRows)
     -> NSStackView * {
-    std::vector<NSButton *> buttons;
-    buttons.reserve(each.size());
-    for (const auto &x : each)
-        buttons.push_back(consonantImageButton(consonants, actions, x));
-    auto row{[NSStackView
-        stackViewWithViews:[NSArray arrayWithObjects:&buttons.front()
-                                               count:buttons.size()]]};
-    row.distribution = NSStackViewDistributionFillEqually;
-    return row;
+    std::vector<NSView *> rows;
+    for (const auto &each : consonantRows) {
+        std::vector<NSButton *> buttons;
+        buttons.reserve(each.size());
+        for (const auto &x : each)
+            buttons.push_back(consonantImageButton(consonants, actions, x));
+        auto row{[NSStackView
+            stackViewWithViews:[NSArray arrayWithObjects:&buttons.front()
+                                                   count:buttons.size()]]};
+        row.distribution = NSStackViewDistributionFillEqually;
+        rows.push_back(row);
+    }
+    auto buttonGrid{[NSStackView
+        stackViewWithViews:[NSArray arrayWithObjects:&rows.front()
+                                               count:rows.size()]]};
+    for (auto row : rows)
+        [NSLayoutConstraint activateConstraints:@[
+            [row.leadingAnchor
+                constraintEqualToAnchor:buttonGrid.leadingAnchor],
+            [row.trailingAnchor
+                constraintEqualToAnchor:buttonGrid.trailingAnchor]
+        ]];
+    return buttonGrid;
 }
 
 AppKitConsonantUI::AppKitConsonantUI(NSRect r)
@@ -370,14 +385,9 @@ AppKitConsonantUI::AppKitConsonantUI(NSRect r)
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       actions{[[ConsonantViewActions alloc] init]} {
     actions->controller = this;
-    const auto firstRow{equallyDistributedConsonantImageButtonRow(
-        consonants, actions, {"b", "c", "d", "h"})};
-    const auto secondRow{equallyDistributedConsonantImageButtonRow(
-        consonants, actions, {"k", "m", "n", "p"})};
-    const auto thirdRow{equallyDistributedConsonantImageButtonRow(
-        consonants, actions, {"s", "t", "v", "z"})};
     responseButtons =
-        [NSStackView stackViewWithViews:@[ firstRow, secondRow, thirdRow ]];
+        equallyDistributedConsonantImageButtonGrid(consonants, actions,
+            {{"b", "c", "d", "h"}, {"k", "m", "n", "p"}, {"s", "t", "v", "z"}});
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
     responseButtons.distribution = NSStackViewDistributionFillEqually;
     addReadyButton(readyButton, actions);
@@ -393,37 +403,13 @@ AppKitConsonantUI::AppKitConsonantUI(NSRect r)
             constraintEqualToAnchor:contentView.leadingAnchor],
         [responseButtons.trailingAnchor
             constraintEqualToAnchor:contentView.trailingAnchor],
-        [firstRow.leadingAnchor
-            constraintEqualToAnchor:responseButtons.leadingAnchor],
-        [firstRow.trailingAnchor
-            constraintEqualToAnchor:responseButtons.trailingAnchor],
-        [secondRow.leadingAnchor
-            constraintEqualToAnchor:responseButtons.leadingAnchor],
-        [secondRow.trailingAnchor
-            constraintEqualToAnchor:responseButtons.trailingAnchor],
-        [thirdRow.leadingAnchor
-            constraintEqualToAnchor:responseButtons.leadingAnchor],
-        [thirdRow.trailingAnchor
-            constraintEqualToAnchor:responseButtons.trailingAnchor]
     ]];
-    for (NSView *view in firstRow.views) {
-        [NSLayoutConstraint activateConstraints:@[
-            [view.topAnchor constraintEqualToAnchor:firstRow.topAnchor],
-            [view.bottomAnchor constraintEqualToAnchor:firstRow.bottomAnchor]
-        ]];
-    }
-    for (NSView *view in secondRow.views) {
-        [NSLayoutConstraint activateConstraints:@[
-            [view.topAnchor constraintEqualToAnchor:secondRow.topAnchor],
-            [view.bottomAnchor constraintEqualToAnchor:secondRow.bottomAnchor]
-        ]];
-    }
-    for (NSView *view in thirdRow.views) {
-        [NSLayoutConstraint activateConstraints:@[
-            [view.topAnchor constraintEqualToAnchor:thirdRow.topAnchor],
-            [view.bottomAnchor constraintEqualToAnchor:thirdRow.bottomAnchor]
-        ]];
-    }
+    for (NSStackView *row in responseButtons.views)
+        for (NSView *view in row.views)
+            [NSLayoutConstraint activateConstraints:@[
+                [view.topAnchor constraintEqualToAnchor:row.topAnchor],
+                [view.bottomAnchor constraintEqualToAnchor:row.bottomAnchor]
+            ]];
     hideResponseButtons();
     hideReadyButton();
 }
