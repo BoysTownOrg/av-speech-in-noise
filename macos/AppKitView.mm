@@ -332,8 +332,6 @@ static void addReadyButton(NSView *parent, ConsonantViewActions *actions) {
         nsButton("", actions, @selector(notifyThatReadyButtonHasBeenClicked))
     };
     [button setBezelStyle:NSBezelStyleTexturedSquare];
-    const auto style{[[NSMutableParagraphStyle alloc] init]};
-    [style setAlignment:NSTextAlignmentCenter];
     const auto font{[NSFont fontWithName:@"Courier" size:36]};
     [button
         setAttributedTitle:
@@ -524,22 +522,20 @@ void AppKitCoordinateResponseMeasureUI::addNumberButton(
 }
 
 void AppKitCoordinateResponseMeasureUI::addNextTrialButton() {
-    const auto button_ {
+    const auto button {
         nsButton("", actions, @selector(notifyThatReadyButtonHasBeenClicked))
     };
-    [button_ setBezelStyle:NSBezelStyleTexturedSquare];
-    auto style{[[NSMutableParagraphStyle alloc] init]};
-    [style setAlignment:NSTextAlignmentCenter];
+    [button setBezelStyle:NSBezelStyleTexturedSquare];
     auto font{[NSFont fontWithName:@"Courier" size:36]};
-    auto attrsDictionary{[NSDictionary
-        dictionaryWithObjectsAndKeys:font, NSFontAttributeName, nil]};
-    auto attrString{
-        [[NSAttributedString alloc] initWithString:@"Press when ready"
-                                        attributes:attrsDictionary]};
-    [button_ setAttributedTitle:attrString];
-    [button_ setFrame:NSMakeRect(0, 0, width(nextTrialButton.frame),
-                          height(nextTrialButton.frame))];
-    addSubview(nextTrialButton, button_);
+    [button
+        setAttributedTitle:
+            [[NSAttributedString alloc]
+                initWithString:@"Press when ready"
+                    attributes:[NSDictionary dictionaryWithObjectsAndKeys:font,
+                                             NSFontAttributeName, nil]]];
+    [button setFrame:NSMakeRect(0, 0, width(nextTrialButton.frame),
+                         height(nextTrialButton.frame))];
+    addSubview(nextTrialButton, button);
 }
 
 auto AppKitCoordinateResponseMeasureUI::numberResponse() -> std::string {
