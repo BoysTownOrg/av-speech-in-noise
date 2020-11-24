@@ -69,7 +69,7 @@ class OutputFileStub : public OutputFile {
         correctKeywords_ = p;
     }
 
-    void write(const ConsonantTrial &p) {
+    void write(const ConsonantTrial &p) override {
         addToLog("writeTrial ");
         consonantTrial_ = p;
     }
