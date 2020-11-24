@@ -346,27 +346,28 @@ static void addReadyButton(NSView *parent, ConsonantViewActions *actions) {
     addSubview(parent, button);
 }
 
+static auto nsArray(const std::vector<NSView *> &v) -> NSArray * {
+    return [NSArray arrayWithObjects:&v.front() count:v.size()];
+}
+
 static auto equallyDistributedConsonantImageButtonGrid(
     std::unordered_map<void *, std::string> &consonants,
     ConsonantViewActions *actions,
     const std::vector<std::vector<std::string>> &consonantRows)
     -> NSStackView * {
-    std::vector<NSView *> rows;
-    for (const auto &consonantRow : consonantRows) {
-        std::vector<NSButton *> buttons(consonantRow.size());
-        std::transform(consonantRow.begin(), consonantRow.end(),
-            buttons.begin(), [&](const std::string &consonant) {
-                return consonantImageButton(consonants, actions, consonant);
-            });
-        const auto row{[NSStackView
-            stackViewWithViews:[NSArray arrayWithObjects:&buttons.front()
-                                                   count:buttons.size()]]};
-        row.distribution = NSStackViewDistributionFillEqually;
-        rows.push_back(row);
-    }
-    const auto grid{[NSStackView
-        stackViewWithViews:[NSArray arrayWithObjects:&rows.front()
-                                               count:rows.size()]]};
+    std::vector<NSView *> rows(consonantRows.size());
+    std::transform(consonantRows.begin(), consonantRows.end(), rows.begin(),
+        [&](const std::vector<std::string> &consonantRow) {
+            std::vector<NSView *> buttons(consonantRow.size());
+            std::transform(consonantRow.begin(), consonantRow.end(),
+                buttons.begin(), [&](const std::string &consonant) {
+                    return consonantImageButton(consonants, actions, consonant);
+                });
+            const auto row{[NSStackView stackViewWithViews:nsArray(buttons)]};
+            row.distribution = NSStackViewDistributionFillEqually;
+            return row;
+        });
+    const auto grid{[NSStackView stackViewWithViews:nsArray(rows)]};
     for (auto row : rows)
         [NSLayoutConstraint activateConstraints:@[
             [row.leadingAnchor constraintEqualToAnchor:grid.leadingAnchor],
