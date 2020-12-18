@@ -130,10 +130,8 @@ static auto videoTrack(AVAsset *asset) -> AVAssetTrack * {
 }
 
 static auto makeAvAsset(const std::string &filePath) -> AVURLAsset * {
-    const auto url = [NSURL
-        fileURLWithPath:[nsString(filePath).stringByExpandingTildeInPath
-                            stringByAddingPercentEncodingWithAllowedCharacters:
-                                NSCharacterSet.URLPathAllowedCharacterSet]];
+    const auto url =
+        [NSURL fileURLWithPath:nsString(filePath).stringByExpandingTildeInPath];
     return [AVURLAsset URLAssetWithURL:url options:nil];
 }
 
