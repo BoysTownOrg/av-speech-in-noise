@@ -54,7 +54,7 @@ class BufferedAudioReaderSimpleStub : public BufferedAudioReaderSimple {
     bool failed_{};
 };
 
-auto read(AudioReaderSimplified &reader, std::string s) -> audio_type {
+auto read(AudioReaderSimplified &reader, std::string s = {}) -> audio_type {
     return reader.read(std::move(s));
 }
 
@@ -64,16 +64,18 @@ class AudioReaderSimplifiedTests : public ::testing::Test {
     AudioReaderSimplified reader{bufferedReader};
 };
 
-TEST_F(AudioReaderSimplifiedTests, loadsFile) {
+#define AUDIO_READER_SIMPLIFIED_TEST(a) TEST_F(AudioReaderSimplifiedTests, a)
+
+AUDIO_READER_SIMPLIFIED_TEST(loadsFile) {
     read(reader, "a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, bufferedReader.url().path);
 }
 
-TEST_F(AudioReaderSimplifiedTests, readThrowsInvalidFileOnFailure) {
+AUDIO_READER_SIMPLIFIED_TEST(readThrowsInvalidFileOnFailure) {
     bufferedReader.failOnLoad();
     try {
-        read(reader, "a");
+        read(reader);
         FAIL() << "Expected AudioReaderSimplified::InvalidFile";
     } catch (const AudioReaderSimplified::InvalidFile &) {
     }
