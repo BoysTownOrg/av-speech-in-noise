@@ -1,7 +1,10 @@
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <stimulus-players/AudioReader.hpp>
+#include <gsl/gsl>
 #include <string>
+#include <vector>
+#include <algorithm>
 
 namespace av_speech_in_noise {
 class BufferedAudioReaderSimple {
@@ -10,6 +13,8 @@ class BufferedAudioReaderSimple {
         BufferedAudioReaderSimple);
     virtual void load(const LocalUrl &) = 0;
     virtual auto failed() -> bool = 0;
+    virtual auto channel(gsl::index) -> std::vector<float> = 0;
+    virtual auto channels() -> gsl::index = 0;
 };
 
 class AudioReaderSimplified : public AudioReader {
@@ -20,7 +25,10 @@ class AudioReaderSimplified : public AudioReader {
         reader.load(LocalUrl{filePath});
         if (reader.failed())
             throw InvalidFile{};
-        return {};
+        audio_type audio(reader.channels());
+        std::generate(audio.begin(), audio.end(),
+            [&, n = 0]() mutable { return reader.channel(n++); });
+        return audio;
     }
 
   private:
@@ -31,11 +39,18 @@ class AudioReaderSimplified : public AudioReader {
 #include "assert-utility.hpp"
 #include <gtest/gtest.h>
 #include <gsl/gsl>
+#include <vector>
 
 namespace av_speech_in_noise {
 namespace {
 class BufferedAudioReaderSimpleStub : public BufferedAudioReaderSimple {
   public:
+    void setAudio(std::vector<std::vector<float>> v) { audio = std::move(v); }
+
+    auto channel(gsl::index n) -> std::vector<float> { return audio.at(n); }
+
+    auto channels() -> gsl::index { return audio.size(); }
+
     void failOnLoad() { failOnLoad_ = true; }
 
     [[nodiscard]] auto url() const -> LocalUrl { return url_; }
@@ -49,6 +64,7 @@ class BufferedAudioReaderSimpleStub : public BufferedAudioReaderSimple {
     auto failed() -> bool override { return failed_; }
 
   private:
+    std::vector<std::vector<float>> audio;
     LocalUrl url_{};
     bool failOnLoad_{};
     bool failed_{};
@@ -81,15 +97,9 @@ AUDIO_READER_SIMPLIFIED_TEST(readThrowsInvalidFileOnFailure) {
     }
 }
 
-// TEST_F(AudioReaderSimplifiedTests, readConcatenatesNormalizedBuffers) {
-//     bufferedReader.setBuffers({{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}},
-//         {{10, 11, 12}, {13, 14, 15}, {16, 17, 18}},
-//         {{19, 20, 21}, {22, 23, 24}, {25, 26, 27}}});
-//     bufferedReader.setMinimumPossibleSample(-3);
-//     assertEqual({dividedBy({1, 2, 3, 10, 11, 12, 19, 20, 21}, -3.F),
-//                     dividedBy({4, 5, 6, 13, 14, 15, 22, 23, 24}, -3.F),
-//                     dividedBy({7, 8, 9, 16, 17, 18, 25, 26, 27}, -3.F)},
-//         read());
-// }
+AUDIO_READER_SIMPLIFIED_TEST(readAssemblesChannels) {
+    bufferedReader.setAudio({{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}});
+    assertEqual({{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}}, read(reader));
+}
 }
 }
