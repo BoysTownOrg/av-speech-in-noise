@@ -9,6 +9,7 @@ class BufferedAudioReaderSimple {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
         BufferedAudioReaderSimple);
     virtual void load(const LocalUrl &) = 0;
+    virtual auto failed() -> bool = 0;
 };
 
 class AudioReaderSimplified : public AudioReader {
@@ -16,6 +17,8 @@ class AudioReaderSimplified : public AudioReader {
     AudioReaderSimplified(BufferedAudioReaderSimple &reader) : reader{reader} {}
     auto read(std::string filePath) -> audio_type {
         reader.load(LocalUrl{filePath});
+        if (reader.failed())
+            throw InvalidFile{};
         return {};
     }
 
@@ -62,14 +65,14 @@ TEST_F(AudioReaderSimplifiedTests, loadsFile) {
         std::string{"a"}, bufferedReader.url().path);
 }
 
-// TEST_F(AudioReaderSimplifiedTests, readThrowsInvalidFileOnFailure) {
-//     bufferedReader.failOnLoad();
-//     try {
-//         read();
-//         FAIL() << "Expected AudioReader::InvalidFile";
-//     } catch (const AudioReaderImpl::InvalidFile &) {
-//     }
-// }
+TEST_F(AudioReaderSimplifiedTests, readThrowsInvalidFileOnFailure) {
+    bufferedReader.failOnLoad();
+    try {
+        reader.read("a");
+        FAIL() << "Expected AudioReaderSimplified::InvalidFile";
+    } catch (const AudioReaderSimplified::InvalidFile &) {
+    }
+}
 
 // TEST_F(AudioReaderSimplifiedTests, readConcatenatesNormalizedBuffers) {
 //     bufferedReader.setBuffers({{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}},
