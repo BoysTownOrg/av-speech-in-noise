@@ -47,9 +47,11 @@ class BufferedAudioReaderSimpleStub : public BufferedAudioReaderSimple {
   public:
     void setAudio(std::vector<std::vector<float>> v) { audio = std::move(v); }
 
-    auto channel(gsl::index n) -> std::vector<float> { return audio.at(n); }
+    auto channel(gsl::index n) -> std::vector<float> override {
+        return audio.at(n);
+    }
 
-    auto channels() -> gsl::index { return audio.size(); }
+    auto channels() -> gsl::index override { return audio.size(); }
 
     void failOnLoad() { failOnLoad_ = true; }
 
