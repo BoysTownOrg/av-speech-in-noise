@@ -3,6 +3,7 @@ add_executable(
   AdaptiveMethod.cpp
   AdaptiveTrack.cpp
   AudioReader.cpp
+  AudioReaderSimplified.cpp
   FixedLevelMethod.cpp
   MaskerPlayer.cpp
   OutputFilePath.cpp
