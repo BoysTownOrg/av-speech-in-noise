@@ -1,9 +1,8 @@
-#ifndef MACOS_MAIN_AVFOUNDATIONPLAYERS_H_
-#define MACOS_MAIN_AVFOUNDATIONPLAYERS_H_
+#ifndef AV_SPEECH_IN_NOISE_MACOS_MAIN_AVFOUNDATIONPLAYERS_H_
+#define AV_SPEECH_IN_NOISE_MACOS_MAIN_AVFOUNDATIONPLAYERS_H_
 
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <stimulus-players/TargetPlayerImpl.hpp>
-#include <stimulus-players/AudioReaderImpl.hpp>
 #include <stimulus-players/AudioReaderSimplified.hpp>
 #import <CoreMedia/CoreMedia.h>
 #import <MediaToolbox/MediaToolbox.h>
