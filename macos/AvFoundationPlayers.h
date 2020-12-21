@@ -16,43 +16,14 @@
 namespace av_speech_in_noise {
 class AvFoundationBufferedAudioReaderSimple : public BufferedAudioReaderSimple {
   public:
-    void load(const LocalUrl &);
-    auto failed() -> bool;
-    auto channel(gsl::index) -> std::vector<float>;
-    auto channels() -> gsl::index;
+    void load(const LocalUrl &) override;
+    auto failed() -> bool override;
+    auto channel(gsl::index) -> std::vector<float> override;
+    auto channels() -> gsl::index override;
 
   private:
     AVAudioPCMBuffer *buffer;
     bool failed_{};
-};
-
-class CoreAudioBuffer : public AudioBuffer {
-  public:
-    explicit CoreAudioBuffer(AVAssetReaderTrackOutput *);
-    ~CoreAudioBuffer() override;
-    void set(CMSampleBufferRef);
-    auto channels() -> int override;
-    auto channel(int) -> std::vector<int> override;
-    auto empty() -> bool override;
-
-  private:
-    AudioBufferList audioBufferList{};
-    CMItemCount frames{};
-    CMSampleBufferRef sampleBuffer;
-    // possibly critical: initialize blockBuffer to null
-    CMBlockBufferRef blockBuffer{};
-};
-
-class CoreAudioBufferedReader : public BufferedAudioReader {
-  public:
-    void loadFile(std::string) override;
-    auto failed() -> bool override;
-    auto readNextBuffer() -> std::shared_ptr<AudioBuffer> override;
-    auto minimumPossibleSample() -> int override;
-    auto sampleRateHz() -> double;
-
-  private:
-    AVAssetReaderTrackOutput *trackOutput{};
 };
 
 class AvFoundationVideoPlayer : public VideoPlayer {
