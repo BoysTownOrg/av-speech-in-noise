@@ -564,4 +564,29 @@ void AvFoundationVideoPlayer::preRoll() {
           listener_->notifyThatPreRollHasCompleted();
         }];
 }
+
+void AvFoundationBufferedAudioReaderSimple::load(const LocalUrl &url) {
+    const auto file{[[AVAudioFile alloc]
+        initForReading:[NSURL fileURLWithPath:nsString(url.path)
+                                                  .stringByExpandingTildeInPath]
+          commonFormat:AVAudioPCMFormatFloat32
+           interleaved:NO
+                 error:nil]};
+    failed_ = file == nil;
+    buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:file.processingFormat
+                                           frameCapacity:file.length];
+    [file readIntoBuffer:buffer error:nil];
+}
+
+auto AvFoundationBufferedAudioReaderSimple::failed() -> bool { return failed_; }
+
+auto AvFoundationBufferedAudioReaderSimple::channel(gsl::index n)
+    -> std::vector<float> {
+    auto *const p{buffer.floatChannelData[n]};
+    return std::vector<float>(p, p + buffer.frameLength);
+}
+
+auto AvFoundationBufferedAudioReaderSimple::channels() -> gsl::index {
+    return buffer.format.channelCount;
+}
 }

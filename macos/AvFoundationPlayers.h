@@ -4,6 +4,7 @@
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <stimulus-players/TargetPlayerImpl.hpp>
 #include <stimulus-players/AudioReaderImpl.hpp>
+#include <stimulus-players/AudioReaderSimplified.hpp>
 #import <CoreMedia/CoreMedia.h>
 #import <MediaToolbox/MediaToolbox.h>
 #import <AVFoundation/AVFoundation.h>
@@ -13,6 +14,18 @@
 @class VideoPlayerActions;
 
 namespace av_speech_in_noise {
+class AvFoundationBufferedAudioReaderSimple : public BufferedAudioReaderSimple {
+  public:
+    void load(const LocalUrl &);
+    auto failed() -> bool;
+    auto channel(gsl::index) -> std::vector<float>;
+    auto channels() -> gsl::index;
+
+  private:
+    AVAudioPCMBuffer *buffer;
+    bool failed_{};
+};
+
 class CoreAudioBuffer : public AudioBuffer {
   public:
     explicit CoreAudioBuffer(AVAssetReaderTrackOutput *);
