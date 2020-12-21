@@ -5,9 +5,7 @@
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <gsl/gsl>
-#include <string>
 #include <vector>
-#include <algorithm>
 
 namespace av_speech_in_noise {
 class BufferedAudioReaderSimple {
@@ -22,17 +20,8 @@ class BufferedAudioReaderSimple {
 
 class AudioReaderSimplified : public AudioReader {
   public:
-    AudioReaderSimplified(BufferedAudioReaderSimple &reader) : reader{reader} {}
-
-    auto read(std::string filePath) -> audio_type override {
-        reader.load(LocalUrl{filePath});
-        if (reader.failed())
-            throw InvalidFile{};
-        audio_type audio(reader.channels());
-        std::generate(audio.begin(), audio.end(),
-            [&, n = 0]() mutable { return reader.channel(n++); });
-        return audio;
-    }
+    AudioReaderSimplified(BufferedAudioReaderSimple &);
+    auto read(std::string filePath) -> audio_type override;
 
   private:
     BufferedAudioReaderSimple &reader;

@@ -1,5 +1,6 @@
-add_library(stimulus-players src/AudioReaderImpl.cpp src/MaskerPlayerImpl.cpp
-                             src/TargetPlayerImpl.cpp)
+add_library(
+  stimulus-players src/AudioReaderImpl.cpp src/AudioReaderSimplified.cpp
+                   src/MaskerPlayerImpl.cpp src/TargetPlayerImpl.cpp)
 target_include_directories(
   stimulus-players
   PUBLIC include
