@@ -13,7 +13,7 @@
 @class VideoPlayerActions;
 
 namespace av_speech_in_noise {
-class AvFoundationBufferedAudioReaderSimple : public BufferedAudioReaderSimple {
+class AvFoundationBufferedAudioReader : public BufferedAudioReader {
   public:
     void load(const LocalUrl &) override;
     auto failed() -> bool override;

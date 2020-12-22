@@ -2,7 +2,7 @@
 #include <algorithm>
 
 namespace av_speech_in_noise {
-AudioReaderSimplified::AudioReaderSimplified(BufferedAudioReaderSimple &reader)
+AudioReaderSimplified::AudioReaderSimplified(BufferedAudioReader &reader)
     : reader{reader} {}
 
 auto AudioReaderSimplified::read(std::string filePath) -> audio_type {

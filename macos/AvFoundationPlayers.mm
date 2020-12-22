@@ -499,7 +499,7 @@ void AvFoundationVideoPlayer::preRoll() {
         }];
 }
 
-void AvFoundationBufferedAudioReaderSimple::load(const LocalUrl &url) {
+void AvFoundationBufferedAudioReader::load(const LocalUrl &url) {
     const auto file{[[AVAudioFile alloc]
         initForReading:[NSURL fileURLWithPath:nsString(url.path)
                                                   .stringByExpandingTildeInPath]
@@ -512,15 +512,15 @@ void AvFoundationBufferedAudioReaderSimple::load(const LocalUrl &url) {
     [file readIntoBuffer:buffer error:nil];
 }
 
-auto AvFoundationBufferedAudioReaderSimple::failed() -> bool { return failed_; }
+auto AvFoundationBufferedAudioReader::failed() -> bool { return failed_; }
 
-auto AvFoundationBufferedAudioReaderSimple::channel(gsl::index n)
+auto AvFoundationBufferedAudioReader::channel(gsl::index n)
     -> std::vector<float> {
     auto *const p{buffer.floatChannelData[n]};
     return std::vector<float>(p, p + buffer.frameLength);
 }
 
-auto AvFoundationBufferedAudioReaderSimple::channels() -> gsl::index {
+auto AvFoundationBufferedAudioReader::channels() -> gsl::index {
     return buffer.format.channelCount;
 }
 }

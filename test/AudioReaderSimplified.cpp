@@ -6,7 +6,7 @@
 
 namespace av_speech_in_noise {
 namespace {
-class BufferedAudioReaderSimpleStub : public BufferedAudioReaderSimple {
+class BufferedAudioReaderSimpleStub : public BufferedAudioReader {
   public:
     void setAudio(std::vector<std::vector<float>> v) { audio = std::move(v); }
 
