@@ -23,7 +23,7 @@ class BufferedAudioReader {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Factory);
         virtual auto make(const LocalUrl &)
-            -> std::shared_ptr<const BufferedAudioReader> = 0;
+            -> std::shared_ptr<BufferedAudioReader> = 0;
     };
 };
 

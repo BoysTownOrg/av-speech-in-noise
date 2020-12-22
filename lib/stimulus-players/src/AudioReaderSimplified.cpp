@@ -6,18 +6,20 @@ AudioReaderSimplified::AudioReaderSimplified(
     BufferedAudioReader &reader, BufferedAudioReader::Factory &readerFactory)
     : reader{reader}, readerFactory{readerFactory} {}
 
-auto AudioReaderSimplified::read(std::string filePath) -> audio_type {
+static auto make(BufferedAudioReader::Factory &factory, const LocalUrl &url)
+    -> std::shared_ptr<BufferedAudioReader> {
     try {
-        readerFactory.make(LocalUrl{filePath});
+        return factory.make(url);
     } catch (const BufferedAudioReader::CannotReadFile &) {
-        throw InvalidFile{};
+        throw AudioReader::InvalidFile{};
     }
-    reader.load(LocalUrl{filePath});
-    if (reader.failed())
-        throw InvalidFile{};
-    audio_type audio(reader.channels());
+}
+
+auto AudioReaderSimplified::read(std::string filePath) -> audio_type {
+    const auto reader{make(readerFactory, LocalUrl{filePath})};
+    audio_type audio(reader->channels());
     std::generate(audio.begin(), audio.end(),
-        [&, n = 0]() mutable { return reader.channel(n++); });
+        [&, n = 0]() mutable { return reader->channel(n++); });
     return audio;
 }
 }

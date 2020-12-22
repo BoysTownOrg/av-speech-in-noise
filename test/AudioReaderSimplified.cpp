@@ -38,11 +38,11 @@ class BufferedAudioReaderStub : public BufferedAudioReader {
 class BufferedAudioReaderStubFactory : public BufferedAudioReader::Factory {
   public:
     BufferedAudioReaderStubFactory(
-        std::shared_ptr<const BufferedAudioReaderStub> reader)
+        std::shared_ptr<BufferedAudioReaderStub> reader)
         : reader{std::move(reader)} {}
 
     auto make(const LocalUrl &url)
-        -> std::shared_ptr<const BufferedAudioReader> override {
+        -> std::shared_ptr<BufferedAudioReader> override {
         url_ = url;
         if (throwOnMake_)
             throw BufferedAudioReader::CannotReadFile{};
@@ -55,7 +55,7 @@ class BufferedAudioReaderStubFactory : public BufferedAudioReader::Factory {
 
   private:
     LocalUrl url_;
-    std::shared_ptr<const BufferedAudioReaderStub> reader;
+    std::shared_ptr<BufferedAudioReaderStub> reader;
     bool throwOnMake_{};
 };
 
@@ -89,7 +89,7 @@ AUDIO_READER_SIMPLIFIED_TEST(readThrowsInvalidFileOnFailure) {
 }
 
 AUDIO_READER_SIMPLIFIED_TEST(readAssemblesChannels) {
-    bufferedReader.setAudio({{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}});
+    bufferedReaderPtr->setAudio({{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}});
     assertEqual({{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}}, read(reader));
 }
 }
