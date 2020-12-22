@@ -3,8 +3,8 @@
 
 namespace av_speech_in_noise {
 AudioReaderSimplified::AudioReaderSimplified(
-    BufferedAudioReader &reader, BufferedAudioReader::Factory &readerFactory)
-    : reader{reader}, readerFactory{readerFactory} {}
+    BufferedAudioReader::Factory &readerFactory)
+    : readerFactory{readerFactory} {}
 
 static auto make(BufferedAudioReader::Factory &factory, const LocalUrl &url)
     -> std::shared_ptr<BufferedAudioReader> {

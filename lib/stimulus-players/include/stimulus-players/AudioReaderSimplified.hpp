@@ -12,8 +12,6 @@ namespace av_speech_in_noise {
 class BufferedAudioReader {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(BufferedAudioReader);
-    virtual void load(const LocalUrl &) = 0;
-    virtual auto failed() -> bool = 0;
     virtual auto channel(gsl::index) -> std::vector<float> = 0;
     virtual auto channels() -> gsl::index = 0;
 
@@ -29,12 +27,10 @@ class BufferedAudioReader {
 
 class AudioReaderSimplified : public AudioReader {
   public:
-    AudioReaderSimplified(
-        BufferedAudioReader &, BufferedAudioReader::Factory &);
+    AudioReaderSimplified(BufferedAudioReader::Factory &);
     auto read(std::string filePath) -> audio_type override;
 
   private:
-    BufferedAudioReader &reader;
     BufferedAudioReader::Factory &readerFactory;
 };
 }

@@ -16,23 +16,8 @@ class BufferedAudioReaderStub : public BufferedAudioReader {
 
     auto channels() -> gsl::index override { return audio.size(); }
 
-    void failOnLoad() { failOnLoad_ = true; }
-
-    [[nodiscard]] auto url() const -> LocalUrl { return url_; }
-
-    void load(const LocalUrl &s) override {
-        url_ = s;
-        if (failOnLoad_)
-            failed_ = true;
-    }
-
-    auto failed() -> bool override { return failed_; }
-
   private:
     std::vector<std::vector<float>> audio;
-    LocalUrl url_{};
-    bool failOnLoad_{};
-    bool failed_{};
 };
 
 class BufferedAudioReaderStubFactory : public BufferedAudioReader::Factory {
@@ -68,8 +53,7 @@ class AudioReaderSimplifiedTests : public ::testing::Test {
     std::shared_ptr<BufferedAudioReaderStub> bufferedReaderPtr =
         std::make_shared<BufferedAudioReaderStub>();
     BufferedAudioReaderStubFactory readerFactory{bufferedReaderPtr};
-    BufferedAudioReaderStub bufferedReader;
-    AudioReaderSimplified reader{bufferedReader, readerFactory};
+    AudioReaderSimplified reader{readerFactory};
 };
 
 #define AUDIO_READER_SIMPLIFIED_TEST(a) TEST_F(AudioReaderSimplifiedTests, a)
