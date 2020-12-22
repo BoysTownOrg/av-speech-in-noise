@@ -6,6 +6,7 @@
 #include <av-speech-in-noise/Model.hpp>
 #include <gsl/gsl>
 #include <vector>
+#include <memory>
 
 namespace av_speech_in_noise {
 class BufferedAudioReader {
@@ -15,11 +16,19 @@ class BufferedAudioReader {
     virtual auto failed() -> bool = 0;
     virtual auto channel(gsl::index) -> std::vector<float> = 0;
     virtual auto channels() -> gsl::index = 0;
+
+    class Factory {
+      public:
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Factory);
+        virtual auto make(const LocalUrl &)
+            -> std::shared_ptr<const BufferedAudioReader> = 0;
+    };
 };
 
 class AudioReaderSimplified : public AudioReader {
   public:
-    AudioReaderSimplified(BufferedAudioReader &);
+    AudioReaderSimplified(
+        BufferedAudioReader &, BufferedAudioReader::Factory &);
     auto read(std::string filePath) -> audio_type override;
 
   private:

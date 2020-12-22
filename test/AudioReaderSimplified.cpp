@@ -6,7 +6,7 @@
 
 namespace av_speech_in_noise {
 namespace {
-class BufferedAudioReaderSimpleStub : public BufferedAudioReader {
+class BufferedAudioReaderStub : public BufferedAudioReader {
   public:
     void setAudio(std::vector<std::vector<float>> v) { audio = std::move(v); }
 
@@ -35,14 +35,32 @@ class BufferedAudioReaderSimpleStub : public BufferedAudioReader {
     bool failed_{};
 };
 
+class BufferedAudioReaderStubFactory : public BufferedAudioReader::Factory {
+  public:
+    BufferedAudioReaderStubFactory(
+        std::shared_ptr<const BufferedAudioReaderStub> reader)
+        : reader{std::move(reader)} {}
+
+    auto make(const LocalUrl &)
+        -> std::shared_ptr<const BufferedAudioReader> override {
+        return reader;
+    }
+
+  private:
+    std::shared_ptr<const BufferedAudioReaderStub> reader;
+};
+
 auto read(AudioReaderSimplified &reader, std::string s = {}) -> audio_type {
     return reader.read(std::move(s));
 }
 
 class AudioReaderSimplifiedTests : public ::testing::Test {
   protected:
-    BufferedAudioReaderSimpleStub bufferedReader;
-    AudioReaderSimplified reader{bufferedReader};
+    std::shared_ptr<BufferedAudioReaderStub> bufferedReaderPtr =
+        std::make_shared<BufferedAudioReaderStub>();
+    BufferedAudioReaderStubFactory readerFactory{bufferedReaderPtr};
+    BufferedAudioReaderStub bufferedReader;
+    AudioReaderSimplified reader{bufferedReader, readerFactory};
 };
 
 #define AUDIO_READER_SIMPLIFIED_TEST(a) TEST_F(AudioReaderSimplifiedTests, a)
