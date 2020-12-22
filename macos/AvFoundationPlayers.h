@@ -20,6 +20,8 @@ class AvFoundationBufferedAudioReader : public BufferedAudioReader {
     auto channels() -> gsl::index override;
 
   private:
+    // order dependent initialization
+    AVAudioFile *file;
     AVAudioPCMBuffer *buffer;
 };
 

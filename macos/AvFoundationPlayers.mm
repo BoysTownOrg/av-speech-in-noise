@@ -500,18 +500,18 @@ void AvFoundationVideoPlayer::preRoll() {
 }
 
 AvFoundationBufferedAudioReader::AvFoundationBufferedAudioReader(
-    const LocalUrl &url) {
-    const auto file{[[AVAudioFile alloc]
-        initForReading:[NSURL fileURLWithPath:nsString(url.path)
-                                                  .stringByExpandingTildeInPath]
-          commonFormat:AVAudioPCMFormatFloat32
-           interleaved:NO
-                 error:nil]};
-    if (file == nil)
+    const LocalUrl &url)
+    : file{[[AVAudioFile alloc]
+          initForReading:
+              [NSURL fileURLWithPath:
+                         nsString(url.path).stringByExpandingTildeInPath]
+            commonFormat:AVAudioPCMFormatFloat32
+             interleaved:NO
+                   error:nil]},
+      buffer{[[AVAudioPCMBuffer alloc] initWithPCMFormat:file.processingFormat
+                                           frameCapacity:file.length]} {
+    if (file == nil || [file readIntoBuffer:buffer error:nil] == NO)
         throw CannotReadFile{};
-    buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:file.processingFormat
-                                           frameCapacity:file.length];
-    [file readIntoBuffer:buffer error:nil];
 }
 
 auto AvFoundationBufferedAudioReader::channel(gsl::index n)
