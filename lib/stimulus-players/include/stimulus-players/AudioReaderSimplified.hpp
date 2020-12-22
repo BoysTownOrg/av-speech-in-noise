@@ -33,6 +33,7 @@ class AudioReaderSimplified : public AudioReader {
 
   private:
     BufferedAudioReader &reader;
+    BufferedAudioReader::Factory &readerFactory;
 };
 }
 

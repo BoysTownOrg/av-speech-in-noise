@@ -41,12 +41,16 @@ class BufferedAudioReaderStubFactory : public BufferedAudioReader::Factory {
         std::shared_ptr<const BufferedAudioReaderStub> reader)
         : reader{std::move(reader)} {}
 
-    auto make(const LocalUrl &)
+    auto make(const LocalUrl &url)
         -> std::shared_ptr<const BufferedAudioReader> override {
+        url_ = url;
         return reader;
     }
 
+    auto url() -> LocalUrl { return url_; }
+
   private:
+    LocalUrl url_;
     std::shared_ptr<const BufferedAudioReaderStub> reader;
 };
 
@@ -67,8 +71,7 @@ class AudioReaderSimplifiedTests : public ::testing::Test {
 
 AUDIO_READER_SIMPLIFIED_TEST(loadsFile) {
     read(reader, "a");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, bufferedReader.url().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, readerFactory.url().path);
 }
 
 AUDIO_READER_SIMPLIFIED_TEST(readThrowsInvalidFileOnFailure) {
