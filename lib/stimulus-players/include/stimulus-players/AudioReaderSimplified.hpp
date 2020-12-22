@@ -17,6 +17,8 @@ class BufferedAudioReader {
     virtual auto channel(gsl::index) -> std::vector<float> = 0;
     virtual auto channels() -> gsl::index = 0;
 
+    class CannotReadFile {};
+
     class Factory {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Factory);

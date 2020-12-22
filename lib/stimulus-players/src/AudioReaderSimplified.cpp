@@ -7,7 +7,11 @@ AudioReaderSimplified::AudioReaderSimplified(
     : reader{reader}, readerFactory{readerFactory} {}
 
 auto AudioReaderSimplified::read(std::string filePath) -> audio_type {
-    readerFactory.make(LocalUrl{filePath});
+    try {
+        readerFactory.make(LocalUrl{filePath});
+    } catch (const BufferedAudioReader::CannotReadFile &) {
+        throw InvalidFile{};
+    }
     reader.load(LocalUrl{filePath});
     if (reader.failed())
         throw InvalidFile{};

@@ -44,14 +44,19 @@ class BufferedAudioReaderStubFactory : public BufferedAudioReader::Factory {
     auto make(const LocalUrl &url)
         -> std::shared_ptr<const BufferedAudioReader> override {
         url_ = url;
+        if (throwOnMake_)
+            throw BufferedAudioReader::CannotReadFile{};
         return reader;
     }
+
+    void throwOnMake() { throwOnMake_ = true; }
 
     auto url() -> LocalUrl { return url_; }
 
   private:
     LocalUrl url_;
     std::shared_ptr<const BufferedAudioReaderStub> reader;
+    bool throwOnMake_{};
 };
 
 auto read(AudioReaderSimplified &reader, std::string s = {}) -> audio_type {
@@ -75,7 +80,7 @@ AUDIO_READER_SIMPLIFIED_TEST(loadsFile) {
 }
 
 AUDIO_READER_SIMPLIFIED_TEST(readThrowsInvalidFileOnFailure) {
-    bufferedReader.failOnLoad();
+    readerFactory.throwOnMake();
     try {
         read(reader);
         FAIL() << "Expected AudioReaderSimplified::InvalidFile";
