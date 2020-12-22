@@ -220,8 +220,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const std::string &relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
-    AvFoundationBufferedAudioReader bufferedReader;
-    AudioReaderSimplified audioReader{bufferedReader};
+    AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
+    AudioReaderSimplified audioReader{bufferedReaderFactory};
     TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
     AvFoundationAudioPlayer audioPlayer;
     TimerImpl timer;

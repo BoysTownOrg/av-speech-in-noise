@@ -499,20 +499,20 @@ void AvFoundationVideoPlayer::preRoll() {
         }];
 }
 
-void AvFoundationBufferedAudioReader::load(const LocalUrl &url) {
+AvFoundationBufferedAudioReader::AvFoundationBufferedAudioReader(
+    const LocalUrl &url) {
     const auto file{[[AVAudioFile alloc]
         initForReading:[NSURL fileURLWithPath:nsString(url.path)
                                                   .stringByExpandingTildeInPath]
           commonFormat:AVAudioPCMFormatFloat32
            interleaved:NO
                  error:nil]};
-    failed_ = file == nil;
+    if (file == nil)
+        throw CannotReadFile{};
     buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:file.processingFormat
                                            frameCapacity:file.length];
     [file readIntoBuffer:buffer error:nil];
 }
-
-auto AvFoundationBufferedAudioReader::failed() -> bool { return failed_; }
 
 auto AvFoundationBufferedAudioReader::channel(gsl::index n)
     -> std::vector<float> {
@@ -522,5 +522,10 @@ auto AvFoundationBufferedAudioReader::channel(gsl::index n)
 
 auto AvFoundationBufferedAudioReader::channels() -> gsl::index {
     return buffer.format.channelCount;
+}
+
+auto AvFoundationBufferedAudioReaderFactory::make(const LocalUrl &url)
+    -> std::shared_ptr<BufferedAudioReader> {
+    return std::make_shared<AvFoundationBufferedAudioReader>(url);
 }
 }

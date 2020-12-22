@@ -15,14 +15,19 @@
 namespace av_speech_in_noise {
 class AvFoundationBufferedAudioReader : public BufferedAudioReader {
   public:
-    void load(const LocalUrl &) override;
-    auto failed() -> bool override;
+    AvFoundationBufferedAudioReader(const LocalUrl &);
     auto channel(gsl::index) -> std::vector<float> override;
     auto channels() -> gsl::index override;
 
   private:
     AVAudioPCMBuffer *buffer;
-    bool failed_{};
+};
+
+class AvFoundationBufferedAudioReaderFactory
+    : public BufferedAudioReader::Factory {
+  public:
+    auto make(const LocalUrl &)
+        -> std::shared_ptr<BufferedAudioReader> override;
 };
 
 class AvFoundationVideoPlayer : public VideoPlayer {
