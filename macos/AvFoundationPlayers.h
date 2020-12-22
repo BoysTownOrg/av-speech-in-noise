@@ -1,9 +1,9 @@
-#ifndef MACOS_MAIN_AVFOUNDATIONPLAYERS_H_
-#define MACOS_MAIN_AVFOUNDATIONPLAYERS_H_
+#ifndef AV_SPEECH_IN_NOISE_MACOS_MAIN_AVFOUNDATIONPLAYERS_H_
+#define AV_SPEECH_IN_NOISE_MACOS_MAIN_AVFOUNDATIONPLAYERS_H_
 
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <stimulus-players/TargetPlayerImpl.hpp>
-#include <stimulus-players/AudioReaderImpl.hpp>
+#include <stimulus-players/AudioReaderSimplified.hpp>
 #import <CoreMedia/CoreMedia.h>
 #import <MediaToolbox/MediaToolbox.h>
 #import <AVFoundation/AVFoundation.h>
@@ -13,33 +13,23 @@
 @class VideoPlayerActions;
 
 namespace av_speech_in_noise {
-class CoreAudioBuffer : public AudioBuffer {
+class AvFoundationBufferedAudioReader : public BufferedAudioReader {
   public:
-    explicit CoreAudioBuffer(AVAssetReaderTrackOutput *);
-    ~CoreAudioBuffer() override;
-    void set(CMSampleBufferRef);
-    auto channels() -> int override;
-    auto channel(int) -> std::vector<int> override;
-    auto empty() -> bool override;
+    AvFoundationBufferedAudioReader(const LocalUrl &);
+    auto channel(gsl::index) -> std::vector<float> override;
+    auto channels() -> gsl::index override;
 
   private:
-    AudioBufferList audioBufferList{};
-    CMItemCount frames{};
-    CMSampleBufferRef sampleBuffer;
-    // possibly critical: initialize blockBuffer to null
-    CMBlockBufferRef blockBuffer{};
+    // order dependent initialization
+    AVAudioFile *file;
+    AVAudioPCMBuffer *buffer;
 };
 
-class CoreAudioBufferedReader : public BufferedAudioReader {
+class AvFoundationBufferedAudioReaderFactory
+    : public BufferedAudioReader::Factory {
   public:
-    void loadFile(std::string) override;
-    auto failed() -> bool override;
-    auto readNextBuffer() -> std::shared_ptr<AudioBuffer> override;
-    auto minimumPossibleSample() -> int override;
-    auto sampleRateHz() -> double;
-
-  private:
-    AVAssetReaderTrackOutput *trackOutput{};
+    auto make(const LocalUrl &)
+        -> std::shared_ptr<BufferedAudioReader> override;
 };
 
 class AvFoundationVideoPlayer : public VideoPlayer {

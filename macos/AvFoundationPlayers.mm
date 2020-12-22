@@ -135,72 +135,6 @@ static auto makeAvAsset(const std::string &filePath) -> AVURLAsset * {
     return [AVURLAsset URLAssetWithURL:url options:nil];
 }
 
-// https://stackoverflow.com/questions/4972677/reading-audio-samples-via-avassetreader
-CoreAudioBuffer::CoreAudioBuffer(AVAssetReaderTrackOutput *trackOutput)
-    : sampleBuffer{[trackOutput copyNextSampleBuffer]} {
-    frames = CMSampleBufferGetNumSamples(sampleBuffer);
-    CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(sampleBuffer,
-        nullptr, &audioBufferList, sizeof(audioBufferList), nullptr, nullptr,
-        kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment,
-        &blockBuffer);
-}
-
-// A better design could throw if constructor cannot allocate buffer(s)...
-CoreAudioBuffer::~CoreAudioBuffer() {
-    if (blockBuffer != nullptr)
-        CFRelease(blockBuffer);
-    if (sampleBuffer != nullptr)
-        CFRelease(sampleBuffer);
-}
-
-auto CoreAudioBuffer::channels() -> int {
-    return audioBufferList.mNumberBuffers;
-}
-
-auto CoreAudioBuffer::channel(int n) -> std::vector<int> {
-    std::vector<int> channel{};
-    auto *const data{static_cast<SInt16 *>(audioBufferList.mBuffers[n].mData)};
-    for (int i{}; i < frames; ++i)
-        channel.push_back(data[i]);
-    return channel;
-}
-
-auto CoreAudioBuffer::empty() -> bool { return frames == 0; }
-
-void CoreAudioBufferedReader::loadFile(std::string filePath) {
-    const auto asset{makeAvAsset(filePath)};
-    const auto reader{[[AVAssetReader alloc] initWithAsset:asset error:nil]};
-    const auto track{audioTrack(asset)};
-
-    // assetReaderTrackOutputWithTrack throws if track is nil...
-    // I do not handle the error here but by querying failed method.
-    trackOutput = track == nil
-        ? nil
-        : [AVAssetReaderTrackOutput
-              assetReaderTrackOutputWithTrack:track
-                               outputSettings:@{
-                                   AVFormatIDKey : [NSNumber
-                                       numberWithInt:kAudioFormatLinearPCM]
-                               }];
-
-    [reader addOutput:trackOutput];
-    [reader startReading];
-}
-
-auto CoreAudioBufferedReader::failed() -> bool { return trackOutput == nil; }
-
-auto CoreAudioBufferedReader::readNextBuffer() -> std::shared_ptr<AudioBuffer> {
-    return std::make_shared<CoreAudioBuffer>(trackOutput);
-}
-
-auto CoreAudioBufferedReader::minimumPossibleSample() -> int {
-    return std::numeric_limits<SInt16>::min();
-}
-
-auto CoreAudioBufferedReader::sampleRateHz() -> double {
-    return av_speech_in_noise::sampleRateHz(trackOutput.track);
-}
-
 static void init(
     MTAudioProcessingTapRef, void *clientInfo, void **tapStorageOut) {
     *tapStorageOut = clientInfo;
@@ -563,5 +497,35 @@ void AvFoundationVideoPlayer::preRoll() {
         completionHandler:^(BOOL finished) {
           listener_->notifyThatPreRollHasCompleted();
         }];
+}
+
+AvFoundationBufferedAudioReader::AvFoundationBufferedAudioReader(
+    const LocalUrl &url)
+    : file{[[AVAudioFile alloc]
+          initForReading:
+              [NSURL fileURLWithPath:
+                         nsString(url.path).stringByExpandingTildeInPath]
+            commonFormat:AVAudioPCMFormatFloat32
+             interleaved:NO
+                   error:nil]},
+      buffer{[[AVAudioPCMBuffer alloc] initWithPCMFormat:file.processingFormat
+                                           frameCapacity:file.length]} {
+    if (file == nil || [file readIntoBuffer:buffer error:nil] == NO)
+        throw CannotReadFile{};
+}
+
+auto AvFoundationBufferedAudioReader::channel(gsl::index n)
+    -> std::vector<float> {
+    auto *const p{buffer.floatChannelData[n]};
+    return std::vector<float>(p, p + buffer.frameLength);
+}
+
+auto AvFoundationBufferedAudioReader::channels() -> gsl::index {
+    return buffer.format.channelCount;
+}
+
+auto AvFoundationBufferedAudioReaderFactory::make(const LocalUrl &url)
+    -> std::shared_ptr<BufferedAudioReader> {
+    return std::make_shared<AvFoundationBufferedAudioReader>(url);
 }
 }

@@ -15,7 +15,7 @@
 #include <recognition-test/ResponseEvaluator.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <stimulus-players/TargetPlayerImpl.hpp>
-#include <stimulus-players/AudioReaderImpl.hpp>
+#include <stimulus-players/AudioReaderSimplified.hpp>
 #include <target-playlists/RandomizedTargetPlaylists.hpp>
 #include <target-playlists/FileFilterDecorator.hpp>
 #include <adaptive-track/AdaptiveTrack.hpp>
@@ -220,8 +220,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const std::string &relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
-    CoreAudioBufferedReader bufferedReader;
-    AudioReaderImpl audioReader{&bufferedReader};
+    AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
+    AudioReaderSimplified audioReader{bufferedReaderFactory};
     TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
     AvFoundationAudioPlayer audioPlayer;
     TimerImpl timer;
