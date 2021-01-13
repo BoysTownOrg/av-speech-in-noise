@@ -166,6 +166,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     push_back(conditionSelections, actions, "FabricMask_AV");
     push_back(conditionSelections, actions, "HospitalMask_AO");
     push_back(conditionSelections, actions, "HospitalMask_AV");
+    push_back(conditionSelections, actions, "NoMask_VO");
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
