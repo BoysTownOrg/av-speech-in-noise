@@ -37,6 +37,7 @@ void FreeResponsePresenter::notifyThatUserIsDoneResponding() {
 
 void FreeResponsePresenter::showResponseSubmission() {
     view.clearFreeResponse();
+    view.clearFlag();
     view.showFreeResponseSubmission();
 }
 }

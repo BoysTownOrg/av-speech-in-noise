@@ -27,6 +27,7 @@ class FreeResponseView {
     virtual void showFreeResponseSubmission() = 0;
     virtual void hideFreeResponseSubmission() = 0;
     virtual void clearFreeResponse() = 0;
+    virtual void clearFlag() = 0;
 };
 
 class FreeResponseController : public TaskController,

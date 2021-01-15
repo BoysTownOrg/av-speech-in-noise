@@ -51,14 +51,19 @@ class FreeResponseViewStub : public FreeResponseView {
 
     void clearFreeResponse() override { freeResponseCleared_ = true; }
 
+    void clearFlag() { flagCleared_ = true; }
+
     [[nodiscard]] auto freeResponseCleared() const -> bool {
         return freeResponseCleared_;
     }
+
+    [[nodiscard]] auto flagCleared() const -> bool { return flagCleared_; }
 
   private:
     bool freeResponseSubmissionShown_{};
     bool freeResponseSubmissionHidden_{};
     bool freeResponseCleared_{};
+    bool flagCleared_{};
 };
 
 void notifyThatSubmitButtonHasBeenClicked(FreeResponseControlStub &view) {
@@ -132,6 +137,11 @@ FREE_RESPONSE_PRESENTER_TEST(
     presenterClearsFreeResponseWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.freeResponseCleared());
+}
+
+FREE_RESPONSE_PRESENTER_TEST(presenterClearsFlagWhenShowingResponseSubmission) {
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.flagCleared());
 }
 
 FREE_RESPONSE_CONTROLLER_TEST(
