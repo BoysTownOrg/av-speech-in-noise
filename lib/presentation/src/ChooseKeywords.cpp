@@ -23,5 +23,7 @@ void ChooseKeywordsPresenter::notifyThatUserIsDoneResponding() {
 
 void ChooseKeywordsPresenter::notifyThatTrialHasStarted() {}
 
-void ChooseKeywordsPresenter::showResponseSubmission() {}
+void ChooseKeywordsPresenter::showResponseSubmission() {
+    view.showResponseSubmission();
+}
 }

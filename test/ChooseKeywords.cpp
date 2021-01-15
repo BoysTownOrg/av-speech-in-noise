@@ -11,10 +11,17 @@ class ChooseKeywordsViewStub : public ChooseKeywordsView {
         return responseSubmissionHidden_;
     }
 
-    void hideResponseSubmission() { responseSubmissionHidden_ = true; }
+    void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
+
+    [[nodiscard]] auto responseSubmissionShown() const -> bool {
+        return responseSubmissionShown_;
+    }
+
+    void showResponseSubmission() override { responseSubmissionShown_ = true; }
 
   private:
     bool responseSubmissionHidden_{};
+    bool responseSubmissionShown_{};
 };
 
 // class ChooseKeywordsControllerTests : public ::testing::Test {
@@ -68,11 +75,11 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(presenterShowsReadyButtonWhenStarted) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
 }
 
-// CHOOSE_KEYWORDS_PRESENTER_TEST(
-//     presenterShowsResponseButtonWhenShowingResponseSubmission) {
-//     presenter.showResponseSubmission();
-//     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.freeResponseSubmissionShown());
-// }
+CHOOSE_KEYWORDS_PRESENTER_TEST(
+    presenterShowsResponseButtonWhenShowingResponseSubmission) {
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseSubmissionShown());
+}
 
 // CHOOSE_KEYWORDS_PRESENTER_TEST(
 //     presenterClearsFreeResponseWhenShowingResponseSubmission) {
