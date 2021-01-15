@@ -468,6 +468,12 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelChooseKeywordsWithAllTargetsPassesTestIdentity) {
+    assertPassesTestIdentity(interpreter, model,
+        Method::fixedLevelChooseKeywordsWithAllTargets, fixedLevelTestIdentity);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingPassesTestIdentity) {
     assertPassesTestIdentity(interpreter, model,
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
