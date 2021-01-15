@@ -71,6 +71,7 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
         TaskPresenter *consonantPresenter,
         TaskPresenter *coordinateResponseMeasurePresenter,
         TaskPresenter *freeResponsePresenter,
+        TaskPresenter *chooseKeywordsPresenter,
         TaskPresenter *correctKeywordsPresenter,
         TaskPresenter *passFailPresenter, UninitializedTaskPresenter *);
     void trialComplete() override;
@@ -92,6 +93,7 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
     TaskPresenter *consonantPresenter;
     TaskPresenter *coordinateResponseMeasurePresenter;
     TaskPresenter *freeResponsePresenter;
+    TaskPresenter *chooseKeywordsPresenter;
     TaskPresenter *correctKeywordsPresenter;
     TaskPresenter *passFailPresenter;
     UninitializedTaskPresenter *taskPresenter_;

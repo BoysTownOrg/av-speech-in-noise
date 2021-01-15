@@ -97,11 +97,13 @@ TestPresenterImpl::TestPresenterImpl(Model &model, TestView &view,
     TaskPresenter *consonantPresenter,
     TaskPresenter *coordinateResponseMeasurePresenter,
     TaskPresenter *freeResponsePresenter,
+    TaskPresenter *chooseKeywordsPresenter,
     TaskPresenter *correctKeywordsPresenter, TaskPresenter *passFailPresenter,
     UninitializedTaskPresenter *taskPresenter_)
     : model{model}, view{view}, consonantPresenter{consonantPresenter},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       freeResponsePresenter{freeResponsePresenter},
+      chooseKeywordsPresenter{chooseKeywordsPresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
       passFailPresenter{passFailPresenter}, taskPresenter_{taskPresenter_} {
     model.attach(this);
@@ -165,6 +167,10 @@ static auto freeResponse(Method m) -> bool {
         m == Method::fixedLevelFreeResponseWithTargetReplacement;
 }
 
+static auto chooseKeywords(Method m) -> bool {
+    return m == Method::fixedLevelChooseKeywordsWithAllTargets;
+}
+
 static auto correctKeywords(Method m) -> bool {
     return m == Method::adaptiveCorrectKeywords ||
         m == Method::adaptiveCorrectKeywordsWithEyeTracking;
@@ -187,6 +193,8 @@ auto TestPresenterImpl::taskPresenter(Method m) -> TaskPresenter * {
         return consonantPresenter;
     if (freeResponse(m))
         return freeResponsePresenter;
+    if (chooseKeywords(m))
+        return chooseKeywordsPresenter;
     if (correctKeywords(m))
         return correctKeywordsPresenter;
     return passFailPresenter;

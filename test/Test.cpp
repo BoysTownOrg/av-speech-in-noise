@@ -169,6 +169,14 @@ class InitializingFixedLevelFreeResponseMethodWithAllTargets
     }
 };
 
+class InitializingFixedLevelChooseKeywordsMethodWithAllTargets
+    : public PresenterUseCase {
+  public:
+    void run(TestPresenter &presenter) override {
+        presenter.initialize(Method::fixedLevelChooseKeywordsWithAllTargets);
+    }
+};
+
 class InitializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking
     : public PresenterUseCase {
   public:
@@ -405,12 +413,14 @@ class TestPresenterTests : public ::testing::Test {
     TaskPresenterStub consonantPresenter;
     TaskPresenterStub coordinateResponseMeasurePresenter;
     TaskPresenterStub freeResponsePresenter;
+    TaskPresenterStub chooseKeywordsPresenter;
     TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub passFailPresenter;
     UninitializedTaskPresenterStub taskPresenter;
     TestPresenterImpl presenter{model, view, &consonantPresenter,
         &coordinateResponseMeasurePresenter, &freeResponsePresenter,
-        &correctKeywordsPresenter, &passFailPresenter, &taskPresenter};
+        &chooseKeywordsPresenter, &correctKeywordsPresenter, &passFailPresenter,
+        &taskPresenter};
     InitializingAdaptiveCoordinateResponseMeasureMethod
         initializingAdaptiveCoordinateResponseMeasureMethod;
     InitializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker
@@ -439,6 +449,8 @@ class TestPresenterTests : public ::testing::Test {
         initializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod;
     InitializingFixedLevelFreeResponseMethodWithAllTargets
         initializingFixedLevelFreeResponseMethodWithAllTargets;
+    InitializingFixedLevelChooseKeywordsMethodWithAllTargets
+        initializingFixedLevelChooseKeywordsMethodWithAllTargets;
     InitializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking
         initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking;
 };
@@ -767,6 +779,13 @@ TEST_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingFixedLevelFreeResponseMethodWithAllTargets, presenter,
         freeResponsePresenter);
+}
+
+TEST_PRESENTER_TEST(
+    initializingFixedLevelChooseKeywordsMethodWithAllTargetsInitializesTask) {
+    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
+        initializingFixedLevelChooseKeywordsMethodWithAllTargets, presenter,
+        chooseKeywordsPresenter);
 }
 
 TEST_PRESENTER_TEST(
