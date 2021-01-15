@@ -799,6 +799,10 @@ void AppKitTestUI::setContinueTestingDialogMessage(const std::string &s) {
 
 void AppKitTestUI::clearFreeResponse() { set(freeResponseField, ""); }
 
+void AppKitTestUI::clearFlag() {
+    freeResponseFlaggedButton.state = NSControlStateValueOff;
+}
+
 auto AppKitTestUI::freeResponse() -> std::string {
     return string(freeResponseField);
 }

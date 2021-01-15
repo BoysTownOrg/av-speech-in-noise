@@ -55,6 +55,7 @@ class AppKitTestUI : public TestView,
     void hideContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &) override;
     void clearFreeResponse() override;
+    void clearFlag() override;
     void notifyThatExitTestButtonHasBeenClicked();
     void notifyThatPlayTrialButtonHasBeenClicked();
     void notifyThatSubmitFreeResponseButtonHasBeenClicked();

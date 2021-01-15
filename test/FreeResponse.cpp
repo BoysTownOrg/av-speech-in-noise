@@ -51,7 +51,7 @@ class FreeResponseViewStub : public FreeResponseView {
 
     void clearFreeResponse() override { freeResponseCleared_ = true; }
 
-    void clearFlag() { flagCleared_ = true; }
+    void clearFlag() override { flagCleared_ = true; }
 
     [[nodiscard]] auto freeResponseCleared() const -> bool {
         return freeResponseCleared_;
