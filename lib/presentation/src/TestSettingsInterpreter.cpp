@@ -173,6 +173,7 @@ static auto method(const std::string &s) -> Method {
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
             Method::adaptiveCoordinateResponseMeasure,
             Method::fixedLevelConsonants,
+            Method::fixedLevelChooseKeywordsWithAllTargets,
             Method::adaptiveCoordinateResponseMeasureWithEyeTracking})
         if (name(s) == name(m))
             return m;

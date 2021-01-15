@@ -342,6 +342,11 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelChooseKeywordsWithAllTargetsReturnsMethod) {
+    assertMethod(interpreter, Method::fixedLevelChooseKeywordsWithAllTargets);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsReturnsMethod) {
     assertMethod(interpreter, Method::fixedLevelConsonants);
 }

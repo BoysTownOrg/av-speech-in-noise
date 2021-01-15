@@ -38,6 +38,8 @@ constexpr auto name(Method c) -> const char * {
         return "fixed-level free response all stimuli";
     case Method::fixedLevelConsonants:
         return "fixed-level consonants";
+    case Method::fixedLevelChooseKeywordsWithAllTargets:
+        return "fixed-level choose keywords all stimuli";
     case Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking:
         return "fixed-level free response all stimuli eye tracking";
     case Method::unknown:
