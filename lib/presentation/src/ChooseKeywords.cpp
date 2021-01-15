@@ -9,7 +9,7 @@ ChooseKeywordsPresenter::ChooseKeywordsPresenter(
     TestView &testView, ChooseKeywordsView &view)
     : testView{testView}, view{view} {}
 
-void ChooseKeywordsPresenter::start() {}
+void ChooseKeywordsPresenter::start() { testView.showNextTrialButton(); }
 
 void ChooseKeywordsPresenter::stop() { hideResponseSubmission(view); }
 

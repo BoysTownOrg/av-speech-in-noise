@@ -63,10 +63,10 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(presenterHidesResponseButtonsWhenStopped) {
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-// CHOOSE_KEYWORDS_PRESENTER_TEST(presenterShowsReadyButtonWhenStarted) {
-//     start(presenter);
-//     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
-// }
+CHOOSE_KEYWORDS_PRESENTER_TEST(presenterShowsReadyButtonWhenStarted) {
+    presenter.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
+}
 
 // CHOOSE_KEYWORDS_PRESENTER_TEST(
 //     presenterShowsResponseButtonWhenShowingResponseSubmission) {
