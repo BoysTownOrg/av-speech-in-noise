@@ -69,12 +69,8 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
 class TestPresenterImpl : public Model::Observer, public TestPresenter {
   public:
     explicit TestPresenterImpl(Model &, TestView &,
-        TaskPresenter *consonantPresenter,
-        TaskPresenter *coordinateResponseMeasurePresenter,
-        TaskPresenter *freeResponsePresenter,
-        TaskPresenter *chooseKeywordsPresenter,
-        TaskPresenter *correctKeywordsPresenter,
-        TaskPresenter *passFailPresenter, UninitializedTaskPresenter *);
+        std::map<Method, TaskPresenter &> taskPresenters,
+        UninitializedTaskPresenter *);
     void trialComplete() override;
     void start() override;
     void stop() override;
@@ -87,15 +83,9 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
     void initialize(Method) override;
 
   private:
-    std::map<Method, TaskPresenter *> taskPresenter;
+    std::map<Method, TaskPresenter &> taskPresenters;
     Model &model;
     TestView &view;
-    TaskPresenter *consonantPresenter;
-    TaskPresenter *coordinateResponseMeasurePresenter;
-    TaskPresenter *freeResponsePresenter;
-    TaskPresenter *chooseKeywordsPresenter;
-    TaskPresenter *correctKeywordsPresenter;
-    TaskPresenter *passFailPresenter;
     UninitializedTaskPresenter *taskPresenter_;
 };
 }

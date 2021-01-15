@@ -417,9 +417,40 @@ class TestPresenterTests : public ::testing::Test {
     TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub passFailPresenter;
     UninitializedTaskPresenterStub taskPresenter;
-    TestPresenterImpl presenter{model, view, &consonantPresenter,
-        &coordinateResponseMeasurePresenter, &freeResponsePresenter,
-        &chooseKeywordsPresenter, &correctKeywordsPresenter, &passFailPresenter,
+    TestPresenterImpl presenter{model, view,
+        {{Method::adaptiveCoordinateResponseMeasure,
+             coordinateResponseMeasurePresenter},
+            {Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
+                coordinateResponseMeasurePresenter},
+            {Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
+                coordinateResponseMeasurePresenter},
+            {Method::adaptiveCoordinateResponseMeasureWithEyeTracking,
+                coordinateResponseMeasurePresenter},
+            {Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+                coordinateResponseMeasurePresenter},
+            {Method::
+                    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
+                coordinateResponseMeasurePresenter},
+            {Method::
+                    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+                coordinateResponseMeasurePresenter},
+            {Method::fixedLevelFreeResponseWithAllTargets,
+                freeResponsePresenter},
+            {Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
+                freeResponsePresenter},
+            {Method::fixedLevelFreeResponseWithSilentIntervalTargets,
+                freeResponsePresenter},
+            {Method::fixedLevelFreeResponseWithTargetReplacement,
+                freeResponsePresenter},
+            {Method::fixedLevelChooseKeywordsWithAllTargets,
+                chooseKeywordsPresenter},
+            {Method::adaptiveCorrectKeywords, correctKeywordsPresenter},
+            {Method::adaptiveCorrectKeywordsWithEyeTracking,
+                correctKeywordsPresenter},
+            {Method::fixedLevelConsonants, consonantPresenter},
+            {Method::adaptivePassFail, passFailPresenter},
+            {Method::adaptivePassFailWithEyeTracking, passFailPresenter},
+            {Method::unknown, passFailPresenter}},
         &taskPresenter};
     InitializingAdaptiveCoordinateResponseMeasureMethod
         initializingAdaptiveCoordinateResponseMeasureMethod;
