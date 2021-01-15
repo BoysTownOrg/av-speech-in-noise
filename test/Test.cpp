@@ -42,41 +42,6 @@ class PresenterUseCase {
     virtual void run(TestPresenter &) = 0;
 };
 
-class InitializingAdaptiveCoordinateResponseMeasureMethod
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::adaptiveCoordinateResponseMeasure);
-    }
-};
-
-class InitializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
-    }
-};
-
-class InitializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
-    }
-};
-
-class InitializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
-    }
-};
-
 class InitializingAdaptivePassFailMethod : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
@@ -84,105 +49,10 @@ class InitializingAdaptivePassFailMethod : public PresenterUseCase {
     }
 };
 
-class InitializingAdaptivePassFailMethodWithEyeTracking
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::adaptivePassFailWithEyeTracking);
-    }
-};
-
-class InitializingAdaptiveCorrectKeywordsMethod : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::adaptiveCorrectKeywords);
-    }
-};
-
-class InitializingAdaptiveCorrectKeywordsMethodWithEyeTracking
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::adaptiveCorrectKeywordsWithEyeTracking);
-    }
-};
-
-class InitializingFixedLevelFreeResponseWithTargetReplacementMethod
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::fixedLevelFreeResponseWithTargetReplacement);
-    }
-};
-
 class InitializingFixedLevelConsonantMethod : public PresenterUseCase {
   public:
     void run(TestPresenter &presenter) override {
         presenter.initialize(Method::fixedLevelConsonants);
-    }
-};
-
-class InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
-    }
-};
-
-class
-    InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::
-                fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
-    }
-};
-
-class
-    InitializingFixedLevelCoordinateResponseMeasureMethodWithSilentIntervalTargets
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::
-                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
-    }
-};
-
-class InitializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::fixedLevelFreeResponseWithSilentIntervalTargets);
-    }
-};
-
-class InitializingFixedLevelFreeResponseMethodWithAllTargets
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::fixedLevelFreeResponseWithAllTargets);
-    }
-};
-
-class InitializingFixedLevelChooseKeywordsMethodWithAllTargets
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::fixedLevelChooseKeywordsWithAllTargets);
-    }
-};
-
-class InitializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
     }
 };
 
