@@ -411,79 +411,15 @@ class TestPresenterTests : public ::testing::Test {
     ModelStub model;
     TestViewStub view;
     TaskPresenterStub consonantPresenter;
-    TaskPresenterStub coordinateResponseMeasurePresenter;
-    TaskPresenterStub freeResponsePresenter;
-    TaskPresenterStub chooseKeywordsPresenter;
-    TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub passFailPresenter;
     UninitializedTaskPresenterStub taskPresenter;
     TestPresenterImpl presenter{model, view,
-        {{Method::adaptiveCoordinateResponseMeasure,
-             coordinateResponseMeasurePresenter},
-            {Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
-                coordinateResponseMeasurePresenter},
-            {Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
-                coordinateResponseMeasurePresenter},
-            {Method::adaptiveCoordinateResponseMeasureWithEyeTracking,
-                coordinateResponseMeasurePresenter},
-            {Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-                coordinateResponseMeasurePresenter},
-            {Method::
-                    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
-                coordinateResponseMeasurePresenter},
-            {Method::
-                    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-                coordinateResponseMeasurePresenter},
-            {Method::fixedLevelFreeResponseWithAllTargets,
-                freeResponsePresenter},
-            {Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
-                freeResponsePresenter},
-            {Method::fixedLevelFreeResponseWithSilentIntervalTargets,
-                freeResponsePresenter},
-            {Method::fixedLevelFreeResponseWithTargetReplacement,
-                freeResponsePresenter},
-            {Method::fixedLevelChooseKeywordsWithAllTargets,
-                chooseKeywordsPresenter},
-            {Method::adaptiveCorrectKeywords, correctKeywordsPresenter},
-            {Method::adaptiveCorrectKeywordsWithEyeTracking,
-                correctKeywordsPresenter},
-            {Method::fixedLevelConsonants, consonantPresenter},
+        {{Method::fixedLevelConsonants, consonantPresenter},
             {Method::adaptivePassFail, passFailPresenter},
-            {Method::adaptivePassFailWithEyeTracking, passFailPresenter},
             {Method::unknown, passFailPresenter}},
         &taskPresenter};
-    InitializingAdaptiveCoordinateResponseMeasureMethod
-        initializingAdaptiveCoordinateResponseMeasureMethod;
-    InitializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker
-        initializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker;
-    InitializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker
-        initializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker;
-    InitializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking
-        initializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking;
     InitializingAdaptivePassFailMethod initializingAdaptivePassFailMethod;
-    InitializingAdaptivePassFailMethodWithEyeTracking
-        initializingAdaptivePassFailMethodWithEyeTracking;
-    InitializingFixedLevelFreeResponseWithTargetReplacementMethod
-        initializingFixedLevelFreeResponseWithTargetReplacementMethod;
     InitializingFixedLevelConsonantMethod initializingFixedLevelConsonantMethod;
-    InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement
-        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement;
-    InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking
-        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking;
-    InitializingAdaptiveCorrectKeywordsMethod
-        initializingAdaptiveCorrectKeywordsMethod;
-    InitializingAdaptiveCorrectKeywordsMethodWithEyeTracking
-        initializingAdaptiveCorrectKeywordsMethodWithEyeTracking;
-    InitializingFixedLevelCoordinateResponseMeasureMethodWithSilentIntervalTargets
-        initializingFixedLevelCoordinateResponseMeasureSilentIntervalsMethod;
-    InitializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod
-        initializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod;
-    InitializingFixedLevelFreeResponseMethodWithAllTargets
-        initializingFixedLevelFreeResponseMethodWithAllTargets;
-    InitializingFixedLevelChooseKeywordsMethodWithAllTargets
-        initializingFixedLevelChooseKeywordsMethodWithAllTargets;
-    InitializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking
-        initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking;
 };
 
 void run(ControllerUseCase &useCase) { useCase.run(); }
@@ -756,103 +692,6 @@ TEST_PRESENTER_TEST(startsTaskPresenterWhenInitializing) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.started());
 }
 
-TEST_PRESENTER_TEST(
-    initializingAdaptiveCoordinateResponseMeasureMethodInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptiveCoordinateResponseMeasureMethod, presenter,
-        coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeakerInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker,
-        presenter, coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMaskerInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker,
-        presenter, coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingAdaptiveCoordinateResponseMeasureMethodWithEyeTrackingInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking,
-        presenter, coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement,
-        presenter, coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTrackingInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking,
-        presenter, coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelCoordinateResponseMeasureSilentIntervalsMethodInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelCoordinateResponseMeasureSilentIntervalsMethod,
-        presenter, coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelFreeResponseMethodWithAllTargetsInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelFreeResponseMethodWithAllTargets, presenter,
-        freeResponsePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelChooseKeywordsMethodWithAllTargetsInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelChooseKeywordsMethodWithAllTargets, presenter,
-        chooseKeywordsPresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTrackingInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking,
-        presenter, freeResponsePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelFreeResponseWithSilentIntervalTargetsMethodInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod,
-        presenter, freeResponsePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelFreeResponseWithTargetReplacementMethodInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelFreeResponseWithTargetReplacementMethod,
-        presenter, freeResponsePresenter);
-}
-
-TEST_PRESENTER_TEST(initializingAdaptiveCorrectKeywordsMethodInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptiveCorrectKeywordsMethod, presenter,
-        correctKeywordsPresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingAdaptiveCorrectKeywordsMethodWithEyeTrackingInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptiveCorrectKeywordsMethodWithEyeTracking, presenter,
-        correctKeywordsPresenter);
-}
-
 TEST_PRESENTER_TEST(initializingFixedLevelConsonantMethodInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingFixedLevelConsonantMethod, presenter, consonantPresenter);
@@ -861,13 +700,6 @@ TEST_PRESENTER_TEST(initializingFixedLevelConsonantMethodInitializesTask) {
 TEST_PRESENTER_TEST(initializingAdaptivePassFailMethodInitializesTask) {
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
         initializingAdaptivePassFailMethod, presenter, passFailPresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingAdaptivePassFailMethodWithEyeTrackingInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptivePassFailMethodWithEyeTracking, presenter,
-        passFailPresenter);
 }
 
 TEST_PRESENTER_TEST(displaysTrialNumberWhenInitializing) {
