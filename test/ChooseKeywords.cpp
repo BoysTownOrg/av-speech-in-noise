@@ -44,6 +44,9 @@ class ChooseKeywordsPresenterTests : public ::testing::Test {
 #define CHOOSE_KEYWORDS_PRESENTER_TEST(a)                                      \
     TEST_F(ChooseKeywordsPresenterTests, a)
 
+#define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).responseSubmissionHidden())
+
 CHOOSE_KEYWORDS_PRESENTER_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
@@ -52,12 +55,12 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(presenterHidesReadyButtonWhenTaskStarts) {
 CHOOSE_KEYWORDS_PRESENTER_TEST(
     presenterHidesResponseSubmissionAfterUserIsDoneResponding) {
     presenter.notifyThatUserIsDoneResponding();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseSubmissionHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(presenterHidesResponseButtonsWhenStopped) {
     presenter.stop();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseSubmissionHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
 // CHOOSE_KEYWORDS_PRESENTER_TEST(presenterShowsReadyButtonWhenStarted) {
