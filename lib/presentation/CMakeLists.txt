@@ -8,7 +8,8 @@ add_library(
   src/CoordinateResponseMeasure.cpp
   src/PassFail.cpp
   src/TestImpl.cpp
-  src/TestSetupImpl.cpp)
+  src/TestSetupImpl.cpp
+  src/ChooseKeywords.cpp)
 target_include_directories(
   presentation
   PUBLIC include

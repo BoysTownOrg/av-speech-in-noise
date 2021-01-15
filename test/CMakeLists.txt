@@ -21,7 +21,8 @@ add_executable(
   PassFail.cpp
   Test.cpp
   TestSetup.cpp
-  SessionController.cpp)
+  SessionController.cpp
+  ChooseKeywords.cpp)
 target_compile_features(av-speech-in-noise-tests PRIVATE cxx_std_17)
 set_target_properties(av-speech-in-noise-tests PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(av-speech-in-noise-tests
