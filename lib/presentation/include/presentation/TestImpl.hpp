@@ -5,6 +5,7 @@
 #include "SessionView.hpp"
 #include "Task.hpp"
 #include <av-speech-in-noise/Model.hpp>
+#include <map>
 
 namespace av_speech_in_noise {
 class TestControllerImpl : public TestControl::Observer, public TestController {
@@ -86,8 +87,7 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
     void initialize(Method) override;
 
   private:
-    auto taskPresenter(Method m) -> TaskPresenter *;
-
+    std::map<Method, TaskPresenter *> taskPresenter;
     Model &model;
     TestView &view;
     TaskPresenter *consonantPresenter;

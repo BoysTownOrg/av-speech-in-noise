@@ -1,7 +1,6 @@
 #include "TestImpl.hpp"
 #include <sstream>
 #include <functional>
-#include <map>
 
 namespace av_speech_in_noise {
 static void displayTrialInformation(
@@ -101,7 +100,38 @@ TestPresenterImpl::TestPresenterImpl(Model &model, TestView &view,
     TaskPresenter *chooseKeywordsPresenter,
     TaskPresenter *correctKeywordsPresenter, TaskPresenter *passFailPresenter,
     UninitializedTaskPresenter *taskPresenter_)
-    : model{model}, view{view}, consonantPresenter{consonantPresenter},
+    : taskPresenter{{Method::adaptiveCoordinateResponseMeasure,
+                        coordinateResponseMeasurePresenter},
+          {Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
+              coordinateResponseMeasurePresenter},
+          {Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
+              coordinateResponseMeasurePresenter},
+          {Method::adaptiveCoordinateResponseMeasureWithEyeTracking,
+              coordinateResponseMeasurePresenter},
+          {Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+              coordinateResponseMeasurePresenter},
+          {Method::
+                  fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
+              coordinateResponseMeasurePresenter},
+          {Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+              coordinateResponseMeasurePresenter},
+          {Method::fixedLevelFreeResponseWithAllTargets, freeResponsePresenter},
+          {Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
+              freeResponsePresenter},
+          {Method::fixedLevelFreeResponseWithSilentIntervalTargets,
+              freeResponsePresenter},
+          {Method::fixedLevelFreeResponseWithTargetReplacement,
+              freeResponsePresenter},
+          {Method::fixedLevelChooseKeywordsWithAllTargets,
+              chooseKeywordsPresenter},
+          {Method::adaptiveCorrectKeywords, correctKeywordsPresenter},
+          {Method::adaptiveCorrectKeywordsWithEyeTracking,
+              correctKeywordsPresenter},
+          {Method::fixedLevelConsonants, consonantPresenter},
+          {Method::adaptivePassFail, passFailPresenter},
+          {Method::adaptivePassFailWithEyeTracking, passFailPresenter},
+          {Method::unknown, passFailPresenter}},
+      model{model}, view{view}, consonantPresenter{consonantPresenter},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       freeResponsePresenter{freeResponsePresenter},
       chooseKeywordsPresenter{chooseKeywordsPresenter},
@@ -150,43 +180,7 @@ void TestPresenterImpl::setContinueTestingDialogMessage(const std::string &s) {
 
 void TestPresenterImpl::initialize(Method m) {
     displayTrialInformation(model, this);
-    taskPresenter_->initialize(taskPresenter(m));
+    taskPresenter_->initialize(taskPresenter.at(m));
     taskPresenter_->start();
-}
-
-auto TestPresenterImpl::taskPresenter(Method m) -> TaskPresenter * {
-    std::map<Method, TaskPresenter *> map{
-        {Method::adaptiveCoordinateResponseMeasure,
-            coordinateResponseMeasurePresenter},
-        {Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
-            coordinateResponseMeasurePresenter},
-        {Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
-            coordinateResponseMeasurePresenter},
-        {Method::adaptiveCoordinateResponseMeasureWithEyeTracking,
-            coordinateResponseMeasurePresenter},
-        {Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-            coordinateResponseMeasurePresenter},
-        {Method::
-                fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
-            coordinateResponseMeasurePresenter},
-        {Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-            coordinateResponseMeasurePresenter},
-        {Method::fixedLevelFreeResponseWithAllTargets, freeResponsePresenter},
-        {Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
-            freeResponsePresenter},
-        {Method::fixedLevelFreeResponseWithSilentIntervalTargets,
-            freeResponsePresenter},
-        {Method::fixedLevelFreeResponseWithTargetReplacement,
-            freeResponsePresenter},
-        {Method::fixedLevelChooseKeywordsWithAllTargets,
-            chooseKeywordsPresenter},
-        {Method::adaptiveCorrectKeywords, correctKeywordsPresenter},
-        {Method::adaptiveCorrectKeywordsWithEyeTracking,
-            correctKeywordsPresenter},
-        {Method::fixedLevelConsonants, consonantPresenter},
-        {Method::adaptivePassFail, passFailPresenter},
-        {Method::adaptivePassFailWithEyeTracking, passFailPresenter},
-        {Method::unknown, passFailPresenter}};
-    return map.at(m);
 }
 }
