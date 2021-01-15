@@ -1,6 +1,7 @@
 #include "TestImpl.hpp"
 #include <sstream>
 #include <functional>
+#include <map>
 
 namespace av_speech_in_noise {
 static void displayTrialInformation(
@@ -147,39 +148,6 @@ void TestPresenterImpl::setContinueTestingDialogMessage(const std::string &s) {
     view.setContinueTestingDialogMessage(s);
 }
 
-static auto coordinateResponseMeasure(Method m) -> bool {
-    return m == Method::adaptiveCoordinateResponseMeasure ||
-        m == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||
-        m == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker ||
-        m == Method::adaptiveCoordinateResponseMeasureWithEyeTracking ||
-        m == Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement ||
-        m ==
-        Method::
-            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking ||
-        m ==
-        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
-}
-
-static auto freeResponse(Method m) -> bool {
-    return m == Method::fixedLevelFreeResponseWithAllTargets ||
-        m == Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking ||
-        m == Method::fixedLevelFreeResponseWithSilentIntervalTargets ||
-        m == Method::fixedLevelFreeResponseWithTargetReplacement;
-}
-
-static auto chooseKeywords(Method m) -> bool {
-    return m == Method::fixedLevelChooseKeywordsWithAllTargets;
-}
-
-static auto correctKeywords(Method m) -> bool {
-    return m == Method::adaptiveCorrectKeywords ||
-        m == Method::adaptiveCorrectKeywordsWithEyeTracking;
-}
-
-static auto consonant(Method m) -> bool {
-    return m == Method::fixedLevelConsonants;
-}
-
 void TestPresenterImpl::initialize(Method m) {
     displayTrialInformation(model, this);
     taskPresenter_->initialize(taskPresenter(m));
@@ -187,16 +155,38 @@ void TestPresenterImpl::initialize(Method m) {
 }
 
 auto TestPresenterImpl::taskPresenter(Method m) -> TaskPresenter * {
-    if (coordinateResponseMeasure(m))
-        return coordinateResponseMeasurePresenter;
-    if (consonant(m))
-        return consonantPresenter;
-    if (freeResponse(m))
-        return freeResponsePresenter;
-    if (chooseKeywords(m))
-        return chooseKeywordsPresenter;
-    if (correctKeywords(m))
-        return correctKeywordsPresenter;
-    return passFailPresenter;
+    std::map<Method, TaskPresenter *> map{
+        {Method::adaptiveCoordinateResponseMeasure,
+            coordinateResponseMeasurePresenter},
+        {Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
+            coordinateResponseMeasurePresenter},
+        {Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
+            coordinateResponseMeasurePresenter},
+        {Method::adaptiveCoordinateResponseMeasureWithEyeTracking,
+            coordinateResponseMeasurePresenter},
+        {Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+            coordinateResponseMeasurePresenter},
+        {Method::
+                fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
+            coordinateResponseMeasurePresenter},
+        {Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+            coordinateResponseMeasurePresenter},
+        {Method::fixedLevelFreeResponseWithAllTargets, freeResponsePresenter},
+        {Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
+            freeResponsePresenter},
+        {Method::fixedLevelFreeResponseWithSilentIntervalTargets,
+            freeResponsePresenter},
+        {Method::fixedLevelFreeResponseWithTargetReplacement,
+            freeResponsePresenter},
+        {Method::fixedLevelChooseKeywordsWithAllTargets,
+            chooseKeywordsPresenter},
+        {Method::adaptiveCorrectKeywords, correctKeywordsPresenter},
+        {Method::adaptiveCorrectKeywordsWithEyeTracking,
+            correctKeywordsPresenter},
+        {Method::fixedLevelConsonants, consonantPresenter},
+        {Method::adaptivePassFail, passFailPresenter},
+        {Method::adaptivePassFailWithEyeTracking, passFailPresenter},
+        {Method::unknown, passFailPresenter}};
+    return map.at(m);
 }
 }
