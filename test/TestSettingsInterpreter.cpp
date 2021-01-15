@@ -410,6 +410,12 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailWithEyeTrackingPassesMethod) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelChooseKeywordsWithAllTargetsPassesMethod) {
+    assertPassesTestMethod(interpreter, model,
+        Method::fixedLevelChooseKeywordsWithAllTargets, fixedLevelTestIdentity);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesMethod) {
     assertPassesTestMethod(interpreter, model,
         Method::fixedLevelFreeResponseWithAllTargets, fixedLevelTestIdentity);

@@ -268,6 +268,11 @@ void TestSettingsInterpreterImpl::initialize(Model &model,
         av_speech_in_noise::initialize(
             test, contents, method, identity, startingSnr);
         model.initializeWithAllTargets(test);
+    } else if (method == Method::fixedLevelChooseKeywordsWithAllTargets) {
+        FixedLevelTest test;
+        av_speech_in_noise::initialize(
+            test, contents, method, identity, startingSnr);
+        model.initializeWithAllTargets(test);
     } else if (method == Method::fixedLevelConsonants) {
         FixedLevelTestWithEachTargetNTimes test;
         av_speech_in_noise::initialize(
