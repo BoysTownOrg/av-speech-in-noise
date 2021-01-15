@@ -81,18 +81,6 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseSubmissionShown());
 }
 
-// CHOOSE_KEYWORDS_PRESENTER_TEST(
-//     presenterClearsFreeResponseWhenShowingResponseSubmission) {
-//     presenter.showResponseSubmission();
-//     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.freeResponseCleared());
-// }
-
-// CHOOSE_KEYWORDS_PRESENTER_TEST(
-//     presenterClearsFlagWhenShowingResponseSubmission) {
-//     presenter.showResponseSubmission();
-//     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.flagCleared());
-// }
-
 // CHOOSE_KEYWORDS_CONTROLLER_TEST(
 //     responderSubmitsFreeResponseAfterResponseButtonIsClicked) {
 //     control.setFreeResponse("a");
