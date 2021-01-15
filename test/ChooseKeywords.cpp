@@ -5,7 +5,17 @@
 
 namespace av_speech_in_noise {
 namespace {
-class ChooseKeywordsViewStub : public ChooseKeywordsView {};
+class ChooseKeywordsViewStub : public ChooseKeywordsView {
+  public:
+    [[nodiscard]] auto responseSubmissionHidden() const -> bool {
+        return responseSubmissionHidden_;
+    }
+
+    void hideResponseSubmission() { responseSubmissionHidden_ = true; }
+
+  private:
+    bool responseSubmissionHidden_{};
+};
 
 // class ChooseKeywordsControllerTests : public ::testing::Test {
 //   protected:
@@ -39,11 +49,11 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(presenterHidesReadyButtonWhenTaskStarts) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
 }
 
-// CHOOSE_KEYWORDS_PRESENTER_TEST(
-//     presenterHidesResponseButtonsAfterUserIsDoneResponding) {
-//     notifyThatUserIsDoneResponding(presenter);
-//     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
-// }
+CHOOSE_KEYWORDS_PRESENTER_TEST(
+    presenterHidesResponseSubmissionAfterUserIsDoneResponding) {
+    presenter.notifyThatUserIsDoneResponding();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseSubmissionHidden());
+}
 
 // CHOOSE_KEYWORDS_PRESENTER_TEST(presenterHidesResponseButtonsWhenStopped) {
 //     stop(presenter);

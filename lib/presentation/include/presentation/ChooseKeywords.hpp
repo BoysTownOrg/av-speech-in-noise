@@ -9,6 +9,7 @@ namespace av_speech_in_noise {
 class ChooseKeywordsView {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ChooseKeywordsView);
+    virtual void hideResponseSubmission() = 0;
 };
 
 class ChooseKeywordsPresenter : public TaskPresenter {

@@ -13,7 +13,9 @@ void ChooseKeywordsPresenter::notifyThatTaskHasStarted() {
     testView.hideNextTrialButton();
 }
 
-void ChooseKeywordsPresenter::notifyThatUserIsDoneResponding() {}
+void ChooseKeywordsPresenter::notifyThatUserIsDoneResponding() {
+    view.hideResponseSubmission();
+}
 
 void ChooseKeywordsPresenter::notifyThatTrialHasStarted() {}
 
