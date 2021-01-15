@@ -717,6 +717,12 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelChooseKeywordsWithAllTargetsPassesSimpleFixedLevelSettings) {
+    assertPassesSimpleFixedLevelSettings(interpreter, model,
+        Method::fixedLevelChooseKeywordsWithAllTargets, fixedLevelTest);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelConsonantsPassesSimpleFixedLevelSettings) {
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
