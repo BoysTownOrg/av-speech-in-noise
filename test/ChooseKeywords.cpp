@@ -55,10 +55,10 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseSubmissionHidden());
 }
 
-// CHOOSE_KEYWORDS_PRESENTER_TEST(presenterHidesResponseButtonsWhenStopped) {
-//     stop(presenter);
-//     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
-// }
+CHOOSE_KEYWORDS_PRESENTER_TEST(presenterHidesResponseButtonsWhenStopped) {
+    presenter.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseSubmissionHidden());
+}
 
 // CHOOSE_KEYWORDS_PRESENTER_TEST(presenterShowsReadyButtonWhenStarted) {
 //     start(presenter);

@@ -7,7 +7,7 @@ ChooseKeywordsPresenter::ChooseKeywordsPresenter(
 
 void ChooseKeywordsPresenter::start() {}
 
-void ChooseKeywordsPresenter::stop() {}
+void ChooseKeywordsPresenter::stop() { view.hideResponseSubmission(); }
 
 void ChooseKeywordsPresenter::notifyThatTaskHasStarted() {
     testView.hideNextTrialButton();
