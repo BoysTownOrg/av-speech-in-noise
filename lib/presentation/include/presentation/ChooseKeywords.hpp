@@ -50,6 +50,7 @@ class ChooseKeywordsController : public TaskController,
   private:
     ChooseKeywordsControl &control;
     Model &model;
+    TestController *testController{};
 };
 
 class ChooseKeywordsPresenter : public TaskPresenter {

@@ -174,7 +174,7 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(
-    submitsKeywordResponseAfterResponseButtonIsClicked) {
+    submitsKeywordResponseAfterSubmitButtonIsClicked) {
     control.setFirstKeywordCorrect();
     control.setThirdKeywordCorrect();
     control.notifyThatSubmitButtonHasBeenClicked();
@@ -198,19 +198,12 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(marksEachCorrectAfterResetButtonIsClicked) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markThirdKeywordCorrectCalled());
 }
 
-// CHOOSE_KEYWORDS_CONTROLLER_TEST(
-//     responderSubmitsFlaggedFreeResponseAfterResponseButtonIsClicked) {
-//     control.setFlagged();
-//     notifyThatSubmitButtonHasBeenClicked(control);
-//     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.freeResponse().flagged);
-// }
-
-// CHOOSE_KEYWORDS_CONTROLLER_TEST(
-//     responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked)
-//     { notifyThatSubmitButtonHasBeenClicked(control);
-//     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-//         testController.notifiedThatUserIsDoneResponding());
-// }
+CHOOSE_KEYWORDS_CONTROLLER_TEST(
+    notifiesThatUserIsReadyForNextTrialAfterSubmitButtonIsClicked) {
+    control.notifyThatSubmitButtonHasBeenClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        testController.notifiedThatUserIsDoneResponding());
+}
 
 // CHOOSE_KEYWORDS_CONTROLLER_TEST(
 //     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
