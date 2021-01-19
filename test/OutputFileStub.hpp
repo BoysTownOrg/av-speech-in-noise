@@ -65,7 +65,7 @@ class OutputFileStub : public OutputFile {
         freeResponseTrial_ = p;
     }
 
-    void write(const ThreeKeywordsTrial &p) {
+    void write(const ThreeKeywordsTrial &p) override {
         addToLog("writeTrial ");
         threeKeywordsTrial_ = p;
     }
