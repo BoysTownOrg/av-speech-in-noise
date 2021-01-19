@@ -152,6 +152,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const coordinate_response_measure::Response *coordinateResponse_{};
     const CorrectKeywords *correctKeywords_{};
     const ConsonantResponse *consonantResponse_{};
+    const FreeResponse *freeResponse_{};
     int trialNumber_{};
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
@@ -260,6 +261,8 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     [[nodiscard]] auto consonantResponse() const { return consonantResponse_; }
 
+    auto freeResponse() -> const FreeResponse * { return freeResponse_; }
+
     [[nodiscard]] auto testMethod() const { return testMethod_; }
 
     [[nodiscard]] auto test() const { return test_; }
@@ -299,13 +302,15 @@ class RecognitionTestModelStub : public RecognitionTestModel {
             testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_
                 ->nextTarget();
     }
+
     void submitIncorrectResponse() override {
         if (testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_ !=
             nullptr)
             testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_
                 ->nextTarget();
     }
-    void submit(const FreeResponse &) override {}
+
+    void submit(const FreeResponse &f) override { freeResponse_ = &f; }
 };
 
 class InitializingTestUseCase {
@@ -1070,6 +1075,13 @@ MODEL_TEST(submitConsonantPassesConsonant) {
     model.submit(r);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(r), internalModel.consonantResponse());
+}
+
+MODEL_TEST(submitFreeResponsePassesFreeResponse) {
+    FreeResponse r;
+    model.submit(r);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(r), internalModel.freeResponse());
 }
 
 MODEL_TEST(submitConsonantSubmitsResponse) {
