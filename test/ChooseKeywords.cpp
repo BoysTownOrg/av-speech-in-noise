@@ -81,11 +81,17 @@ class ChooseKeywordsControlStub : public ChooseKeywordsControl {
         markThirdKeywordIncorrectCalled_ = true;
     }
 
-    void markFirstKeywordCorrect() { markFirstKeywordCorrectCalled_ = true; }
+    void markFirstKeywordCorrect() override {
+        markFirstKeywordCorrectCalled_ = true;
+    }
 
-    void markSecondKeywordCorrect() { markSecondKeywordCorrectCalled_ = true; }
+    void markSecondKeywordCorrect() override {
+        markSecondKeywordCorrectCalled_ = true;
+    }
 
-    void markThirdKeywordCorrect() { markThirdKeywordCorrectCalled_ = true; }
+    void markThirdKeywordCorrect() override {
+        markThirdKeywordCorrectCalled_ = true;
+    }
 
     void attach(Observer *a) override { observer = a; }
 
