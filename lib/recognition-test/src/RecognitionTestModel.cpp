@@ -377,6 +377,7 @@ void RecognitionTestModelImpl::submit(const ThreeKeywords &p) {
     trial.firstCorrect = p.firstCorrect;
     trial.secondCorrect = p.secondCorrect;
     trial.thirdCorrect = p.thirdCorrect;
+    trial.target = targetName(evaluator, testMethod);
     outputFile.write(trial);
     save(outputFile);
     prepareNextTrialIfNeeded();
