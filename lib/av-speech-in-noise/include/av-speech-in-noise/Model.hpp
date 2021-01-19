@@ -24,6 +24,7 @@ struct ThreeKeywords {
     bool firstCorrect{};
     bool secondCorrect{};
     bool thirdCorrect{};
+    bool flagged{};
 };
 
 struct FreeResponse {

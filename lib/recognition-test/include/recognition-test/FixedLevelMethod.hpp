@@ -15,6 +15,7 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const FreeResponse &) override;
     void submit(const ConsonantResponse &) override;
+    void submit(const ThreeKeywords &) override;
     void writeLastCoordinateResponse(OutputFile &) override;
     void writeTestingParameters(OutputFile &) override;
     void writeTestResult(OutputFile &) override {}

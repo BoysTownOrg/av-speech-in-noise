@@ -107,4 +107,8 @@ void FixedLevelMethodImpl::submit(const FreeResponse &response) {
     } else
         --trials_;
 }
+
+void FixedLevelMethodImpl::submit(const ThreeKeywords &) {
+    finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
+}
 }

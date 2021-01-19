@@ -74,6 +74,16 @@ class SubmittingFreeResponse : public UseCase {
     void setFlagged() { response.flagged = true; }
 };
 
+class SubmittingThreeKeywords : public UseCase {
+
+  public:
+    void run(FixedLevelMethodImpl &m) override { m.submit(response); }
+    void setFlagged() { response.flagged = true; }
+
+  private:
+    ThreeKeywords response{};
+};
+
 class SubmittingConsonant : public UseCase {
     ConsonantResponse response{};
 
@@ -452,6 +462,7 @@ class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests
         initializingMethod{targetList, test};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
+    SubmittingThreeKeywords submittingThreeKeywords;
 
     FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests() {
         run(initializingMethod, method);
@@ -484,6 +495,11 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     completeWhenTestCompleteAfterFreeResponse) {
     assertTestCompleteOnlyAfter(submittingFreeResponse, method, targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    completeWhenTestCompleteAfterThreeKeywords) {
+    assertTestCompleteOnlyAfter(submittingThreeKeywords, method, targetList);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
