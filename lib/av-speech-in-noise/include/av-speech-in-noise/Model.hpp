@@ -19,6 +19,12 @@ struct CorrectKeywords {
     int count{};
 };
 
+struct ThreeKeywords {
+    bool firstCorrect;
+    bool secondCorrect;
+    bool thirdCorrect;
+};
+
 struct FreeResponse {
     std::string response;
     bool flagged{};
@@ -154,6 +160,7 @@ class Model {
     virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const CorrectKeywords &) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
+    virtual void submit(const ThreeKeywords &) {}
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual auto testComplete() -> bool = 0;

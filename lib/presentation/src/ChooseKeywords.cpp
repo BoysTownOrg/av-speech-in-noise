@@ -1,6 +1,24 @@
 #include "ChooseKeywords.hpp"
 
 namespace av_speech_in_noise {
+ChooseKeywordsController::ChooseKeywordsController(
+    Model &model, ChooseKeywordsControl &control)
+    : control{control}, model{model} {
+    control.attach(this);
+}
+
+void ChooseKeywordsController::attach(TaskController::Observer *) {}
+
+void ChooseKeywordsController::attach(TestController *) {}
+
+void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
+    ThreeKeywords threeKeywords{};
+    threeKeywords.firstCorrect = control.firstKeywordCorrect();
+    threeKeywords.secondCorrect = control.secondKeywordCorrect();
+    threeKeywords.thirdCorrect = control.thirdKeywordCorrect();
+    model.submit(threeKeywords);
+}
+
 static void hideResponseSubmission(ChooseKeywordsView &view) {
     view.hideResponseSubmission();
 }

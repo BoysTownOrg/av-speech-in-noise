@@ -1,5 +1,8 @@
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
+#include "TestControllerStub.hpp"
+#include "TaskControllerObserverStub.hpp"
+#include "ModelStub.hpp"
 #include <presentation/ChooseKeywords.hpp>
 #include <gtest/gtest.h>
 
@@ -24,19 +27,46 @@ class ChooseKeywordsViewStub : public ChooseKeywordsView {
     bool responseSubmissionShown_{};
 };
 
-// class ChooseKeywordsControllerTests : public ::testing::Test {
-//   protected:
-//     ModelStub model;
-//     ChooseKeywordsControlStub control;
-//     ChooseKeywordsController controller{model, control};
-//     TestControllerStub testController;
-//     TaskControllerObserverStub taskController;
+class ChooseKeywordsControlStub : public ChooseKeywordsControl {
+  public:
+    void setFirstKeywordCorrect() { firstKeywordCorrect_ = true; }
 
-//     ChooseKeywordsControllerTests() {
-//         controller.attach(&testController);
-//         controller.attach(&taskController);
-//     }
-// };
+    void setThirdKeywordCorrect() { thirdKeywordCorrect_ = true; }
+
+    auto thirdKeywordCorrect() -> bool override { return thirdKeywordCorrect_; }
+
+    auto secondKeywordCorrect() -> bool override {
+        return secondKeywordCorrect_;
+    }
+
+    auto firstKeywordCorrect() -> bool override { return firstKeywordCorrect_; }
+
+    void notifyThatSubmitButtonHasBeenClicked() {
+        observer->notifyThatSubmitButtonHasBeenClicked();
+    }
+
+    void attach(Observer *a) override { observer = a; }
+
+  private:
+    Observer *observer{};
+    bool firstKeywordCorrect_{};
+    bool secondKeywordCorrect_{};
+    bool thirdKeywordCorrect_{};
+};
+
+class ChooseKeywordsControllerTests : public ::testing::Test {
+  protected:
+    ModelStub model;
+    ChooseKeywordsControlStub control;
+    ChooseKeywordsController controller{model, control};
+    TestControllerStub testController;
+    TaskControllerObserverStub taskController;
+
+    ChooseKeywordsControllerTests() {
+        controller.attach(&testController);
+        controller.attach(&taskController);
+    }
+};
 
 class ChooseKeywordsPresenterTests : public ::testing::Test {
   protected:
@@ -81,13 +111,15 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseSubmissionShown());
 }
 
-// CHOOSE_KEYWORDS_CONTROLLER_TEST(
-//     responderSubmitsFreeResponseAfterResponseButtonIsClicked) {
-//     control.setFreeResponse("a");
-//     notifyThatSubmitButtonHasBeenClicked(control);
-//     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-//         std::string{"a"}, model.freeResponse().response);
-// }
+CHOOSE_KEYWORDS_CONTROLLER_TEST(
+    controllerSubmitsKeywordResponseAfterResponseButtonIsClicked) {
+    control.setFirstKeywordCorrect();
+    control.setThirdKeywordCorrect();
+    control.notifyThatSubmitButtonHasBeenClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().firstCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.threeKeywords().secondCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().thirdCorrect);
+}
 
 // CHOOSE_KEYWORDS_CONTROLLER_TEST(
 //     responderSubmitsFlaggedFreeResponseAfterResponseButtonIsClicked) {
