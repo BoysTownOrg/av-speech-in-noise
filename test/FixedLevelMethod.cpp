@@ -352,6 +352,7 @@ class FixedLevelMethodWithFiniteTargetPlaylistTests : public ::testing::Test {
         targetList, test};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
+    SubmittingThreeKeywords submittingThreeKeywords;
     SubmittingConsonant submittingConsonant;
 
     FixedLevelMethodWithFiniteTargetPlaylistTests() {
@@ -444,6 +445,11 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     completeWhenTestCompleteAfterFreeResponse) {
     assertTestCompleteOnlyAfter(submittingFreeResponse, method, targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    completeWhenTestCompleteAfterThreeKeywords) {
+    assertTestCompleteOnlyAfter(submittingThreeKeywords, method, targetList);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
