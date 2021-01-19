@@ -1736,6 +1736,17 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesWithoutFlag) {
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(freeResponseTrial(outputFile).flagged);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesFlagged) {
+    threeKeywords.flagged = true;
+    run(submittingThreeKeywords, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.threeKeywordsTrial().flagged);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesWithoutFlag) {
+    run(submittingThreeKeywords, model);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.threeKeywordsTrial().flagged);
+}
+
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesTarget) {
     assertWritesTarget(submittingFreeResponse);
 }
