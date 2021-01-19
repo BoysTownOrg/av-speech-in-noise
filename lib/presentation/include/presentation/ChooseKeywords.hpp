@@ -22,6 +22,7 @@ class ChooseKeywordsControl {
         virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
         virtual void notifyThatAllWrongButtonHasBeenClicked() = 0;
         virtual void notifyThatResetButtonIsClicked() = 0;
+        virtual void notifyThatFirstKeywordButtonIsClicked() = 0;
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
         ChooseKeywordsControl);
@@ -46,6 +47,7 @@ class ChooseKeywordsController : public TaskController,
     void notifyThatSubmitButtonHasBeenClicked() override;
     void notifyThatAllWrongButtonHasBeenClicked() override;
     void notifyThatResetButtonIsClicked() override;
+    void notifyThatFirstKeywordButtonIsClicked() override;
 
   private:
     ChooseKeywordsControl &control;
