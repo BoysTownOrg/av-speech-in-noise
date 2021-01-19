@@ -442,6 +442,10 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
+    void submit(const ThreeKeywords &) override {
+        throw RequestFailure{errorMessage};
+    }
+
     void playCalibration(const Calibration &) override {
         throw RequestFailure{errorMessage};
     }

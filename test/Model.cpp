@@ -153,6 +153,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const CorrectKeywords *correctKeywords_{};
     const ConsonantResponse *consonantResponse_{};
     const FreeResponse *freeResponse_{};
+    const ThreeKeywords *threeKeywords_{};
     int trialNumber_{};
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
@@ -263,6 +264,8 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     auto freeResponse() -> const FreeResponse * { return freeResponse_; }
 
+    auto threeKeywords() -> const ThreeKeywords * { return threeKeywords_; }
+
     [[nodiscard]] auto testMethod() const { return testMethod_; }
 
     [[nodiscard]] auto test() const { return test_; }
@@ -311,6 +314,8 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     }
 
     void submit(const FreeResponse &f) override { freeResponse_ = &f; }
+
+    void submit(const ThreeKeywords &f) { threeKeywords_ = &f; }
 };
 
 class InitializingTestUseCase {
@@ -1082,6 +1087,13 @@ MODEL_TEST(submitFreeResponsePassesFreeResponse) {
     model.submit(r);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(r), internalModel.freeResponse());
+}
+
+MODEL_TEST(submitThreeKeywordsPassesThreeKeywords) {
+    ThreeKeywords r;
+    model.submit(r);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(r), internalModel.threeKeywords());
 }
 
 MODEL_TEST(submitConsonantSubmitsResponse) {

@@ -171,6 +171,8 @@ void ModelImpl::submitIncorrectResponse() {
 
 void ModelImpl::submit(const FreeResponse &response) { model.submit(response); }
 
+void ModelImpl::submit(const ThreeKeywords &r) { model.submit(r); }
+
 void ModelImpl::submit(const CorrectKeywords &k) {
     adaptiveMethod.submit(k);
     adaptiveMethod.writeLastCorrectKeywords(outputFile);
