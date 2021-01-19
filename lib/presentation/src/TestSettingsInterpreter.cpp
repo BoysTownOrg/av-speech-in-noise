@@ -244,6 +244,15 @@ static void initializeFixedLevelFixedTrialsTest(Method method,
     f(test);
 }
 
+static void initializeFixedLevelTestWithEachTargetNTimes(Method method,
+    const std::string &contents, const TestIdentity &identity, SNR startingSnr,
+    const std::function<void(const FixedLevelTestWithEachTargetNTimes &)> &f) {
+    FixedLevelTestWithEachTargetNTimes test;
+    av_speech_in_noise::initialize(
+        test, contents, method, identity, startingSnr);
+    f(test);
+}
+
 void TestSettingsInterpreterImpl::initialize(Model &model,
     const std::string &contents, const TestIdentity &identity,
     SNR startingSnr) {
@@ -299,10 +308,10 @@ void TestSettingsInterpreterImpl::initialize(Model &model,
                 model.initializeWithAllTargets(test);
             });
     } else if (method == Method::fixedLevelConsonants) {
-        FixedLevelTestWithEachTargetNTimes test;
-        av_speech_in_noise::initialize(
-            test, contents, method, identity, startingSnr);
-        model.initialize(test);
+        initializeFixedLevelTestWithEachTargetNTimes(method, contents, identity,
+            startingSnr, [&](const FixedLevelTestWithEachTargetNTimes &test) {
+                model.initialize(test);
+            });
     } else if (method ==
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking) {
         initializeFixedLevelTest(method, contents, identity, startingSnr,
