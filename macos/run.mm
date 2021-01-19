@@ -355,6 +355,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto experimenterViewController{
         nsTabViewControllerWithoutTabControl()};
     addChild(viewController, experimenterViewController);
+    const auto chooseKeywordsUIController{
+        nsTabViewControllerWithoutTabControl()};
+    addChild(experimenterViewController, chooseKeywordsUIController);
     AppKitTestUI experimenterView{experimenterViewController};
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
@@ -379,7 +382,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     FreeResponseController freeResponseController{model, experimenterView};
     FreeResponsePresenter freeResponsePresenter{
         experimenterView, experimenterView};
-    ChooseKeywordsUI chooseKeywordsUI;
+    ChooseKeywordsUI chooseKeywordsUI{chooseKeywordsUIController};
     ChooseKeywordsController chooseKeywordsController{model, chooseKeywordsUI};
     ChooseKeywordsPresenter chooseKeywordsPresenter{
         experimenterView, chooseKeywordsUI};
@@ -408,6 +411,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     coordinateResponseMeasureController.attach(&testController);
     coordinateResponseMeasureController.attach(
         &coordinateResponseMeasurePresenter);
+    chooseKeywordsController.attach(&testController);
+    chooseKeywordsController.attach(&chooseKeywordsPresenter);
     UninitializedTaskPresenterImpl taskPresenter;
     TestPresenterImpl experimenterPresenter{model, experimenterView,
         {{Method::adaptiveCoordinateResponseMeasure,

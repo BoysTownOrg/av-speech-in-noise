@@ -21,6 +21,9 @@
 @interface FreeResponseViewActions : NSObject
 @end
 
+@interface ChooseKeywordsUIActions : NSObject
+@end
+
 @implementation SetupViewActions {
   @public
     av_speech_in_noise::AppKitTestSetupUI *controller;
@@ -108,6 +111,36 @@
 
 - (void)notifyThatSubmitFreeResponseButtonHasBeenClicked {
     controller->notifyThatSubmitFreeResponseButtonHasBeenClicked();
+}
+@end
+
+@implementation ChooseKeywordsUIActions {
+  @public
+    av_speech_in_noise::ChooseKeywordsControl::Observer *observer;
+}
+
+- (void)notifyThatFirstKeywordButtonHasBeenClicked {
+    observer->notifyThatFirstKeywordButtonIsClicked();
+}
+
+- (void)notifyThatSecondKeywordButtonHasBeenClicked {
+    observer->notifyThatSecondKeywordButtonIsClicked();
+}
+
+- (void)notifyThatThirdKeywordButtonHasBeenClicked {
+    observer->notifyThatThirdKeywordButtonIsClicked();
+}
+
+- (void)notifyThatResetButtonHasBeenClicked {
+    observer->notifyThatResetButtonIsClicked();
+}
+
+- (void)notifyThatAllWrongButtonHasBeenClicked {
+    observer->notifyThatAllWrongButtonHasBeenClicked();
+}
+
+- (void)notifyThatSubmitButtonHasBeenClicked {
+    observer->notifyThatSubmitButtonHasBeenClicked();
 }
 @end
 
@@ -916,14 +949,62 @@ void AppKitView::populateAudioDeviceMenu(std::vector<std::string> items) {
 
 void ChooseKeywordsUI::markThirdKeywordCorrect() {}
 void ChooseKeywordsUI::markSecondKeywordCorrect() {}
-void ChooseKeywordsUI::markFirstKeywordCorrect() {}
+void ChooseKeywordsUI::markFirstKeywordCorrect() {
+    [firstKeywordButton setState:NSControlStateValueOn];
+}
 void ChooseKeywordsUI::markThirdKeywordIncorrect() {}
 void ChooseKeywordsUI::markSecondKeywordIncorrect() {}
 void ChooseKeywordsUI::markFirstKeywordIncorrect() {}
 auto ChooseKeywordsUI::thirdKeywordCorrect() -> bool { return false; }
 auto ChooseKeywordsUI::secondKeywordCorrect() -> bool { return false; }
 auto ChooseKeywordsUI::firstKeywordCorrect() -> bool { return false; }
-void ChooseKeywordsUI::attach(Observer *) {}
-void ChooseKeywordsUI::showResponseSubmission() {}
-void ChooseKeywordsUI::hideResponseSubmission() {}
+
+void ChooseKeywordsUI::attach(Observer *observer) {
+    actions->observer = observer;
+}
+
+void ChooseKeywordsUI::showResponseSubmission() {
+    av_speech_in_noise::show(responseView);
+}
+
+void ChooseKeywordsUI::hideResponseSubmission() {
+    av_speech_in_noise::hide(responseView);
+}
+
+ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
+    : actions{[[ChooseKeywordsUIActions alloc] init]} {
+    firstKeywordButton = nsButton(
+        "", actions, @selector(notifyThatFirstKeywordButtonHasBeenClicked));
+    secondKeywordButton = nsButton(
+        "", actions, @selector(notifyThatSecondKeywordButtonHasBeenClicked));
+    thirdKeywordButton = nsButton(
+        "", actions, @selector(notifyThatThirdKeywordButtonHasBeenClicked));
+    const auto keywordButtons {
+        [NSStackView stackViewWithViews:@[
+            firstKeywordButton, secondKeywordButton, thirdKeywordButton
+        ]]
+    };
+    const auto resetButton {
+        nsButton(
+            "Reset", actions, @selector(notifyThatResetButtonHasBeenClicked))
+    };
+    const auto allWrongButton {
+        nsButton("All wrong", actions,
+            @selector(notifyThatAllWrongButtonHasBeenClicked))
+    };
+    const auto submitButton {
+        nsButton(
+            "Submit", actions, @selector(notifyThatSubmitButtonHasBeenClicked))
+    };
+    const auto actionButtons {
+        [NSStackView
+            stackViewWithViews:@[ resetButton, allWrongButton, submitButton ]]
+    };
+    responseView =
+        [NSStackView stackViewWithViews:@[ keywordButtons, actionButtons ]];
+    responseView.orientation = NSUserInterfaceLayoutOrientationVertical;
+    addAutolayoutEnabledSubview(view(viewController), responseView);
+    activateChildConstraintNestledInBottomRightCorner(
+        responseView, view(viewController), defaultMarginPoints);
+}
 }

@@ -19,11 +19,13 @@
 @class ConsonantViewActions;
 @class ExperimenterViewActions;
 @class FreeResponseViewActions;
+@class ChooseKeywordsUIActions;
 
 namespace av_speech_in_noise {
 class ChooseKeywordsUI : public ChooseKeywordsControl,
                          public ChooseKeywordsView {
   public:
+    explicit ChooseKeywordsUI(NSViewController *);
     void attach(Observer *) override;
     auto firstKeywordCorrect() -> bool override;
     auto secondKeywordCorrect() -> bool override;
@@ -36,6 +38,13 @@ class ChooseKeywordsUI : public ChooseKeywordsControl,
     void markThirdKeywordCorrect() override;
     void hideResponseSubmission() override;
     void showResponseSubmission() override;
+
+  private:
+    NSStackView *responseView{};
+    NSButton *firstKeywordButton;
+    NSButton *secondKeywordButton;
+    NSButton *thirdKeywordButton;
+    ChooseKeywordsUIActions *actions;
 };
 
 class AppKitTestUI : public TestView,
