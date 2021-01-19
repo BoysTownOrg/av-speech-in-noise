@@ -81,6 +81,8 @@ struct ConsonantTrial : Target {
     bool correct{};
 };
 
+struct ThreeKeywordsTrial : ThreeKeywords, open_set::Trial {};
+
 struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
 class OutputFile {
@@ -164,7 +166,7 @@ class RecognitionTestModel {
     virtual void playRightSpeakerCalibration(const Calibration &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void submit(const FreeResponse &) = 0;
-    virtual void submit(const ThreeKeywords &) {}
+    virtual void submit(const ThreeKeywords &) = 0;
     virtual void submit(const CorrectKeywords &) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
     virtual void submitCorrectResponse() = 0;

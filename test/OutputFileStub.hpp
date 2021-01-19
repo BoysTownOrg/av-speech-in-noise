@@ -14,6 +14,7 @@ class OutputFileStub : public OutputFile {
     FreeResponseTrial freeResponseTrial_{};
     CorrectKeywordsTrial correctKeywords_{};
     ConsonantTrial consonantTrial_{};
+    ThreeKeywordsTrial threeKeywordsTrial_{};
     open_set::AdaptiveTrial openSetAdaptiveTrial_{};
     BinocularGazeSamples eyeGazes_;
     AdaptiveTestResults adaptiveTestResult_{};
@@ -62,6 +63,11 @@ class OutputFileStub : public OutputFile {
     void write(const FreeResponseTrial &p) override {
         addToLog("writeTrial ");
         freeResponseTrial_ = p;
+    }
+
+    void write(const ThreeKeywordsTrial &p) {
+        addToLog("writeTrial ");
+        threeKeywordsTrial_ = p;
     }
 
     void write(const CorrectKeywordsTrial &p) override {
@@ -146,6 +152,10 @@ class OutputFileStub : public OutputFile {
 
     auto openSetAdaptiveTrial() const -> auto & {
         return openSetAdaptiveTrial_;
+    }
+
+    auto threeKeywordsTrial() -> ThreeKeywordsTrial {
+        return threeKeywordsTrial_;
     }
 
     auto adaptiveTestResult() const -> AdaptiveTestResults {
