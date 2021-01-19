@@ -205,11 +205,11 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(
         testController.notifiedThatUserIsDoneResponding());
 }
 
-// CHOOSE_KEYWORDS_CONTROLLER_TEST(
-//     responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
-//     notifyThatSubmitButtonHasBeenClicked(control);
-//     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-//         taskController.notifiedThatUserIsDoneResponding());
-// }
+CHOOSE_KEYWORDS_CONTROLLER_TEST(
+    notifiesThatUserIsDoneRespondingAfterSubmitButtonIsClicked) {
+    control.notifyThatSubmitButtonHasBeenClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        taskController.notifiedThatUserIsDoneResponding());
+}
 }
 }

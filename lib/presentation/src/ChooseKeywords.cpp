@@ -7,7 +7,9 @@ ChooseKeywordsController::ChooseKeywordsController(
     control.attach(this);
 }
 
-void ChooseKeywordsController::attach(TaskController::Observer *) {}
+void ChooseKeywordsController::attach(TaskController::Observer *t) {
+    taskControllerObserver = t;
+}
 
 void ChooseKeywordsController::attach(TestController *t) { testController = t; }
 
@@ -18,6 +20,7 @@ void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     threeKeywords.thirdCorrect = control.thirdKeywordCorrect();
     model.submit(threeKeywords);
     testController->notifyThatUserIsDoneResponding();
+    taskControllerObserver->notifyThatUserIsDoneResponding();
 }
 
 void ChooseKeywordsController::notifyThatAllWrongButtonHasBeenClicked() {

@@ -51,6 +51,7 @@ class ChooseKeywordsController : public TaskController,
     ChooseKeywordsControl &control;
     Model &model;
     TestController *testController{};
+    TaskController::Observer *taskControllerObserver{};
 };
 
 class ChooseKeywordsPresenter : public TaskPresenter {
