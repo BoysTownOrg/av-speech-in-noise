@@ -107,6 +107,14 @@ class ChooseKeywordsControlStub : public ChooseKeywordsControl {
         observer->notifyThatFirstKeywordButtonIsClicked();
     }
 
+    void notifyThatSecondKeywordButtonIsClicked() {
+        observer->notifyThatSecondKeywordButtonIsClicked();
+    }
+
+    void notifyThatThirdKeywordButtonIsClicked() {
+        observer->notifyThatThirdKeywordButtonIsClicked();
+    }
+
   private:
     Observer *observer{};
     bool firstKeywordCorrect_{};
@@ -199,6 +207,18 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(
     marksFirstIncorrectAfterFirstKeywordButtonIsClicked) {
     control.notifyThatFirstKeywordButtonIsClicked();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markFirstKeywordIncorrectCalled());
+}
+
+CHOOSE_KEYWORDS_CONTROLLER_TEST(
+    marksSecondIncorrectAfterSecondKeywordButtonIsClicked) {
+    control.notifyThatSecondKeywordButtonIsClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markSecondKeywordIncorrectCalled());
+}
+
+CHOOSE_KEYWORDS_CONTROLLER_TEST(
+    marksThirdIncorrectAfterThirdKeywordButtonIsClicked) {
+    control.notifyThatThirdKeywordButtonIsClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markThirdKeywordIncorrectCalled());
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(marksEachCorrectAfterResetButtonIsClicked) {
