@@ -315,7 +315,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void submit(const FreeResponse &f) override { freeResponse_ = &f; }
 
-    void submit(const ThreeKeywords &f) { threeKeywords_ = &f; }
+    void submit(const ThreeKeywords &f) override { threeKeywords_ = &f; }
 };
 
 class InitializingTestUseCase {
