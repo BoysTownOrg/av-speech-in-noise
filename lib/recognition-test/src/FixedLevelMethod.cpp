@@ -99,18 +99,25 @@ void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile &file) {
     file.write(lastCoordinateResponseMeasureTrial);
 }
 
+static void update(
+    FiniteTargetPlaylistWithRepeatables *finiteTargetPlaylistWithRepeatables,
+    FiniteTargetPlaylist *finiteTargetPlaylist, bool flagged,
+    bool &finiteTargetsExhausted_) {
+    if (flagged)
+        finiteTargetPlaylistWithRepeatables->reinsertCurrent();
+    finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
+}
+
 void FixedLevelMethodImpl::submit(const FreeResponse &response) {
-    if (usingFiniteTargetPlaylist_) {
-        if (response.flagged)
-            finiteTargetPlaylistWithRepeatables->reinsertCurrent();
-        finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
-    } else
+    if (usingFiniteTargetPlaylist_)
+        update(finiteTargetPlaylistWithRepeatables, finiteTargetPlaylist,
+            response.flagged, finiteTargetsExhausted_);
+    else
         --trials_;
 }
 
 void FixedLevelMethodImpl::submit(const ThreeKeywords &response) {
-    if (response.flagged)
-        finiteTargetPlaylistWithRepeatables->reinsertCurrent();
-    finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
+    update(finiteTargetPlaylistWithRepeatables, finiteTargetPlaylist,
+        response.flagged, finiteTargetsExhausted_);
 }
 }
