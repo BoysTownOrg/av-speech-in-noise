@@ -373,6 +373,9 @@ void RecognitionTestModelImpl::submit(const FreeResponse &response) {
 }
 
 void RecognitionTestModelImpl::submit(const ThreeKeywords &) {
+    ThreeKeywordsTrial trial;
+    outputFile.write(trial);
+    save(outputFile);
     prepareNextTrialIfNeeded();
 }
 

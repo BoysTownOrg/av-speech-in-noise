@@ -103,6 +103,7 @@ class OutputFile {
     virtual void write(const BinocularGazeSamples &) = 0;
     virtual void write(TargetStartTime) = 0;
     virtual void write(const EyeTrackerTargetPlayerSynchronization &) = 0;
+    virtual void write(const ThreeKeywordsTrial &) {}
     virtual void close() = 0;
     virtual void save() = 0;
 };
