@@ -45,27 +45,27 @@ class ChooseKeywordsControlStub : public ChooseKeywordsControl {
         observer->notifyThatSubmitButtonHasBeenClicked();
     }
 
-    auto markFirstKeywordIncorrectCalled() -> bool {
+    [[nodiscard]] auto markFirstKeywordIncorrectCalled() const -> bool {
         return markFirstKeywordIncorrectCalled_;
     }
 
-    auto markSecondKeywordIncorrectCalled() -> bool {
+    [[nodiscard]] auto markSecondKeywordIncorrectCalled() const -> bool {
         return markSecondKeywordIncorrectCalled_;
     }
 
-    auto markThirdKeywordIncorrectCalled() -> bool {
+    [[nodiscard]] auto markThirdKeywordIncorrectCalled() const -> bool {
         return markThirdKeywordIncorrectCalled_;
     }
 
-    void markFirstKeywordIncorrect() {
+    void markFirstKeywordIncorrect() override {
         markFirstKeywordIncorrectCalled_ = true;
     }
 
-    void markSecondKeywordIncorrect() {
+    void markSecondKeywordIncorrect() override {
         markSecondKeywordIncorrectCalled_ = true;
     }
 
-    void markThirdKeywordIncorrect() {
+    void markThirdKeywordIncorrect() override {
         markThirdKeywordIncorrectCalled_ = true;
     }
 
