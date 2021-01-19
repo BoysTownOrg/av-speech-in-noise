@@ -16,6 +16,7 @@ class TestMethod {
     virtual auto snr() -> SNR = 0;
     virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
+    virtual void submit(const ThreeKeywords &) {}
     virtual void writeTestingParameters(OutputFile &) = 0;
     virtual void writeLastCoordinateResponse(OutputFile &) = 0;
     virtual void writeTestResult(OutputFile &) = 0;

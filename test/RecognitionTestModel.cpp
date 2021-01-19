@@ -28,6 +28,8 @@ class TestMethodStub : public TestMethod {
         return submittedFreeResponse_;
     }
 
+    auto threeKeywords() -> const ThreeKeywords * { return threeKeywords_; }
+
     void setSnr_dB(int x) { snr_dB_ = x; }
 
     auto snr() -> SNR override { return SNR{snr_dB_}; }
@@ -57,6 +59,11 @@ class TestMethodStub : public TestMethod {
         submittedFreeResponse_ = true;
     }
 
+    void submit(const ThreeKeywords &p) {
+        insert(log_, "submitThreeKeywords ");
+        threeKeywords_ = &p;
+    }
+
     void submit(const coordinate_response_measure::Response &) override {
         insert(log_, "submitCoordinateResponse ");
     }
@@ -81,6 +88,7 @@ class TestMethodStub : public TestMethod {
     std::string currentTarget_{};
     std::string currentTargetWhenNextTarget_{};
     std::string nextTarget_{};
+    const ThreeKeywords *threeKeywords_{};
     int snr_dB_{};
     bool complete_{};
     bool submittedFreeResponse_{};
@@ -1764,6 +1772,12 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSubmitsResponse) {
     run(initializingTest, model);
     run(submittingFreeResponse, model);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFreeResponse());
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsSubmitsToTestMethod) {
+    run(initializingTest, model);
+    run(submittingThreeKeywords, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&threeKeywords, testMethod.threeKeywords());
 }
 }
 }
