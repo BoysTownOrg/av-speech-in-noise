@@ -20,6 +20,7 @@ class ChooseKeywordsControl {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
+        virtual void notifyThatAllWrongButtonHasBeenClicked() = 0;
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
         ChooseKeywordsControl);
@@ -27,6 +28,9 @@ class ChooseKeywordsControl {
     virtual auto firstKeywordCorrect() -> bool = 0;
     virtual auto secondKeywordCorrect() -> bool = 0;
     virtual auto thirdKeywordCorrect() -> bool = 0;
+    virtual void markFirstKeywordIncorrect() = 0;
+    virtual void markSecondKeywordIncorrect() = 0;
+    virtual void markThirdKeywordIncorrect() = 0;
 };
 
 class ChooseKeywordsController : public TaskController,
@@ -36,6 +40,7 @@ class ChooseKeywordsController : public TaskController,
     void attach(TaskController::Observer *) override;
     void attach(TestController *) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
+    void notifyThatAllWrongButtonHasBeenClicked() override;
 
   private:
     ChooseKeywordsControl &control;

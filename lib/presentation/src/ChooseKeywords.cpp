@@ -19,6 +19,12 @@ void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     model.submit(threeKeywords);
 }
 
+void ChooseKeywordsController::notifyThatAllWrongButtonHasBeenClicked() {
+    control.markFirstKeywordIncorrect();
+    control.markSecondKeywordIncorrect();
+    control.markThirdKeywordIncorrect();
+}
+
 static void hideResponseSubmission(ChooseKeywordsView &view) {
     view.hideResponseSubmission();
 }

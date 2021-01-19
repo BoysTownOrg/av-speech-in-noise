@@ -45,13 +45,44 @@ class ChooseKeywordsControlStub : public ChooseKeywordsControl {
         observer->notifyThatSubmitButtonHasBeenClicked();
     }
 
+    auto markFirstKeywordIncorrectCalled() -> bool {
+        return markFirstKeywordIncorrectCalled_;
+    }
+
+    auto markSecondKeywordIncorrectCalled() -> bool {
+        return markSecondKeywordIncorrectCalled_;
+    }
+
+    auto markThirdKeywordIncorrectCalled() -> bool {
+        return markThirdKeywordIncorrectCalled_;
+    }
+
+    void markFirstKeywordIncorrect() {
+        markFirstKeywordIncorrectCalled_ = true;
+    }
+
+    void markSecondKeywordIncorrect() {
+        markSecondKeywordIncorrectCalled_ = true;
+    }
+
+    void markThirdKeywordIncorrect() {
+        markThirdKeywordIncorrectCalled_ = true;
+    }
+
     void attach(Observer *a) override { observer = a; }
+
+    void notifyThatAllWrongButtonHasBeenClicked() {
+        observer->notifyThatAllWrongButtonHasBeenClicked();
+    }
 
   private:
     Observer *observer{};
     bool firstKeywordCorrect_{};
     bool secondKeywordCorrect_{};
     bool thirdKeywordCorrect_{};
+    bool markFirstKeywordIncorrectCalled_{};
+    bool markSecondKeywordIncorrectCalled_{};
+    bool markThirdKeywordIncorrectCalled_{};
 };
 
 class ChooseKeywordsControllerTests : public ::testing::Test {
@@ -119,6 +150,13 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().firstCorrect);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.threeKeywords().secondCorrect);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().thirdCorrect);
+}
+
+CHOOSE_KEYWORDS_CONTROLLER_TEST(marksAllWrongAfterAllWrongButtonIsClicked) {
+    control.notifyThatAllWrongButtonHasBeenClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markFirstKeywordIncorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markSecondKeywordIncorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markThirdKeywordIncorrectCalled());
 }
 
 // CHOOSE_KEYWORDS_CONTROLLER_TEST(
