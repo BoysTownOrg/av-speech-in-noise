@@ -143,6 +143,10 @@ auto markThirdKeywordIncorrectCalled(ChooseKeywordsControlStub &control)
     return control.markThirdKeywordIncorrectCalled();
 }
 
+void notifyThatSubmitButtonHasBeenClicked(ChooseKeywordsControlStub &control) {
+    control.notifyThatSubmitButtonHasBeenClicked();
+}
+
 class ChooseKeywordsControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -204,7 +208,7 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(
     submitsKeywordResponseAfterSubmitButtonIsClicked) {
     control.setFirstKeywordCorrect();
     control.setThirdKeywordCorrect();
-    control.notifyThatSubmitButtonHasBeenClicked();
+    notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().firstCorrect);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.threeKeywords().secondCorrect);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().thirdCorrect);
@@ -245,14 +249,14 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(marksEachCorrectAfterResetButtonIsClicked) {
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(
     notifiesThatUserIsReadyForNextTrialAfterSubmitButtonIsClicked) {
-    control.notifyThatSubmitButtonHasBeenClicked();
+    notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(
     notifiesThatUserIsDoneRespondingAfterSubmitButtonIsClicked) {
-    control.notifyThatSubmitButtonHasBeenClicked();
+    notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         taskController.notifiedThatUserIsDoneResponding());
 }
