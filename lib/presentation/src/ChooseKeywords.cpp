@@ -67,8 +67,6 @@ void ChooseKeywordsPresenter::notifyThatUserIsDoneResponding() {
     hideResponseSubmission(view);
 }
 
-void ChooseKeywordsPresenter::notifyThatTrialHasStarted() {}
-
 void ChooseKeywordsPresenter::showResponseSubmission() {
     view.showResponseSubmission();
 }
