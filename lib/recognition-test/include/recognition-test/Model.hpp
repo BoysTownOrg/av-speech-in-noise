@@ -4,6 +4,7 @@
 #include "TargetPlaylist.hpp"
 #include "TestMethod.hpp"
 #include <av-speech-in-noise/Model.hpp>
+#include <av-speech-in-noise/Interface.hpp>
 #include <gsl/gsl>
 #include <cstdint>
 #include <vector>
@@ -87,7 +88,7 @@ struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
 class OutputFile {
   public:
-    virtual ~OutputFile() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(OutputFile);
     virtual void openNewFile(const TestIdentity &) = 0;
     class OpenFailure {};
     virtual void write(const coordinate_response_measure::AdaptiveTrial &) = 0;
@@ -110,7 +111,7 @@ class OutputFile {
 
 class ResponseEvaluator {
   public:
-    virtual ~ResponseEvaluator() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ResponseEvaluator);
     virtual auto correct(const LocalUrl &,
         const coordinate_response_measure::Response &) -> bool = 0;
     virtual auto correct(const LocalUrl &, const ConsonantResponse &)
@@ -124,7 +125,7 @@ class ResponseEvaluator {
 
 class TargetPlaylistReader {
   public:
-    virtual ~TargetPlaylistReader() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TargetPlaylistReader);
     using lists_type = typename std::vector<std::shared_ptr<TargetPlaylist>>;
     virtual auto read(const LocalUrl &) -> lists_type = 0;
 };
@@ -155,7 +156,7 @@ class FixedLevelMethod : public virtual TestMethod {
 
 class RecognitionTestModel {
   public:
-    virtual ~RecognitionTestModel() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RecognitionTestModel);
     virtual void attach(Model::Observer *) = 0;
     virtual void initialize(TestMethod *, const Test &) = 0;
     virtual void initializeWithSingleSpeaker(TestMethod *, const Test &) = 0;

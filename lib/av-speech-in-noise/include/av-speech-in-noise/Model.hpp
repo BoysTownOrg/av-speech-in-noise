@@ -21,9 +21,9 @@ struct CorrectKeywords {
 };
 
 struct ThreeKeywords {
-    bool firstCorrect;
-    bool secondCorrect;
-    bool thirdCorrect;
+    bool firstCorrect{};
+    bool secondCorrect{};
+    bool thirdCorrect{};
 };
 
 struct FreeResponse {
