@@ -57,6 +57,18 @@ class ChooseKeywordsControlStub : public ChooseKeywordsControl {
         return markThirdKeywordIncorrectCalled_;
     }
 
+    [[nodiscard]] auto markFirstKeywordCorrectCalled() const -> bool {
+        return markFirstKeywordCorrectCalled_;
+    }
+
+    [[nodiscard]] auto markSecondKeywordCorrectCalled() const -> bool {
+        return markSecondKeywordCorrectCalled_;
+    }
+
+    [[nodiscard]] auto markThirdKeywordCorrectCalled() const -> bool {
+        return markThirdKeywordCorrectCalled_;
+    }
+
     void markFirstKeywordIncorrect() override {
         markFirstKeywordIncorrectCalled_ = true;
     }
@@ -69,10 +81,20 @@ class ChooseKeywordsControlStub : public ChooseKeywordsControl {
         markThirdKeywordIncorrectCalled_ = true;
     }
 
+    void markFirstKeywordCorrect() { markFirstKeywordCorrectCalled_ = true; }
+
+    void markSecondKeywordCorrect() { markSecondKeywordCorrectCalled_ = true; }
+
+    void markThirdKeywordCorrect() { markThirdKeywordCorrectCalled_ = true; }
+
     void attach(Observer *a) override { observer = a; }
 
     void notifyThatAllWrongButtonHasBeenClicked() {
         observer->notifyThatAllWrongButtonHasBeenClicked();
+    }
+
+    void notifyThatResetButtonIsClicked() {
+        observer->notifyThatResetButtonIsClicked();
     }
 
   private:
@@ -83,6 +105,9 @@ class ChooseKeywordsControlStub : public ChooseKeywordsControl {
     bool markFirstKeywordIncorrectCalled_{};
     bool markSecondKeywordIncorrectCalled_{};
     bool markThirdKeywordIncorrectCalled_{};
+    bool markFirstKeywordCorrectCalled_{};
+    bool markSecondKeywordCorrectCalled_{};
+    bool markThirdKeywordCorrectCalled_{};
 };
 
 class ChooseKeywordsControllerTests : public ::testing::Test {
@@ -152,11 +177,19 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().thirdCorrect);
 }
 
-CHOOSE_KEYWORDS_CONTROLLER_TEST(marksAllWrongAfterAllWrongButtonIsClicked) {
+CHOOSE_KEYWORDS_CONTROLLER_TEST(
+    marksEachIncorrectAfterAllWrongButtonIsClicked) {
     control.notifyThatAllWrongButtonHasBeenClicked();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markFirstKeywordIncorrectCalled());
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markSecondKeywordIncorrectCalled());
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markThirdKeywordIncorrectCalled());
+}
+
+CHOOSE_KEYWORDS_CONTROLLER_TEST(marksEachCorrectAfterResetButtonIsClicked) {
+    control.notifyThatResetButtonIsClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markFirstKeywordCorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markSecondKeywordCorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markThirdKeywordCorrectCalled());
 }
 
 // CHOOSE_KEYWORDS_CONTROLLER_TEST(

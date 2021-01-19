@@ -25,6 +25,12 @@ void ChooseKeywordsController::notifyThatAllWrongButtonHasBeenClicked() {
     control.markThirdKeywordIncorrect();
 }
 
+void ChooseKeywordsController::notifyThatResetButtonIsClicked() {
+    control.markFirstKeywordCorrect();
+    control.markSecondKeywordCorrect();
+    control.markThirdKeywordCorrect();
+}
+
 static void hideResponseSubmission(ChooseKeywordsView &view) {
     view.hideResponseSubmission();
 }
