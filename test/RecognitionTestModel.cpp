@@ -1743,6 +1743,12 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submitThreeKeywordsPassesCurrentTargetToEvaluatorBeforeAdvancingTarget) {
+    assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
+        submittingThreeKeywords);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseWritesTrialAfterSubmittingResponse) {
     assertTestMethodLogContains(submittingCoordinateResponse,
         "submitCoordinateResponse writeLastCoordinateResponse ");
