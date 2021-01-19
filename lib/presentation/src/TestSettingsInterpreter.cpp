@@ -235,6 +235,15 @@ static void initializeFixedLevelTest(Method method, const std::string &contents,
     f(test);
 }
 
+static void initializeFixedLevelFixedTrialsTest(Method method,
+    const std::string &contents, const TestIdentity &identity, SNR startingSnr,
+    const std::function<void(const FixedLevelFixedTrialsTest &)> &f) {
+    FixedLevelFixedTrialsTest test;
+    av_speech_in_noise::initialize(
+        test, contents, method, identity, startingSnr);
+    f(test);
+}
+
 void TestSettingsInterpreterImpl::initialize(Model &model,
     const std::string &contents, const TestIdentity &identity,
     SNR startingSnr) {
@@ -303,15 +312,15 @@ void TestSettingsInterpreterImpl::initialize(Model &model,
     } else if (method ==
         Method::
             fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking) {
-        FixedLevelFixedTrialsTest test;
-        av_speech_in_noise::initialize(
-            test, contents, method, identity, startingSnr);
-        model.initializeWithTargetReplacementAndEyeTracking(test);
+        initializeFixedLevelFixedTrialsTest(method, contents, identity,
+            startingSnr, [&](const FixedLevelFixedTrialsTest &test) {
+                model.initializeWithTargetReplacementAndEyeTracking(test);
+            });
     } else {
-        FixedLevelFixedTrialsTest test;
-        av_speech_in_noise::initialize(
-            test, contents, method, identity, startingSnr);
-        model.initializeWithTargetReplacement(test);
+        initializeFixedLevelFixedTrialsTest(method, contents, identity,
+            startingSnr, [&](const FixedLevelFixedTrialsTest &test) {
+                model.initializeWithTargetReplacement(test);
+            });
     }
 }
 
