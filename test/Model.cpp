@@ -686,6 +686,7 @@ auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
 
 class PlayingCalibrationUseCase {
   public:
+    virtual ~PlayingCalibrationUseCase() = default;
     virtual void run(Model &model, const Calibration &c) = 0;
     virtual auto calibration(RecognitionTestModelStub &model)
         -> const Calibration * = 0;
