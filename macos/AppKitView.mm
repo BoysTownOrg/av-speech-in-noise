@@ -913,4 +913,17 @@ void AppKitView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (const auto &item : items)
         [audioDeviceMenu addItemWithTitle:nsString(item)];
 }
+
+void ChooseKeywordsUI::markThirdKeywordCorrect() {}
+void ChooseKeywordsUI::markSecondKeywordCorrect() {}
+void ChooseKeywordsUI::markFirstKeywordCorrect() {}
+void ChooseKeywordsUI::markThirdKeywordIncorrect() {}
+void ChooseKeywordsUI::markSecondKeywordIncorrect() {}
+void ChooseKeywordsUI::markFirstKeywordIncorrect() {}
+auto ChooseKeywordsUI::thirdKeywordCorrect() -> bool { return false; }
+auto ChooseKeywordsUI::secondKeywordCorrect() -> bool { return false; }
+auto ChooseKeywordsUI::firstKeywordCorrect() -> bool { return false; }
+void ChooseKeywordsUI::attach(Observer *) {}
+void ChooseKeywordsUI::showResponseSubmission() {}
+void ChooseKeywordsUI::hideResponseSubmission() {}
 }

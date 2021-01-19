@@ -5,6 +5,7 @@
 #include <presentation/Consonant.hpp>
 #include <presentation/CoordinateResponseMeasure.hpp>
 #include <presentation/FreeResponse.hpp>
+#include <presentation/ChooseKeywords.hpp>
 #include <presentation/PassFail.hpp>
 #include <presentation/CorrectKeywords.hpp>
 #include <presentation/TestSetupImpl.hpp>
@@ -20,6 +21,23 @@
 @class FreeResponseViewActions;
 
 namespace av_speech_in_noise {
+class ChooseKeywordsUI : public ChooseKeywordsControl,
+                         public ChooseKeywordsView {
+  public:
+    void attach(Observer *) override;
+    auto firstKeywordCorrect() -> bool override;
+    auto secondKeywordCorrect() -> bool override;
+    auto thirdKeywordCorrect() -> bool override;
+    void markFirstKeywordIncorrect() override;
+    void markSecondKeywordIncorrect() override;
+    void markThirdKeywordIncorrect() override;
+    void markFirstKeywordCorrect() override;
+    void markSecondKeywordCorrect() override;
+    void markThirdKeywordCorrect() override;
+    void hideResponseSubmission() override;
+    void showResponseSubmission() override;
+};
+
 class AppKitTestUI : public TestView,
                      public TestControl,
                      public FreeResponseControl,

@@ -379,6 +379,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     FreeResponseController freeResponseController{model, experimenterView};
     FreeResponsePresenter freeResponsePresenter{
         experimenterView, experimenterView};
+    ChooseKeywordsUI chooseKeywordsUI;
+    ChooseKeywordsController chooseKeywordsController{model, chooseKeywordsUI};
+    ChooseKeywordsPresenter chooseKeywordsPresenter{
+        experimenterView, chooseKeywordsUI};
     CorrectKeywordsController correctKeywordsController{
         model, view, experimenterView};
     CorrectKeywordsPresenter correctKeywordsPresenter{
