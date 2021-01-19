@@ -1288,6 +1288,12 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submittingThreeKeywordsPassesNextTargetToTargetPlayer) {
+    run(initializingTest, model);
+    assertPassesNextTargetToPlayer(submittingThreeKeywords);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submittingCorrectKeywordsPassesNextTargetToTargetPlayer) {
     run(initializingTest, model);
     assertPassesNextTargetToPlayer(submittingCorrectKeywords);
