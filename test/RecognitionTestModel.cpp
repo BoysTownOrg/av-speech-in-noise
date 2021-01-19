@@ -1704,6 +1704,19 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesResponse) {
         std::string{"a"}, freeResponseTrial(outputFile).response);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesEachKeywordEvaluation) {
+    threeKeywords.firstCorrect = true;
+    threeKeywords.secondCorrect = false;
+    threeKeywords.thirdCorrect = true;
+    run(submittingThreeKeywords, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        outputFile.threeKeywordsTrial().firstCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
+        outputFile.threeKeywordsTrial().secondCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        outputFile.threeKeywordsTrial().thirdCorrect);
+}
+
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesFlagged) {
     freeResponse.flagged = true;
     run(submittingFreeResponse, model);

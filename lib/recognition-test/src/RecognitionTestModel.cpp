@@ -372,8 +372,11 @@ void RecognitionTestModelImpl::submit(const FreeResponse &response) {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::submit(const ThreeKeywords &) {
+void RecognitionTestModelImpl::submit(const ThreeKeywords &p) {
     ThreeKeywordsTrial trial;
+    trial.firstCorrect = p.firstCorrect;
+    trial.secondCorrect = p.secondCorrect;
+    trial.thirdCorrect = p.thirdCorrect;
     outputFile.write(trial);
     save(outputFile);
     prepareNextTrialIfNeeded();
