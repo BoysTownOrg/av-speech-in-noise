@@ -128,6 +128,21 @@ class ChooseKeywordsControlStub : public ChooseKeywordsControl {
     bool markThirdKeywordCorrectCalled_{};
 };
 
+auto markFirstKeywordIncorrectCalled(ChooseKeywordsControlStub &control)
+    -> bool {
+    return control.markFirstKeywordIncorrectCalled();
+}
+
+auto markSecondKeywordIncorrectCalled(ChooseKeywordsControlStub &control)
+    -> bool {
+    return control.markSecondKeywordIncorrectCalled();
+}
+
+auto markThirdKeywordIncorrectCalled(ChooseKeywordsControlStub &control)
+    -> bool {
+    return control.markThirdKeywordIncorrectCalled();
+}
+
 class ChooseKeywordsControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -198,27 +213,27 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(
 CHOOSE_KEYWORDS_CONTROLLER_TEST(
     marksEachIncorrectAfterAllWrongButtonIsClicked) {
     control.notifyThatAllWrongButtonHasBeenClicked();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markFirstKeywordIncorrectCalled());
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markSecondKeywordIncorrectCalled());
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markThirdKeywordIncorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(markFirstKeywordIncorrectCalled(control));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(markSecondKeywordIncorrectCalled(control));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(markThirdKeywordIncorrectCalled(control));
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(
     marksFirstIncorrectAfterFirstKeywordButtonIsClicked) {
     control.notifyThatFirstKeywordButtonIsClicked();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markFirstKeywordIncorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(markFirstKeywordIncorrectCalled(control));
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(
     marksSecondIncorrectAfterSecondKeywordButtonIsClicked) {
     control.notifyThatSecondKeywordButtonIsClicked();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markSecondKeywordIncorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(markSecondKeywordIncorrectCalled(control));
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(
     marksThirdIncorrectAfterThirdKeywordButtonIsClicked) {
     control.notifyThatThirdKeywordButtonIsClicked();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.markThirdKeywordIncorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(markThirdKeywordIncorrectCalled(control));
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(marksEachCorrectAfterResetButtonIsClicked) {
