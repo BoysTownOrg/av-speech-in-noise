@@ -239,7 +239,7 @@ class ModelStub : public Model {
 
     void submit(const ConsonantResponse &s) override { consonantResponse_ = s; }
 
-    void submit(const ThreeKeywords &s) { threeKeywords_ = s; }
+    void submit(const ThreeKeywords &s) override { threeKeywords_ = s; }
 
     void restartAdaptiveTestWhilePreservingTargets() override {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;

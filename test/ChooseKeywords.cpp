@@ -84,35 +84,35 @@ class ChooseKeywordsPresenterTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).responseSubmissionHidden())
 
-CHOOSE_KEYWORDS_PRESENTER_TEST(presenterHidesReadyButtonWhenTaskStarts) {
+CHOOSE_KEYWORDS_PRESENTER_TEST(hidesReadyButtonWhenTaskStarts) {
     presenter.notifyThatTaskHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(
-    presenterHidesResponseSubmissionAfterUserIsDoneResponding) {
+    hidesResponseSubmissionAfterUserIsDoneResponding) {
     presenter.notifyThatUserIsDoneResponding();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-CHOOSE_KEYWORDS_PRESENTER_TEST(presenterHidesResponseButtonsWhenStopped) {
+CHOOSE_KEYWORDS_PRESENTER_TEST(hidesResponseButtonsWhenStopped) {
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-CHOOSE_KEYWORDS_PRESENTER_TEST(presenterShowsReadyButtonWhenStarted) {
+CHOOSE_KEYWORDS_PRESENTER_TEST(showsReadyButtonWhenStarted) {
     presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(
-    presenterShowsResponseButtonWhenShowingResponseSubmission) {
+    showsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseSubmissionShown());
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(
-    controllerSubmitsKeywordResponseAfterResponseButtonIsClicked) {
+    submitsKeywordResponseAfterResponseButtonIsClicked) {
     control.setFirstKeywordCorrect();
     control.setThirdKeywordCorrect();
     control.notifyThatSubmitButtonHasBeenClicked();
