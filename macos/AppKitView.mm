@@ -6,19 +6,19 @@
 #include <array>
 #include <algorithm>
 
-@interface SetupViewActions : NSObject
+@interface TestSetupUIActions : NSObject
 @end
 
-@interface CoordinateResponseMeasureViewActions : NSObject
+@interface CoordinateResponseMeasureUIActions : NSObject
 @end
 
-@interface ConsonantViewActions : NSObject
+@interface ConsonantUIActions : NSObject
 @end
 
-@interface ExperimenterViewActions : NSObject
+@interface TestUIActions : NSObject
 @end
 
-@interface FreeResponseViewActions : NSObject
+@interface FreeResponseUIActions : NSObject
 @end
 
 @interface ChooseKeywordsUIActions : NSObject
@@ -30,7 +30,7 @@
 @interface PassFailUIActions : NSObject
 @end
 
-@implementation SetupViewActions {
+@implementation TestSetupUIActions {
   @public
     av_speech_in_noise::AppKitTestSetupUI *controller;
 }
@@ -48,7 +48,7 @@
 }
 @end
 
-@implementation CoordinateResponseMeasureViewActions {
+@implementation CoordinateResponseMeasureUIActions {
   @public
     av_speech_in_noise::AppKitCoordinateResponseMeasureUI *controller;
 }
@@ -62,7 +62,7 @@
 }
 @end
 
-@implementation ConsonantViewActions {
+@implementation ConsonantUIActions {
   @public
     av_speech_in_noise::AppKitConsonantUI *controller;
 }
@@ -76,25 +76,25 @@
 }
 @end
 
-@implementation ExperimenterViewActions {
+@implementation TestUIActions {
   @public
-    av_speech_in_noise::AppKitTestUI *controller;
+    av_speech_in_noise::TestControl::Observer *observer;
 }
 
 - (void)notifyThatExitTestButtonHasBeenClicked {
-    controller->notifyThatExitTestButtonHasBeenClicked();
+    observer->exitTest();
 }
 
 - (void)notifyThatPlayTrialButtonHasBeenClicked {
-    controller->notifyThatPlayTrialButtonHasBeenClicked();
+    observer->playTrial();
 }
 
 - (void)notifyThatContinueTestingButtonHasBeenClicked {
-    controller->notifyThatContinueTestingButtonHasBeenClicked();
+    observer->acceptContinuingTesting();
 }
 
 - (void)notifyThatDeclineContinueTestingButtonHasBeenClicked {
-    controller->notifyThatDeclineContinueTestingButtonHasBeenClicked();
+    observer->declineContinuingTesting();
 }
 @end
 
@@ -122,7 +122,7 @@
 }
 @end
 
-@implementation FreeResponseViewActions {
+@implementation FreeResponseUIActions {
   @public
     av_speech_in_noise::FreeResponseControl::Observer *observer;
 }
@@ -231,7 +231,7 @@ AppKitTestSetupUI::AppKitTestSetupUI(NSViewController *viewController)
       transducerMenu{[[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                                 pullsDown:NO]},
       testSettingsField{emptyTextField()}, startingSnrField{emptyTextField()},
-      actions{[[SetupViewActions alloc] init]} {
+      actions{[[TestSetupUIActions alloc] init]} {
     actions->controller = this;
     const auto confirmButton {
         nsButton("Confirm", actions,
@@ -363,7 +363,7 @@ void AppKitTestSetupUI::notifyThatPlayCalibrationButtonHasBeenClicked() {
 
 static auto consonantImageButton(
     std::unordered_map<void *, std::string> &consonants,
-    ConsonantViewActions *actions, const std::string &consonant) -> NSButton * {
+    ConsonantUIActions *actions, const std::string &consonant) -> NSButton * {
     const auto image{[[NSImage alloc]
         initWithContentsOfFile:nsString(resourceUrl(consonant, "bmp").path)]};
     const auto button {
@@ -378,7 +378,7 @@ static auto consonantImageButton(
     return button;
 }
 
-static void addReadyButton(NSView *parent, ConsonantViewActions *actions) {
+static void addReadyButton(NSView *parent, ConsonantUIActions *actions) {
     const auto button {
         nsButton("", actions, @selector(notifyThatReadyButtonHasBeenClicked))
     };
@@ -401,7 +401,7 @@ static auto nsArray(const std::vector<NSView *> &v) -> NSArray * {
 
 static auto equallyDistributedConsonantImageButtonGrid(
     std::unordered_map<void *, std::string> &consonants,
-    ConsonantViewActions *actions,
+    ConsonantUIActions *actions,
     const std::vector<std::vector<std::string>> &consonantRows)
     -> NSStackView * {
     std::vector<NSView *> rows(consonantRows.size());
@@ -433,7 +433,7 @@ AppKitConsonantUI::AppKitConsonantUI(NSRect r)
                                              defer:YES]},
       readyButton{
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
-      actions{[[ConsonantViewActions alloc] init]} {
+      actions{[[ConsonantUIActions alloc] init]} {
     actions->controller = this;
     responseButtons =
         equallyDistributedConsonantImageButtonGrid(consonants, actions,
@@ -521,7 +521,7 @@ AppKitCoordinateResponseMeasureUI::AppKitCoordinateResponseMeasureUI(NSRect r)
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       nextTrialButton{
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
-      actions{[[CoordinateResponseMeasureViewActions alloc] init]} {
+      actions{[[CoordinateResponseMeasureUIActions alloc] init]} {
     actions->controller = this;
     addButtonRow(blueColor, 0);
     addButtonRow(greenColor, 1);
@@ -650,8 +650,8 @@ static auto emptyLabel() -> NSTextField * { return label(""); }
 
 AppKitTestUI::AppKitTestUI(NSViewController *viewController)
     : viewController{viewController}, continueTestingDialogField{emptyLabel()},
-      primaryTextField{emptyLabel()}, secondaryTextField{emptyLabel()},
-      actions{[[ExperimenterViewActions alloc] init]} {
+      primaryTextField{emptyLabel()},
+      secondaryTextField{emptyLabel()}, actions{[[TestUIActions alloc] init]} {
     const auto continueTestingDialogController{
         nsTabViewControllerWithoutTabControl()};
     continueTestingDialog = [NSWindow
@@ -694,10 +694,9 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
         nextTrialButton, view(viewController), defaultMarginPoints);
     av_speech_in_noise::hide(nextTrialButton);
     av_speech_in_noise::hide(view(viewController));
-    actions->controller = this;
 }
 
-void AppKitTestUI::attach(TestControl::Observer *e) { observer = e; }
+void AppKitTestUI::attach(Observer *e) { actions->observer = e; }
 
 void AppKitTestUI::showExitTestButton() {
     av_speech_in_noise::show(exitTestButton);
@@ -710,10 +709,6 @@ void AppKitTestUI::hideExitTestButton() {
 void AppKitTestUI::show() { av_speech_in_noise::show(view(viewController)); }
 
 void AppKitTestUI::hide() { av_speech_in_noise::hide(view(viewController)); }
-
-void AppKitTestUI::notifyThatExitTestButtonHasBeenClicked() {
-    observer->exitTest();
-}
 
 void AppKitTestUI::display(std::string s) { set(primaryTextField, s); }
 
@@ -741,18 +736,6 @@ void AppKitTestUI::hideContinueTestingDialog() {
 
 void AppKitTestUI::setContinueTestingDialogMessage(const std::string &s) {
     set(continueTestingDialogField, s);
-}
-
-void AppKitTestUI::notifyThatPlayTrialButtonHasBeenClicked() {
-    observer->playTrial();
-}
-
-void AppKitTestUI::notifyThatContinueTestingButtonHasBeenClicked() {
-    observer->acceptContinuingTesting();
-}
-
-void AppKitTestUI::notifyThatDeclineContinueTestingButtonHasBeenClicked() {
-    observer->declineContinuingTesting();
 }
 
 AppKitView::AppKitView(NSApplication *app, NSViewController *viewController)
@@ -920,7 +903,7 @@ FreeResponseUI::FreeResponseUI(NSViewController *viewController)
                                            checkboxWithTitle:@"flagged"
                                                       target:nil
                                                       action:nil]},
-      actions{[[FreeResponseViewActions alloc] init]} {
+      actions{[[FreeResponseUIActions alloc] init]} {
     const auto submitFreeResponseButton {
         nsButton(
             "Submit", actions, @selector(notifyThatSubmitButtonHasBeenClicked))

@@ -14,11 +14,11 @@
 #import <AppKit/AppKit.h>
 #include <unordered_map>
 
-@class SetupViewActions;
-@class CoordinateResponseMeasureViewActions;
-@class ConsonantViewActions;
-@class ExperimenterViewActions;
-@class FreeResponseViewActions;
+@class TestSetupUIActions;
+@class CoordinateResponseMeasureUIActions;
+@class ConsonantUIActions;
+@class TestUIActions;
+@class FreeResponseUIActions;
 @class ChooseKeywordsUIActions;
 @class CorrectKeywordsUIActions;
 @class PassFailUIActions;
@@ -64,7 +64,7 @@ class FreeResponseUI : public FreeResponseView, public FreeResponseControl {
     NSStackView *responseView{};
     NSTextField *responseField;
     NSButton *flaggedButton;
-    FreeResponseViewActions *actions;
+    FreeResponseUIActions *actions;
 };
 
 class CorrectKeywordsUI : public CorrectKeywordsControl,
@@ -109,10 +109,6 @@ class AppKitTestUI : public TestView, public TestControl {
     void showContinueTestingDialog() override;
     void hideContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &) override;
-    void notifyThatExitTestButtonHasBeenClicked();
-    void notifyThatPlayTrialButtonHasBeenClicked();
-    void notifyThatContinueTestingButtonHasBeenClicked();
-    void notifyThatDeclineContinueTestingButtonHasBeenClicked();
 
   private:
     NSViewController *viewController;
@@ -122,8 +118,7 @@ class AppKitTestUI : public TestView, public TestControl {
     NSTextField *secondaryTextField;
     NSButton *exitTestButton;
     NSButton *nextTrialButton;
-    ExperimenterViewActions *actions;
-    TestControl::Observer *observer{};
+    TestUIActions *actions;
 };
 
 class AppKitTestSetupUI : public TestSetupUI {
@@ -154,7 +149,7 @@ class AppKitTestSetupUI : public TestSetupUI {
     NSPopUpButton *transducerMenu;
     NSTextField *testSettingsField;
     NSTextField *startingSnrField;
-    SetupViewActions *actions;
+    TestSetupUIActions *actions;
     Observer *observer{};
 };
 
@@ -188,7 +183,7 @@ class AppKitConsonantUI : public ConsonantTaskView,
     NSStackView *responseButtons;
     NSView *readyButton;
     NSButton *lastButtonPressed{};
-    ConsonantViewActions *actions;
+    ConsonantUIActions *actions;
     Observer *listener_{};
 };
 
@@ -221,7 +216,7 @@ class AppKitCoordinateResponseMeasureUI
     NSView *responseButtons;
     NSView *nextTrialButton;
     NSButton *lastButtonPressed{};
-    CoordinateResponseMeasureViewActions *actions;
+    CoordinateResponseMeasureUIActions *actions;
     Observer *listener_{};
 };
 
