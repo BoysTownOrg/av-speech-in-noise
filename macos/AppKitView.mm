@@ -947,17 +947,41 @@ void AppKitView::populateAudioDeviceMenu(std::vector<std::string> items) {
         [audioDeviceMenu addItemWithTitle:nsString(item)];
 }
 
-void ChooseKeywordsUI::markThirdKeywordCorrect() {}
-void ChooseKeywordsUI::markSecondKeywordCorrect() {}
+void ChooseKeywordsUI::markThirdKeywordCorrect() {
+    [thirdKeywordButton setState:NSControlStateValueOff];
+}
+
+void ChooseKeywordsUI::markSecondKeywordCorrect() {
+    [secondKeywordButton setState:NSControlStateValueOff];
+}
+
 void ChooseKeywordsUI::markFirstKeywordCorrect() {
+    [firstKeywordButton setState:NSControlStateValueOff];
+}
+
+void ChooseKeywordsUI::markThirdKeywordIncorrect() {
+    [thirdKeywordButton setState:NSControlStateValueOn];
+}
+
+void ChooseKeywordsUI::markSecondKeywordIncorrect() {
+    [secondKeywordButton setState:NSControlStateValueOn];
+}
+
+void ChooseKeywordsUI::markFirstKeywordIncorrect() {
     [firstKeywordButton setState:NSControlStateValueOn];
 }
-void ChooseKeywordsUI::markThirdKeywordIncorrect() {}
-void ChooseKeywordsUI::markSecondKeywordIncorrect() {}
-void ChooseKeywordsUI::markFirstKeywordIncorrect() {}
-auto ChooseKeywordsUI::thirdKeywordCorrect() -> bool { return false; }
-auto ChooseKeywordsUI::secondKeywordCorrect() -> bool { return false; }
-auto ChooseKeywordsUI::firstKeywordCorrect() -> bool { return false; }
+
+auto ChooseKeywordsUI::thirdKeywordCorrect() -> bool {
+    return thirdKeywordButton.state == NSControlStateValueOff;
+}
+
+auto ChooseKeywordsUI::secondKeywordCorrect() -> bool {
+    return secondKeywordButton.state == NSControlStateValueOff;
+}
+
+auto ChooseKeywordsUI::firstKeywordCorrect() -> bool {
+    return firstKeywordButton.state == NSControlStateValueOff;
+}
 
 void ChooseKeywordsUI::attach(Observer *observer) {
     actions->observer = observer;
@@ -979,6 +1003,9 @@ ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
         "", actions, @selector(notifyThatSecondKeywordButtonHasBeenClicked));
     thirdKeywordButton = nsButton(
         "", actions, @selector(notifyThatThirdKeywordButtonHasBeenClicked));
+    [firstKeywordButton setButtonType:NSButtonTypePushOnPushOff];
+    [secondKeywordButton setButtonType:NSButtonTypePushOnPushOff];
+    [thirdKeywordButton setButtonType:NSButtonTypePushOnPushOff];
     const auto keywordButtons {
         [NSStackView stackViewWithViews:@[
             firstKeywordButton, secondKeywordButton, thirdKeywordButton
