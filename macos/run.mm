@@ -358,8 +358,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto chooseKeywordsUIController{
         nsTabViewControllerWithoutTabControl()};
     const auto freeResponseUIController{nsTabViewControllerWithoutTabControl()};
+    const auto correctKeywordsUIController{
+        nsTabViewControllerWithoutTabControl()};
     addChild(experimenterViewController, chooseKeywordsUIController);
     addChild(experimenterViewController, freeResponseUIController);
+    addChild(experimenterViewController, correctKeywordsUIController);
     AppKitTestUI experimenterView{experimenterViewController};
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
@@ -389,10 +392,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     ChooseKeywordsController chooseKeywordsController{model, chooseKeywordsUI};
     ChooseKeywordsPresenter chooseKeywordsPresenter{
         experimenterView, chooseKeywordsUI};
+    CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
     CorrectKeywordsController correctKeywordsController{
-        model, view, experimenterView};
+        model, view, correctKeywordsUI};
     CorrectKeywordsPresenter correctKeywordsPresenter{
-        experimenterView, experimenterView};
+        experimenterView, correctKeywordsUI};
     PassFailController passFailController{model, experimenterView};
     PassFailPresenter passFailPresenter{experimenterView, experimenterView};
     CoordinateResponseMeasureController coordinateResponseMeasureController{

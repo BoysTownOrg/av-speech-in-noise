@@ -24,6 +24,9 @@
 @interface ChooseKeywordsUIActions : NSObject
 @end
 
+@interface CorrectKeywordsUIActions : NSObject
+@end
+
 @implementation SetupViewActions {
   @public
     av_speech_in_noise::AppKitTestSetupUI *controller;
@@ -91,16 +94,22 @@
     controller->notifyThatIncorrectButtonHasBeenClicked();
 }
 
-- (void)notifyThatSubmitCorrectKeywordsButtonHasBeenClicked {
-    controller->notifyThatSubmitCorrectKeywordsButtonHasBeenClicked();
-}
-
 - (void)notifyThatContinueTestingButtonHasBeenClicked {
     controller->notifyThatContinueTestingButtonHasBeenClicked();
 }
 
 - (void)notifyThatDeclineContinueTestingButtonHasBeenClicked {
     controller->notifyThatDeclineContinueTestingButtonHasBeenClicked();
+}
+@end
+
+@implementation CorrectKeywordsUIActions {
+  @public
+    av_speech_in_noise::CorrectKeywordsControl::Observer *observer;
+}
+
+- (void)notifyThatSubmitButtonHasBeenClicked {
+    observer->notifyThatSubmitButtonHasBeenClicked();
 }
 @end
 
@@ -633,7 +642,6 @@ static auto emptyLabel() -> NSTextField * { return label(""); }
 AppKitTestUI::AppKitTestUI(NSViewController *viewController)
     : viewController{viewController}, continueTestingDialogField{emptyLabel()},
       primaryTextField{emptyLabel()}, secondaryTextField{emptyLabel()},
-      correctKeywordsField{emptyTextField()},
       actions{[[ExperimenterViewActions alloc] init]} {
     const auto continueTestingDialogController{
         nsTabViewControllerWithoutTabControl()};
@@ -650,20 +658,11 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
         nsButton("Correct", actions,
             @selector(notifyThatCorrectButtonHasBeenClicked))
     ]];
-    const auto submitCorrectKeywordsButton {
-        nsButton("Submit", actions,
-            @selector(notifyThatSubmitCorrectKeywordsButtonHasBeenClicked))
-    };
-    setPlaceholder(correctKeywordsField, "2");
     const auto topRow {
         [NSStackView stackViewWithViews:@[
             exitTestButton, primaryTextField, secondaryTextField
         ]]
     };
-    correctKeywordsView = [NSStackView stackViewWithViews:@[
-        correctKeywordsField, submitCorrectKeywordsButton
-    ]];
-    correctKeywordsView.orientation = NSUserInterfaceLayoutOrientationVertical;
     addAutolayoutEnabledSubview(view(viewController), topRow);
     addAutolayoutEnabledSubview(view(viewController), evaluationButtons);
     const auto continueTestingDialogStack {
@@ -682,36 +681,24 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
     addAutolayoutEnabledSubview(
         view(continueTestingDialogController), continueTestingDialogStack);
     addAutolayoutEnabledSubview(view(viewController), nextTrialButton);
-    addAutolayoutEnabledSubview(view(viewController), correctKeywordsView);
     activateConstraints(@[
         [topRow.leadingAnchor
             constraintEqualToAnchor:view(viewController).leadingAnchor
                            constant:defaultMarginPoints],
         [topRow.topAnchor constraintEqualToAnchor:view(viewController).topAnchor
-                                         constant:defaultMarginPoints],
-        [correctKeywordsField.leadingAnchor
-            constraintEqualToAnchor:submitCorrectKeywordsButton.leadingAnchor],
-        [correctKeywordsField.trailingAnchor
-            constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor]
+                                         constant:defaultMarginPoints]
     ]);
     activateChildConstraintNestledInBottomRightCorner(
         evaluationButtons, view(viewController), defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
-        correctKeywordsView, view(viewController), defaultMarginPoints);
-    activateChildConstraintNestledInBottomRightCorner(
         nextTrialButton, view(viewController), defaultMarginPoints);
     av_speech_in_noise::hide(evaluationButtons);
     av_speech_in_noise::hide(nextTrialButton);
-    av_speech_in_noise::hide(correctKeywordsView);
     av_speech_in_noise::hide(view(viewController));
     actions->controller = this;
 }
 
 void AppKitTestUI::attach(TestControl::Observer *e) { observer = e; }
-
-void AppKitTestUI::attach(CorrectKeywordsControl::Observer *e) {
-    correctKeywordsObserver = e;
-}
 
 void AppKitTestUI::attach(PassFailControl::Observer *e) {
     passFailObserver = e;
@@ -755,14 +742,6 @@ void AppKitTestUI::hideEvaluationButtons() {
     av_speech_in_noise::hide(evaluationButtons);
 }
 
-void AppKitTestUI::showCorrectKeywordsSubmission() {
-    av_speech_in_noise::show(correctKeywordsView);
-}
-
-void AppKitTestUI::hideCorrectKeywordsSubmission() {
-    av_speech_in_noise::hide(correctKeywordsView);
-}
-
 void AppKitTestUI::showContinueTestingDialog() {
     [view(viewController).window beginSheet:continueTestingDialog
                           completionHandler:^(NSModalResponse){
@@ -777,10 +756,6 @@ void AppKitTestUI::setContinueTestingDialogMessage(const std::string &s) {
     set(continueTestingDialogField, s);
 }
 
-auto AppKitTestUI::correctKeywords() -> std::string {
-    return string(correctKeywordsField);
-}
-
 void AppKitTestUI::notifyThatPlayTrialButtonHasBeenClicked() {
     observer->playTrial();
 }
@@ -791,10 +766,6 @@ void AppKitTestUI::notifyThatCorrectButtonHasBeenClicked() {
 
 void AppKitTestUI::notifyThatIncorrectButtonHasBeenClicked() {
     passFailObserver->notifyThatIncorrectButtonHasBeenClicked();
-}
-
-void AppKitTestUI::notifyThatSubmitCorrectKeywordsButtonHasBeenClicked() {
-    correctKeywordsObserver->notifyThatSubmitButtonHasBeenClicked();
 }
 
 void AppKitTestUI::notifyThatContinueTestingButtonHasBeenClicked() {
@@ -1030,5 +1001,43 @@ auto FreeResponseUI::freeResponse() -> std::string {
 
 auto FreeResponseUI::flagged() -> bool {
     return flaggedButton.state == NSControlStateValueOn;
+}
+
+CorrectKeywordsUI::CorrectKeywordsUI(NSViewController *viewController)
+    : correctKeywordsField{emptyTextField()},
+      actions{[[CorrectKeywordsUIActions alloc] init]} {
+    setPlaceholder(correctKeywordsField, "2");
+    const auto submitCorrectKeywordsButton {
+        nsButton(
+            "Submit", actions, @selector(notifyThatSubmitButtonHasBeenClicked))
+    };
+    correctKeywordsView = [NSStackView stackViewWithViews:@[
+        correctKeywordsField, submitCorrectKeywordsButton
+    ]];
+    correctKeywordsView.orientation = NSUserInterfaceLayoutOrientationVertical;
+    addAutolayoutEnabledSubview(view(viewController), correctKeywordsView);
+    activateConstraints(@[
+        [correctKeywordsField.leadingAnchor
+            constraintEqualToAnchor:submitCorrectKeywordsButton.leadingAnchor],
+        [correctKeywordsField.trailingAnchor
+            constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor]
+    ]);
+    activateChildConstraintNestledInBottomRightCorner(
+        correctKeywordsView, view(viewController), defaultMarginPoints);
+    av_speech_in_noise::hide(correctKeywordsView);
+}
+
+void CorrectKeywordsUI::attach(Observer *e) { actions->observer = e; }
+
+void CorrectKeywordsUI::showCorrectKeywordsSubmission() {
+    av_speech_in_noise::show(correctKeywordsView);
+}
+
+void CorrectKeywordsUI::hideCorrectKeywordsSubmission() {
+    av_speech_in_noise::hide(correctKeywordsView);
+}
+
+auto CorrectKeywordsUI::correctKeywords() -> std::string {
+    return string(correctKeywordsField);
 }
 }

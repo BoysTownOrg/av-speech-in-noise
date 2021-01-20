@@ -20,6 +20,7 @@
 @class ExperimenterViewActions;
 @class FreeResponseViewActions;
 @class ChooseKeywordsUIActions;
+@class CorrectKeywordsUIActions;
 
 namespace av_speech_in_noise {
 class ChooseKeywordsUI : public ChooseKeywordsControl,
@@ -65,16 +66,28 @@ class FreeResponseUI : public FreeResponseView, public FreeResponseControl {
     FreeResponseViewActions *actions;
 };
 
+class CorrectKeywordsUI : public CorrectKeywordsControl,
+                          public CorrectKeywordsView {
+  public:
+    explicit CorrectKeywordsUI(NSViewController *);
+    void attach(Observer *) override;
+    auto correctKeywords() -> std::string override;
+    void showCorrectKeywordsSubmission() override;
+    void hideCorrectKeywordsSubmission() override;
+
+  private:
+    NSStackView *correctKeywordsView{};
+    NSTextField *correctKeywordsField;
+    CorrectKeywordsUIActions *actions;
+};
+
 class AppKitTestUI : public TestView,
                      public TestControl,
-                     public CorrectKeywordsControl,
-                     public CorrectKeywordsView,
                      public PassFailControl,
                      public PassFailView {
   public:
     explicit AppKitTestUI(NSViewController *);
     void attach(TestControl::Observer *) override;
-    void attach(CorrectKeywordsControl::Observer *) override;
     void attach(PassFailControl::Observer *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;
@@ -85,10 +98,7 @@ class AppKitTestUI : public TestView,
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
     void showEvaluationButtons() override;
-    auto correctKeywords() -> std::string override;
     void hideEvaluationButtons() override;
-    void showCorrectKeywordsSubmission() override;
-    void hideCorrectKeywordsSubmission() override;
     void showContinueTestingDialog() override;
     void hideContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &) override;
@@ -102,18 +112,15 @@ class AppKitTestUI : public TestView,
 
   private:
     NSViewController *viewController;
-    NSStackView *correctKeywordsView{};
     NSStackView *evaluationButtons{};
     NSWindow *continueTestingDialog;
     NSTextField *continueTestingDialogField;
     NSTextField *primaryTextField;
     NSTextField *secondaryTextField;
-    NSTextField *correctKeywordsField;
     NSButton *exitTestButton;
     NSButton *nextTrialButton;
     ExperimenterViewActions *actions;
     TestControl::Observer *observer{};
-    CorrectKeywordsControl::Observer *correctKeywordsObserver{};
     PassFailControl::Observer *passFailObserver{};
 };
 
