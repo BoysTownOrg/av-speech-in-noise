@@ -46,7 +46,43 @@ class ChooseKeywordsViewStub : public ChooseKeywordsView {
         thirdKeywordButtonText_ = s;
     }
 
+    void setTextPrecedingFirstKeywordButton(const std::string &s) {
+        textPrecedingFirstKeywordButton_ = s;
+    }
+
+    auto textPrecedingFirstKeywordButton() -> std::string {
+        return textPrecedingFirstKeywordButton_;
+    }
+
+    void setTextFollowingFirstKeywordButton(const std::string &s) {
+        textFollowingFirstKeywordButton_ = s;
+    }
+
+    auto textFollowingFirstKeywordButton() -> std::string {
+        return textFollowingFirstKeywordButton_;
+    }
+
+    void setTextFollowingSecondKeywordButton(const std::string &s) {
+        textFollowingSecondKeywordButton_ = s;
+    }
+
+    auto textFollowingSecondKeywordButton() -> std::string {
+        return textFollowingSecondKeywordButton_;
+    }
+
+    void setTextFollowingThirdKeywordButton(const std::string &s) {
+        textFollowingThirdKeywordButton_ = s;
+    }
+
+    auto textFollowingThirdKeywordButton() -> std::string {
+        return textFollowingThirdKeywordButton_;
+    }
+
   private:
+    std::string textFollowingThirdKeywordButton_;
+    std::string textFollowingSecondKeywordButton_;
+    std::string textFollowingFirstKeywordButton_;
+    std::string textPrecedingFirstKeywordButton_;
     std::string firstKeywordButtonText_;
     std::string secondKeywordButtonText_;
     std::string thirdKeywordButtonText_;
@@ -232,10 +268,20 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText) {
-    presenter.set(ThreeKeywords{"am", "is", "are"});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("am", view.firstKeywordButtonText());
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("is", view.secondKeywordButtonText());
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("are", view.thirdKeywordButtonText());
+    presenter.set(
+        SentenceWithThreeKeywords{"The visitors stretched before dinner.",
+            "visitors", "stretched", "dinner"});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "The", view.textPrecedingFirstKeywordButton());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("visitors", view.firstKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("", view.textFollowingFirstKeywordButton());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "stretched", view.secondKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "before", view.textFollowingSecondKeywordButton());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("dinner", view.thirdKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        ".", view.textFollowingThirdKeywordButton());
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(

@@ -1,4 +1,5 @@
 #include "ChooseKeywords.hpp"
+#include <regex>
 
 namespace av_speech_in_noise {
 ChooseKeywordsController::ChooseKeywordsController(
@@ -71,9 +72,19 @@ void ChooseKeywordsPresenter::showResponseSubmission() {
     view.showResponseSubmission();
 }
 
-void ChooseKeywordsPresenter::set(const ThreeKeywords &keywords) {
-    view.setFirstKeywordButtonText(keywords.first);
-    view.setSecondKeywordButtonText(keywords.second);
-    view.setThirdKeywordButtonText(keywords.third);
+void ChooseKeywordsPresenter::set(
+    const SentenceWithThreeKeywords &sentenceWithThreeKeywords) {
+    std::regex pattern{"(.*) +?" + sentenceWithThreeKeywords.firstKeyword +
+        " (.*) ?" + sentenceWithThreeKeywords.secondKeyword + " (.*) +?" +
+        sentenceWithThreeKeywords.thirdKeyword + " ?(.*)"};
+    std::smatch match;
+    std::regex_search(sentenceWithThreeKeywords.sentence, match, pattern);
+    view.setTextPrecedingFirstKeywordButton(match[1]);
+    view.setFirstKeywordButtonText(sentenceWithThreeKeywords.firstKeyword);
+    view.setTextFollowingFirstKeywordButton(match[2]);
+    view.setSecondKeywordButtonText(sentenceWithThreeKeywords.secondKeyword);
+    view.setTextFollowingSecondKeywordButton(match[3]);
+    view.setThirdKeywordButtonText(sentenceWithThreeKeywords.thirdKeyword);
+    view.setTextFollowingThirdKeywordButton(match[4]);
 }
 }

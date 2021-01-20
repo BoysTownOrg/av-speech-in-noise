@@ -16,6 +16,10 @@ class ChooseKeywordsView {
     virtual void setFirstKeywordButtonText(const std::string &s) = 0;
     virtual void setSecondKeywordButtonText(const std::string &s) = 0;
     virtual void setThirdKeywordButtonText(const std::string &s) = 0;
+    virtual void setTextPrecedingFirstKeywordButton(const std::string &s) = 0;
+    virtual void setTextFollowingFirstKeywordButton(const std::string &s) = 0;
+    virtual void setTextFollowingSecondKeywordButton(const std::string &s) = 0;
+    virtual void setTextFollowingThirdKeywordButton(const std::string &s) = 0;
 };
 
 class ChooseKeywordsControl {
@@ -64,10 +68,11 @@ class ChooseKeywordsController : public TaskController,
     TaskController::Observer *taskControllerObserver{};
 };
 
-struct ThreeKeywords {
-    std::string first;
-    std::string second;
-    std::string third;
+struct SentenceWithThreeKeywords {
+    std::string sentence;
+    std::string firstKeyword;
+    std::string secondKeyword;
+    std::string thirdKeyword;
 };
 
 class ChooseKeywordsPresenter : public TaskPresenter {
@@ -78,7 +83,7 @@ class ChooseKeywordsPresenter : public TaskPresenter {
     void notifyThatTaskHasStarted() override;
     void notifyThatUserIsDoneResponding() override;
     void showResponseSubmission() override;
-    void set(const ThreeKeywords &);
+    void set(const SentenceWithThreeKeywords &);
 
   private:
     TestView &testView;
