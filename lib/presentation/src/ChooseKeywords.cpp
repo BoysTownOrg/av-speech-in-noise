@@ -74,8 +74,8 @@ void ChooseKeywordsPresenter::showResponseSubmission() {
 
 void ChooseKeywordsPresenter::set(
     const SentenceWithThreeKeywords &sentenceWithThreeKeywords) {
-    std::regex pattern{"(.*) +?" + sentenceWithThreeKeywords.firstKeyword +
-        " (.*) ?" + sentenceWithThreeKeywords.secondKeyword + " (.*) +?" +
+    std::regex pattern{"(.*?) ?" + sentenceWithThreeKeywords.firstKeyword +
+        " ?(.*?) ?" + sentenceWithThreeKeywords.secondKeyword + " ?(.*?) ?" +
         sentenceWithThreeKeywords.thirdKeyword + " ?(.*)"};
     std::smatch match;
     std::regex_search(sentenceWithThreeKeywords.sentence, match, pattern);

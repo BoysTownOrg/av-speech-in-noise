@@ -284,6 +284,20 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText) {
         ".", view.textFollowingThirdKeywordButton());
 }
 
+CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText2) {
+    presenter.set(SentenceWithThreeKeywords{
+        "Daddy's mouth is turning yellow.", "Daddy's", "mouth", "turning"});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("", view.textPrecedingFirstKeywordButton());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("Daddy's", view.firstKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("", view.textFollowingFirstKeywordButton());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("mouth", view.secondKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "is", view.textFollowingSecondKeywordButton());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("turning", view.thirdKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "yellow.", view.textFollowingThirdKeywordButton());
+}
+
 CHOOSE_KEYWORDS_CONTROLLER_TEST(
     submitsKeywordResponseAfterSubmitButtonIsClicked) {
     control.setFirstKeywordCorrect();
