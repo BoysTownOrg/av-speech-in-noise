@@ -47,10 +47,27 @@ class ChooseKeywordsUI : public ChooseKeywordsControl,
     ChooseKeywordsUIActions *actions;
 };
 
+class FreeResponseUI : public FreeResponseView, public FreeResponseControl {
+  public:
+    explicit FreeResponseUI(NSViewController *);
+    void attach(Observer *) override;
+    void showFreeResponseSubmission() override;
+    void hideFreeResponseSubmission() override;
+    auto freeResponse() -> std::string override;
+    auto flagged() -> bool override;
+    void clearFreeResponse() override;
+    void clearFlag() override;
+
+  private:
+    NSStackView *freeResponseView{};
+    NSTextField *freeResponseField;
+    NSButton *freeResponseFlaggedButton;
+    FreeResponseViewActions *freeResponseActions;
+    Observer *freeResponseObserver{};
+};
+
 class AppKitTestUI : public TestView,
                      public TestControl,
-                     public FreeResponseControl,
-                     public FreeResponseView,
                      public CorrectKeywordsControl,
                      public CorrectKeywordsView,
                      public PassFailControl,
@@ -58,7 +75,6 @@ class AppKitTestUI : public TestView,
   public:
     explicit AppKitTestUI(NSViewController *);
     void attach(TestControl::Observer *) override;
-    void attach(FreeResponseControl::Observer *) override;
     void attach(CorrectKeywordsControl::Observer *) override;
     void attach(PassFailControl::Observer *) override;
     void showExitTestButton() override;
@@ -70,19 +86,13 @@ class AppKitTestUI : public TestView,
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
     void showEvaluationButtons() override;
-    void showFreeResponseSubmission() override;
-    auto freeResponse() -> std::string override;
     auto correctKeywords() -> std::string override;
-    auto flagged() -> bool override;
-    void hideFreeResponseSubmission() override;
     void hideEvaluationButtons() override;
     void showCorrectKeywordsSubmission() override;
     void hideCorrectKeywordsSubmission() override;
     void showContinueTestingDialog() override;
     void hideContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &) override;
-    void clearFreeResponse() override;
-    void clearFlag() override;
     void notifyThatExitTestButtonHasBeenClicked();
     void notifyThatPlayTrialButtonHasBeenClicked();
     void notifyThatSubmitFreeResponseButtonHasBeenClicked();
@@ -94,22 +104,17 @@ class AppKitTestUI : public TestView,
 
   private:
     NSViewController *viewController;
-    NSStackView *freeResponseView{};
     NSStackView *correctKeywordsView{};
     NSStackView *evaluationButtons{};
     NSWindow *continueTestingDialog;
     NSTextField *continueTestingDialogField;
     NSTextField *primaryTextField;
     NSTextField *secondaryTextField;
-    NSTextField *freeResponseField;
     NSTextField *correctKeywordsField;
-    NSButton *freeResponseFlaggedButton;
     NSButton *exitTestButton;
     NSButton *nextTrialButton;
     ExperimenterViewActions *actions;
-    FreeResponseViewActions *freeResponseActions;
     TestControl::Observer *observer{};
-    FreeResponseControl::Observer *freeResponseObserver{};
     CorrectKeywordsControl::Observer *correctKeywordsObserver{};
     PassFailControl::Observer *passFailObserver{};
 };

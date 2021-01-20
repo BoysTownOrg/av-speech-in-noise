@@ -106,11 +106,11 @@
 
 @implementation FreeResponseViewActions {
   @public
-    av_speech_in_noise::AppKitTestUI *controller;
+    av_speech_in_noise::FreeResponseControl::Observer *observer;
 }
 
-- (void)notifyThatSubmitFreeResponseButtonHasBeenClicked {
-    controller->notifyThatSubmitFreeResponseButtonHasBeenClicked();
+- (void)notifyThatSubmitButtonHasBeenClicked {
+    observer->notifyThatSubmitButtonHasBeenClicked();
 }
 @end
 
@@ -633,13 +633,8 @@ static auto emptyLabel() -> NSTextField * { return label(""); }
 AppKitTestUI::AppKitTestUI(NSViewController *viewController)
     : viewController{viewController}, continueTestingDialogField{emptyLabel()},
       primaryTextField{emptyLabel()}, secondaryTextField{emptyLabel()},
-      freeResponseField{emptyTextField()},
       correctKeywordsField{emptyTextField()},
-      freeResponseFlaggedButton{[NSButton checkboxWithTitle:@"flagged"
-                                                     target:nil
-                                                     action:nil]},
-      actions{[[ExperimenterViewActions alloc] init]},
-      freeResponseActions{[[FreeResponseViewActions alloc] init]} {
+      actions{[[ExperimenterViewActions alloc] init]} {
     const auto continueTestingDialogController{
         nsTabViewControllerWithoutTabControl()};
     continueTestingDialog = [NSWindow
@@ -649,10 +644,6 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
         @selector(notifyThatExitTestButtonHasBeenClicked));
     nextTrialButton = nsButton("Play Trial", actions,
         @selector(notifyThatPlayTrialButtonHasBeenClicked));
-    const auto submitFreeResponseButton {
-        nsButton("Submit", freeResponseActions,
-            @selector(notifyThatSubmitFreeResponseButtonHasBeenClicked))
-    };
     evaluationButtons = [NSStackView stackViewWithViews:@[
         nsButton("Incorrect", actions,
             @selector(notifyThatIncorrectButtonHasBeenClicked)),
@@ -664,7 +655,6 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
             @selector(notifyThatSubmitCorrectKeywordsButtonHasBeenClicked))
     };
     setPlaceholder(correctKeywordsField, "2");
-    setPlaceholder(freeResponseField, "This is a sentence.");
     const auto topRow {
         [NSStackView stackViewWithViews:@[
             exitTestButton, primaryTextField, secondaryTextField
@@ -674,26 +664,6 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
         correctKeywordsField, submitCorrectKeywordsButton
     ]];
     correctKeywordsView.orientation = NSUserInterfaceLayoutOrientationVertical;
-    const auto innerFreeResponseView {
-        [NSStackView stackViewWithViews:@[
-            freeResponseFlaggedButton, freeResponseField
-        ]]
-    };
-    freeResponseView = [NSStackView stackViewWithViews:@[
-        innerFreeResponseView, submitFreeResponseButton
-    ]];
-    freeResponseView.orientation = NSUserInterfaceLayoutOrientationVertical;
-    innerFreeResponseView.distribution = NSStackViewDistributionFill;
-    [freeResponseFlaggedButton
-        setContentHuggingPriority:251
-                   forOrientation:NSLayoutConstraintOrientationHorizontal];
-    [freeResponseField
-        setContentHuggingPriority:48
-                   forOrientation:NSLayoutConstraintOrientationHorizontal];
-    [freeResponseField
-        setContentCompressionResistancePriority:749
-                                 forOrientation:
-                                     NSLayoutConstraintOrientationHorizontal];
     addAutolayoutEnabledSubview(view(viewController), topRow);
     addAutolayoutEnabledSubview(view(viewController), evaluationButtons);
     const auto continueTestingDialogStack {
@@ -712,7 +682,6 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
     addAutolayoutEnabledSubview(
         view(continueTestingDialogController), continueTestingDialogStack);
     addAutolayoutEnabledSubview(view(viewController), nextTrialButton);
-    addAutolayoutEnabledSubview(view(viewController), freeResponseView);
     addAutolayoutEnabledSubview(view(viewController), correctKeywordsView);
     activateConstraints(@[
         [topRow.leadingAnchor
@@ -723,13 +692,7 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
         [correctKeywordsField.leadingAnchor
             constraintEqualToAnchor:submitCorrectKeywordsButton.leadingAnchor],
         [correctKeywordsField.trailingAnchor
-            constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor],
-        [freeResponseView.leadingAnchor
-            constraintEqualToAnchor:view(viewController).centerXAnchor],
-        [innerFreeResponseView.leadingAnchor
-            constraintEqualToAnchor:freeResponseView.leadingAnchor],
-        [innerFreeResponseView.trailingAnchor
-            constraintEqualToAnchor:freeResponseView.trailingAnchor]
+            constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor]
     ]);
     activateChildConstraintNestledInBottomRightCorner(
         evaluationButtons, view(viewController), defaultMarginPoints);
@@ -737,22 +700,14 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
         correctKeywordsView, view(viewController), defaultMarginPoints);
     activateChildConstraintNestledInBottomRightCorner(
         nextTrialButton, view(viewController), defaultMarginPoints);
-    activateChildConstraintNestledInBottomRightCorner(
-        freeResponseView, view(viewController), defaultMarginPoints);
     av_speech_in_noise::hide(evaluationButtons);
     av_speech_in_noise::hide(nextTrialButton);
-    av_speech_in_noise::hide(freeResponseView);
     av_speech_in_noise::hide(correctKeywordsView);
     av_speech_in_noise::hide(view(viewController));
     actions->controller = this;
-    freeResponseActions->controller = this;
 }
 
 void AppKitTestUI::attach(TestControl::Observer *e) { observer = e; }
-
-void AppKitTestUI::attach(FreeResponseControl::Observer *e) {
-    freeResponseObserver = e;
-}
 
 void AppKitTestUI::attach(CorrectKeywordsControl::Observer *e) {
     correctKeywordsObserver = e;
@@ -796,14 +751,6 @@ void AppKitTestUI::showEvaluationButtons() {
     av_speech_in_noise::show(evaluationButtons);
 }
 
-void AppKitTestUI::showFreeResponseSubmission() {
-    av_speech_in_noise::show(freeResponseView);
-}
-
-void AppKitTestUI::hideFreeResponseSubmission() {
-    av_speech_in_noise::hide(freeResponseView);
-}
-
 void AppKitTestUI::hideEvaluationButtons() {
     av_speech_in_noise::hide(evaluationButtons);
 }
@@ -830,30 +777,12 @@ void AppKitTestUI::setContinueTestingDialogMessage(const std::string &s) {
     set(continueTestingDialogField, s);
 }
 
-void AppKitTestUI::clearFreeResponse() { set(freeResponseField, ""); }
-
-void AppKitTestUI::clearFlag() {
-    freeResponseFlaggedButton.state = NSControlStateValueOff;
-}
-
-auto AppKitTestUI::freeResponse() -> std::string {
-    return string(freeResponseField);
-}
-
 auto AppKitTestUI::correctKeywords() -> std::string {
     return string(correctKeywordsField);
 }
 
-auto AppKitTestUI::flagged() -> bool {
-    return freeResponseFlaggedButton.state == NSControlStateValueOn;
-}
-
 void AppKitTestUI::notifyThatPlayTrialButtonHasBeenClicked() {
     observer->playTrial();
-}
-
-void AppKitTestUI::notifyThatSubmitFreeResponseButtonHasBeenClicked() {
-    freeResponseObserver->notifyThatSubmitButtonHasBeenClicked();
 }
 
 void AppKitTestUI::notifyThatCorrectButtonHasBeenClicked() {
@@ -1033,5 +962,75 @@ ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
     addAutolayoutEnabledSubview(view(viewController), responseView);
     activateChildConstraintNestledInBottomRightCorner(
         responseView, view(viewController), defaultMarginPoints);
+    av_speech_in_noise::hide(responseView);
+}
+
+FreeResponseUI::FreeResponseUI(NSViewController *viewController)
+    : freeResponseField{emptyTextField()}, freeResponseFlaggedButton{[NSButton
+                                               checkboxWithTitle:@"flagged"
+                                                          target:nil
+                                                          action:nil]},
+      freeResponseActions{[[FreeResponseViewActions alloc] init]} {
+    const auto submitFreeResponseButton {
+        nsButton("Submit", freeResponseActions,
+            @selector(notifyThatSubmitButtonHasBeenClicked))
+    };
+    setPlaceholder(freeResponseField, "This is a sentence.");
+    const auto innerFreeResponseView {
+        [NSStackView stackViewWithViews:@[
+            freeResponseFlaggedButton, freeResponseField
+        ]]
+    };
+    freeResponseView = [NSStackView stackViewWithViews:@[
+        innerFreeResponseView, submitFreeResponseButton
+    ]];
+    freeResponseView.orientation = NSUserInterfaceLayoutOrientationVertical;
+    innerFreeResponseView.distribution = NSStackViewDistributionFill;
+    [freeResponseFlaggedButton
+        setContentHuggingPriority:251
+                   forOrientation:NSLayoutConstraintOrientationHorizontal];
+    [freeResponseField
+        setContentHuggingPriority:48
+                   forOrientation:NSLayoutConstraintOrientationHorizontal];
+    [freeResponseField
+        setContentCompressionResistancePriority:749
+                                 forOrientation:
+                                     NSLayoutConstraintOrientationHorizontal];
+    addAutolayoutEnabledSubview(view(viewController), freeResponseView);
+    activateConstraints(@[
+        [freeResponseView.leadingAnchor
+            constraintEqualToAnchor:view(viewController).centerXAnchor],
+        [innerFreeResponseView.leadingAnchor
+            constraintEqualToAnchor:freeResponseView.leadingAnchor],
+        [innerFreeResponseView.trailingAnchor
+            constraintEqualToAnchor:freeResponseView.trailingAnchor]
+    ]);
+    activateChildConstraintNestledInBottomRightCorner(
+        freeResponseView, view(viewController), defaultMarginPoints);
+    av_speech_in_noise::hide(freeResponseView);
+}
+
+void FreeResponseUI::attach(Observer *e) { freeResponseActions->observer = e; }
+
+void FreeResponseUI::showFreeResponseSubmission() {
+    av_speech_in_noise::show(freeResponseView);
+}
+
+void FreeResponseUI::hideFreeResponseSubmission() {
+    av_speech_in_noise::hide(freeResponseView);
+}
+
+void FreeResponseUI::clearFreeResponse() { set(freeResponseField, ""); }
+
+void FreeResponseUI::clearFlag() {
+    freeResponseFlaggedButton.state = NSControlStateValueOff;
+}
+
+auto FreeResponseUI::freeResponse() -> std::string {
+    return string(freeResponseField);
+}
+
+auto FreeResponseUI::flagged() -> bool {
+    return freeResponseFlaggedButton.state == NSControlStateValueOn;
 }
 }

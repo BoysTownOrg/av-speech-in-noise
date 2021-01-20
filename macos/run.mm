@@ -357,7 +357,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     addChild(viewController, experimenterViewController);
     const auto chooseKeywordsUIController{
         nsTabViewControllerWithoutTabControl()};
+    const auto freeResponseUIController{nsTabViewControllerWithoutTabControl()};
     addChild(experimenterViewController, chooseKeywordsUIController);
+    addChild(experimenterViewController, freeResponseUIController);
     AppKitTestUI experimenterView{experimenterViewController};
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
@@ -379,9 +381,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     TestSettingsInterpreterImpl testSettingsInterpreter;
     ConsonantTaskController consonantTaskController{model, consonantView};
     ConsonantTaskPresenter consonantPresenter{consonantView};
-    FreeResponseController freeResponseController{model, experimenterView};
+    FreeResponseUI freeResponseUI{freeResponseUIController};
+    FreeResponseController freeResponseController{model, freeResponseUI};
     FreeResponsePresenter freeResponsePresenter{
-        experimenterView, experimenterView};
+        experimenterView, freeResponseUI};
     ChooseKeywordsUI chooseKeywordsUI{chooseKeywordsUIController};
     ChooseKeywordsController chooseKeywordsController{model, chooseKeywordsUI};
     ChooseKeywordsPresenter chooseKeywordsPresenter{
