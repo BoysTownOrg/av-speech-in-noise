@@ -40,6 +40,9 @@ class ChooseKeywordsUI : public ChooseKeywordsControl,
     void markThirdKeywordCorrect() override;
     void hideResponseSubmission() override;
     void showResponseSubmission() override;
+    void setFirstKeywordButtonText(const std::string &s) override;
+    void setSecondKeywordButtonText(const std::string &s) override;
+    void setThirdKeywordButtonText(const std::string &s) override;
 
   private:
     NSStackView *responseView{};

@@ -898,6 +898,18 @@ void ChooseKeywordsUI::hideResponseSubmission() {
     av_speech_in_noise::hide(responseView);
 }
 
+void ChooseKeywordsUI::setThirdKeywordButtonText(const std::string &s) {
+    [thirdKeywordButton setStringValue:nsString(s)];
+}
+
+void ChooseKeywordsUI::setSecondKeywordButtonText(const std::string &s) {
+    [secondKeywordButton setStringValue:nsString(s)];
+}
+
+void ChooseKeywordsUI::setFirstKeywordButtonText(const std::string &s) {
+    [firstKeywordButton setStringValue:nsString(s)];
+}
+
 FreeResponseUI::FreeResponseUI(NSViewController *viewController)
     : responseField{emptyTextField()}, flaggedButton{[NSButton
                                            checkboxWithTitle:@"flagged"
