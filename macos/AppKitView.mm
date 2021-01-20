@@ -966,71 +966,69 @@ ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
 }
 
 FreeResponseUI::FreeResponseUI(NSViewController *viewController)
-    : freeResponseField{emptyTextField()}, freeResponseFlaggedButton{[NSButton
-                                               checkboxWithTitle:@"flagged"
-                                                          target:nil
-                                                          action:nil]},
-      freeResponseActions{[[FreeResponseViewActions alloc] init]} {
+    : responseField{emptyTextField()}, flaggedButton{[NSButton
+                                           checkboxWithTitle:@"flagged"
+                                                      target:nil
+                                                      action:nil]},
+      actions{[[FreeResponseViewActions alloc] init]} {
     const auto submitFreeResponseButton {
-        nsButton("Submit", freeResponseActions,
-            @selector(notifyThatSubmitButtonHasBeenClicked))
+        nsButton(
+            "Submit", actions, @selector(notifyThatSubmitButtonHasBeenClicked))
     };
-    setPlaceholder(freeResponseField, "This is a sentence.");
+    setPlaceholder(responseField, "This is a sentence.");
     const auto innerFreeResponseView {
-        [NSStackView stackViewWithViews:@[
-            freeResponseFlaggedButton, freeResponseField
-        ]]
+        [NSStackView stackViewWithViews:@[ flaggedButton, responseField ]]
     };
-    freeResponseView = [NSStackView stackViewWithViews:@[
+    responseView = [NSStackView stackViewWithViews:@[
         innerFreeResponseView, submitFreeResponseButton
     ]];
-    freeResponseView.orientation = NSUserInterfaceLayoutOrientationVertical;
+    responseView.orientation = NSUserInterfaceLayoutOrientationVertical;
     innerFreeResponseView.distribution = NSStackViewDistributionFill;
-    [freeResponseFlaggedButton
+    [flaggedButton
         setContentHuggingPriority:251
                    forOrientation:NSLayoutConstraintOrientationHorizontal];
-    [freeResponseField
+    [responseField
         setContentHuggingPriority:48
                    forOrientation:NSLayoutConstraintOrientationHorizontal];
-    [freeResponseField
+    [responseField
         setContentCompressionResistancePriority:749
                                  forOrientation:
                                      NSLayoutConstraintOrientationHorizontal];
-    addAutolayoutEnabledSubview(view(viewController), freeResponseView);
+    addAutolayoutEnabledSubview(view(viewController), responseView);
     activateConstraints(@[
-        [freeResponseView.leadingAnchor
+        [responseView.leadingAnchor
             constraintEqualToAnchor:view(viewController).centerXAnchor],
         [innerFreeResponseView.leadingAnchor
-            constraintEqualToAnchor:freeResponseView.leadingAnchor],
+            constraintEqualToAnchor:responseView.leadingAnchor],
         [innerFreeResponseView.trailingAnchor
-            constraintEqualToAnchor:freeResponseView.trailingAnchor]
+            constraintEqualToAnchor:responseView.trailingAnchor]
     ]);
     activateChildConstraintNestledInBottomRightCorner(
-        freeResponseView, view(viewController), defaultMarginPoints);
-    av_speech_in_noise::hide(freeResponseView);
+        responseView, view(viewController), defaultMarginPoints);
+    av_speech_in_noise::hide(responseView);
 }
 
-void FreeResponseUI::attach(Observer *e) { freeResponseActions->observer = e; }
+void FreeResponseUI::attach(Observer *e) { actions->observer = e; }
 
 void FreeResponseUI::showFreeResponseSubmission() {
-    av_speech_in_noise::show(freeResponseView);
+    av_speech_in_noise::show(responseView);
 }
 
 void FreeResponseUI::hideFreeResponseSubmission() {
-    av_speech_in_noise::hide(freeResponseView);
+    av_speech_in_noise::hide(responseView);
 }
 
-void FreeResponseUI::clearFreeResponse() { set(freeResponseField, ""); }
+void FreeResponseUI::clearFreeResponse() { set(responseField, ""); }
 
 void FreeResponseUI::clearFlag() {
-    freeResponseFlaggedButton.state = NSControlStateValueOff;
+    flaggedButton.state = NSControlStateValueOff;
 }
 
 auto FreeResponseUI::freeResponse() -> std::string {
-    return string(freeResponseField);
+    return string(responseField);
 }
 
 auto FreeResponseUI::flagged() -> bool {
-    return freeResponseFlaggedButton.state == NSControlStateValueOn;
+    return flaggedButton.state == NSControlStateValueOn;
 }
 }

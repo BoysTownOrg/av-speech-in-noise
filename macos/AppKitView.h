@@ -59,11 +59,10 @@ class FreeResponseUI : public FreeResponseView, public FreeResponseControl {
     void clearFlag() override;
 
   private:
-    NSStackView *freeResponseView{};
-    NSTextField *freeResponseField;
-    NSButton *freeResponseFlaggedButton;
-    FreeResponseViewActions *freeResponseActions;
-    Observer *freeResponseObserver{};
+    NSStackView *responseView{};
+    NSTextField *responseField;
+    NSButton *flaggedButton;
+    FreeResponseViewActions *actions;
 };
 
 class AppKitTestUI : public TestView,
@@ -95,7 +94,6 @@ class AppKitTestUI : public TestView,
     void setContinueTestingDialogMessage(const std::string &) override;
     void notifyThatExitTestButtonHasBeenClicked();
     void notifyThatPlayTrialButtonHasBeenClicked();
-    void notifyThatSubmitFreeResponseButtonHasBeenClicked();
     void notifyThatCorrectButtonHasBeenClicked();
     void notifyThatIncorrectButtonHasBeenClicked();
     void notifyThatSubmitCorrectKeywordsButtonHasBeenClicked();
