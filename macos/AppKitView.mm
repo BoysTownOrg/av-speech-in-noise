@@ -809,6 +809,47 @@ void AppKitView::populateAudioDeviceMenu(std::vector<std::string> items) {
         [audioDeviceMenu addItemWithTitle:nsString(item)];
 }
 
+ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
+    : actions{[[ChooseKeywordsUIActions alloc] init]} {
+    firstKeywordButton = nsButton(
+        "", actions, @selector(notifyThatFirstKeywordButtonHasBeenClicked));
+    secondKeywordButton = nsButton(
+        "", actions, @selector(notifyThatSecondKeywordButtonHasBeenClicked));
+    thirdKeywordButton = nsButton(
+        "", actions, @selector(notifyThatThirdKeywordButtonHasBeenClicked));
+    [firstKeywordButton setButtonType:NSButtonTypePushOnPushOff];
+    [secondKeywordButton setButtonType:NSButtonTypePushOnPushOff];
+    [thirdKeywordButton setButtonType:NSButtonTypePushOnPushOff];
+    const auto keywordButtons {
+        [NSStackView stackViewWithViews:@[
+            firstKeywordButton, secondKeywordButton, thirdKeywordButton
+        ]]
+    };
+    const auto resetButton {
+        nsButton(
+            "Reset", actions, @selector(notifyThatResetButtonHasBeenClicked))
+    };
+    const auto allWrongButton {
+        nsButton("All wrong", actions,
+            @selector(notifyThatAllWrongButtonHasBeenClicked))
+    };
+    const auto submitButton {
+        nsButton(
+            "Submit", actions, @selector(notifyThatSubmitButtonHasBeenClicked))
+    };
+    const auto actionButtons {
+        [NSStackView
+            stackViewWithViews:@[ resetButton, allWrongButton, submitButton ]]
+    };
+    responseView =
+        [NSStackView stackViewWithViews:@[ keywordButtons, actionButtons ]];
+    responseView.orientation = NSUserInterfaceLayoutOrientationVertical;
+    addAutolayoutEnabledSubview(view(viewController), responseView);
+    activateChildConstraintNestledInBottomRightCorner(
+        responseView, view(viewController), defaultMarginPoints);
+    av_speech_in_noise::hide(responseView);
+}
+
 void ChooseKeywordsUI::markThirdKeywordCorrect() {
     [thirdKeywordButton setState:NSControlStateValueOff];
 }
@@ -857,66 +898,24 @@ void ChooseKeywordsUI::hideResponseSubmission() {
     av_speech_in_noise::hide(responseView);
 }
 
-ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
-    : actions{[[ChooseKeywordsUIActions alloc] init]} {
-    firstKeywordButton = nsButton(
-        "", actions, @selector(notifyThatFirstKeywordButtonHasBeenClicked));
-    secondKeywordButton = nsButton(
-        "", actions, @selector(notifyThatSecondKeywordButtonHasBeenClicked));
-    thirdKeywordButton = nsButton(
-        "", actions, @selector(notifyThatThirdKeywordButtonHasBeenClicked));
-    [firstKeywordButton setButtonType:NSButtonTypePushOnPushOff];
-    [secondKeywordButton setButtonType:NSButtonTypePushOnPushOff];
-    [thirdKeywordButton setButtonType:NSButtonTypePushOnPushOff];
-    const auto keywordButtons {
-        [NSStackView stackViewWithViews:@[
-            firstKeywordButton, secondKeywordButton, thirdKeywordButton
-        ]]
-    };
-    const auto resetButton {
-        nsButton(
-            "Reset", actions, @selector(notifyThatResetButtonHasBeenClicked))
-    };
-    const auto allWrongButton {
-        nsButton("All wrong", actions,
-            @selector(notifyThatAllWrongButtonHasBeenClicked))
-    };
-    const auto submitButton {
-        nsButton(
-            "Submit", actions, @selector(notifyThatSubmitButtonHasBeenClicked))
-    };
-    const auto actionButtons {
-        [NSStackView
-            stackViewWithViews:@[ resetButton, allWrongButton, submitButton ]]
-    };
-    responseView =
-        [NSStackView stackViewWithViews:@[ keywordButtons, actionButtons ]];
-    responseView.orientation = NSUserInterfaceLayoutOrientationVertical;
-    addAutolayoutEnabledSubview(view(viewController), responseView);
-    activateChildConstraintNestledInBottomRightCorner(
-        responseView, view(viewController), defaultMarginPoints);
-    av_speech_in_noise::hide(responseView);
-}
-
 FreeResponseUI::FreeResponseUI(NSViewController *viewController)
     : responseField{emptyTextField()}, flaggedButton{[NSButton
                                            checkboxWithTitle:@"flagged"
                                                       target:nil
                                                       action:nil]},
       actions{[[FreeResponseUIActions alloc] init]} {
-    const auto submitFreeResponseButton {
+    const auto submitButton {
         nsButton(
             "Submit", actions, @selector(notifyThatSubmitButtonHasBeenClicked))
     };
     setPlaceholder(responseField, "This is a sentence.");
-    const auto innerFreeResponseView {
+    const auto innerView {
         [NSStackView stackViewWithViews:@[ flaggedButton, responseField ]]
     };
-    responseView = [NSStackView stackViewWithViews:@[
-        innerFreeResponseView, submitFreeResponseButton
-    ]];
+    responseView =
+        [NSStackView stackViewWithViews:@[ innerView, submitButton ]];
     responseView.orientation = NSUserInterfaceLayoutOrientationVertical;
-    innerFreeResponseView.distribution = NSStackViewDistributionFill;
+    innerView.distribution = NSStackViewDistributionFill;
     [flaggedButton
         setContentHuggingPriority:251
                    forOrientation:NSLayoutConstraintOrientationHorizontal];
@@ -931,9 +930,9 @@ FreeResponseUI::FreeResponseUI(NSViewController *viewController)
     activateConstraints(@[
         [responseView.leadingAnchor
             constraintEqualToAnchor:view(viewController).centerXAnchor],
-        [innerFreeResponseView.leadingAnchor
+        [innerView.leadingAnchor
             constraintEqualToAnchor:responseView.leadingAnchor],
-        [innerFreeResponseView.trailingAnchor
+        [innerView.trailingAnchor
             constraintEqualToAnchor:responseView.trailingAnchor]
     ]);
     activateChildConstraintNestledInBottomRightCorner(
@@ -966,64 +965,63 @@ auto FreeResponseUI::flagged() -> bool {
 }
 
 CorrectKeywordsUI::CorrectKeywordsUI(NSViewController *viewController)
-    : correctKeywordsField{emptyTextField()},
+    : responseField{emptyTextField()},
       actions{[[CorrectKeywordsUIActions alloc] init]} {
-    setPlaceholder(correctKeywordsField, "2");
-    const auto submitCorrectKeywordsButton {
+    setPlaceholder(responseField, "2");
+    const auto submitButton {
         nsButton(
             "Submit", actions, @selector(notifyThatSubmitButtonHasBeenClicked))
     };
-    correctKeywordsView = [NSStackView stackViewWithViews:@[
-        correctKeywordsField, submitCorrectKeywordsButton
-    ]];
-    correctKeywordsView.orientation = NSUserInterfaceLayoutOrientationVertical;
-    addAutolayoutEnabledSubview(view(viewController), correctKeywordsView);
+    responseView =
+        [NSStackView stackViewWithViews:@[ responseField, submitButton ]];
+    responseView.orientation = NSUserInterfaceLayoutOrientationVertical;
+    addAutolayoutEnabledSubview(view(viewController), responseView);
     activateConstraints(@[
-        [correctKeywordsField.leadingAnchor
-            constraintEqualToAnchor:submitCorrectKeywordsButton.leadingAnchor],
-        [correctKeywordsField.trailingAnchor
-            constraintEqualToAnchor:submitCorrectKeywordsButton.trailingAnchor]
+        [responseField.leadingAnchor
+            constraintEqualToAnchor:submitButton.leadingAnchor],
+        [responseField.trailingAnchor
+            constraintEqualToAnchor:submitButton.trailingAnchor]
     ]);
     activateChildConstraintNestledInBottomRightCorner(
-        correctKeywordsView, view(viewController), defaultMarginPoints);
-    av_speech_in_noise::hide(correctKeywordsView);
+        responseView, view(viewController), defaultMarginPoints);
+    av_speech_in_noise::hide(responseView);
 }
 
 void CorrectKeywordsUI::attach(Observer *e) { actions->observer = e; }
 
 void CorrectKeywordsUI::showCorrectKeywordsSubmission() {
-    av_speech_in_noise::show(correctKeywordsView);
+    av_speech_in_noise::show(responseView);
 }
 
 void CorrectKeywordsUI::hideCorrectKeywordsSubmission() {
-    av_speech_in_noise::hide(correctKeywordsView);
+    av_speech_in_noise::hide(responseView);
 }
 
 auto CorrectKeywordsUI::correctKeywords() -> std::string {
-    return string(correctKeywordsField);
+    return string(responseField);
 }
 
 PassFailUI::PassFailUI(NSViewController *viewController)
     : actions{[[PassFailUIActions alloc] init]} {
-    evaluationButtons = [NSStackView stackViewWithViews:@[
+    responseView = [NSStackView stackViewWithViews:@[
         nsButton("Incorrect", actions,
             @selector(notifyThatIncorrectButtonHasBeenClicked)),
         nsButton("Correct", actions,
             @selector(notifyThatCorrectButtonHasBeenClicked))
     ]];
-    addAutolayoutEnabledSubview(view(viewController), evaluationButtons);
+    addAutolayoutEnabledSubview(view(viewController), responseView);
     activateChildConstraintNestledInBottomRightCorner(
-        evaluationButtons, view(viewController), defaultMarginPoints);
-    av_speech_in_noise::hide(evaluationButtons);
+        responseView, view(viewController), defaultMarginPoints);
+    av_speech_in_noise::hide(responseView);
 }
 
 void PassFailUI::attach(Observer *e) { actions->observer = e; }
 
 void PassFailUI::showEvaluationButtons() {
-    av_speech_in_noise::show(evaluationButtons);
+    av_speech_in_noise::show(responseView);
 }
 
 void PassFailUI::hideEvaluationButtons() {
-    av_speech_in_noise::hide(evaluationButtons);
+    av_speech_in_noise::hide(responseView);
 }
 }

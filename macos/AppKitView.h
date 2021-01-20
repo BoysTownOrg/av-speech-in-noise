@@ -77,8 +77,8 @@ class CorrectKeywordsUI : public CorrectKeywordsControl,
     void hideCorrectKeywordsSubmission() override;
 
   private:
-    NSStackView *correctKeywordsView{};
-    NSTextField *correctKeywordsField;
+    NSStackView *responseView{};
+    NSTextField *responseField;
     CorrectKeywordsUIActions *actions;
 };
 
@@ -90,7 +90,7 @@ class PassFailUI : public PassFailControl, public PassFailView {
     void hideEvaluationButtons() override;
 
   private:
-    NSStackView *evaluationButtons{};
+    NSStackView *responseView{};
     PassFailUIActions *actions;
 };
 
