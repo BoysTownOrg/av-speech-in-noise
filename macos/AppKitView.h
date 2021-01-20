@@ -21,6 +21,7 @@
 @class FreeResponseViewActions;
 @class ChooseKeywordsUIActions;
 @class CorrectKeywordsUIActions;
+@class PassFailUIActions;
 
 namespace av_speech_in_noise {
 class ChooseKeywordsUI : public ChooseKeywordsControl,
@@ -81,14 +82,22 @@ class CorrectKeywordsUI : public CorrectKeywordsControl,
     CorrectKeywordsUIActions *actions;
 };
 
-class AppKitTestUI : public TestView,
-                     public TestControl,
-                     public PassFailControl,
-                     public PassFailView {
+class PassFailUI : public PassFailControl, public PassFailView {
+  public:
+    explicit PassFailUI(NSViewController *);
+    void attach(Observer *) override;
+    void showEvaluationButtons() override;
+    void hideEvaluationButtons() override;
+
+  private:
+    NSStackView *evaluationButtons{};
+    PassFailUIActions *actions;
+};
+
+class AppKitTestUI : public TestView, public TestControl {
   public:
     explicit AppKitTestUI(NSViewController *);
     void attach(TestControl::Observer *) override;
-    void attach(PassFailControl::Observer *) override;
     void showExitTestButton() override;
     void hideExitTestButton() override;
     void show() override;
@@ -97,22 +106,16 @@ class AppKitTestUI : public TestView,
     void secondaryDisplay(std::string) override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
-    void showEvaluationButtons() override;
-    void hideEvaluationButtons() override;
     void showContinueTestingDialog() override;
     void hideContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &) override;
     void notifyThatExitTestButtonHasBeenClicked();
     void notifyThatPlayTrialButtonHasBeenClicked();
-    void notifyThatCorrectButtonHasBeenClicked();
-    void notifyThatIncorrectButtonHasBeenClicked();
-    void notifyThatSubmitCorrectKeywordsButtonHasBeenClicked();
     void notifyThatContinueTestingButtonHasBeenClicked();
     void notifyThatDeclineContinueTestingButtonHasBeenClicked();
 
   private:
     NSViewController *viewController;
-    NSStackView *evaluationButtons{};
     NSWindow *continueTestingDialog;
     NSTextField *continueTestingDialogField;
     NSTextField *primaryTextField;
@@ -121,7 +124,6 @@ class AppKitTestUI : public TestView,
     NSButton *nextTrialButton;
     ExperimenterViewActions *actions;
     TestControl::Observer *observer{};
-    PassFailControl::Observer *passFailObserver{};
 };
 
 class AppKitTestSetupUI : public TestSetupUI {

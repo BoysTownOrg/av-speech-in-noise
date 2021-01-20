@@ -27,6 +27,9 @@
 @interface CorrectKeywordsUIActions : NSObject
 @end
 
+@interface PassFailUIActions : NSObject
+@end
+
 @implementation SetupViewActions {
   @public
     av_speech_in_noise::AppKitTestSetupUI *controller;
@@ -86,20 +89,26 @@
     controller->notifyThatPlayTrialButtonHasBeenClicked();
 }
 
-- (void)notifyThatCorrectButtonHasBeenClicked {
-    controller->notifyThatCorrectButtonHasBeenClicked();
-}
-
-- (void)notifyThatIncorrectButtonHasBeenClicked {
-    controller->notifyThatIncorrectButtonHasBeenClicked();
-}
-
 - (void)notifyThatContinueTestingButtonHasBeenClicked {
     controller->notifyThatContinueTestingButtonHasBeenClicked();
 }
 
 - (void)notifyThatDeclineContinueTestingButtonHasBeenClicked {
     controller->notifyThatDeclineContinueTestingButtonHasBeenClicked();
+}
+@end
+
+@implementation PassFailUIActions {
+  @public
+    av_speech_in_noise::PassFailControl::Observer *observer;
+}
+
+- (void)notifyThatCorrectButtonHasBeenClicked {
+    observer->notifyThatCorrectButtonHasBeenClicked();
+}
+
+- (void)notifyThatIncorrectButtonHasBeenClicked {
+    observer->notifyThatIncorrectButtonHasBeenClicked();
 }
 @end
 
@@ -652,19 +661,12 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
         @selector(notifyThatExitTestButtonHasBeenClicked));
     nextTrialButton = nsButton("Play Trial", actions,
         @selector(notifyThatPlayTrialButtonHasBeenClicked));
-    evaluationButtons = [NSStackView stackViewWithViews:@[
-        nsButton("Incorrect", actions,
-            @selector(notifyThatIncorrectButtonHasBeenClicked)),
-        nsButton("Correct", actions,
-            @selector(notifyThatCorrectButtonHasBeenClicked))
-    ]];
     const auto topRow {
         [NSStackView stackViewWithViews:@[
             exitTestButton, primaryTextField, secondaryTextField
         ]]
     };
     addAutolayoutEnabledSubview(view(viewController), topRow);
-    addAutolayoutEnabledSubview(view(viewController), evaluationButtons);
     const auto continueTestingDialogStack {
         [NSStackView stackViewWithViews:@[
             continueTestingDialogField, [NSStackView stackViewWithViews:@[
@@ -689,20 +691,13 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
                                          constant:defaultMarginPoints]
     ]);
     activateChildConstraintNestledInBottomRightCorner(
-        evaluationButtons, view(viewController), defaultMarginPoints);
-    activateChildConstraintNestledInBottomRightCorner(
         nextTrialButton, view(viewController), defaultMarginPoints);
-    av_speech_in_noise::hide(evaluationButtons);
     av_speech_in_noise::hide(nextTrialButton);
     av_speech_in_noise::hide(view(viewController));
     actions->controller = this;
 }
 
 void AppKitTestUI::attach(TestControl::Observer *e) { observer = e; }
-
-void AppKitTestUI::attach(PassFailControl::Observer *e) {
-    passFailObserver = e;
-}
 
 void AppKitTestUI::showExitTestButton() {
     av_speech_in_noise::show(exitTestButton);
@@ -734,14 +729,6 @@ void AppKitTestUI::hideNextTrialButton() {
     av_speech_in_noise::hide(nextTrialButton);
 }
 
-void AppKitTestUI::showEvaluationButtons() {
-    av_speech_in_noise::show(evaluationButtons);
-}
-
-void AppKitTestUI::hideEvaluationButtons() {
-    av_speech_in_noise::hide(evaluationButtons);
-}
-
 void AppKitTestUI::showContinueTestingDialog() {
     [view(viewController).window beginSheet:continueTestingDialog
                           completionHandler:^(NSModalResponse){
@@ -758,14 +745,6 @@ void AppKitTestUI::setContinueTestingDialogMessage(const std::string &s) {
 
 void AppKitTestUI::notifyThatPlayTrialButtonHasBeenClicked() {
     observer->playTrial();
-}
-
-void AppKitTestUI::notifyThatCorrectButtonHasBeenClicked() {
-    passFailObserver->notifyThatCorrectButtonHasBeenClicked();
-}
-
-void AppKitTestUI::notifyThatIncorrectButtonHasBeenClicked() {
-    passFailObserver->notifyThatIncorrectButtonHasBeenClicked();
 }
 
 void AppKitTestUI::notifyThatContinueTestingButtonHasBeenClicked() {
@@ -1039,5 +1018,29 @@ void CorrectKeywordsUI::hideCorrectKeywordsSubmission() {
 
 auto CorrectKeywordsUI::correctKeywords() -> std::string {
     return string(correctKeywordsField);
+}
+
+PassFailUI::PassFailUI(NSViewController *viewController)
+    : actions{[[PassFailUIActions alloc] init]} {
+    evaluationButtons = [NSStackView stackViewWithViews:@[
+        nsButton("Incorrect", actions,
+            @selector(notifyThatIncorrectButtonHasBeenClicked)),
+        nsButton("Correct", actions,
+            @selector(notifyThatCorrectButtonHasBeenClicked))
+    ]];
+    addAutolayoutEnabledSubview(view(viewController), evaluationButtons);
+    activateChildConstraintNestledInBottomRightCorner(
+        evaluationButtons, view(viewController), defaultMarginPoints);
+    av_speech_in_noise::hide(evaluationButtons);
+}
+
+void PassFailUI::attach(Observer *e) { actions->observer = e; }
+
+void PassFailUI::showEvaluationButtons() {
+    av_speech_in_noise::show(evaluationButtons);
+}
+
+void PassFailUI::hideEvaluationButtons() {
+    av_speech_in_noise::hide(evaluationButtons);
 }
 }
