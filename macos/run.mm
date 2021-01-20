@@ -423,6 +423,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         &coordinateResponseMeasurePresenter);
     chooseKeywordsController.attach(&testController);
     chooseKeywordsController.attach(&chooseKeywordsPresenter);
+    chooseKeywordsPresenter.set(SentenceWithThreeKeywords{
+        "Daddy's mouth is turning yellow.", "Daddy's", "mouth", "turning"});
     UninitializedTaskPresenterImpl taskPresenter;
     TestPresenterImpl experimenterPresenter{model, experimenterView,
         {{Method::adaptiveCoordinateResponseMeasure,

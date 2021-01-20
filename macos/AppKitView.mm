@@ -810,7 +810,11 @@ void AppKitView::populateAudioDeviceMenu(std::vector<std::string> items) {
 }
 
 ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
-    : actions{[[ChooseKeywordsUIActions alloc] init]} {
+    : textFieldBeforeFirstKeywordButton{emptyLabel()},
+      textFieldAfterFirstKeywordButton{emptyLabel()},
+      textFieldAfterSecondKeywordButton{emptyLabel()},
+      textFieldAfterThirdKeywordButton{emptyLabel()},
+      actions{[[ChooseKeywordsUIActions alloc] init]} {
     firstKeywordButton = nsButton(
         "", actions, @selector(notifyThatFirstKeywordButtonHasBeenClicked));
     secondKeywordButton = nsButton(
@@ -822,7 +826,10 @@ ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
     [thirdKeywordButton setButtonType:NSButtonTypePushOnPushOff];
     const auto keywordButtons {
         [NSStackView stackViewWithViews:@[
-            firstKeywordButton, secondKeywordButton, thirdKeywordButton
+            textFieldBeforeFirstKeywordButton, firstKeywordButton,
+            textFieldAfterFirstKeywordButton, secondKeywordButton,
+            textFieldAfterSecondKeywordButton, thirdKeywordButton,
+            textFieldAfterThirdKeywordButton
         ]]
     };
     const auto resetButton {
@@ -899,15 +906,35 @@ void ChooseKeywordsUI::hideResponseSubmission() {
 }
 
 void ChooseKeywordsUI::setThirdKeywordButtonText(const std::string &s) {
-    [thirdKeywordButton setStringValue:nsString(s)];
+    [thirdKeywordButton setTitle:nsString(s)];
 }
 
 void ChooseKeywordsUI::setSecondKeywordButtonText(const std::string &s) {
-    [secondKeywordButton setStringValue:nsString(s)];
+    [secondKeywordButton setTitle:nsString(s)];
 }
 
 void ChooseKeywordsUI::setFirstKeywordButtonText(const std::string &s) {
-    [firstKeywordButton setStringValue:nsString(s)];
+    [firstKeywordButton setTitle:nsString(s)];
+}
+
+void ChooseKeywordsUI::setTextPrecedingFirstKeywordButton(
+    const std::string &s) {
+    [textFieldBeforeFirstKeywordButton setStringValue:nsString(s)];
+}
+
+void ChooseKeywordsUI::setTextFollowingFirstKeywordButton(
+    const std::string &s) {
+    [textFieldAfterFirstKeywordButton setStringValue:nsString(s)];
+}
+
+void ChooseKeywordsUI::setTextFollowingSecondKeywordButton(
+    const std::string &s) {
+    [textFieldAfterSecondKeywordButton setStringValue:nsString(s)];
+}
+
+void ChooseKeywordsUI::setTextFollowingThirdKeywordButton(
+    const std::string &s) {
+    [textFieldAfterThirdKeywordButton setStringValue:nsString(s)];
 }
 
 FreeResponseUI::FreeResponseUI(NSViewController *viewController)

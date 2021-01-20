@@ -43,9 +43,17 @@ class ChooseKeywordsUI : public ChooseKeywordsControl,
     void setFirstKeywordButtonText(const std::string &s) override;
     void setSecondKeywordButtonText(const std::string &s) override;
     void setThirdKeywordButtonText(const std::string &s) override;
+    void setTextPrecedingFirstKeywordButton(const std::string &s) override;
+    void setTextFollowingFirstKeywordButton(const std::string &s) override;
+    void setTextFollowingSecondKeywordButton(const std::string &s) override;
+    void setTextFollowingThirdKeywordButton(const std::string &s) override;
 
   private:
     NSStackView *responseView{};
+    NSTextField *textFieldBeforeFirstKeywordButton;
+    NSTextField *textFieldAfterFirstKeywordButton;
+    NSTextField *textFieldAfterSecondKeywordButton;
+    NSTextField *textFieldAfterThirdKeywordButton;
     NSButton *firstKeywordButton;
     NSButton *secondKeywordButton;
     NSButton *thirdKeywordButton;
