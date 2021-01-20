@@ -72,13 +72,42 @@ void ChooseKeywordsPresenter::showResponseSubmission() {
     view.showResponseSubmission();
 }
 
+// https://stackoverflow.com/a/65440575
+
+// we cannot return a char array from a function, therefore we need a wrapper
+template <unsigned N> struct String { char c[N]; };
+
+template <unsigned... Len>
+constexpr auto concatenate(const char (&...strings)[Len]) {
+    constexpr auto N{(... + Len) - sizeof...(Len)};
+    String<N + 1> result = {};
+    result.c[N] = '\0';
+
+    auto *dst{result.c};
+    for (const auto *src : {strings...})
+        for (; *src != '\0'; src++, dst++)
+            *dst = *src;
+    return result;
+}
+
+constexpr const char spaceIfPresent[]{" ?"};
+constexpr const char captureAnythingLazily[]{"(.*?)"};
+constexpr auto captureAnythingExceptTrailingSpace{
+    concatenate(captureAnythingLazily, spaceIfPresent)};
+constexpr auto captureAnythingExceptLeadingOrTrailingSpace{
+    concatenate(spaceIfPresent, captureAnythingExceptTrailingSpace.c)};
+
 void ChooseKeywordsPresenter::set(
     const SentenceWithThreeKeywords &sentenceWithThreeKeywords) {
-    std::regex pattern{"(.*?) ?" + sentenceWithThreeKeywords.firstKeyword +
-        " ?(.*?) ?" + sentenceWithThreeKeywords.secondKeyword + " ?(.*?) ?" +
-        sentenceWithThreeKeywords.thirdKeyword + " ?(.*)"};
     std::smatch match;
-    std::regex_search(sentenceWithThreeKeywords.sentence, match, pattern);
+    std::regex_search(sentenceWithThreeKeywords.sentence, match,
+        std::regex{captureAnythingExceptTrailingSpace.c +
+            sentenceWithThreeKeywords.firstKeyword +
+            captureAnythingExceptLeadingOrTrailingSpace.c +
+            sentenceWithThreeKeywords.secondKeyword +
+            captureAnythingExceptLeadingOrTrailingSpace.c +
+            sentenceWithThreeKeywords.thirdKeyword +
+            concatenate(spaceIfPresent, "(.*)").c});
     view.setTextPrecedingFirstKeywordButton(match[1]);
     view.setFirstKeywordButtonText(sentenceWithThreeKeywords.firstKeyword);
     view.setTextFollowingFirstKeywordButton(match[2]);
