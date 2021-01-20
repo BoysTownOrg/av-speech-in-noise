@@ -34,15 +34,15 @@ class ChooseKeywordsViewStub : public ChooseKeywordsView {
         return thirdKeywordButtonText_;
     }
 
-    void setFirstKeywordButtonText(const std::string &s) {
+    void setFirstKeywordButtonText(const std::string &s) override {
         firstKeywordButtonText_ = s;
     }
 
-    void setSecondKeywordButtonText(const std::string &s) {
+    void setSecondKeywordButtonText(const std::string &s) override {
         secondKeywordButtonText_ = s;
     }
 
-    void setThirdKeywordButtonText(const std::string &s) {
+    void setThirdKeywordButtonText(const std::string &s) override {
         thirdKeywordButtonText_ = s;
     }
 
