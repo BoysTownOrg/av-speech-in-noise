@@ -28,7 +28,9 @@ class TestMethodStub : public TestMethod {
         return submittedFreeResponse_;
     }
 
-    auto threeKeywords() -> const ThreeKeywords * { return threeKeywords_; }
+    auto threeKeywords() -> const ThreeKeywordsResponse * {
+        return threeKeywords_;
+    }
 
     void setSnr_dB(int x) { snr_dB_ = x; }
 
@@ -59,7 +61,7 @@ class TestMethodStub : public TestMethod {
         submittedFreeResponse_ = true;
     }
 
-    void submit(const ThreeKeywords &p) {
+    void submit(const ThreeKeywordsResponse &p) {
         insert(log_, "submitThreeKeywords ");
         threeKeywords_ = &p;
     }
@@ -88,7 +90,7 @@ class TestMethodStub : public TestMethod {
     std::string currentTarget_{};
     std::string currentTargetWhenNextTarget_{};
     std::string nextTarget_{};
-    const ThreeKeywords *threeKeywords_{};
+    const ThreeKeywordsResponse *threeKeywords_{};
     int snr_dB_{};
     bool complete_{};
     bool submittedFreeResponse_{};
@@ -277,7 +279,7 @@ class SubmittingFreeResponse : public TargetWritingUseCase {
 
 class SubmittingThreeKeywords : public TargetWritingUseCase {
   public:
-    explicit SubmittingThreeKeywords(const ThreeKeywords &response = {})
+    explicit SubmittingThreeKeywords(const ThreeKeywordsResponse &response = {})
         : response{response} {}
 
     void run(RecognitionTestModelImpl &m) override { m.submit(response); }
@@ -287,7 +289,7 @@ class SubmittingThreeKeywords : public TargetWritingUseCase {
     }
 
   private:
-    const ThreeKeywords &response;
+    const ThreeKeywordsResponse &response;
 };
 
 class SubmittingCorrectKeywords : public TargetWritingUseCase {
@@ -619,7 +621,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingIncorrectResponse submittingIncorrectResponse;
     FreeResponse freeResponse{};
     SubmittingFreeResponse submittingFreeResponse{freeResponse};
-    ThreeKeywords threeKeywords;
+    ThreeKeywordsResponse threeKeywords;
     SubmittingThreeKeywords submittingThreeKeywords{threeKeywords};
     AudioSampleTimeWithOffset fadeInCompleteTime{};
     SubmittingCorrectKeywords submittingCorrectKeywords;

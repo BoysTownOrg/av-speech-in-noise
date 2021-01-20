@@ -116,7 +116,7 @@ void FixedLevelMethodImpl::submit(const FreeResponse &response) {
         --trials_;
 }
 
-void FixedLevelMethodImpl::submit(const ThreeKeywords &response) {
+void FixedLevelMethodImpl::submit(const ThreeKeywordsResponse &response) {
     update(finiteTargetPlaylistWithRepeatables, finiteTargetPlaylist,
         response.flagged, finiteTargetsExhausted_);
 }

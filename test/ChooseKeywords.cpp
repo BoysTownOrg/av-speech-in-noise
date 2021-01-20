@@ -22,7 +22,34 @@ class ChooseKeywordsViewStub : public ChooseKeywordsView {
 
     void showResponseSubmission() override { responseSubmissionShown_ = true; }
 
+    auto firstKeywordButtonText() -> std::string {
+        return firstKeywordButtonText_;
+    }
+
+    auto secondKeywordButtonText() -> std::string {
+        return secondKeywordButtonText_;
+    }
+
+    auto thirdKeywordButtonText() -> std::string {
+        return thirdKeywordButtonText_;
+    }
+
+    void setFirstKeywordButtonText(const std::string &s) {
+        firstKeywordButtonText_ = s;
+    }
+
+    void setSecondKeywordButtonText(const std::string &s) {
+        secondKeywordButtonText_ = s;
+    }
+
+    void setThirdKeywordButtonText(const std::string &s) {
+        thirdKeywordButtonText_ = s;
+    }
+
   private:
+    std::string firstKeywordButtonText_;
+    std::string secondKeywordButtonText_;
+    std::string thirdKeywordButtonText_;
     bool responseSubmissionHidden_{};
     bool responseSubmissionShown_{};
 };
@@ -202,6 +229,13 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(
     showsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseSubmissionShown());
+}
+
+CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText) {
+    presenter.set(ThreeKeywords{"am", "is", "are"});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("am", view.firstKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("is", view.secondKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("are", view.thirdKeywordButtonText());
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(

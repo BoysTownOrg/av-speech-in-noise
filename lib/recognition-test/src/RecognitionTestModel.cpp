@@ -372,7 +372,7 @@ void RecognitionTestModelImpl::submit(const FreeResponse &response) {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::submit(const ThreeKeywords &p) {
+void RecognitionTestModelImpl::submit(const ThreeKeywordsResponse &p) {
     testMethod->submit(p);
     ThreeKeywordsTrial trial;
     trial.firstCorrect = p.firstCorrect;

@@ -82,7 +82,7 @@ struct ConsonantTrial : Target {
     bool correct{};
 };
 
-struct ThreeKeywordsTrial : ThreeKeywords, open_set::Trial {};
+struct ThreeKeywordsTrial : ThreeKeywordsResponse, open_set::Trial {};
 
 struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
@@ -168,7 +168,7 @@ class RecognitionTestModel {
     virtual void playRightSpeakerCalibration(const Calibration &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void submit(const FreeResponse &) = 0;
-    virtual void submit(const ThreeKeywords &) = 0;
+    virtual void submit(const ThreeKeywordsResponse &) = 0;
     virtual void submit(const CorrectKeywords &) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
@@ -217,7 +217,7 @@ class ModelImpl : public Model {
     void submit(const FreeResponse &) override;
     void submit(const CorrectKeywords &) override;
     void submit(const ConsonantResponse &) override;
-    void submit(const ThreeKeywords &) override;
+    void submit(const ThreeKeywordsResponse &) override;
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
     auto testComplete() -> bool override;

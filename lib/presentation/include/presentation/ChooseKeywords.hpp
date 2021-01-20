@@ -5,6 +5,7 @@
 #include "Task.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
+#include <string>
 
 namespace av_speech_in_noise {
 class ChooseKeywordsView {
@@ -12,6 +13,9 @@ class ChooseKeywordsView {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ChooseKeywordsView);
     virtual void hideResponseSubmission() = 0;
     virtual void showResponseSubmission() = 0;
+    virtual void setFirstKeywordButtonText(const std::string &s) = 0;
+    virtual void setSecondKeywordButtonText(const std::string &s) = 0;
+    virtual void setThirdKeywordButtonText(const std::string &s) = 0;
 };
 
 class ChooseKeywordsControl {
@@ -60,6 +64,12 @@ class ChooseKeywordsController : public TaskController,
     TaskController::Observer *taskControllerObserver{};
 };
 
+struct ThreeKeywords {
+    std::string first;
+    std::string second;
+    std::string third;
+};
+
 class ChooseKeywordsPresenter : public TaskPresenter {
   public:
     ChooseKeywordsPresenter(TestView &, ChooseKeywordsView &);
@@ -68,6 +78,7 @@ class ChooseKeywordsPresenter : public TaskPresenter {
     void notifyThatTaskHasStarted() override;
     void notifyThatUserIsDoneResponding() override;
     void showResponseSubmission() override;
+    void set(const ThreeKeywords &);
 
   private:
     TestView &testView;

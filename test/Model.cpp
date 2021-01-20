@@ -153,7 +153,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const CorrectKeywords *correctKeywords_{};
     const ConsonantResponse *consonantResponse_{};
     const FreeResponse *freeResponse_{};
-    const ThreeKeywords *threeKeywords_{};
+    const ThreeKeywordsResponse *threeKeywords_{};
     int trialNumber_{};
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
@@ -264,7 +264,9 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     auto freeResponse() -> const FreeResponse * { return freeResponse_; }
 
-    auto threeKeywords() -> const ThreeKeywords * { return threeKeywords_; }
+    auto threeKeywords() -> const ThreeKeywordsResponse * {
+        return threeKeywords_;
+    }
 
     [[nodiscard]] auto testMethod() const { return testMethod_; }
 
@@ -315,7 +317,9 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void submit(const FreeResponse &f) override { freeResponse_ = &f; }
 
-    void submit(const ThreeKeywords &f) override { threeKeywords_ = &f; }
+    void submit(const ThreeKeywordsResponse &f) override {
+        threeKeywords_ = &f;
+    }
 };
 
 class InitializingTestUseCase {
@@ -1091,7 +1095,7 @@ MODEL_TEST(submitFreeResponsePassesFreeResponse) {
 }
 
 MODEL_TEST(submitThreeKeywordsPassesThreeKeywords) {
-    ThreeKeywords r;
+    ThreeKeywordsResponse r;
     model.submit(r);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(r), internalModel.threeKeywords());

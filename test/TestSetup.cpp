@@ -442,7 +442,7 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void submit(const ThreeKeywords &) override {
+    void submit(const ThreeKeywordsResponse &) override {
         throw RequestFailure{errorMessage};
     }
 

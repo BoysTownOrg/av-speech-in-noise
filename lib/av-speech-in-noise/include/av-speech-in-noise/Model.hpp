@@ -20,7 +20,7 @@ struct CorrectKeywords {
     int count{};
 };
 
-struct ThreeKeywords {
+struct ThreeKeywordsResponse {
     bool firstCorrect{};
     bool secondCorrect{};
     bool thirdCorrect{};
@@ -162,7 +162,7 @@ class Model {
     virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const CorrectKeywords &) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
-    virtual void submit(const ThreeKeywords &) = 0;
+    virtual void submit(const ThreeKeywordsResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual auto testComplete() -> bool = 0;

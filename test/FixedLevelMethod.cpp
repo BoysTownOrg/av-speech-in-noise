@@ -81,7 +81,7 @@ class SubmittingThreeKeywords : public UseCase {
     void setFlagged() { response.flagged = true; }
 
   private:
-    ThreeKeywords response{};
+    ThreeKeywordsResponse response{};
 };
 
 class SubmittingConsonant : public UseCase {

@@ -14,7 +14,7 @@ void ChooseKeywordsController::attach(TaskController::Observer *t) {
 void ChooseKeywordsController::attach(TestController *t) { testController = t; }
 
 void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
-    ThreeKeywords threeKeywords{};
+    ThreeKeywordsResponse threeKeywords{};
     threeKeywords.firstCorrect = control.firstKeywordCorrect();
     threeKeywords.secondCorrect = control.secondKeywordCorrect();
     threeKeywords.thirdCorrect = control.thirdKeywordCorrect();
@@ -69,5 +69,11 @@ void ChooseKeywordsPresenter::notifyThatUserIsDoneResponding() {
 
 void ChooseKeywordsPresenter::showResponseSubmission() {
     view.showResponseSubmission();
+}
+
+void ChooseKeywordsPresenter::set(const ThreeKeywords &keywords) {
+    view.setFirstKeywordButtonText(keywords.first);
+    view.setSecondKeywordButtonText(keywords.second);
+    view.setThirdKeywordButtonText(keywords.third);
 }
 }
