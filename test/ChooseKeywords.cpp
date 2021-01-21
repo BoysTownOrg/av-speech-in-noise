@@ -287,7 +287,10 @@ class ChooseKeywordsPresenterTests : public ::testing::Test {
                     "stretched", "dinner"}},
             {"fileB",
                 SentenceWithThreeKeywords{"Daddy's mouth is turning yellow.",
-                    "Daddy's", "mouth", "turning"}}}};
+                    "Daddy's", "mouth", "turning"}},
+            {"fileC",
+                SentenceWithThreeKeywords{
+                    "Tom won't pull the oar.", "won't", "pull", "oar"}}}};
 };
 
 #define CHOOSE_KEYWORDS_CONTROLLER_TEST(a)                                     \
@@ -348,6 +351,21 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText2) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("turning", view.thirdKeywordButtonText());
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "yellow.", view.textFollowingThirdKeywordButton());
+}
+
+CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText3) {
+    model.setTargetFileName("fileC");
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "Tom", view.textPrecedingFirstKeywordButton());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("won't", view.firstKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("", view.textFollowingFirstKeywordButton());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("pull", view.secondKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "the", view.textFollowingSecondKeywordButton());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("oar", view.thirdKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        ".", view.textFollowingThirdKeywordButton());
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(marksFirstKeywordIncorrect) {
