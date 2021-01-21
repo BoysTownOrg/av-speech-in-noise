@@ -385,7 +385,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
     TestSettingsInterpreterImpl testSettingsInterpreter;
-    ConsonantTaskController consonantTaskController{model, consonantView};
     ConsonantTaskPresenter consonantPresenter{consonantView};
     FreeResponseUI freeResponseUI{freeResponseUIController};
     FreeResponsePresenter freeResponsePresenter{
@@ -400,8 +399,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         experimenterView, correctKeywordsUI};
     PassFailUI passFailUI{passFailUIController};
     PassFailPresenter passFailPresenter{experimenterView, passFailUI};
-    CoordinateResponseMeasureController coordinateResponseMeasureController{
-        model, coordinateResponseMeasureView};
     CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
         coordinateResponseMeasureView};
     TestSetupControllerImpl testSetupController{model, view,
@@ -415,9 +412,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     FreeResponseController freeResponseController{
         testController, model, freeResponseUI};
     PassFailController passFailController{testController, model, passFailUI};
-    consonantTaskController.attach(&testController);
+    ConsonantTaskController consonantTaskController{
+        testController, model, consonantView};
+    CoordinateResponseMeasureController coordinateResponseMeasureController{
+        testController, model, coordinateResponseMeasureView};
     consonantTaskController.attach(&consonantPresenter);
-    coordinateResponseMeasureController.attach(&testController);
     coordinateResponseMeasureController.attach(
         &coordinateResponseMeasurePresenter);
     UninitializedTaskPresenterImpl taskPresenter;

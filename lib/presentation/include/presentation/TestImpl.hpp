@@ -44,6 +44,11 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
             presenter->showResponseSubmission();
     }
 
+    void hideResponseSubmission() override {
+        if (presenter != nullptr)
+            presenter->hideResponseSubmission();
+    }
+
     void notifyThatTaskHasStarted() override {
         if (presenter != nullptr)
             presenter->notifyThatTaskHasStarted();
