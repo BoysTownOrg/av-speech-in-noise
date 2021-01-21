@@ -2,13 +2,13 @@
 #include <regex>
 
 namespace av_speech_in_noise {
-ChooseKeywordsController::ChooseKeywordsController(Model &model,
+ChooseKeywordsController::ChooseKeywordsController(
+    TestController &testController, Model &model,
     ChooseKeywordsControl &control, ChooseKeywordsPresenter &presenter)
-    : control{control}, model{model}, presenter{presenter} {
+    : testController{testController}, model{model}, control{control},
+      presenter{presenter} {
     control.attach(this);
 }
-
-void ChooseKeywordsController::attach(TestController *t) { testController = t; }
 
 void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     ThreeKeywordsResponse threeKeywords{};
@@ -16,7 +16,7 @@ void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     threeKeywords.secondCorrect = control.secondKeywordCorrect();
     threeKeywords.thirdCorrect = control.thirdKeywordCorrect();
     model.submit(threeKeywords);
-    testController->notifyThatUserIsDoneResponding();
+    testController.notifyThatUserIsDoneResponding();
     presenter.hideResponseSubmission();
 }
 

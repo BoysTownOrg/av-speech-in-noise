@@ -269,10 +269,9 @@ class ChooseKeywordsControllerTests : public ::testing::Test {
     ModelStub model;
     ChooseKeywordsControlStub control;
     ChooseKeywordsPresenterStub presenter;
-    ChooseKeywordsController controller{model, control, presenter};
     TestControllerStub testController;
-
-    ChooseKeywordsControllerTests() { controller.attach(&testController); }
+    ChooseKeywordsController controller{
+        testController, model, control, presenter};
 };
 
 class ChooseKeywordsPresenterTests : public ::testing::Test {

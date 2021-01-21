@@ -60,12 +60,10 @@ class ChooseKeywordsPresenter {
     virtual void hideResponseSubmission() = 0;
 };
 
-class ChooseKeywordsController : public TaskController,
-                                 public ChooseKeywordsControl::Observer {
+class ChooseKeywordsController : public ChooseKeywordsControl::Observer {
   public:
-    ChooseKeywordsController(
-        Model &, ChooseKeywordsControl &, ChooseKeywordsPresenter &);
-    void attach(TestController *);
+    ChooseKeywordsController(TestController &, Model &, ChooseKeywordsControl &,
+        ChooseKeywordsPresenter &);
     void notifyThatSubmitButtonHasBeenClicked() override;
     void notifyThatAllWrongButtonHasBeenClicked() override;
     void notifyThatResetButtonIsClicked() override;
@@ -74,10 +72,10 @@ class ChooseKeywordsController : public TaskController,
     void notifyThatThirdKeywordButtonIsClicked() override;
 
   private:
-    ChooseKeywordsControl &control;
+    TestController &testController;
     Model &model;
+    ChooseKeywordsControl &control;
     ChooseKeywordsPresenter &presenter;
-    TestController *testController{};
 };
 
 struct SentenceWithThreeKeywords {

@@ -393,8 +393,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     ChooseKeywordsUI chooseKeywordsUI{chooseKeywordsUIController};
     ChooseKeywordsPresenterImpl chooseKeywordsPresenter{
         experimenterView, chooseKeywordsUI};
-    ChooseKeywordsController chooseKeywordsController{
-        model, chooseKeywordsUI, chooseKeywordsPresenter};
     CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
     CorrectKeywordsController correctKeywordsController{
         model, view, correctKeywordsUI};
@@ -411,6 +409,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         *(testSetupView.get()), testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenter{*(testSetupView.get())};
     TestControllerImpl testController{model, view, experimenterView};
+    ChooseKeywordsController chooseKeywordsController{
+        testController, model, chooseKeywordsUI, chooseKeywordsPresenter};
     consonantTaskController.attach(&testController);
     consonantTaskController.attach(&consonantPresenter);
     freeResponseController.attach(&testController);
@@ -422,7 +422,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     coordinateResponseMeasureController.attach(&testController);
     coordinateResponseMeasureController.attach(
         &coordinateResponseMeasurePresenter);
-    chooseKeywordsController.attach(&testController);
     chooseKeywordsPresenter.set(SentenceWithThreeKeywords{
         "Daddy's mouth is turning yellow.", "Daddy's", "mouth", "turning"});
     UninitializedTaskPresenterImpl taskPresenter;
