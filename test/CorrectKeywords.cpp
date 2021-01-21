@@ -2,7 +2,6 @@
 #include "ModelStub.hpp"
 #include "SessionViewStub.hpp"
 #include "TestViewStub.hpp"
-#include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
 #include <presentation/CorrectKeywords.hpp>
 #include <gtest/gtest.h>
@@ -54,10 +53,6 @@ void notifyThatSubmitButtonHasBeenClicked(CorrectKeywordsControlStub &view) {
     view.notifyThatSubmitButtonHasBeenClicked();
 }
 
-void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
-    presenter.notifyThatUserIsDoneResponding();
-}
-
 void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
@@ -69,12 +64,8 @@ class CorrectKeywordsControllerTests : public ::testing::Test {
     CorrectKeywordsControlStub control;
     CorrectKeywordsController controller{model, sessionView, control};
     TestControllerStub testController;
-    TaskControllerObserverStub taskController;
 
-    CorrectKeywordsControllerTests() {
-        controller.attach(&testController);
-        controller.attach(&taskController);
-    }
+    CorrectKeywordsControllerTests() { controller.attach(&testController); }
 };
 
 class CorrectKeywordsPresenterTests : public ::testing::Test {

@@ -8,10 +8,6 @@ CorrectKeywordsController::CorrectKeywordsController(
     keywordsView.attach(this);
 }
 
-void CorrectKeywordsController::attach(TaskController::Observer *e) {
-    observer = e;
-}
-
 void CorrectKeywordsController::attach(TestController *r) { controller = r; }
 
 static void submitCorrectKeywords(
