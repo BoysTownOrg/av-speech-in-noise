@@ -242,26 +242,44 @@ class NotifyingThatUserIsReadyForNextTrial : public ControllerUseCase {
 class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
   public:
     void initialize(TaskPresenter *p) override { presenter_ = p; }
+
     auto presenter() -> TaskPresenter * { return presenter_; }
+
     void showResponseSubmission() override { responseSubmissionShown_ = true; }
+
     [[nodiscard]] auto responseSubmissionShown() const -> bool {
         return responseSubmissionShown_;
     }
+
     void notifyThatTaskHasStarted() override {}
+
     void notifyThatUserIsDoneResponding() override {}
+
     void notifyThatTrialHasStarted() override {
         notifiedThatTrialHasStarted_ = true;
     }
+
     void start() override { started_ = true; }
+
     [[nodiscard]] auto started() const -> bool { return started_; }
+
     void stop() override { stopped_ = true; }
+
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+
     [[nodiscard]] auto notifiedThatTrialHasStarted() const -> bool {
         return notifiedThatTrialHasStarted_;
     }
 
+    [[nodiscard]] auto responseSubmissionHidden() const -> bool {
+        return responseSubmissionHidden_;
+    }
+
+    void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
+
   private:
     TaskPresenter *presenter_{};
+    bool responseSubmissionHidden_{};
     bool stopped_{};
     bool started_{};
     bool notifiedThatTrialHasStarted_{};
@@ -532,6 +550,11 @@ TEST_PRESENTER_TEST(hidesExitTestButtonAfterTrialStarts) {
 TEST_PRESENTER_TEST(hidesNextTrialButtonAfterTrialStarts) {
     presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonHidden());
+}
+
+TEST_PRESENTER_TEST(hidesResponseSubmission) {
+    presenter.hideResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionHidden());
 }
 
 TEST_PRESENTER_TEST(notifiesTaskPresenterThatTrialHasStarted) {
