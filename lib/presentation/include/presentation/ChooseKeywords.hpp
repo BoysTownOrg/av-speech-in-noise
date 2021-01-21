@@ -7,6 +7,7 @@
 #include <av-speech-in-noise/Interface.hpp>
 #include <string>
 #include <map>
+#include <string_view>
 
 namespace av_speech_in_noise {
 class ChooseKeywordsView {
@@ -85,6 +86,15 @@ struct SentenceWithThreeKeywords {
     std::string secondKeyword;
     std::string thirdKeyword;
 };
+
+auto sentencesWithThreeKeywords(std::string_view s)
+    -> std::map<std::string, SentenceWithThreeKeywords>;
+
+static auto operator==(const SentenceWithThreeKeywords &a,
+    const SentenceWithThreeKeywords &b) -> bool {
+    return a.sentence == b.sentence && a.firstKeyword == b.firstKeyword &&
+        a.secondKeyword == b.secondKeyword && a.thirdKeyword == b.thirdKeyword;
+}
 
 class ChooseKeywordsPresenterImpl : public ChooseKeywordsPresenter,
                                     public TaskPresenter {

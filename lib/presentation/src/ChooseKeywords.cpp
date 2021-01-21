@@ -1,6 +1,7 @@
 #include "ChooseKeywords.hpp"
 #include <regex>
 #include <utility>
+#include <sstream>
 
 namespace av_speech_in_noise {
 ChooseKeywordsController::ChooseKeywordsController(
@@ -134,5 +135,23 @@ void ChooseKeywordsPresenterImpl::markAllKeywordsCorrect() {
     view.markFirstKeywordCorrect();
     view.markSecondKeywordCorrect();
     view.markThirdKeywordCorrect();
+}
+auto sentencesWithThreeKeywords(std::string_view s)
+    -> std::map<std::string, SentenceWithThreeKeywords> {
+    std::map<std::string, SentenceWithThreeKeywords> map;
+    std::stringstream stream{std::string{s}};
+    while (!stream.eof()) {
+        std::string maybeFileName;
+        std::getline(stream, maybeFileName);
+        if (maybeFileName.empty())
+            continue;
+        SentenceWithThreeKeywords sentenceWithThreeKeywords;
+        std::getline(stream, sentenceWithThreeKeywords.sentence);
+        std::getline(stream, sentenceWithThreeKeywords.firstKeyword);
+        std::getline(stream, sentenceWithThreeKeywords.secondKeyword);
+        std::getline(stream, sentenceWithThreeKeywords.thirdKeyword);
+        map[maybeFileName] = sentenceWithThreeKeywords;
+    }
+    return map;
 }
 }

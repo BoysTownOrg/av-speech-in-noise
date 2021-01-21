@@ -190,6 +190,7 @@ class TimeStampImpl : public TimeStamp {
 };
 
 class TextFileReaderImpl : public TextFileReader {
+  public:
     auto read(const LocalUrl &s) -> std::string override {
         std::ifstream file{s.path};
         std::stringstream stream;
@@ -391,8 +392,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     FreeResponsePresenter freeResponsePresenter{
         experimenterView, freeResponseUI};
     ChooseKeywordsUI chooseKeywordsUI{chooseKeywordsUIController};
-    ChooseKeywordsPresenterImpl chooseKeywordsPresenter{
-        experimenterView, chooseKeywordsUI};
+    ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model, experimenterView,
+        chooseKeywordsUI,
+        sentencesWithThreeKeywords(
+            TextFileReaderImpl{}.read(resourceUrl("mlst-c", "txt")))};
     CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
     CorrectKeywordsController correctKeywordsController{
         model, view, correctKeywordsUI};
@@ -422,8 +425,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     coordinateResponseMeasureController.attach(&testController);
     coordinateResponseMeasureController.attach(
         &coordinateResponseMeasurePresenter);
-    chooseKeywordsPresenter.set(SentenceWithThreeKeywords{
-        "Daddy's mouth is turning yellow.", "Daddy's", "mouth", "turning"});
     UninitializedTaskPresenterImpl taskPresenter;
     TestPresenterImpl experimenterPresenter{model, experimenterView,
         {{Method::adaptiveCoordinateResponseMeasure,
