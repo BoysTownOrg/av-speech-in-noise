@@ -76,6 +76,7 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
     void stop() override;
     void notifyThatTrialHasStarted() override;
     void notifyThatNextTrialIsReady() override;
+    void hideResponseSubmission() override;
     void display(const std::string &s) override;
     void secondaryDisplay(const std::string &s) override;
     void showContinueTestingDialog() override;

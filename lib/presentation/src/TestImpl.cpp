@@ -81,6 +81,7 @@ void TestControllerImpl::
 }
 
 void TestControllerImpl::notifyThatUserIsDoneResponding() {
+    observer->hideResponseSubmission();
     notifyIfTestIsCompleteElse(
         model, controller, [&]() { readyNextTrial(model, observer); });
 }
@@ -144,5 +145,9 @@ void TestPresenterImpl::initialize(Method m) {
     displayTrialInformation(model, this);
     taskPresenter_->initialize(&taskPresenters.at(m));
     taskPresenter_->start();
+}
+
+void TestPresenterImpl::hideResponseSubmission() {
+    taskPresenter_->hideResponseSubmission();
 }
 }

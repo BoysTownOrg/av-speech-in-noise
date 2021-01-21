@@ -97,38 +97,56 @@ class TestControllerListenerStub : public TestController::Observer {
     void notifyThatTrialHasStarted() override {
         notifiedThatTrialHasStarted_ = true;
     }
+
     [[nodiscard]] auto notifiedThatTrialHasStarted() const -> bool {
         return notifiedThatTrialHasStarted_;
     }
+
     void notifyThatNextTrialIsReady() override {
         notifiedThatNextTrialIsReady_ = true;
     }
+
     [[nodiscard]] auto notifiedThatNextTrialIsReady() const -> bool {
         return notifiedThatNextTrialIsReady_;
     }
+
     void setContinueTestingDialogMessage(const std::string &s) override {
         continueTestingDialogMessage_ = s;
     }
+
     auto continueTestingDialogMessage() -> std::string {
         return continueTestingDialogMessage_;
     }
+
     void showContinueTestingDialog() override {
         continueTestingDialogShown_ = true;
     }
+
     [[nodiscard]] auto continueTestingDialogShown() const -> bool {
         return continueTestingDialogShown_;
     }
+
     void display(const std::string &s) override { displayed_ = s; }
+
     auto displayed() -> std::string { return displayed_; }
+
     void secondaryDisplay(const std::string &s) override {
         displayedSecondary_ = s;
     }
+
     auto displayedSecondary() -> std::string { return displayedSecondary_; }
+
+    [[nodiscard]] auto responseSubmissionHidden() const -> bool {
+        return responseSubmissionHidden_;
+    }
+
+    void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
 
   private:
     std::string displayed_;
     std::string displayedSecondary_;
     std::string continueTestingDialogMessage_;
+    bool responseSubmissionHidden_{};
     bool notifiedThatTrialHasStarted_{};
     bool notifiedThatNextTrialIsReady_{};
     bool continueTestingDialogShown_{};
@@ -441,6 +459,12 @@ TEST_CONTROLLER_TEST(
 TEST_CONTROLLER_TEST(responderDisplaysTrialNumberAfterUserIsDoneResponding) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
         notifyingThatUserIsDoneResponding, experimenterControllerListener);
+}
+
+TEST_CONTROLLER_TEST(hidesResponseSubmissionAfterUserIsDoneResponding) {
+    run(notifyingThatUserIsDoneResponding);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        experimenterControllerListener.responseSubmissionHidden());
 }
 
 TEST_CONTROLLER_TEST(

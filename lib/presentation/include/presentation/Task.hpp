@@ -21,6 +21,7 @@ class TaskPresenter : virtual public TaskController::Observer,
                       virtual public Presenter {
   public:
     virtual void showResponseSubmission() = 0;
+    virtual void hideResponseSubmission() {}
 };
 }
 

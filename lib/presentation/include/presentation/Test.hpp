@@ -45,6 +45,7 @@ class TestController {
         virtual void showContinueTestingDialog() = 0;
         virtual void display(const std::string &) = 0;
         virtual void secondaryDisplay(const std::string &) = 0;
+        virtual void hideResponseSubmission() {}
         virtual void notifyThatNextTrialIsReady() = 0;
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestController);
