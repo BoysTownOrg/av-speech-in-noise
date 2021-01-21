@@ -27,10 +27,6 @@ void FreeResponsePresenter::start() { testView.showNextTrialButton(); }
 
 void FreeResponsePresenter::stop() { view.hideFreeResponseSubmission(); }
 
-void FreeResponsePresenter::notifyThatTaskHasStarted() {
-    testView.hideNextTrialButton();
-}
-
 void FreeResponsePresenter::notifyThatUserIsDoneResponding() {
     view.hideFreeResponseSubmission();
 }

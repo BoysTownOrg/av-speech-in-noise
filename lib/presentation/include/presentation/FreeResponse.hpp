@@ -50,7 +50,6 @@ class FreeResponsePresenter : public TaskPresenter {
     FreeResponsePresenter(TestView &, FreeResponseView &);
     void start() override;
     void stop() override;
-    void notifyThatTaskHasStarted() override;
     void notifyThatUserIsDoneResponding() override;
     void showResponseSubmission() override;
 
