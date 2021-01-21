@@ -2,9 +2,9 @@
 #include <regex>
 
 namespace av_speech_in_noise {
-ChooseKeywordsController::ChooseKeywordsController(
-    Model &model, ChooseKeywordsControl &control)
-    : control{control}, model{model} {
+ChooseKeywordsController::ChooseKeywordsController(Model &model,
+    ChooseKeywordsControl &control, ChooseKeywordsPresenter &presenter)
+    : control{control}, model{model}, presenter{presenter} {
     control.attach(this);
 }
 
@@ -25,50 +25,50 @@ void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
 }
 
 void ChooseKeywordsController::notifyThatAllWrongButtonHasBeenClicked() {
-    control.markFirstKeywordIncorrect();
-    control.markSecondKeywordIncorrect();
-    control.markThirdKeywordIncorrect();
+    presenter.markFirstKeywordIncorrect();
+    presenter.markSecondKeywordIncorrect();
+    presenter.markThirdKeywordIncorrect();
 }
 
 void ChooseKeywordsController::notifyThatResetButtonIsClicked() {
-    control.markFirstKeywordCorrect();
-    control.markSecondKeywordCorrect();
-    control.markThirdKeywordCorrect();
+    presenter.markFirstKeywordCorrect();
+    presenter.markSecondKeywordCorrect();
+    presenter.markThirdKeywordCorrect();
 }
 
 void ChooseKeywordsController::notifyThatFirstKeywordButtonIsClicked() {
-    control.markFirstKeywordIncorrect();
+    presenter.markFirstKeywordIncorrect();
 }
 
 void ChooseKeywordsController::notifyThatSecondKeywordButtonIsClicked() {
-    control.markSecondKeywordIncorrect();
+    presenter.markSecondKeywordIncorrect();
 }
 
 void ChooseKeywordsController::notifyThatThirdKeywordButtonIsClicked() {
-    control.markThirdKeywordIncorrect();
+    presenter.markThirdKeywordIncorrect();
 }
 
 static void hideResponseSubmission(ChooseKeywordsView &view) {
     view.hideResponseSubmission();
 }
 
-ChooseKeywordsPresenter::ChooseKeywordsPresenter(
+ChooseKeywordsPresenterImpl::ChooseKeywordsPresenterImpl(
     TestView &testView, ChooseKeywordsView &view)
     : testView{testView}, view{view} {}
 
-void ChooseKeywordsPresenter::start() { testView.showNextTrialButton(); }
+void ChooseKeywordsPresenterImpl::start() { testView.showNextTrialButton(); }
 
-void ChooseKeywordsPresenter::stop() { hideResponseSubmission(view); }
+void ChooseKeywordsPresenterImpl::stop() { hideResponseSubmission(view); }
 
-void ChooseKeywordsPresenter::notifyThatTaskHasStarted() {
+void ChooseKeywordsPresenterImpl::notifyThatTaskHasStarted() {
     testView.hideNextTrialButton();
 }
 
-void ChooseKeywordsPresenter::notifyThatUserIsDoneResponding() {
+void ChooseKeywordsPresenterImpl::notifyThatUserIsDoneResponding() {
     hideResponseSubmission(view);
 }
 
-void ChooseKeywordsPresenter::showResponseSubmission() {
+void ChooseKeywordsPresenterImpl::showResponseSubmission() {
     view.showResponseSubmission();
 }
 
@@ -97,7 +97,7 @@ constexpr auto captureAnythingExceptTrailingSpace{
 constexpr auto captureAnythingExceptLeadingOrTrailingSpace{
     concatenate(spaceIfPresent, captureAnythingExceptTrailingSpace.c)};
 
-void ChooseKeywordsPresenter::set(
+void ChooseKeywordsPresenterImpl::set(
     const SentenceWithThreeKeywords &sentenceWithThreeKeywords) {
     std::smatch match;
     std::regex_search(sentenceWithThreeKeywords.sentence, match,
@@ -115,5 +115,29 @@ void ChooseKeywordsPresenter::set(
     view.setTextFollowingSecondKeywordButton(match[3]);
     view.setThirdKeywordButtonText(sentenceWithThreeKeywords.thirdKeyword);
     view.setTextFollowingThirdKeywordButton(match[4]);
+}
+
+void ChooseKeywordsPresenterImpl::markFirstKeywordIncorrect() {
+    view.markFirstKeywordIncorrect();
+}
+
+void ChooseKeywordsPresenterImpl::markSecondKeywordIncorrect() {
+    view.markSecondKeywordIncorrect();
+}
+
+void ChooseKeywordsPresenterImpl::markThirdKeywordIncorrect() {
+    view.markThirdKeywordIncorrect();
+}
+
+void ChooseKeywordsPresenterImpl::markFirstKeywordCorrect() {
+    view.markFirstKeywordCorrect();
+}
+
+void ChooseKeywordsPresenterImpl::markSecondKeywordCorrect() {
+    view.markSecondKeywordCorrect();
+}
+
+void ChooseKeywordsPresenterImpl::markThirdKeywordCorrect() {
+    view.markThirdKeywordCorrect();
 }
 }

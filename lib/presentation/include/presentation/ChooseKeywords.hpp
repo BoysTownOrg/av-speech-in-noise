@@ -20,6 +20,12 @@ class ChooseKeywordsView {
     virtual void setTextFollowingFirstKeywordButton(const std::string &s) = 0;
     virtual void setTextFollowingSecondKeywordButton(const std::string &s) = 0;
     virtual void setTextFollowingThirdKeywordButton(const std::string &s) = 0;
+    virtual void markFirstKeywordIncorrect() = 0;
+    virtual void markSecondKeywordIncorrect() = 0;
+    virtual void markThirdKeywordIncorrect() = 0;
+    virtual void markFirstKeywordCorrect() = 0;
+    virtual void markSecondKeywordCorrect() = 0;
+    virtual void markThirdKeywordCorrect() = 0;
 };
 
 class ChooseKeywordsControl {
@@ -40,6 +46,12 @@ class ChooseKeywordsControl {
     virtual auto firstKeywordCorrect() -> bool = 0;
     virtual auto secondKeywordCorrect() -> bool = 0;
     virtual auto thirdKeywordCorrect() -> bool = 0;
+};
+
+class ChooseKeywordsPresenter {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        ChooseKeywordsPresenter);
     virtual void markFirstKeywordIncorrect() = 0;
     virtual void markSecondKeywordIncorrect() = 0;
     virtual void markThirdKeywordIncorrect() = 0;
@@ -51,7 +63,8 @@ class ChooseKeywordsControl {
 class ChooseKeywordsController : public TaskController,
                                  public ChooseKeywordsControl::Observer {
   public:
-    ChooseKeywordsController(Model &, ChooseKeywordsControl &);
+    ChooseKeywordsController(
+        Model &, ChooseKeywordsControl &, ChooseKeywordsPresenter &);
     void attach(TaskController::Observer *) override;
     void attach(TestController *) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
@@ -64,6 +77,7 @@ class ChooseKeywordsController : public TaskController,
   private:
     ChooseKeywordsControl &control;
     Model &model;
+    ChooseKeywordsPresenter &presenter;
     TestController *testController{};
     TaskController::Observer *taskControllerObserver{};
 };
@@ -75,15 +89,22 @@ struct SentenceWithThreeKeywords {
     std::string thirdKeyword;
 };
 
-class ChooseKeywordsPresenter : public TaskPresenter {
+class ChooseKeywordsPresenterImpl : public ChooseKeywordsPresenter,
+                                    public TaskPresenter {
   public:
-    ChooseKeywordsPresenter(TestView &, ChooseKeywordsView &);
+    ChooseKeywordsPresenterImpl(TestView &, ChooseKeywordsView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
     void notifyThatUserIsDoneResponding() override;
     void showResponseSubmission() override;
     void set(const SentenceWithThreeKeywords &);
+    void markFirstKeywordIncorrect() override;
+    void markSecondKeywordIncorrect() override;
+    void markThirdKeywordIncorrect() override;
+    void markFirstKeywordCorrect() override;
+    void markSecondKeywordCorrect() override;
+    void markThirdKeywordCorrect() override;
 
   private:
     TestView &testView;
