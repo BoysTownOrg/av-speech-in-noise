@@ -37,9 +37,9 @@ class ConsonantTaskPresenter : public TaskPresenter {
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
-    void notifyThatUserIsDoneResponding() override;
     void notifyThatTrialHasStarted() override;
     void showResponseSubmission() override;
+    void hideResponseSubmission() override;
 
   private:
     ConsonantTaskView &view;
@@ -48,17 +48,16 @@ class ConsonantTaskPresenter : public TaskPresenter {
 class ConsonantTaskController : public TaskController,
                                 public ConsonantTaskControl::Observer {
   public:
-    ConsonantTaskController(Model &, ConsonantTaskControl &);
+    ConsonantTaskController(TestController &, Model &, ConsonantTaskControl &);
     void attach(TaskController::Observer *);
-    void attach(TestController *);
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
 
   private:
+    TestController &testController;
     Model &model;
     ConsonantTaskControl &control;
     TaskController::Observer *observer{};
-    TestController *controller{};
 };
 }
 

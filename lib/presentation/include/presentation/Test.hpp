@@ -55,6 +55,7 @@ class TestController {
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() = 0;
     virtual void notifyThatUserIsDoneResponding() = 0;
     virtual void notifyThatUserIsReadyForNextTrial() = 0;
+    virtual void notifyThatUserIsDoneRespondingAndIsReadyForNextTrial() {}
 };
 
 class TestPresenter : public virtual TestController::Observer,
