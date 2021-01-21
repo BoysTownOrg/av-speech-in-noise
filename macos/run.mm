@@ -397,8 +397,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         sentencesWithThreeKeywords(
             TextFileReaderImpl{}.read(resourceUrl("mlst-c", "txt")))};
     CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
-    CorrectKeywordsController correctKeywordsController{
-        model, view, correctKeywordsUI};
     CorrectKeywordsPresenter correctKeywordsPresenter{
         experimenterView, correctKeywordsUI};
     PassFailUI passFailUI{passFailUIController};
@@ -414,12 +412,12 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     TestControllerImpl testController{model, view, experimenterView};
     ChooseKeywordsController chooseKeywordsController{
         testController, model, chooseKeywordsUI, chooseKeywordsPresenter};
+    CorrectKeywordsController correctKeywordsController{
+        testController, model, view, correctKeywordsUI};
     consonantTaskController.attach(&testController);
     consonantTaskController.attach(&consonantPresenter);
     freeResponseController.attach(&testController);
     freeResponseController.attach(&freeResponsePresenter);
-    correctKeywordsController.attach(&testController);
-    correctKeywordsController.attach(&correctKeywordsPresenter);
     passFailController.attach(&testController);
     passFailController.attach(&passFailPresenter);
     coordinateResponseMeasureController.attach(&testController);
