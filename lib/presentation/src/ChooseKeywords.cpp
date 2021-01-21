@@ -58,12 +58,6 @@ void ChooseKeywordsPresenterImpl::stop() {
     av_speech_in_noise::hideResponseSubmission(view);
 }
 
-void ChooseKeywordsPresenterImpl::notifyThatTaskHasStarted() {
-    testView.hideNextTrialButton();
-}
-
-void ChooseKeywordsPresenterImpl::notifyThatUserIsDoneResponding() {}
-
 void ChooseKeywordsPresenterImpl::showResponseSubmission() {
     view.showResponseSubmission();
 }

@@ -10,8 +10,8 @@ class TaskController {
     class Observer {
       public:
         virtual ~Observer() = default;
-        virtual void notifyThatTaskHasStarted() = 0;
-        virtual void notifyThatUserIsDoneResponding() = 0;
+        virtual void notifyThatTaskHasStarted() {}
+        virtual void notifyThatUserIsDoneResponding() {}
         virtual void notifyThatTrialHasStarted() {}
     };
     virtual ~TaskController() = default;

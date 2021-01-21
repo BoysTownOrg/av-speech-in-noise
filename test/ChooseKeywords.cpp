@@ -290,11 +290,6 @@ class ChooseKeywordsPresenterTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).responseSubmissionHidden())
 
-CHOOSE_KEYWORDS_PRESENTER_TEST(hidesReadyButtonWhenTaskStarts) {
-    presenter.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
-}
-
 CHOOSE_KEYWORDS_PRESENTER_TEST(hidesResponseSubmission) {
     presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);

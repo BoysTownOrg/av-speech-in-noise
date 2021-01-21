@@ -91,8 +91,6 @@ class ChooseKeywordsPresenterImpl : public ChooseKeywordsPresenter,
     ChooseKeywordsPresenterImpl(TestView &, ChooseKeywordsView &);
     void start() override;
     void stop() override;
-    void notifyThatTaskHasStarted() override;
-    void notifyThatUserIsDoneResponding() override;
     void showResponseSubmission() override;
     void hideResponseSubmission() override;
     void set(const SentenceWithThreeKeywords &);
