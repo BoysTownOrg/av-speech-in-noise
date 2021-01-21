@@ -1,5 +1,6 @@
 #include "ChooseKeywords.hpp"
 #include <regex>
+#include <utility>
 
 namespace av_speech_in_noise {
 ChooseKeywordsController::ChooseKeywordsController(
@@ -44,9 +45,11 @@ static void hideResponseSubmission(ChooseKeywordsView &view) {
     view.hideResponseSubmission();
 }
 
-ChooseKeywordsPresenterImpl::ChooseKeywordsPresenterImpl(
-    TestView &testView, ChooseKeywordsView &view)
-    : testView{testView}, view{view} {}
+ChooseKeywordsPresenterImpl::ChooseKeywordsPresenterImpl(Model &model,
+    TestView &testView, ChooseKeywordsView &view,
+    std::map<std::string, SentenceWithThreeKeywords> sentencesWithThreeKeywords)
+    : sentencesWithThreeKeywords{std::move(sentencesWithThreeKeywords)},
+      model{model}, testView{testView}, view{view} {}
 
 void ChooseKeywordsPresenterImpl::start() { testView.showNextTrialButton(); }
 
@@ -59,6 +62,8 @@ void ChooseKeywordsPresenterImpl::stop() {
 }
 
 void ChooseKeywordsPresenterImpl::showResponseSubmission() {
+    if (sentencesWithThreeKeywords.count(model.targetFileName()) != 0)
+        set(sentencesWithThreeKeywords.at(model.targetFileName()));
     view.showResponseSubmission();
 }
 

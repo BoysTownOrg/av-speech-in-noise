@@ -276,9 +276,18 @@ class ChooseKeywordsControllerTests : public ::testing::Test {
 
 class ChooseKeywordsPresenterTests : public ::testing::Test {
   protected:
+    ModelStub model;
     TestViewStub testView;
     ChooseKeywordsViewStub view;
-    ChooseKeywordsPresenterImpl presenter{testView, view};
+    ChooseKeywordsPresenterImpl presenter{model, testView, view,
+        std::map<std::string, SentenceWithThreeKeywords>{
+            {"fileA",
+                SentenceWithThreeKeywords{
+                    "The visitors stretched before dinner.", "visitors",
+                    "stretched", "dinner"}},
+            {"fileB",
+                SentenceWithThreeKeywords{"Daddy's mouth is turning yellow.",
+                    "Daddy's", "mouth", "turning"}}}};
 };
 
 #define CHOOSE_KEYWORDS_CONTROLLER_TEST(a)                                     \
@@ -312,9 +321,8 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText) {
-    presenter.set(
-        SentenceWithThreeKeywords{"The visitors stretched before dinner.",
-            "visitors", "stretched", "dinner"});
+    model.setTargetFileName("fileA");
+    presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "The", view.textPrecedingFirstKeywordButton());
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("visitors", view.firstKeywordButtonText());
@@ -329,8 +337,8 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText) {
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText2) {
-    presenter.set(SentenceWithThreeKeywords{
-        "Daddy's mouth is turning yellow.", "Daddy's", "mouth", "turning"});
+    model.setTargetFileName("fileB");
+    presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("", view.textPrecedingFirstKeywordButton());
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("Daddy's", view.firstKeywordButtonText());
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("", view.textFollowingFirstKeywordButton());
