@@ -21,7 +21,7 @@ void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     threeKeywords.thirdCorrect = control.thirdKeywordCorrect();
     model.submit(threeKeywords);
     testController->notifyThatUserIsDoneResponding();
-    taskControllerObserver->notifyThatUserIsDoneResponding();
+    presenter.hideResponseSubmission();
 }
 
 void ChooseKeywordsController::notifyThatAllWrongButtonHasBeenClicked() {
@@ -58,15 +58,19 @@ ChooseKeywordsPresenterImpl::ChooseKeywordsPresenterImpl(
 
 void ChooseKeywordsPresenterImpl::start() { testView.showNextTrialButton(); }
 
-void ChooseKeywordsPresenterImpl::stop() { hideResponseSubmission(view); }
+void ChooseKeywordsPresenterImpl::hideResponseSubmission() {
+    view.hideResponseSubmission();
+}
+
+void ChooseKeywordsPresenterImpl::stop() {
+    av_speech_in_noise::hideResponseSubmission(view);
+}
 
 void ChooseKeywordsPresenterImpl::notifyThatTaskHasStarted() {
     testView.hideNextTrialButton();
 }
 
-void ChooseKeywordsPresenterImpl::notifyThatUserIsDoneResponding() {
-    hideResponseSubmission(view);
-}
+void ChooseKeywordsPresenterImpl::notifyThatUserIsDoneResponding() {}
 
 void ChooseKeywordsPresenterImpl::showResponseSubmission() {
     view.showResponseSubmission();

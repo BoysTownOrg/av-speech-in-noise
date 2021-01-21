@@ -58,6 +58,7 @@ class ChooseKeywordsPresenter {
     virtual void markFirstKeywordCorrect() = 0;
     virtual void markSecondKeywordCorrect() = 0;
     virtual void markThirdKeywordCorrect() = 0;
+    virtual void hideResponseSubmission() = 0;
 };
 
 class ChooseKeywordsController : public TaskController,
@@ -98,6 +99,7 @@ class ChooseKeywordsPresenterImpl : public ChooseKeywordsPresenter,
     void notifyThatTaskHasStarted() override;
     void notifyThatUserIsDoneResponding() override;
     void showResponseSubmission() override;
+    void hideResponseSubmission() override;
     void set(const SentenceWithThreeKeywords &);
     void markFirstKeywordIncorrect() override;
     void markSecondKeywordIncorrect() override;

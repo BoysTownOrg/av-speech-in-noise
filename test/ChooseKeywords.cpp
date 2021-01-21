@@ -241,7 +241,14 @@ class ChooseKeywordsPresenterStub : public ChooseKeywordsPresenter {
         return markThirdKeywordCorrectCalled_;
     }
 
+    void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
+
+    [[nodiscard]] auto responseSubmissionHidden() const -> bool {
+        return responseSubmissionHidden_;
+    }
+
   private:
+    bool responseSubmissionHidden_{};
     bool markFirstKeywordIncorrectCalled_{};
     bool markSecondKeywordIncorrectCalled_{};
     bool markThirdKeywordIncorrectCalled_{};
@@ -305,9 +312,8 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(hidesReadyButtonWhenTaskStarts) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
 }
 
-CHOOSE_KEYWORDS_PRESENTER_TEST(
-    hidesResponseSubmissionAfterUserIsDoneResponding) {
-    presenter.notifyThatUserIsDoneResponding();
+CHOOSE_KEYWORDS_PRESENTER_TEST(hidesResponseSubmission) {
+    presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
@@ -439,10 +445,9 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(
-    notifiesThatUserIsDoneRespondingAfterSubmitButtonIsClicked) {
+    hidesResponseSubmissionAfterSubmitButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        taskController.notifiedThatUserIsDoneResponding());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.responseSubmissionHidden());
 }
 }
 }
