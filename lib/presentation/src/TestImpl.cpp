@@ -96,6 +96,15 @@ void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
 
 void TestControllerImpl::attach(SessionController *p) { controller = p; }
 
+void TestControllerImpl::
+    notifyThatUserIsDoneRespondingAndIsReadyForNextTrial() {
+    observer->hideResponseSubmission();
+    notifyIfTestIsCompleteElse(model, controller, [&]() {
+        displayTrialInformation(model, observer);
+        av_speech_in_noise::playTrial(model, sessionView, observer);
+    });
+}
+
 TestPresenterImpl::TestPresenterImpl(Model &model, TestView &view,
     std::map<Method, TaskPresenter &> taskPresenters,
     UninitializedTaskPresenter *taskPresenter_)

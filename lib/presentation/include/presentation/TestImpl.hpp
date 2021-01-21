@@ -21,6 +21,7 @@ class TestControllerImpl : public TestControl::Observer, public TestController {
         override;
     void notifyThatUserIsDoneResponding() override;
     void notifyThatUserIsReadyForNextTrial() override;
+    void notifyThatUserIsDoneRespondingAndIsReadyForNextTrial();
 
   private:
     Model &model;

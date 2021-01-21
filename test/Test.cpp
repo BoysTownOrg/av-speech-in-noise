@@ -239,6 +239,21 @@ class NotifyingThatUserIsReadyForNextTrial : public ControllerUseCase {
     TestControllerImpl &controller;
 };
 
+class NotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial
+    : public ControllerUseCase {
+  public:
+    explicit NotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial(
+        TestControllerImpl &controller)
+        : controller{controller} {}
+
+    void run() override {
+        controller.notifyThatUserIsDoneRespondingAndIsReadyForNextTrial();
+    }
+
+  private:
+    TestControllerImpl &controller;
+};
+
 class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
   public:
     void initialize(TaskPresenter *p) override { presenter_ = p; }
@@ -303,6 +318,8 @@ class TestControllerTests : public ::testing::Test {
         controller};
     NotifyingThatUserIsReadyForNextTrial notifyingThatUserIsReadyForNextTrial{
         controller};
+    NotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial
+        notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial{controller};
     SessionControllerStub sessionController;
     TestControllerListenerStub experimenterControllerListener;
 
@@ -403,6 +420,13 @@ TEST_CONTROLLER_TEST(
         notifyingThatUserIsReadyForNextTrial, sessionController);
 }
 
+TEST_CONTROLLER_TEST(
+    notifiesThatTestIsCompleteAfterUserIsDoneRespondingAndIsReadyForNextTrial) {
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE_WHEN_COMPLETE(
+        notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial,
+        sessionController);
+}
+
 TEST_CONTROLLER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
     AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(playingTrial, sessionView, model);
 }
@@ -411,6 +435,13 @@ TEST_CONTROLLER_TEST(
     responderPlaysTrialAfterNotifyingThatUserIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(
         notifyingThatUserIsReadyForNextTrial, sessionView, model);
+}
+
+TEST_CONTROLLER_TEST(
+    responderPlaysTrialAfterNotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial) {
+    AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(
+        notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial, sessionView,
+        model);
 }
 
 TEST_CONTROLLER_TEST(notifiesThatTrialHasStartedAfterPlayTrialButtonClicked) {
@@ -422,6 +453,13 @@ TEST_CONTROLLER_TEST(
     notifiesThatTrialHasStartedAfterNotifyingThatUserIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_TRIAL_HAS_STARTED(
         notifyingThatUserIsReadyForNextTrial, experimenterControllerListener);
+}
+
+TEST_CONTROLLER_TEST(
+    notifiesThatTrialHasStartedAfterNotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial) {
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_TRIAL_HAS_STARTED(
+        notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial,
+        experimenterControllerListener);
 }
 
 TEST_CONTROLLER_TEST(
@@ -474,6 +512,13 @@ TEST_CONTROLLER_TEST(
         notifyingThatUserIsReadyForNextTrial, experimenterControllerListener);
 }
 
+TEST_CONTROLLER_TEST(
+    responderDisplaysTargetFileNameAfterNotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial) {
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
+        notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial,
+        experimenterControllerListener);
+}
+
 TEST_CONTROLLER_TEST(responderDisplaysTrialNumberAfterUserIsDoneResponding) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
         notifyingThatUserIsDoneResponding, experimenterControllerListener);
@@ -488,6 +533,13 @@ TEST_CONTROLLER_TEST(hidesResponseSubmissionAfterUserIsDoneResponding) {
 TEST_CONTROLLER_TEST(
     hidesResponseSubmissionAfterUserIsDoneRespondingForATestThatMayContinueAfterCompletion) {
     run(notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        experimenterControllerListener.responseSubmissionHidden());
+}
+
+TEST_CONTROLLER_TEST(
+    hidesResponseSubmissionAfterUserIsDoneRespondingAndIsReadyForNextTrial) {
+    run(notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         experimenterControllerListener.responseSubmissionHidden());
 }
@@ -509,6 +561,13 @@ TEST_CONTROLLER_TEST(
     responderDisplaysTrialNumberAfterNotifyingThatUserIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
         notifyingThatUserIsReadyForNextTrial, experimenterControllerListener);
+}
+
+TEST_CONTROLLER_TEST(
+    responderDisplaysTrialNumberAfterNotifyingThatUserIsDoneRespondingIsReadyForNextTrial) {
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
+        notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial,
+        experimenterControllerListener);
 }
 
 TEST_CONTROLLER_TEST(showsContinueTestingDialog) {
