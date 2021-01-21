@@ -399,7 +399,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     CorrectKeywordsPresenter correctKeywordsPresenter{
         experimenterView, correctKeywordsUI};
     PassFailUI passFailUI{passFailUIController};
-    PassFailController passFailController{model, passFailUI};
     PassFailPresenter passFailPresenter{experimenterView, passFailUI};
     CoordinateResponseMeasureController coordinateResponseMeasureController{
         model, coordinateResponseMeasureView};
@@ -415,10 +414,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         testController, model, view, correctKeywordsUI};
     FreeResponseController freeResponseController{
         testController, model, freeResponseUI};
+    PassFailController passFailController{testController, model, passFailUI};
     consonantTaskController.attach(&testController);
     consonantTaskController.attach(&consonantPresenter);
-    passFailController.attach(&testController);
-    passFailController.attach(&passFailPresenter);
     coordinateResponseMeasureController.attach(&testController);
     coordinateResponseMeasureController.attach(
         &coordinateResponseMeasurePresenter);
