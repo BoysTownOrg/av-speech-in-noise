@@ -59,7 +59,6 @@ class ChooseKeywordsPresenter {
     virtual void markThirdKeywordIncorrect() = 0;
     virtual void markAllKeywordsIncorrect() = 0;
     virtual void markAllKeywordsCorrect() = 0;
-    virtual void hideResponseSubmission() = 0;
 };
 
 class ChooseKeywordsController : public ChooseKeywordsControl::Observer {

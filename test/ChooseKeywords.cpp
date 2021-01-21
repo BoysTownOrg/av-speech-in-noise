@@ -230,14 +230,7 @@ class ChooseKeywordsPresenterStub : public ChooseKeywordsPresenter {
         return allKeywordsMarkedCorrect_;
     }
 
-    void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
-
-    [[nodiscard]] auto responseSubmissionHidden() const -> bool {
-        return responseSubmissionHidden_;
-    }
-
   private:
-    bool responseSubmissionHidden_{};
     bool markFirstKeywordIncorrectCalled_{};
     bool markSecondKeywordIncorrectCalled_{};
     bool markThirdKeywordIncorrectCalled_{};
@@ -440,12 +433,6 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
-}
-
-CHOOSE_KEYWORDS_CONTROLLER_TEST(
-    hidesResponseSubmissionAfterSubmitButtonIsClicked) {
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.responseSubmissionHidden());
 }
 }
 }

@@ -19,7 +19,6 @@ void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     threeKeywords.thirdCorrect = control.thirdKeywordCorrect();
     model.submit(threeKeywords);
     testController.notifyThatUserIsDoneResponding();
-    presenter.hideResponseSubmission();
 }
 
 void ChooseKeywordsController::notifyThatAllWrongButtonHasBeenClicked() {
