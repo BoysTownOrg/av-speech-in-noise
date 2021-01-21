@@ -111,14 +111,12 @@ class CoordinateResponseMeasureControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
     CoordinateResponseMeasureControlStub control;
-    CoordinateResponseMeasureController controller{model, control};
     TestControllerStub testController;
+    CoordinateResponseMeasureController controller{
+        testController, model, control};
     TaskControllerObserverStub observer;
 
-    CoordinateResponseMeasureControllerTests() {
-        controller.attach(&testController);
-        controller.attach(&observer);
-    }
+    CoordinateResponseMeasureControllerTests() { controller.attach(&observer); }
 };
 
 class CoordinateResponseMeasurePresenterTests : public ::testing::Test {
@@ -144,9 +142,9 @@ COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(hidesReadyButtonWhenTaskStarts) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonHidden());
 }
 
-COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(
-    hidesResponseButtonsAfterUserIsDoneResponding) {
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(hidesResponseSubmission) {
     notifyThatUserIsDoneResponding(presenter);
+    presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
@@ -193,13 +191,8 @@ COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
     notifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
     clickResponseButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController.notifiedThatUserIsReadyForNextTrial());
-}
-
-COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
-    notifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
-    clickResponseButton(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatUserIsDoneResponding());
+        testController
+            .notifiedThatUserIsDoneRespondingAndIsReadyForNextTrial());
 }
 
 COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(

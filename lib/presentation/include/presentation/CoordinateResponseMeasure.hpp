@@ -37,18 +37,17 @@ class CoordinateResponseMeasureController
     : public TaskController,
       public CoordinateResponseMeasureControl::Observer {
   public:
-    explicit CoordinateResponseMeasureController(
-        Model &, CoordinateResponseMeasureControl &);
+    CoordinateResponseMeasureController(
+        TestController &, Model &, CoordinateResponseMeasureControl &);
     void attach(TaskController::Observer *);
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
-    void attach(TestController *);
 
   private:
+    TestController &testController;
     Model &model;
     CoordinateResponseMeasureControl &control;
     TaskController::Observer *observer{};
-    TestController *controller{};
 };
 
 class CoordinateResponseMeasurePresenter : public TaskPresenter {
@@ -58,7 +57,7 @@ class CoordinateResponseMeasurePresenter : public TaskPresenter {
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
-    void notifyThatUserIsDoneResponding() override;
+    void hideResponseSubmission() override;
     void showResponseSubmission() override;
 
   private:
