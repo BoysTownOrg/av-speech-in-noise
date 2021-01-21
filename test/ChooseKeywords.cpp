@@ -1,7 +1,6 @@
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
-#include "TaskControllerObserverStub.hpp"
 #include "ModelStub.hpp"
 #include <presentation/ChooseKeywords.hpp>
 #include <gtest/gtest.h>
@@ -283,12 +282,8 @@ class ChooseKeywordsControllerTests : public ::testing::Test {
     ChooseKeywordsPresenterStub presenter;
     ChooseKeywordsController controller{model, control, presenter};
     TestControllerStub testController;
-    TaskControllerObserverStub taskController;
 
-    ChooseKeywordsControllerTests() {
-        controller.attach(&testController);
-        controller.attach(&taskController);
-    }
+    ChooseKeywordsControllerTests() { controller.attach(&testController); }
 };
 
 class ChooseKeywordsPresenterTests : public ::testing::Test {

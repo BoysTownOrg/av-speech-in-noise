@@ -8,10 +8,6 @@ ChooseKeywordsController::ChooseKeywordsController(Model &model,
     control.attach(this);
 }
 
-void ChooseKeywordsController::attach(TaskController::Observer *t) {
-    taskControllerObserver = t;
-}
-
 void ChooseKeywordsController::attach(TestController *t) { testController = t; }
 
 void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {

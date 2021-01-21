@@ -66,7 +66,6 @@ class ChooseKeywordsController : public TaskController,
   public:
     ChooseKeywordsController(
         Model &, ChooseKeywordsControl &, ChooseKeywordsPresenter &);
-    void attach(TaskController::Observer *) override;
     void attach(TestController *) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
     void notifyThatAllWrongButtonHasBeenClicked() override;
@@ -80,7 +79,6 @@ class ChooseKeywordsController : public TaskController,
     Model &model;
     ChooseKeywordsPresenter &presenter;
     TestController *testController{};
-    TaskController::Observer *taskControllerObserver{};
 };
 
 struct SentenceWithThreeKeywords {
