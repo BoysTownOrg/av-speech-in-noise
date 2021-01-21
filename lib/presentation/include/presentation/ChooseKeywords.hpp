@@ -55,9 +55,8 @@ class ChooseKeywordsPresenter {
     virtual void markFirstKeywordIncorrect() = 0;
     virtual void markSecondKeywordIncorrect() = 0;
     virtual void markThirdKeywordIncorrect() = 0;
-    virtual void markFirstKeywordCorrect() = 0;
-    virtual void markSecondKeywordCorrect() = 0;
-    virtual void markThirdKeywordCorrect() = 0;
+    virtual void markAllKeywordsIncorrect() = 0;
+    virtual void markAllKeywordsCorrect() = 0;
     virtual void hideResponseSubmission() = 0;
 };
 
@@ -102,9 +101,8 @@ class ChooseKeywordsPresenterImpl : public ChooseKeywordsPresenter,
     void markFirstKeywordIncorrect() override;
     void markSecondKeywordIncorrect() override;
     void markThirdKeywordIncorrect() override;
-    void markFirstKeywordCorrect() override;
-    void markSecondKeywordCorrect() override;
-    void markThirdKeywordCorrect() override;
+    void markAllKeywordsIncorrect() override;
+    void markAllKeywordsCorrect() override;
 
   private:
     TestView &testView;

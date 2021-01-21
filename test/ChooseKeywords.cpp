@@ -204,17 +204,11 @@ class ChooseKeywordsPresenterStub : public ChooseKeywordsPresenter {
         markThirdKeywordIncorrectCalled_ = true;
     }
 
-    void markFirstKeywordCorrect() override {
-        markFirstKeywordCorrectCalled_ = true;
+    void markAllKeywordsIncorrect() override {
+        allKeywordsMarkedIncorrect_ = true;
     }
 
-    void markSecondKeywordCorrect() override {
-        markSecondKeywordCorrectCalled_ = true;
-    }
-
-    void markThirdKeywordCorrect() override {
-        markThirdKeywordCorrectCalled_ = true;
-    }
+    void markAllKeywordsCorrect() override { allKeywordsMarkedCorrect_ = true; }
 
     [[nodiscard]] auto markFirstKeywordIncorrectCalled() const -> bool {
         return markFirstKeywordIncorrectCalled_;
@@ -228,16 +222,12 @@ class ChooseKeywordsPresenterStub : public ChooseKeywordsPresenter {
         return markThirdKeywordIncorrectCalled_;
     }
 
-    [[nodiscard]] auto markFirstKeywordCorrectCalled() const -> bool {
-        return markFirstKeywordCorrectCalled_;
+    [[nodiscard]] auto allKeywordsMarkedIncorrect() const -> bool {
+        return allKeywordsMarkedIncorrect_;
     }
 
-    [[nodiscard]] auto markSecondKeywordCorrectCalled() const -> bool {
-        return markSecondKeywordCorrectCalled_;
-    }
-
-    [[nodiscard]] auto markThirdKeywordCorrectCalled() const -> bool {
-        return markThirdKeywordCorrectCalled_;
+    [[nodiscard]] auto allKeywordsMarkedCorrect() const -> bool {
+        return allKeywordsMarkedCorrect_;
     }
 
     void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
@@ -251,9 +241,8 @@ class ChooseKeywordsPresenterStub : public ChooseKeywordsPresenter {
     bool markFirstKeywordIncorrectCalled_{};
     bool markSecondKeywordIncorrectCalled_{};
     bool markThirdKeywordIncorrectCalled_{};
-    bool markFirstKeywordCorrectCalled_{};
-    bool markSecondKeywordCorrectCalled_{};
-    bool markThirdKeywordCorrectCalled_{};
+    bool allKeywordsMarkedIncorrect_{};
+    bool allKeywordsMarkedCorrect_{};
 };
 
 auto markFirstKeywordIncorrectCalled(ChooseKeywordsPresenterStub &control)
@@ -374,19 +363,18 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(marksThirdKeywordIncorrect) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.markThirdKeywordIncorrectCalled());
 }
 
-CHOOSE_KEYWORDS_PRESENTER_TEST(marksFirstKeywordCorrect) {
-    presenter.markFirstKeywordCorrect();
+CHOOSE_KEYWORDS_PRESENTER_TEST(marksAllKeywordsCorrect) {
+    presenter.markAllKeywordsCorrect();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.markFirstKeywordCorrectCalled());
-}
-
-CHOOSE_KEYWORDS_PRESENTER_TEST(marksSecondKeywordCorrect) {
-    presenter.markSecondKeywordCorrect();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.markSecondKeywordCorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.markThirdKeywordCorrectCalled());
 }
 
-CHOOSE_KEYWORDS_PRESENTER_TEST(marksThirdKeywordCorrect) {
-    presenter.markThirdKeywordCorrect();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.markThirdKeywordCorrectCalled());
+CHOOSE_KEYWORDS_PRESENTER_TEST(marksAllKeywordsIncorrect) {
+    presenter.markAllKeywordsIncorrect();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.markFirstKeywordIncorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.markSecondKeywordIncorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.markThirdKeywordIncorrectCalled());
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(
@@ -399,12 +387,9 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().thirdCorrect);
 }
 
-CHOOSE_KEYWORDS_CONTROLLER_TEST(
-    marksEachIncorrectAfterAllWrongButtonIsClicked) {
+CHOOSE_KEYWORDS_CONTROLLER_TEST(marksAllIncorrectAfterAllWrongButtonIsClicked) {
     control.notifyThatAllWrongButtonHasBeenClicked();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(markFirstKeywordIncorrectCalled(presenter));
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(markSecondKeywordIncorrectCalled(presenter));
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(markThirdKeywordIncorrectCalled(presenter));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.allKeywordsMarkedIncorrect());
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(
@@ -425,11 +410,9 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(markThirdKeywordIncorrectCalled(presenter));
 }
 
-CHOOSE_KEYWORDS_CONTROLLER_TEST(marksEachCorrectAfterResetButtonIsClicked) {
+CHOOSE_KEYWORDS_CONTROLLER_TEST(marksAllCorrectAfterResetButtonIsClicked) {
     control.notifyThatResetButtonIsClicked();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.markFirstKeywordCorrectCalled());
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.markSecondKeywordCorrectCalled());
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.markThirdKeywordCorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.allKeywordsMarkedCorrect());
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(

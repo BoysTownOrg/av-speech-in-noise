@@ -21,15 +21,11 @@ void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
 }
 
 void ChooseKeywordsController::notifyThatAllWrongButtonHasBeenClicked() {
-    presenter.markFirstKeywordIncorrect();
-    presenter.markSecondKeywordIncorrect();
-    presenter.markThirdKeywordIncorrect();
+    presenter.markAllKeywordsIncorrect();
 }
 
 void ChooseKeywordsController::notifyThatResetButtonIsClicked() {
-    presenter.markFirstKeywordCorrect();
-    presenter.markSecondKeywordCorrect();
-    presenter.markThirdKeywordCorrect();
+    presenter.markAllKeywordsCorrect();
 }
 
 void ChooseKeywordsController::notifyThatFirstKeywordButtonIsClicked() {
@@ -129,15 +125,15 @@ void ChooseKeywordsPresenterImpl::markThirdKeywordIncorrect() {
     view.markThirdKeywordIncorrect();
 }
 
-void ChooseKeywordsPresenterImpl::markFirstKeywordCorrect() {
+void ChooseKeywordsPresenterImpl::markAllKeywordsIncorrect() {
+    view.markFirstKeywordIncorrect();
+    view.markSecondKeywordIncorrect();
+    view.markThirdKeywordIncorrect();
+}
+
+void ChooseKeywordsPresenterImpl::markAllKeywordsCorrect() {
     view.markFirstKeywordCorrect();
-}
-
-void ChooseKeywordsPresenterImpl::markSecondKeywordCorrect() {
     view.markSecondKeywordCorrect();
-}
-
-void ChooseKeywordsPresenterImpl::markThirdKeywordCorrect() {
     view.markThirdKeywordCorrect();
 }
 }
