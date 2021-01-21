@@ -1,7 +1,6 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "TestViewStub.hpp"
-#include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
 #include <presentation/FreeResponse.hpp>
 #include <gtest/gtest.h>
@@ -82,14 +81,8 @@ class FreeResponseControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
     FreeResponseControlStub control;
-    FreeResponseController controller{model, control};
     TestControllerStub testController;
-    TaskControllerObserverStub taskController;
-
-    FreeResponseControllerTests() {
-        controller.attach(&testController);
-        controller.attach(&taskController);
-    }
+    FreeResponseController controller{testController, model, control};
 };
 
 class FreeResponsePresenterTests : public ::testing::Test {
@@ -106,9 +99,8 @@ class FreeResponsePresenterTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).freeResponseSubmissionHidden())
 
-FREE_RESPONSE_PRESENTER_TEST(
-    presenterHidesResponseButtonsAfterUserIsDoneResponding) {
-    notifyThatUserIsDoneResponding(presenter);
+FREE_RESPONSE_PRESENTER_TEST(presenterHidesResponseSubmission) {
+    presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
@@ -159,13 +151,6 @@ FREE_RESPONSE_CONTROLLER_TEST(
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
-}
-
-FREE_RESPONSE_CONTROLLER_TEST(
-    responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        taskController.notifiedThatUserIsDoneResponding());
 }
 }
 }

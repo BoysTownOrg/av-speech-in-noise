@@ -33,16 +33,13 @@ class FreeResponseView {
 class FreeResponseController : public TaskController,
                                public FreeResponseControl::Observer {
   public:
-    FreeResponseController(Model &, FreeResponseControl &);
-    void attach(TaskController::Observer *);
-    void attach(TestController *);
+    FreeResponseController(TestController &, Model &, FreeResponseControl &);
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
+    TestController &testController;
     Model &model;
     FreeResponseControl &control;
-    TaskController::Observer *observer{};
-    TestController *controller{};
 };
 
 class FreeResponsePresenter : public TaskPresenter {
@@ -50,7 +47,7 @@ class FreeResponsePresenter : public TaskPresenter {
     FreeResponsePresenter(TestView &, FreeResponseView &);
     void start() override;
     void stop() override;
-    void notifyThatUserIsDoneResponding() override;
+    void hideResponseSubmission() override;
     void showResponseSubmission() override;
 
   private:
