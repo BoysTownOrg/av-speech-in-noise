@@ -35,7 +35,7 @@ class FreeResponseController : public TaskController,
   public:
     FreeResponseController(Model &, FreeResponseControl &);
     void attach(TaskController::Observer *);
-    void attach(TestController *) override;
+    void attach(TestController *);
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:

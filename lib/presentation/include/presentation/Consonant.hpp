@@ -50,7 +50,7 @@ class ConsonantTaskController : public TaskController,
   public:
     ConsonantTaskController(Model &, ConsonantTaskControl &);
     void attach(TaskController::Observer *);
-    void attach(TestController *) override;
+    void attach(TestController *);
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
 

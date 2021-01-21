@@ -35,7 +35,7 @@ class CorrectKeywordsController : public TaskController,
     explicit CorrectKeywordsController(
         Model &, SessionView &, CorrectKeywordsControl &);
     void attach(TaskController::Observer *);
-    void attach(TestController *) override;
+    void attach(TestController *);
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:

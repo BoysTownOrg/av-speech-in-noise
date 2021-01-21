@@ -65,7 +65,7 @@ class ChooseKeywordsController : public TaskController,
   public:
     ChooseKeywordsController(
         Model &, ChooseKeywordsControl &, ChooseKeywordsPresenter &);
-    void attach(TestController *) override;
+    void attach(TestController *);
     void notifyThatSubmitButtonHasBeenClicked() override;
     void notifyThatAllWrongButtonHasBeenClicked() override;
     void notifyThatResetButtonIsClicked() override;
