@@ -14,18 +14,17 @@ void CorrectKeywordsController::attach(TaskController::Observer *e) {
 
 void CorrectKeywordsController::attach(TestController *r) { controller = r; }
 
-static void submitCorrectKeywords(Model &model, CorrectKeywordsControl &control,
-    TaskController::Observer *observer, TestController *controller) {
+static void submitCorrectKeywords(
+    Model &model, CorrectKeywordsControl &control, TestController *controller) {
     model.submit(
         CorrectKeywords{readInteger(control.correctKeywords(), "number")});
-    observer->notifyThatUserIsDoneResponding();
     controller
         ->notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
 void CorrectKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     try {
-        submitCorrectKeywords(model, control, observer, controller);
+        submitCorrectKeywords(model, control, controller);
     } catch (const std::runtime_error &e) {
         sessionView.showErrorMessage(e.what());
     }
@@ -39,7 +38,7 @@ void CorrectKeywordsPresenter::start() { testView.showNextTrialButton(); }
 
 void CorrectKeywordsPresenter::stop() { view.hideCorrectKeywordsSubmission(); }
 
-void CorrectKeywordsPresenter::notifyThatUserIsDoneResponding() {
+void CorrectKeywordsPresenter::hideResponseSubmission() {
     view.hideCorrectKeywordsSubmission();
 }
 

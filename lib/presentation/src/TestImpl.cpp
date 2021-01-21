@@ -69,6 +69,7 @@ static void notifyIfTestIsCompleteElse(Model &model,
 
 void TestControllerImpl::
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() {
+    observer->hideResponseSubmission();
     readyNextTrialIfTestIncompleteElse(model, observer, [&] {
         observer->showContinueTestingDialog();
         std::stringstream thresholds;

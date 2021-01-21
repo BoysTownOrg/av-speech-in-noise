@@ -51,8 +51,8 @@ class CorrectKeywordsPresenter : public TaskPresenter {
     explicit CorrectKeywordsPresenter(TestView &, CorrectKeywordsView &);
     void start() override;
     void stop() override;
-    void notifyThatUserIsDoneResponding() override;
     void showResponseSubmission() override;
+    void hideResponseSubmission() override;
 
   private:
     TestView &testView;

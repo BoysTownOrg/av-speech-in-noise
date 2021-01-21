@@ -93,9 +93,8 @@ class CorrectKeywordsPresenterTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).correctKeywordsSubmissionHidden())
 
-CORRECT_KEYWORDS_PRESENTER_TEST(
-    presenterHidesResponseButtonsAfterUserIsDoneResponding) {
-    notifyThatUserIsDoneResponding(presenter);
+CORRECT_KEYWORDS_PRESENTER_TEST(presenterHidesResponseButtons) {
+    presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
@@ -128,13 +127,6 @@ CORRECT_KEYWORDS_CONTROLLER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
-}
-
-CORRECT_KEYWORDS_CONTROLLER_TEST(
-    responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        taskController.notifiedThatUserIsDoneResponding());
 }
 
 CORRECT_KEYWORDS_CONTROLLER_TEST(

@@ -486,6 +486,13 @@ TEST_CONTROLLER_TEST(hidesResponseSubmissionAfterUserIsDoneResponding) {
 }
 
 TEST_CONTROLLER_TEST(
+    hidesResponseSubmissionAfterUserIsDoneRespondingForATestThatMayContinueAfterCompletion) {
+    run(notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        experimenterControllerListener.responseSubmissionHidden());
+}
+
+TEST_CONTROLLER_TEST(
     displaysTrialNumberAfterNotShowingContinueTestingDialogWithResults) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
