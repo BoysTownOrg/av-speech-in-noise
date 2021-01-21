@@ -29,8 +29,8 @@ class TestControlStub : public TestControl {
 class TaskPresenterStub : public TaskPresenter {
   public:
     void showResponseSubmission() override {}
+    void hideResponseSubmission() override {}
     void notifyThatTaskHasStarted() override {}
-    void notifyThatUserIsDoneResponding() override {}
     void notifyThatTrialHasStarted() override {}
     void start() override {}
     void stop() override {}
@@ -267,8 +267,6 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
     }
 
     void notifyThatTaskHasStarted() override {}
-
-    void notifyThatUserIsDoneResponding() override {}
 
     void notifyThatTrialHasStarted() override {
         notifiedThatTrialHasStarted_ = true;

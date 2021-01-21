@@ -88,10 +88,6 @@ auto cursorHidden(ConsonantViewStub &view) -> bool {
     return view.cursorHidden();
 }
 
-void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
-    presenter.notifyThatUserIsDoneResponding();
-}
-
 void notifyThatTrialHasStarted(TaskPresenter &presenter) {
     presenter.notifyThatTrialHasStarted();
 }

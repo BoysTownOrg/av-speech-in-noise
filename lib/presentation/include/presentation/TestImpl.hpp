@@ -38,26 +38,27 @@ class UninitializedTaskPresenter : public TaskPresenter {
 class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
   public:
     void initialize(TaskPresenter *p) override { presenter = p; }
+
     void showResponseSubmission() override {
         if (presenter != nullptr)
             presenter->showResponseSubmission();
     }
+
     void notifyThatTaskHasStarted() override {
         if (presenter != nullptr)
             presenter->notifyThatTaskHasStarted();
     }
-    void notifyThatUserIsDoneResponding() override {
-        if (presenter != nullptr)
-            presenter->notifyThatUserIsDoneResponding();
-    }
+
     void notifyThatTrialHasStarted() override {
         if (presenter != nullptr)
             presenter->notifyThatTrialHasStarted();
     }
+
     void start() override {
         if (presenter != nullptr)
             presenter->start();
     }
+
     void stop() override {
         if (presenter != nullptr)
             presenter->stop();

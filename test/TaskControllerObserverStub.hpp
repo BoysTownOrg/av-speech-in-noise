@@ -10,20 +10,11 @@ class TaskControllerObserverStub : public TaskController::Observer {
         notifiedThatTaskHasStarted_ = true;
     }
 
-    void notifyThatUserIsDoneResponding() override {
-        notifiedThatUserIsDoneResponding_ = true;
-    }
-
-    [[nodiscard]] auto notifiedThatUserIsDoneResponding() const -> bool {
-        return notifiedThatUserIsDoneResponding_;
-    }
-
     [[nodiscard]] auto notifiedThatTaskHasStarted() const -> bool {
         return notifiedThatTaskHasStarted_;
     }
 
   private:
-    bool notifiedThatUserIsDoneResponding_{};
     bool notifiedThatTaskHasStarted_{};
 };
 }

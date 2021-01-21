@@ -69,10 +69,6 @@ void notifyThatSubmitButtonHasBeenClicked(FreeResponseControlStub &view) {
     view.notifyThatSubmitButtonHasBeenClicked();
 }
 
-void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
-    presenter.notifyThatUserIsDoneResponding();
-}
-
 void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }

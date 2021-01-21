@@ -95,10 +95,6 @@ void clickReadyButton(CoordinateResponseMeasureControlStub &view) {
     view.clickReadyButton();
 }
 
-void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
-    presenter.notifyThatUserIsDoneResponding();
-}
-
 void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
@@ -143,7 +139,6 @@ COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(hidesReadyButtonWhenTaskStarts) {
 }
 
 COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(hidesResponseSubmission) {
-    notifyThatUserIsDoneResponding(presenter);
     presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }

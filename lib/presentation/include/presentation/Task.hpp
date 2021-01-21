@@ -11,7 +11,6 @@ class TaskController {
       public:
         virtual ~Observer() = default;
         virtual void notifyThatTaskHasStarted() {}
-        virtual void notifyThatUserIsDoneResponding() {}
         virtual void notifyThatTrialHasStarted() {}
     };
     virtual ~TaskController() = default;
@@ -21,7 +20,7 @@ class TaskPresenter : virtual public TaskController::Observer,
                       virtual public Presenter {
   public:
     virtual void showResponseSubmission() = 0;
-    virtual void hideResponseSubmission() {}
+    virtual void hideResponseSubmission() = 0;
 };
 }
 

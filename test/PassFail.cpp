@@ -51,10 +51,6 @@ void notifyThatCorrectButtonHasBeenClicked(PassFailControlStub &view) {
     view.notifyThatCorrectButtonHasBeenClicked();
 }
 
-void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
-    presenter.notifyThatUserIsDoneResponding();
-}
-
 void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
