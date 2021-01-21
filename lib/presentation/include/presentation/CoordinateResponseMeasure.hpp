@@ -39,7 +39,7 @@ class CoordinateResponseMeasureController
   public:
     explicit CoordinateResponseMeasureController(
         Model &, CoordinateResponseMeasureControl &);
-    void attach(TaskController::Observer *) override;
+    void attach(TaskController::Observer *);
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
     void attach(TestController *) override;

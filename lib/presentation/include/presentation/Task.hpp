@@ -15,7 +15,6 @@ class TaskController {
         virtual void notifyThatTrialHasStarted() {}
     };
     virtual ~TaskController() = default;
-    virtual void attach(Observer *) {}
     virtual void attach(TestController *) = 0;
 };
 

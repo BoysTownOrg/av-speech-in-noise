@@ -30,7 +30,7 @@ class PassFailController : public TaskController,
                            public PassFailControl::Observer {
   public:
     PassFailController(Model &, PassFailControl &);
-    void attach(TaskController::Observer *) override;
+    void attach(TaskController::Observer *);
     void attach(TestController *) override;
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
