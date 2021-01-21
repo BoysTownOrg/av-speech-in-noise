@@ -124,7 +124,6 @@ void TestPresenterImpl::stop() {
 void TestPresenterImpl::notifyThatTrialHasStarted() {
     view.hideExitTestButton();
     view.hideNextTrialButton();
-    taskPresenter_->notifyThatTrialHasStarted();
 }
 
 void TestPresenterImpl::trialComplete() {

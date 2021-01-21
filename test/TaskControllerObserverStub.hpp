@@ -14,7 +14,16 @@ class TaskControllerObserverStub : public TaskController::Observer {
         return notifiedThatTaskHasStarted_;
     }
 
+    [[nodiscard]] auto notifiedThatTrialHasStarted() const -> bool {
+        return notifiedThatTrialHasStarted_;
+    }
+
+    void notifyThatTrialHasStarted() override {
+        notifiedThatTrialHasStarted_ = true;
+    }
+
   private:
+    bool notifiedThatTrialHasStarted_{};
     bool notifiedThatTaskHasStarted_{};
 };
 }

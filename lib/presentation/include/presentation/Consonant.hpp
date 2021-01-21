@@ -31,7 +31,8 @@ class ConsonantTaskView : public virtual View {
     virtual void showResponseButtons() = 0;
 };
 
-class ConsonantTaskPresenter : public TaskPresenter {
+class ConsonantTaskPresenter : public TaskController::Observer,
+                               public TaskPresenter {
   public:
     explicit ConsonantTaskPresenter(ConsonantTaskView &);
     void start() override;

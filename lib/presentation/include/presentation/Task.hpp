@@ -16,8 +16,7 @@ class TaskController {
     virtual ~TaskController() = default;
 };
 
-class TaskPresenter : virtual public TaskController::Observer,
-                      virtual public Presenter {
+class TaskPresenter : public Presenter {
   public:
     virtual void showResponseSubmission() = 0;
     virtual void hideResponseSubmission() = 0;

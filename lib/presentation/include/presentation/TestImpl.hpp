@@ -49,16 +49,6 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
             presenter->hideResponseSubmission();
     }
 
-    void notifyThatTaskHasStarted() override {
-        if (presenter != nullptr)
-            presenter->notifyThatTaskHasStarted();
-    }
-
-    void notifyThatTrialHasStarted() override {
-        if (presenter != nullptr)
-            presenter->notifyThatTrialHasStarted();
-    }
-
     void start() override {
         if (presenter != nullptr)
             presenter->start();

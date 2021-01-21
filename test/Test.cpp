@@ -30,8 +30,6 @@ class TaskPresenterStub : public TaskPresenter {
   public:
     void showResponseSubmission() override {}
     void hideResponseSubmission() override {}
-    void notifyThatTaskHasStarted() override {}
-    void notifyThatTrialHasStarted() override {}
     void start() override {}
     void stop() override {}
 };
@@ -264,12 +262,6 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
 
     [[nodiscard]] auto responseSubmissionShown() const -> bool {
         return responseSubmissionShown_;
-    }
-
-    void notifyThatTaskHasStarted() override {}
-
-    void notifyThatTrialHasStarted() override {
-        notifiedThatTrialHasStarted_ = true;
     }
 
     void start() override { started_ = true; }
@@ -619,11 +611,6 @@ TEST_PRESENTER_TEST(hidesNextTrialButtonAfterTrialStarts) {
 TEST_PRESENTER_TEST(hidesResponseSubmission) {
     presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionHidden());
-}
-
-TEST_PRESENTER_TEST(notifiesTaskPresenterThatTrialHasStarted) {
-    presenter.notifyThatTrialHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.notifiedThatTrialHasStarted());
 }
 
 TEST_PRESENTER_TEST(showsExitTestButtonWhenTrialCompletes) {

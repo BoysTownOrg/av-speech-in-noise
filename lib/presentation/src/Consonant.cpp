@@ -48,10 +48,12 @@ void ConsonantTaskController::attach(TaskController::Observer *e) {
 void ConsonantTaskController::notifyThatReadyButtonHasBeenClicked() {
     observer->notifyThatTaskHasStarted();
     testController.notifyThatUserIsReadyForNextTrial();
+    observer->notifyThatTrialHasStarted();
 }
 
 void ConsonantTaskController::notifyThatResponseButtonHasBeenClicked() {
     model.submit(ConsonantResponse{control.consonant().front()});
     testController.notifyThatUserIsDoneRespondingAndIsReadyForNextTrial();
+    observer->notifyThatTrialHasStarted();
 }
 }

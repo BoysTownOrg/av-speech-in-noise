@@ -88,7 +88,7 @@ auto cursorHidden(ConsonantViewStub &view) -> bool {
     return view.cursorHidden();
 }
 
-void notifyThatTrialHasStarted(TaskPresenter &presenter) {
+void notifyThatTrialHasStarted(ConsonantTaskPresenter &presenter) {
     presenter.notifyThatTrialHasStarted();
 }
 
@@ -182,6 +182,12 @@ CONSONANT_TASK_CONTROLLER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatTaskHasStarted());
 }
 
+CONSONANT_TASK_CONTROLLER_TEST(
+    notifiesObserverThatTrialHasStartedAfterReadyButtonIsClicked) {
+    notifyThatReadyButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatTrialHasStarted());
+}
+
 CONSONANT_TASK_CONTROLLER_TEST(submitsConsonantAfterResponseButtonIsClicked) {
     control.setConsonant("b");
     notifyThatResponseButtonHasBeenClicked(control);
@@ -194,6 +200,12 @@ CONSONANT_TASK_CONTROLLER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController
             .notifiedThatUserIsDoneRespondingAndIsReadyForNextTrial());
+}
+
+CONSONANT_TASK_CONTROLLER_TEST(
+    notifiesObserverThatTrialHasStartedAfterResponseButtonIsClicked) {
+    notifyThatResponseButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatTrialHasStarted());
 }
 }
 }

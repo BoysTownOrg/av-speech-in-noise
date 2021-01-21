@@ -50,7 +50,8 @@ class CoordinateResponseMeasureController
     TaskController::Observer *observer{};
 };
 
-class CoordinateResponseMeasurePresenter : public TaskPresenter {
+class CoordinateResponseMeasurePresenter : public TaskController::Observer,
+                                           public TaskPresenter {
   public:
     explicit CoordinateResponseMeasurePresenter(
         CoordinateResponseMeasureView &);
