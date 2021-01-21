@@ -35,10 +35,6 @@ void PassFailPresenter::start() { testView.showNextTrialButton(); }
 
 void PassFailPresenter::stop() { view.hideEvaluationButtons(); }
 
-void PassFailPresenter::notifyThatTaskHasStarted() {
-    testView.hideNextTrialButton();
-}
-
 void PassFailPresenter::notifyThatUserIsDoneResponding() {
     view.hideEvaluationButtons();
 }

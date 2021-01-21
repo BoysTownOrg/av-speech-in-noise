@@ -88,11 +88,6 @@ class PassFailPresenterTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).evaluationButtonsHidden())
 
-PASS_FAIL_PRESENTER_TEST(presenterHidesReadyButtonWhenTaskStarts) {
-    presenter.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
-}
-
 PASS_FAIL_PRESENTER_TEST(
     presenterHidesResponseButtonsAfterUserIsDoneResponding) {
     notifyThatUserIsDoneResponding(presenter);

@@ -46,7 +46,6 @@ class PassFailPresenter : public TaskPresenter {
     PassFailPresenter(TestView &, PassFailView &);
     void start() override;
     void stop() override;
-    void notifyThatTaskHasStarted() override;
     void notifyThatUserIsDoneResponding() override;
     void showResponseSubmission() override;
 
