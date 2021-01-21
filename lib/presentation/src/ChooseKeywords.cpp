@@ -51,7 +51,7 @@ ChooseKeywordsPresenterImpl::ChooseKeywordsPresenterImpl(
 void ChooseKeywordsPresenterImpl::start() { testView.showNextTrialButton(); }
 
 void ChooseKeywordsPresenterImpl::hideResponseSubmission() {
-    view.hideResponseSubmission();
+    av_speech_in_noise::hideResponseSubmission(view);
 }
 
 void ChooseKeywordsPresenterImpl::stop() {
