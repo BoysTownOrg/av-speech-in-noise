@@ -33,15 +33,15 @@ class CorrectKeywordsController : public TaskController,
                                   public CorrectKeywordsControl::Observer {
   public:
     explicit CorrectKeywordsController(
-        Model &, SessionView &, CorrectKeywordsControl &);
+        TestController &, Model &, SessionView &, CorrectKeywordsControl &);
     void attach(TestController *);
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
+    TestController &testController;
     Model &model;
     SessionView &sessionView;
     CorrectKeywordsControl &control;
-    TestController *controller{};
 };
 
 class CorrectKeywordsPresenter : public TaskPresenter {

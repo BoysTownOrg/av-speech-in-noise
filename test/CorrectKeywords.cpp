@@ -62,10 +62,9 @@ class CorrectKeywordsControllerTests : public ::testing::Test {
     ModelStub model;
     SessionViewStub sessionView;
     CorrectKeywordsControlStub control;
-    CorrectKeywordsController controller{model, sessionView, control};
     TestControllerStub testController;
-
-    CorrectKeywordsControllerTests() { controller.attach(&testController); }
+    CorrectKeywordsController controller{
+        testController, model, sessionView, control};
 };
 
 class CorrectKeywordsPresenterTests : public ::testing::Test {

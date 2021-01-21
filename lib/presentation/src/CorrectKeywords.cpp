@@ -3,24 +3,24 @@
 
 namespace av_speech_in_noise {
 CorrectKeywordsController::CorrectKeywordsController(
-    Model &model, SessionView &view, CorrectKeywordsControl &keywordsView)
-    : model{model}, sessionView{view}, control{keywordsView} {
+    TestController &testController, Model &model, SessionView &view,
+    CorrectKeywordsControl &keywordsView)
+    : testController{testController}, model{model},
+      sessionView{view}, control{keywordsView} {
     keywordsView.attach(this);
 }
 
-void CorrectKeywordsController::attach(TestController *r) { controller = r; }
-
 static void submitCorrectKeywords(
-    Model &model, CorrectKeywordsControl &control, TestController *controller) {
+    Model &model, CorrectKeywordsControl &control, TestController &controller) {
     model.submit(
         CorrectKeywords{readInteger(control.correctKeywords(), "number")});
     controller
-        ->notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
+        .notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
 void CorrectKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     try {
-        submitCorrectKeywords(model, control, controller);
+        submitCorrectKeywords(model, control, testController);
     } catch (const std::runtime_error &e) {
         sessionView.showErrorMessage(e.what());
     }
