@@ -39,10 +39,6 @@ void CorrectKeywordsPresenter::start() { testView.showNextTrialButton(); }
 
 void CorrectKeywordsPresenter::stop() { view.hideCorrectKeywordsSubmission(); }
 
-void CorrectKeywordsPresenter::notifyThatTaskHasStarted() {
-    testView.hideNextTrialButton();
-}
-
 void CorrectKeywordsPresenter::notifyThatUserIsDoneResponding() {
     view.hideCorrectKeywordsSubmission();
 }
