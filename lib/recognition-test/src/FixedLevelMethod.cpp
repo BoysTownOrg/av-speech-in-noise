@@ -29,6 +29,8 @@ void FixedLevelMethodImpl::initialize(
     snr_ = p.snr;
     loadFromDirectory(targetList, p);
     finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
+    totalKeywordsSubmitted_ = 0;
+    totalKeywordsCorrect_ = 0;
 }
 
 void FixedLevelMethodImpl::initialize(
@@ -129,8 +131,10 @@ void FixedLevelMethodImpl::submit(const ThreeKeywordsResponse &response) {
 }
 
 auto FixedLevelMethodImpl::keywordsTestResults() -> KeywordsTestResults {
-    return KeywordsTestResults{
-        totalKeywordsCorrect_ / static_cast<double>(totalKeywordsSubmitted_),
+    return KeywordsTestResults{totalKeywordsSubmitted_ == 0
+            ? 0
+            : totalKeywordsCorrect_ /
+                static_cast<double>(totalKeywordsSubmitted_),
         totalKeywordsCorrect_};
 }
 }
