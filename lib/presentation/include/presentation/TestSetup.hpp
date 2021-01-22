@@ -41,6 +41,7 @@ class TestSetupView : public virtual View {
 class TestSetupPresenter : public Presenter {
   public:
     virtual void showTestSettingsFile(const std::string &) = 0;
+    virtual void showErrorMessage(std::string) = 0;
 };
 }
 

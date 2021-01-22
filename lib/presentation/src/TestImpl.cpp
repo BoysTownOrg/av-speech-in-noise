@@ -15,8 +15,8 @@ static void readyNextTrial(Model &model, TestController::Observer *presenter) {
 }
 
 TestControllerImpl::TestControllerImpl(
-    Model &model, SessionView &sessionView, TestControl &control)
-    : model{model}, sessionView{sessionView} {
+    Model &model, SessionControl &sessionControl, TestControl &control)
+    : model{model}, sessionControl{sessionControl} {
     control.attach(this);
 }
 
@@ -29,13 +29,13 @@ static void notifyThatTestIsComplete(SessionController *presenter) {
 void TestControllerImpl::exitTest() { notifyThatTestIsComplete(controller); }
 
 static void playTrial(
-    Model &model, SessionView &view, TestController::Observer *observer) {
-    model.playTrial(AudioSettings{view.audioDevice()});
+    Model &model, SessionControl &control, TestController::Observer *observer) {
+    model.playTrial(AudioSettings{control.audioDevice()});
     observer->notifyThatTrialHasStarted();
 }
 
 void TestControllerImpl::playTrial() {
-    av_speech_in_noise::playTrial(model, sessionView, observer);
+    av_speech_in_noise::playTrial(model, sessionControl, observer);
 }
 
 void TestControllerImpl::declineContinuingTesting() {
@@ -89,7 +89,7 @@ void TestControllerImpl::notifyThatUserIsDoneResponding() {
 void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
     notifyIfTestIsCompleteElse(model, controller, [&]() {
         displayTrialInformation(model, observer);
-        av_speech_in_noise::playTrial(model, sessionView, observer);
+        av_speech_in_noise::playTrial(model, sessionControl, observer);
     });
 }
 
@@ -100,7 +100,7 @@ void TestControllerImpl::
     observer->hideResponseSubmission();
     notifyIfTestIsCompleteElse(model, controller, [&]() {
         displayTrialInformation(model, observer);
-        av_speech_in_noise::playTrial(model, sessionView, observer);
+        av_speech_in_noise::playTrial(model, sessionControl, observer);
     });
 }
 

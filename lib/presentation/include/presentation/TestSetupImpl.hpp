@@ -2,7 +2,6 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETUPIMPL_HPP_
 
 #include "TestSetup.hpp"
-#include "SessionView.hpp"
 #include "SessionController.hpp"
 #include "Input.hpp"
 #include <av-speech-in-noise/Model.hpp>
@@ -42,9 +41,9 @@ constexpr auto name(Transducer c) -> const char * {
 
 class TestSetupControllerImpl : public TestSetupControl::Observer {
   public:
-    TestSetupControllerImpl(SessionController &, Model &, SessionView &,
-        TestSetupControl &, TestSettingsInterpreter &, TextFileReader &,
-        TestSetupPresenter &);
+    TestSetupControllerImpl(TestSetupControl &, SessionController &,
+        SessionControl &, TestSetupPresenter &, Model &,
+        TestSettingsInterpreter &, TextFileReader &);
     void notifyThatConfirmButtonHasBeenClicked() override;
     void notifyThatPlayCalibrationButtonHasBeenClicked() override;
     void notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() override;
@@ -52,24 +51,26 @@ class TestSetupControllerImpl : public TestSetupControl::Observer {
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
 
   private:
-    SessionController &sessionController;
-    Model &model;
-    SessionView &sessionView;
     TestSetupControl &control;
+    SessionController &sessionController;
+    SessionControl &sessionControl;
+    TestSetupPresenter &presenter;
+    Model &model;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
-    TestSetupPresenter &presenter;
 };
 
 class TestSetupPresenterImpl : public TestSetupPresenter {
   public:
-    explicit TestSetupPresenterImpl(TestSetupView &view);
+    explicit TestSetupPresenterImpl(TestSetupView &, SessionView &);
     void start() override;
     void stop() override;
     void showTestSettingsFile(const std::string &s) override;
+    void showErrorMessage(std::string) override;
 
   private:
     TestSetupView &view;
+    SessionView &sessionView;
 };
 }
 

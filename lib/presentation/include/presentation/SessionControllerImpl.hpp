@@ -4,7 +4,6 @@
 #include "TestSetup.hpp"
 #include "Test.hpp"
 #include "SessionController.hpp"
-#include "SessionView.hpp"
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {

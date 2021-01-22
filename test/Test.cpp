@@ -55,7 +55,7 @@ void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
     c.notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
-void setAudioDevice(SessionViewStub &view, std::string s) {
+void setAudioDevice(SessionControlStub &view, std::string s) {
     view.setAudioDevice(std::move(s));
 }
 
@@ -280,7 +280,7 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
 class TestControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
-    SessionViewStub sessionView;
+    SessionControlStub sessionView;
     TestControlStub control;
     TestControllerImpl controller{model, sessionView, control};
     DecliningContinuingTesting decliningContinuingTesting{control};

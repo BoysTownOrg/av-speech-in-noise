@@ -30,6 +30,7 @@ class TestPresenterStub : public TestPresenter {
 
 class TestSetupPresenterStub : public TestSetupPresenter {
   public:
+    void showErrorMessage(std::string) override {}
     void showTestSettingsFile(const std::string &) override {}
     void start() override { started_ = true; }
     void stop() override { stopped_ = true; }

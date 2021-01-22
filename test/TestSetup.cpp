@@ -181,8 +181,15 @@ class TestSetupPresenterStub : public TestSetupPresenter {
         return testSettingsFileShown_;
     }
 
+    void showErrorMessage(std::string s) override {
+        errorMessage_ = std::move(s);
+    }
+
+    auto errorMessage() -> std::string { return errorMessage_; }
+
   private:
     std::string testSettingsFile_;
+    std::string errorMessage_;
     bool testSettingsFileShown_{};
 };
 
@@ -263,7 +270,7 @@ auto errorMessage(SessionViewStub &view) -> std::string {
     return view.errorMessage();
 }
 
-void setAudioDevice(SessionViewStub &view, std::string s) {
+void setAudioDevice(SessionControlStub &view, std::string s) {
     view.setAudioDevice(std::move(s));
 }
 
@@ -279,15 +286,15 @@ class SessionControllerStub : public SessionController {
 class TestSetupControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
-    SessionViewStub sessionView;
+    SessionControlStub sessionView;
     TestSetupControlStub control;
     Calibration calibration;
     TestSettingsInterpreterStub testSettingsInterpreter{calibration};
     TextFileReaderStub textFileReader;
     SessionControllerStub sessionController;
     TestSetupPresenterStub presenter;
-    TestSetupControllerImpl controller{sessionController, model, sessionView,
-        control, testSettingsInterpreter, textFileReader, presenter};
+    TestSetupControllerImpl controller{control, sessionController, sessionView,
+        presenter, model, testSettingsInterpreter, textFileReader};
     PlayingCalibration playingCalibration{control};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{control};
@@ -340,7 +347,8 @@ class TestSetupControllerTests : public ::testing::Test {
 class TestSetupPresenterTests : public ::testing::Test {
   protected:
     TestSetupViewStub view;
-    TestSetupPresenterImpl presenter{view};
+    SessionViewStub sessionView;
+    TestSetupPresenterImpl presenter{view, sessionView};
 };
 
 class RequestFailingModel : public Model {
@@ -454,18 +462,24 @@ class RequestFailingModel : public Model {
 class TestSetupFailureTests : public ::testing::Test {
   protected:
     RequestFailingModel failingModel;
+    SessionControlStub sessionControl;
     SessionViewStub sessionView;
     TestSetupViewStub view;
     TestSetupControlStub control;
     Calibration calibration;
     TestSettingsInterpreterStub testSettingsInterpreter{calibration};
-    TestSetupPresenterImpl testSetupPresenter{view};
+    TestSetupPresenterImpl testSetupPresenter{view, sessionView};
     TextFileReaderStub textFileReader;
     SessionControllerStub sessionController;
-    TestSetupPresenterStub testPresenter;
-    TestSetupControllerImpl controller{sessionController, failingModel,
-        sessionView, control, testSettingsInterpreter, textFileReader,
-        testPresenter};
+    TestSetupControllerImpl controller{
+        control,
+        sessionController,
+        sessionControl,
+        testSetupPresenter,
+        failingModel,
+        testSettingsInterpreter,
+        textFileReader,
+    };
 };
 
 #define TEST_SETUP_CONTROLLER_TEST(a) TEST_F(TestSetupControllerTests, a)
@@ -502,7 +516,7 @@ TEST_SETUP_CONTROLLER_TEST(
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"\"a\" is not a valid starting SNR."},
-        errorMessage(sessionView));
+        presenter.errorMessage());
 }
 
 TEST_SETUP_CONTROLLER_TEST(

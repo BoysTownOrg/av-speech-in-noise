@@ -3,27 +3,29 @@
 #include <utility>
 
 namespace av_speech_in_noise {
-TestSetupControllerImpl::TestSetupControllerImpl(
-    SessionController &sessionController, Model &model, SessionView &mainView,
-    TestSetupControl &control, TestSettingsInterpreter &testSettingsInterpreter,
-    TextFileReader &textFileReader, TestSetupPresenter &presenter)
-    : sessionController{sessionController}, model{model}, sessionView{mainView},
-      control{control}, testSettingsInterpreter{testSettingsInterpreter},
-      textFileReader{textFileReader}, presenter{presenter} {
+TestSetupControllerImpl::TestSetupControllerImpl(TestSetupControl &control,
+    SessionController &sessionController, SessionControl &sessionControl,
+    TestSetupPresenter &presenter, Model &model,
+    TestSettingsInterpreter &testSettingsInterpreter,
+    TextFileReader &textFileReader)
+    : control{control}, sessionController{sessionController},
+      sessionControl{sessionControl}, presenter{presenter}, model{model},
+      testSettingsInterpreter{testSettingsInterpreter}, textFileReader{
+                                                            textFileReader} {
     control.attach(this);
 }
 
 static void showErrorMessageOnRuntimeError(
-    SessionView &view, const std::function<void()> &f) {
+    TestSetupPresenter &presenter, const std::function<void()> &f) {
     try {
         f();
     } catch (const std::runtime_error &e) {
-        view.showErrorMessage(e.what());
+        presenter.showErrorMessage(e.what());
     }
 }
 
 void TestSetupControllerImpl::notifyThatConfirmButtonHasBeenClicked() {
-    showErrorMessageOnRuntimeError(sessionView, [&] {
+    showErrorMessageOnRuntimeError(presenter, [&] {
         const auto testSettings{
             textFileReader.read({control.testSettingsFile()})};
         TestIdentity p;
@@ -40,45 +42,46 @@ void TestSetupControllerImpl::notifyThatConfirmButtonHasBeenClicked() {
 
 static auto calibration(TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader, TestSetupControl &control,
-    SessionView &sessionView) -> Calibration {
+    SessionControl &sessionControl) -> Calibration {
     auto calibration{testSettingsInterpreter.calibration(
         textFileReader.read({control.testSettingsFile()}))};
-    calibration.audioDevice = sessionView.audioDevice();
+    calibration.audioDevice = sessionControl.audioDevice();
     return calibration;
 }
 
 void TestSetupControllerImpl::notifyThatPlayCalibrationButtonHasBeenClicked() {
-    showErrorMessageOnRuntimeError(sessionView, [&] {
+    showErrorMessageOnRuntimeError(presenter, [&] {
         model.playCalibration(calibration(
-            testSettingsInterpreter, textFileReader, control, sessionView));
+            testSettingsInterpreter, textFileReader, control, sessionControl));
     });
 }
 
 void TestSetupControllerImpl::
     notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() {
-    showErrorMessageOnRuntimeError(sessionView, [&] {
+    showErrorMessageOnRuntimeError(presenter, [&] {
         model.playLeftSpeakerCalibration(calibration(
-            testSettingsInterpreter, textFileReader, control, sessionView));
+            testSettingsInterpreter, textFileReader, control, sessionControl));
     });
 }
 
 void TestSetupControllerImpl::
     notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() {
-    showErrorMessageOnRuntimeError(sessionView, [&] {
+    showErrorMessageOnRuntimeError(presenter, [&] {
         model.playRightSpeakerCalibration(calibration(
-            testSettingsInterpreter, textFileReader, control, sessionView));
+            testSettingsInterpreter, textFileReader, control, sessionControl));
     });
 }
 
 void TestSetupControllerImpl::
     notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
-    auto file{sessionView.browseForOpeningFile()};
-    if (!sessionView.browseCancelled())
+    auto file{sessionControl.browseForOpeningFile()};
+    if (!sessionControl.browseCancelled())
         presenter.showTestSettingsFile(file);
 }
 
-TestSetupPresenterImpl::TestSetupPresenterImpl(TestSetupView &view)
-    : view{view} {
+TestSetupPresenterImpl::TestSetupPresenterImpl(
+    TestSetupView &view, SessionView &sessionView)
+    : view{view}, sessionView{sessionView} {
     view.populateTransducerMenu({name(Transducer::headphone),
         name(Transducer::oneSpeaker), name(Transducer::twoSpeakers)});
 }
@@ -89,5 +92,9 @@ void TestSetupPresenterImpl::stop() { view.hide(); }
 
 void TestSetupPresenterImpl::showTestSettingsFile(const std::string &s) {
     view.setTestSettingsFile(s);
+}
+
+void TestSetupPresenterImpl::showErrorMessage(std::string s) {
+    sessionView.showErrorMessage(std::move(s));
 }
 }

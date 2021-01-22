@@ -2,14 +2,14 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTIMPL_HPP_
 
 #include "Test.hpp"
-#include "SessionView.hpp"
+#include "SessionController.hpp"
 #include "Task.hpp"
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
 class TestControllerImpl : public TestControl::Observer, public TestController {
   public:
-    explicit TestControllerImpl(Model &, SessionView &, TestControl &);
+    explicit TestControllerImpl(Model &, SessionControl &, TestControl &);
     void attach(TestController::Observer *) override;
     void attach(SessionController *) override;
     void exitTest() override;
@@ -24,7 +24,7 @@ class TestControllerImpl : public TestControl::Observer, public TestController {
 
   private:
     Model &model;
-    SessionView &sessionView;
+    SessionControl &sessionControl;
     TestController::Observer *observer{};
     SessionController *controller{};
 };
