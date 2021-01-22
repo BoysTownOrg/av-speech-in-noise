@@ -290,26 +290,6 @@ class SessionControllerStub : public SessionController {
     bool prepareCalled_{};
 };
 
-class TestSetupControllerObserverStub : public TestSetupController::Observer {
-  public:
-    void notifyThatUserHasSelectedTestSettingsFile(
-        const std::string &s) override {
-        testSettingsFile_ = s;
-        notifiedThatUserHasSelectedTestSettingsFile_ = true;
-    }
-
-    auto testSettingsFile() -> std::string { return testSettingsFile_; }
-
-    [[nodiscard]] auto notifiedThatUserHasSelectedTestSettingsFile() const
-        -> bool {
-        return notifiedThatUserHasSelectedTestSettingsFile_;
-    }
-
-  private:
-    std::string testSettingsFile_;
-    bool notifiedThatUserHasSelectedTestSettingsFile_{};
-};
-
 class TestSetupControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -701,7 +681,7 @@ TEST_SETUP_PRESENTER_TEST(presenterHidesViewWhenStopped) {
 }
 
 TEST_SETUP_PRESENTER_TEST(presenterSetsTestSettingsFileWhenNotified) {
-    presenter.notifyThatUserHasSelectedTestSettingsFile("a");
+    presenter.showTestSettingsFile("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", view.testSettingsFile());
 }
 auto contains(const std::vector<std::string> &items, const std::string &item)

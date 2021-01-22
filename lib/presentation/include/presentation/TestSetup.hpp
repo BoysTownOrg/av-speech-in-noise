@@ -39,23 +39,9 @@ class TestSetupView : public virtual View {
     virtual void setTestSettingsFile(std::string) = 0;
 };
 
-class TestSetupController {
+class TestSetupPresenter : public Presenter {
   public:
-    class Observer {
-      public:
-        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
-        virtual void notifyThatUserHasSelectedTestSettingsFile(
-            const std::string &) {}
-    };
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestSetupController);
-    virtual void attach(SessionController *) {}
-    virtual void attach(Observer *) {}
-};
-
-class TestSetupPresenter : public virtual TestSetupController::Observer,
-                           public virtual Presenter {
-  public:
-    virtual void showTestSettingsFile(const std::string &) {}
+    virtual void showTestSettingsFile(const std::string &) = 0;
 };
 }
 

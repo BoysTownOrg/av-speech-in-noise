@@ -88,8 +88,7 @@ void TestSetupPresenterImpl::start() { view.show(); }
 
 void TestSetupPresenterImpl::stop() { view.hide(); }
 
-void TestSetupPresenterImpl::notifyThatUserHasSelectedTestSettingsFile(
-    const std::string &s) {
+void TestSetupPresenterImpl::showTestSettingsFile(const std::string &s) {
     view.setTestSettingsFile(s);
 }
 }

@@ -40,8 +40,7 @@ constexpr auto name(Transducer c) -> const char * {
     }
 }
 
-class TestSetupControllerImpl : public TestSetupControl::Observer,
-                                public TestSetupController {
+class TestSetupControllerImpl : public TestSetupControl::Observer {
   public:
     TestSetupControllerImpl(SessionController &, Model &, SessionView &,
         TestSetupControl &, TestSettingsInterpreter &, TextFileReader &,
@@ -67,8 +66,7 @@ class TestSetupPresenterImpl : public TestSetupPresenter {
     explicit TestSetupPresenterImpl(TestSetupView &view);
     void start() override;
     void stop() override;
-    void notifyThatUserHasSelectedTestSettingsFile(
-        const std::string &s) override;
+    void showTestSettingsFile(const std::string &s) override;
 
   private:
     TestSetupView &view;

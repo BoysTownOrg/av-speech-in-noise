@@ -30,8 +30,7 @@ class TestPresenterStub : public TestPresenter {
 
 class TestSetupPresenterStub : public TestSetupPresenter {
   public:
-    void notifyThatUserHasSelectedTestSettingsFile(
-        const std::string &) override {}
+    void showTestSettingsFile(const std::string &) override {}
     void start() override { started_ = true; }
     void stop() override { stopped_ = true; }
     [[nodiscard]] auto started() const -> bool { return started_; }
@@ -48,7 +47,9 @@ class SessionControllerObserverStub : public SessionController::Observer {
         return notifiedThatTestIsComplete_;
     }
 
-    void notifyThatTestIsComplete() { notifiedThatTestIsComplete_ = true; }
+    void notifyThatTestIsComplete() override {
+        notifiedThatTestIsComplete_ = true;
+    }
 
   private:
     bool notifiedThatTestIsComplete_{};
