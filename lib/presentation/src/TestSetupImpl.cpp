@@ -26,16 +26,15 @@ static void showErrorMessageOnRuntimeError(
 
 void TestSetupControllerImpl::notifyThatConfirmButtonHasBeenClicked() {
     showErrorMessageOnRuntimeError(presenter, [&] {
-        const auto testSettings{
-            textFileReader.read({control.testSettingsFile()})};
-        TestIdentity p;
-        p.subjectId = control.subjectId();
-        p.testerId = control.testerId();
-        p.session = control.session();
-        p.rmeSetting = control.rmeSetting();
-        p.transducer = control.transducer();
+        TestIdentity testIdentity;
+        testIdentity.subjectId = control.subjectId();
+        testIdentity.testerId = control.testerId();
+        testIdentity.session = control.session();
+        testIdentity.rmeSetting = control.rmeSetting();
+        testIdentity.transducer = control.transducer();
         testSettingsInterpreter.initialize(model, sessionController,
-            testSettings, p,
+            textFileReader.read(LocalUrl{control.testSettingsFile()}),
+            testIdentity,
             SNR{readInteger(control.startingSnr(), "starting SNR")});
     });
 }
@@ -44,7 +43,7 @@ static auto calibration(TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader, TestSetupControl &control,
     SessionControl &sessionControl) -> Calibration {
     auto calibration{testSettingsInterpreter.calibration(
-        textFileReader.read({control.testSettingsFile()}))};
+        textFileReader.read(LocalUrl{control.testSettingsFile()}))};
     calibration.audioDevice = sessionControl.audioDevice();
     return calibration;
 }
@@ -74,7 +73,7 @@ void TestSetupControllerImpl::
 
 void TestSetupControllerImpl::
     notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
-    auto file{sessionControl.browseForOpeningFile()};
+    const auto file{sessionControl.browseForOpeningFile()};
     if (!sessionControl.browseCancelled())
         presenter.showTestSettingsFile(file);
 }
