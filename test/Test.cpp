@@ -70,7 +70,7 @@ class SessionControllerStub : public SessionController {
     [[nodiscard]] auto notifiedThatTestIsComplete() const -> bool {
         return notifiedThatTestIsComplete_;
     }
-    void prepare(Method) override {}
+    void prepare(TaskPresenter &) override {}
 
   private:
     bool notifiedThatTestIsComplete_{};

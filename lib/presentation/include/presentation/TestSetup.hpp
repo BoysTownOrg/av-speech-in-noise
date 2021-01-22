@@ -3,7 +3,6 @@
 
 #include "View.hpp"
 #include "Presenter.hpp"
-#include "Method.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <vector>
 #include <string>

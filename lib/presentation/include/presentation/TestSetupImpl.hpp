@@ -3,6 +3,7 @@
 
 #include "TestSetup.hpp"
 #include "SessionView.hpp"
+#include "SessionController.hpp"
 #include "Input.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
@@ -10,6 +11,27 @@
 #include <map>
 
 namespace av_speech_in_noise {
+enum class Method {
+    adaptivePassFail,
+    adaptivePassFailWithEyeTracking,
+    adaptiveCorrectKeywords,
+    adaptiveCorrectKeywordsWithEyeTracking,
+    adaptiveCoordinateResponseMeasure,
+    adaptiveCoordinateResponseMeasureWithSingleSpeaker,
+    adaptiveCoordinateResponseMeasureWithDelayedMasker,
+    adaptiveCoordinateResponseMeasureWithEyeTracking,
+    fixedLevelFreeResponseWithTargetReplacement,
+    fixedLevelFreeResponseWithSilentIntervalTargets,
+    fixedLevelFreeResponseWithAllTargets,
+    fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
+    fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
+    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+    fixedLevelConsonants,
+    fixedLevelChooseKeywordsWithAllTargets,
+    unknown
+};
+
 class TestSettingsInterpreter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
