@@ -4,6 +4,7 @@
 #include "View.hpp"
 #include "Presenter.hpp"
 #include "Method.hpp"
+#include "Task.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <string>
 
@@ -62,6 +63,7 @@ class TestPresenter : public virtual TestController::Observer,
                       public virtual Presenter {
   public:
     virtual void initialize(Method) = 0;
+    virtual void initialize(TaskPresenter &) {}
 };
 }
 

@@ -13,6 +13,10 @@ void SessionControllerImpl::prepare(Method m) {
     testPresenter.start();
 }
 
+void SessionControllerImpl::prepare(TaskPresenter &p) {
+    testPresenter.initialize(p);
+}
+
 void SessionControllerImpl::notifyThatTestIsComplete() {
     testPresenter.stop();
     testSetupPresenter.start();

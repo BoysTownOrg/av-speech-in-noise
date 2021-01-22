@@ -21,8 +21,11 @@ class TestPresenterStub : public TestPresenter {
     void notifyThatNextTrialIsReady() override {}
     [[nodiscard]] auto started() const -> bool { return started_; }
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+    auto taskPresenter() -> TaskPresenter * { return taskPresenter_; }
+    void initialize(TaskPresenter &p) { taskPresenter_ = &p; }
 
   private:
+    TaskPresenter *taskPresenter_{};
     Method method_{};
     bool started_{};
     bool stopped_{};
@@ -39,6 +42,14 @@ class TestSetupPresenterStub : public TestSetupPresenter {
   private:
     bool started_{};
     bool stopped_{};
+};
+
+class TaskPresenterStub : public TaskPresenter {
+  public:
+    void showResponseSubmission() override {}
+    void hideResponseSubmission() override {}
+    void start() override {}
+    void stop() override {}
 };
 
 class SessionControllerObserverStub : public SessionController::Observer {
@@ -81,6 +92,13 @@ SESSION_CONTROLLER_TEST(prepareInitializesTest) {
     controller.prepare(Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         Method::adaptivePassFail, testPresenter.method());
+}
+
+SESSION_CONTROLLER_TEST(preparePassesTaskPresenter) {
+    TaskPresenterStub taskPresenter;
+    controller.prepare(taskPresenter);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &taskPresenter, testPresenter.taskPresenter());
 }
 
 SESSION_CONTROLLER_TEST(testStopsAfterTestIsComplete) {
