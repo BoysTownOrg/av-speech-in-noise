@@ -2,7 +2,7 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTIMPL_HPP_
 
 #include "Test.hpp"
-#include "SessionController.hpp"
+#include "Session.hpp"
 #include "Task.hpp"
 #include <av-speech-in-noise/Model.hpp>
 

@@ -3,7 +3,7 @@
 
 #include "View.hpp"
 #include "Presenter.hpp"
-#include "SessionController.hpp"
+#include "Session.hpp"
 #include "Task.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <string>
