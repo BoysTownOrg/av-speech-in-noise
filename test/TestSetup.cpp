@@ -292,8 +292,6 @@ class SessionControllerStub : public SessionController {
 
     [[nodiscard]] auto prepareCalled() const -> bool { return prepareCalled_; }
 
-    auto taskPresenter() -> TaskPresenter * { return taskPresenter_; }
-
   private:
     TaskPresenter *taskPresenter_{};
     bool prepareCalled_{};
@@ -502,13 +500,6 @@ TEST_SETUP_CONTROLLER_TEST(
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &sessionController, testSettingsInterpreter.sessionController());
-}
-
-TEST_SETUP_CONTROLLER_TEST(
-    controllerDoesNotPrepareTestAfterConfirmButtonIsClickedWhenTestWouldAlreadyBeComplete) {
-    setTestComplete(model);
-    run(confirmingTestSetup);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
 }
 
 TEST_SETUP_CONTROLLER_TEST(

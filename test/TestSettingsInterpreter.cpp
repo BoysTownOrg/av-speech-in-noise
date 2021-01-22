@@ -17,12 +17,18 @@ class SessionControllerStub : public SessionController {
   public:
     void notifyThatTestIsComplete() override {}
 
-    void prepare(TaskPresenter &p) override { taskPresenter_ = &p; }
+    void prepare(TaskPresenter &p) override {
+        taskPresenter_ = &p;
+        prepareCalled_ = true;
+    }
 
     auto taskPresenter() -> const TaskPresenter * { return taskPresenter_; }
 
+    [[nodiscard]] auto prepareCalled() const -> bool { return prepareCalled_; }
+
   private:
     const TaskPresenter *taskPresenter_{};
+    bool prepareCalled_{};
 };
 
 class TaskPresenterStub : public TaskPresenter {
@@ -339,11 +345,17 @@ TEST_SETTINGS_INTERPRETER_TEST(meta) {
         "a", interpreter.meta(entryWithNewline(TestSetting::meta, "a")));
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(
-    controllerPreparesTestAfterConfirmButtonIsClicked) {
+TEST_SETTINGS_INTERPRETER_TEST(preparesTestAfterConfirmButtonIsClicked) {
     initialize(interpreter, model, sessionController, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &passFailPresenter, sessionController.taskPresenter());
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    doesNotPrepareTestAfterConfirmButtonIsClickedWhenTestWouldAlreadyBeComplete) {
+    model.setTestComplete();
+    initialize(interpreter, model, sessionController, Method::adaptivePassFail);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailReturnsMethod) {
