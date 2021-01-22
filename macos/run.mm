@@ -401,8 +401,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     PassFailPresenter passFailPresenter{experimenterView, passFailUI};
     CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
         coordinateResponseMeasureView};
-    TestSetupControllerImpl testSetupController{model, view,
-        *(testSetupView.get()), testSettingsInterpreter, textFileReader};
     TestSetupPresenterImpl testSetupPresenter{*(testSetupView.get())};
     TestControllerImpl testController{model, view, experimenterView};
     ChooseKeywordsController chooseKeywordsController{
@@ -457,9 +455,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         &taskPresenter};
     SessionControllerImpl sessionController{
         model, view, testSetupPresenter, experimenterPresenter};
+    TestSetupControllerImpl testSetupController{sessionController, model, view,
+        *(testSetupView.get()), testSettingsInterpreter, textFileReader,
+        testSetupPresenter};
     sessionController.attach(sessionControllerObserver);
-    testSetupController.attach(&sessionController);
-    testSetupController.attach(&testSetupPresenter);
     testController.attach(&sessionController);
     testController.attach(&experimenterPresenter);
     [app run];
