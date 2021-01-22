@@ -3,7 +3,7 @@
 #include <utility>
 
 namespace av_speech_in_noise {
-TestSetupControllerImpl::TestSetupControllerImpl(TestSetupControl &control,
+TestSetupController::TestSetupController(TestSetupControl &control,
     SessionController &sessionController, SessionControl &sessionControl,
     TestSetupPresenter &presenter, Model &model,
     TestSettingsInterpreter &testSettingsInterpreter,
@@ -24,7 +24,7 @@ static void showErrorMessageOnRuntimeError(
     }
 }
 
-void TestSetupControllerImpl::notifyThatConfirmButtonHasBeenClicked() {
+void TestSetupController::notifyThatConfirmButtonHasBeenClicked() {
     showErrorMessageOnRuntimeError(presenter, [&] {
         TestIdentity testIdentity;
         testIdentity.subjectId = control.subjectId();
@@ -48,14 +48,14 @@ static auto calibration(TestSettingsInterpreter &testSettingsInterpreter,
     return calibration;
 }
 
-void TestSetupControllerImpl::notifyThatPlayCalibrationButtonHasBeenClicked() {
+void TestSetupController::notifyThatPlayCalibrationButtonHasBeenClicked() {
     showErrorMessageOnRuntimeError(presenter, [&] {
         model.playCalibration(calibration(
             testSettingsInterpreter, textFileReader, control, sessionControl));
     });
 }
 
-void TestSetupControllerImpl::
+void TestSetupController::
     notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() {
     showErrorMessageOnRuntimeError(presenter, [&] {
         model.playLeftSpeakerCalibration(calibration(
@@ -63,7 +63,7 @@ void TestSetupControllerImpl::
     });
 }
 
-void TestSetupControllerImpl::
+void TestSetupController::
     notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() {
     showErrorMessageOnRuntimeError(presenter, [&] {
         model.playRightSpeakerCalibration(calibration(
@@ -71,7 +71,7 @@ void TestSetupControllerImpl::
     });
 }
 
-void TestSetupControllerImpl::
+void TestSetupController::
     notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
     const auto file{sessionControl.browseForOpeningFile()};
     if (!sessionControl.browseCancelled())

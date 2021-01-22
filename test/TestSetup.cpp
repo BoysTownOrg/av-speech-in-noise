@@ -293,7 +293,7 @@ class TestSetupControllerTests : public ::testing::Test {
     TextFileReaderStub textFileReader;
     SessionControllerStub sessionController;
     TestSetupPresenterStub presenter;
-    TestSetupControllerImpl controller{control, sessionController, sessionView,
+    TestSetupController controller{control, sessionController, sessionView,
         presenter, model, testSettingsInterpreter, textFileReader};
     PlayingCalibration playingCalibration{control};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
@@ -471,7 +471,7 @@ class TestSetupFailureTests : public ::testing::Test {
     TestSetupPresenterImpl testSetupPresenter{view, sessionView};
     TextFileReaderStub textFileReader;
     SessionControllerStub sessionController;
-    TestSetupControllerImpl controller{
+    TestSetupController controller{
         control,
         sessionController,
         sessionControl,

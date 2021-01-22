@@ -453,7 +453,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {Method::fixedLevelConsonants, consonantPresenter},
             {Method::adaptivePassFail, passFailPresenter},
             {Method::adaptivePassFailWithEyeTracking, passFailPresenter}}};
-    TestSetupControllerImpl testSetupController{*(testSetupUI.get()),
+    TestSetupController testSetupController{*(testSetupUI.get()),
         sessionController, sessionUI, testSetupPresenter, model,
         testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);

@@ -39,9 +39,9 @@ constexpr auto name(Transducer c) -> const char * {
     }
 }
 
-class TestSetupControllerImpl : public TestSetupControl::Observer {
+class TestSetupController : public TestSetupControl::Observer {
   public:
-    TestSetupControllerImpl(TestSetupControl &, SessionController &,
+    TestSetupController(TestSetupControl &, SessionController &,
         SessionControl &, TestSetupPresenter &, Model &,
         TestSettingsInterpreter &, TextFileReader &);
     void notifyThatConfirmButtonHasBeenClicked() override;
