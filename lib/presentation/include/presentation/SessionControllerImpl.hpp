@@ -12,7 +12,6 @@ class SessionControllerImpl : public SessionController {
     SessionControllerImpl(
         Model &, SessionView &, TestSetupPresenter &, TestPresenter &);
     void notifyThatTestIsComplete() override;
-    void prepare(Method m) override;
     void prepare(TaskPresenter &) override;
     void attach(Observer *) override;
 

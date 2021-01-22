@@ -5,7 +5,6 @@
 #include "SessionView.hpp"
 #include "Task.hpp"
 #include <av-speech-in-noise/Model.hpp>
-#include <map>
 
 namespace av_speech_in_noise {
 class TestControllerImpl : public TestControl::Observer, public TestController {
@@ -60,14 +59,13 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
     }
 
   private:
-    TaskPresenter *presenter;
+    TaskPresenter *presenter{};
 };
 
 class TestPresenterImpl : public Model::Observer, public TestPresenter {
   public:
-    explicit TestPresenterImpl(Model &, TestView &,
-        std::map<Method, TaskPresenter &> taskPresenters,
-        UninitializedTaskPresenter *);
+    explicit TestPresenterImpl(
+        Model &, TestView &, UninitializedTaskPresenter *);
     void trialComplete() override;
     void start() override;
     void stop() override;
@@ -78,10 +76,9 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
     void secondaryDisplay(const std::string &s) override;
     void showContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &s) override;
-    void initialize(Method) override;
+    void initialize(TaskPresenter &) override;
 
   private:
-    std::map<Method, TaskPresenter &> taskPresenters;
     Model &model;
     TestView &view;
     UninitializedTaskPresenter *taskPresenter_;

@@ -1,7 +1,6 @@
 #include "TestImpl.hpp"
 #include <sstream>
 #include <functional>
-#include <utility>
 
 namespace av_speech_in_noise {
 static void displayTrialInformation(
@@ -105,11 +104,9 @@ void TestControllerImpl::
     });
 }
 
-TestPresenterImpl::TestPresenterImpl(Model &model, TestView &view,
-    std::map<Method, TaskPresenter &> taskPresenters,
-    UninitializedTaskPresenter *taskPresenter_)
-    : taskPresenters{std::move(taskPresenters)}, model{model}, view{view},
-      taskPresenter_{taskPresenter_} {
+TestPresenterImpl::TestPresenterImpl(
+    Model &model, TestView &view, UninitializedTaskPresenter *taskPresenter_)
+    : model{model}, view{view}, taskPresenter_{taskPresenter_} {
     model.attach(this);
 }
 
@@ -150,9 +147,9 @@ void TestPresenterImpl::setContinueTestingDialogMessage(const std::string &s) {
     view.setContinueTestingDialogMessage(s);
 }
 
-void TestPresenterImpl::initialize(Method m) {
+void TestPresenterImpl::initialize(TaskPresenter &p) {
     displayTrialInformation(model, this);
-    taskPresenter_->initialize(&taskPresenters.at(m));
+    taskPresenter_->initialize(&p);
     taskPresenter_->start();
 }
 

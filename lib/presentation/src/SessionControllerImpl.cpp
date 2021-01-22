@@ -7,12 +7,6 @@ SessionControllerImpl::SessionControllerImpl(Model &model, SessionView &view,
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 
-void SessionControllerImpl::prepare(Method m) {
-    testSetupPresenter.stop();
-    testPresenter.initialize(m);
-    testPresenter.start();
-}
-
 void SessionControllerImpl::prepare(TaskPresenter &p) {
     testSetupPresenter.stop();
     testPresenter.initialize(p);

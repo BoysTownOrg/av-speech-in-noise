@@ -40,20 +40,6 @@ class PresenterUseCase {
     virtual void run(TestPresenter &) = 0;
 };
 
-class InitializingAdaptivePassFailMethod : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::adaptivePassFail);
-    }
-};
-
-class InitializingFixedLevelConsonantMethod : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::fixedLevelConsonants);
-    }
-};
-
 void exitTest(TestControlStub &c) { c.exitTest(); }
 
 void declineContinuingTesting(TestControlStub &c) {
@@ -323,16 +309,8 @@ class TestPresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
     TestViewStub view;
-    TaskPresenterStub consonantPresenter;
-    TaskPresenterStub passFailPresenter;
     UninitializedTaskPresenterStub taskPresenter;
-    TestPresenterImpl presenter{model, view,
-        {{Method::fixedLevelConsonants, consonantPresenter},
-            {Method::adaptivePassFail, passFailPresenter},
-            {Method::unknown, passFailPresenter}},
-        &taskPresenter};
-    InitializingAdaptivePassFailMethod initializingAdaptivePassFailMethod;
-    InitializingFixedLevelConsonantMethod initializingFixedLevelConsonantMethod;
+    TestPresenterImpl presenter{model, view, &taskPresenter};
 };
 
 void run(ControllerUseCase &useCase) { useCase.run(); }
@@ -367,8 +345,8 @@ void run(ControllerUseCase &useCase) { useCase.run(); }
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(                  \
-    useCase, experimenterPresenter, expected)                                  \
-    useCase.run(experimenterPresenter);                                        \
+    experimenterPresenter, expected)                                           \
+    experimenterPresenter.initialize(expected);                                \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         static_cast<TaskPresenter *>(&(expected)), taskPresenter.presenter())
 
@@ -656,29 +634,34 @@ TEST_PRESENTER_TEST(setsContinueTestingDialogMessage) {
 }
 
 TEST_PRESENTER_TEST(startsTaskPresenterWhenInitializing) {
-    presenter.initialize(Method::unknown);
+    TaskPresenterStub taskPresenter_;
+    presenter.initialize(taskPresenter_);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.started());
 }
 
 TEST_PRESENTER_TEST(initializingFixedLevelConsonantMethodInitializesTask) {
+    TaskPresenterStub taskPresenter_;
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelConsonantMethod, presenter, consonantPresenter);
+        presenter, taskPresenter_);
 }
 
 TEST_PRESENTER_TEST(initializingAdaptivePassFailMethodInitializesTask) {
+    TaskPresenterStub taskPresenter_;
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptivePassFailMethod, presenter, passFailPresenter);
+        presenter, taskPresenter_);
 }
 
 TEST_PRESENTER_TEST(displaysTrialNumberWhenInitializing) {
     model.setTrialNumber(1);
-    presenter.initialize(Method::unknown);
+    TaskPresenterStub taskPresenter_;
+    presenter.initialize(taskPresenter_);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"Trial 1"}, view.displayed());
 }
 
 TEST_PRESENTER_TEST(displaysTargetWhenInitializing) {
     model.setTargetFileName("a");
-    presenter.initialize(Method::unknown);
+    TaskPresenterStub taskPresenter_;
+    presenter.initialize(taskPresenter_);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.secondaryDisplayed());
 }

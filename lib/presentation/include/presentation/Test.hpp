@@ -62,8 +62,7 @@ class TestController {
 class TestPresenter : public virtual TestController::Observer,
                       public virtual Presenter {
   public:
-    virtual void initialize(Method) = 0;
-    virtual void initialize(TaskPresenter &) {}
+    virtual void initialize(TaskPresenter &) = 0;
 };
 }
 

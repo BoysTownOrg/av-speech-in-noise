@@ -9,8 +9,6 @@ namespace av_speech_in_noise {
 namespace {
 class TestPresenterStub : public TestPresenter {
   public:
-    void initialize(Method m) override { method_ = m; }
-    auto method() -> Method { return method_; }
     void start() override { started_ = true; }
     void stop() override { stopped_ = true; }
     void notifyThatTrialHasStarted() override {}
@@ -22,11 +20,10 @@ class TestPresenterStub : public TestPresenter {
     [[nodiscard]] auto started() const -> bool { return started_; }
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
     auto taskPresenter() -> TaskPresenter * { return taskPresenter_; }
-    void initialize(TaskPresenter &p) { taskPresenter_ = &p; }
+    void initialize(TaskPresenter &p) override { taskPresenter_ = &p; }
 
   private:
     TaskPresenter *taskPresenter_{};
-    Method method_{};
     bool started_{};
     bool stopped_{};
 };
@@ -79,31 +76,15 @@ class SessionControllerTests : public ::testing::Test {
 #define SESSION_CONTROLLER_TEST(a) TEST_F(SessionControllerTests, a)
 
 SESSION_CONTROLLER_TEST(prepareStopsTestSetup) {
-    controller.prepare(Method::unknown);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testSetupPresenter.stopped());
-}
-
-SESSION_CONTROLLER_TEST(prepareStopsTestSetup2) {
     TaskPresenterStub taskPresenter;
     controller.prepare(taskPresenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testSetupPresenter.stopped());
 }
 
 SESSION_CONTROLLER_TEST(prepareStartsTest) {
-    controller.prepare(Method::unknown);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.started());
-}
-
-SESSION_CONTROLLER_TEST(prepareStartsTest2) {
     TaskPresenterStub taskPresenter;
     controller.prepare(taskPresenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.started());
-}
-
-SESSION_CONTROLLER_TEST(prepareInitializesTest) {
-    controller.prepare(Method::adaptivePassFail);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Method::adaptivePassFail, testPresenter.method());
 }
 
 SESSION_CONTROLLER_TEST(preparePassesTaskPresenter) {
