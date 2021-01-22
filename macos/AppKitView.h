@@ -10,7 +10,7 @@
 #include <presentation/CorrectKeywords.hpp>
 #include <presentation/TestSetupImpl.hpp>
 #include <presentation/TestImpl.hpp>
-#include <presentation/SessionControllerImpl.hpp>
+#include <presentation/SessionController.hpp>
 #import <AppKit/AppKit.h>
 #include <unordered_map>
 

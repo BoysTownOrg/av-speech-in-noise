@@ -2,7 +2,7 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETTINGSINTERPRETER_HPP_
 
 #include "TestSetupImpl.hpp"
-#include "SessionControllerImpl.hpp"
+#include "SessionController.hpp"
 #include <map>
 
 namespace av_speech_in_noise {

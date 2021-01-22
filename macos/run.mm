@@ -4,7 +4,7 @@
 #include "AppKitView.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
-#include <presentation/SessionControllerImpl.hpp>
+#include <presentation/SessionController.hpp>
 #include <presentation/TestSettingsInterpreter.hpp>
 #include <recognition-test/Model.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>

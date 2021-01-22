@@ -1,7 +1,7 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "SessionViewStub.hpp"
-#include <presentation/SessionControllerImpl.hpp>
+#include <presentation/SessionController.hpp>
 #include <gtest/gtest.h>
 #include <utility>
 

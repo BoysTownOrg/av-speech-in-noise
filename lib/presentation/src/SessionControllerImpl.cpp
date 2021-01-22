@@ -1,4 +1,4 @@
-#include "SessionControllerImpl.hpp"
+#include "SessionController.hpp"
 
 namespace av_speech_in_noise {
 SessionControllerImpl::SessionControllerImpl(Model &model, SessionView &view,
