@@ -38,14 +38,6 @@ class TestSetupViewStub : public TestSetupView {
     bool hidden_{};
 };
 
-class TaskPresenterStub : public TaskPresenter {
-  public:
-    void showResponseSubmission() override {}
-    void hideResponseSubmission() override {}
-    void start() override {}
-    void stop() override {}
-};
-
 class TestSetupControlStub : public TestSetupControl {
   public:
     auto testSettingsFile() -> std::string override {
@@ -124,9 +116,10 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return calibration_;
     }
 
-    void initialize(Model &m, const std::string &t, const TestIdentity &id,
-        SNR snr) override {
+    void initialize(Model &m, SessionController &sc, const std::string &t,
+        const TestIdentity &id, SNR snr) override {
         startingSnr_ = snr.dB;
+        sessionController_ = &sc;
         text_ = t;
         identity_ = id;
         if (initializeAnyTestOnApply_)
@@ -152,12 +145,17 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
 
     void initializeAnyTestOnApply() { initializeAnyTestOnApply_ = true; }
 
+    auto sessionController() -> const SessionController * {
+        return sessionController_;
+    }
+
   private:
     std::string text_;
     std::string textForMethodQuery_;
     TestIdentity identity_{};
     int startingSnr_{};
     const Calibration &calibration_;
+    const SessionController *sessionController_{};
     Method method_{};
     bool initializeAnyTestOnApply_{};
 };
@@ -311,13 +309,8 @@ class TestSetupControllerTests : public ::testing::Test {
     TextFileReaderStub textFileReader;
     SessionControllerStub sessionController;
     TestSetupPresenterStub presenter;
-    TaskPresenterStub consonantPresenter;
-    TaskPresenterStub passFailPresenter;
     TestSetupControllerImpl controller{sessionController, model, sessionView,
-        control, testSettingsInterpreter, textFileReader, presenter,
-        {{Method::fixedLevelConsonants, consonantPresenter},
-            {Method::adaptivePassFail, passFailPresenter},
-            {Method::unknown, passFailPresenter}}};
+        control, testSettingsInterpreter, textFileReader, presenter};
     PlayingCalibration playingCalibration{control};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{control};
@@ -495,7 +488,7 @@ class TestSetupFailureTests : public ::testing::Test {
     TestSetupPresenterStub testPresenter;
     TestSetupControllerImpl controller{sessionController, failingModel,
         sessionView, control, testSettingsInterpreter, textFileReader,
-        testPresenter, {}};
+        testPresenter};
 };
 
 #define TEST_SETUP_CONTROLLER_TEST(a) TEST_F(TestSetupControllerTests, a)
@@ -504,11 +497,11 @@ class TestSetupFailureTests : public ::testing::Test {
 
 #define TEST_SETUP_FAILURE_TEST(a) TEST_F(TestSetupFailureTests, a)
 
-TEST_SETUP_CONTROLLER_TEST(controllerPreparesTestAfterConfirmButtonIsClicked) {
-    testSettingsInterpreter.setMethod(Method::adaptivePassFail);
+TEST_SETUP_CONTROLLER_TEST(
+    passesSessionControllerToTestSettingsInterpreterAfterConfirmButtonIsClicked) {
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &passFailPresenter, sessionController.taskPresenter());
+        &sessionController, testSettingsInterpreter.sessionController());
 }
 
 TEST_SETUP_CONTROLLER_TEST(
@@ -572,14 +565,6 @@ TEST_SETUP_CONTROLLER_TEST(
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, testSettingsInterpreter.identity().transducer);
-}
-
-TEST_SETUP_CONTROLLER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery) {
-    textFileReader.setRead("a");
-    run(confirmingTestSetup);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, testSettingsInterpreter.textForMethodQuery());
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesLevel) {

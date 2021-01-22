@@ -3,6 +3,7 @@
 
 #include "TestSetupImpl.hpp"
 #include "SessionControllerImpl.hpp"
+#include <map>
 
 namespace av_speech_in_noise {
 constexpr auto name(Method c) -> const char * {
@@ -111,11 +112,15 @@ constexpr auto name(TestSetting p) -> const char * {
 
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
-    void initialize(
-        Model &, const std::string &, const TestIdentity &, SNR) override;
+    TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>);
+    void initialize(Model &, SessionController &, const std::string &,
+        const TestIdentity &, SNR) override;
     auto method(const std::string &) -> Method override;
     static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
+
+  private:
+    std::map<Method, TaskPresenter &> taskPresenters;
 };
 }
 

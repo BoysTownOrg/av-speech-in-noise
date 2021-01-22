@@ -8,7 +8,6 @@
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <string>
-#include <map>
 
 namespace av_speech_in_noise {
 enum class Method {
@@ -36,8 +35,8 @@ class TestSettingsInterpreter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
         TestSettingsInterpreter);
-    virtual void initialize(
-        Model &, const std::string &, const TestIdentity &, SNR) = 0;
+    virtual void initialize(Model &, SessionController &, const std::string &,
+        const TestIdentity &, SNR) = 0;
     virtual auto method(const std::string &) -> Method = 0;
     virtual auto calibration(const std::string &) -> Calibration = 0;
 };
@@ -67,7 +66,7 @@ class TestSetupControllerImpl : public TestSetupControl::Observer {
   public:
     TestSetupControllerImpl(SessionController &, Model &, SessionView &,
         TestSetupControl &, TestSettingsInterpreter &, TextFileReader &,
-        TestSetupPresenter &, std::map<Method, TaskPresenter &>);
+        TestSetupPresenter &);
     void notifyThatConfirmButtonHasBeenClicked() override;
     void notifyThatPlayCalibrationButtonHasBeenClicked() override;
     void notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() override;
@@ -75,7 +74,6 @@ class TestSetupControllerImpl : public TestSetupControl::Observer {
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
 
   private:
-    std::map<Method, TaskPresenter &> taskPresenters;
     SessionController &sessionController;
     Model &model;
     SessionView &sessionView;

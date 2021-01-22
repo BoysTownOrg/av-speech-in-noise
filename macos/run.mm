@@ -384,7 +384,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
-    TestSettingsInterpreterImpl testSettingsInterpreter;
     ConsonantTaskPresenter consonantPresenter{consonantView};
     FreeResponseUI freeResponseUI{freeResponseUIController};
     FreeResponsePresenter freeResponsePresenter{
@@ -422,9 +421,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         model, experimenterView, &taskPresenter};
     SessionControllerImpl sessionController{
         model, view, testSetupPresenter, experimenterPresenter};
-    TestSetupControllerImpl testSetupController{sessionController, model, view,
-        *(testSetupView.get()), testSettingsInterpreter, textFileReader,
-        testSetupPresenter,
+    TestSettingsInterpreterImpl testSettingsInterpreter{
         {{Method::adaptiveCoordinateResponseMeasure,
              coordinateResponseMeasurePresenter},
             {Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
@@ -456,8 +453,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                 correctKeywordsPresenter},
             {Method::fixedLevelConsonants, consonantPresenter},
             {Method::adaptivePassFail, passFailPresenter},
-            {Method::adaptivePassFailWithEyeTracking, passFailPresenter},
-            {Method::unknown, passFailPresenter}}};
+            {Method::adaptivePassFailWithEyeTracking, passFailPresenter}}};
+    TestSetupControllerImpl testSetupController{sessionController, model, view,
+        *(testSetupView.get()), testSettingsInterpreter, textFileReader,
+        testSetupPresenter};
     sessionController.attach(sessionControllerObserver);
     testController.attach(&sessionController);
     testController.attach(&experimenterPresenter);

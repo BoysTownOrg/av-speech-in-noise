@@ -3,6 +3,7 @@
 #include <gsl/gsl>
 #include <sstream>
 #include <functional>
+#include <utility>
 
 namespace av_speech_in_noise {
 static auto entryDelimiter(const std::string &s) -> gsl::index {
@@ -253,10 +254,8 @@ static void initializeFixedLevelTestWithEachTargetNTimes(Method method,
     f(test);
 }
 
-void TestSettingsInterpreterImpl::initialize(Model &model,
-    const std::string &contents, const TestIdentity &identity,
-    SNR startingSnr) {
-    const auto method{av_speech_in_noise::method(contents)};
+static void initialize(Model &model, Method method, const std::string &contents,
+    const TestIdentity &identity, SNR startingSnr) {
     switch (method) {
     case Method::adaptiveCoordinateResponseMeasureWithDelayedMasker:
         return av_speech_in_noise::initialize(method, contents, identity,
@@ -334,6 +333,16 @@ void TestSettingsInterpreterImpl::initialize(Model &model,
     }
 }
 
+void TestSettingsInterpreterImpl::initialize(Model &model,
+    SessionController &sessionController, const std::string &contents,
+    const TestIdentity &identity, SNR startingSnr) {
+    const auto method{av_speech_in_noise::method(contents)};
+    av_speech_in_noise::initialize(
+        model, method, contents, identity, startingSnr);
+    if (!model.testComplete() && taskPresenters.count(method) != 0)
+        sessionController.prepare(taskPresenters.at(method));
+}
+
 auto TestSettingsInterpreterImpl::method(const std::string &s) -> Method {
     return av_speech_in_noise::method(s);
 }
@@ -356,4 +365,8 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
             return entry(line);
     return "";
 }
+
+TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
+    std::map<Method, TaskPresenter &> taskPresenters)
+    : taskPresenters{std::move(taskPresenters)} {}
 }
