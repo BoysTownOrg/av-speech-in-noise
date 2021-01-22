@@ -96,6 +96,11 @@ struct AdaptiveTestResult {
     double threshold{};
 };
 
+struct KeywordsTestResults {
+    double percentCorrect;
+    int totalCorrect;
+};
+
 using AdaptiveTestResults = typename std::vector<AdaptiveTestResult>;
 
 struct FixedLevelTest : Test {
@@ -171,6 +176,7 @@ class Model {
     virtual auto targetFileName() -> std::string = 0;
     virtual void restartAdaptiveTestWhilePreservingTargets() = 0;
     virtual auto adaptiveTestResults() -> AdaptiveTestResults = 0;
+    virtual auto keywordsTestResults() -> KeywordsTestResults = 0;
 };
 }
 

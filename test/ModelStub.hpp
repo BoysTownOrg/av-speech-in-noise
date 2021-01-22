@@ -251,6 +251,8 @@ class ModelStub : public Model {
 
     auto threeKeywords() -> ThreeKeywordsResponse { return threeKeywords_; }
 
+    auto keywordsTestResults() -> KeywordsTestResults override { return {}; }
+
   private:
     AdaptiveTest adaptiveTest_{};
     FixedLevelTest fixedLevelTest_{};

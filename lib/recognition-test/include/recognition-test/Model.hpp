@@ -86,11 +86,6 @@ struct ThreeKeywordsTrial : ThreeKeywordsResponse, open_set::Trial {};
 
 struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
-struct KeywordsTestResults {
-    double percentCorrect;
-    int totalCorrect;
-};
-
 class OutputFile {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(OutputFile);
@@ -231,7 +226,7 @@ class ModelImpl : public Model {
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
     auto adaptiveTestResults() -> AdaptiveTestResults override;
-    auto keywordsTestResults() -> KeywordsTestResults;
+    auto keywordsTestResults() -> KeywordsTestResults override;
     void restartAdaptiveTestWhilePreservingTargets() override;
 
   private:
