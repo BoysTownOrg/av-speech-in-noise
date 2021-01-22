@@ -83,8 +83,20 @@ SESSION_CONTROLLER_TEST(prepareStopsTestSetup) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testSetupPresenter.stopped());
 }
 
+SESSION_CONTROLLER_TEST(prepareStopsTestSetup2) {
+    TaskPresenterStub taskPresenter;
+    controller.prepare(taskPresenter);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testSetupPresenter.stopped());
+}
+
 SESSION_CONTROLLER_TEST(prepareStartsTest) {
     controller.prepare(Method::unknown);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.started());
+}
+
+SESSION_CONTROLLER_TEST(prepareStartsTest2) {
+    TaskPresenterStub taskPresenter;
+    controller.prepare(taskPresenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.started());
 }
 

@@ -14,7 +14,9 @@ void SessionControllerImpl::prepare(Method m) {
 }
 
 void SessionControllerImpl::prepare(TaskPresenter &p) {
+    testSetupPresenter.stop();
     testPresenter.initialize(p);
+    testPresenter.start();
 }
 
 void SessionControllerImpl::notifyThatTestIsComplete() {
