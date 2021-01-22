@@ -170,6 +170,28 @@ class TextFileReaderStub : public TextFileReader {
     std::string read_;
 };
 
+class TestSetupPresenterStub : public TestSetupPresenter {
+  public:
+    void start() override {}
+
+    void stop() override {}
+
+    void showTestSettingsFile(const std::string &s) override {
+        testSettingsFile_ = s;
+        testSettingsFileShown_ = true;
+    }
+
+    auto testSettingsFile() -> std::string { return testSettingsFile_; }
+
+    [[nodiscard]] auto testSettingsFileShown() const -> bool {
+        return testSettingsFileShown_;
+    }
+
+  private:
+    std::string testSettingsFile_;
+    bool testSettingsFileShown_{};
+};
+
 class UseCase {
   public:
     virtual ~UseCase() = default;
@@ -296,19 +318,14 @@ class TestSetupControllerTests : public ::testing::Test {
     Calibration calibration;
     TestSettingsInterpreterStub testSettingsInterpreter{calibration};
     TextFileReaderStub textFileReader;
-    TestSetupControllerImpl controller{
-        model, sessionView, control, testSettingsInterpreter, textFileReader};
+    SessionControllerStub sessionController;
+    TestSetupPresenterStub presenter;
+    TestSetupControllerImpl controller{sessionController, model, sessionView,
+        control, testSettingsInterpreter, textFileReader, presenter};
     PlayingCalibration playingCalibration{control};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{control};
-    SessionControllerStub sessionController;
-    TestSetupControllerObserverStub testSetupControllerObserver;
     ConfirmingTestSetupImpl confirmingTestSetup{control};
-
-    TestSetupControllerTests() {
-        controller.attach(&sessionController);
-        controller.attach(&testSetupControllerObserver);
-    }
 
     void assertPassesTestSettingsFileToTextFileReader(UseCase &useCase) {
         control.setTestSettingsFile("a");
@@ -478,8 +495,11 @@ class TestSetupFailureTests : public ::testing::Test {
     TestSettingsInterpreterStub testSettingsInterpreter{calibration};
     TestSetupPresenterImpl testSetupPresenter{view};
     TextFileReaderStub textFileReader;
-    TestSetupControllerImpl controller{failingModel, sessionView, control,
-        testSettingsInterpreter, textFileReader};
+    SessionControllerStub sessionController;
+    TestSetupPresenterStub testPresenter;
+    TestSetupControllerImpl controller{sessionController, failingModel,
+        sessionView, control, testSettingsInterpreter, textFileReader,
+        testPresenter};
 };
 
 #define TEST_SETUP_CONTROLLER_TEST(a) TEST_F(TestSetupControllerTests, a)
@@ -648,17 +668,14 @@ TEST_SETUP_CONTROLLER_TEST(playingRightSpeakerCalibrationPassesAudioDevice) {
 TEST_SETUP_CONTROLLER_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
     sessionView.setBrowseForOpeningFileResult("a");
     control.browseForTestSettingsFile();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        "a", testSetupControllerObserver.testSettingsFile());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", presenter.testSettingsFile());
 }
 
 TEST_SETUP_CONTROLLER_TEST(
     browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
     sessionView.setBrowseCancelled();
     control.browseForTestSettingsFile();
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
-        testSetupControllerObserver
-            .notifiedThatUserHasSelectedTestSettingsFile());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(presenter.testSettingsFileShown());
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFullScaleLevel) {

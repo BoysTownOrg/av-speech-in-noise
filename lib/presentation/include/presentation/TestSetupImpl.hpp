@@ -5,12 +5,14 @@
 #include "SessionView.hpp"
 #include "Input.hpp"
 #include <av-speech-in-noise/Model.hpp>
+#include <av-speech-in-noise/Interface.hpp>
 #include <string>
 
 namespace av_speech_in_noise {
 class TestSettingsInterpreter {
   public:
-    virtual ~TestSettingsInterpreter() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        TestSettingsInterpreter);
     virtual void initialize(
         Model &, const std::string &, const TestIdentity &, SNR) = 0;
     virtual auto method(const std::string &) -> Method = 0;
@@ -19,7 +21,7 @@ class TestSettingsInterpreter {
 
 class TextFileReader {
   public:
-    virtual ~TextFileReader() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TextFileReader);
     virtual auto read(const LocalUrl &) -> std::string = 0;
 };
 
@@ -41,24 +43,23 @@ constexpr auto name(Transducer c) -> const char * {
 class TestSetupControllerImpl : public TestSetupControl::Observer,
                                 public TestSetupController {
   public:
-    explicit TestSetupControllerImpl(Model &, SessionView &, TestSetupControl &,
-        TestSettingsInterpreter &, TextFileReader &);
+    TestSetupControllerImpl(SessionController &, Model &, SessionView &,
+        TestSetupControl &, TestSettingsInterpreter &, TextFileReader &,
+        TestSetupPresenter &);
     void notifyThatConfirmButtonHasBeenClicked() override;
     void notifyThatPlayCalibrationButtonHasBeenClicked() override;
     void notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() override;
     void notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() override;
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
-    void attach(SessionController *p) override;
-    void attach(TestSetupController::Observer *e) override;
 
   private:
+    SessionController &sessionController;
     Model &model;
     SessionView &sessionView;
     TestSetupControl &control;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
-    SessionController *controller{};
-    TestSetupController::Observer *observer{};
+    TestSetupPresenter &presenter;
 };
 
 class TestSetupPresenterImpl : public TestSetupPresenter {

@@ -2,13 +2,13 @@
 #include <functional>
 
 namespace av_speech_in_noise {
-TestSetupControllerImpl::TestSetupControllerImpl(Model &model,
-    SessionView &mainView, TestSetupControl &control,
-    TestSettingsInterpreter &testSettingsInterpreter,
-    TextFileReader &textFileReader)
-    : model{model}, sessionView{mainView}, control{control},
-      testSettingsInterpreter{testSettingsInterpreter}, textFileReader{
-                                                            textFileReader} {
+TestSetupControllerImpl::TestSetupControllerImpl(
+    SessionController &sessionController, Model &model, SessionView &mainView,
+    TestSetupControl &control, TestSettingsInterpreter &testSettingsInterpreter,
+    TextFileReader &textFileReader, TestSetupPresenter &presenter)
+    : sessionController{sessionController}, model{model}, sessionView{mainView},
+      control{control}, testSettingsInterpreter{testSettingsInterpreter},
+      textFileReader{textFileReader}, presenter{presenter} {
     control.attach(this);
 }
 
@@ -34,7 +34,8 @@ void TestSetupControllerImpl::notifyThatConfirmButtonHasBeenClicked() {
         testSettingsInterpreter.initialize(model, testSettings, p,
             SNR{readInteger(control.startingSnr(), "starting SNR")});
         if (!model.testComplete())
-            controller->prepare(testSettingsInterpreter.method(testSettings));
+            sessionController.prepare(
+                testSettingsInterpreter.method(testSettings));
     });
 }
 
@@ -74,13 +75,7 @@ void TestSetupControllerImpl::
     notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
     auto file{sessionView.browseForOpeningFile()};
     if (!sessionView.browseCancelled())
-        observer->notifyThatUserHasSelectedTestSettingsFile(file);
-}
-
-void TestSetupControllerImpl::attach(SessionController *p) { controller = p; }
-
-void TestSetupControllerImpl::attach(TestSetupController::Observer *e) {
-    observer = e;
+        presenter.showTestSettingsFile(file);
 }
 
 TestSetupPresenterImpl::TestSetupPresenterImpl(TestSetupView &view)

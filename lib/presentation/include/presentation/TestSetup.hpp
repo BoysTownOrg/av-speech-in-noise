@@ -45,15 +45,18 @@ class TestSetupController {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatUserHasSelectedTestSettingsFile(
-            const std::string &) = 0;
+            const std::string &) {}
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestSetupController);
-    virtual void attach(SessionController *) = 0;
-    virtual void attach(Observer *) = 0;
+    virtual void attach(SessionController *) {}
+    virtual void attach(Observer *) {}
 };
 
 class TestSetupPresenter : public virtual TestSetupController::Observer,
-                           public virtual Presenter {};
+                           public virtual Presenter {
+  public:
+    virtual void showTestSettingsFile(const std::string &) {}
+};
 }
 
 #endif
