@@ -10,7 +10,7 @@ namespace av_speech_in_noise {
 class SessionControllerImpl : public SessionController {
   public:
     SessionControllerImpl(
-        Model &, SessionView &, TestSetupPresenter *, TestPresenter *);
+        Model &, SessionView &, TestSetupPresenter &, TestPresenter &);
     void notifyThatTestIsComplete() override;
     void prepare(Method m) override;
     void attach(Observer *) override;
@@ -21,8 +21,8 @@ class SessionControllerImpl : public SessionController {
     static constexpr auto trackBumpLimit{10};
 
   private:
-    Presenter *testSetupPresenter;
-    TestPresenter *experimenterPresenter;
+    Presenter &testSetupPresenter;
+    TestPresenter &testPresenter;
     Observer *observer{};
 };
 }

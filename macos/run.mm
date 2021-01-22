@@ -456,7 +456,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {Method::unknown, passFailPresenter}},
         &taskPresenter};
     SessionControllerImpl sessionController{
-        model, view, &testSetupPresenter, &experimenterPresenter};
+        model, view, testSetupPresenter, experimenterPresenter};
     sessionController.attach(sessionControllerObserver);
     testSetupController.attach(&sessionController);
     testSetupController.attach(&testSetupPresenter);

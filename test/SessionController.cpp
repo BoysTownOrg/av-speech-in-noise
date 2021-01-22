@@ -61,7 +61,7 @@ class SessionControllerTests : public ::testing::Test {
     TestSetupPresenterStub testSetupPresenter;
     TestPresenterStub testPresenter;
     SessionControllerImpl controller{
-        model, view, &testSetupPresenter, &testPresenter};
+        model, view, testSetupPresenter, testPresenter};
 };
 
 #define SESSION_CONTROLLER_TEST(a) TEST_F(SessionControllerTests, a)
@@ -108,7 +108,7 @@ TEST_F(SessionControllerTBDTests, constructorPopulatesAudioDeviceMenu) {
     TestPresenterStub testPresenter;
     model.setAudioDevices({"a", "b", "c"});
     SessionControllerImpl controller{
-        model, view, &testSetupPresenter, &testPresenter};
+        model, view, testSetupPresenter, testPresenter};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.audioDevices().at(0));
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
