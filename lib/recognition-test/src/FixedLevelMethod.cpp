@@ -119,5 +119,18 @@ void FixedLevelMethodImpl::submit(const FreeResponse &response) {
 void FixedLevelMethodImpl::submit(const ThreeKeywordsResponse &response) {
     update(finiteTargetPlaylistWithRepeatables, finiteTargetPlaylist,
         response.flagged, finiteTargetsExhausted_);
+    totalKeywordsSubmitted_ += 3;
+    if (response.firstCorrect)
+        ++totalKeywordsCorrect_;
+    if (response.secondCorrect)
+        ++totalKeywordsCorrect_;
+    if (response.thirdCorrect)
+        ++totalKeywordsCorrect_;
+}
+
+auto FixedLevelMethodImpl::keywordsTestResults() -> KeywordsTestResults {
+    return KeywordsTestResults{
+        totalKeywordsCorrect_ / static_cast<double>(totalKeywordsSubmitted_),
+        totalKeywordsCorrect_};
 }
 }

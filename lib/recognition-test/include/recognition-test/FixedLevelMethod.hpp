@@ -4,6 +4,11 @@
 #include "Model.hpp"
 
 namespace av_speech_in_noise {
+struct KeywordsTestResults {
+    double percentCorrect;
+    int totalCorrect;
+};
+
 class FixedLevelMethodImpl : public FixedLevelMethod {
   public:
     explicit FixedLevelMethodImpl(ResponseEvaluator &);
@@ -24,6 +29,7 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     auto nextTarget() -> LocalUrl override;
     auto currentTarget() -> LocalUrl override;
     auto complete() -> bool override;
+    auto keywordsTestResults() -> KeywordsTestResults;
 
   private:
     coordinate_response_measure::FixedLevelTrial
@@ -35,6 +41,8 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     FiniteTargetPlaylistWithRepeatables *finiteTargetPlaylistWithRepeatables{};
     ResponseEvaluator &evaluator;
     SNR snr_{};
+    int totalKeywordsCorrect_{};
+    int totalKeywordsSubmitted_{};
     int trials_{};
     bool finiteTargetsExhausted_{};
     bool usingFiniteTargetPlaylist_{};
