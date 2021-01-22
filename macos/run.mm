@@ -418,7 +418,13 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     coordinateResponseMeasureController.attach(
         &coordinateResponseMeasurePresenter);
     UninitializedTaskPresenterImpl taskPresenter;
-    TestPresenterImpl experimenterPresenter{model, experimenterView,
+    TestPresenterImpl experimenterPresenter{
+        model, experimenterView, &taskPresenter};
+    SessionControllerImpl sessionController{
+        model, view, testSetupPresenter, experimenterPresenter};
+    TestSetupControllerImpl testSetupController{sessionController, model, view,
+        *(testSetupView.get()), testSettingsInterpreter, textFileReader,
+        testSetupPresenter,
         {{Method::adaptiveCoordinateResponseMeasure,
              coordinateResponseMeasurePresenter},
             {Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
@@ -451,13 +457,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {Method::fixedLevelConsonants, consonantPresenter},
             {Method::adaptivePassFail, passFailPresenter},
             {Method::adaptivePassFailWithEyeTracking, passFailPresenter},
-            {Method::unknown, passFailPresenter}},
-        &taskPresenter};
-    SessionControllerImpl sessionController{
-        model, view, testSetupPresenter, experimenterPresenter};
-    TestSetupControllerImpl testSetupController{sessionController, model, view,
-        *(testSetupView.get()), testSettingsInterpreter, textFileReader,
-        testSetupPresenter};
+            {Method::unknown, passFailPresenter}}};
     sessionController.attach(sessionControllerObserver);
     testController.attach(&sessionController);
     testController.attach(&experimenterPresenter);
