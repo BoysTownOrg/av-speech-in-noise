@@ -10,34 +10,12 @@
 #include <string>
 
 namespace av_speech_in_noise {
-enum class Method {
-    adaptivePassFail,
-    adaptivePassFailWithEyeTracking,
-    adaptiveCorrectKeywords,
-    adaptiveCorrectKeywordsWithEyeTracking,
-    adaptiveCoordinateResponseMeasure,
-    adaptiveCoordinateResponseMeasureWithSingleSpeaker,
-    adaptiveCoordinateResponseMeasureWithDelayedMasker,
-    adaptiveCoordinateResponseMeasureWithEyeTracking,
-    fixedLevelFreeResponseWithTargetReplacement,
-    fixedLevelFreeResponseWithSilentIntervalTargets,
-    fixedLevelFreeResponseWithAllTargets,
-    fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
-    fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
-    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-    fixedLevelConsonants,
-    fixedLevelChooseKeywordsWithAllTargets,
-    unknown
-};
-
 class TestSettingsInterpreter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
         TestSettingsInterpreter);
     virtual void initialize(Model &, SessionController &, const std::string &,
         const TestIdentity &, SNR) = 0;
-    virtual auto method(const std::string &) -> Method = 0;
     virtual auto calibration(const std::string &) -> Calibration = 0;
 };
 

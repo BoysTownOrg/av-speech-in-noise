@@ -343,10 +343,6 @@ void TestSettingsInterpreterImpl::initialize(Model &model,
         sessionController.prepare(taskPresenters.at(method));
 }
 
-auto TestSettingsInterpreterImpl::method(const std::string &s) -> Method {
-    return av_speech_in_noise::method(s);
-}
-
 auto TestSettingsInterpreterImpl::calibration(const std::string &contents)
     -> Calibration {
     Calibration calibration;

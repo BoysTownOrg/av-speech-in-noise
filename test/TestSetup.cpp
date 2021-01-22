@@ -132,11 +132,6 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
 
     [[nodiscard]] auto startingSnr() const -> int { return startingSnr_; }
 
-    auto method(const std::string &t) -> Method override {
-        textForMethodQuery_ = t;
-        return method_;
-    }
-
     void initializeAnyTestOnApply() { initializeAnyTestOnApply_ = true; }
 
     auto sessionController() -> const SessionController * {
@@ -150,7 +145,6 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     int startingSnr_{};
     const Calibration &calibration_;
     const SessionController *sessionController_{};
-    Method method_{};
     bool initializeAnyTestOnApply_{};
 };
 

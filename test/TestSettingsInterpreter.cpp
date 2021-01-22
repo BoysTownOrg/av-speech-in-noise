@@ -144,15 +144,6 @@ void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
         {entryWithNewline(TestSetting::method, m)}, startingSnr, identity);
 }
 
-auto method(TestSettingsInterpreterImpl &interpreter,
-    const std::vector<std::string> &v) -> Method {
-    return interpreter.method(concatenate(v));
-}
-
-auto method(TestSettingsInterpreterImpl &interpreter, Method m) -> Method {
-    return method(interpreter, {entryWithNewline(TestSetting::method, m)});
-}
-
 void assertDefaultAdaptiveTestInitialized(ModelStub &model) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.defaultAdaptiveTestInitialized());
 }
@@ -278,10 +269,6 @@ void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
     assertTestMethodEquals(name(m), f(model));
 }
 
-void assertMethod(TestSettingsInterpreterImpl &interpreter, Method m) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(m, method(interpreter, m));
-}
-
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -356,96 +343,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     model.setTestComplete();
     initialize(interpreter, model, sessionController, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailReturnsMethod) {
-    assertMethod(interpreter, Method::adaptivePassFail);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailWithEyeTrackingReturnsMethod) {
-    assertMethod(interpreter, Method::adaptivePassFailWithEyeTracking);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsReturnsMethod) {
-    assertMethod(interpreter, Method::adaptiveCorrectKeywords);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    adaptiveCorrectKeywordsWithEyeTrackingReturnsMethod) {
-    assertMethod(interpreter, Method::adaptiveCorrectKeywordsWithEyeTracking);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(adaptiveCoordinateResponseMeasureReturnsMethod) {
-    assertMethod(interpreter, Method::adaptiveCoordinateResponseMeasure);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    adaptiveCoordinateResponseMeasureWithSingleSpeakerReturnsMethod) {
-    assertMethod(interpreter,
-        Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    adaptiveCoordinateResponseMeasureWithDelayedMaskerReturnsMethod) {
-    assertMethod(interpreter,
-        Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelChooseKeywordsWithAllTargetsReturnsMethod) {
-    assertMethod(interpreter, Method::fixedLevelChooseKeywordsWithAllTargets);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsReturnsMethod) {
-    assertMethod(interpreter, Method::fixedLevelConsonants);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    adaptiveCoordinateResponseMeasureWithEyeTrackingReturnsMethod) {
-    assertMethod(
-        interpreter, Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithTargetReplacementReturnsMethod) {
-    assertMethod(
-        interpreter, Method::fixedLevelFreeResponseWithTargetReplacement);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelCoordinateResponseMeasureWithTargetReplacementReturnsMethod) {
-    assertMethod(interpreter,
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingReturnsMethod) {
-    assertMethod(interpreter,
-        Method::
-            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithSilentIntervalTargetsReturnsMethod) {
-    assertMethod(
-        interpreter, Method::fixedLevelFreeResponseWithSilentIntervalTargets);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithAllTargetsReturnsMethod) {
-    assertMethod(interpreter, Method::fixedLevelFreeResponseWithAllTargets);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithAllTargetsAndEyeTrackingReturnsMethod) {
-    assertMethod(interpreter,
-        Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsReturnsMethod) {
-    assertMethod(interpreter,
-        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesMethod) {

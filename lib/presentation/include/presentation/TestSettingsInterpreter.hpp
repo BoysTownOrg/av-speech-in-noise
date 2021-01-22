@@ -6,6 +6,27 @@
 #include <map>
 
 namespace av_speech_in_noise {
+enum class Method {
+    adaptivePassFail,
+    adaptivePassFailWithEyeTracking,
+    adaptiveCorrectKeywords,
+    adaptiveCorrectKeywordsWithEyeTracking,
+    adaptiveCoordinateResponseMeasure,
+    adaptiveCoordinateResponseMeasureWithSingleSpeaker,
+    adaptiveCoordinateResponseMeasureWithDelayedMasker,
+    adaptiveCoordinateResponseMeasureWithEyeTracking,
+    fixedLevelFreeResponseWithTargetReplacement,
+    fixedLevelFreeResponseWithSilentIntervalTargets,
+    fixedLevelFreeResponseWithAllTargets,
+    fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
+    fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
+    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+    fixedLevelConsonants,
+    fixedLevelChooseKeywordsWithAllTargets,
+    unknown
+};
+
 constexpr auto name(Method c) -> const char * {
     switch (c) {
     case Method::adaptivePassFail:
@@ -115,7 +136,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>);
     void initialize(Model &, SessionController &, const std::string &,
         const TestIdentity &, SNR) override;
-    auto method(const std::string &) -> Method override;
     static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
 
