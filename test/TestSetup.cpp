@@ -130,13 +130,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
 
     [[nodiscard]] auto identity() const -> TestIdentity { return identity_; }
 
-    [[nodiscard]] auto textForMethodQuery() const -> std::string {
-        return textForMethodQuery_;
-    }
-
     [[nodiscard]] auto startingSnr() const -> int { return startingSnr_; }
-
-    void setMethod(Method m) { method_ = m; }
 
     auto method(const std::string &t) -> Method override {
         textForMethodQuery_ = t;
@@ -279,22 +273,13 @@ void setAudioDevice(SessionViewStub &view, std::string s) {
     view.setAudioDevice(std::move(s));
 }
 
-void setTestComplete(ModelStub &model) { model.setTestComplete(); }
-
 class SessionControllerStub : public SessionController {
   public:
     void notifyThatTestIsComplete() override {}
 
-    void prepare(TaskPresenter &p) override {
-        taskPresenter_ = &p;
-        prepareCalled_ = true;
-    }
-
-    [[nodiscard]] auto prepareCalled() const -> bool { return prepareCalled_; }
+    void prepare(TaskPresenter &) override {}
 
   private:
-    TaskPresenter *taskPresenter_{};
-    bool prepareCalled_{};
 };
 
 class TestSetupControllerTests : public ::testing::Test {
