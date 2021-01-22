@@ -738,7 +738,8 @@ void AppKitTestUI::setContinueTestingDialogMessage(const std::string &s) {
     set(continueTestingDialogField, s);
 }
 
-AppKitView::AppKitView(NSApplication *app, NSViewController *viewController)
+AppKitSessionUI::AppKitSessionUI(
+    NSApplication *app, NSViewController *viewController)
     : app{app}, audioDeviceMenu{
                     [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                                pullsDown:NO]} {
@@ -763,9 +764,9 @@ AppKitView::AppKitView(NSApplication *app, NSViewController *viewController)
     ]);
 }
 
-void AppKitView::eventLoop() { [app run]; }
+void AppKitSessionUI::eventLoop() { [app run]; }
 
-void AppKitView::showErrorMessage(std::string s) {
+void AppKitSessionUI::showErrorMessage(std::string s) {
     const auto alert{[[NSAlert alloc] init]};
     [alert setMessageText:@"Error."];
     [alert setInformativeText:nsString(s)];
@@ -773,23 +774,23 @@ void AppKitView::showErrorMessage(std::string s) {
     [alert runModal];
 }
 
-auto AppKitView::browseForDirectory() -> std::string {
+auto AppKitSessionUI::browseForDirectory() -> std::string {
     const auto panel{[NSOpenPanel openPanel]};
     panel.canChooseDirectories = YES;
     panel.canChooseFiles = NO;
     return browseModal(panel);
 }
 
-auto AppKitView::browseCancelled() -> bool { return browseCancelled_; }
+auto AppKitSessionUI::browseCancelled() -> bool { return browseCancelled_; }
 
-auto AppKitView::browseForOpeningFile() -> std::string {
+auto AppKitSessionUI::browseForOpeningFile() -> std::string {
     const auto panel{[NSOpenPanel openPanel]};
     panel.canChooseDirectories = NO;
     panel.canChooseFiles = YES;
     return browseModal(panel);
 }
 
-auto AppKitView::browseModal(NSOpenPanel *panel) -> std::string {
+auto AppKitSessionUI::browseModal(NSOpenPanel *panel) -> std::string {
     switch ([panel runModal]) {
     case NSModalResponseOK:
         browseCancelled_ = false;
@@ -800,11 +801,11 @@ auto AppKitView::browseModal(NSOpenPanel *panel) -> std::string {
     }
 }
 
-auto AppKitView::audioDevice() -> std::string {
+auto AppKitSessionUI::audioDevice() -> std::string {
     return audioDeviceMenu.titleOfSelectedItem.UTF8String;
 }
 
-void AppKitView::populateAudioDeviceMenu(std::vector<std::string> items) {
+void AppKitSessionUI::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (const auto &item : items)
         [audioDeviceMenu addItemWithTitle:nsString(item)];
 }

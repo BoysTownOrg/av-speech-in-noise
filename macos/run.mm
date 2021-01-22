@@ -215,7 +215,7 @@ static void addChild(NSTabViewController *parent, NSTabViewController *child) {
 }
 
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
-    AppKitTestSetupUIFactory &testSetupViewFactory,
+    AppKitTestSetupUIFactory &testSetupUIFactory,
     OutputFileNameFactory &outputFileNameFactory,
     SessionController::Observer *sessionControllerObserver,
     const std::string &relativeOutputDirectory) {
@@ -333,7 +333,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                    keyEquivalent:@"q"];
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
-    AppKitView view{app, preferencesViewController};
+    AppKitSessionUI sessionUI{app, preferencesViewController};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);
     testSetupViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -351,8 +351,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             constraintEqualToAnchor:viewController.view.trailingAnchor
                            constant:-8]
     ]];
-    const auto testSetupView{
-        testSetupViewFactory.make(testSetupViewController)};
+    const auto testSetupUI{testSetupUIFactory.make(testSetupViewController)};
     const auto experimenterViewController{
         nsTabViewControllerWithoutTabControl()};
     addChild(viewController, experimenterViewController);
@@ -400,12 +399,12 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     PassFailPresenter passFailPresenter{experimenterView, passFailUI};
     CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
         coordinateResponseMeasureView};
-    TestSetupPresenterImpl testSetupPresenter{*(testSetupView.get())};
-    TestControllerImpl testController{model, view, experimenterView};
+    TestSetupPresenterImpl testSetupPresenter{*(testSetupUI.get()), sessionUI};
+    TestControllerImpl testController{model, sessionUI, experimenterView};
     ChooseKeywordsController chooseKeywordsController{
         testController, model, chooseKeywordsUI, chooseKeywordsPresenter};
     CorrectKeywordsController correctKeywordsController{
-        testController, model, view, correctKeywordsUI};
+        testController, model, sessionUI, correctKeywordsUI};
     FreeResponseController freeResponseController{
         testController, model, freeResponseUI};
     PassFailController passFailController{testController, model, passFailUI};
@@ -420,7 +419,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     TestPresenterImpl experimenterPresenter{
         model, experimenterView, &taskPresenter};
     SessionControllerImpl sessionController{
-        model, view, testSetupPresenter, experimenterPresenter};
+        model, sessionUI, testSetupPresenter, experimenterPresenter};
     TestSettingsInterpreterImpl testSettingsInterpreter{
         {{Method::adaptiveCoordinateResponseMeasure,
              coordinateResponseMeasurePresenter},
@@ -454,9 +453,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {Method::fixedLevelConsonants, consonantPresenter},
             {Method::adaptivePassFail, passFailPresenter},
             {Method::adaptivePassFailWithEyeTracking, passFailPresenter}}};
-    TestSetupControllerImpl testSetupController{sessionController, model, view,
-        *(testSetupView.get()), testSettingsInterpreter, textFileReader,
-        testSetupPresenter};
+    TestSetupControllerImpl testSetupController{*(testSetupUI.get()),
+        sessionController, sessionUI, testSetupPresenter, model,
+        testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);
     testController.attach(&sessionController);
     testController.attach(&experimenterPresenter);

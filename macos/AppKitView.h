@@ -231,9 +231,9 @@ class AppKitCoordinateResponseMeasureUI
     Observer *listener_{};
 };
 
-class AppKitView : public SessionView {
+class AppKitSessionUI : public SessionView, public SessionControl {
   public:
-    explicit AppKitView(NSApplication *, NSViewController *);
+    explicit AppKitSessionUI(NSApplication *, NSViewController *);
     void eventLoop() override;
     void showErrorMessage(std::string) override;
     auto browseForDirectory() -> std::string override;
