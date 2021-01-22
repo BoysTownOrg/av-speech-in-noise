@@ -9,38 +9,38 @@ static void loadFromDirectory(
     list->loadFromDirectory(test.targetsUrl);
 }
 
-void FixedLevelMethodImpl::initialize(
-    const FixedLevelFixedTrialsTest &test, TargetPlaylist *list) {
-    usingFiniteTargetPlaylist_ = false;
+static void initialize(TargetPlaylist *&targetList,
+    const FixedLevelTest *&test_, SNR &snr_, const FixedLevelTest &test,
+    TargetPlaylist *list) {
     targetList = list;
     test_ = &test;
-    trials_ = test.trials;
     snr_ = test.snr;
     loadFromDirectory(targetList, test);
 }
 
 void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &p, FiniteTargetPlaylistWithRepeatables *list) {
+    const FixedLevelFixedTrialsTest &test, TargetPlaylist *list) {
+    usingFiniteTargetPlaylist_ = false;
+    av_speech_in_noise::initialize(targetList, test_, snr_, test, list);
+    trials_ = test.trials;
+}
+
+void FixedLevelMethodImpl::initialize(
+    const FixedLevelTest &test, FiniteTargetPlaylistWithRepeatables *list) {
     usingFiniteTargetPlaylist_ = true;
-    targetList = list;
     finiteTargetPlaylist = list;
     finiteTargetPlaylistWithRepeatables = list;
-    test_ = &p;
-    snr_ = p.snr;
-    loadFromDirectory(targetList, p);
+    av_speech_in_noise::initialize(targetList, test_, snr_, test, list);
     finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
     totalKeywordsSubmitted_ = 0;
     totalKeywordsCorrect_ = 0;
 }
 
 void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &p, FiniteTargetPlaylist *list) {
+    const FixedLevelTest &test, FiniteTargetPlaylist *list) {
     usingFiniteTargetPlaylist_ = true;
-    targetList = list;
     finiteTargetPlaylist = list;
-    test_ = &p;
-    snr_ = p.snr;
-    loadFromDirectory(targetList, p);
+    av_speech_in_noise::initialize(targetList, test_, snr_, test, list);
     finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
 }
 
