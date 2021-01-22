@@ -86,6 +86,11 @@ struct ThreeKeywordsTrial : ThreeKeywordsResponse, open_set::Trial {};
 
 struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
+struct KeywordsTestResults {
+    double percentCorrect;
+    int totalCorrect;
+};
+
 class OutputFile {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(OutputFile);
@@ -152,6 +157,7 @@ class FixedLevelMethod : public virtual TestMethod {
         const FixedLevelFixedTrialsTest &, TargetPlaylist *) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
     virtual void writeLastConsonant(OutputFile &) = 0;
+    virtual auto keywordsTestResults() -> KeywordsTestResults = 0;
 };
 
 class RecognitionTestModel {

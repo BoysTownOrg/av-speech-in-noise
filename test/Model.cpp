@@ -134,6 +134,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     }
     void writeTestResult(OutputFile &) override {}
     void submit(const coordinate_response_measure::Response &) override {}
+    auto keywordsTestResults() -> KeywordsTestResults override { return {}; }
 };
 
 class RecognitionTestModelStub : public RecognitionTestModel {
