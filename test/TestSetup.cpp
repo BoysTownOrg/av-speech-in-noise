@@ -38,6 +38,14 @@ class TestSetupViewStub : public TestSetupView {
     bool hidden_{};
 };
 
+class TaskPresenterStub : public TaskPresenter {
+  public:
+    void showResponseSubmission() override {}
+    void hideResponseSubmission() override {}
+    void start() override {}
+    void stop() override {}
+};
+
 class TestSetupControlStub : public TestSetupControl {
   public:
     auto testSettingsFile() -> std::string override {
@@ -278,15 +286,18 @@ void setTestComplete(ModelStub &model) { model.setTestComplete(); }
 class SessionControllerStub : public SessionController {
   public:
     void notifyThatTestIsComplete() override {}
-    void prepare(Method m) override {
-        method_ = m;
+
+    void prepare(TaskPresenter &p) override {
+        taskPresenter_ = &p;
         prepareCalled_ = true;
     }
-    auto method() -> Method { return method_; }
+
     [[nodiscard]] auto prepareCalled() const -> bool { return prepareCalled_; }
 
+    auto taskPresenter() -> TaskPresenter * { return taskPresenter_; }
+
   private:
-    Method method_{};
+    TaskPresenter *taskPresenter_{};
     bool prepareCalled_{};
 };
 
@@ -300,8 +311,13 @@ class TestSetupControllerTests : public ::testing::Test {
     TextFileReaderStub textFileReader;
     SessionControllerStub sessionController;
     TestSetupPresenterStub presenter;
+    TaskPresenterStub consonantPresenter;
+    TaskPresenterStub passFailPresenter;
     TestSetupControllerImpl controller{sessionController, model, sessionView,
-        control, testSettingsInterpreter, textFileReader, presenter};
+        control, testSettingsInterpreter, textFileReader, presenter,
+        {{Method::fixedLevelConsonants, consonantPresenter},
+            {Method::adaptivePassFail, passFailPresenter},
+            {Method::unknown, passFailPresenter}}};
     PlayingCalibration playingCalibration{control};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{control};
@@ -479,7 +495,7 @@ class TestSetupFailureTests : public ::testing::Test {
     TestSetupPresenterStub testPresenter;
     TestSetupControllerImpl controller{sessionController, failingModel,
         sessionView, control, testSettingsInterpreter, textFileReader,
-        testPresenter};
+        testPresenter, {}};
 };
 
 #define TEST_SETUP_CONTROLLER_TEST(a) TEST_F(TestSetupControllerTests, a)
@@ -492,7 +508,7 @@ TEST_SETUP_CONTROLLER_TEST(controllerPreparesTestAfterConfirmButtonIsClicked) {
     testSettingsInterpreter.setMethod(Method::adaptivePassFail);
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Method::adaptivePassFail, sessionController.method());
+        &passFailPresenter, sessionController.taskPresenter());
 }
 
 TEST_SETUP_CONTROLLER_TEST(
@@ -684,6 +700,7 @@ TEST_SETUP_PRESENTER_TEST(presenterSetsTestSettingsFileWhenNotified) {
     presenter.showTestSettingsFile("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", view.testSettingsFile());
 }
+
 auto contains(const std::vector<std::string> &items, const std::string &item)
     -> bool {
     return std::find(items.begin(), items.end(), item) != items.end();

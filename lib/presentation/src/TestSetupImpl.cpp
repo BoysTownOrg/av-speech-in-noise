@@ -1,12 +1,15 @@
 #include "TestSetupImpl.hpp"
 #include <functional>
+#include <utility>
 
 namespace av_speech_in_noise {
 TestSetupControllerImpl::TestSetupControllerImpl(
     SessionController &sessionController, Model &model, SessionView &mainView,
     TestSetupControl &control, TestSettingsInterpreter &testSettingsInterpreter,
-    TextFileReader &textFileReader, TestSetupPresenter &presenter)
-    : sessionController{sessionController}, model{model}, sessionView{mainView},
+    TextFileReader &textFileReader, TestSetupPresenter &presenter,
+    std::map<Method, TaskPresenter &> taskPresenters)
+    : taskPresenters{std::move(taskPresenters)},
+      sessionController{sessionController}, model{model}, sessionView{mainView},
       control{control}, testSettingsInterpreter{testSettingsInterpreter},
       textFileReader{textFileReader}, presenter{presenter} {
     control.attach(this);
@@ -34,8 +37,8 @@ void TestSetupControllerImpl::notifyThatConfirmButtonHasBeenClicked() {
         testSettingsInterpreter.initialize(model, testSettings, p,
             SNR{readInteger(control.startingSnr(), "starting SNR")});
         if (!model.testComplete())
-            sessionController.prepare(
-                testSettingsInterpreter.method(testSettings));
+            sessionController.prepare(taskPresenters.at(
+                testSettingsInterpreter.method(testSettings)));
     });
 }
 

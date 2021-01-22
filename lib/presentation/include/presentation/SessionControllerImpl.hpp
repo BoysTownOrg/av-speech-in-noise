@@ -13,7 +13,7 @@ class SessionControllerImpl : public SessionController {
         Model &, SessionView &, TestSetupPresenter &, TestPresenter &);
     void notifyThatTestIsComplete() override;
     void prepare(Method m) override;
-    void prepare(TaskPresenter &);
+    void prepare(TaskPresenter &) override;
     void attach(Observer *) override;
 
     static constexpr RealLevel fullScaleLevel{119};
