@@ -78,12 +78,6 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 };
 
 class FixedLevelMethodStub : public FixedLevelMethod {
-    std::stringstream log_{};
-    const FixedLevelTest *test_{};
-    const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
-    TargetPlaylist *targetList_{};
-    bool submittedConsonant_{};
-
   public:
     void initialize(
         const FixedLevelFixedTrialsTest &t, TargetPlaylist *list) override {
@@ -116,25 +110,50 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     auto log() -> const std::stringstream & { return log_; }
 
     auto complete() -> bool override { return {}; }
+
     auto nextTarget() -> LocalUrl override {
         log_ << "nextTarget ";
         return {};
     }
+
     auto currentTarget() -> LocalUrl override { return {}; }
+
     auto snr() -> SNR override { return SNR{}; }
+
     void submit(const FreeResponse &) override {}
+
     void submit(const ConsonantResponse &) override {
         submittedConsonant_ = true;
         log_ << "submitConsonant ";
     }
+
     void writeTestingParameters(OutputFile &) override {}
+
     void writeLastCoordinateResponse(OutputFile &) override {}
+
     void writeLastConsonant(OutputFile &) override {
         log_ << "writeLastConsonant ";
     }
+
     void writeTestResult(OutputFile &) override {}
+
     void submit(const coordinate_response_measure::Response &) override {}
-    auto keywordsTestResults() -> KeywordsTestResults override { return {}; }
+
+    auto keywordsTestResults() -> KeywordsTestResults override {
+        return keywordsTestResults_;
+    }
+
+    void setKeywordsTestResults(const KeywordsTestResults &r) {
+        keywordsTestResults_ = r;
+    }
+
+  private:
+    KeywordsTestResults keywordsTestResults_{};
+    std::stringstream log_{};
+    const FixedLevelTest *test_{};
+    const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
+    TargetPlaylist *targetList_{};
+    bool submittedConsonant_{};
 };
 
 class RecognitionTestModelStub : public RecognitionTestModel {
@@ -1204,6 +1223,14 @@ MODEL_TEST(returnsAdaptiveTestResults) {
     adaptiveMethod.setTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
     assertEqual(
         {{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}}, model.adaptiveTestResults());
+}
+
+MODEL_TEST(returnsKeywordsTestResults) {
+    fixedLevelMethod.setKeywordsTestResults({1., 2});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        1., model.keywordsTestResults().percentCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        2, model.keywordsTestResults().totalCorrect);
 }
 
 MODEL_TEST(returnsTrialNumber) {

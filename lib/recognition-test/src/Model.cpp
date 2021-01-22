@@ -213,4 +213,8 @@ auto ModelImpl::trialNumber() -> int { return model.trialNumber(); }
 auto ModelImpl::targetFileName() -> std::string {
     return model.targetFileName();
 }
+
+auto ModelImpl::keywordsTestResults() -> KeywordsTestResults {
+    return fixedLevelMethod.keywordsTestResults();
+}
 }
