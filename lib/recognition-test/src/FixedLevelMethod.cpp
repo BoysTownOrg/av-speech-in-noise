@@ -35,9 +35,9 @@ void FixedLevelMethodImpl::initialize(
 
 void FixedLevelMethodImpl::initialize(
     const FixedLevelTest &test, FiniteTargetPlaylistWithRepeatables *list) {
+    av_speech_in_noise::initialize(targetList, test_, snr_, test, list);
     av_speech_in_noise::initialize(usingFiniteTargetPlaylist_,
         finiteTargetPlaylist, finiteTargetsExhausted_, list);
-    av_speech_in_noise::initialize(targetList, test_, snr_, test, list);
     finiteTargetPlaylistWithRepeatables = list;
     totalKeywordsSubmitted_ = 0;
     totalKeywordsCorrect_ = 0;
