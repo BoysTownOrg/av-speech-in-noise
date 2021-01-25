@@ -36,7 +36,7 @@ class TargetPlaylistStub : public virtual TargetPlaylist {
 
     auto log() const -> const std::stringstream & { return log_; }
 
-  private:
+  protected:
     std::stringstream log_{};
     std::string currentWhenNext_{};
     std::string directory_{};
@@ -50,7 +50,10 @@ class FiniteTargetPlaylistStub : public virtual FiniteTargetPlaylist,
   public:
     void setEmpty() { empty_ = true; }
 
-    auto empty() -> bool override { return empty_; }
+    auto empty() -> bool override {
+        insert(log_, "empty ");
+        return empty_;
+    }
 
   private:
     bool empty_{};
@@ -60,9 +63,9 @@ class RepeatableFiniteTargetPlaylistStub
     : public virtual RepeatableFiniteTargetPlaylist,
       public FiniteTargetPlaylistStub {
   public:
-    void setRepeats(gsl::index n) { repeats_ = n; }
+    void setRepeats(gsl::index n) override { repeats_ = n; }
 
-    auto repeats() -> gsl::index { return repeats_; }
+    auto repeats() const -> gsl::index { return repeats_; }
 
   private:
     gsl::index repeats_{};
@@ -72,9 +75,14 @@ class FiniteTargetPlaylistWithRepeatablesStub
     : public virtual FiniteTargetPlaylistWithRepeatables,
       public FiniteTargetPlaylistStub {
   public:
-    void reinsertCurrent() override { reinsertCurrentCalled_ = true; }
+    void reinsertCurrent() override {
+        insert(log_, "reinsertCurrent ");
+        reinsertCurrentCalled_ = true;
+    }
 
-    auto reinsertCurrentCalled() const { return reinsertCurrentCalled_; }
+    auto reinsertCurrentCalled() const -> bool {
+        return reinsertCurrentCalled_;
+    }
 
   private:
     bool reinsertCurrentCalled_{};

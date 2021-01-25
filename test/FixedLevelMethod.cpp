@@ -564,48 +564,21 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
         0, method.keywordsTestResults().percentCorrect);
 }
 
-class TargetPlaylistTestConcluderComboStub
-    : public FiniteTargetPlaylistWithRepeatables {
-  public:
-    void loadFromDirectory(const LocalUrl &) override {
-        insert(log_, "loadFromDirectory ");
-    }
-    auto directory() -> LocalUrl override { return {}; }
-    auto next() -> LocalUrl override { return {}; }
-    auto current() -> LocalUrl override { return {}; }
-    auto empty() -> bool override {
-        insert(log_, "empty ");
-        return {};
-    }
-    void reinsertCurrent() override { insert(log_, "reinsertCurrent "); }
-    auto log() const -> const std::stringstream & { return log_; }
-
-  private:
-    std::stringstream log_;
-};
-
-TEST(FixedLevelMethodTestsTBD,
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     submitFreeResponseReinsertsCurrentTargetIfFlaggedBeforeQueryingCompletion) {
-    ResponseEvaluatorStub evaluator;
-    TargetPlaylistTestConcluderComboStub combo;
-    FixedLevelMethodImpl method{evaluator};
-    FixedLevelTest test;
-    method.initialize(test, &combo);
+    run(initializingMethod, method);
     FreeResponse response;
     response.flagged = true;
     method.submit(response);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        endsWith(combo.log(), "reinsertCurrent empty "));
+        endsWith(targetList.log(), "reinsertCurrent empty "));
 }
 
-TEST(FixedLevelMethodTestsTBD, initializeLoadsBeforeQueryingCompletion) {
-    ResponseEvaluatorStub evaluator;
-    TargetPlaylistTestConcluderComboStub combo;
-    FixedLevelMethodImpl method{evaluator};
-    FixedLevelTest test;
-    method.initialize(test, &combo);
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    initializeLoadsBeforeQueryingCompletion) {
+    run(initializingMethod, method);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        endsWith(combo.log(), "loadFromDirectory empty "));
+        endsWith(targetList.log(), "loadFromDirectory empty "));
 }
 }
 }
