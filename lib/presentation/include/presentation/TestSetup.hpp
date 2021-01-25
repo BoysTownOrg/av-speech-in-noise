@@ -6,6 +6,7 @@
 #include <av-speech-in-noise/Interface.hpp>
 #include <vector>
 #include <string>
+#include <string_view>
 
 namespace av_speech_in_noise {
 class TestSetupControl {
@@ -35,13 +36,13 @@ class TestSetupControl {
 class TestSetupView : public virtual View {
   public:
     virtual void populateTransducerMenu(std::vector<std::string>) = 0;
-    virtual void setTestSettingsFile(std::string) = 0;
+    virtual void setTestSettingsFile(std::string_view) = 0;
 };
 
 class TestSetupPresenter : public Presenter {
   public:
-    virtual void showTestSettingsFile(const std::string &) = 0;
-    virtual void showErrorMessage(std::string) = 0;
+    virtual void updateTestSettingsFile(std::string_view) = 0;
+    virtual void updateErrorMessage(std::string_view) = 0;
 };
 }
 

@@ -7,9 +7,7 @@
 namespace av_speech_in_noise {
 class SessionViewStub : public SessionView {
   public:
-    void showErrorMessage(std::string s) override {
-        errorMessage_ = std::move(s);
-    }
+    void showErrorMessage(std::string_view s) override { errorMessage_ = s; }
 
     auto errorMessage() -> std::string { return errorMessage_; }
 

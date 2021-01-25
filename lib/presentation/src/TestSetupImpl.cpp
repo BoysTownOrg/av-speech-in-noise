@@ -20,7 +20,7 @@ static void showErrorMessageOnRuntimeError(
     try {
         f();
     } catch (const std::runtime_error &e) {
-        presenter.showErrorMessage(e.what());
+        presenter.updateErrorMessage(e.what());
     }
 }
 
@@ -79,7 +79,7 @@ void TestSetupController::
     notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
     const auto file{sessionControl.browseForOpeningFile()};
     if (!sessionControl.browseCancelled())
-        presenter.showTestSettingsFile(file);
+        presenter.updateTestSettingsFile(file);
 }
 
 TestSetupPresenterImpl::TestSetupPresenterImpl(
@@ -93,11 +93,11 @@ void TestSetupPresenterImpl::start() { view.show(); }
 
 void TestSetupPresenterImpl::stop() { view.hide(); }
 
-void TestSetupPresenterImpl::showTestSettingsFile(const std::string &s) {
+void TestSetupPresenterImpl::updateTestSettingsFile(std::string_view s) {
     view.setTestSettingsFile(s);
 }
 
-void TestSetupPresenterImpl::showErrorMessage(std::string s) {
-    sessionView.showErrorMessage(std::move(s));
+void TestSetupPresenterImpl::updateErrorMessage(std::string_view s) {
+    sessionView.showErrorMessage(s);
 }
 }

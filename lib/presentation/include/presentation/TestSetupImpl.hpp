@@ -65,8 +65,8 @@ class TestSetupPresenterImpl : public TestSetupPresenter {
     TestSetupPresenterImpl(TestSetupView &, SessionView &);
     void start() override;
     void stop() override;
-    void showTestSettingsFile(const std::string &s) override;
-    void showErrorMessage(std::string) override;
+    void updateTestSettingsFile(std::string_view) override;
+    void updateErrorMessage(std::string_view) override;
 
   private:
     TestSetupView &view;

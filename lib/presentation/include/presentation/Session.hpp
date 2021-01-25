@@ -5,6 +5,7 @@
 #include <av-speech-in-noise/Interface.hpp>
 #include <vector>
 #include <string>
+#include <string_view>
 
 namespace av_speech_in_noise {
 class SessionController {
@@ -25,7 +26,7 @@ class SessionView {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SessionView);
     virtual void eventLoop() = 0;
     virtual void populateAudioDeviceMenu(std::vector<std::string>) = 0;
-    virtual void showErrorMessage(std::string) = 0;
+    virtual void showErrorMessage(std::string_view) = 0;
 };
 
 class SessionControl {

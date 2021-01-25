@@ -11,8 +11,8 @@ namespace av_speech_in_noise {
 namespace {
 class TestSetupViewStub : public TestSetupView {
   public:
-    void setTestSettingsFile(std::string s) override {
-        testSettingsFile_ = std::move(s);
+    void setTestSettingsFile(std::string_view s) override {
+        testSettingsFile_ = s;
     }
 
     void populateTransducerMenu(std::vector<std::string> v) override {
@@ -170,7 +170,7 @@ class TestSetupPresenterStub : public TestSetupPresenter {
 
     void stop() override {}
 
-    void showTestSettingsFile(const std::string &s) override {
+    void updateTestSettingsFile(std::string_view s) override {
         testSettingsFile_ = s;
         testSettingsFileShown_ = true;
     }
@@ -181,9 +181,7 @@ class TestSetupPresenterStub : public TestSetupPresenter {
         return testSettingsFileShown_;
     }
 
-    void showErrorMessage(std::string s) override {
-        errorMessage_ = std::move(s);
-    }
+    void updateErrorMessage(std::string_view s) override { errorMessage_ = s; }
 
     auto errorMessage() -> std::string { return errorMessage_; }
 
@@ -666,7 +664,7 @@ TEST_SETUP_PRESENTER_TEST(presenterHidesViewWhenStopped) {
 }
 
 TEST_SETUP_PRESENTER_TEST(presenterSetsTestSettingsFileWhenNotified) {
-    presenter.showTestSettingsFile("a");
+    presenter.updateTestSettingsFile("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", view.testSettingsFile());
 }
 
