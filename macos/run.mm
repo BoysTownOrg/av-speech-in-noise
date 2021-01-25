@@ -352,20 +352,19 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                            constant:-8]
     ]];
     const auto testSetupUI{testSetupUIFactory.make(testSetupViewController)};
-    const auto experimenterViewController{
-        nsTabViewControllerWithoutTabControl()};
-    addChild(viewController, experimenterViewController);
+    const auto testViewController{nsTabViewControllerWithoutTabControl()};
+    addChild(viewController, testViewController);
     const auto chooseKeywordsUIController{
         nsTabViewControllerWithoutTabControl()};
     const auto freeResponseUIController{nsTabViewControllerWithoutTabControl()};
     const auto correctKeywordsUIController{
         nsTabViewControllerWithoutTabControl()};
     const auto passFailUIController{nsTabViewControllerWithoutTabControl()};
-    addChild(experimenterViewController, chooseKeywordsUIController);
-    addChild(experimenterViewController, freeResponseUIController);
-    addChild(experimenterViewController, correctKeywordsUIController);
-    addChild(experimenterViewController, passFailUIController);
-    AppKitTestUI experimenterView{experimenterViewController};
+    addChild(testViewController, chooseKeywordsUIController);
+    addChild(testViewController, freeResponseUIController);
+    addChild(testViewController, correctKeywordsUIController);
+    addChild(testViewController, passFailUIController);
+    AppKitTestUI testUI{testViewController};
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
     const auto subjectScreenFrame{subjectScreen.frame};
@@ -385,28 +384,26 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             subjectViewWidth, subjectViewHeight)};
     ConsonantTaskPresenter consonantPresenter{consonantView};
     FreeResponseUI freeResponseUI{freeResponseUIController};
-    FreeResponsePresenter freeResponsePresenter{
-        experimenterView, freeResponseUI};
+    FreeResponsePresenter freeResponsePresenter{testUI, freeResponseUI};
     ChooseKeywordsUI chooseKeywordsUI{chooseKeywordsUIController};
-    ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model, experimenterView,
+    ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model, testUI,
         chooseKeywordsUI,
         sentencesWithThreeKeywords(
             TextFileReaderImpl{}.read(resourceUrl("mlst-c", "txt")))};
     CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
     CorrectKeywordsPresenter correctKeywordsPresenter{
-        experimenterView, correctKeywordsUI};
+        testUI, correctKeywordsUI};
     PassFailUI passFailUI{passFailUIController};
-    PassFailPresenter passFailPresenter{experimenterView, passFailUI};
+    PassFailPresenter passFailPresenter{testUI, passFailUI};
     CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
         coordinateResponseMeasureView};
     TestSetupPresenterImpl testSetupPresenter{*(testSetupUI.get()), sessionUI};
     UninitializedTaskPresenterImpl taskPresenter;
-    TestPresenterImpl experimenterPresenter{
-        model, experimenterView, &taskPresenter};
+    TestPresenterImpl testPresenter{model, testUI, &taskPresenter};
     SessionControllerImpl sessionController{
-        model, sessionUI, testSetupPresenter, experimenterPresenter};
+        model, sessionUI, testSetupPresenter, testPresenter};
     TestControllerImpl testController{
-        sessionController, model, sessionUI, experimenterView};
+        sessionController, model, sessionUI, testUI, testPresenter};
     ChooseKeywordsController chooseKeywordsController{
         testController, model, chooseKeywordsUI, chooseKeywordsPresenter};
     CorrectKeywordsController correctKeywordsController{
@@ -458,7 +455,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         sessionController, sessionUI, testSetupPresenter, model,
         testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);
-    testController.attach(&experimenterPresenter);
     [app run];
 }
 }
