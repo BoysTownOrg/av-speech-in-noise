@@ -400,7 +400,13 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
         coordinateResponseMeasureView};
     TestSetupPresenterImpl testSetupPresenter{*(testSetupUI.get()), sessionUI};
-    TestControllerImpl testController{model, sessionUI, experimenterView};
+    UninitializedTaskPresenterImpl taskPresenter;
+    TestPresenterImpl experimenterPresenter{
+        model, experimenterView, &taskPresenter};
+    SessionControllerImpl sessionController{
+        model, sessionUI, testSetupPresenter, experimenterPresenter};
+    TestControllerImpl testController{
+        sessionController, model, sessionUI, experimenterView};
     ChooseKeywordsController chooseKeywordsController{
         testController, model, chooseKeywordsUI, chooseKeywordsPresenter};
     CorrectKeywordsController correctKeywordsController{
@@ -415,11 +421,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     consonantTaskController.attach(&consonantPresenter);
     coordinateResponseMeasureController.attach(
         &coordinateResponseMeasurePresenter);
-    UninitializedTaskPresenterImpl taskPresenter;
-    TestPresenterImpl experimenterPresenter{
-        model, experimenterView, &taskPresenter};
-    SessionControllerImpl sessionController{
-        model, sessionUI, testSetupPresenter, experimenterPresenter};
     TestSettingsInterpreterImpl testSettingsInterpreter{
         {{Method::adaptiveCoordinateResponseMeasure,
              coordinateResponseMeasurePresenter},
@@ -457,7 +458,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         sessionController, sessionUI, testSetupPresenter, model,
         testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);
-    testController.attach(&sessionController);
     testController.attach(&experimenterPresenter);
     [app run];
 }
