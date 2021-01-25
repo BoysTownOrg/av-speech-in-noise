@@ -45,9 +45,9 @@ void FixedLevelMethodImpl::initialize(
 
 void FixedLevelMethodImpl::initialize(
     const FixedLevelTest &test, FiniteTargetPlaylist *list) {
+    av_speech_in_noise::initialize(targetList, test_, snr_, test, list);
     av_speech_in_noise::initialize(usingFiniteTargetPlaylist_,
         finiteTargetPlaylist, finiteTargetsExhausted_, list);
-    av_speech_in_noise::initialize(targetList, test_, snr_, test, list);
 }
 
 auto FixedLevelMethodImpl::complete() -> bool {

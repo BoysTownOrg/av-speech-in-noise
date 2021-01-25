@@ -457,6 +457,13 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     assertTestCompleteOnlyAfter(initializingMethod, method, targetList);
 }
 
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    initializeLoadsBeforeQueryingCompletion) {
+    run(initializingMethod, method);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        endsWith(targetList.log(), "loadFromDirectory empty "));
+}
+
 class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests
     : public ::testing::Test {
   protected:
