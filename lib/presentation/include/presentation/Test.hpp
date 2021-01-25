@@ -38,20 +38,7 @@ class TestView : public virtual View {
 
 class TestController {
   public:
-    class Observer {
-      public:
-        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
-        virtual void notifyThatTrialHasStarted() = 0;
-        virtual void setContinueTestingDialogMessage(const std::string &) = 0;
-        virtual void showContinueTestingDialog() = 0;
-        virtual void display(const std::string &) = 0;
-        virtual void secondaryDisplay(const std::string &) = 0;
-        virtual void hideResponseSubmission() {}
-        virtual void notifyThatNextTrialIsReady() = 0;
-    };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestController);
-    virtual void attach(Observer *) {}
-    virtual void attach(SessionController *) {}
     virtual void
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() = 0;
     virtual void notifyThatUserIsDoneResponding() = 0;
@@ -59,10 +46,16 @@ class TestController {
     virtual void notifyThatUserIsDoneRespondingAndIsReadyForNextTrial() {}
 };
 
-class TestPresenter : public virtual TestController::Observer,
-                      public virtual Presenter {
+class TestPresenter : public Presenter {
   public:
     virtual void initialize(TaskPresenter &) = 0;
+    virtual void notifyThatTrialHasStarted() = 0;
+    virtual void setContinueTestingDialogMessage(const std::string &) = 0;
+    virtual void showContinueTestingDialog() = 0;
+    virtual void display(const std::string &) = 0;
+    virtual void secondaryDisplay(const std::string &) = 0;
+    virtual void hideResponseSubmission() {}
+    virtual void notifyThatNextTrialIsReady() = 0;
 };
 }
 

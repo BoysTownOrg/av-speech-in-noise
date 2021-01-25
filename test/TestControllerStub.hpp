@@ -6,10 +6,6 @@
 namespace av_speech_in_noise {
 class TestControllerStub : public TestController {
   public:
-    void attach(Observer *) override {}
-
-    void attach(SessionController *) override {}
-
     void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion()
         override {
         notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion_ =
