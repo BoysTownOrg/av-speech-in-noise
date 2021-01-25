@@ -334,8 +334,8 @@ auto AppKitTestSetupUI::rmeSetting() -> std::string {
     return string(rmeSettingField);
 }
 
-void AppKitTestSetupUI::setTestSettingsFile(std::string s) {
-    set(testSettingsField, s);
+void AppKitTestSetupUI::setTestSettingsFile(std::string_view s) {
+    set(testSettingsField, std::string{s});
 }
 
 void AppKitTestSetupUI::populateTransducerMenu(std::vector<std::string> items) {
@@ -766,10 +766,10 @@ AppKitSessionUI::AppKitSessionUI(
 
 void AppKitSessionUI::eventLoop() { [app run]; }
 
-void AppKitSessionUI::showErrorMessage(std::string s) {
+void AppKitSessionUI::showErrorMessage(std::string_view s) {
     const auto alert{[[NSAlert alloc] init]};
     [alert setMessageText:@"Error."];
-    [alert setInformativeText:nsString(s)];
+    [alert setInformativeText:nsString(std::string{s})];
     [alert addButtonWithTitle:@"Ok"];
     [alert runModal];
 }

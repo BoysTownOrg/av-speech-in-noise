@@ -145,7 +145,7 @@ class AppKitTestSetupUI : public TestSetupUI {
     auto transducer() -> std::string override;
     auto rmeSetting() -> std::string override;
     void populateTransducerMenu(std::vector<std::string>) override;
-    void setTestSettingsFile(std::string) override;
+    void setTestSettingsFile(std::string_view) override;
     void attach(Observer *) override;
     void notifyThatConfirmButtonHasBeenClicked();
     void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
@@ -235,7 +235,7 @@ class AppKitSessionUI : public SessionView, public SessionControl {
   public:
     explicit AppKitSessionUI(NSApplication *, NSViewController *);
     void eventLoop() override;
-    void showErrorMessage(std::string) override;
+    void showErrorMessage(std::string_view) override;
     auto browseForDirectory() -> std::string override;
     auto browseCancelled() -> bool override;
     auto browseForOpeningFile() -> std::string override;
