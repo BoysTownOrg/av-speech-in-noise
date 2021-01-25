@@ -282,7 +282,9 @@ class TestControllerTests : public ::testing::Test {
     ModelStub model;
     SessionControlStub sessionView;
     TestControlStub control;
-    TestControllerImpl controller{model, sessionView, control};
+    SessionControllerStub sessionController;
+    TestControllerImpl controller{
+        sessionController, model, sessionView, control};
     DecliningContinuingTesting decliningContinuingTesting{control};
     AcceptingContinuingTesting acceptingContinuingTesting{control};
     ExitingTest exitingTest{control};
@@ -296,11 +298,9 @@ class TestControllerTests : public ::testing::Test {
         controller};
     NotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial
         notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial{controller};
-    SessionControllerStub sessionController;
     TestControllerListenerStub experimenterControllerListener;
 
     TestControllerTests() {
-        controller.attach(&sessionController);
         controller.attach(&experimenterControllerListener);
     }
 };

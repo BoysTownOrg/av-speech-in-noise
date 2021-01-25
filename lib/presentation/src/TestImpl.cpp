@@ -5,7 +5,9 @@
 namespace av_speech_in_noise {
 static void displayTrialInformation(
     Model &model, TestController::Observer *presenter) {
-    presenter->display("Trial " + std::to_string(model.trialNumber()));
+    std::stringstream stream;
+    stream << "Trial " << model.trialNumber();
+    presenter->display(stream.str());
     presenter->secondaryDisplay(model.targetFileName());
 }
 
@@ -14,19 +16,22 @@ static void readyNextTrial(Model &model, TestController::Observer *presenter) {
     presenter->notifyThatNextTrialIsReady();
 }
 
-TestControllerImpl::TestControllerImpl(
+TestControllerImpl::TestControllerImpl(SessionController &sessionController,
     Model &model, SessionControl &sessionControl, TestControl &control)
-    : model{model}, sessionControl{sessionControl} {
+    : sessionController{sessionController}, model{model}, sessionControl{
+                                                              sessionControl} {
     control.attach(this);
 }
 
 void TestControllerImpl::attach(TestController::Observer *e) { observer = e; }
 
-static void notifyThatTestIsComplete(SessionController *presenter) {
-    presenter->notifyThatTestIsComplete();
+static void notifyThatTestIsComplete(SessionController &controller) {
+    controller.notifyThatTestIsComplete();
 }
 
-void TestControllerImpl::exitTest() { notifyThatTestIsComplete(controller); }
+void TestControllerImpl::exitTest() {
+    notifyThatTestIsComplete(sessionController);
+}
 
 static void playTrial(
     Model &model, SessionControl &control, TestController::Observer *observer) {
@@ -39,7 +44,7 @@ void TestControllerImpl::playTrial() {
 }
 
 void TestControllerImpl::declineContinuingTesting() {
-    notifyThatTestIsComplete(controller);
+    notifyThatTestIsComplete(sessionController);
 }
 
 void TestControllerImpl::acceptContinuingTesting() {
@@ -61,7 +66,7 @@ static void readyNextTrialIfTestIncompleteElse(Model &model,
 }
 
 static void notifyIfTestIsCompleteElse(Model &model,
-    SessionController *controller, const std::function<void()> &f) {
+    SessionController &controller, const std::function<void()> &f) {
     ifTestCompleteElse(
         model, [&]() { notifyThatTestIsComplete(controller); }, f);
 }
@@ -83,22 +88,20 @@ void TestControllerImpl::
 void TestControllerImpl::notifyThatUserIsDoneResponding() {
     observer->hideResponseSubmission();
     notifyIfTestIsCompleteElse(
-        model, controller, [&]() { readyNextTrial(model, observer); });
+        model, sessionController, [&]() { readyNextTrial(model, observer); });
 }
 
 void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
-    notifyIfTestIsCompleteElse(model, controller, [&]() {
+    notifyIfTestIsCompleteElse(model, sessionController, [&]() {
         displayTrialInformation(model, observer);
         av_speech_in_noise::playTrial(model, sessionControl, observer);
     });
 }
 
-void TestControllerImpl::attach(SessionController *p) { controller = p; }
-
 void TestControllerImpl::
     notifyThatUserIsDoneRespondingAndIsReadyForNextTrial() {
     observer->hideResponseSubmission();
-    notifyIfTestIsCompleteElse(model, controller, [&]() {
+    notifyIfTestIsCompleteElse(model, sessionController, [&]() {
         displayTrialInformation(model, observer);
         av_speech_in_noise::playTrial(model, sessionControl, observer);
     });

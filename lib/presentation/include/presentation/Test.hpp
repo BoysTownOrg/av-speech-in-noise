@@ -50,8 +50,8 @@ class TestController {
         virtual void notifyThatNextTrialIsReady() = 0;
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestController);
-    virtual void attach(Observer *) = 0;
-    virtual void attach(SessionController *) = 0;
+    virtual void attach(Observer *) {}
+    virtual void attach(SessionController *) {}
     virtual void
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() = 0;
     virtual void notifyThatUserIsDoneResponding() = 0;
