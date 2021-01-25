@@ -62,7 +62,7 @@ class TestSetupController : public TestSetupControl::Observer {
 
 class TestSetupPresenterImpl : public TestSetupPresenter {
   public:
-    explicit TestSetupPresenterImpl(TestSetupView &, SessionView &);
+    TestSetupPresenterImpl(TestSetupView &, SessionView &);
     void start() override;
     void stop() override;
     void showTestSettingsFile(const std::string &s) override;

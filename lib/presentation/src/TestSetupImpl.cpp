@@ -24,6 +24,11 @@ static void showErrorMessageOnRuntimeError(
     }
 }
 
+static auto readTestSettingsFile(
+    TextFileReader &textFileReader, TestSetupControl &control) -> std::string {
+    return textFileReader.read(LocalUrl{control.testSettingsFile()});
+}
+
 void TestSetupController::notifyThatConfirmButtonHasBeenClicked() {
     showErrorMessageOnRuntimeError(presenter, [&] {
         TestIdentity testIdentity;
@@ -33,8 +38,7 @@ void TestSetupController::notifyThatConfirmButtonHasBeenClicked() {
         testIdentity.rmeSetting = control.rmeSetting();
         testIdentity.transducer = control.transducer();
         testSettingsInterpreter.initialize(model, sessionController,
-            textFileReader.read(LocalUrl{control.testSettingsFile()}),
-            testIdentity,
+            readTestSettingsFile(textFileReader, control), testIdentity,
             SNR{readInteger(control.startingSnr(), "starting SNR")});
     });
 }
@@ -43,7 +47,7 @@ static auto calibration(TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader, TestSetupControl &control,
     SessionControl &sessionControl) -> Calibration {
     auto calibration{testSettingsInterpreter.calibration(
-        textFileReader.read(LocalUrl{control.testSettingsFile()}))};
+        readTestSettingsFile(textFileReader, control))};
     calibration.audioDevice = sessionControl.audioDevice();
     return calibration;
 }
