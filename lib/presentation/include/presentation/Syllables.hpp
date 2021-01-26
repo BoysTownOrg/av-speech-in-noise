@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_SYLLABLES_HPP_
 
 #include "Task.hpp"
+#include "Test.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 
 namespace av_speech_in_noise {
@@ -32,7 +33,7 @@ class SyllablesController : public SyllablesControl::Observer {
 
 class SyllablesPresenterImpl : public SyllablesPresenter, public TaskPresenter {
   public:
-    explicit SyllablesPresenterImpl(SyllablesView &);
+    SyllablesPresenterImpl(SyllablesView &, TestView &);
     void start() override;
     void stop() override;
     void showResponseSubmission() override;
@@ -40,6 +41,7 @@ class SyllablesPresenterImpl : public SyllablesPresenter, public TaskPresenter {
 
   private:
     SyllablesView &view;
+    TestView &testView;
 };
 }
 

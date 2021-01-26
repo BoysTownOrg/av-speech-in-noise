@@ -1,4 +1,5 @@
 #include "assert-utility.hpp"
+#include "TestViewStub.hpp"
 #include <presentation/Syllables.hpp>
 #include <gtest/gtest.h>
 
@@ -8,7 +9,7 @@ class SyllablesViewStub : public SyllablesView {
   public:
     [[nodiscard]] auto hidden() const -> bool { return hidden_; }
 
-    void hide() { hidden_ = true; }
+    void hide() override { hidden_ = true; }
 
   private:
     bool hidden_{};
@@ -27,7 +28,8 @@ class SyllablesControllerTests : public ::testing::Test {
 class SyllablesPresenterTests : public ::testing::Test {
   protected:
     SyllablesViewStub view;
-    SyllablesPresenterImpl presenter{view};
+    TestViewStub testView;
+    SyllablesPresenterImpl presenter{view, testView};
 };
 
 #define SYLLABLES_CONTROLLER_TEST(a) TEST_F(SyllablesControllerTests, a)
@@ -44,10 +46,10 @@ SYLLABLES_PRESENTER_TEST(hidesResponseButtonsWhenStopped) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-// SYLLABLES_PRESENTER_TEST(showsReadyButtonWhenStarted) {
-//     presenter.start();
-//     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
-// }
+SYLLABLES_PRESENTER_TEST(showsNextTrialButtonWhenStarted) {
+    presenter.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
+}
 
 // SYLLABLES_PRESENTER_TEST(showsResponseButtonWhenShowingResponseSubmission) {
 //     presenter.showResponseSubmission();

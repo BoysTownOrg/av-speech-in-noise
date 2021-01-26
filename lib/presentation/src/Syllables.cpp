@@ -1,10 +1,11 @@
 #include "Syllables.hpp"
 
 namespace av_speech_in_noise {
-SyllablesPresenterImpl::SyllablesPresenterImpl(SyllablesView &view)
-    : view{view} {}
+SyllablesPresenterImpl::SyllablesPresenterImpl(
+    SyllablesView &view, TestView &testView)
+    : view{view}, testView{testView} {}
 
-void SyllablesPresenterImpl::start() {}
+void SyllablesPresenterImpl::start() { testView.showNextTrialButton(); }
 
 void SyllablesPresenterImpl::stop() { view.hide(); }
 
