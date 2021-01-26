@@ -398,6 +398,7 @@ void RecognitionTestModelImpl::submit(const ConsonantResponse &) {
 void RecognitionTestModelImpl::submit(const SyllableResponse &p) {
     SyllableTrial trial;
     trial.syllable = p.syllable;
+    trial.target = targetName(evaluator, testMethod);
     outputFile.write(trial);
     save(outputFile);
     prepareNextTrialIfNeeded();

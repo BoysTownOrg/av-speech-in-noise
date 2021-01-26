@@ -300,7 +300,7 @@ class SubmittingSyllable : public TargetWritingUseCase {
     void run(RecognitionTestModelImpl &m) override { m.submit(response); }
 
     auto target(OutputFileStub &file) -> std::string override {
-        return file.threeKeywordsTrial().target;
+        return file.syllableTrial().target;
     }
 
   private:
@@ -1788,6 +1788,10 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesTarget) {
 
 RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesTarget) {
     assertWritesTarget(submittingThreeKeywords);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesTarget) {
+    assertWritesTarget(submittingSyllable);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
