@@ -157,30 +157,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 };
 
 class RecognitionTestModelStub : public RecognitionTestModel {
-    std::vector<std::string> audioDevices_{};
-    std::string targetFileName_{};
-    TestMethod *testMethodToCallNextTargetOnSubmitConsonants_{};
-    TestMethod *
-        testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_{};
-    const Model::Observer *listener_{};
-    const Calibration *calibration_{};
-    const Calibration *leftSpeakerCalibration_{};
-    const Calibration *rightSpeakerCalibration_{};
-    const AudioSettings *playTrialSettings_{};
-    const Test *test_{};
-    const TestMethod *testMethod_{};
-    const coordinate_response_measure::Response *coordinateResponse_{};
-    const CorrectKeywords *correctKeywords_{};
-    const ConsonantResponse *consonantResponse_{};
-    const FreeResponse *freeResponse_{};
-    const ThreeKeywordsResponse *threeKeywords_{};
-    int trialNumber_{};
-    bool complete_{};
-    bool initializedWithSingleSpeaker_{};
-    bool initializedWithDelayedMasker_{};
-    bool initializedWithEyeTracking_{};
-    bool nextTrialPreparedIfNeeded_{};
-
   public:
     [[nodiscard]] auto nextTrialPreparedIfNeeded() const -> bool {
         return nextTrialPreparedIfNeeded_;
@@ -288,6 +264,10 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         return threeKeywords_;
     }
 
+    auto syllableResponse() -> const SyllableResponse * {
+        return syllableResponse_;
+    }
+
     [[nodiscard]] auto testMethod() const { return testMethod_; }
 
     [[nodiscard]] auto test() const { return test_; }
@@ -340,6 +320,34 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     void submit(const ThreeKeywordsResponse &f) override {
         threeKeywords_ = &f;
     }
+
+    void submit(const SyllableResponse &f) { syllableResponse_ = &f; }
+
+  private:
+    std::vector<std::string> audioDevices_{};
+    std::string targetFileName_{};
+    TestMethod *testMethodToCallNextTargetOnSubmitConsonants_{};
+    TestMethod *
+        testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_{};
+    const Model::Observer *listener_{};
+    const Calibration *calibration_{};
+    const Calibration *leftSpeakerCalibration_{};
+    const Calibration *rightSpeakerCalibration_{};
+    const AudioSettings *playTrialSettings_{};
+    const Test *test_{};
+    const TestMethod *testMethod_{};
+    const coordinate_response_measure::Response *coordinateResponse_{};
+    const CorrectKeywords *correctKeywords_{};
+    const ConsonantResponse *consonantResponse_{};
+    const FreeResponse *freeResponse_{};
+    const ThreeKeywordsResponse *threeKeywords_{};
+    const SyllableResponse *syllableResponse_{};
+    int trialNumber_{};
+    bool complete_{};
+    bool initializedWithSingleSpeaker_{};
+    bool initializedWithDelayedMasker_{};
+    bool initializedWithEyeTracking_{};
+    bool nextTrialPreparedIfNeeded_{};
 };
 
 class InitializingTestUseCase {
@@ -1119,6 +1127,13 @@ MODEL_TEST(submitThreeKeywordsPassesThreeKeywords) {
     model.submit(r);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(r), internalModel.threeKeywords());
+}
+
+MODEL_TEST(submitSyllablePassesSyllable) {
+    SyllableResponse r{};
+    model.submit(r);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(r), internalModel.syllableResponse());
 }
 
 MODEL_TEST(submitConsonantSubmitsResponse) {

@@ -172,6 +172,7 @@ class RecognitionTestModel {
     virtual void submit(const ThreeKeywordsResponse &) = 0;
     virtual void submit(const CorrectKeywords &) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
+    virtual void submit(const SyllableResponse &) {}
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual auto testComplete() -> bool = 0;
@@ -219,6 +220,7 @@ class ModelImpl : public Model {
     void submit(const CorrectKeywords &) override;
     void submit(const ConsonantResponse &) override;
     void submit(const ThreeKeywordsResponse &) override;
+    void submit(const SyllableResponse &) override;
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
     auto testComplete() -> bool override;
