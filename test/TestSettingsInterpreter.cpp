@@ -285,6 +285,12 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 #define TEST_SETTINGS_INTERPRETER_TEST(a)                                      \
     TEST_F(TestSettingsInterpreterTests, a)
 
+#define TEST_SETTINGS_INTREPRETER_TEST_EXPECT_INITIALIZES_FIXED_LEVEL_TEST_WITH_ALL_TARGETS( \
+    interpreter, model, sessionController, method)                                           \
+    initialize(interpreter, model, sessionController, method);                               \
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(                                                          \
+        (model).fixedLevelTestWithAllTargetsInitialized())
+
 TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
     auto calibration{interpreter.calibration(
         concatenate({entryWithNewline(TestSetting::masker, "a"),
@@ -520,26 +526,23 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsInitializesFixedLevelTest) {
-    initialize(interpreter, model, sessionController,
+    TEST_SETTINGS_INTREPRETER_TEST_EXPECT_INITIALIZES_FIXED_LEVEL_TEST_WITH_ALL_TARGETS(
+        interpreter, model, sessionController,
         Method::fixedLevelFreeResponseWithAllTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        model.fixedLevelTestWithAllTargetsInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelChooseKeywordsWithAllTargetsInitializesFixedLevelTest) {
-    initialize(interpreter, model, sessionController,
+    TEST_SETTINGS_INTREPRETER_TEST_EXPECT_INITIALIZES_FIXED_LEVEL_TEST_WITH_ALL_TARGETS(
+        interpreter, model, sessionController,
         Method::fixedLevelChooseKeywordsWithAllTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        model.fixedLevelTestWithAllTargetsInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelSyllablesWithAllTargetsInitializesFixedLevelTest) {
-    initialize(interpreter, model, sessionController,
+    TEST_SETTINGS_INTREPRETER_TEST_EXPECT_INITIALIZES_FIXED_LEVEL_TEST_WITH_ALL_TARGETS(
+        interpreter, model, sessionController,
         Method::fixedLevelSyllablesWithAllTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        model.fixedLevelTestWithAllTargetsInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
