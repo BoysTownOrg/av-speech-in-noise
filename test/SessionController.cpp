@@ -13,8 +13,7 @@ class TestPresenterStub : public TestPresenter {
     void stop() override { stopped_ = true; }
     void notifyThatTrialHasStarted() override {}
     void updateAdaptiveTestResults() override {}
-    void display(const std::string &) override {}
-    void secondaryDisplay(const std::string &) override {}
+    void updateTrialInformation() override {}
     void notifyThatNextTrialIsReady() override {}
     [[nodiscard]] auto started() const -> bool { return started_; }
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }

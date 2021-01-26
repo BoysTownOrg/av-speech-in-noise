@@ -51,8 +51,7 @@ class TestPresenter : public Presenter {
     virtual void initialize(TaskPresenter &) = 0;
     virtual void notifyThatTrialHasStarted() = 0;
     virtual void updateAdaptiveTestResults() = 0;
-    virtual void display(const std::string &) = 0;
-    virtual void secondaryDisplay(const std::string &) = 0;
+    virtual void updateTrialInformation() = 0;
     virtual void hideResponseSubmission() = 0;
     virtual void notifyThatNextTrialIsReady() = 0;
 };

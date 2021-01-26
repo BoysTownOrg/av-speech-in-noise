@@ -3,15 +3,8 @@
 #include <functional>
 
 namespace av_speech_in_noise {
-static void displayTrialInformation(Model &model, TestPresenter &presenter) {
-    std::stringstream stream;
-    stream << "Trial " << model.trialNumber();
-    presenter.display(stream.str());
-    presenter.secondaryDisplay(model.targetFileName());
-}
-
-static void readyNextTrial(Model &model, TestPresenter &presenter) {
-    displayTrialInformation(model, presenter);
+static void readyNextTrial(TestPresenter &presenter) {
+    presenter.updateTrialInformation();
     presenter.notifyThatNextTrialIsReady();
 }
 
@@ -47,7 +40,7 @@ void TestControllerImpl::declineContinuingTesting() {
 
 void TestControllerImpl::acceptContinuingTesting() {
     model.restartAdaptiveTestWhilePreservingTargets();
-    readyNextTrial(model, presenter);
+    readyNextTrial(presenter);
 }
 
 static void ifTestCompleteElse(Model &model, const std::function<void()> &f,
@@ -60,7 +53,7 @@ static void ifTestCompleteElse(Model &model, const std::function<void()> &f,
 
 static void readyNextTrialIfTestIncompleteElse(
     Model &model, TestPresenter &presenter, const std::function<void()> &f) {
-    ifTestCompleteElse(model, f, [&]() { readyNextTrial(model, presenter); });
+    ifTestCompleteElse(model, f, [&]() { readyNextTrial(presenter); });
 }
 
 static void notifyIfTestIsCompleteElse(Model &model,
@@ -79,12 +72,12 @@ void TestControllerImpl::
 void TestControllerImpl::notifyThatUserIsDoneResponding() {
     presenter.hideResponseSubmission();
     notifyIfTestIsCompleteElse(
-        model, sessionController, [&]() { readyNextTrial(model, presenter); });
+        model, sessionController, [&]() { readyNextTrial(presenter); });
 }
 
 void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
     notifyIfTestIsCompleteElse(model, sessionController, [&]() {
-        displayTrialInformation(model, presenter);
+        presenter.updateTrialInformation();
         av_speech_in_noise::playTrial(model, sessionControl, presenter);
     });
 }
@@ -93,7 +86,7 @@ void TestControllerImpl::
     notifyThatUserIsDoneRespondingAndIsReadyForNextTrial() {
     presenter.hideResponseSubmission();
     notifyIfTestIsCompleteElse(model, sessionController, [&]() {
-        displayTrialInformation(model, presenter);
+        presenter.updateTrialInformation();
         av_speech_in_noise::playTrial(model, sessionControl, presenter);
     });
 }
@@ -127,10 +120,11 @@ void TestPresenterImpl::notifyThatNextTrialIsReady() {
     view.showNextTrialButton();
 }
 
-void TestPresenterImpl::display(const std::string &s) { view.display(s); }
-
-void TestPresenterImpl::secondaryDisplay(const std::string &s) {
-    view.secondaryDisplay(s);
+void TestPresenterImpl::updateTrialInformation() {
+    std::stringstream stream;
+    stream << "Trial " << model.trialNumber();
+    view.display(stream.str());
+    view.secondaryDisplay(model.targetFileName());
 }
 
 void TestPresenterImpl::updateAdaptiveTestResults() {
@@ -144,7 +138,7 @@ void TestPresenterImpl::updateAdaptiveTestResults() {
 }
 
 void TestPresenterImpl::initialize(TaskPresenter &p) {
-    displayTrialInformation(model, *this);
+    updateTrialInformation();
     taskPresenter_->initialize(&p);
     taskPresenter_->start();
 }
