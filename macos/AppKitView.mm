@@ -866,6 +866,10 @@ auto ChooseKeywordsUI::flagged() -> bool {
     return flaggedButton.state == NSControlStateValueOn;
 }
 
+void ChooseKeywordsUI::clearFlag() {
+    flaggedButton.state = NSControlStateValueOff;
+}
+
 void ChooseKeywordsUI::markThirdKeywordCorrect() {
     [thirdKeywordButton setState:NSControlStateValueOff];
 }

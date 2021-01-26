@@ -33,6 +33,7 @@ class ChooseKeywordsUI : public ChooseKeywordsControl,
     auto secondKeywordCorrect() -> bool override;
     auto thirdKeywordCorrect() -> bool override;
     auto flagged() -> bool override;
+    void clearFlag() override;
     void markFirstKeywordIncorrect() override;
     void markSecondKeywordIncorrect() override;
     void markThirdKeywordIncorrect() override;

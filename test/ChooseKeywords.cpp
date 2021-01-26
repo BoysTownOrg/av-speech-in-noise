@@ -127,7 +127,7 @@ class ChooseKeywordsViewStub : public ChooseKeywordsView {
 
     [[nodiscard]] auto flagCleared() const -> bool { return flagCleared_; }
 
-    void clearFlag() { flagCleared_ = true; }
+    void clearFlag() override { flagCleared_ = true; }
 
   private:
     std::string textFollowingThirdKeywordButton_;
