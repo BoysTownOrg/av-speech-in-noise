@@ -70,7 +70,7 @@ class TestMethodStub : public TestMethod {
         threeKeywords_ = &p;
     }
 
-    void submit(const SyllableResponse &p) {
+    void submit(const SyllableResponse &p) override {
         insert(log_, "submitSyllableResponse ");
         syllableResponse_ = &p;
     }

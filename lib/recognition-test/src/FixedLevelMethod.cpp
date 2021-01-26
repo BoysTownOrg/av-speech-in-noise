@@ -136,6 +136,11 @@ void FixedLevelMethodImpl::submit(const ThreeKeywordsResponse &response) {
         ++totalKeywordsCorrect_;
 }
 
+void FixedLevelMethodImpl::submit(const SyllableResponse &response) {
+    update(finiteTargetPlaylistWithRepeatables, finiteTargetPlaylist,
+        response.flagged, finiteTargetsExhausted_);
+}
+
 auto FixedLevelMethodImpl::keywordsTestResults() -> KeywordsTestResults {
     return KeywordsTestResults{totalKeywordsSubmitted_ == 0
             ? 0

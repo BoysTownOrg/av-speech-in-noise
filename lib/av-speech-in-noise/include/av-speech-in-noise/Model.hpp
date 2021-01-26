@@ -73,6 +73,7 @@ enum class Syllable {
 
 struct SyllableResponse {
     Syllable syllable{};
+    bool flagged{};
 };
 
 enum class Condition { auditoryOnly, audioVisual };
