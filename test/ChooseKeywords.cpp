@@ -125,6 +125,10 @@ class ChooseKeywordsViewStub : public ChooseKeywordsView {
         markThirdKeywordCorrectCalled_ = true;
     }
 
+    [[nodiscard]] auto flagCleared() const -> bool { return flagCleared_; }
+
+    void clearFlag() { flagCleared_ = true; }
+
   private:
     std::string textFollowingThirdKeywordButton_;
     std::string textFollowingSecondKeywordButton_;
@@ -133,6 +137,7 @@ class ChooseKeywordsViewStub : public ChooseKeywordsView {
     std::string firstKeywordButtonText_;
     std::string secondKeywordButtonText_;
     std::string thirdKeywordButtonText_;
+    bool flagCleared_{};
     bool responseSubmissionHidden_{};
     bool responseSubmissionShown_{};
     bool markFirstKeywordIncorrectCalled_{};
@@ -319,6 +324,14 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(
     showsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseSubmissionShown());
+}
+
+CHOOSE_KEYWORDS_PRESENTER_TEST(clearsViewWhenShown) {
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.markFirstKeywordCorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.markSecondKeywordCorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.markThirdKeywordCorrectCalled());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.flagCleared());
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText) {

@@ -29,6 +29,7 @@ class ChooseKeywordsView {
     virtual void markFirstKeywordCorrect() = 0;
     virtual void markSecondKeywordCorrect() = 0;
     virtual void markThirdKeywordCorrect() = 0;
+    virtual void clearFlag() = 0;
 };
 
 class ChooseKeywordsControl {

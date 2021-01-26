@@ -65,6 +65,10 @@ void ChooseKeywordsPresenterImpl::stop() {
 void ChooseKeywordsPresenterImpl::showResponseSubmission() {
     if (sentencesWithThreeKeywords.count(model.targetFileName()) != 0)
         set(sentencesWithThreeKeywords.at(model.targetFileName()));
+    view.markFirstKeywordCorrect();
+    view.markSecondKeywordCorrect();
+    view.markThirdKeywordCorrect();
+    view.clearFlag();
     view.showResponseSubmission();
 }
 
