@@ -48,7 +48,6 @@ class TestSetupController : public TestSetupControl::Observer {
     void notifyThatPlayCalibrationButtonHasBeenClicked() override;
     void notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() override;
     void notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() override;
-    void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
 
   private:
     TestSetupControl &control;
@@ -65,7 +64,6 @@ class TestSetupPresenterImpl : public TestSetupPresenter {
     TestSetupPresenterImpl(TestSetupView &, SessionView &);
     void start() override;
     void stop() override;
-    void updateTestSettingsFile(std::string_view) override;
     void updateErrorMessage(std::string_view) override;
 
   private:

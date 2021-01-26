@@ -75,13 +75,6 @@ void TestSetupController::
     });
 }
 
-void TestSetupController::
-    notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
-    const auto file{sessionControl.browseForOpeningFile()};
-    if (!sessionControl.browseCancelled())
-        presenter.updateTestSettingsFile(file);
-}
-
 TestSetupPresenterImpl::TestSetupPresenterImpl(
     TestSetupView &view, SessionView &sessionView)
     : view{view}, sessionView{sessionView} {
@@ -92,10 +85,6 @@ TestSetupPresenterImpl::TestSetupPresenterImpl(
 void TestSetupPresenterImpl::start() { view.show(); }
 
 void TestSetupPresenterImpl::stop() { view.hide(); }
-
-void TestSetupPresenterImpl::updateTestSettingsFile(std::string_view s) {
-    view.setTestSettingsFile(s);
-}
 
 void TestSetupPresenterImpl::updateErrorMessage(std::string_view s) {
     sessionView.showErrorMessage(s);

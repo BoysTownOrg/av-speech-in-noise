@@ -20,7 +20,6 @@ class TestSetupControl {
         notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() = 0;
         virtual void
         notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() = 0;
-        virtual void notifyThatBrowseForTestSettingsButtonHasBeenClicked() = 0;
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestSetupControl);
     virtual void attach(Observer *) = 0;
@@ -36,12 +35,10 @@ class TestSetupControl {
 class TestSetupView : public virtual View {
   public:
     virtual void populateTransducerMenu(std::vector<std::string>) = 0;
-    virtual void setTestSettingsFile(std::string_view) = 0;
 };
 
 class TestSetupPresenter : public Presenter {
   public:
-    virtual void updateTestSettingsFile(std::string_view) = 0;
     virtual void updateErrorMessage(std::string_view) = 0;
 };
 }

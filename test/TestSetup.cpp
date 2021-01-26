@@ -11,10 +11,6 @@ namespace av_speech_in_noise {
 namespace {
 class TestSetupViewStub : public TestSetupView {
   public:
-    void setTestSettingsFile(std::string_view s) override {
-        testSettingsFile_ = s;
-    }
-
     void populateTransducerMenu(std::vector<std::string> v) override {
         transducers_ = std::move(v);
     }
@@ -45,10 +41,6 @@ class TestSetupControlStub : public TestSetupControl {
     }
 
     auto startingSnr() -> std::string override { return startingSnr_; }
-
-    void browseForTestSettingsFile() {
-        listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
-    }
 
     void confirmTestSetup() {
         listener_->notifyThatConfirmButtonHasBeenClicked();
@@ -170,23 +162,11 @@ class TestSetupPresenterStub : public TestSetupPresenter {
 
     void stop() override {}
 
-    void updateTestSettingsFile(std::string_view s) override {
-        testSettingsFile_ = s;
-        testSettingsFileShown_ = true;
-    }
-
-    auto testSettingsFile() -> std::string { return testSettingsFile_; }
-
-    [[nodiscard]] auto testSettingsFileShown() const -> bool {
-        return testSettingsFileShown_;
-    }
-
     void updateErrorMessage(std::string_view s) override { errorMessage_ = s; }
 
     auto errorMessage() -> std::string { return errorMessage_; }
 
   private:
-    std::string testSettingsFile_;
     std::string errorMessage_;
     bool testSettingsFileShown_{};
 };
@@ -628,19 +608,6 @@ TEST_SETUP_CONTROLLER_TEST(playingRightSpeakerCalibrationPassesAudioDevice) {
     assertPassesAudioDevice(playingRightSpeakerCalibration);
 }
 
-TEST_SETUP_CONTROLLER_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
-    sessionView.setBrowseForOpeningFileResult("a");
-    control.browseForTestSettingsFile();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", presenter.testSettingsFile());
-}
-
-TEST_SETUP_CONTROLLER_TEST(
-    browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
-    sessionView.setBrowseCancelled();
-    control.browseForTestSettingsFile();
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(presenter.testSettingsFileShown());
-}
-
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFullScaleLevel) {
     assertPassesFullScaleLevel(playingCalibration);
 }
@@ -661,11 +628,6 @@ TEST_SETUP_PRESENTER_TEST(presenterShowsViewWhenStarted) {
 TEST_SETUP_PRESENTER_TEST(presenterHidesViewWhenStopped) {
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
-}
-
-TEST_SETUP_PRESENTER_TEST(presenterSetsTestSettingsFileWhenNotified) {
-    presenter.updateTestSettingsFile("a");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", view.testSettingsFile());
 }
 
 auto contains(const std::vector<std::string> &items, const std::string &item)
