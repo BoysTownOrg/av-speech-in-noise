@@ -1807,6 +1807,12 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submitSyllablePassesCurrentTargetToEvaluatorBeforeAdvancingTarget) {
+    assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
+        submittingSyllable);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseWritesTrialAfterSubmittingResponse) {
     assertTestMethodLogContains(submittingCoordinateResponse,
         "submitCoordinateResponse writeLastCoordinateResponse ");
