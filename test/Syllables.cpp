@@ -50,7 +50,8 @@ class SyllablesControllerTests : public ::testing::Test {
     SyllablesControlStub control;
     TestControllerStub testController;
     ModelStub model;
-    SyllablesController controller{control, testController, model};
+    SyllablesController controller{
+        control, testController, model, {{"Ghee", Syllable::gi}}};
 };
 
 class SyllablesPresenterTests : public ::testing::Test {

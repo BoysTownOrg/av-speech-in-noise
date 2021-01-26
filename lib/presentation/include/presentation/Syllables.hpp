@@ -33,17 +33,14 @@ class SyllablesPresenter {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SyllablesPresenter);
 };
 
-static auto syllable(std::string_view s) -> Syllable {
-    std::map<std::string, Syllable, std::less<>> map{{"Ghee", Syllable::gi}};
-    return map.count(s) == 0 ? Syllable::unknown : map.at(std::string{s});
-}
-
 class SyllablesController : public SyllablesControl::Observer {
   public:
-    SyllablesController(SyllablesControl &, TestController &, Model &);
+    SyllablesController(SyllablesControl &, TestController &, Model &,
+        std::map<std::string, Syllable, std::less<>> map);
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
+    std::map<std::string, Syllable, std::less<>> map;
     SyllablesControl &control;
     TestController &testController;
     Model &model;
