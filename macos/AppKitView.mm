@@ -333,7 +333,7 @@ AppKitTestSetupUI::AppKitTestSetupUI(NSViewController *viewController)
             labeledView(rmeSettingField, "RME setting:"),
             labeledView(transducerMenu, "transducer:"),
             [NSStackView stackViewWithViews:@[
-                testSettingsFilePathControl,
+                label("test settings file:"), testSettingsFilePathControl,
                 nsButton("Play Calibration", actions,
                     @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
             ]],
