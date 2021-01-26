@@ -88,6 +88,7 @@ class SubmittingSyllable : public UseCase {
 
   public:
     void run(FixedLevelMethodImpl &m) override { m.submit(response); }
+    void setFlagged() { response.flagged = true; }
 
   private:
     SyllableResponse response{};
@@ -570,6 +571,13 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     submitThreeKeywordsReinsertsCurrentTargetIfFlagged) {
     submittingThreeKeywords.setFlagged();
     run(submittingThreeKeywords, method);
+    assertCurrentTargetReinserted(targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    submitSyllableReinsertsCurrentTargetIfFlagged) {
+    submittingSyllable.setFlagged();
+    run(submittingSyllable, method);
     assertCurrentTargetReinserted(targetList);
 }
 
