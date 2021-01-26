@@ -136,6 +136,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     void submit(const CorrectKeywords &) override;
     void submit(const ConsonantResponse &) override;
     void submit(const ThreeKeywordsResponse &) override;
+    void submit(const SyllableResponse &) override;
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
     auto testComplete() -> bool override;

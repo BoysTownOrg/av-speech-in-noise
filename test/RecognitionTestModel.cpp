@@ -292,6 +292,21 @@ class SubmittingThreeKeywords : public TargetWritingUseCase {
     const ThreeKeywordsResponse &response;
 };
 
+class SubmittingSyllable : public TargetWritingUseCase {
+  public:
+    explicit SubmittingSyllable(const SyllableResponse &response = {})
+        : response{response} {}
+
+    void run(RecognitionTestModelImpl &m) override { m.submit(response); }
+
+    auto target(OutputFileStub &file) -> std::string override {
+        return file.threeKeywordsTrial().target;
+    }
+
+  private:
+    const SyllableResponse &response;
+};
+
 class SubmittingCorrectKeywords : public TargetWritingUseCase {
   public:
     void run(RecognitionTestModelImpl &m) override {
@@ -623,6 +638,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingFreeResponse submittingFreeResponse{freeResponse};
     ThreeKeywordsResponse threeKeywords;
     SubmittingThreeKeywords submittingThreeKeywords{threeKeywords};
+    SubmittingSyllable submittingSyllable;
     AudioSampleTimeWithOffset fadeInCompleteTime{};
     SubmittingCorrectKeywords submittingCorrectKeywords;
     SubmittingConsonant submittingConsonant;
@@ -1246,6 +1262,11 @@ RECOGNITION_TEST_MODEL_TEST(submittingFreeResponseIncrementsTrialNumber) {
 RECOGNITION_TEST_MODEL_TEST(submittingThreeKeywordsIncrementsTrialNumber) {
     run(initializingTest, model);
     assertYieldsTrialNumber(submittingThreeKeywords, 2);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submittingSyllableIncrementsTrialNumber) {
+    run(initializingTest, model);
+    assertYieldsTrialNumber(submittingSyllable, 2);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submittingCorrectKeywordsIncrementsTrialNumber) {

@@ -395,6 +395,10 @@ void RecognitionTestModelImpl::submit(const ConsonantResponse &) {
     prepareNextTrialIfNeeded();
 }
 
+void RecognitionTestModelImpl::submit(const SyllableResponse &) {
+    prepareNextTrialIfNeeded();
+}
+
 void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
     if (!testMethod->complete()) {
         ++trialNumber_;
