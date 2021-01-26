@@ -1,6 +1,7 @@
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
+#include "ModelStub.hpp"
 #include <presentation/Syllables.hpp>
 #include <gtest/gtest.h>
 
@@ -27,9 +28,14 @@ class SyllablesControlStub : public SyllablesControl {
         observer->notifyThatSubmitButtonHasBeenClicked();
     }
 
-    void attach(Observer *a) { observer = a; }
+    void attach(Observer *a) override { observer = a; }
+
+    void setSyllable(std::string s) { syllable_ = std::move(s); }
+
+    auto syllable() -> std::string { return syllable_; }
 
   private:
+    std::string syllable_;
     Observer *observer{};
 };
 
@@ -43,7 +49,8 @@ class SyllablesControllerTests : public ::testing::Test {
   protected:
     SyllablesControlStub control;
     TestControllerStub testController;
-    SyllablesController controller{control, testController};
+    ModelStub model;
+    SyllablesController controller{control, testController, model};
 };
 
 class SyllablesPresenterTests : public ::testing::Test {
@@ -77,14 +84,12 @@ SYLLABLES_PRESENTER_TEST(showsResponseButtonsWhenShowingResponseSubmission) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
 }
 
-// SYLLABLES_CONTROLLER_TEST(submitsKeywordResponseAfterSubmitButtonIsClicked) {
-//     control.setFirstKeywordCorrect();
-//     control.setThirdKeywordCorrect();
-//     notifyThatSubmitButtonHasBeenClicked(control);
-//     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().firstCorrect);
-//     AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.threeKeywords().secondCorrect);
-//     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().thirdCorrect);
-// }
+SYLLABLES_CONTROLLER_TEST(submitsKeywordResponseAfterSubmitButtonIsClicked) {
+    control.setSyllable("Ghee");
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Syllable::gi, model.syllableResponse().syllable);
+}
 
 SYLLABLES_CONTROLLER_TEST(
     notifiesThatUserIsReadyForNextTrialAfterSubmitButtonIsClicked) {

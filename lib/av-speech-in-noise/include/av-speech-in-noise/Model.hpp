@@ -46,6 +46,35 @@ struct ConsonantResponse {
     char consonant{};
 };
 
+enum class Syllable {
+    bi,
+    di,
+    dji,
+    fi,
+    gi,
+    hi,
+    ji,
+    ki,
+    li,
+    mi,
+    ni,
+    pi,
+    ri,
+    shi,
+    si,
+    thi,
+    ti,
+    tsi,
+    vi,
+    wi,
+    zi,
+    unknown
+};
+
+struct SyllableResponse {
+    Syllable syllable;
+};
+
 enum class Condition { auditoryOnly, audioVisual };
 
 struct RealLevel {
@@ -168,6 +197,7 @@ class Model {
     virtual void submit(const CorrectKeywords &) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
     virtual void submit(const ThreeKeywordsResponse &) = 0;
+    virtual void submit(const SyllableResponse &) {}
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual auto testComplete() -> bool = 0;

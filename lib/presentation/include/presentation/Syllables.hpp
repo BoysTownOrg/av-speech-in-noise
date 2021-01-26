@@ -4,6 +4,9 @@
 #include "Task.hpp"
 #include "Test.hpp"
 #include <av-speech-in-noise/Interface.hpp>
+#include <av-speech-in-noise/Model.hpp>
+#include <map>
+#include <string>
 
 namespace av_speech_in_noise {
 class SyllablesView {
@@ -20,8 +23,9 @@ class SyllablesControl {
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
     };
-    virtual void attach(Observer *) = 0;
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SyllablesControl);
+    virtual void attach(Observer *) = 0;
+    virtual auto syllable() -> std::string = 0;
 };
 
 class SyllablesPresenter {
@@ -29,20 +33,20 @@ class SyllablesPresenter {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SyllablesPresenter);
 };
 
+static auto syllable(std::string_view s) -> Syllable {
+    std::map<std::string, Syllable, std::less<>> map{{"Ghee", Syllable::gi}};
+    return map.count(s) == 0 ? Syllable::unknown : map.at(std::string{s});
+}
+
 class SyllablesController : public SyllablesControl::Observer {
   public:
-    SyllablesController(
-        SyllablesControl &control, TestController &testController)
-        : testController{testController} {
-        control.attach(this);
-    }
-
-    void notifyThatSubmitButtonHasBeenClicked() override {
-        testController.notifyThatUserIsDoneResponding();
-    }
+    SyllablesController(SyllablesControl &, TestController &, Model &);
+    void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
+    SyllablesControl &control;
     TestController &testController;
+    Model &model;
 };
 
 class SyllablesPresenterImpl : public SyllablesPresenter, public TaskPresenter {
