@@ -151,7 +151,7 @@ class ChooseKeywordsControlStub : public ChooseKeywordsControl {
 
     void setThirdKeywordCorrect() { thirdKeywordCorrect_ = true; }
 
-    auto flagged() -> bool { return flagged_; }
+    auto flagged() -> bool override { return flagged_; }
 
     auto thirdKeywordCorrect() -> bool override { return thirdKeywordCorrect_; }
 

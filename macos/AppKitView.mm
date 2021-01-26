@@ -815,6 +815,9 @@ ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
       textFieldAfterFirstKeywordButton{emptyLabel()},
       textFieldAfterSecondKeywordButton{emptyLabel()},
       textFieldAfterThirdKeywordButton{emptyLabel()},
+      flaggedButton{[NSButton checkboxWithTitle:@"flagged"
+                                         target:nil
+                                         action:nil]},
       actions{[[ChooseKeywordsUIActions alloc] init]} {
     firstKeywordButton = nsButton(
         "", actions, @selector(notifyThatFirstKeywordButtonHasBeenClicked));
@@ -849,13 +852,18 @@ ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
         [NSStackView
             stackViewWithViews:@[ resetButton, allWrongButton, submitButton ]]
     };
-    responseView =
-        [NSStackView stackViewWithViews:@[ keywordButtons, actionButtons ]];
+    responseView = [NSStackView
+        stackViewWithViews:@[ flaggedButton, keywordButtons, actionButtons ]];
     responseView.orientation = NSUserInterfaceLayoutOrientationVertical;
+    responseView.alignment = NSLayoutAttributeRight;
     addAutolayoutEnabledSubview(view(viewController), responseView);
     activateChildConstraintNestledInBottomRightCorner(
         responseView, view(viewController), defaultMarginPoints);
     av_speech_in_noise::hide(responseView);
+}
+
+auto ChooseKeywordsUI::flagged() -> bool {
+    return flaggedButton.state == NSControlStateValueOn;
 }
 
 void ChooseKeywordsUI::markThirdKeywordCorrect() {

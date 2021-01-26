@@ -32,6 +32,7 @@ class ChooseKeywordsUI : public ChooseKeywordsControl,
     auto firstKeywordCorrect() -> bool override;
     auto secondKeywordCorrect() -> bool override;
     auto thirdKeywordCorrect() -> bool override;
+    auto flagged() -> bool override;
     void markFirstKeywordIncorrect() override;
     void markSecondKeywordIncorrect() override;
     void markThirdKeywordIncorrect() override;
@@ -57,6 +58,7 @@ class ChooseKeywordsUI : public ChooseKeywordsControl,
     NSButton *firstKeywordButton;
     NSButton *secondKeywordButton;
     NSButton *thirdKeywordButton;
+    NSButton *flaggedButton;
     ChooseKeywordsUIActions *actions;
 };
 
