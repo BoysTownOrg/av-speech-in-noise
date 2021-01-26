@@ -355,6 +355,11 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailWithEyeTrackingPassesMethod) {
         Method::adaptivePassFailWithEyeTracking, adaptiveTestIdentity);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelSyllablesWithAllTargetsPassesMethod) {
+    assertPassesTestMethod(interpreter, model, sessionController,
+        Method::fixedLevelSyllablesWithAllTargets, fixedLevelTestIdentity);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelChooseKeywordsWithAllTargetsPassesMethod) {
     assertPassesTestMethod(interpreter, model, sessionController,

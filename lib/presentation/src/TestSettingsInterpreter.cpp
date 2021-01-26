@@ -175,6 +175,7 @@ static auto method(const std::string &s) -> Method {
             Method::adaptiveCoordinateResponseMeasure,
             Method::fixedLevelConsonants,
             Method::fixedLevelChooseKeywordsWithAllTargets,
+            Method::fixedLevelSyllablesWithAllTargets,
             Method::adaptiveCoordinateResponseMeasureWithEyeTracking})
         if (name(s) == name(m))
             return m;
@@ -295,11 +296,8 @@ static void initialize(Model &model, Method method, const std::string &contents,
                 model.initializeWithSilentIntervalTargets(test);
             });
     case Method::fixedLevelFreeResponseWithAllTargets:
-        return av_speech_in_noise::initialize(method, contents, identity,
-            startingSnr, [&](const FixedLevelTest &test) {
-                model.initializeWithAllTargets(test);
-            });
     case Method::fixedLevelChooseKeywordsWithAllTargets:
+    case Method::fixedLevelSyllablesWithAllTargets:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {
                 model.initializeWithAllTargets(test);
