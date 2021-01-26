@@ -32,11 +32,11 @@ class SyllablesController : public SyllablesControl::Observer {
 
 class SyllablesPresenterImpl : public SyllablesPresenter, public TaskPresenter {
   public:
-    explicit SyllablesPresenterImpl(SyllablesView &view) : view{view} {}
-    void start() override {}
-    void stop() override {}
-    void showResponseSubmission() override {}
-    void hideResponseSubmission() override { view.hide(); }
+    explicit SyllablesPresenterImpl(SyllablesView &);
+    void start() override;
+    void stop() override;
+    void showResponseSubmission() override;
+    void hideResponseSubmission() override;
 
   private:
     SyllablesView &view;

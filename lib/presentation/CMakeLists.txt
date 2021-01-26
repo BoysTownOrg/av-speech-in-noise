@@ -9,7 +9,8 @@ add_library(
   src/PassFail.cpp
   src/TestImpl.cpp
   src/TestSetupImpl.cpp
-  src/ChooseKeywords.cpp)
+  src/ChooseKeywords.cpp
+  src/Syllables.cpp)
 target_include_directories(
   presentation
   PUBLIC include
