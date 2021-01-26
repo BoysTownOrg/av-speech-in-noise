@@ -535,6 +535,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelSyllablesWithAllTargetsInitializesFixedLevelTest) {
+    initialize(interpreter, model, sessionController,
+        Method::fixedLevelSyllablesWithAllTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        model.fixedLevelTestWithAllTargetsInitialized());
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingInitializesFixedLevelTest) {
     initialize(interpreter, model, sessionController,
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
