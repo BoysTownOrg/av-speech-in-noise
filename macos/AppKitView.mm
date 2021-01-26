@@ -344,7 +344,7 @@ AppKitTestSetupUI::AppKitTestSetupUI(NSViewController *viewController)
     setPlaceholder(subjectIdField, "abc123");
     setPlaceholder(testerIdField, "abc123");
     setPlaceholder(sessionField, "abc123");
-    setPlaceholder(rmeSettingField, "ihavenoideawhatgoeshere");
+    setPlaceholder(rmeSettingField, "abc123");
     setPlaceholder(startingSnrField, "5");
     addAutolayoutEnabledSubview(view(viewController), confirmButton);
     addAutolayoutEnabledSubview(view(viewController), stack);
@@ -415,8 +415,6 @@ auto AppKitTestSetupUI::session() -> std::string {
 auto AppKitTestSetupUI::rmeSetting() -> std::string {
     return string(rmeSettingField);
 }
-
-void AppKitTestSetupUI::setTestSettingsFile(std::string_view s) {}
 
 void AppKitTestSetupUI::populateTransducerMenu(std::vector<std::string> items) {
     for (const auto &item : items)

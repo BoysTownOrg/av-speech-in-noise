@@ -164,7 +164,6 @@ class AppKitTestSetupUI : public TestSetupUI {
     auto transducer() -> std::string override;
     auto rmeSetting() -> std::string override;
     void populateTransducerMenu(std::vector<std::string>) override;
-    void setTestSettingsFile(std::string_view) override;
     void attach(Observer *) override;
     void notifyThatConfirmButtonHasBeenClicked();
     void notifyThatPlayCalibrationButtonHasBeenClicked();
