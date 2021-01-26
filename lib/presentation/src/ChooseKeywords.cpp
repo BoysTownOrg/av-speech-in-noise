@@ -17,6 +17,7 @@ void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     threeKeywords.firstCorrect = control.firstKeywordCorrect();
     threeKeywords.secondCorrect = control.secondKeywordCorrect();
     threeKeywords.thirdCorrect = control.thirdKeywordCorrect();
+    threeKeywords.flagged = control.flagged();
     model.submit(threeKeywords);
     testController.notifyThatUserIsDoneResponding();
 }

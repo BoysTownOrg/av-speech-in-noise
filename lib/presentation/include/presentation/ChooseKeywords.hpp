@@ -46,6 +46,7 @@ class ChooseKeywordsControl {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
         ChooseKeywordsControl);
     virtual void attach(Observer *) = 0;
+    virtual auto flagged() -> bool = 0;
     virtual auto firstKeywordCorrect() -> bool = 0;
     virtual auto secondKeywordCorrect() -> bool = 0;
     virtual auto thirdKeywordCorrect() -> bool = 0;

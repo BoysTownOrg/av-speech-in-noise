@@ -145,9 +145,13 @@ class ChooseKeywordsViewStub : public ChooseKeywordsView {
 
 class ChooseKeywordsControlStub : public ChooseKeywordsControl {
   public:
+    void setFlagged() { flagged_ = true; }
+
     void setFirstKeywordCorrect() { firstKeywordCorrect_ = true; }
 
     void setThirdKeywordCorrect() { thirdKeywordCorrect_ = true; }
+
+    auto flagged() -> bool { return flagged_; }
 
     auto thirdKeywordCorrect() -> bool override { return thirdKeywordCorrect_; }
 
@@ -185,6 +189,7 @@ class ChooseKeywordsControlStub : public ChooseKeywordsControl {
 
   private:
     Observer *observer{};
+    bool flagged_{};
     bool firstKeywordCorrect_{};
     bool secondKeywordCorrect_{};
     bool thirdKeywordCorrect_{};
@@ -398,6 +403,12 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().firstCorrect);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.threeKeywords().secondCorrect);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().thirdCorrect);
+}
+
+CHOOSE_KEYWORDS_CONTROLLER_TEST(submitsFlaggedAfterSubmitButtonIsClicked) {
+    control.setFlagged();
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().flagged);
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(marksAllIncorrectAfterAllWrongButtonIsClicked) {
