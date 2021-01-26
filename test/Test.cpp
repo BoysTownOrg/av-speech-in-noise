@@ -98,20 +98,16 @@ class TestPresenterStub : public TestPresenter {
         return notifiedThatNextTrialIsReady_;
     }
 
-    void setContinueTestingDialogMessage(const std::string &s) override {
-        continueTestingDialogMessage_ = s;
-    }
-
     auto continueTestingDialogMessage() -> std::string {
         return continueTestingDialogMessage_;
     }
 
-    void showContinueTestingDialog() override {
-        continueTestingDialogShown_ = true;
+    void updateAdaptiveTestResults() override {
+        adaptiveTestResultsUpdated_ = true;
     }
 
-    [[nodiscard]] auto continueTestingDialogShown() const -> bool {
-        return continueTestingDialogShown_;
+    [[nodiscard]] auto adaptiveTestResultsUpdated() const -> bool {
+        return adaptiveTestResultsUpdated_;
     }
 
     void display(const std::string &s) override { displayed_ = s; }
@@ -137,7 +133,7 @@ class TestPresenterStub : public TestPresenter {
     bool responseSubmissionHidden_{};
     bool notifiedThatTrialHasStarted_{};
     bool notifiedThatNextTrialIsReady_{};
-    bool continueTestingDialogShown_{};
+    bool adaptiveTestResultsUpdated_{};
 };
 
 class ControllerUseCase {
@@ -532,17 +528,21 @@ TEST_CONTROLLER_TEST(showsContinueTestingDialog) {
     setTestComplete(model);
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
         controller);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.continueTestingDialogShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.adaptiveTestResultsUpdated());
 }
 
-TEST_CONTROLLER_TEST(showsAdaptiveTestResults) {
+TEST_PRESENTER_TEST(showsAdaptiveTestResults) {
     setTestComplete(model);
     model.setAdaptiveTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
-    notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
-        controller);
+    presenter.updateAdaptiveTestResults();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3"},
-        presenter.continueTestingDialogMessage());
+        view.continueTestingDialogMessage());
+}
+
+TEST_PRESENTER_TEST(showsContinueTestingDialog) {
+    presenter.updateAdaptiveTestResults();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.continueTestingDialogShown());
 }
 
 TEST_PRESENTER_TEST(showsViewAfterStarting) {
@@ -609,17 +609,6 @@ TEST_PRESENTER_TEST(displaysSecondaryMessage) {
     presenter.secondaryDisplay("a");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.secondaryDisplayed());
-}
-
-TEST_PRESENTER_TEST(showsContinueTestingDialog) {
-    presenter.showContinueTestingDialog();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.continueTestingDialogShown());
-}
-
-TEST_PRESENTER_TEST(setsContinueTestingDialogMessage) {
-    presenter.setContinueTestingDialogMessage("a");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, view.continueTestingDialogMessage());
 }
 
 TEST_PRESENTER_TEST(startsTaskPresenterWhenInitializing) {

@@ -12,8 +12,7 @@ class TestPresenterStub : public TestPresenter {
     void start() override { started_ = true; }
     void stop() override { stopped_ = true; }
     void notifyThatTrialHasStarted() override {}
-    void setContinueTestingDialogMessage(const std::string &) override {}
-    void showContinueTestingDialog() override {}
+    void updateAdaptiveTestResults() override {}
     void display(const std::string &) override {}
     void secondaryDisplay(const std::string &) override {}
     void notifyThatNextTrialIsReady() override {}
@@ -21,6 +20,7 @@ class TestPresenterStub : public TestPresenter {
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
     auto taskPresenter() -> TaskPresenter * { return taskPresenter_; }
     void initialize(TaskPresenter &p) override { taskPresenter_ = &p; }
+    void hideResponseSubmission() override {}
 
   private:
     TaskPresenter *taskPresenter_{};

@@ -72,15 +72,8 @@ static void notifyIfTestIsCompleteElse(Model &model,
 void TestControllerImpl::
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() {
     presenter.hideResponseSubmission();
-    readyNextTrialIfTestIncompleteElse(model, presenter, [&] {
-        presenter.showContinueTestingDialog();
-        std::stringstream thresholds;
-        thresholds << "thresholds (targets: dB SNR)";
-        for (const auto &result : model.adaptiveTestResults())
-            thresholds << '\n'
-                       << result.targetsUrl.path << ": " << result.threshold;
-        presenter.setContinueTestingDialogMessage(thresholds.str());
-    });
+    readyNextTrialIfTestIncompleteElse(
+        model, presenter, [&] { presenter.updateAdaptiveTestResults(); });
 }
 
 void TestControllerImpl::notifyThatUserIsDoneResponding() {
@@ -140,12 +133,14 @@ void TestPresenterImpl::secondaryDisplay(const std::string &s) {
     view.secondaryDisplay(s);
 }
 
-void TestPresenterImpl::showContinueTestingDialog() {
+void TestPresenterImpl::updateAdaptiveTestResults() {
     view.showContinueTestingDialog();
-}
-
-void TestPresenterImpl::setContinueTestingDialogMessage(const std::string &s) {
-    view.setContinueTestingDialogMessage(s);
+    std::stringstream thresholds;
+    thresholds << "thresholds (targets: dB SNR)";
+    for (const auto &result : model.adaptiveTestResults())
+        thresholds << '\n'
+                   << result.targetsUrl.path << ": " << result.threshold;
+    view.setContinueTestingDialogMessage(thresholds.str());
 }
 
 void TestPresenterImpl::initialize(TaskPresenter &p) {

@@ -65,17 +65,16 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
   public:
     explicit TestPresenterImpl(
         Model &, TestView &, UninitializedTaskPresenter *);
-    void trialComplete() override;
+    void initialize(TaskPresenter &) override;
     void start() override;
     void stop() override;
+    void trialComplete() override;
     void notifyThatTrialHasStarted() override;
     void notifyThatNextTrialIsReady() override;
     void hideResponseSubmission() override;
     void display(const std::string &s) override;
     void secondaryDisplay(const std::string &s) override;
-    void showContinueTestingDialog() override;
-    void setContinueTestingDialogMessage(const std::string &s) override;
-    void initialize(TaskPresenter &) override;
+    void updateAdaptiveTestResults() override;
 
   private:
     Model &model;
