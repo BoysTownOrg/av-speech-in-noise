@@ -32,7 +32,7 @@ class SyllablesControlStub : public SyllablesControl {
 
     void setSyllable(std::string s) { syllable_ = std::move(s); }
 
-    auto syllable() -> std::string { return syllable_; }
+    auto syllable() -> std::string override { return syllable_; }
 
   private:
     std::string syllable_;

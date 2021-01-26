@@ -30,6 +30,9 @@
 @interface PassFailUIActions : NSObject
 @end
 
+@interface SyllablesUIActions : NSObject
+@end
+
 @implementation TestSetupUIActions {
   @public
     av_speech_in_noise::AppKitTestSetupUI *controller;
@@ -109,6 +112,12 @@
 
 - (void)notifyThatIncorrectButtonHasBeenClicked {
     observer->notifyThatIncorrectButtonHasBeenClicked();
+}
+@end
+
+@implementation SyllablesUIActions {
+  @public
+    av_speech_in_noise::SyllablesControl::Observer *observer;
 }
 @end
 
@@ -1076,4 +1085,18 @@ void PassFailUI::showEvaluationButtons() {
 void PassFailUI::hideEvaluationButtons() {
     av_speech_in_noise::hide(responseView);
 }
+
+SyllablesUI::SyllablesUI(NSViewController *viewController)
+    : actions{[[SyllablesUIActions alloc] init]} {
+    addAutolayoutEnabledSubview(av_speech_in_noise::view(viewController), view);
+    av_speech_in_noise::hide(view);
+}
+
+void SyllablesUI::attach(Observer *a) { actions->observer = a; }
+
+void SyllablesUI::hide() { av_speech_in_noise::hide(view); }
+
+void SyllablesUI::show() { av_speech_in_noise::show(view); }
+
+auto SyllablesUI::syllable() -> std::string { return "tbd"; }
 }

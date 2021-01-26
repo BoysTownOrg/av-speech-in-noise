@@ -360,10 +360,12 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto correctKeywordsUIController{
         nsTabViewControllerWithoutTabControl()};
     const auto passFailUIController{nsTabViewControllerWithoutTabControl()};
+    const auto syllablesUIController{nsTabViewControllerWithoutTabControl()};
     addChild(testViewController, chooseKeywordsUIController);
     addChild(testViewController, freeResponseUIController);
     addChild(testViewController, correctKeywordsUIController);
     addChild(testViewController, passFailUIController);
+    addChild(testViewController, syllablesUIController);
     AppKitTestUI testUI{testViewController};
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
@@ -390,6 +392,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         chooseKeywordsUI,
         sentencesWithThreeKeywords(
             TextFileReaderImpl{}.read(resourceUrl("mlst-c", "txt")))};
+    SyllablesUI syllablesUI{syllablesUIController};
+    SyllablesPresenterImpl syllablesPresenter{syllablesUI, testUI};
     CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
     CorrectKeywordsPresenter correctKeywordsPresenter{
         testUI, correctKeywordsUI};
@@ -406,6 +410,14 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         sessionController, model, sessionUI, testUI, testPresenter};
     ChooseKeywordsController chooseKeywordsController{
         testController, model, chooseKeywordsUI, chooseKeywordsPresenter};
+    SyllablesController syllablesController{syllablesUI, testController, model,
+        {{"B", Syllable::bi}, {"D", Syllable::di}, {"G", Syllable::dji},
+            {"F", Syllable::fi}, {"Ghee", Syllable::gi}, {"H", Syllable::hi},
+            {"Yee", Syllable::ji}, {"K", Syllable::ki}, {"L", Syllable::li},
+            {"M", Syllable::mi}, {"N", Syllable::ni}, {"P", Syllable::pi},
+            {"R", Syllable::ri}, {"Sh", Syllable::shi}, {"S", Syllable::si},
+            {"Th", Syllable::thi}, {"T", Syllable::ti}, {"Ch", Syllable::tsi},
+            {"V", Syllable::vi}, {"W", Syllable::wi}, {"Z", Syllable::zi}}};
     CorrectKeywordsController correctKeywordsController{
         testController, model, sessionUI, correctKeywordsUI};
     FreeResponseController freeResponseController{
@@ -445,6 +457,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                 freeResponsePresenter},
             {Method::fixedLevelChooseKeywordsWithAllTargets,
                 chooseKeywordsPresenter},
+            {Method::fixedLevelSyllablesWithAllTargets, syllablesPresenter},
             {Method::adaptiveCorrectKeywords, correctKeywordsPresenter},
             {Method::adaptiveCorrectKeywordsWithEyeTracking,
                 correctKeywordsPresenter},

@@ -6,6 +6,7 @@
 #include <presentation/CoordinateResponseMeasure.hpp>
 #include <presentation/FreeResponse.hpp>
 #include <presentation/ChooseKeywords.hpp>
+#include <presentation/Syllables.hpp>
 #include <presentation/PassFail.hpp>
 #include <presentation/CorrectKeywords.hpp>
 #include <presentation/TestSetupImpl.hpp>
@@ -22,6 +23,7 @@
 @class ChooseKeywordsUIActions;
 @class CorrectKeywordsUIActions;
 @class PassFailUIActions;
+@class SyllablesUIActions;
 
 namespace av_speech_in_noise {
 class ChooseKeywordsUI : public ChooseKeywordsControl,
@@ -61,6 +63,19 @@ class ChooseKeywordsUI : public ChooseKeywordsControl,
     NSButton *thirdKeywordButton;
     NSButton *flaggedButton;
     ChooseKeywordsUIActions *actions;
+};
+
+class SyllablesUI : public SyllablesControl, public SyllablesView {
+  public:
+    explicit SyllablesUI(NSViewController *);
+    void attach(Observer *) override;
+    void hide() override;
+    void show() override;
+    auto syllable() -> std::string override;
+
+  private:
+    NSStackView *view{};
+    SyllablesUIActions *actions;
 };
 
 class FreeResponseUI : public FreeResponseView, public FreeResponseControl {
