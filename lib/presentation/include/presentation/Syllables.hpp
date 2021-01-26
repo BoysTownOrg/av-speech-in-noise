@@ -18,7 +18,9 @@ class SyllablesControl {
     class Observer {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
+        virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
     };
+    virtual void attach(Observer *) = 0;
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SyllablesControl);
 };
 
@@ -29,7 +31,18 @@ class SyllablesPresenter {
 
 class SyllablesController : public SyllablesControl::Observer {
   public:
-    explicit SyllablesController(SyllablesControl &) {}
+    SyllablesController(
+        SyllablesControl &control, TestController &testController)
+        : testController{testController} {
+        control.attach(this);
+    }
+
+    void notifyThatSubmitButtonHasBeenClicked() override {
+        testController.notifyThatUserIsDoneResponding();
+    }
+
+  private:
+    TestController &testController;
 };
 
 class SyllablesPresenterImpl : public SyllablesPresenter, public TaskPresenter {

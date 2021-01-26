@@ -1,5 +1,6 @@
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
+#include "TestControllerStub.hpp"
 #include <presentation/Syllables.hpp>
 #include <gtest/gtest.h>
 
@@ -13,21 +14,36 @@ class SyllablesViewStub : public SyllablesView {
 
     [[nodiscard]] auto shown() const -> bool { return shown_; }
 
-    void show() { shown_ = true; }
+    void show() override { shown_ = true; }
 
   private:
     bool hidden_{};
     bool shown_{};
 };
 
-class SyllablesControlStub : public SyllablesControl {};
+class SyllablesControlStub : public SyllablesControl {
+  public:
+    void notifyThatSubmitButtonHasBeenClicked() {
+        observer->notifyThatSubmitButtonHasBeenClicked();
+    }
+
+    void attach(Observer *a) { observer = a; }
+
+  private:
+    Observer *observer{};
+};
+
+void notifyThatSubmitButtonHasBeenClicked(SyllablesControlStub &control) {
+    control.notifyThatSubmitButtonHasBeenClicked();
+}
 
 class SyllablesPresenterStub : public SyllablesPresenter {};
 
 class SyllablesControllerTests : public ::testing::Test {
   protected:
     SyllablesControlStub control;
-    SyllablesController controller{control};
+    TestControllerStub testController;
+    SyllablesController controller{control, testController};
 };
 
 class SyllablesPresenterTests : public ::testing::Test {
@@ -70,11 +86,11 @@ SYLLABLES_PRESENTER_TEST(showsResponseButtonsWhenShowingResponseSubmission) {
 //     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().thirdCorrect);
 // }
 
-// SYLLABLES_CONTROLLER_TEST(
-//     notifiesThatUserIsReadyForNextTrialAfterSubmitButtonIsClicked) {
-//     notifyThatSubmitButtonHasBeenClicked(control);
-//     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-//         testController.notifiedThatUserIsDoneResponding());
-// }
+SYLLABLES_CONTROLLER_TEST(
+    notifiesThatUserIsReadyForNextTrialAfterSubmitButtonIsClicked) {
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        testController.notifiedThatUserIsDoneResponding());
+}
 }
 }
