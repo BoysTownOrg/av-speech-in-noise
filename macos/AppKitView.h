@@ -167,7 +167,6 @@ class AppKitTestSetupUI : public TestSetupUI {
     void setTestSettingsFile(std::string_view) override;
     void attach(Observer *) override;
     void notifyThatConfirmButtonHasBeenClicked();
-    void notifyThatBrowseForTestSettingsButtonHasBeenClicked();
     void notifyThatPlayCalibrationButtonHasBeenClicked();
 
   private:
@@ -177,7 +176,7 @@ class AppKitTestSetupUI : public TestSetupUI {
     NSTextField *sessionField;
     NSTextField *rmeSettingField;
     NSPopUpButton *transducerMenu;
-    NSTextField *testSettingsField;
+    NSPathControl *testSettingsFilePathControl;
     NSTextField *startingSnrField;
     TestSetupUIActions *actions;
     Observer *observer{};

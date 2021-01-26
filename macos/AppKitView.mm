@@ -43,10 +43,6 @@
     controller->notifyThatConfirmButtonHasBeenClicked();
 }
 
-- (void)notifyThatBrowseForTestSettingsButtonHasBeenClicked {
-    controller->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
-}
-
 - (void)notifyThatPlayCalibrationButtonHasBeenClicked {
     controller->notifyThatPlayCalibrationButtonHasBeenClicked();
 }
@@ -318,7 +314,8 @@ AppKitTestSetupUI::AppKitTestSetupUI(NSViewController *viewController)
       rmeSettingField{emptyTextField()},
       transducerMenu{[[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                                 pullsDown:NO]},
-      testSettingsField{emptyTextField()}, startingSnrField{emptyTextField()},
+      testSettingsFilePathControl{[[NSPathControl alloc] init]},
+      startingSnrField{emptyTextField()},
       actions{[[TestSetupUIActions alloc] init]} {
     actions->controller = this;
     const auto confirmButton {
@@ -326,7 +323,9 @@ AppKitTestSetupUI::AppKitTestSetupUI(NSViewController *viewController)
             @selector(notifyThatConfirmButtonHasBeenClicked))
     };
     [confirmButton setKeyEquivalent:@"\r"];
-    const auto stack {
+    testSettingsFilePathControl.pathStyle = NSPathStylePopUp;
+    testSettingsFilePathControl.allowedTypes = @[ @"txt" ];
+    auto stack {
         [NSStackView stackViewWithViews:@[
             labeledView(subjectIdField, "subject:"),
             labeledView(testerIdField, "tester:"),
@@ -334,10 +333,7 @@ AppKitTestSetupUI::AppKitTestSetupUI(NSViewController *viewController)
             labeledView(rmeSettingField, "RME setting:"),
             labeledView(transducerMenu, "transducer:"),
             [NSStackView stackViewWithViews:@[
-                labeledView(testSettingsField, "test settings:"),
-                nsButton("Browse...", actions,
-                    @selector
-                    (notifyThatBrowseForTestSettingsButtonHasBeenClicked)),
+                testSettingsFilePathControl,
                 nsButton("Play Calibration", actions,
                     @selector(notifyThatPlayCalibrationButtonHasBeenClicked))
             ]],
@@ -349,8 +345,6 @@ AppKitTestSetupUI::AppKitTestSetupUI(NSViewController *viewController)
     setPlaceholder(testerIdField, "abc123");
     setPlaceholder(sessionField, "abc123");
     setPlaceholder(rmeSettingField, "ihavenoideawhatgoeshere");
-    setPlaceholder(
-        testSettingsField, "/Users/username/Documents/test-settings.txt");
     setPlaceholder(startingSnrField, "5");
     addAutolayoutEnabledSubview(view(viewController), confirmButton);
     addAutolayoutEnabledSubview(view(viewController), stack);
@@ -367,7 +361,7 @@ AppKitTestSetupUI::AppKitTestSetupUI(NSViewController *viewController)
         [subjectIdField.leadingAnchor
             constraintEqualToAnchor:rmeSettingField.leadingAnchor],
         [subjectIdField.leadingAnchor
-            constraintEqualToAnchor:testSettingsField.leadingAnchor],
+            constraintEqualToAnchor:testSettingsFilePathControl.leadingAnchor],
         [subjectIdField.leadingAnchor
             constraintEqualToAnchor:startingSnrField.leadingAnchor],
         [subjectIdField.leadingAnchor
@@ -378,8 +372,6 @@ AppKitTestSetupUI::AppKitTestSetupUI(NSViewController *viewController)
             constraintEqualToAnchor:sessionField.trailingAnchor],
         [subjectIdField.trailingAnchor
             constraintEqualToAnchor:rmeSettingField.trailingAnchor],
-        [subjectIdField.trailingAnchor
-            constraintEqualToAnchor:testSettingsField.trailingAnchor],
         [subjectIdField.trailingAnchor
             constraintEqualToAnchor:startingSnrField.trailingAnchor],
         [subjectIdField.trailingAnchor
@@ -399,7 +391,9 @@ void AppKitTestSetupUI::hide() {
 }
 
 auto AppKitTestSetupUI::testSettingsFile() -> std::string {
-    return string(testSettingsField);
+    return testSettingsFilePathControl.URL == nil
+        ? ""
+        : testSettingsFilePathControl.URL.fileSystemRepresentation;
 }
 
 auto AppKitTestSetupUI::testerId() -> std::string {
@@ -422,9 +416,7 @@ auto AppKitTestSetupUI::rmeSetting() -> std::string {
     return string(rmeSettingField);
 }
 
-void AppKitTestSetupUI::setTestSettingsFile(std::string_view s) {
-    set(testSettingsField, std::string{s});
-}
+void AppKitTestSetupUI::setTestSettingsFile(std::string_view s) {}
 
 void AppKitTestSetupUI::populateTransducerMenu(std::vector<std::string> items) {
     for (const auto &item : items)
@@ -439,10 +431,6 @@ void AppKitTestSetupUI::attach(Observer *e) { observer = e; }
 
 void AppKitTestSetupUI::notifyThatConfirmButtonHasBeenClicked() {
     observer->notifyThatConfirmButtonHasBeenClicked();
-}
-
-void AppKitTestSetupUI::notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
-    observer->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
 }
 
 void AppKitTestSetupUI::notifyThatPlayCalibrationButtonHasBeenClicked() {
