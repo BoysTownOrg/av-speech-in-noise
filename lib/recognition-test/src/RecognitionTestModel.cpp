@@ -385,21 +385,22 @@ void RecognitionTestModelImpl::submit(const ThreeKeywordsResponse &p) {
     prepareNextTrialIfNeeded();
 }
 
+void RecognitionTestModelImpl::submit(const SyllableResponse &p) {
+    testMethod->submit(p);
+    SyllableTrial trial;
+    trial.syllable = p.syllable;
+    trial.target = targetName(evaluator, testMethod);
+    outputFile.write(trial);
+    save(outputFile);
+    prepareNextTrialIfNeeded();
+}
+
 void RecognitionTestModelImpl::submit(const CorrectKeywords &) {
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
 
 void RecognitionTestModelImpl::submit(const ConsonantResponse &) {
-    save(outputFile);
-    prepareNextTrialIfNeeded();
-}
-
-void RecognitionTestModelImpl::submit(const SyllableResponse &p) {
-    SyllableTrial trial;
-    trial.syllable = p.syllable;
-    trial.target = targetName(evaluator, testMethod);
-    outputFile.write(trial);
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
