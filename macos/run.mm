@@ -308,6 +308,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto viewController{nsTabViewControllerWithoutTabControl()};
     const auto window{
         [NSWindow windowWithContentViewController:viewController]};
+    window.title = @"AV Speech in Noise";
     [window makeKeyAndOrderFront:nil];
     const auto app{[NSApplication sharedApplication]};
     app.mainMenu = [[NSMenu alloc] init];
