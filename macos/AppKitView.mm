@@ -5,6 +5,7 @@
 #include <iterator>
 #include <array>
 #include <algorithm>
+#include <functional>
 
 @interface TestSetupUIActions : NSObject
 @end
@@ -118,6 +119,12 @@
 @implementation SyllablesUIActions {
   @public
     av_speech_in_noise::SyllablesControl::Observer *observer;
+    std::function<void(id)> onResponseButtonClick;
+}
+
+- (void)notifyThatResponseButtonHasBeenClicked:(id)sender {
+    onResponseButtonClick(sender);
+    observer->notifyThatResponseButtonHasBeenClicked();
 }
 @end
 
@@ -231,6 +238,78 @@ static void activateConstraints(NSArray<NSLayoutConstraint *> *constraints) {
 
 static auto view(NSViewController *viewController) -> NSView * {
     return viewController.view;
+}
+
+AppKitSessionUI::AppKitSessionUI(
+    NSApplication *app, NSViewController *viewController)
+    : app{app}, audioDeviceMenu{
+                    [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
+                                               pullsDown:NO]} {
+    const auto audioDeviceStack {
+        [NSStackView
+            stackViewWithViews:@[ label("audio output:"), audioDeviceMenu ]]
+    };
+    addAutolayoutEnabledSubview(view(viewController), audioDeviceStack);
+    activateConstraints(@[
+        [audioDeviceStack.topAnchor
+            constraintEqualToAnchor:view(viewController).topAnchor
+                           constant:defaultMarginPoints],
+        [audioDeviceStack.bottomAnchor
+            constraintEqualToAnchor:view(viewController).bottomAnchor
+                           constant:-defaultMarginPoints],
+        [audioDeviceStack.leadingAnchor
+            constraintEqualToAnchor:view(viewController).leadingAnchor
+                           constant:defaultMarginPoints],
+        [audioDeviceStack.trailingAnchor
+            constraintEqualToAnchor:view(viewController).trailingAnchor
+                           constant:-defaultMarginPoints]
+    ]);
+}
+
+void AppKitSessionUI::eventLoop() { [app run]; }
+
+void AppKitSessionUI::showErrorMessage(std::string_view s) {
+    const auto alert{[[NSAlert alloc] init]};
+    [alert setMessageText:@"Error."];
+    [alert setInformativeText:nsString(std::string{s})];
+    [alert addButtonWithTitle:@"Ok"];
+    [alert runModal];
+}
+
+auto AppKitSessionUI::browseForDirectory() -> std::string {
+    const auto panel{[NSOpenPanel openPanel]};
+    panel.canChooseDirectories = YES;
+    panel.canChooseFiles = NO;
+    return browseModal(panel);
+}
+
+auto AppKitSessionUI::browseCancelled() -> bool { return browseCancelled_; }
+
+auto AppKitSessionUI::browseForOpeningFile() -> std::string {
+    const auto panel{[NSOpenPanel openPanel]};
+    panel.canChooseDirectories = NO;
+    panel.canChooseFiles = YES;
+    return browseModal(panel);
+}
+
+auto AppKitSessionUI::browseModal(NSOpenPanel *panel) -> std::string {
+    switch ([panel runModal]) {
+    case NSModalResponseOK:
+        browseCancelled_ = false;
+        return panel.URLs.lastObject.path.UTF8String;
+    default:
+        browseCancelled_ = true;
+        return {};
+    }
+}
+
+auto AppKitSessionUI::audioDevice() -> std::string {
+    return audioDeviceMenu.titleOfSelectedItem.UTF8String;
+}
+
+void AppKitSessionUI::populateAudioDeviceMenu(std::vector<std::string> items) {
+    for (const auto &item : items)
+        [audioDeviceMenu addItemWithTitle:nsString(item)];
 }
 
 AppKitTestSetupUI::AppKitTestSetupUI(NSViewController *viewController)
@@ -368,6 +447,98 @@ void AppKitTestSetupUI::notifyThatBrowseForTestSettingsButtonHasBeenClicked() {
 
 void AppKitTestSetupUI::notifyThatPlayCalibrationButtonHasBeenClicked() {
     observer->notifyThatPlayCalibrationButtonHasBeenClicked();
+}
+
+static auto emptyLabel() -> NSTextField * { return label(""); }
+
+AppKitTestUI::AppKitTestUI(NSViewController *viewController)
+    : viewController{viewController}, continueTestingDialogField{emptyLabel()},
+      primaryTextField{emptyLabel()},
+      secondaryTextField{emptyLabel()}, actions{[[TestUIActions alloc] init]} {
+    const auto continueTestingDialogController{
+        nsTabViewControllerWithoutTabControl()};
+    continueTestingDialog = [NSWindow
+        windowWithContentViewController:continueTestingDialogController];
+    continueTestingDialog.styleMask = NSWindowStyleMaskBorderless;
+    exitTestButton = nsButton("Exit Test", actions,
+        @selector(notifyThatExitTestButtonHasBeenClicked));
+    nextTrialButton = nsButton("Play Trial", actions,
+        @selector(notifyThatPlayTrialButtonHasBeenClicked));
+    const auto topRow {
+        [NSStackView stackViewWithViews:@[
+            exitTestButton, primaryTextField, secondaryTextField
+        ]]
+    };
+    addAutolayoutEnabledSubview(view(viewController), topRow);
+    const auto continueTestingDialogStack {
+        [NSStackView stackViewWithViews:@[
+            continueTestingDialogField, [NSStackView stackViewWithViews:@[
+                nsButton("Exit", actions,
+                    @selector
+                    (notifyThatDeclineContinueTestingButtonHasBeenClicked)),
+                nsButton("Continue", actions,
+                    @selector(notifyThatContinueTestingButtonHasBeenClicked))
+            ]]
+        ]]
+    };
+    continueTestingDialogStack.orientation =
+        NSUserInterfaceLayoutOrientationVertical;
+    addAutolayoutEnabledSubview(
+        view(continueTestingDialogController), continueTestingDialogStack);
+    addAutolayoutEnabledSubview(view(viewController), nextTrialButton);
+    activateConstraints(@[
+        [topRow.leadingAnchor
+            constraintEqualToAnchor:view(viewController).leadingAnchor
+                           constant:defaultMarginPoints],
+        [topRow.topAnchor constraintEqualToAnchor:view(viewController).topAnchor
+                                         constant:defaultMarginPoints]
+    ]);
+    activateChildConstraintNestledInBottomRightCorner(
+        nextTrialButton, view(viewController), defaultMarginPoints);
+    av_speech_in_noise::hide(nextTrialButton);
+    av_speech_in_noise::hide(view(viewController));
+}
+
+void AppKitTestUI::attach(Observer *e) { actions->observer = e; }
+
+void AppKitTestUI::showExitTestButton() {
+    av_speech_in_noise::show(exitTestButton);
+}
+
+void AppKitTestUI::hideExitTestButton() {
+    av_speech_in_noise::hide(exitTestButton);
+}
+
+void AppKitTestUI::show() { av_speech_in_noise::show(view(viewController)); }
+
+void AppKitTestUI::hide() { av_speech_in_noise::hide(view(viewController)); }
+
+void AppKitTestUI::display(std::string s) { set(primaryTextField, s); }
+
+void AppKitTestUI::secondaryDisplay(std::string s) {
+    set(secondaryTextField, s);
+}
+
+void AppKitTestUI::showNextTrialButton() {
+    av_speech_in_noise::show(nextTrialButton);
+}
+
+void AppKitTestUI::hideNextTrialButton() {
+    av_speech_in_noise::hide(nextTrialButton);
+}
+
+void AppKitTestUI::showContinueTestingDialog() {
+    [view(viewController).window beginSheet:continueTestingDialog
+                          completionHandler:^(NSModalResponse){
+                          }];
+}
+
+void AppKitTestUI::hideContinueTestingDialog() {
+    [view(viewController).window endSheet:continueTestingDialog];
+}
+
+void AppKitTestUI::setContinueTestingDialogMessage(const std::string &s) {
+    set(continueTestingDialogField, s);
 }
 
 static auto consonantImageButton(
@@ -655,170 +826,6 @@ void AppKitCoordinateResponseMeasureUI::show() {
 
 void AppKitCoordinateResponseMeasureUI::hide() { [window orderOut:nil]; }
 
-static auto emptyLabel() -> NSTextField * { return label(""); }
-
-AppKitTestUI::AppKitTestUI(NSViewController *viewController)
-    : viewController{viewController}, continueTestingDialogField{emptyLabel()},
-      primaryTextField{emptyLabel()},
-      secondaryTextField{emptyLabel()}, actions{[[TestUIActions alloc] init]} {
-    const auto continueTestingDialogController{
-        nsTabViewControllerWithoutTabControl()};
-    continueTestingDialog = [NSWindow
-        windowWithContentViewController:continueTestingDialogController];
-    continueTestingDialog.styleMask = NSWindowStyleMaskBorderless;
-    exitTestButton = nsButton("Exit Test", actions,
-        @selector(notifyThatExitTestButtonHasBeenClicked));
-    nextTrialButton = nsButton("Play Trial", actions,
-        @selector(notifyThatPlayTrialButtonHasBeenClicked));
-    const auto topRow {
-        [NSStackView stackViewWithViews:@[
-            exitTestButton, primaryTextField, secondaryTextField
-        ]]
-    };
-    addAutolayoutEnabledSubview(view(viewController), topRow);
-    const auto continueTestingDialogStack {
-        [NSStackView stackViewWithViews:@[
-            continueTestingDialogField, [NSStackView stackViewWithViews:@[
-                nsButton("Exit", actions,
-                    @selector
-                    (notifyThatDeclineContinueTestingButtonHasBeenClicked)),
-                nsButton("Continue", actions,
-                    @selector(notifyThatContinueTestingButtonHasBeenClicked))
-            ]]
-        ]]
-    };
-    continueTestingDialogStack.orientation =
-        NSUserInterfaceLayoutOrientationVertical;
-    addAutolayoutEnabledSubview(
-        view(continueTestingDialogController), continueTestingDialogStack);
-    addAutolayoutEnabledSubview(view(viewController), nextTrialButton);
-    activateConstraints(@[
-        [topRow.leadingAnchor
-            constraintEqualToAnchor:view(viewController).leadingAnchor
-                           constant:defaultMarginPoints],
-        [topRow.topAnchor constraintEqualToAnchor:view(viewController).topAnchor
-                                         constant:defaultMarginPoints]
-    ]);
-    activateChildConstraintNestledInBottomRightCorner(
-        nextTrialButton, view(viewController), defaultMarginPoints);
-    av_speech_in_noise::hide(nextTrialButton);
-    av_speech_in_noise::hide(view(viewController));
-}
-
-void AppKitTestUI::attach(Observer *e) { actions->observer = e; }
-
-void AppKitTestUI::showExitTestButton() {
-    av_speech_in_noise::show(exitTestButton);
-}
-
-void AppKitTestUI::hideExitTestButton() {
-    av_speech_in_noise::hide(exitTestButton);
-}
-
-void AppKitTestUI::show() { av_speech_in_noise::show(view(viewController)); }
-
-void AppKitTestUI::hide() { av_speech_in_noise::hide(view(viewController)); }
-
-void AppKitTestUI::display(std::string s) { set(primaryTextField, s); }
-
-void AppKitTestUI::secondaryDisplay(std::string s) {
-    set(secondaryTextField, s);
-}
-
-void AppKitTestUI::showNextTrialButton() {
-    av_speech_in_noise::show(nextTrialButton);
-}
-
-void AppKitTestUI::hideNextTrialButton() {
-    av_speech_in_noise::hide(nextTrialButton);
-}
-
-void AppKitTestUI::showContinueTestingDialog() {
-    [view(viewController).window beginSheet:continueTestingDialog
-                          completionHandler:^(NSModalResponse){
-                          }];
-}
-
-void AppKitTestUI::hideContinueTestingDialog() {
-    [view(viewController).window endSheet:continueTestingDialog];
-}
-
-void AppKitTestUI::setContinueTestingDialogMessage(const std::string &s) {
-    set(continueTestingDialogField, s);
-}
-
-AppKitSessionUI::AppKitSessionUI(
-    NSApplication *app, NSViewController *viewController)
-    : app{app}, audioDeviceMenu{
-                    [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
-                                               pullsDown:NO]} {
-    const auto audioDeviceStack {
-        [NSStackView
-            stackViewWithViews:@[ label("audio output:"), audioDeviceMenu ]]
-    };
-    addAutolayoutEnabledSubview(view(viewController), audioDeviceStack);
-    activateConstraints(@[
-        [audioDeviceStack.topAnchor
-            constraintEqualToAnchor:view(viewController).topAnchor
-                           constant:defaultMarginPoints],
-        [audioDeviceStack.bottomAnchor
-            constraintEqualToAnchor:view(viewController).bottomAnchor
-                           constant:-defaultMarginPoints],
-        [audioDeviceStack.leadingAnchor
-            constraintEqualToAnchor:view(viewController).leadingAnchor
-                           constant:defaultMarginPoints],
-        [audioDeviceStack.trailingAnchor
-            constraintEqualToAnchor:view(viewController).trailingAnchor
-                           constant:-defaultMarginPoints]
-    ]);
-}
-
-void AppKitSessionUI::eventLoop() { [app run]; }
-
-void AppKitSessionUI::showErrorMessage(std::string_view s) {
-    const auto alert{[[NSAlert alloc] init]};
-    [alert setMessageText:@"Error."];
-    [alert setInformativeText:nsString(std::string{s})];
-    [alert addButtonWithTitle:@"Ok"];
-    [alert runModal];
-}
-
-auto AppKitSessionUI::browseForDirectory() -> std::string {
-    const auto panel{[NSOpenPanel openPanel]};
-    panel.canChooseDirectories = YES;
-    panel.canChooseFiles = NO;
-    return browseModal(panel);
-}
-
-auto AppKitSessionUI::browseCancelled() -> bool { return browseCancelled_; }
-
-auto AppKitSessionUI::browseForOpeningFile() -> std::string {
-    const auto panel{[NSOpenPanel openPanel]};
-    panel.canChooseDirectories = NO;
-    panel.canChooseFiles = YES;
-    return browseModal(panel);
-}
-
-auto AppKitSessionUI::browseModal(NSOpenPanel *panel) -> std::string {
-    switch ([panel runModal]) {
-    case NSModalResponseOK:
-        browseCancelled_ = false;
-        return panel.URLs.lastObject.path.UTF8String;
-    default:
-        browseCancelled_ = true;
-        return {};
-    }
-}
-
-auto AppKitSessionUI::audioDevice() -> std::string {
-    return audioDeviceMenu.titleOfSelectedItem.UTF8String;
-}
-
-void AppKitSessionUI::populateAudioDeviceMenu(std::vector<std::string> items) {
-    for (const auto &item : items)
-        [audioDeviceMenu addItemWithTitle:nsString(item)];
-}
-
 ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
     : textFieldBeforeFirstKeywordButton{emptyLabel()},
       textFieldAfterFirstKeywordButton{emptyLabel()},
@@ -1088,7 +1095,37 @@ void PassFailUI::hideEvaluationButtons() {
 
 SyllablesUI::SyllablesUI(NSViewController *viewController)
     : actions{[[SyllablesUIActions alloc] init]} {
+    actions->onResponseButtonClick = [&](id sender) {
+        lastButtonPressed = sender;
+    };
+    std::vector<std::vector<std::string>> syllables{
+        {"B", "D", "G", "F", "Ghee", "H", "Yee"},
+        {"K", "L", "M", "N", "P", "R", "Sh"},
+        {"S", "Th", "T", "Ch", "V", "W", "Z"}};
+    std::vector<NSView *> rows(syllables.size());
+    std::transform(syllables.begin(), syllables.end(), rows.begin(),
+        [&](const std::vector<std::string> &syllableRow) {
+            std::vector<NSView *> buttons(syllableRow.size());
+            std::transform(syllableRow.begin(), syllableRow.end(),
+                buttons.begin(), [&](const std::string &syllable) {
+                    return nsButton(syllable, actions,
+                        @selector(notifyThatResponseButtonHasBeenClicked:));
+                });
+            const auto row{[NSStackView stackViewWithViews:nsArray(buttons)]};
+            row.distribution = NSStackViewDistributionFillEqually;
+            return row;
+        });
+    view = [NSStackView stackViewWithViews:nsArray(rows)];
+    for (auto row : rows)
+        [NSLayoutConstraint activateConstraints:@[
+            [row.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
+            [row.trailingAnchor constraintEqualToAnchor:view.trailingAnchor]
+        ]];
+    view.orientation = NSUserInterfaceLayoutOrientationVertical;
+    view.distribution = NSStackViewDistributionFillEqually;
     addAutolayoutEnabledSubview(av_speech_in_noise::view(viewController), view);
+    activateChildConstraintNestledInBottomRightCorner(
+        view, av_speech_in_noise::view(viewController), defaultMarginPoints);
     av_speech_in_noise::hide(view);
 }
 
@@ -1098,5 +1135,7 @@ void SyllablesUI::hide() { av_speech_in_noise::hide(view); }
 
 void SyllablesUI::show() { av_speech_in_noise::show(view); }
 
-auto SyllablesUI::syllable() -> std::string { return "tbd"; }
+auto SyllablesUI::syllable() -> std::string {
+    return lastButtonPressed.title.UTF8String;
+}
 }

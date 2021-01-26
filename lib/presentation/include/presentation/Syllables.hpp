@@ -21,7 +21,7 @@ class SyllablesControl {
     class Observer {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
-        virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
+        virtual void notifyThatResponseButtonHasBeenClicked() = 0;
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SyllablesControl);
     virtual void attach(Observer *) = 0;
@@ -37,7 +37,7 @@ class SyllablesController : public SyllablesControl::Observer {
   public:
     SyllablesController(SyllablesControl &, TestController &, Model &,
         std::map<std::string, Syllable, std::less<>> map);
-    void notifyThatSubmitButtonHasBeenClicked() override;
+    void notifyThatResponseButtonHasBeenClicked() override;
 
   private:
     std::map<std::string, Syllable, std::less<>> map;

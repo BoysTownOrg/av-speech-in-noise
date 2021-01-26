@@ -24,8 +24,8 @@ class SyllablesViewStub : public SyllablesView {
 
 class SyllablesControlStub : public SyllablesControl {
   public:
-    void notifyThatSubmitButtonHasBeenClicked() {
-        observer->notifyThatSubmitButtonHasBeenClicked();
+    void notifyThatResponseButtonHasBeenClicked() {
+        observer->notifyThatResponseButtonHasBeenClicked();
     }
 
     void attach(Observer *a) override { observer = a; }
@@ -39,8 +39,8 @@ class SyllablesControlStub : public SyllablesControl {
     Observer *observer{};
 };
 
-void notifyThatSubmitButtonHasBeenClicked(SyllablesControlStub &control) {
-    control.notifyThatSubmitButtonHasBeenClicked();
+void notifyThatResponseButtonHasBeenClicked(SyllablesControlStub &control) {
+    control.notifyThatResponseButtonHasBeenClicked();
 }
 
 class SyllablesPresenterStub : public SyllablesPresenter {};
@@ -87,14 +87,14 @@ SYLLABLES_PRESENTER_TEST(showsResponseButtonsWhenShowingResponseSubmission) {
 
 SYLLABLES_CONTROLLER_TEST(submitsKeywordResponseAfterSubmitButtonIsClicked) {
     control.setSyllable("Ghee");
-    notifyThatSubmitButtonHasBeenClicked(control);
+    notifyThatResponseButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         Syllable::gi, model.syllableResponse().syllable);
 }
 
 SYLLABLES_CONTROLLER_TEST(
     notifiesThatUserIsReadyForNextTrialAfterSubmitButtonIsClicked) {
-    notifyThatSubmitButtonHasBeenClicked(control);
+    notifyThatResponseButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
 }

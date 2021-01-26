@@ -75,6 +75,7 @@ class SyllablesUI : public SyllablesControl, public SyllablesView {
 
   private:
     NSStackView *view{};
+    NSButton *lastButtonPressed{};
     SyllablesUIActions *actions;
 };
 

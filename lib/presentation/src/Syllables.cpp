@@ -15,7 +15,7 @@ static auto syllable(const std::map<std::string, Syllable, std::less<>> &map,
     return map.count(s) == 0 ? Syllable::unknown : map.at(std::string{s});
 }
 
-void SyllablesController::notifyThatSubmitButtonHasBeenClicked() {
+void SyllablesController::notifyThatResponseButtonHasBeenClicked() {
     model.submit(SyllableResponse{syllable(map, control.syllable())});
     testController.notifyThatUserIsDoneResponding();
 }
