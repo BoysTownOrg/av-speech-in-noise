@@ -61,7 +61,7 @@ class TestMethodStub : public TestMethod {
         submittedFreeResponse_ = true;
     }
 
-    void submit(const ThreeKeywordsResponse &p) {
+    void submit(const ThreeKeywordsResponse &p) override {
         insert(log_, "submitThreeKeywords ");
         threeKeywords_ = &p;
     }
@@ -638,7 +638,8 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingFreeResponse submittingFreeResponse{freeResponse};
     ThreeKeywordsResponse threeKeywords;
     SubmittingThreeKeywords submittingThreeKeywords{threeKeywords};
-    SubmittingSyllable submittingSyllable;
+    SyllableResponse syllableResponse;
+    SubmittingSyllable submittingSyllable{syllableResponse};
     AudioSampleTimeWithOffset fadeInCompleteTime{};
     SubmittingCorrectKeywords submittingCorrectKeywords;
     SubmittingConsonant submittingConsonant;
@@ -1750,6 +1751,13 @@ RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesEachKeywordEvaluation) {
         outputFile.threeKeywordsTrial().secondCorrect);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         outputFile.threeKeywordsTrial().thirdCorrect);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesSyllable) {
+    syllableResponse.syllable = Syllable::gi;
+    run(submittingSyllable, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Syllable::gi, outputFile.syllableTrial().syllable);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesFlagged) {

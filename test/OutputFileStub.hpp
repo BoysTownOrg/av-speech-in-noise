@@ -167,6 +167,8 @@ class OutputFileStub : public OutputFile {
     auto adaptiveTestResult() const -> AdaptiveTestResults {
         return adaptiveTestResult_;
     }
+
+    auto syllableTrial() -> SyllableTrial { return syllableTrial_; }
 };
 }
 
