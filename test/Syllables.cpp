@@ -39,10 +39,10 @@ SYLLABLES_PRESENTER_TEST(hidesResponseSubmission) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-// SYLLABLES_PRESENTER_TEST(hidesResponseButtonsWhenStopped) {
-//     presenter.stop();
-//     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
-// }
+SYLLABLES_PRESENTER_TEST(hidesResponseButtonsWhenStopped) {
+    presenter.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
+}
 
 // SYLLABLES_PRESENTER_TEST(showsReadyButtonWhenStarted) {
 //     presenter.start();

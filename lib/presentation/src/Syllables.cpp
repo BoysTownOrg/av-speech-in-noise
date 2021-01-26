@@ -6,7 +6,7 @@ SyllablesPresenterImpl::SyllablesPresenterImpl(SyllablesView &view)
 
 void SyllablesPresenterImpl::start() {}
 
-void SyllablesPresenterImpl::stop() {}
+void SyllablesPresenterImpl::stop() { view.hide(); }
 
 void SyllablesPresenterImpl::showResponseSubmission() {}
 
