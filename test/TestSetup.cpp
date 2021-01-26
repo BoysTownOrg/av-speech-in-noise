@@ -434,6 +434,7 @@ class RequestFailingModel : public Model {
     void attach(Observer *) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
+    void submit(const SyllableResponse &) override {}
     void restartAdaptiveTestWhilePreservingTargets() override {}
 };
 

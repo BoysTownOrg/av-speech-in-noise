@@ -321,7 +321,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         threeKeywords_ = &f;
     }
 
-    void submit(const SyllableResponse &f) { syllableResponse_ = &f; }
+    void submit(const SyllableResponse &f) override { syllableResponse_ = &f; }
 
   private:
     std::vector<std::string> audioDevices_{};
