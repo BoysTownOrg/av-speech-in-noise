@@ -11,8 +11,13 @@ class SyllablesViewStub : public SyllablesView {
 
     void hide() override { hidden_ = true; }
 
+    [[nodiscard]] auto shown() const -> bool { return shown_; }
+
+    void show() { shown_ = true; }
+
   private:
     bool hidden_{};
+    bool shown_{};
 };
 
 class SyllablesControlStub : public SyllablesControl {};
@@ -51,10 +56,10 @@ SYLLABLES_PRESENTER_TEST(showsNextTrialButtonWhenStarted) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
 }
 
-// SYLLABLES_PRESENTER_TEST(showsResponseButtonWhenShowingResponseSubmission) {
-//     presenter.showResponseSubmission();
-//     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseSubmissionShown());
-// }
+SYLLABLES_PRESENTER_TEST(showsResponseButtonsWhenShowingResponseSubmission) {
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
+}
 
 // SYLLABLES_CONTROLLER_TEST(submitsKeywordResponseAfterSubmitButtonIsClicked) {
 //     control.setFirstKeywordCorrect();

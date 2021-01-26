@@ -9,7 +9,7 @@ void SyllablesPresenterImpl::start() { testView.showNextTrialButton(); }
 
 void SyllablesPresenterImpl::stop() { view.hide(); }
 
-void SyllablesPresenterImpl::showResponseSubmission() {}
+void SyllablesPresenterImpl::showResponseSubmission() { view.show(); }
 
 void SyllablesPresenterImpl::hideResponseSubmission() { view.hide(); }
 }

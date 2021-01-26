@@ -10,6 +10,7 @@ class SyllablesView {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SyllablesView);
     virtual void hide() = 0;
+    virtual void show() = 0;
 };
 
 class SyllablesControl {
