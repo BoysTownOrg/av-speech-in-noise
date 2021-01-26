@@ -84,6 +84,8 @@ struct ConsonantTrial : Target {
 
 struct ThreeKeywordsTrial : ThreeKeywordsResponse, open_set::Trial {};
 
+struct SyllableTrial : SyllableResponse, open_set::Trial {};
+
 struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
 class OutputFile {
@@ -105,6 +107,7 @@ class OutputFile {
     virtual void write(TargetStartTime) = 0;
     virtual void write(const EyeTrackerTargetPlayerSynchronization &) = 0;
     virtual void write(const ThreeKeywordsTrial &) {}
+    virtual void write(const SyllableTrial &) {}
     virtual void close() = 0;
     virtual void save() = 0;
 };

@@ -1566,6 +1566,10 @@ RECOGNITION_TEST_MODEL_TEST(
     assertSavesOutputFileAfterWritingTrial(submittingThreeKeywords);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submitSyllableSavesOutputFileAfterWritingTrial) {
+    assertSavesOutputFileAfterWritingTrial(submittingSyllable);
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     submitCorrectKeywordsSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingCorrectKeywords);

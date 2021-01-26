@@ -15,6 +15,7 @@ class OutputFileStub : public OutputFile {
     CorrectKeywordsTrial correctKeywords_{};
     ConsonantTrial consonantTrial_{};
     ThreeKeywordsTrial threeKeywordsTrial_{};
+    SyllableTrial syllableTrial_{};
     open_set::AdaptiveTrial openSetAdaptiveTrial_{};
     BinocularGazeSamples eyeGazes_;
     AdaptiveTestResults adaptiveTestResult_{};
@@ -68,6 +69,11 @@ class OutputFileStub : public OutputFile {
     void write(const ThreeKeywordsTrial &p) override {
         addToLog("writeTrial ");
         threeKeywordsTrial_ = p;
+    }
+
+    void write(const SyllableTrial &p) override {
+        addToLog("writeTrial ");
+        syllableTrial_ = p;
     }
 
     void write(const CorrectKeywordsTrial &p) override {
