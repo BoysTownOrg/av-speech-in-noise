@@ -98,10 +98,6 @@ class TestPresenterStub : public TestPresenter {
         return notifiedThatNextTrialIsReady_;
     }
 
-    auto continueTestingDialogMessage() -> std::string {
-        return continueTestingDialogMessage_;
-    }
-
     void updateAdaptiveTestResults() override {
         adaptiveTestResultsUpdated_ = true;
     }
@@ -123,9 +119,6 @@ class TestPresenterStub : public TestPresenter {
     void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
 
   private:
-    std::string displayed_;
-    std::string displayedSecondary_;
-    std::string continueTestingDialogMessage_;
     bool trialInformationUpdated_{};
     bool responseSubmissionHidden_{};
     bool notifiedThatTrialHasStarted_{};
@@ -467,39 +460,35 @@ TEST_CONTROLLER_TEST(
         presenter);
 }
 
-TEST_CONTROLLER_TEST(responderDisplaysTargetAfterUserIsDoneResponding) {
+TEST_CONTROLLER_TEST(
+    responderUpdatesTrialInformationAfterUserIsDoneResponding) {
     AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
         notifyingThatUserIsDoneResponding, presenter);
 }
 
 TEST_CONTROLLER_TEST(
-    displaysTargetFileNameAfterNotShowingContinueTestingDialogWithResults) {
+    updatesTrialInformationAfterNotShowingContinueTestingDialogWithResults) {
     AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
         presenter);
 }
 
 TEST_CONTROLLER_TEST(
-    responderDisplaysTargetFileNameAfterContinueTestingDialogIsAccepted) {
+    updatesTrialInformationAfterContinueTestingDialogIsAccepted) {
     AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
         acceptingContinuingTesting, presenter);
 }
 
 TEST_CONTROLLER_TEST(
-    responderDisplaysTargetFileNameAfterNotifyingThatUserIsReadyForNextTrial) {
+    updatesTrialInformationAfterNotifyingThatUserIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
         notifyingThatUserIsReadyForNextTrial, presenter);
 }
 
 TEST_CONTROLLER_TEST(
-    responderDisplaysTargetFileNameAfterNotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial) {
+    updatesTrialInformationAfterNotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
         notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial, presenter);
-}
-
-TEST_CONTROLLER_TEST(responderDisplaysTrialNumberAfterUserIsDoneResponding) {
-    AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
-        notifyingThatUserIsDoneResponding, presenter);
 }
 
 TEST_CONTROLLER_TEST(hidesResponseSubmissionAfterUserIsDoneResponding) {
@@ -517,31 +506,6 @@ TEST_CONTROLLER_TEST(
     hidesResponseSubmissionAfterUserIsDoneRespondingAndIsReadyForNextTrial) {
     run(notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.responseSubmissionHidden());
-}
-
-TEST_CONTROLLER_TEST(
-    displaysTrialNumberAfterNotShowingContinueTestingDialogWithResults) {
-    AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
-        notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
-        presenter);
-}
-
-TEST_CONTROLLER_TEST(
-    responderDisplaysTrialNumberAfterContinueTestingDialogIsAccepted) {
-    AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
-        acceptingContinuingTesting, presenter);
-}
-
-TEST_CONTROLLER_TEST(
-    responderDisplaysTrialNumberAfterNotifyingThatUserIsReadyForNextTrial) {
-    AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
-        notifyingThatUserIsReadyForNextTrial, presenter);
-}
-
-TEST_CONTROLLER_TEST(
-    responderDisplaysTrialNumberAfterNotifyingThatUserIsDoneRespondingIsReadyForNextTrial) {
-    AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
-        notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial, presenter);
 }
 
 TEST_CONTROLLER_TEST(showsContinueTestingDialog) {
