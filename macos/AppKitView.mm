@@ -498,7 +498,7 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
     ]);
     activateChildConstraintNestledInBottomRightCorner(
         nextTrialButton, view(viewController), defaultMarginPoints);
-    actions->onSheetsOkButtonClicked = [&]() {
+    actions->onSheetsOkButtonClicked = [=]() {
         [view(viewController).window endSheet:sheet];
     };
     av_speech_in_noise::hide(nextTrialButton);
