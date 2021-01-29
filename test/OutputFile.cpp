@@ -489,6 +489,33 @@ class WritingThreeKeywordsTrial : public WritingTrial {
         {HeadingItem::thirdKeywordEvaluation, 4}};
 };
 
+class WritingSyllableTrial : public WritingTrial {
+  public:
+    WritingSyllableTrial() {
+        trial.target = "a";
+        trial.syllable = Syllable::ki;
+    }
+
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "a", at(headingLabels_, HeadingItem::target), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "ki",
+            at(headingLabels_, HeadingItem::subjectSyllable), line);
+    }
+
+    void run(OutputFileImpl &file) override { file.write(trial); }
+
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return headingLabels_;
+    }
+
+  private:
+    SyllableTrial trial{};
+    std::map<HeadingItem, gsl::index> headingLabels_{
+        {HeadingItem::target, 1}, {HeadingItem::subjectSyllable, 2}};
+};
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -503,6 +530,7 @@ class OutputFileTests : public ::testing::Test {
     WritingConsonantTrial writingConsonantTrial;
     WritingFreeResponseTrial writingFreeResponseTrial;
     WritingThreeKeywordsTrial writingThreeKeywordsTrial;
+    WritingSyllableTrial writingSyllableTrial;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
     FreeResponseTrial freeResponseTrial;
@@ -613,6 +641,10 @@ OUTPUT_FILE_TEST(writingFreeResponseTrialWritesHeadingOnFirstLine) {
 
 OUTPUT_FILE_TEST(writingThreeKeywordsTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingThreeKeywordsTrial);
+}
+
+OUTPUT_FILE_TEST(writingSyllableTrialWritesHeadingOnFirstLine) {
+    assertWritesHeadingOnFirstLine(writingSyllableTrial);
 }
 
 OUTPUT_FILE_TEST(writingCorrectKeywordsTrialWritesHeadingOnFirstLine) {

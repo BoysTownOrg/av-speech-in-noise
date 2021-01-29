@@ -24,7 +24,8 @@ enum class HeadingItem {
     subjectConsonant,
     firstKeywordEvaluation,
     secondKeywordEvaluation,
-    thirdKeywordEvaluation
+    thirdKeywordEvaluation,
+    subjectSyllable
 };
 
 constexpr auto name(HeadingItem i) -> const char * {
@@ -67,6 +68,57 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "second keyword evaluation";
     case HeadingItem::thirdKeywordEvaluation:
         return "third keyword evaluation";
+    case HeadingItem::subjectSyllable:
+        return "subject syllable";
+    }
+}
+
+constexpr auto name(Syllable i) -> const char * {
+    switch (i) {
+    case Syllable::bi:
+        return "bi";
+    case Syllable::di:
+        return "di";
+    case Syllable::dji:
+        return "dji";
+    case Syllable::fi:
+        return "fi";
+    case Syllable::gi:
+        return "gi";
+    case Syllable::hi:
+        return "hi";
+    case Syllable::ji:
+        return "ji";
+    case Syllable::ki:
+        return "ki";
+    case Syllable::li:
+        return "li";
+    case Syllable::mi:
+        return "mi";
+    case Syllable::ni:
+        return "ni";
+    case Syllable::pi:
+        return "pi";
+    case Syllable::ri:
+        return "ri";
+    case Syllable::shi:
+        return "shi";
+    case Syllable::si:
+        return "si";
+    case Syllable::thi:
+        return "thi";
+    case Syllable::ti:
+        return "ti";
+    case Syllable::tsi:
+        return "tsi";
+    case Syllable::vi:
+        return "vi";
+    case Syllable::wi:
+        return "wi";
+    case Syllable::zi:
+        return "zi";
+    case Syllable::unknown:
+        return "?";
     }
 }
 
@@ -122,6 +174,7 @@ class OutputFileImpl : public OutputFile {
     void write(const BinocularGazeSamples &) override;
     void write(TargetStartTime) override;
     void write(const EyeTrackerTargetPlayerSynchronization &) override;
+    void write(const SyllableTrial &) override;
 
     enum class Trial : int;
 

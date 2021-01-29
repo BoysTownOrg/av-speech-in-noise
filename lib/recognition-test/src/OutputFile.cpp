@@ -1,5 +1,6 @@
 #include "OutputFile.hpp"
 #include <av-speech-in-noise/name.hpp>
+#include <av-speech-in-noise/Interface.hpp>
 #include <sstream>
 #include <algorithm>
 
@@ -12,6 +13,7 @@ enum class OutputFileImpl::Trial {
     CorrectKeywords,
     Consonant,
     ThreeKeywords,
+    Syllable,
     none
 };
 
@@ -33,6 +35,8 @@ static auto operator<<(std::ostream &os, const std::vector<int> &v)
 }
 
 static auto operator<<(std::ostream &os, HeadingItem item) { os << name(item); }
+
+static auto operator<<(std::ostream &os, Syllable item) { os << name(item); }
 
 template <typename T> void insert(std::stringstream &stream, T item) {
     stream << item;
@@ -220,7 +224,7 @@ static auto format(const AdaptiveTestResult &result) -> std::string {
 namespace {
 class TrialFormatter {
   public:
-    virtual ~TrialFormatter() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TrialFormatter);
     virtual auto heading() -> std::string = 0;
     virtual auto trial() -> std::string = 0;
 };
@@ -492,6 +496,33 @@ class ThreeKeywordsTrialFormatter : public TrialFormatter {
   private:
     const ThreeKeywordsTrial &trial_;
 };
+
+class SyllableTrialFormatter : public TrialFormatter {
+  public:
+    explicit SyllableTrialFormatter(const SyllableTrial &trial_)
+        : trial_{trial_} {}
+
+    auto heading() -> std::string override {
+        std::stringstream stream;
+        insert(stream, HeadingItem::target);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::subjectSyllable);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+    auto trial() -> std::string override {
+        std::stringstream stream;
+        insert(stream, trial_.target);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.syllable);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+  private:
+    const SyllableTrial &trial_;
+};
 }
 
 static void write(Writer &writer, const std::string &s) { writer.write(s); }
@@ -551,6 +582,11 @@ void OutputFileImpl::write(const ThreeKeywordsTrial &trial) {
     ThreeKeywordsTrialFormatter formatter{trial};
     av_speech_in_noise::write(
         writer, formatter, currentTrial, Trial::ThreeKeywords);
+}
+
+void OutputFileImpl::write(const SyllableTrial &trial) {
+    SyllableTrialFormatter formatter{trial};
+    av_speech_in_noise::write(writer, formatter, currentTrial, Trial::Syllable);
 }
 
 void OutputFileImpl::write(const AdaptiveTest &test) { write(format(test)); }
