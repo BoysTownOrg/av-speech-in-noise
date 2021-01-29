@@ -454,6 +454,41 @@ class WritingFreeResponseTrial : public WritingTrial {
         {HeadingItem::target, 1}, {HeadingItem::freeResponse, 2}};
 };
 
+class WritingThreeKeywordsTrial : public WritingTrial {
+  public:
+    WritingThreeKeywordsTrial() {
+        trial.target = "a";
+        trial.firstCorrect = true;
+        trial.secondCorrect = false;
+        trial.thirdCorrect = true;
+    }
+
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "a", at(headingLabels_, HeadingItem::target), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "correct",
+            at(headingLabels_, HeadingItem::firstKeywordEvaluation), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "incorrect",
+            at(headingLabels_, HeadingItem::secondKeywordEvaluation), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "correct",
+            at(headingLabels_, HeadingItem::thirdKeywordEvaluation), line);
+    }
+
+    void run(OutputFileImpl &file) override { file.write(trial); }
+
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return headingLabels_;
+    }
+
+  private:
+    ThreeKeywordsTrial trial{};
+    std::map<HeadingItem, gsl::index> headingLabels_{{HeadingItem::target, 1},
+        {HeadingItem::firstKeywordEvaluation, 2},
+        {HeadingItem::secondKeywordEvaluation, 3},
+        {HeadingItem::thirdKeywordEvaluation, 4}};
+};
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -467,6 +502,7 @@ class OutputFileTests : public ::testing::Test {
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
     WritingConsonantTrial writingConsonantTrial;
     WritingFreeResponseTrial writingFreeResponseTrial;
+    WritingThreeKeywordsTrial writingThreeKeywordsTrial;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
     FreeResponseTrial freeResponseTrial;
@@ -573,6 +609,10 @@ OUTPUT_FILE_TEST(
 
 OUTPUT_FILE_TEST(writingFreeResponseTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingFreeResponseTrial);
+}
+
+OUTPUT_FILE_TEST(writingThreeKeywordsTrialWritesHeadingOnFirstLine) {
+    assertWritesHeadingOnFirstLine(writingThreeKeywordsTrial);
 }
 
 OUTPUT_FILE_TEST(writingCorrectKeywordsTrialWritesHeadingOnFirstLine) {

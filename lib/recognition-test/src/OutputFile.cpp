@@ -380,6 +380,19 @@ static auto formatOpenSetAdaptiveTrialHeading() -> std::string {
     return string(stream);
 }
 
+static auto formatThreeKeywordsTrialHeading() -> std::string {
+    std::stringstream stream;
+    insert(stream, HeadingItem::target);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::firstKeywordEvaluation);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::secondKeywordEvaluation);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::thirdKeywordEvaluation);
+    insertNewLine(stream);
+    return string(stream);
+}
+
 OutputFileImpl::OutputFileImpl(Writer &writer, OutputFilePath &path)
     : writer{writer}, path{path} {}
 
@@ -427,6 +440,10 @@ void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
         write(formatOpenSetAdaptiveTrialHeading());
     write(format(trial));
     justWroteOpenSetAdaptiveTrial = true;
+}
+
+void OutputFileImpl::write(const ThreeKeywordsTrial &) {
+    write(formatThreeKeywordsTrialHeading());
 }
 
 void OutputFileImpl::write(const AdaptiveTest &test) { write(format(test)); }

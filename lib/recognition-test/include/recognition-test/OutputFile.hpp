@@ -21,7 +21,10 @@ enum class HeadingItem {
     eyeTrackerTime,
     targetPlayerTime,
     correctConsonant,
-    subjectConsonant
+    subjectConsonant,
+    firstKeywordEvaluation,
+    secondKeywordEvaluation,
+    thirdKeywordEvaluation
 };
 
 constexpr auto name(HeadingItem i) -> const char * {
@@ -58,6 +61,12 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "eye tracker time (us)";
     case HeadingItem::targetPlayerTime:
         return "target player time (ns)";
+    case HeadingItem::firstKeywordEvaluation:
+        return "first keyword evaluation";
+    case HeadingItem::secondKeywordEvaluation:
+        return "second keyword evaluation";
+    case HeadingItem::thirdKeywordEvaluation:
+        return "third keyword evaluation";
     }
 }
 
@@ -108,6 +117,7 @@ class OutputFileImpl : public OutputFile {
     void write(const FreeResponseTrial &) override;
     void write(const CorrectKeywordsTrial &) override;
     void write(const ConsonantTrial &) override;
+    void write(const ThreeKeywordsTrial &) override;
     void write(const AdaptiveTestResults &) override;
     void write(const BinocularGazeSamples &) override;
     void write(TargetStartTime) override;
