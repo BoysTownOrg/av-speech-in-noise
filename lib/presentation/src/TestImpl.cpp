@@ -1,5 +1,4 @@
 #include "TestImpl.hpp"
-#include <iomanip>
 #include <sstream>
 #include <functional>
 
@@ -135,14 +134,6 @@ void TestPresenterImpl::updateAdaptiveTestResults() {
         thresholds << '\n'
                    << result.targetsUrl.path << ": " << result.threshold;
     view.setContinueTestingDialogMessage(thresholds.str());
-}
-
-void TestPresenterImpl::updateKeywordTestResults() {
-    const auto results{model.keywordsTestResults()};
-    std::stringstream stream;
-    stream << results.totalCorrect << " (" << std::setprecision(3)
-           << results.percentCorrect << "%) keywords correct";
-    view.showSheet(stream.str());
 }
 
 void TestPresenterImpl::initialize(TaskPresenter &p) {

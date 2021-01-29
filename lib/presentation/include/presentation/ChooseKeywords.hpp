@@ -113,6 +113,7 @@ class ChooseKeywordsPresenterImpl : public ChooseKeywordsPresenter,
     void markThirdKeywordIncorrect() override;
     void markAllKeywordsIncorrect() override;
     void markAllKeywordsCorrect() override;
+    void updateKeywordTestResults();
 
   private:
     std::map<std::string, SentenceWithThreeKeywords> sentencesWithThreeKeywords;

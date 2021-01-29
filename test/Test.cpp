@@ -518,13 +518,6 @@ TEST_PRESENTER_TEST(showsAdaptiveTestResults) {
         view.continueTestingDialogMessage());
 }
 
-TEST_PRESENTER_TEST(showsKeywordTestResults) {
-    model.setKeywordTestResults({12.34, 5});
-    presenter.updateKeywordTestResults();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"5 (12.3%) keywords correct"}, view.sheetMessage());
-}
-
 TEST_PRESENTER_TEST(showsContinueTestingDialog) {
     presenter.updateAdaptiveTestResults();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.continueTestingDialogShown());

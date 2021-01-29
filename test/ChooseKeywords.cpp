@@ -408,6 +408,13 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(marksAllKeywordsIncorrect) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.markThirdKeywordIncorrectCalled());
 }
 
+CHOOSE_KEYWORDS_PRESENTER_TEST(showsKeywordTestResults) {
+    model.setKeywordTestResults({12.34, 5});
+    presenter.updateKeywordTestResults();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"5 (12.3%) keywords correct"}, testView.sheetMessage());
+}
+
 CHOOSE_KEYWORDS_CONTROLLER_TEST(
     submitsKeywordResponseAfterSubmitButtonIsClicked) {
     control.setFirstKeywordCorrect();

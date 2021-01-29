@@ -2,6 +2,7 @@
 #include <regex>
 #include <utility>
 #include <sstream>
+#include <iomanip>
 
 namespace av_speech_in_noise {
 ChooseKeywordsController::ChooseKeywordsController(
@@ -157,5 +158,13 @@ auto sentencesWithThreeKeywords(std::string_view s)
         map[maybeFileName] = sentenceWithThreeKeywords;
     }
     return map;
+}
+
+void ChooseKeywordsPresenterImpl::updateKeywordTestResults() {
+    const auto results{model.keywordsTestResults()};
+    std::stringstream stream;
+    stream << results.totalCorrect << " (" << std::setprecision(3)
+           << results.percentCorrect << "%) keywords correct";
+    testView.showSheet(stream.str());
 }
 }
