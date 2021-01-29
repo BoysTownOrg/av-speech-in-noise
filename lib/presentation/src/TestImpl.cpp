@@ -145,4 +145,6 @@ void TestPresenterImpl::initialize(TaskPresenter &p) {
 void TestPresenterImpl::hideResponseSubmission() {
     taskPresenter_->hideResponseSubmission();
 }
+
+void TestPresenterImpl::completeTask() { taskPresenter_->complete(); }
 }

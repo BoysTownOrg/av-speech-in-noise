@@ -254,9 +254,14 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
 
     void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
 
+    [[nodiscard]] auto completed() const -> bool { return completed_; }
+
+    void complete() override { completed_ = true; }
+
   private:
     TaskPresenter *presenter_{};
     bool responseSubmissionHidden_{};
+    bool completed_{};
     bool stopped_{};
     bool started_{};
     bool responseSubmissionShown_{};
@@ -614,6 +619,11 @@ TEST_PRESENTER_TEST(displaysTrialNumberWhenInitializing) {
 TEST_PRESENTER_TEST(displaysTargetWhenInitializing) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(
         presenter, model, initializing, view);
+}
+
+TEST_PRESENTER_TEST(completeTaskCompletesTask) {
+    presenter.completeTask();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.completed());
 }
 }
 }

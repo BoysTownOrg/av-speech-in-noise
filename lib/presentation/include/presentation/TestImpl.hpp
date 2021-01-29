@@ -57,6 +57,11 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
             presenter->stop();
     }
 
+    void complete() override {
+        if (presenter != nullptr)
+            presenter->complete();
+    }
+
   private:
     TaskPresenter *presenter{};
 };
@@ -74,6 +79,7 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
     void hideResponseSubmission() override;
     void updateTrialInformation() override;
     void updateAdaptiveTestResults() override;
+    void completeTask();
 
   private:
     Model &model;
