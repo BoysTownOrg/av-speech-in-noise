@@ -248,10 +248,6 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
 
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
 
-    [[nodiscard]] auto notifiedThatTrialHasStarted() const -> bool {
-        return notifiedThatTrialHasStarted_;
-    }
-
     [[nodiscard]] auto responseSubmissionHidden() const -> bool {
         return responseSubmissionHidden_;
     }
@@ -263,7 +259,6 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
     bool responseSubmissionHidden_{};
     bool stopped_{};
     bool started_{};
-    bool notifiedThatTrialHasStarted_{};
     bool responseSubmissionShown_{};
 };
 
@@ -516,12 +511,18 @@ TEST_CONTROLLER_TEST(showsContinueTestingDialog) {
 }
 
 TEST_PRESENTER_TEST(showsAdaptiveTestResults) {
-    setTestComplete(model);
     model.setAdaptiveTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
     presenter.updateAdaptiveTestResults();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3"},
         view.continueTestingDialogMessage());
+}
+
+TEST_PRESENTER_TEST(showsKeywordTestResults) {
+    model.setKeywordTestResults({12.34, 5});
+    presenter.updateKeywordTestResults();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"5 (12.34%) keywords correct"}, view.sheetMessage());
 }
 
 TEST_PRESENTER_TEST(showsContinueTestingDialog) {

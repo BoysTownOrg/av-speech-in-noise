@@ -136,6 +136,14 @@ void TestPresenterImpl::updateAdaptiveTestResults() {
     view.setContinueTestingDialogMessage(thresholds.str());
 }
 
+void TestPresenterImpl::updateKeywordTestResults() {
+    const auto results{model.keywordsTestResults()};
+    std::stringstream stream;
+    stream << results.totalCorrect << " (" << results.percentCorrect
+           << "%) keywords correct";
+    view.showSheet(stream.str());
+}
+
 void TestPresenterImpl::initialize(TaskPresenter &p) {
     updateTrialInformation();
     taskPresenter_->initialize(&p);

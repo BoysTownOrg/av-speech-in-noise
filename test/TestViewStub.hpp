@@ -12,6 +12,10 @@ class TestViewStub : public TestView {
         return continueTestingDialogMessage_;
     }
 
+    auto sheetMessage() -> std::string { return sheetMessage_; }
+
+    void showSheet(std::string_view s) { sheetMessage_ = s; }
+
     void setContinueTestingDialogMessage(const std::string &s) override {
         continueTestingDialogMessage_ = s;
     }
@@ -93,6 +97,7 @@ class TestViewStub : public TestView {
     std::string response_;
     std::string messageToSubject_;
     std::string correctKeywords_{"0"};
+    std::string sheetMessage_;
     TestControl::Observer *listener_{};
     bool exitTestButtonHidden_{};
     bool exitTestButtonShown_{};

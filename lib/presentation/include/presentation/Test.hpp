@@ -34,6 +34,7 @@ class TestView : public virtual View {
     virtual void hideNextTrialButton() = 0;
     virtual void display(std::string) = 0;
     virtual void secondaryDisplay(std::string) = 0;
+    virtual void showSheet(std::string_view) {}
 };
 
 class TestController {

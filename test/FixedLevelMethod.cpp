@@ -592,7 +592,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
         13, method.keywordsTestResults().totalCorrect);
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
-        13 / 18., method.keywordsTestResults().percentCorrect);
+        13 * 100. / 18, method.keywordsTestResults().percentCorrect);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(

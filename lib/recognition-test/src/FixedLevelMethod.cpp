@@ -144,8 +144,7 @@ void FixedLevelMethodImpl::submit(const SyllableResponse &response) {
 auto FixedLevelMethodImpl::keywordsTestResults() -> KeywordsTestResults {
     return KeywordsTestResults{totalKeywordsSubmitted_ == 0
             ? 0
-            : totalKeywordsCorrect_ /
-                static_cast<double>(totalKeywordsSubmitted_),
+            : totalKeywordsCorrect_ * 100. / totalKeywordsSubmitted_,
         totalKeywordsCorrect_};
 }
 }

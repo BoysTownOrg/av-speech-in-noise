@@ -74,6 +74,7 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
     void hideResponseSubmission() override;
     void updateTrialInformation() override;
     void updateAdaptiveTestResults() override;
+    void updateKeywordTestResults();
 
   private:
     Model &model;
