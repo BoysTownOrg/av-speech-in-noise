@@ -123,19 +123,15 @@ class OutputFileImpl : public OutputFile {
     void write(TargetStartTime) override;
     void write(const EyeTrackerTargetPlayerSynchronization &) override;
 
+    enum class Trial : int;
+
   private:
     void write(const std::string &);
     auto generateNewFilePath(const TestIdentity &) -> std::string;
 
     Writer &writer;
     OutputFilePath &path;
-    bool justWroteFixedLevelCoordinateResponseTrial{};
-    bool justWroteAdaptiveCoordinateResponseTrial{};
-    bool justWroteFreeResponseTrial{};
-    bool justWroteOpenSetAdaptiveTrial{};
-    bool justWroteCorrectKeywordsTrial{};
-    bool justWroteConsonantTrial{};
-    bool justWroteThreeKeywordsTrial{};
+    Trial currentTrial;
 };
 }
 

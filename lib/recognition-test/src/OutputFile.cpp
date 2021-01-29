@@ -4,6 +4,17 @@
 #include <algorithm>
 
 namespace av_speech_in_noise {
+enum class OutputFileImpl::Trial {
+    FixedLevelCoordinateResponse,
+    AdaptiveCoordinateResponse,
+    FreeResponse,
+    OpenSetAdaptive,
+    CorrectKeywords,
+    Consonant,
+    ThreeKeywords,
+    none
+};
+
 static auto operator<<(std::ostream &os, const std::vector<int> &v)
     -> std::ostream & {
     if (!v.empty()) {
@@ -411,59 +422,59 @@ static auto formatThreeKeywordsTrialHeading() -> std::string {
 }
 
 OutputFileImpl::OutputFileImpl(Writer &writer, OutputFilePath &path)
-    : writer{writer}, path{path} {}
+    : writer{writer}, path{path}, currentTrial{Trial::none} {}
 
 void OutputFileImpl::write(const std::string &s) { writer.write(s); }
 
 void OutputFileImpl::write(
     const coordinate_response_measure::AdaptiveTrial &trial) {
-    if (!justWroteAdaptiveCoordinateResponseTrial)
+    if (currentTrial != Trial::AdaptiveCoordinateResponse)
         write(formatAdaptiveCoordinateResponseTrialHeading());
     write(format(trial));
-    justWroteAdaptiveCoordinateResponseTrial = true;
+    currentTrial = Trial::AdaptiveCoordinateResponse;
 }
 
 void OutputFileImpl::write(
     const coordinate_response_measure::FixedLevelTrial &trial) {
-    if (!justWroteFixedLevelCoordinateResponseTrial)
+    if (currentTrial != Trial::FixedLevelCoordinateResponse)
         write(formatFixedLevelCoordinateResponseTrialHeading());
     write(format(trial));
-    justWroteFixedLevelCoordinateResponseTrial = true;
+    currentTrial = Trial::FixedLevelCoordinateResponse;
 }
 
 void OutputFileImpl::write(const FreeResponseTrial &trial) {
-    if (!justWroteFreeResponseTrial)
+    if (currentTrial != Trial::FreeResponse)
         write(formatOpenSetFreeResponseTrialHeading());
     write(format(trial));
-    justWroteFreeResponseTrial = true;
+    currentTrial = Trial::FreeResponse;
 }
 
 void OutputFileImpl::write(const CorrectKeywordsTrial &trial) {
-    if (!justWroteCorrectKeywordsTrial)
+    if (currentTrial != Trial::CorrectKeywords)
         write(formatCorrectKeywordsTrialHeading());
     write(format(trial));
-    justWroteCorrectKeywordsTrial = true;
+    currentTrial = Trial::CorrectKeywords;
 }
 
 void OutputFileImpl::write(const ConsonantTrial &trial) {
-    if (!justWroteConsonantTrial)
+    if (currentTrial != Trial::Consonant)
         write(formatConsonantTrialHeading());
     write(format(trial));
-    justWroteConsonantTrial = true;
+    currentTrial = Trial::Consonant;
 }
 
 void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
-    if (!justWroteOpenSetAdaptiveTrial)
+    if (currentTrial != Trial::OpenSetAdaptive)
         write(formatOpenSetAdaptiveTrialHeading());
     write(format(trial));
-    justWroteOpenSetAdaptiveTrial = true;
+    currentTrial = Trial::OpenSetAdaptive;
 }
 
 void OutputFileImpl::write(const ThreeKeywordsTrial &trial) {
-    if (!justWroteThreeKeywordsTrial)
+    if (currentTrial != Trial::ThreeKeywords)
         write(formatThreeKeywordsTrialHeading());
     write(format(trial));
-    justWroteThreeKeywordsTrial = true;
+    currentTrial = Trial::ThreeKeywords;
 }
 
 void OutputFileImpl::write(const AdaptiveTest &test) { write(format(test)); }
@@ -484,12 +495,7 @@ void OutputFileImpl::openNewFile(const TestIdentity &test) {
     writer.open(generateNewFilePath(test));
     if (writer.failed())
         throw OpenFailure{};
-    justWroteAdaptiveCoordinateResponseTrial = false;
-    justWroteFixedLevelCoordinateResponseTrial = false;
-    justWroteFreeResponseTrial = false;
-    justWroteOpenSetAdaptiveTrial = false;
-    justWroteCorrectKeywordsTrial = false;
-    justWroteConsonantTrial = false;
+    currentTrial = Trial::none;
 }
 
 auto OutputFileImpl::generateNewFilePath(const TestIdentity &test)
