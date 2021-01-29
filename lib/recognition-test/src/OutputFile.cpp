@@ -89,17 +89,21 @@ static void writeCondition(std::stringstream &stream, const Test &p) {
 constexpr auto correct{"correct"};
 constexpr auto incorrect{"incorrect"};
 
+static auto evaluation(bool b) -> std::string {
+    return b ? correct : incorrect;
+}
+
 static auto evaluation(const open_set::AdaptiveTrial &trial) -> std::string {
-    return trial.correct ? correct : incorrect;
+    return evaluation(trial.correct);
 }
 
 static auto evaluation(const ConsonantTrial &trial) -> std::string {
-    return trial.correct ? correct : incorrect;
+    return evaluation(trial.correct);
 }
 
 static auto evaluation(const coordinate_response_measure::Trial &trial)
     -> std::string {
-    return trial.correct ? correct : incorrect;
+    return evaluation(trial.correct);
 }
 
 static auto identity(const Test &test) -> TestIdentity { return test.identity; }
@@ -255,6 +259,19 @@ static auto format(const open_set::AdaptiveTrial &trial) -> std::string {
     insert(stream, evaluation(trial));
     insertCommaAndSpace(stream);
     insert(stream, trial.reversals);
+    insertNewLine(stream);
+    return string(stream);
+}
+
+static auto format(const ThreeKeywordsTrial &trial) -> std::string {
+    std::stringstream stream;
+    insert(stream, trial.target);
+    insertCommaAndSpace(stream);
+    insert(stream, evaluation(trial.firstCorrect));
+    insertCommaAndSpace(stream);
+    insert(stream, evaluation(trial.secondCorrect));
+    insertCommaAndSpace(stream);
+    insert(stream, evaluation(trial.thirdCorrect));
     insertNewLine(stream);
     return string(stream);
 }
@@ -442,8 +459,9 @@ void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
     justWroteOpenSetAdaptiveTrial = true;
 }
 
-void OutputFileImpl::write(const ThreeKeywordsTrial &) {
+void OutputFileImpl::write(const ThreeKeywordsTrial &trial) {
     write(formatThreeKeywordsTrialHeading());
+    write(format(trial));
 }
 
 void OutputFileImpl::write(const AdaptiveTest &test) { write(format(test)); }

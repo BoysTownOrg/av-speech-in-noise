@@ -644,6 +644,10 @@ OUTPUT_FILE_TEST(writeFreeResponseTrialWritesTrialOnSecondLine) {
     assertWritesTrialOnLine(writingFreeResponseTrial, 2);
 }
 
+OUTPUT_FILE_TEST(writeThreeKeywordsTrialWritesTrialOnSecondLine) {
+    assertWritesTrialOnLine(writingThreeKeywordsTrial, 2);
+}
+
 OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialWritesTrialOnSecondLine) {
     assertWritesTrialOnLine(writingOpenSetAdaptiveTrial, 2);
 }
