@@ -676,6 +676,10 @@ OUTPUT_FILE_TEST(writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
     assertWritesTrialOnLineAfterWritingTwice(writingFreeResponseTrial, 3);
 }
 
+OUTPUT_FILE_TEST(writeThreeKeywordsTrialTwiceDoesNotWriteHeadingTwice) {
+    assertWritesTrialOnLineAfterWritingTwice(writingThreeKeywordsTrial, 3);
+}
+
 OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialTwiceDoesNotWriteHeadingTwice) {
     assertWritesTrialOnLineAfterWritingTwice(writingOpenSetAdaptiveTrial, 3);
 }

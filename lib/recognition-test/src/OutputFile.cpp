@@ -460,8 +460,10 @@ void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
 }
 
 void OutputFileImpl::write(const ThreeKeywordsTrial &trial) {
-    write(formatThreeKeywordsTrialHeading());
+    if (!justWroteThreeKeywordsTrial)
+        write(formatThreeKeywordsTrialHeading());
     write(format(trial));
+    justWroteThreeKeywordsTrial = true;
 }
 
 void OutputFileImpl::write(const AdaptiveTest &test) { write(format(test)); }
