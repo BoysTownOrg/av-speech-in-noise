@@ -522,7 +522,7 @@ TEST_PRESENTER_TEST(showsKeywordTestResults) {
     model.setKeywordTestResults({12.34, 5});
     presenter.updateKeywordTestResults();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"5 (12.34%) keywords correct"}, view.sheetMessage());
+        std::string{"5 (12.3%) keywords correct"}, view.sheetMessage());
 }
 
 TEST_PRESENTER_TEST(showsContinueTestingDialog) {

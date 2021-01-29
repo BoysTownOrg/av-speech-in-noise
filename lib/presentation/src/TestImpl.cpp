@@ -1,4 +1,5 @@
 #include "TestImpl.hpp"
+#include <iomanip>
 #include <sstream>
 #include <functional>
 
@@ -139,8 +140,8 @@ void TestPresenterImpl::updateAdaptiveTestResults() {
 void TestPresenterImpl::updateKeywordTestResults() {
     const auto results{model.keywordsTestResults()};
     std::stringstream stream;
-    stream << results.totalCorrect << " (" << results.percentCorrect
-           << "%) keywords correct";
+    stream << results.totalCorrect << " (" << std::setprecision(3)
+           << results.percentCorrect << "%) keywords correct";
     view.showSheet(stream.str());
 }
 
