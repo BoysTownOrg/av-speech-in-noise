@@ -91,15 +91,15 @@ void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
 }
 
 TestPresenterImpl::TestPresenterImpl(
-    Model &model, TestView &view, UninitializedTaskPresenter *taskPresenter_)
-    : model{model}, view{view}, taskPresenter_{taskPresenter_} {
+    Model &model, TestView &view, UninitializedTaskPresenter *taskPresenter)
+    : model{model}, view{view}, taskPresenter{taskPresenter} {
     model.attach(this);
 }
 
 void TestPresenterImpl::start() { view.show(); }
 
 void TestPresenterImpl::stop() {
-    taskPresenter_->stop();
+    taskPresenter->stop();
     view.hideContinueTestingDialog();
     view.hide();
 }
@@ -111,7 +111,7 @@ void TestPresenterImpl::notifyThatTrialHasStarted() {
 
 void TestPresenterImpl::trialComplete() {
     view.showExitTestButton();
-    taskPresenter_->showResponseSubmission();
+    taskPresenter->showResponseSubmission();
 }
 
 void TestPresenterImpl::notifyThatNextTrialIsReady() {
@@ -138,13 +138,13 @@ void TestPresenterImpl::updateAdaptiveTestResults() {
 
 void TestPresenterImpl::initialize(TaskPresenter &p) {
     updateTrialInformation();
-    taskPresenter_->initialize(&p);
-    taskPresenter_->start();
+    taskPresenter->initialize(&p);
+    taskPresenter->start();
 }
 
 void TestPresenterImpl::hideResponseSubmission() {
-    taskPresenter_->hideResponseSubmission();
+    taskPresenter->hideResponseSubmission();
 }
 
-void TestPresenterImpl::completeTask() { taskPresenter_->complete(); }
+void TestPresenterImpl::completeTask() { taskPresenter->complete(); }
 }

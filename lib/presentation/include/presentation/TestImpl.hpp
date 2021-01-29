@@ -84,7 +84,7 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
   private:
     Model &model;
     TestView &view;
-    UninitializedTaskPresenter *taskPresenter_;
+    UninitializedTaskPresenter *taskPresenter;
 };
 }
 
