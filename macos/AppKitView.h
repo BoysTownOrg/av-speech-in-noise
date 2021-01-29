@@ -144,6 +144,8 @@ class AppKitTestUI : public TestView, public TestControl {
   private:
     NSViewController *viewController;
     NSWindow *continueTestingDialog;
+    NSWindow *sheet;
+    NSTextField *sheetField;
     NSTextField *continueTestingDialogField;
     NSTextField *primaryTextField;
     NSTextField *secondaryTextField;

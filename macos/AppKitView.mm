@@ -443,9 +443,21 @@ void AppKitTestSetupUI::notifyThatPlayCalibrationButtonHasBeenClicked() {
 static auto emptyLabel() -> NSTextField * { return label(""); }
 
 AppKitTestUI::AppKitTestUI(NSViewController *viewController)
-    : viewController{viewController}, continueTestingDialogField{emptyLabel()},
-      primaryTextField{emptyLabel()},
+    : viewController{viewController}, sheetField{emptyLabel()},
+      continueTestingDialogField{emptyLabel()}, primaryTextField{emptyLabel()},
       secondaryTextField{emptyLabel()}, actions{[[TestUIActions alloc] init]} {
+    const auto sheetController{nsTabViewControllerWithoutTabControl()};
+    sheet = [NSWindow windowWithContentViewController:sheetController];
+    sheet.styleMask = NSWindowStyleMaskBorderless;
+    const auto sheetStack {
+        [NSStackView stackViewWithViews:@[
+            sheetField,
+            nsButton("Ok", actions,
+                @selector(notifyThatSheetsOkButtonHasBeenClicked))
+
+        ]]
+    };
+    addAutolayoutEnabledSubview(view(sheetController), sheetStack);
     const auto continueTestingDialogController{
         nsTabViewControllerWithoutTabControl()};
     continueTestingDialog = [NSWindow
@@ -486,6 +498,9 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
     ]);
     activateChildConstraintNestledInBottomRightCorner(
         nextTrialButton, view(viewController), defaultMarginPoints);
+    actions->onSheetsOkButtonClicked = [&]() {
+        [view(viewController).window endSheet:sheet];
+    };
     av_speech_in_noise::hide(nextTrialButton);
     av_speech_in_noise::hide(view(viewController));
 }
@@ -533,24 +548,10 @@ void AppKitTestUI::setContinueTestingDialogMessage(const std::string &s) {
 }
 
 void AppKitTestUI::showSheet(std::string_view s) {
-    const auto sheetController{nsTabViewControllerWithoutTabControl()};
-    const auto sheet{
-        [NSWindow windowWithContentViewController:sheetController]};
-    const auto sheetStack {
-        [NSStackView stackViewWithViews:@[
-            label(std::string{s}),
-            nsButton("Ok", actions,
-                @selector(notifyThatSheetsOkButtonHasBeenClicked))
-
-        ]]
-    };
-    addAutolayoutEnabledSubview(view(sheetController), sheetStack);
+    set(sheetField, std::string{s});
     [view(viewController).window beginSheet:sheet
                           completionHandler:^(NSModalResponse){
                           }];
-    actions->onSheetsOkButtonClicked = [&]() {
-        [view(viewController).window endSheet:sheet];
-    };
 }
 
 static auto consonantImageButton(
