@@ -139,6 +139,7 @@ class AppKitTestUI : public TestView, public TestControl {
     void showContinueTestingDialog() override;
     void hideContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &) override;
+    void showSheet(std::string_view) override;
 
   private:
     NSViewController *viewController;

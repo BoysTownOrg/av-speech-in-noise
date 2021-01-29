@@ -79,6 +79,7 @@
 @implementation TestUIActions {
   @public
     av_speech_in_noise::TestControl::Observer *observer;
+    std::function<void()> onSheetsOkButtonClicked;
 }
 
 - (void)notifyThatExitTestButtonHasBeenClicked {
@@ -95,6 +96,10 @@
 
 - (void)notifyThatDeclineContinueTestingButtonHasBeenClicked {
     observer->declineContinuingTesting();
+}
+
+- (void)notifyThatSheetsOkButtonHasBeenClicked {
+    onSheetsOkButtonClicked();
 }
 @end
 
@@ -525,6 +530,27 @@ void AppKitTestUI::hideContinueTestingDialog() {
 
 void AppKitTestUI::setContinueTestingDialogMessage(const std::string &s) {
     set(continueTestingDialogField, s);
+}
+
+void AppKitTestUI::showSheet(std::string_view s) {
+    const auto sheetController{nsTabViewControllerWithoutTabControl()};
+    const auto sheet{
+        [NSWindow windowWithContentViewController:sheetController]};
+    const auto sheetStack {
+        [NSStackView stackViewWithViews:@[
+            label(std::string{s}),
+            nsButton("Ok", actions,
+                @selector(notifyThatSheetsOkButtonHasBeenClicked))
+
+        ]]
+    };
+    addAutolayoutEnabledSubview(view(sheetController), sheetStack);
+    [view(viewController).window beginSheet:sheet
+                          completionHandler:^(NSModalResponse){
+                          }];
+    actions->onSheetsOkButtonClicked = [&]() {
+        [view(viewController).window endSheet:sheet];
+    };
 }
 
 static auto consonantImageButton(
