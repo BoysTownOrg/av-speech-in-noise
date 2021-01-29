@@ -55,6 +55,7 @@ class TestPresenter : public Presenter {
     virtual void updateTrialInformation() = 0;
     virtual void hideResponseSubmission() = 0;
     virtual void notifyThatNextTrialIsReady() = 0;
+    virtual void completeTask() = 0;
 };
 }
 

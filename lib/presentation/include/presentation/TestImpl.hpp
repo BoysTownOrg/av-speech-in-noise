@@ -79,7 +79,7 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
     void hideResponseSubmission() override;
     void updateTrialInformation() override;
     void updateAdaptiveTestResults() override;
-    void completeTask();
+    void completeTask() override;
 
   private:
     Model &model;

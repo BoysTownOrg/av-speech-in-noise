@@ -64,8 +64,10 @@ static void notifyIfTestIsCompleteElse(Model &model,
 }
 
 void TestControllerImpl::notifyThatUserIsDoneResponding() {
-    readyNextTrialIfTestIncompleteElse(model, presenter,
-        [&]() { notifyThatTestIsComplete(sessionController); });
+    readyNextTrialIfTestIncompleteElse(model, presenter, [&]() {
+        presenter.completeTask();
+        notifyThatTestIsComplete(sessionController);
+    });
 }
 
 void TestControllerImpl::

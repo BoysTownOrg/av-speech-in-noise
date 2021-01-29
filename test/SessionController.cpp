@@ -20,6 +20,7 @@ class TestPresenterStub : public TestPresenter {
     auto taskPresenter() -> TaskPresenter * { return taskPresenter_; }
     void initialize(TaskPresenter &p) override { taskPresenter_ = &p; }
     void hideResponseSubmission() override {}
+    void completeTask() override {}
 
   private:
     TaskPresenter *taskPresenter_{};

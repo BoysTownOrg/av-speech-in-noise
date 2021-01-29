@@ -118,7 +118,12 @@ class TestPresenterStub : public TestPresenter {
 
     void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
 
+    [[nodiscard]] auto taskCompleted() const -> bool { return taskCompleted_; }
+
+    void completeTask() override { taskCompleted_ = true; }
+
   private:
+    bool taskCompleted_{};
     bool trialInformationUpdated_{};
     bool responseSubmissionHidden_{};
     bool notifiedThatTrialHasStarted_{};
@@ -513,6 +518,12 @@ TEST_CONTROLLER_TEST(showsContinueTestingDialog) {
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
         controller);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.adaptiveTestResultsUpdated());
+}
+
+TEST_CONTROLLER_TEST(completesTaskWhenTestIsComplete) {
+    setTestComplete(model);
+    run(notifyingThatUserIsDoneResponding);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.taskCompleted());
 }
 
 TEST_PRESENTER_TEST(showsAdaptiveTestResults) {
