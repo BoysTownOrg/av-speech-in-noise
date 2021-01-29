@@ -141,6 +141,7 @@ void ChooseKeywordsPresenterImpl::markAllKeywordsCorrect() {
     view.markSecondKeywordCorrect();
     view.markThirdKeywordCorrect();
 }
+
 auto sentencesWithThreeKeywords(std::string_view s)
     -> std::map<std::string, SentenceWithThreeKeywords> {
     std::map<std::string, SentenceWithThreeKeywords> map;
@@ -160,7 +161,7 @@ auto sentencesWithThreeKeywords(std::string_view s)
     return map;
 }
 
-void ChooseKeywordsPresenterImpl::updateKeywordTestResults() {
+void ChooseKeywordsPresenterImpl::complete() {
     const auto results{model.keywordsTestResults()};
     std::stringstream stream;
     stream << results.totalCorrect << " (" << std::setprecision(3)
