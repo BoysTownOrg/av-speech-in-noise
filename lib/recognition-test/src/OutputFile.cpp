@@ -210,111 +210,6 @@ static auto format(const EyeTrackerTargetPlayerSynchronization &s)
     return stream.str();
 }
 
-static auto format(const coordinate_response_measure::FixedLevelTrial &trial)
-    -> std::string {
-    std::stringstream stream;
-    insert(stream, trial.correctNumber);
-    insertCommaAndSpace(stream);
-    insert(stream, trial.subjectNumber);
-    insertCommaAndSpace(stream);
-    insert(stream, name(trial.correctColor));
-    insertCommaAndSpace(stream);
-    insert(stream, name(trial.subjectColor));
-    insertCommaAndSpace(stream);
-    insert(stream, evaluation(trial));
-    insertCommaAndSpace(stream);
-    insert(stream, trial.target);
-    insertNewLine(stream);
-    return string(stream);
-}
-
-static auto format(const coordinate_response_measure::AdaptiveTrial &trial)
-    -> std::string {
-    std::stringstream stream;
-    insert(stream, trial.snr.dB);
-    insertCommaAndSpace(stream);
-    insert(stream, trial.correctNumber);
-    insertCommaAndSpace(stream);
-    insert(stream, trial.subjectNumber);
-    insertCommaAndSpace(stream);
-    insert(stream, name(trial.correctColor));
-    insertCommaAndSpace(stream);
-    insert(stream, name(trial.subjectColor));
-    insertCommaAndSpace(stream);
-    insert(stream, evaluation(trial));
-    insertCommaAndSpace(stream);
-    insert(stream, trial.reversals);
-    insertNewLine(stream);
-    return string(stream);
-}
-
-static auto format(const FreeResponseTrial &trial) -> std::string {
-    std::stringstream stream;
-    insert(stream, trial.target);
-    insertCommaAndSpace(stream);
-    insert(stream, trial.response);
-    if (trial.flagged) {
-        insertCommaAndSpace(stream);
-        insert(stream, "FLAGGED");
-    }
-    insertNewLine(stream);
-    return string(stream);
-}
-
-static auto format(const open_set::AdaptiveTrial &trial) -> std::string {
-    std::stringstream stream;
-    insert(stream, trial.snr.dB);
-    insertCommaAndSpace(stream);
-    insert(stream, trial.target);
-    insertCommaAndSpace(stream);
-    insert(stream, evaluation(trial));
-    insertCommaAndSpace(stream);
-    insert(stream, trial.reversals);
-    insertNewLine(stream);
-    return string(stream);
-}
-
-static auto format(const ThreeKeywordsTrial &trial) -> std::string {
-    std::stringstream stream;
-    insert(stream, trial.target);
-    insertCommaAndSpace(stream);
-    insert(stream, evaluation(trial.firstCorrect));
-    insertCommaAndSpace(stream);
-    insert(stream, evaluation(trial.secondCorrect));
-    insertCommaAndSpace(stream);
-    insert(stream, evaluation(trial.thirdCorrect));
-    insertNewLine(stream);
-    return string(stream);
-}
-
-static auto format(const CorrectKeywordsTrial &trial) -> std::string {
-    std::stringstream stream;
-    insert(stream, trial.snr.dB);
-    insertCommaAndSpace(stream);
-    insert(stream, trial.target);
-    insertCommaAndSpace(stream);
-    insert(stream, trial.count);
-    insertCommaAndSpace(stream);
-    insert(stream, evaluation(trial));
-    insertCommaAndSpace(stream);
-    insert(stream, trial.reversals);
-    insertNewLine(stream);
-    return string(stream);
-}
-
-static auto format(const ConsonantTrial &trial) -> std::string {
-    std::stringstream stream;
-    insert(stream, trial.correctConsonant);
-    insertCommaAndSpace(stream);
-    insert(stream, trial.subjectConsonant);
-    insertCommaAndSpace(stream);
-    insert(stream, evaluation(trial));
-    insertCommaAndSpace(stream);
-    insert(stream, trial.target);
-    insertNewLine(stream);
-    return string(stream);
-}
-
 static auto format(const AdaptiveTestResult &result) -> std::string {
     std::stringstream stream;
     writeLabeledLine(
@@ -322,103 +217,291 @@ static auto format(const AdaptiveTestResult &result) -> std::string {
     return string(stream);
 }
 
-static auto formatOpenSetFreeResponseTrialHeading() -> std::string {
-    std::stringstream stream;
-    insert(stream, HeadingItem::target);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::freeResponse);
-    insertNewLine(stream);
-    return string(stream);
+namespace {
+class TrialFormatter {
+  public:
+    virtual ~TrialFormatter() = default;
+    virtual auto heading() -> std::string = 0;
+    virtual auto trial() -> std::string = 0;
+};
+
+class FixedLevelCoordinateResponseTrialFormatter : public TrialFormatter {
+  public:
+    explicit FixedLevelCoordinateResponseTrialFormatter(
+        const coordinate_response_measure::FixedLevelTrial &trial_)
+        : trial_{trial_} {}
+
+    auto heading() -> std::string override {
+        std::stringstream stream;
+        insert(stream, HeadingItem::correctNumber);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::subjectNumber);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::correctColor);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::subjectColor);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::evaluation);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::target);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+    auto trial() -> std::string override {
+        std::stringstream stream;
+        insert(stream, trial_.correctNumber);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.subjectNumber);
+        insertCommaAndSpace(stream);
+        insert(stream, name(trial_.correctColor));
+        insertCommaAndSpace(stream);
+        insert(stream, name(trial_.subjectColor));
+        insertCommaAndSpace(stream);
+        insert(stream, evaluation(trial_));
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.target);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+  private:
+    const coordinate_response_measure::FixedLevelTrial &trial_;
+};
+
+class AdaptiveCoordinateResponseTrialFormatter : public TrialFormatter {
+  public:
+    explicit AdaptiveCoordinateResponseTrialFormatter(
+        const coordinate_response_measure::AdaptiveTrial &trial_)
+        : trial_{trial_} {}
+
+    auto heading() -> std::string override {
+        std::stringstream stream;
+        insert(stream, HeadingItem::snr_dB);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::correctNumber);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::subjectNumber);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::correctColor);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::subjectColor);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::evaluation);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::reversals);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+    auto trial() -> std::string override {
+        std::stringstream stream;
+        insert(stream, trial_.snr.dB);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.correctNumber);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.subjectNumber);
+        insertCommaAndSpace(stream);
+        insert(stream, name(trial_.correctColor));
+        insertCommaAndSpace(stream);
+        insert(stream, name(trial_.subjectColor));
+        insertCommaAndSpace(stream);
+        insert(stream, evaluation(trial_));
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.reversals);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+  private:
+    const coordinate_response_measure::AdaptiveTrial &trial_;
+};
+
+class FreeResponseTrialFormatter : public TrialFormatter {
+  public:
+    explicit FreeResponseTrialFormatter(const FreeResponseTrial &trial_)
+        : trial_{trial_} {}
+
+    auto heading() -> std::string override {
+        std::stringstream stream;
+        insert(stream, HeadingItem::target);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::freeResponse);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+    auto trial() -> std::string override {
+        std::stringstream stream;
+        insert(stream, trial_.target);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.response);
+        if (trial_.flagged) {
+            insertCommaAndSpace(stream);
+            insert(stream, "FLAGGED");
+        }
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+  private:
+    const FreeResponseTrial &trial_;
+};
+
+class OpenSetAdaptiveTrialFormatter : public TrialFormatter {
+  public:
+    explicit OpenSetAdaptiveTrialFormatter(
+        const open_set::AdaptiveTrial &trial_)
+        : trial_{trial_} {}
+
+    auto heading() -> std::string override {
+        std::stringstream stream;
+        insert(stream, HeadingItem::snr_dB);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::target);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::evaluation);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::reversals);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+    auto trial() -> std::string override {
+        std::stringstream stream;
+        insert(stream, trial_.snr.dB);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.target);
+        insertCommaAndSpace(stream);
+        insert(stream, evaluation(trial_));
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.reversals);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+  private:
+    const open_set::AdaptiveTrial &trial_;
+};
+
+class CorrectKeywordsTrialFormatter : public TrialFormatter {
+  public:
+    explicit CorrectKeywordsTrialFormatter(const CorrectKeywordsTrial &trial_)
+        : trial_{trial_} {}
+
+    auto heading() -> std::string override {
+        std::stringstream stream;
+        insert(stream, HeadingItem::snr_dB);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::target);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::correctKeywords);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::evaluation);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::reversals);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+    auto trial() -> std::string override {
+        std::stringstream stream;
+        insert(stream, trial_.snr.dB);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.target);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.count);
+        insertCommaAndSpace(stream);
+        insert(stream, evaluation(trial_));
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.reversals);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+  private:
+    const CorrectKeywordsTrial &trial_;
+};
+
+class ConsonantTrialFormatter : public TrialFormatter {
+  public:
+    explicit ConsonantTrialFormatter(const ConsonantTrial &trial_)
+        : trial_{trial_} {}
+
+    auto heading() -> std::string override {
+        std::stringstream stream;
+        insert(stream, HeadingItem::correctConsonant);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::subjectConsonant);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::evaluation);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::target);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+    auto trial() -> std::string override {
+        std::stringstream stream;
+        insert(stream, trial_.correctConsonant);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.subjectConsonant);
+        insertCommaAndSpace(stream);
+        insert(stream, evaluation(trial_));
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.target);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+  private:
+    const ConsonantTrial &trial_;
+};
+
+class ThreeKeywordsTrialFormatter : public TrialFormatter {
+  public:
+    explicit ThreeKeywordsTrialFormatter(const ThreeKeywordsTrial &trial_)
+        : trial_{trial_} {}
+
+    auto heading() -> std::string override {
+        std::stringstream stream;
+        insert(stream, HeadingItem::target);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::firstKeywordEvaluation);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::secondKeywordEvaluation);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::thirdKeywordEvaluation);
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+    auto trial() -> std::string override {
+        std::stringstream stream;
+        insert(stream, trial_.target);
+        insertCommaAndSpace(stream);
+        insert(stream, evaluation(trial_.firstCorrect));
+        insertCommaAndSpace(stream);
+        insert(stream, evaluation(trial_.secondCorrect));
+        insertCommaAndSpace(stream);
+        insert(stream, evaluation(trial_.thirdCorrect));
+        insertNewLine(stream);
+        return string(stream);
+    }
+
+  private:
+    const ThreeKeywordsTrial &trial_;
+};
 }
 
-static auto formatCorrectKeywordsTrialHeading() -> std::string {
-    std::stringstream stream;
-    insert(stream, HeadingItem::snr_dB);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::target);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::correctKeywords);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::evaluation);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::reversals);
-    insertNewLine(stream);
-    return string(stream);
-}
+static void write(Writer &writer, const std::string &s) { writer.write(s); }
 
-static auto formatConsonantTrialHeading() -> std::string {
-    std::stringstream stream;
-    insert(stream, HeadingItem::correctConsonant);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::subjectConsonant);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::evaluation);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::target);
-    insertNewLine(stream);
-    return string(stream);
-}
-
-static auto formatAdaptiveCoordinateResponseTrialHeading() -> std::string {
-    std::stringstream stream;
-    insert(stream, HeadingItem::snr_dB);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::correctNumber);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::subjectNumber);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::correctColor);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::subjectColor);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::evaluation);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::reversals);
-    insertNewLine(stream);
-    return string(stream);
-}
-
-static auto formatFixedLevelCoordinateResponseTrialHeading() -> std::string {
-    std::stringstream stream;
-    insert(stream, HeadingItem::correctNumber);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::subjectNumber);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::correctColor);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::subjectColor);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::evaluation);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::target);
-    insertNewLine(stream);
-    return string(stream);
-}
-
-static auto formatOpenSetAdaptiveTrialHeading() -> std::string {
-    std::stringstream stream;
-    insert(stream, HeadingItem::snr_dB);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::target);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::evaluation);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::reversals);
-    insertNewLine(stream);
-    return string(stream);
-}
-
-static auto formatThreeKeywordsTrialHeading() -> std::string {
-    std::stringstream stream;
-    insert(stream, HeadingItem::target);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::firstKeywordEvaluation);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::secondKeywordEvaluation);
-    insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::thirdKeywordEvaluation);
-    insertNewLine(stream);
-    return string(stream);
+static void write(Writer &writer, TrialFormatter &formatter,
+    OutputFileImpl::Trial &currentTrial, OutputFileImpl::Trial trial) {
+    if (currentTrial != trial)
+        write(writer, formatter.heading());
+    write(writer, formatter.trial());
+    currentTrial = trial;
 }
 
 OutputFileImpl::OutputFileImpl(Writer &writer, OutputFilePath &path)
@@ -428,53 +511,46 @@ void OutputFileImpl::write(const std::string &s) { writer.write(s); }
 
 void OutputFileImpl::write(
     const coordinate_response_measure::AdaptiveTrial &trial) {
-    if (currentTrial != Trial::AdaptiveCoordinateResponse)
-        write(formatAdaptiveCoordinateResponseTrialHeading());
-    write(format(trial));
-    currentTrial = Trial::AdaptiveCoordinateResponse;
+    AdaptiveCoordinateResponseTrialFormatter formatter{trial};
+    av_speech_in_noise::write(
+        writer, formatter, currentTrial, Trial::AdaptiveCoordinateResponse);
 }
 
 void OutputFileImpl::write(
     const coordinate_response_measure::FixedLevelTrial &trial) {
-    if (currentTrial != Trial::FixedLevelCoordinateResponse)
-        write(formatFixedLevelCoordinateResponseTrialHeading());
-    write(format(trial));
-    currentTrial = Trial::FixedLevelCoordinateResponse;
+    FixedLevelCoordinateResponseTrialFormatter formatter{trial};
+    av_speech_in_noise::write(
+        writer, formatter, currentTrial, Trial::FixedLevelCoordinateResponse);
 }
 
 void OutputFileImpl::write(const FreeResponseTrial &trial) {
-    if (currentTrial != Trial::FreeResponse)
-        write(formatOpenSetFreeResponseTrialHeading());
-    write(format(trial));
-    currentTrial = Trial::FreeResponse;
+    FreeResponseTrialFormatter formatter{trial};
+    av_speech_in_noise::write(
+        writer, formatter, currentTrial, Trial::FreeResponse);
 }
 
 void OutputFileImpl::write(const CorrectKeywordsTrial &trial) {
-    if (currentTrial != Trial::CorrectKeywords)
-        write(formatCorrectKeywordsTrialHeading());
-    write(format(trial));
-    currentTrial = Trial::CorrectKeywords;
+    CorrectKeywordsTrialFormatter formatter{trial};
+    av_speech_in_noise::write(
+        writer, formatter, currentTrial, Trial::CorrectKeywords);
 }
 
 void OutputFileImpl::write(const ConsonantTrial &trial) {
-    if (currentTrial != Trial::Consonant)
-        write(formatConsonantTrialHeading());
-    write(format(trial));
-    currentTrial = Trial::Consonant;
+    ConsonantTrialFormatter formatter{trial};
+    av_speech_in_noise::write(
+        writer, formatter, currentTrial, Trial::Consonant);
 }
 
 void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
-    if (currentTrial != Trial::OpenSetAdaptive)
-        write(formatOpenSetAdaptiveTrialHeading());
-    write(format(trial));
-    currentTrial = Trial::OpenSetAdaptive;
+    OpenSetAdaptiveTrialFormatter formatter{trial};
+    av_speech_in_noise::write(
+        writer, formatter, currentTrial, Trial::OpenSetAdaptive);
 }
 
 void OutputFileImpl::write(const ThreeKeywordsTrial &trial) {
-    if (currentTrial != Trial::ThreeKeywords)
-        write(formatThreeKeywordsTrialHeading());
-    write(format(trial));
-    currentTrial = Trial::ThreeKeywords;
+    ThreeKeywordsTrialFormatter formatter{trial};
+    av_speech_in_noise::write(
+        writer, formatter, currentTrial, Trial::ThreeKeywords);
 }
 
 void OutputFileImpl::write(const AdaptiveTest &test) { write(format(test)); }
