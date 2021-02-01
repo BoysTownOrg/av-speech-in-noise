@@ -91,7 +91,7 @@ struct SentenceWithThreeKeywords {
 };
 
 auto sentencesWithThreeKeywords(std::string_view s)
-    -> std::map<std::string, SentenceWithThreeKeywords>;
+    -> std::vector<SentenceWithThreeKeywords>;
 
 static auto operator==(const SentenceWithThreeKeywords &a,
     const SentenceWithThreeKeywords &b) -> bool {

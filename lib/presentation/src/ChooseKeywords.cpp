@@ -176,22 +176,22 @@ void ChooseKeywordsPresenterImpl::markAllKeywordsCorrect() {
 }
 
 auto sentencesWithThreeKeywords(std::string_view s)
-    -> std::map<std::string, SentenceWithThreeKeywords> {
-    std::map<std::string, SentenceWithThreeKeywords> map;
+    -> std::vector<SentenceWithThreeKeywords> {
+    std::vector<SentenceWithThreeKeywords> sentencesWithThreeKeywords;
     std::stringstream stream{std::string{s}};
     while (!stream.eof()) {
-        std::string maybeFileName;
-        std::getline(stream, maybeFileName);
-        if (maybeFileName.empty())
+        std::string maybeSentence;
+        std::getline(stream, maybeSentence);
+        if (maybeSentence.empty())
             continue;
         SentenceWithThreeKeywords sentenceWithThreeKeywords;
-        std::getline(stream, sentenceWithThreeKeywords.sentence);
+        sentenceWithThreeKeywords.sentence = maybeSentence;
         std::getline(stream, sentenceWithThreeKeywords.firstKeyword);
         std::getline(stream, sentenceWithThreeKeywords.secondKeyword);
         std::getline(stream, sentenceWithThreeKeywords.thirdKeyword);
-        map[maybeFileName] = sentenceWithThreeKeywords;
+        sentencesWithThreeKeywords.push_back(sentenceWithThreeKeywords);
     }
-    return map;
+    return sentencesWithThreeKeywords;
 }
 
 void ChooseKeywordsPresenterImpl::complete() {
