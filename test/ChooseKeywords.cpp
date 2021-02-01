@@ -286,7 +286,8 @@ class ChooseKeywordsPresenterTests : public ::testing::Test {
         {{"The visitors stretched before dinner.", "visitors", "stretched",
              "dinner"},
             {"Daddy's mouth is turning yellow.", "Daddy's", "mouth", "turning"},
-            {"Tom won't pull the oar.", "won't", "pull", "oar"}}};
+            {"Tom won't pull the oar.", "won't", "pull", "oar"},
+            {"This is an example of a bad match.", "This", "exmple", "match"}}};
 };
 
 #define CHOOSE_KEYWORDS_CONTROLLER_TEST(a)                                     \
@@ -370,6 +371,11 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText3) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("oar", view.thirdKeywordButtonText());
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         ".", view.textFollowingThirdKeywordButton());
+}
+
+CHOOSE_KEYWORDS_PRESENTER_TEST(badMatchDoesNotThrow) {
+    model.setTargetFileName("2 This is an example of a bad match.mov");
+    presenter.showResponseSubmission();
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(marksFirstKeywordIncorrect) {
