@@ -29,28 +29,9 @@ class SessionControlStub : public SessionControl {
   public:
     void setAudioDevice(std::string s) { audioDevice_ = std::move(s); }
 
-    void setBrowseForOpeningFileResult(std::string s) {
-        browseForOpeningFileResult_ = std::move(s);
-    }
-
-    void setBrowseCancelled() { browseCancelled_ = true; }
-
     auto audioDevice() -> std::string override { return audioDevice_; }
 
-    auto browseForDirectory() -> std::string override {
-        return browseForDirectoryResult_;
-    }
-
-    auto browseCancelled() -> bool override { return browseCancelled_; }
-
-    auto browseForOpeningFile() -> std::string override {
-        return browseForOpeningFileResult_;
-    }
-
   private:
-    std::string browseForDirectoryResult_;
-    std::string browseForOpeningFileResult_;
-    bool browseCancelled_{};
     std::string audioDevice_;
 };
 }

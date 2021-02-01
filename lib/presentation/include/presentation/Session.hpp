@@ -32,9 +32,6 @@ class SessionView {
 class SessionControl {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SessionControl);
-    virtual auto browseForDirectory() -> std::string = 0;
-    virtual auto browseForOpeningFile() -> std::string = 0;
-    virtual auto browseCancelled() -> bool = 0;
     virtual auto audioDevice() -> std::string = 0;
 };
 }
