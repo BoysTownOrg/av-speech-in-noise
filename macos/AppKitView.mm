@@ -277,33 +277,6 @@ void AppKitSessionUI::showErrorMessage(std::string_view s) {
     [alert runModal];
 }
 
-auto AppKitSessionUI::browseForDirectory() -> std::string {
-    const auto panel{[NSOpenPanel openPanel]};
-    panel.canChooseDirectories = YES;
-    panel.canChooseFiles = NO;
-    return browseModal(panel);
-}
-
-auto AppKitSessionUI::browseCancelled() -> bool { return browseCancelled_; }
-
-auto AppKitSessionUI::browseForOpeningFile() -> std::string {
-    const auto panel{[NSOpenPanel openPanel]};
-    panel.canChooseDirectories = NO;
-    panel.canChooseFiles = YES;
-    return browseModal(panel);
-}
-
-auto AppKitSessionUI::browseModal(NSOpenPanel *panel) -> std::string {
-    switch ([panel runModal]) {
-    case NSModalResponseOK:
-        browseCancelled_ = false;
-        return panel.URLs.lastObject.path.UTF8String;
-    default:
-        browseCancelled_ = true;
-        return {};
-    }
-}
-
 auto AppKitSessionUI::audioDevice() -> std::string {
     return audioDeviceMenu.titleOfSelectedItem.UTF8String;
 }

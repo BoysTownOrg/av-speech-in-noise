@@ -26,6 +26,86 @@
 @class SyllablesUIActions;
 
 namespace av_speech_in_noise {
+class AppKitSessionUI : public SessionView, public SessionControl {
+  public:
+    explicit AppKitSessionUI(NSApplication *, NSViewController *);
+    void eventLoop() override;
+    void showErrorMessage(std::string_view) override;
+    auto audioDevice() -> std::string override;
+    void populateAudioDeviceMenu(std::vector<std::string>) override;
+
+  private:
+    NSApplication *app;
+    NSPopUpButton *audioDeviceMenu;
+};
+
+class AppKitTestUI : public TestView, public TestControl {
+  public:
+    explicit AppKitTestUI(NSViewController *);
+    void attach(TestControl::Observer *) override;
+    void showExitTestButton() override;
+    void hideExitTestButton() override;
+    void show() override;
+    void hide() override;
+    void display(std::string) override;
+    void secondaryDisplay(std::string) override;
+    void showNextTrialButton() override;
+    void hideNextTrialButton() override;
+    void showContinueTestingDialog() override;
+    void hideContinueTestingDialog() override;
+    void setContinueTestingDialogMessage(const std::string &) override;
+    void showSheet(std::string_view) override;
+
+  private:
+    NSViewController *viewController;
+    NSWindow *continueTestingDialog;
+    NSWindow *sheet;
+    NSTextField *sheetField;
+    NSTextField *continueTestingDialogField;
+    NSTextField *primaryTextField;
+    NSTextField *secondaryTextField;
+    NSButton *exitTestButton;
+    NSButton *nextTrialButton;
+    TestUIActions *actions;
+};
+
+class AppKitTestSetupUI : public TestSetupUI {
+  public:
+    explicit AppKitTestSetupUI(NSViewController *);
+    void show() override;
+    void hide() override;
+    auto testerId() -> std::string override;
+    auto subjectId() -> std::string override;
+    auto session() -> std::string override;
+    auto testSettingsFile() -> std::string override;
+    auto startingSnr() -> std::string override;
+    auto transducer() -> std::string override;
+    auto rmeSetting() -> std::string override;
+    void populateTransducerMenu(std::vector<std::string>) override;
+    void attach(Observer *) override;
+    void notifyThatConfirmButtonHasBeenClicked();
+    void notifyThatPlayCalibrationButtonHasBeenClicked();
+
+  private:
+    NSViewController *viewController;
+    NSTextField *subjectIdField;
+    NSTextField *testerIdField;
+    NSTextField *sessionField;
+    NSTextField *rmeSettingField;
+    NSPopUpButton *transducerMenu;
+    NSPathControl *testSettingsFilePathControl;
+    NSTextField *startingSnrField;
+    TestSetupUIActions *actions;
+    Observer *observer{};
+};
+
+class AppKitTestSetupUIFactoryImpl : public AppKitTestSetupUIFactory {
+  public:
+    auto make(NSViewController *c) -> std::unique_ptr<TestSetupUI> override {
+        return std::make_unique<AppKitTestSetupUI>(c);
+    }
+};
+
 class ChooseKeywordsUI : public ChooseKeywordsControl,
                          public ChooseKeywordsView {
   public:
@@ -124,73 +204,6 @@ class PassFailUI : public PassFailControl, public PassFailView {
     PassFailUIActions *actions;
 };
 
-class AppKitTestUI : public TestView, public TestControl {
-  public:
-    explicit AppKitTestUI(NSViewController *);
-    void attach(TestControl::Observer *) override;
-    void showExitTestButton() override;
-    void hideExitTestButton() override;
-    void show() override;
-    void hide() override;
-    void display(std::string) override;
-    void secondaryDisplay(std::string) override;
-    void showNextTrialButton() override;
-    void hideNextTrialButton() override;
-    void showContinueTestingDialog() override;
-    void hideContinueTestingDialog() override;
-    void setContinueTestingDialogMessage(const std::string &) override;
-    void showSheet(std::string_view) override;
-
-  private:
-    NSViewController *viewController;
-    NSWindow *continueTestingDialog;
-    NSWindow *sheet;
-    NSTextField *sheetField;
-    NSTextField *continueTestingDialogField;
-    NSTextField *primaryTextField;
-    NSTextField *secondaryTextField;
-    NSButton *exitTestButton;
-    NSButton *nextTrialButton;
-    TestUIActions *actions;
-};
-
-class AppKitTestSetupUI : public TestSetupUI {
-  public:
-    explicit AppKitTestSetupUI(NSViewController *);
-    void show() override;
-    void hide() override;
-    auto testerId() -> std::string override;
-    auto subjectId() -> std::string override;
-    auto session() -> std::string override;
-    auto testSettingsFile() -> std::string override;
-    auto startingSnr() -> std::string override;
-    auto transducer() -> std::string override;
-    auto rmeSetting() -> std::string override;
-    void populateTransducerMenu(std::vector<std::string>) override;
-    void attach(Observer *) override;
-    void notifyThatConfirmButtonHasBeenClicked();
-    void notifyThatPlayCalibrationButtonHasBeenClicked();
-
-  private:
-    NSViewController *viewController;
-    NSTextField *subjectIdField;
-    NSTextField *testerIdField;
-    NSTextField *sessionField;
-    NSTextField *rmeSettingField;
-    NSPopUpButton *transducerMenu;
-    NSPathControl *testSettingsFilePathControl;
-    NSTextField *startingSnrField;
-    TestSetupUIActions *actions;
-    Observer *observer{};
-};
-
-class AppKitTestSetupUIFactoryImpl : public AppKitTestSetupUIFactory {
-  public:
-    auto make(NSViewController *c) -> std::unique_ptr<TestSetupUI> override {
-        return std::make_unique<AppKitTestSetupUI>(c);
-    }
-};
-
 class AppKitConsonantUI : public ConsonantTaskView,
                           public ConsonantTaskControl {
   public:
@@ -249,25 +262,6 @@ class AppKitCoordinateResponseMeasureUI
     NSButton *lastButtonPressed{};
     CoordinateResponseMeasureUIActions *actions;
     Observer *listener_{};
-};
-
-class AppKitSessionUI : public SessionView, public SessionControl {
-  public:
-    explicit AppKitSessionUI(NSApplication *, NSViewController *);
-    void eventLoop() override;
-    void showErrorMessage(std::string_view) override;
-    auto browseForDirectory() -> std::string override;
-    auto browseCancelled() -> bool override;
-    auto browseForOpeningFile() -> std::string override;
-    auto audioDevice() -> std::string override;
-    void populateAudioDeviceMenu(std::vector<std::string>) override;
-
-  private:
-    auto browseModal(NSOpenPanel *panel) -> std::string;
-
-    NSApplication *app;
-    NSPopUpButton *audioDeviceMenu;
-    bool browseCancelled_{};
 };
 }
 
