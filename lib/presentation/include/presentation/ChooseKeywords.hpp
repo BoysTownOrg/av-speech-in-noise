@@ -7,6 +7,7 @@
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <string>
+#include <vector>
 #include <map>
 #include <string_view>
 
@@ -102,7 +103,7 @@ class ChooseKeywordsPresenterImpl : public ChooseKeywordsPresenter,
                                     public TaskPresenter {
   public:
     ChooseKeywordsPresenterImpl(Model &, TestView &, ChooseKeywordsView &,
-        std::map<std::string, SentenceWithThreeKeywords>);
+        const std::vector<SentenceWithThreeKeywords> &);
     void start() override;
     void stop() override;
     void showResponseSubmission() override;
@@ -116,7 +117,8 @@ class ChooseKeywordsPresenterImpl : public ChooseKeywordsPresenter,
     void complete() override;
 
   private:
-    std::map<std::string, SentenceWithThreeKeywords> sentencesWithThreeKeywords;
+    std::map<std::string, SentenceWithThreeKeywords>
+        sentencesWithThreeKeywordsFromExpectedFileNameSentence;
     Model &model;
     TestView &testView;
     ChooseKeywordsView &view;

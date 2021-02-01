@@ -3,6 +3,8 @@
 #include <utility>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
+#include <iterator>
 
 namespace av_speech_in_noise {
 ChooseKeywordsController::ChooseKeywordsController(
@@ -47,10 +49,30 @@ static void hideResponseSubmission(ChooseKeywordsView &view) {
     view.hideResponseSubmission();
 }
 
+static auto withoutApostrophesNorPeriods(std::string s) -> std::string {
+    s.erase(std::remove_if(s.begin(), s.end(),
+                [](unsigned char x) { return x == '\'' || x == '.'; }),
+        s.end());
+    return s;
+}
+
+static auto f(
+    const std::vector<SentenceWithThreeKeywords> &sentencesWithThreeKeywords)
+    -> std::map<std::string, SentenceWithThreeKeywords> {
+    std::map<std::string, SentenceWithThreeKeywords> map;
+    std::transform(sentencesWithThreeKeywords.begin(),
+        sentencesWithThreeKeywords.end(), std::inserter(map, map.end()),
+        [](const SentenceWithThreeKeywords &p) {
+            return std::make_pair(withoutApostrophesNorPeriods(p.sentence), p);
+        });
+    return map;
+}
+
 ChooseKeywordsPresenterImpl::ChooseKeywordsPresenterImpl(Model &model,
     TestView &testView, ChooseKeywordsView &view,
-    std::map<std::string, SentenceWithThreeKeywords> sentencesWithThreeKeywords)
-    : sentencesWithThreeKeywords{std::move(sentencesWithThreeKeywords)},
+    const std::vector<SentenceWithThreeKeywords> &sentencesWithThreeKeywords)
+    : sentencesWithThreeKeywordsFromExpectedFileNameSentence{f(
+          sentencesWithThreeKeywords)},
       model{model}, testView{testView}, view{view} {}
 
 void ChooseKeywordsPresenterImpl::start() { testView.showNextTrialButton(); }
@@ -63,9 +85,20 @@ void ChooseKeywordsPresenterImpl::stop() {
     av_speech_in_noise::hideResponseSubmission(view);
 }
 
+static auto mlstFileNameSentence(Model &model) -> std::string {
+    std::stringstream stream{model.targetFileName()};
+    int ignore = 0;
+    stream >> ignore >> std::ws;
+    std::string mlstFileNameSentence;
+    std::getline(stream, mlstFileNameSentence, '.');
+    return mlstFileNameSentence;
+}
+
 void ChooseKeywordsPresenterImpl::showResponseSubmission() {
-    if (sentencesWithThreeKeywords.count(model.targetFileName()) != 0)
-        set(sentencesWithThreeKeywords.at(model.targetFileName()));
+    if (sentencesWithThreeKeywordsFromExpectedFileNameSentence.count(
+            mlstFileNameSentence(model)) != 0)
+        set(sentencesWithThreeKeywordsFromExpectedFileNameSentence.at(
+            mlstFileNameSentence(model)));
     view.markFirstKeywordCorrect();
     view.markSecondKeywordCorrect();
     view.markThirdKeywordCorrect();

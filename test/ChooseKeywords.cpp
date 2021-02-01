@@ -283,17 +283,10 @@ class ChooseKeywordsPresenterTests : public ::testing::Test {
     TestViewStub testView;
     ChooseKeywordsViewStub view;
     ChooseKeywordsPresenterImpl presenter{model, testView, view,
-        std::map<std::string, SentenceWithThreeKeywords>{
-            {"fileA",
-                SentenceWithThreeKeywords{
-                    "The visitors stretched before dinner.", "visitors",
-                    "stretched", "dinner"}},
-            {"fileB",
-                SentenceWithThreeKeywords{"Daddy's mouth is turning yellow.",
-                    "Daddy's", "mouth", "turning"}},
-            {"fileC",
-                SentenceWithThreeKeywords{
-                    "Tom won't pull the oar.", "won't", "pull", "oar"}}}};
+        {{"The visitors stretched before dinner.", "visitors", "stretched",
+             "dinner"},
+            {"Daddy's mouth is turning yellow.", "Daddy's", "mouth", "turning"},
+            {"Tom won't pull the oar.", "won't", "pull", "oar"}}};
 };
 
 #define CHOOSE_KEYWORDS_CONTROLLER_TEST(a)                                     \
@@ -335,7 +328,7 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(clearsViewWhenShown) {
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText) {
-    model.setTargetFileName("fileA");
+    model.setTargetFileName("11 The visitors stretched before dinner.mov");
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "The", view.textPrecedingFirstKeywordButton());
@@ -351,7 +344,7 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText) {
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText2) {
-    model.setTargetFileName("fileB");
+    model.setTargetFileName("3 Daddys mouth is turning yellow.mov");
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("", view.textPrecedingFirstKeywordButton());
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("Daddy's", view.firstKeywordButtonText());
@@ -365,7 +358,7 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText2) {
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText3) {
-    model.setTargetFileName("fileC");
+    model.setTargetFileName("5 Tom wont pull the oar.mov");
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "Tom", view.textPrecedingFirstKeywordButton());
