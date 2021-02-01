@@ -56,7 +56,7 @@ static auto withoutApostrophesNorPeriods(std::string s) -> std::string {
     return s;
 }
 
-static auto f(
+static auto transformToSentencesWithThreeKeywordsFromExpectedFileNameSentence(
     const std::vector<SentenceWithThreeKeywords> &sentencesWithThreeKeywords)
     -> std::map<std::string, SentenceWithThreeKeywords> {
     std::map<std::string, SentenceWithThreeKeywords> map;
@@ -71,7 +71,7 @@ static auto f(
 ChooseKeywordsPresenterImpl::ChooseKeywordsPresenterImpl(Model &model,
     TestView &testView, ChooseKeywordsView &view,
     const std::vector<SentenceWithThreeKeywords> &sentencesWithThreeKeywords)
-    : sentencesWithThreeKeywordsFromExpectedFileNameSentence{f(
+    : sentencesWithThreeKeywordsFromExpectedFileNameSentence{transformToSentencesWithThreeKeywordsFromExpectedFileNameSentence(
           sentencesWithThreeKeywords)},
       model{model}, testView{testView}, view{view} {}
 
