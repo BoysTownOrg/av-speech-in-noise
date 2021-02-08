@@ -1080,7 +1080,10 @@ void PassFailUI::hideEvaluationButtons() {
 }
 
 SyllablesUI::SyllablesUI(NSViewController *viewController)
-    : actions{[[SyllablesUIActions alloc] init]} {
+    : actions{[[SyllablesUIActions alloc] init]},
+      flaggedButton{[NSButton checkboxWithTitle:@"flagged"
+                                         target:nil
+                                         action:nil]} {
     actions->onResponseButtonClick = [&](id sender) {
         lastButtonPressed = sender;
     };
@@ -1101,14 +1104,18 @@ SyllablesUI::SyllablesUI(NSViewController *viewController)
             row.distribution = NSStackViewDistributionFillEqually;
             return row;
         });
-    view = [NSStackView stackViewWithViews:nsArray(rows)];
+    const auto responseButtons{[NSStackView stackViewWithViews:nsArray(rows)]};
     for (auto row : rows)
         [NSLayoutConstraint activateConstraints:@[
-            [row.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
-            [row.trailingAnchor constraintEqualToAnchor:view.trailingAnchor]
+            [row.leadingAnchor
+                constraintEqualToAnchor:responseButtons.leadingAnchor],
+            [row.trailingAnchor
+                constraintEqualToAnchor:responseButtons.trailingAnchor]
         ]];
+    responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
+    responseButtons.distribution = NSStackViewDistributionFillEqually;
+    view = [NSStackView stackViewWithViews:@[ flaggedButton, responseButtons ]];
     view.orientation = NSUserInterfaceLayoutOrientationVertical;
-    view.distribution = NSStackViewDistributionFillEqually;
     addAutolayoutEnabledSubview(av_speech_in_noise::view(viewController), view);
     activateChildConstraintNestledInBottomRightCorner(
         view, av_speech_in_noise::view(viewController), defaultMarginPoints);
@@ -1123,5 +1130,9 @@ void SyllablesUI::show() { av_speech_in_noise::show(view); }
 
 auto SyllablesUI::syllable() -> std::string {
     return lastButtonPressed.title.UTF8String;
+}
+
+auto SyllablesUI::flagged() -> bool {
+    return flaggedButton.state == NSControlStateValueOn;
 }
 }

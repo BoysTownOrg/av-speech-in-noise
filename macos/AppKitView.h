@@ -152,11 +152,13 @@ class SyllablesUI : public SyllablesControl, public SyllablesView {
     void hide() override;
     void show() override;
     auto syllable() -> std::string override;
+    auto flagged() -> bool override;
 
   private:
     NSStackView *view{};
     NSButton *lastButtonPressed{};
     SyllablesUIActions *actions;
+    NSButton *flaggedButton;
 };
 
 class FreeResponseUI : public FreeResponseView, public FreeResponseControl {
