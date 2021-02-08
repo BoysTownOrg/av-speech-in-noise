@@ -17,9 +17,14 @@ class SyllablesViewStub : public SyllablesView {
 
     void show() override { shown_ = true; }
 
+    [[nodiscard]] auto flagCleared() const -> bool { return flagCleared_; }
+
+    void clearFlag() { flagCleared_ = true; }
+
   private:
     bool hidden_{};
     bool shown_{};
+    bool flagCleared_{};
 };
 
 class SyllablesControlStub : public SyllablesControl {
@@ -36,7 +41,7 @@ class SyllablesControlStub : public SyllablesControl {
 
     void setFlagged() { flagged_ = true; }
 
-    auto flagged() -> bool { return flagged_; }
+    auto flagged() -> bool override { return flagged_; }
 
   private:
     std::string syllable_;
@@ -88,6 +93,11 @@ SYLLABLES_PRESENTER_TEST(showsNextTrialButtonWhenStarted) {
 SYLLABLES_PRESENTER_TEST(showsResponseButtonsWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
+}
+
+SYLLABLES_PRESENTER_TEST(clearsViewWhenShown) {
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.flagCleared());
 }
 
 SYLLABLES_CONTROLLER_TEST(submitsKeywordResponseAfterSubmitButtonIsClicked) {
