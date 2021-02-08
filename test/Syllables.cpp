@@ -34,9 +34,14 @@ class SyllablesControlStub : public SyllablesControl {
 
     auto syllable() -> std::string override { return syllable_; }
 
+    void setFlagged() { flagged_ = true; }
+
+    auto flagged() -> bool { return flagged_; }
+
   private:
     std::string syllable_;
     Observer *observer{};
+    bool flagged_{};
 };
 
 void notifyThatResponseButtonHasBeenClicked(SyllablesControlStub &control) {
@@ -90,6 +95,12 @@ SYLLABLES_CONTROLLER_TEST(submitsKeywordResponseAfterSubmitButtonIsClicked) {
     notifyThatResponseButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         Syllable::gi, model.syllableResponse().syllable);
+}
+
+SYLLABLES_CONTROLLER_TEST(submitsFlaggedAfterSubmitButtonIsClicked) {
+    control.setFlagged();
+    notifyThatResponseButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.syllableResponse().flagged);
 }
 
 SYLLABLES_CONTROLLER_TEST(

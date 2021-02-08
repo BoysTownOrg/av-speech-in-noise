@@ -26,6 +26,7 @@ class SyllablesControl {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SyllablesControl);
     virtual void attach(Observer *) = 0;
     virtual auto syllable() -> std::string = 0;
+    virtual auto flagged() -> bool = 0;
 };
 
 class SyllablesPresenter {
