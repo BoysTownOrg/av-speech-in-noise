@@ -1135,4 +1135,6 @@ auto SyllablesUI::syllable() -> std::string {
 auto SyllablesUI::flagged() -> bool {
     return flaggedButton.state == NSControlStateValueOn;
 }
+
+void SyllablesUI::clearFlag() { flaggedButton.state = NSControlStateValueOff; }
 }

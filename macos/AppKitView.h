@@ -153,6 +153,7 @@ class SyllablesUI : public SyllablesControl, public SyllablesView {
     void show() override;
     auto syllable() -> std::string override;
     auto flagged() -> bool override;
+    void clearFlag() override;
 
   private:
     NSStackView *view{};
