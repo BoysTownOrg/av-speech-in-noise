@@ -19,7 +19,7 @@ static auto subString(const std::string &s, gsl::index position)
     return s.substr(position);
 }
 
-int ResponseEvaluatorImpl::invalidNumber = -1;
+const int ResponseEvaluatorImpl::invalidNumber = -1;
 
 auto ResponseEvaluatorImpl::correct(const LocalUrl &filePath,
     const coordinate_response_measure::Response &r) -> bool {
@@ -134,5 +134,66 @@ auto ResponseEvaluatorImpl::correctColor(const LocalUrl &filePath)
     auto colorName = subString(filePath.path, leadingPathLength_,
         colorNameLength(filePath, leadingPathLength_));
     return color(colorName);
+}
+
+static auto syllable(const std::string &match) -> Syllable {
+    if (match == "bi")
+        return Syllable::bi;
+    if (match == "di")
+        return Syllable::di;
+    if (match == "dji")
+        return Syllable::dji;
+    if (match == "fi")
+        return Syllable::fi;
+    if (match == "gi")
+        return Syllable::gi;
+    if (match == "hi")
+        return Syllable::hi;
+    if (match == "ji")
+        return Syllable::ji;
+    if (match == "ki")
+        return Syllable::ki;
+    if (match == "li")
+        return Syllable::li;
+    if (match == "mi")
+        return Syllable::mi;
+    if (match == "ni")
+        return Syllable::ni;
+    if (match == "pi")
+        return Syllable::pi;
+    if (match == "ri")
+        return Syllable::ri;
+    if (match == "shi")
+        return Syllable::shi;
+    if (match == "si")
+        return Syllable::si;
+    if (match == "thi")
+        return Syllable::thi;
+    if (match == "ti")
+        return Syllable::ti;
+    if (match == "tsi")
+        return Syllable::tsi;
+    if (match == "vi")
+        return Syllable::vi;
+    if (match == "wi")
+        return Syllable::wi;
+    if (match == "zi")
+        return Syllable::zi;
+    return Syllable::unknown;
+}
+
+auto correctSyllable(const LocalUrl &file) -> Syllable {
+    auto stem{av_speech_in_noise::stem(file)};
+    std::regex pattern{"say_(.*?)_.*"};
+    std::smatch match;
+    std::regex_search(stem, match, pattern);
+    if (match.size() > 1)
+        return syllable(match[1]);
+    return Syllable::unknown;
+}
+
+auto ResponseEvaluatorImpl::correct(
+    const LocalUrl &url, const SyllableResponse &response) -> bool {
+    return correctSyllable(url) == response.syllable;
 }
 }

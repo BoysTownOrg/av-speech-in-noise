@@ -101,86 +101,117 @@ COORDINATE_RESPONSE_EVALUATOR_TEST(miscellaneous) {
 }
 
 namespace av_speech_in_noise {
+static auto correct(ResponseEvaluatorImpl &evaluator, std::string_view s,
+    ConsonantResponse r) -> bool {
+    return evaluator.correct(LocalUrl{std::string{s}}, r);
+}
+
+static void assertIncorrect(
+    ResponseEvaluatorImpl &evaluator, const std::string &s, char r) {
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
+        correct(evaluator, s, ConsonantResponse{r}));
+}
+
+static void assertCorrect(
+    ResponseEvaluatorImpl &evaluator, const std::string &s, char r) {
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(correct(evaluator, s, ConsonantResponse{r}));
+}
+
+static auto correct(ResponseEvaluatorImpl &evaluator, std::string_view s,
+    SyllableResponse r) -> bool {
+    return evaluator.correct(LocalUrl{std::string{s}}, r);
+}
+
+static void assertIncorrect(
+    ResponseEvaluatorImpl &evaluator, const std::string &s, Syllable r) {
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(correct(evaluator, s, SyllableResponse{r}));
+}
+
+static void assertCorrect(
+    ResponseEvaluatorImpl &evaluator, const std::string &s, Syllable r) {
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(correct(evaluator, s, SyllableResponse{r}));
+}
+
 namespace {
 class ConsonantResponseEvaluatorTests : public ::testing::Test {
   protected:
     ResponseEvaluatorImpl evaluator{};
-
-    auto correct(const std::string &s, ConsonantResponse r) -> bool {
-        return evaluator.correct({s}, r);
-    }
-
-    void assertCorrect(const std::string &s, char r) {
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(correct(s, {r}));
-    }
-
-    void assertIncorrect(const std::string &s, char r) {
-        AV_SPEECH_IN_NOISE_EXPECT_FALSE(correct(s, {r}));
-    }
 };
 
 #define CONSONANT_RESPONSE_EVALUATOR_TEST(a)                                   \
     TEST_F(ConsonantResponseEvaluatorTests, a)
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(b) {
-    assertCorrect("choose_bi_1-25_Communicator.mp4", 'b');
+    assertCorrect(evaluator, "choose_bi_1-25_Communicator.mp4", 'b');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(c) {
-    assertCorrect("choose_si_2-25_FabricMask.mp4", 'c');
+    assertCorrect(evaluator, "choose_si_2-25_FabricMask.mp4", 'c');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(d) {
-    assertCorrect("choose_di_2-25_Communicator.mp4", 'd');
+    assertCorrect(evaluator, "choose_di_2-25_Communicator.mp4", 'd');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(h) {
-    assertCorrect("choose_hi_1-25_Clear.mp4", 'h');
+    assertCorrect(evaluator, "choose_hi_1-25_Clear.mp4", 'h');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(k) {
-    assertCorrect("choose_ki_2-25_FabricMask.mp4", 'k');
+    assertCorrect(evaluator, "choose_ki_2-25_FabricMask.mp4", 'k');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(m) {
-    assertCorrect("choose_mi_1-25_HospitalMask.mp4", 'm');
+    assertCorrect(evaluator, "choose_mi_1-25_HospitalMask.mp4", 'm');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(n) {
-    assertCorrect("choose_ni_3-25_HospitalMask.mp4", 'n');
+    assertCorrect(evaluator, "choose_ni_3-25_HospitalMask.mp4", 'n');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(p) {
-    assertCorrect("choose_pi_2-25_NoMask.mp4", 'p');
+    assertCorrect(evaluator, "choose_pi_2-25_NoMask.mp4", 'p');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(s) {
-    assertCorrect("choose_shi_2-25_Clear.mp4", 's');
+    assertCorrect(evaluator, "choose_shi_2-25_Clear.mp4", 's');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(t) {
-    assertCorrect("choose_ti_3-25_Communicator.mp4", 't');
+    assertCorrect(evaluator, "choose_ti_3-25_Communicator.mp4", 't');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(v) {
-    assertCorrect("choose_vi_3-25_FabricMask.mp4", 'v');
+    assertCorrect(evaluator, "choose_vi_3-25_FabricMask.mp4", 'v');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(z) {
-    assertCorrect("choose_zi_3-25_NoMask.mp4", 'z');
+    assertCorrect(evaluator, "choose_zi_3-25_NoMask.mp4", 'z');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(notB) {
-    assertIncorrect("choose_zi_3-25_NoMask.mp4", 'b');
+    assertIncorrect(evaluator, "choose_zi_3-25_NoMask.mp4", 'b');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(invalidFormatIsAlwaysIncorrect) {
-    assertIncorrect("idontknowb", 'b');
+    assertIncorrect(evaluator, "idontknowb", 'b');
 }
 
 CONSONANT_RESPONSE_EVALUATOR_TEST(parsesConsonant) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         'b', evaluator.correctConsonant({"choose_bi_1-25_Communicator.mp4"}));
 }
+
+class SyllableResponseEvaluatorTests : public ::testing::Test {
+  protected:
+    ResponseEvaluatorImpl evaluator{};
+};
+
+#define SYLLABLE_RESPONSE_EVALUATOR_TEST(a)                                    \
+    TEST_F(SyllableResponseEvaluatorTests, a)
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(b) {
+    assertCorrect(evaluator, "say_bi_1-25.mov", Syllable::bi);
 }
 }
