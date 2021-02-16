@@ -113,23 +113,19 @@ static auto stem(const LocalUrl &url) -> std::string {
 }
 
 static auto correctConsonant(const LocalUrl &url) -> char {
-    auto stem{av_speech_in_noise::stem(url)};
+    const auto stem{av_speech_in_noise::stem(url)};
     std::regex pattern{"choose_(.*?)_.*"};
     std::smatch match;
     std::regex_search(stem, match, pattern);
-    if (match.size() > 1)
-        return consonant(match[1]);
-    return '\0';
+    return match.size() > 1 ? consonant(match[1]) : '\0';
 }
 
 static auto correctSyllable(const LocalUrl &file) -> Syllable {
-    auto stem{av_speech_in_noise::stem(file)};
+    const auto stem{av_speech_in_noise::stem(file)};
     std::regex pattern{"say_(.*?)_.*"};
     std::smatch match;
     std::regex_search(stem, match, pattern);
-    if (match.size() > 1)
-        return syllable(match[1]);
-    return Syllable::unknown;
+    return match.size() > 1 ? syllable(match[1]) : Syllable::unknown;
 }
 
 static auto colorNameLength(const LocalUrl &url, gsl::index leadingPathLength_)
@@ -141,9 +137,12 @@ static auto colorNameLength(const LocalUrl &url, gsl::index leadingPathLength_)
 }
 
 static auto correctNumber_(const LocalUrl &url) -> int {
-    const auto leadingPathLength_{leadingPathLength(url)};
-    return std::stoi(subString(url.path,
-        leadingPathLength_ + colorNameLength(url, leadingPathLength_), 1));
+    const auto stem{av_speech_in_noise::stem(url)};
+    std::regex pattern{"[A-Za-z]*(\\d).*"};
+    std::smatch match;
+    std::regex_search(stem, match, pattern);
+    return match.size() > 1 ? std::stoi(match[1])
+                            : ResponseEvaluatorImpl::invalidNumber;
 }
 
 const int ResponseEvaluatorImpl::invalidNumber = -1;
