@@ -161,9 +161,12 @@ auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &url) -> int {
 
 auto ResponseEvaluatorImpl::correctColor(const LocalUrl &url)
     -> coordinate_response_measure::Color {
-    const auto leadingPathLength_{leadingPathLength(url)};
-    return color(subString(url.path, leadingPathLength_,
-        colorNameLength(url, leadingPathLength_)));
+    const auto stem{av_speech_in_noise::stem(url)};
+    std::regex pattern{"([A-Za-z]*).*"};
+    std::smatch match;
+    std::regex_search(stem, match, pattern);
+    return match.size() > 1 ? color(match[1])
+                            : coordinate_response_measure::Color::unknown;
 }
 
 auto ResponseEvaluatorImpl::fileName(const LocalUrl &url) -> std::string {
