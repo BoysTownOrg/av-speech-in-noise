@@ -6,8 +6,8 @@
 #include <filesystem>
 
 namespace av_speech_in_noise {
-static auto leadingPathLength(const std::string &filePath) -> gsl::index {
-    return filePath.find_last_of('/') + 1;
+static auto leadingPathLength(const LocalUrl &url) -> gsl::index {
+    return url.path.find_last_of('/') + 1;
 }
 
 static auto subString(
@@ -15,27 +15,21 @@ static auto subString(
     return s.substr(position, size);
 }
 
-static auto subString(const std::string &s, gsl::index position)
-    -> std::string {
-    return s.substr(position);
-}
-
 const int ResponseEvaluatorImpl::invalidNumber = -1;
 
-auto ResponseEvaluatorImpl::correct(const LocalUrl &filePath,
+auto ResponseEvaluatorImpl::correct(const LocalUrl &url,
     const coordinate_response_measure::Response &r) -> bool {
-    return correctNumber(filePath) == r.number &&
-        correctColor(filePath) == r.color &&
+    return correctNumber(url) == r.number && correctColor(url) == r.color &&
         r.color != coordinate_response_measure::Color::unknown &&
         r.number != invalidNumber;
 }
 
-static auto fileName(const LocalUrl &filePath) -> std::string {
-    return std::filesystem::path{filePath.path}.filename();
+static auto fileName(const LocalUrl &url) -> std::string {
+    return std::filesystem::path{url.path}.filename();
 }
 
-static auto stem(const LocalUrl &file) -> std::string {
-    return std::filesystem::path{file.path}.stem();
+static auto stem(const LocalUrl &url) -> std::string {
+    return std::filesystem::path{url.path}.stem();
 }
 
 static auto consonant(const std::string &match) -> char {
@@ -66,8 +60,8 @@ static auto consonant(const std::string &match) -> char {
     return '\0';
 }
 
-static auto correctConsonant(const LocalUrl &file) -> char {
-    auto stem{av_speech_in_noise::stem(file)};
+static auto correctConsonant(const LocalUrl &url) -> char {
+    auto stem{av_speech_in_noise::stem(url)};
     std::regex pattern{"choose_(.*?)_.*"};
     std::smatch match;
     std::regex_search(stem, match, pattern);
@@ -76,40 +70,40 @@ static auto correctConsonant(const LocalUrl &file) -> char {
     return '\0';
 }
 
-auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &file) -> char {
-    return av_speech_in_noise::correctConsonant(file);
+auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &url) -> char {
+    return av_speech_in_noise::correctConsonant(url);
 }
 
 auto ResponseEvaluatorImpl::correct(
-    const LocalUrl &file, const ConsonantResponse &r) -> bool {
-    return av_speech_in_noise::correctConsonant(file) == r.consonant;
+    const LocalUrl &url, const ConsonantResponse &r) -> bool {
+    return av_speech_in_noise::correctConsonant(url) == r.consonant;
 }
 
-static auto colorNameLength(
-    const LocalUrl &filePath, gsl::index leadingPathLength_) -> gsl::index {
-    auto fileNameBeginning = filePath.path.begin() + leadingPathLength_;
-    auto notAlpha = std::find_if(fileNameBeginning, filePath.path.end(),
+static auto colorNameLength(const LocalUrl &url, gsl::index leadingPathLength_)
+    -> gsl::index {
+    auto fileNameBeginning = url.path.begin() + leadingPathLength_;
+    auto notAlpha = std::find_if(fileNameBeginning, url.path.end(),
         [](unsigned char c) { return std::isalpha(c) == 0; });
     return std::distance(fileNameBeginning, notAlpha);
 }
 
-static auto correctNumber_(const LocalUrl &filePath) -> int {
-    auto leadingPathLength_ = leadingPathLength(filePath.path);
-    auto number = subString(filePath.path,
-        leadingPathLength_ + colorNameLength(filePath, leadingPathLength_), 1);
+static auto correctNumber_(const LocalUrl &url) -> int {
+    auto leadingPathLength_ = leadingPathLength(url);
+    auto number = subString(url.path,
+        leadingPathLength_ + colorNameLength(url, leadingPathLength_), 1);
     return std::stoi(number);
 }
 
-auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &filePath) -> int {
+auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &url) -> int {
     try {
-        return correctNumber_(filePath);
+        return correctNumber_(url);
     } catch (const std::invalid_argument &) {
         return invalidNumber;
     }
 }
 
-auto ResponseEvaluatorImpl::fileName(const LocalUrl &file) -> std::string {
-    return av_speech_in_noise::fileName(file);
+auto ResponseEvaluatorImpl::fileName(const LocalUrl &url) -> std::string {
+    return av_speech_in_noise::fileName(url);
 }
 
 static auto color(const std::string &colorName)
@@ -127,11 +121,11 @@ static auto color(const std::string &colorName)
     return Color::unknown;
 }
 
-auto ResponseEvaluatorImpl::correctColor(const LocalUrl &filePath)
+auto ResponseEvaluatorImpl::correctColor(const LocalUrl &url)
     -> coordinate_response_measure::Color {
-    auto leadingPathLength_ = leadingPathLength(filePath.path);
-    auto colorName = subString(filePath.path, leadingPathLength_,
-        colorNameLength(filePath, leadingPathLength_));
+    auto leadingPathLength_ = leadingPathLength(url);
+    auto colorName = subString(
+        url.path, leadingPathLength_, colorNameLength(url, leadingPathLength_));
     return color(colorName);
 }
 
