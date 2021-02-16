@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <regex>
+#include <filesystem>
 
 namespace av_speech_in_noise {
 static auto leadingPathLength(const std::string &filePath) -> gsl::index {
@@ -34,9 +35,7 @@ static auto fileName(const LocalUrl &filePath) -> std::string {
 }
 
 static auto stem(const LocalUrl &file) -> std::string {
-    const auto fileName{av_speech_in_noise::fileName(file)};
-    auto dot{fileName.find('.')};
-    return fileName.substr(0, dot);
+    return std::filesystem::path{file.path}.stem();
 }
 
 static auto consonant(const std::string &match) -> char {
