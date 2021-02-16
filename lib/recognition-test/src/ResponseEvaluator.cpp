@@ -95,15 +95,6 @@ static auto color(const std::string &colorName)
     return Color::unknown;
 }
 
-static auto leadingPathLength(const LocalUrl &url) -> gsl::index {
-    return url.path.find_last_of('/') + 1;
-}
-
-static auto subString(
-    const std::string &s, gsl::index position, gsl::index size) -> std::string {
-    return s.substr(position, size);
-}
-
 static auto fileName(const LocalUrl &url) -> std::string {
     return std::filesystem::path{url.path}.filename();
 }
@@ -128,15 +119,7 @@ static auto correctSyllable(const LocalUrl &file) -> Syllable {
     return match.size() > 1 ? syllable(match[1]) : Syllable::unknown;
 }
 
-static auto colorNameLength(const LocalUrl &url, gsl::index leadingPathLength_)
-    -> gsl::index {
-    const auto fileNameBeginning{url.path.begin() + leadingPathLength_};
-    return std::distance(fileNameBeginning,
-        std::find_if(fileNameBeginning, url.path.end(),
-            [](unsigned char c) { return std::isalpha(c) == 0; }));
-}
-
-static auto correctNumber_(const LocalUrl &url) -> int {
+static auto correctNumber(const LocalUrl &url) -> int {
     const auto stem{av_speech_in_noise::stem(url)};
     std::regex pattern{"[A-Za-z]*(\\d).*"};
     std::smatch match;
@@ -145,21 +128,7 @@ static auto correctNumber_(const LocalUrl &url) -> int {
                             : ResponseEvaluatorImpl::invalidNumber;
 }
 
-const int ResponseEvaluatorImpl::invalidNumber = -1;
-
-auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &url) -> char {
-    return av_speech_in_noise::correctConsonant(url);
-}
-
-auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &url) -> int {
-    try {
-        return correctNumber_(url);
-    } catch (const std::invalid_argument &) {
-        return invalidNumber;
-    }
-}
-
-auto ResponseEvaluatorImpl::correctColor(const LocalUrl &url)
+static auto correctColor(const LocalUrl &url)
     -> coordinate_response_measure::Color {
     const auto stem{av_speech_in_noise::stem(url)};
     std::regex pattern{"([A-Za-z]*).*"};
@@ -169,13 +138,29 @@ auto ResponseEvaluatorImpl::correctColor(const LocalUrl &url)
                             : coordinate_response_measure::Color::unknown;
 }
 
+const int ResponseEvaluatorImpl::invalidNumber = -1;
+
+auto ResponseEvaluatorImpl::correctColor(const LocalUrl &url)
+    -> coordinate_response_measure::Color {
+    return av_speech_in_noise::correctColor(url);
+}
+
+auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &url) -> char {
+    return av_speech_in_noise::correctConsonant(url);
+}
+
+auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &url) -> int {
+    return av_speech_in_noise::correctNumber(url);
+}
+
 auto ResponseEvaluatorImpl::fileName(const LocalUrl &url) -> std::string {
     return av_speech_in_noise::fileName(url);
 }
 
 auto ResponseEvaluatorImpl::correct(const LocalUrl &url,
     const coordinate_response_measure::Response &r) -> bool {
-    return correctNumber(url) == r.number && correctColor(url) == r.color &&
+    return av_speech_in_noise::correctNumber(url) == r.number &&
+        av_speech_in_noise::correctColor(url) == r.color &&
         r.color != coordinate_response_measure::Color::unknown &&
         r.number != invalidNumber;
 }
