@@ -67,13 +67,23 @@ static auto consonant(const std::string &match) -> char {
     return '\0';
 }
 
-auto ResponseEvaluatorImpl::correct(
-    const LocalUrl &file, const ConsonantResponse &r) -> bool {
+static auto correctConsonant(const LocalUrl &file) -> char {
     auto stem{av_speech_in_noise::stem(file)};
     std::regex pattern{"choose_(.*?)_.*"};
     std::smatch match;
     std::regex_search(stem, match, pattern);
-    return match.size() > 1 && consonant(match[1]) == r.consonant;
+    if (match.size() > 1)
+        return consonant(match[1]);
+    return '\0';
+}
+
+auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &file) -> char {
+    return av_speech_in_noise::correctConsonant(file);
+}
+
+auto ResponseEvaluatorImpl::correct(
+    const LocalUrl &file, const ConsonantResponse &r) -> bool {
+    return av_speech_in_noise::correctConsonant(file) == r.consonant;
 }
 
 static auto colorNameLength(
@@ -97,16 +107,6 @@ auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &filePath) -> int {
     } catch (const std::invalid_argument &) {
         return invalidNumber;
     }
-}
-
-auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &file) -> char {
-    auto stem{av_speech_in_noise::stem(file)};
-    std::regex pattern{"choose_(.*?)_.*"};
-    std::smatch match;
-    std::regex_search(stem, match, pattern);
-    if (match.size() > 1)
-        return consonant(match[1]);
-    return '\0';
 }
 
 auto ResponseEvaluatorImpl::fileName(const LocalUrl &file) -> std::string {
@@ -182,7 +182,7 @@ static auto syllable(const std::string &match) -> Syllable {
     return Syllable::unknown;
 }
 
-auto correctSyllable(const LocalUrl &file) -> Syllable {
+static auto correctSyllable(const LocalUrl &file) -> Syllable {
     auto stem{av_speech_in_noise::stem(file)};
     std::regex pattern{"say_(.*?)_.*"};
     std::smatch match;
