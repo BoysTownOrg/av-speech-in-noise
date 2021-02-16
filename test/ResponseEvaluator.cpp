@@ -211,7 +211,15 @@ class SyllableResponseEvaluatorTests : public ::testing::Test {
     TEST_F(SyllableResponseEvaluatorTests, a)
 }
 
-SYLLABLE_RESPONSE_EVALUATOR_TEST(b) {
+SYLLABLE_RESPONSE_EVALUATOR_TEST(bi) {
     assertCorrect(evaluator, "say_bi_1-25.mov", Syllable::bi);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(biAuditoryOnly) {
+    assertCorrect(evaluator, "say_bi_2-25ao.mov", Syllable::bi);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(biIncorrect) {
+    assertIncorrect(evaluator, "say_tsi_2-25.mov", Syllable::bi);
 }
 }
