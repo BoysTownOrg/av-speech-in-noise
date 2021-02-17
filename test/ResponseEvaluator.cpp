@@ -303,6 +303,10 @@ SYLLABLE_RESPONSE_EVALUATOR_TEST(biIncorrect) {
     assertIncorrect(evaluator, "say_tsi_2-25.mov", Syllable::bi);
 }
 
+SYLLABLE_RESPONSE_EVALUATOR_TEST(withParentPath) {
+    assertCorrect(evaluator, "/Users/bob/say_ti_2-25.mov", Syllable::ti);
+}
+
 CONSONANT_RESPONSE_EVALUATOR_TEST(parsesSyllable) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         Syllable::fi, evaluator.correctSyllable(LocalUrl{"say_fi_3-25ao.mov"}));
