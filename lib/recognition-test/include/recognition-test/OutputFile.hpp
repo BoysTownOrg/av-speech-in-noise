@@ -71,6 +71,8 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "third keyword evaluation";
     case HeadingItem::subjectSyllable:
         return "subject syllable";
+    case HeadingItem::correctSyllable:
+        return "correct syllable";
     }
 }
 
