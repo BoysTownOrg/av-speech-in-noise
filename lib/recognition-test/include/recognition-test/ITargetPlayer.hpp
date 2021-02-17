@@ -7,9 +7,6 @@
 #include <string>
 
 namespace av_speech_in_noise {
-class InvalidAudioFile {};
-class InvalidAudioDevice {};
-
 class TargetPlayer {
   public:
     class Observer {

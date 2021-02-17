@@ -6,6 +6,9 @@
 #include <cstdint>
 
 namespace av_speech_in_noise {
+class InvalidAudioFile {};
+class InvalidAudioDevice {};
+
 struct Duration {
     double seconds;
 };
