@@ -6,10 +6,6 @@
 #include "ITargetPlayer.hpp"
 #include "IMaskerPlayer.hpp"
 #include "IRecognitionTestModel.hpp"
-#include <gsl/gsl>
-#include <string>
-#include <vector>
-#include <cstdint>
 
 namespace av_speech_in_noise {
 class EyeTracker {
