@@ -3,7 +3,8 @@
 
 #include "Randomizer.hpp"
 #include "IResponseEvaluator.hpp"
-#include "Model.hpp"
+#include "IAdaptiveMethod.hpp"
+#include "IOutputFile.hpp"
 #include <limits>
 #include <memory>
 #include <vector>
