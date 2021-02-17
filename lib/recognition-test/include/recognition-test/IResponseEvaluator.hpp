@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_IRESPONSEEVALUATOR_HPP_
 
 #include <av-speech-in-noise/Model.hpp>
+#include <string>
 
 namespace av_speech_in_noise {
 class ResponseEvaluator {

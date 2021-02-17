@@ -9,9 +9,6 @@
 #include "IRecognitionTestModel.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
-#include <gsl/gsl>
-#include <cstdint>
-#include <vector>
 #include <string>
 #include <memory>
 

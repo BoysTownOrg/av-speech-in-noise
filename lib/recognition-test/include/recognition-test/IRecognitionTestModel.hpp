@@ -2,6 +2,8 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_IRECOGNITIONTEST_HPP_
 
 #include "TestMethod.hpp"
+#include <av-speech-in-noise/Model.hpp>
+#include <string>
 
 namespace av_speech_in_noise {
 class RecognitionTestModel {

@@ -3,6 +3,8 @@
 
 #include "TargetPlaylist.hpp"
 #include "TestMethod.hpp"
+#include <vector>
+#include <memory>
 
 namespace av_speech_in_noise {
 class TargetPlaylistReader {
