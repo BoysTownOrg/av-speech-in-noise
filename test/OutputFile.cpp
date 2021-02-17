@@ -489,11 +489,12 @@ class WritingThreeKeywordsTrial : public WritingTrial {
         {HeadingItem::thirdKeywordEvaluation, 4}};
 };
 
-class WritingSyllableTrial : public WritingTrial {
+class WritingSyllableTrial : public WritingEvaluatedTrial {
   public:
     WritingSyllableTrial() {
         trial.target = "a";
         trial.subjectSyllable = Syllable::ki;
+        trial.correctSyllable = Syllable::zi;
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
@@ -502,6 +503,8 @@ class WritingSyllableTrial : public WritingTrial {
             writer, "a", at(headingLabels_, HeadingItem::target), line);
         assertNthCommaDelimitedEntryOfLine(writer, "ki",
             at(headingLabels_, HeadingItem::subjectSyllable), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "zi",
+            at(headingLabels_, HeadingItem::correctSyllable), line);
     }
 
     void run(OutputFileImpl &file) override { file.write(trial); }
@@ -510,10 +513,19 @@ class WritingSyllableTrial : public WritingTrial {
         return headingLabels_;
     }
 
+    void incorrect() override { trial.correct = false; }
+
+    void correct() override { trial.correct = true; }
+
+    auto evaluationEntryIndex() -> gsl::index override {
+        return at(headingLabels_, HeadingItem::evaluation);
+    }
+
   private:
     SyllableTrial trial{};
     std::map<HeadingItem, gsl::index> headingLabels_{
-        {HeadingItem::target, 1}, {HeadingItem::subjectSyllable, 2}};
+        {HeadingItem::correctSyllable, 1}, {HeadingItem::subjectSyllable, 2},
+        {HeadingItem::evaluation, 3}, {HeadingItem::target, 4}};
 };
 
 class OutputFileTests : public ::testing::Test {
@@ -774,6 +786,10 @@ OUTPUT_FILE_TEST(writeIncorrectKeywordsTrial) {
     assertIncorrectTrialWritesEvaluation(writingCorrectKeywordsTrial);
 }
 
+OUTPUT_FILE_TEST(writeIncorrectSyllableTrial) {
+    assertIncorrectTrialWritesEvaluation(writingSyllableTrial);
+}
+
 OUTPUT_FILE_TEST(writeCorrectAdaptiveCoordinateResponseTrial) {
     assertCorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
 }
@@ -793,6 +809,10 @@ OUTPUT_FILE_TEST(writeCorrectOpenSetAdaptiveTrial) {
 
 OUTPUT_FILE_TEST(writeCorrectKeywordsTrialWritesCorrectEvaluation) {
     assertCorrectTrialWritesEvaluation(writingCorrectKeywordsTrial);
+}
+
+OUTPUT_FILE_TEST(writeCorrectSyllableTrial) {
+    assertCorrectTrialWritesEvaluation(writingSyllableTrial);
 }
 
 OUTPUT_FILE_TEST(writeFlaggedFreeResponseTrial) {

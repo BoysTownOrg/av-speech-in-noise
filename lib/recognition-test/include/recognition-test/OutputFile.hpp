@@ -25,7 +25,8 @@ enum class HeadingItem {
     firstKeywordEvaluation,
     secondKeywordEvaluation,
     thirdKeywordEvaluation,
-    subjectSyllable
+    subjectSyllable,
+    correctSyllable
 };
 
 constexpr auto name(HeadingItem i) -> const char * {

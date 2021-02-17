@@ -121,6 +121,10 @@ static auto evaluation(const coordinate_response_measure::Trial &trial)
     return evaluation(trial.correct);
 }
 
+static auto evaluation(const SyllableTrial &trial) -> std::string {
+    return evaluation(trial.correct);
+}
+
 static auto identity(const Test &test) -> TestIdentity { return test.identity; }
 
 static void write(std::stringstream &stream, const TestIdentity &identity) {
@@ -504,18 +508,26 @@ class SyllableTrialFormatter : public TrialFormatter {
 
     auto heading() -> std::string override {
         std::stringstream stream;
-        insert(stream, HeadingItem::target);
+        insert(stream, HeadingItem::correctSyllable);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::subjectSyllable);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::evaluation);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::target);
         insertNewLine(stream);
         return string(stream);
     }
 
     auto trial() -> std::string override {
         std::stringstream stream;
-        insert(stream, trial_.target);
+        insert(stream, trial_.correctSyllable);
         insertCommaAndSpace(stream);
         insert(stream, trial_.subjectSyllable);
+        insertCommaAndSpace(stream);
+        insert(stream, evaluation(trial_));
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.target);
         insertNewLine(stream);
         return string(stream);
     }
