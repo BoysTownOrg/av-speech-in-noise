@@ -25,11 +25,8 @@ class TestSetupViewStub : public TestSetupView {
 
     auto transducers() -> std::vector<std::string> { return transducers_; }
 
-    auto testSettingsFile() -> std::string { return testSettingsFile_; }
-
   private:
     std::vector<std::string> transducers_;
-    std::string testSettingsFile_;
     bool shown_{};
     bool hidden_{};
 };
@@ -168,7 +165,6 @@ class TestSetupPresenterStub : public TestSetupPresenter {
 
   private:
     std::string errorMessage_;
-    bool testSettingsFileShown_{};
 };
 
 class UseCase {

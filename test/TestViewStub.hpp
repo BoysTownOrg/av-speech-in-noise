@@ -14,7 +14,7 @@ class TestViewStub : public TestView {
 
     auto sheetMessage() -> std::string { return sheetMessage_; }
 
-    void showSheet(std::string_view s) { sheetMessage_ = s; }
+    void showSheet(std::string_view s) override { sheetMessage_ = s; }
 
     void setContinueTestingDialogMessage(const std::string &s) override {
         continueTestingDialogMessage_ = s;

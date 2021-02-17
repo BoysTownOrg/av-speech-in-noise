@@ -19,7 +19,7 @@ class SyllablesViewStub : public SyllablesView {
 
     [[nodiscard]] auto flagCleared() const -> bool { return flagCleared_; }
 
-    void clearFlag() { flagCleared_ = true; }
+    void clearFlag() override { flagCleared_ = true; }
 
   private:
     bool hidden_{};
