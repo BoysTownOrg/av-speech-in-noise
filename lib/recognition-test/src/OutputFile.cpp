@@ -515,7 +515,7 @@ class SyllableTrialFormatter : public TrialFormatter {
         std::stringstream stream;
         insert(stream, trial_.target);
         insertCommaAndSpace(stream);
-        insert(stream, trial_.syllable);
+        insert(stream, trial_.subjectSyllable);
         insertNewLine(stream);
         return string(stream);
     }

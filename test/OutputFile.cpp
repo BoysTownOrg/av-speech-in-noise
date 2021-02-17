@@ -493,7 +493,7 @@ class WritingSyllableTrial : public WritingTrial {
   public:
     WritingSyllableTrial() {
         trial.target = "a";
-        trial.syllable = Syllable::ki;
+        trial.subjectSyllable = Syllable::ki;
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
