@@ -391,7 +391,9 @@ void RecognitionTestModelImpl::submit(const SyllableResponse &p) {
     SyllableTrial trial;
     trial.subjectSyllable = p.syllable;
     trial.target = targetName(evaluator, testMethod);
-    trial.correctSyllable = evaluator.correctSyllable({});
+    trial.correctSyllable =
+        evaluator.correctSyllable(LocalUrl{targetName(evaluator, testMethod)});
+    trial.flagged = p.flagged;
     outputFile.write(trial);
     save(outputFile);
     prepareNextTrialIfNeeded();

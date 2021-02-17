@@ -1777,6 +1777,19 @@ RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesCorrectSyllable) {
         Syllable::gi, outputFile.syllableTrial().correctSyllable);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    submitSyllablePassesTargetNameToEvaluatorForCorrectSyllable) {
+    evaluator.setFileName("a");
+    run(submittingSyllable, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", evaluator.correctSyllableUrl().path);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesFlagged) {
+    syllableResponse.flagged = true;
+    run(submittingSyllable, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().flagged);
+}
+
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesFlagged) {
     freeResponse.flagged = true;
     run(submittingFreeResponse, model);
