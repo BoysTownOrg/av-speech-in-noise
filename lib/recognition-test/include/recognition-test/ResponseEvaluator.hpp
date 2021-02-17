@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_RESPONSEEVALUATOR_HPP_
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_RESPONSEEVALUATOR_HPP_
 
-#include "Model.hpp"
+#include "IResponseEvaluator.hpp"
 
 namespace av_speech_in_noise {
 class ResponseEvaluatorImpl : public ResponseEvaluator {

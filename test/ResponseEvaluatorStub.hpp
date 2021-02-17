@@ -1,7 +1,7 @@
 #ifndef TESTS_RESPONSEEVALUATORSTUB_HPP_
 #define TESTS_RESPONSEEVALUATORSTUB_HPP_
 
-#include <recognition-test/Model.hpp>
+#include <recognition-test/IResponseEvaluator.hpp>
 #include <utility>
 
 namespace av_speech_in_noise {

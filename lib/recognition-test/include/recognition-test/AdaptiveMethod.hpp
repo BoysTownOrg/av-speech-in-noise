@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_ADAPTIVEMETHOD_HPP_
 
 #include "Randomizer.hpp"
+#include "IResponseEvaluator.hpp"
 #include "Model.hpp"
 #include <limits>
 #include <memory>
