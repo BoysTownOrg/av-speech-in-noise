@@ -215,6 +215,86 @@ SYLLABLE_RESPONSE_EVALUATOR_TEST(bi) {
     assertCorrect(evaluator, "say_bi_1-25.mov", Syllable::bi);
 }
 
+SYLLABLE_RESPONSE_EVALUATOR_TEST(di) {
+    assertCorrect(evaluator, "say_di_3-25.mov", Syllable::di);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(dji) {
+    assertCorrect(evaluator, "say_dji_3-25.mov", Syllable::dji);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(fi) {
+    assertCorrect(evaluator, "say_fi_2-25ao.mov", Syllable::fi);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(gi) {
+    assertCorrect(evaluator, "say_gi_1-25ao.mov", Syllable::gi);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(hi) {
+    assertCorrect(evaluator, "say_hi_2-25ao.mov", Syllable::hi);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(ji) {
+    assertCorrect(evaluator, "say_ji_2-25.mov", Syllable::ji);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(ki) {
+    assertCorrect(evaluator, "say_ki_3-25.mov", Syllable::ki);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(li) {
+    assertCorrect(evaluator, "say_li_1-25.mov", Syllable::li);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(mi) {
+    assertCorrect(evaluator, "say_mi_1-25ao.mov", Syllable::mi);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(ni) {
+    assertCorrect(evaluator, "say_ni_2-25ao.mov", Syllable::ni);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(pi) {
+    assertCorrect(evaluator, "say_pi_2-25ao.mov", Syllable::pi);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(ri) {
+    assertCorrect(evaluator, "say_ri_2-25.mov", Syllable::ri);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(shi) {
+    assertCorrect(evaluator, "say_shi_1-25.mov", Syllable::shi);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(si) {
+    assertCorrect(evaluator, "say_si_3-25.mov", Syllable::si);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(thi) {
+    assertCorrect(evaluator, "say_thi_3-25ao.mov", Syllable::thi);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(ti) {
+    assertCorrect(evaluator, "say_ti_1-25ao.mov", Syllable::ti);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(tsi) {
+    assertCorrect(evaluator, "say_tsi_1-25ao.mov", Syllable::tsi);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(vi) {
+    assertCorrect(evaluator, "say_vi_2-25ao.mov", Syllable::vi);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(wi) {
+    assertCorrect(evaluator, "say_wi_1-25ao.mov", Syllable::wi);
+}
+
+SYLLABLE_RESPONSE_EVALUATOR_TEST(zi) {
+    assertCorrect(evaluator, "say_zi_1-25.mov", Syllable::zi);
+}
+
 SYLLABLE_RESPONSE_EVALUATOR_TEST(biAuditoryOnly) {
     assertCorrect(evaluator, "say_bi_2-25ao.mov", Syllable::bi);
 }
