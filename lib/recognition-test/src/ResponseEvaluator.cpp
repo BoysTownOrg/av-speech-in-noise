@@ -172,6 +172,10 @@ auto ResponseEvaluatorImpl::correct(
 
 auto ResponseEvaluatorImpl::correct(
     const LocalUrl &url, const SyllableResponse &response) -> bool {
-    return correctSyllable(url) == response.syllable;
+    return av_speech_in_noise::correctSyllable(url) == response.syllable;
+}
+
+auto ResponseEvaluatorImpl::correctSyllable(const LocalUrl &url) -> Syllable {
+    return av_speech_in_noise::correctSyllable(url);
 }
 }

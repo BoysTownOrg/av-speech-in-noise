@@ -15,6 +15,7 @@ class ResponseEvaluatorImpl : public ResponseEvaluator {
     auto correctConsonant(const LocalUrl &) -> char override;
     auto correctColor(const LocalUrl &)
         -> coordinate_response_measure::Color override;
+    auto correctSyllable(const LocalUrl &) -> Syllable;
     auto fileName(const LocalUrl &) -> std::string override;
 };
 }
