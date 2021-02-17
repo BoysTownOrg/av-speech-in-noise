@@ -12,6 +12,8 @@ class ResponseEvaluator {
         const coordinate_response_measure::Response &) -> bool = 0;
     virtual auto correct(const LocalUrl &, const ConsonantResponse &)
         -> bool = 0;
+    virtual auto correct(const LocalUrl &, const SyllableResponse &)
+        -> bool = 0;
     virtual auto correctColor(const LocalUrl &)
         -> coordinate_response_measure::Color = 0;
     virtual auto correctNumber(const LocalUrl &) -> int = 0;

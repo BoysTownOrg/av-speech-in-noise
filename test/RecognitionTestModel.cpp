@@ -1784,6 +1784,12 @@ RECOGNITION_TEST_MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", evaluator.correctSyllableUrl().path);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submitCorrectSyllable) {
+    evaluator.setSyllableIsCorrect();
+    run(submittingSyllable, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().correct);
+}
+
 RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesFlagged) {
     syllableResponse.flagged = true;
     run(submittingSyllable, model);
