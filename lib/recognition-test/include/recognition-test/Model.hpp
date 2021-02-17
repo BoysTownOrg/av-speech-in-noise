@@ -86,6 +86,8 @@ struct ThreeKeywordsTrial : ThreeKeywordsResponse, open_set::Trial {};
 
 struct SyllableTrial : SyllableResponse, open_set::Trial {
     Syllable correctSyllable{};
+    Syllable subjectSyllable{};
+    bool correct{};
 };
 
 struct FreeResponseTrial : FreeResponse, open_set::Trial {};

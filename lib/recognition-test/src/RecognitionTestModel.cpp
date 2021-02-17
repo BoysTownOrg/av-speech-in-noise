@@ -388,7 +388,7 @@ void RecognitionTestModelImpl::submit(const ThreeKeywordsResponse &p) {
 void RecognitionTestModelImpl::submit(const SyllableResponse &p) {
     testMethod->submit(p);
     SyllableTrial trial;
-    trial.syllable = p.syllable;
+    trial.subjectSyllable = p.syllable;
     trial.target = targetName(evaluator, testMethod);
     trial.correctSyllable = evaluator.correctSyllable({});
     outputFile.write(trial);

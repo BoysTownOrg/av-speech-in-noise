@@ -1763,11 +1763,11 @@ RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesEachKeywordEvaluation) {
         outputFile.threeKeywordsTrial().thirdCorrect);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesSyllable) {
+RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesSubjectSyllable) {
     syllableResponse.syllable = Syllable::gi;
     run(submittingSyllable, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Syllable::gi, outputFile.syllableTrial().syllable);
+        Syllable::gi, outputFile.syllableTrial().subjectSyllable);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesCorrectSyllable) {
