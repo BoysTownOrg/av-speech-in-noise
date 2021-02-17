@@ -1778,15 +1778,17 @@ RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesCorrectSyllable) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    submitSyllablePassesTargetNameToEvaluatorForCorrectSyllable) {
-    evaluator.setFileName("a");
+    submitSyllablePassesTargetToEvaluatorForCorrectSyllable) {
+    run(initializingTest, model);
+    testMethod.setCurrentTarget("a");
     run(submittingSyllable, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", evaluator.correctSyllableUrl().path);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     submitSyllablePassesTargetNameToEvaluatorForCorrectness) {
-    evaluator.setFileName("a");
+    run(initializingTest, model);
+    testMethod.setCurrentTarget("a");
     run(submittingSyllable, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", evaluator.isSyllableCorrectUrl().path);
 }

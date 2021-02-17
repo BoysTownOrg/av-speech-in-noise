@@ -105,9 +105,13 @@ static void play(TargetPlayer &player) { player.play(); }
 
 static void play(MaskerPlayer &player) { player.play(); }
 
+static auto currentTarget(TestMethod *testMethod) -> LocalUrl {
+    return testMethod->currentTarget();
+}
+
 static auto targetName(ResponseEvaluator &evaluator, TestMethod *testMethod)
     -> std::string {
-    return evaluator.fileName(testMethod->currentTarget());
+    return evaluator.fileName(currentTarget(testMethod));
 }
 
 static void save(OutputFile &file) { file.save(); }
@@ -392,9 +396,8 @@ void RecognitionTestModelImpl::submit(const SyllableResponse &p) {
     trial.subjectSyllable = p.syllable;
     trial.target = targetName(evaluator, testMethod);
     trial.correctSyllable =
-        evaluator.correctSyllable(LocalUrl{targetName(evaluator, testMethod)});
-    trial.correct =
-        evaluator.correct(LocalUrl{targetName(evaluator, testMethod)}, p);
+        evaluator.correctSyllable(currentTarget(testMethod));
+    trial.correct = evaluator.correct(currentTarget(testMethod), p);
     trial.flagged = p.flagged;
     outputFile.write(trial);
     save(outputFile);
