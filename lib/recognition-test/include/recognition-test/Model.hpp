@@ -8,9 +8,6 @@
 #include "IFixedLevelMethod.hpp"
 #include "IRecognitionTestModel.hpp"
 #include <av-speech-in-noise/Model.hpp>
-#include <av-speech-in-noise/Interface.hpp>
-#include <string>
-#include <memory>
 
 namespace av_speech_in_noise {
 class ModelImpl : public Model {

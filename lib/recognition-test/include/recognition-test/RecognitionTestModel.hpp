@@ -3,6 +3,7 @@
 
 #include "Randomizer.hpp"
 #include "IResponseEvaluator.hpp"
+#include "ITargetPlayer.hpp"
 #include "IRecognitionTestModel.hpp"
 #include <gsl/gsl>
 #include <string>
@@ -10,68 +11,6 @@
 #include <cstdint>
 
 namespace av_speech_in_noise {
-class InvalidAudioDevice {};
-class InvalidAudioFile {};
-
-struct Duration {
-    double seconds;
-};
-
-struct Delay : Duration {
-    explicit constexpr Delay(double seconds = 0.) : Duration{seconds} {}
-};
-
-using player_system_time_type = std::uintmax_t;
-
-struct PlayerTime {
-    player_system_time_type system{};
-};
-
-struct PlayerTimeWithDelay {
-    PlayerTime playerTime;
-    Delay delay{};
-};
-
-struct DigitalLevel {
-    double dBov;
-};
-
-struct LevelAmplification {
-    double dB;
-};
-
-class TargetPlayer {
-  public:
-    class Observer {
-      public:
-        virtual ~Observer() = default;
-        virtual void playbackComplete() {}
-        virtual void notifyThatPreRollHasCompleted() = 0;
-    };
-
-    virtual ~TargetPlayer() = default;
-    virtual void attach(Observer *) = 0;
-    virtual void setAudioDevice(std::string) = 0;
-    virtual void play() = 0;
-    virtual void playAt(const PlayerTimeWithDelay &) = 0;
-    virtual auto playing() -> bool = 0;
-    virtual void loadFile(const LocalUrl &) = 0;
-    virtual void hideVideo() = 0;
-    virtual void showVideo() = 0;
-    virtual auto digitalLevel() -> DigitalLevel = 0;
-    virtual void apply(LevelAmplification) = 0;
-    virtual void subscribeToPlaybackCompletion() {}
-    virtual auto duration() -> Duration = 0;
-    virtual void useAllChannels() = 0;
-    virtual void useFirstChannelOnly() = 0;
-    virtual void preRoll() = 0;
-};
-
-struct AudioSampleTimeWithOffset {
-    PlayerTime playerTime;
-    gsl::index sampleOffset;
-};
-
 class MaskerPlayer {
   public:
     class Observer {
