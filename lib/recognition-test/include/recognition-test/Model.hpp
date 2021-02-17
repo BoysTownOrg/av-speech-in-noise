@@ -84,7 +84,9 @@ struct ConsonantTrial : Target {
 
 struct ThreeKeywordsTrial : ThreeKeywordsResponse, open_set::Trial {};
 
-struct SyllableTrial : SyllableResponse, open_set::Trial {};
+struct SyllableTrial : SyllableResponse, open_set::Trial {
+    Syllable correctSyllable{};
+};
 
 struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
@@ -123,6 +125,7 @@ class ResponseEvaluator {
         -> coordinate_response_measure::Color = 0;
     virtual auto correctNumber(const LocalUrl &) -> int = 0;
     virtual auto correctConsonant(const LocalUrl &) -> char = 0;
+    virtual auto correctSyllable(const LocalUrl &) -> Syllable = 0;
     virtual auto fileName(const LocalUrl &) -> std::string = 0;
 };
 

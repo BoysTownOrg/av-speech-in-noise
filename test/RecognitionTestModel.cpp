@@ -1770,6 +1770,13 @@ RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesSyllable) {
         Syllable::gi, outputFile.syllableTrial().syllable);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesCorrectSyllable) {
+    evaluator.setCorrectSyllable(Syllable::gi);
+    run(submittingSyllable, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Syllable::gi, outputFile.syllableTrial().correctSyllable);
+}
+
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesFlagged) {
     freeResponse.flagged = true;
     run(submittingFreeResponse, model);
