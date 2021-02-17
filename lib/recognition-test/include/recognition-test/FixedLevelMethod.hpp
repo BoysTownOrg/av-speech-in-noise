@@ -2,7 +2,8 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_FIXEDLEVELMETHOD_HPP_
 
 #include "IResponseEvaluator.hpp"
-#include "Model.hpp"
+#include "IFixedLevelMethod.hpp"
+#include "OutputFile.hpp"
 
 namespace av_speech_in_noise {
 class FixedLevelMethodImpl : public FixedLevelMethod {

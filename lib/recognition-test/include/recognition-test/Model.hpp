@@ -5,6 +5,7 @@
 #include "TestMethod.hpp"
 #include "IOutputFile.hpp"
 #include "IAdaptiveMethod.hpp"
+#include "IFixedLevelMethod.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <gsl/gsl>
@@ -14,18 +15,6 @@
 #include <memory>
 
 namespace av_speech_in_noise {
-class FixedLevelMethod : public virtual TestMethod {
-  public:
-    virtual void initialize(const FixedLevelTest &, FiniteTargetPlaylist *) = 0;
-    virtual void initialize(
-        const FixedLevelTest &, FiniteTargetPlaylistWithRepeatables *) = 0;
-    virtual void initialize(
-        const FixedLevelFixedTrialsTest &, TargetPlaylist *) = 0;
-    virtual void submit(const ConsonantResponse &) = 0;
-    virtual void writeLastConsonant(OutputFile &) = 0;
-    virtual auto keywordsTestResults() -> KeywordsTestResults = 0;
-};
-
 class RecognitionTestModel {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RecognitionTestModel);
