@@ -88,9 +88,13 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
 
     void setSyllableIsCorrect() { syllableIsCorrect = true; }
 
-    auto correct(const LocalUrl &, const SyllableResponse &) -> bool {
+    auto correct(const LocalUrl &url, const SyllableResponse &)
+        -> bool override {
+        isSyllableCorrectUrl_ = url;
         return syllableIsCorrect;
     }
+
+    auto isSyllableCorrectUrl() -> LocalUrl { return isSyllableCorrectUrl_; }
 
   private:
     std::string correctTarget_;
@@ -98,6 +102,7 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
     std::string correctColorFilePath_;
     std::string fileName_;
     std::string filePathForFileName_;
+    LocalUrl isSyllableCorrectUrl_;
     LocalUrl correctSyllableUrl_;
     LocalUrl correctConsonantUrl_;
     LocalUrl correctUrlForConsonantResponse_;
