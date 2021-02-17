@@ -3,7 +3,7 @@
 
 #include "Randomizer.hpp"
 #include "IResponseEvaluator.hpp"
-#include "Model.hpp"
+#include "IRecognitionTestModel.hpp"
 #include <gsl/gsl>
 #include <string>
 #include <vector>

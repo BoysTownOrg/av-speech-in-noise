@@ -1,4 +1,5 @@
 #include "RecognitionTestModel.hpp"
+#include "IOutputFile.hpp"
 #include <gsl/gsl>
 #include <cmath>
 #include <functional>
