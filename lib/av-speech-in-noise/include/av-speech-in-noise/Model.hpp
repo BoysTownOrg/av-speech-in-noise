@@ -157,6 +157,37 @@ struct Calibration : AudioSettings {
 
 using AudioDevices = typename std::vector<std::string>;
 
+struct EyeGaze {
+    float x;
+    float y;
+};
+
+struct EyeTrackerSystemTime {
+    std::int_least64_t microseconds;
+};
+
+struct TargetPlayerSystemTime {
+    std::uintmax_t nanoseconds;
+};
+
+struct EyeTrackerTargetPlayerSynchronization {
+    EyeTrackerSystemTime eyeTrackerSystemTime;
+    TargetPlayerSystemTime targetPlayerSystemTime;
+};
+
+struct BinocularGazeSample {
+    EyeTrackerSystemTime systemTime;
+    EyeGaze left;
+    EyeGaze right;
+};
+
+using BinocularGazeSamples = typename std::vector<BinocularGazeSample>;
+
+struct TargetStartTime : TargetPlayerSystemTime {
+    explicit constexpr TargetStartTime(std::uintmax_t nanoseconds = 0)
+        : TargetPlayerSystemTime{nanoseconds} {}
+};
+
 class Model {
   public:
     class Observer {
