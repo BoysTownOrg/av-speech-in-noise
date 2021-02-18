@@ -818,7 +818,8 @@ OUTPUT_FILE_TEST(writeCorrectSyllableTrial) {
 OUTPUT_FILE_TEST(writeFlaggedFreeResponseTrial) {
     freeResponseTrial.flagged = true;
     write(file, freeResponseTrial);
-    assertNthEntryOfSecondLine(writer, "FLAGGED", 3);
+    assertNthEntryOfSecondLine(
+        writer, "FLAGGED", writingFreeResponseTrial.headingLabels().size() + 1);
 }
 
 OUTPUT_FILE_TEST(writeNoFlagFreeResponseTrialOnlyTwoEntries) {
@@ -828,7 +829,33 @@ OUTPUT_FILE_TEST(writeNoFlagFreeResponseTrialOnlyTwoEntries) {
         find_nth_element(writtenString(writer), 2 - 1, '\n')};
     const auto line_{writtenString(writer).substr(precedingNewLine + 1)};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::iterator_traits<std::string::iterator>::difference_type{2 - 1},
+        static_cast<
+            std::iterator_traits<std::string::iterator>::difference_type>(
+            writingFreeResponseTrial.headingLabels().size()) -
+            1,
+        std::count(line_.begin(), line_.end(), ','));
+}
+
+OUTPUT_FILE_TEST(writeFlaggedSyllablesTrial) {
+    SyllableTrial syllableTrial;
+    syllableTrial.flagged = true;
+    file.write(syllableTrial);
+    assertNthEntryOfSecondLine(
+        writer, "FLAGGED", writingSyllableTrial.headingLabels().size() + 1);
+}
+
+OUTPUT_FILE_TEST(writeNoFlagSyllablesTrialDoesNotHaveExtraEntry) {
+    SyllableTrial syllableTrial;
+    syllableTrial.flagged = false;
+    file.write(syllableTrial);
+    const auto precedingNewLine{
+        find_nth_element(writtenString(writer), 2 - 1, '\n')};
+    const auto line_{writtenString(writer).substr(precedingNewLine + 1)};
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        static_cast<
+            std::iterator_traits<std::string::iterator>::difference_type>(
+            writingSyllableTrial.headingLabels().size()) -
+            1,
         std::count(line_.begin(), line_.end(), ','));
 }
 

@@ -528,6 +528,10 @@ class SyllableTrialFormatter : public TrialFormatter {
         insert(stream, evaluation(trial_));
         insertCommaAndSpace(stream);
         insert(stream, trial_.target);
+        if (trial_.flagged) {
+            insertCommaAndSpace(stream);
+            insert(stream, "FLAGGED");
+        }
         insertNewLine(stream);
         return string(stream);
     }
