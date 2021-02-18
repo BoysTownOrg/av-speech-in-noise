@@ -414,8 +414,9 @@ void RecognitionTestModelImpl::submitCorrectResponse() {
 }
 
 void RecognitionTestModelImpl::submitIncorrectResponse() {
-    save(outputFile);
-    prepareNextTrialIfNeeded();
+    saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
+        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
+        fullScaleLevel_);
 }
 
 void RecognitionTestModelImpl::submit(
