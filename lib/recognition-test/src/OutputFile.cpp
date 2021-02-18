@@ -59,10 +59,7 @@ static auto insertNewLine(std::ostream &stream) -> std::ostream & {
 template <typename T>
 auto writeLabeledLine(std::ostream &stream, const std::string &label, T thing)
     -> std::ostream & {
-    insert(stream, label);
-    insert(stream, ": ");
-    insert(stream, thing);
-    return insertNewLine(stream);
+    return insertNewLine(insert(insert(insert(stream, label), ": "), thing));
 }
 
 static auto string(const std::stringstream &stream) -> std::string {
@@ -145,18 +142,22 @@ static auto evaluation(const SyllableTrial &trial) -> std::string {
 
 static auto identity(const Test &test) -> TestIdentity { return test.identity; }
 
-static void write(std::stringstream &stream, const TestIdentity &identity) {
-    writeSubjectId(stream, identity);
-    writeTester(stream, identity);
-    writeSession(stream, identity);
-    writeMethod(stream, identity);
-    writeRmeSetting(stream, identity);
-    writeTransducer(stream, identity);
+static auto operator<<(std::ostream &stream, const TestIdentity &identity)
+    -> std::ostream & {
+    return writeTransducer(
+        writeRmeSetting(
+            writeMethod(
+                writeSession(
+                    writeTester(writeSubjectId(stream, identity), identity),
+                    identity),
+                identity),
+            identity),
+        identity);
 }
 
-static auto format(const AdaptiveTest &test) -> std::string {
-    std::stringstream stream;
-    write(stream, identity(test));
+static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
+    -> std::ostream & {
+    stream << identity(test);
     writeMasker(stream, test);
     writeTargetPlaylist(stream, test);
     writeMaskerLevel(stream, test);
@@ -177,24 +178,22 @@ static auto format(const AdaptiveTest &test) -> std::string {
     writeLabeledLine(stream, "reversals per step size", runCounts);
     writeLabeledLine(stream, "step sizes (dB)", stepSizes);
     writeLabeledLine(stream, "threshold reversals", test.thresholdReversals);
-    insertNewLine(stream);
-    return string(stream);
+    return insertNewLine(stream);
 }
 
-static auto format(const FixedLevelTest &test) -> std::string {
-    std::stringstream stream;
-    write(stream, identity(test));
+static auto operator<<(std::ostream &stream, const FixedLevelTest &test)
+    -> std::ostream & {
+    stream << identity(test);
     writeMasker(stream, test);
     writeTargetPlaylist(stream, test);
     writeMaskerLevel(stream, test);
     writeLabeledLine(stream, "SNR (dB)", test.snr.dB);
     writeCondition(stream, test);
-    insertNewLine(stream);
-    return string(stream);
+    return insertNewLine(stream);
 }
 
-static auto format(const BinocularGazeSamples &gazeSamples) -> std::string {
-    std::stringstream stream;
+static auto operator<<(std::ostream &stream,
+    const BinocularGazeSamples &gazeSamples) -> std::ostream & {
     insert(stream, name(HeadingItem::eyeTrackerTime));
     insertCommaAndSpace(stream);
     insert(stream, name(HeadingItem::leftGaze));
@@ -212,19 +211,16 @@ static auto format(const BinocularGazeSamples &gazeSamples) -> std::string {
         insert(stream, " ");
         insert(stream, g.right.y);
     });
-    insertNewLine(stream);
-    return stream.str();
+    return insertNewLine(stream);
 }
 
-static auto format(TargetStartTime t) -> std::string {
-    std::stringstream stream;
-    writeLabeledLine(stream, "target start time (ns)", t.nanoseconds);
-    return stream.str();
+static auto operator<<(std::ostream &stream, TargetStartTime t)
+    -> std::ostream & {
+    return writeLabeledLine(stream, "target start time (ns)", t.nanoseconds);
 }
 
-static auto format(const EyeTrackerTargetPlayerSynchronization &s)
-    -> std::string {
-    std::stringstream stream;
+static auto operator<<(std::ostream &stream,
+    const EyeTrackerTargetPlayerSynchronization &s) -> std::ostream & {
     insert(stream, HeadingItem::eyeTrackerTime);
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::targetPlayerTime);
@@ -232,15 +228,13 @@ static auto format(const EyeTrackerTargetPlayerSynchronization &s)
     insert(stream, s.eyeTrackerSystemTime.microseconds);
     insertCommaAndSpace(stream);
     insert(stream, s.targetPlayerSystemTime.nanoseconds);
-    insertNewLine(stream);
-    return stream.str();
+    return insertNewLine(stream);
 }
 
-static auto format(const AdaptiveTestResult &result) -> std::string {
-    std::stringstream stream;
-    writeLabeledLine(
+static auto operator<<(std::ostream &stream, const AdaptiveTestResult &result)
+    -> std::ostream & {
+    return writeLabeledLine(
         stream, "threshold for " + result.targetsUrl.path, result.threshold);
-    return string(stream);
 }
 
 namespace {
@@ -625,18 +619,34 @@ void OutputFileImpl::write(const SyllableTrial &trial) {
     av_speech_in_noise::write(writer, formatter, currentTrial, Trial::Syllable);
 }
 
-void OutputFileImpl::write(const AdaptiveTest &test) { write(format(test)); }
-
-void OutputFileImpl::write(const FixedLevelTest &test) { write(format(test)); }
-
-void OutputFileImpl::write(const BinocularGazeSamples &gazeSamples) {
-    write(format(gazeSamples));
+void OutputFileImpl::write(const AdaptiveTest &test) {
+    std::stringstream stream;
+    stream << test;
+    write(string(stream));
 }
 
-void OutputFileImpl::write(TargetStartTime t) { write(format(t)); }
+void OutputFileImpl::write(const FixedLevelTest &test) {
+    std::stringstream stream;
+    stream << test;
+    write(string(stream));
+}
+
+void OutputFileImpl::write(const BinocularGazeSamples &gazeSamples) {
+    std::stringstream stream;
+    stream << gazeSamples;
+    write(string(stream));
+}
+
+void OutputFileImpl::write(TargetStartTime t) {
+    std::stringstream stream;
+    stream << t;
+    write(string(stream));
+}
 
 void OutputFileImpl::write(const EyeTrackerTargetPlayerSynchronization &s) {
-    write(format(s));
+    std::stringstream stream;
+    stream << s;
+    write(string(stream));
 }
 
 void OutputFileImpl::openNewFile(const TestIdentity &test) {
@@ -656,7 +666,9 @@ void OutputFileImpl::close() { writer.close(); }
 void OutputFileImpl::save() { writer.save(); }
 
 void OutputFileImpl::write(const AdaptiveTestResults &results) {
+    std::stringstream stream;
     for (const auto &result : results)
-        write(format(result));
+        stream << result;
+    write(string(stream));
 }
 }
