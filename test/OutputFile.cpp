@@ -107,6 +107,12 @@ class WritingEvaluatedTrial : public virtual WritingTrial {
     virtual auto evaluationEntryIndex() -> gsl::index = 0;
 };
 
+class WritingFlaggableTrial : public virtual WritingTrial {
+  public:
+    virtual void flag() = 0;
+    virtual void clearFlag() = 0;
+};
+
 void setCorrect(coordinate_response_measure::Trial &trial) {
     trial.correct = true;
 }
@@ -427,7 +433,7 @@ class WritingConsonantTrial : public WritingEvaluatedTrial {
         {HeadingItem::evaluation, 3}, {HeadingItem::target, 4}};
 };
 
-class WritingFreeResponseTrial : public WritingTrial {
+class WritingFreeResponseTrial : public WritingFlaggableTrial {
   public:
     WritingFreeResponseTrial() {
         trial.target = "a";
@@ -448,13 +454,17 @@ class WritingFreeResponseTrial : public WritingTrial {
         return headingLabels_;
     }
 
+    void flag() override { trial.flagged = true; }
+
+    void clearFlag() override { trial.flagged = false; }
+
   private:
     FreeResponseTrial trial{};
     std::map<HeadingItem, gsl::index> headingLabels_{
         {HeadingItem::target, 1}, {HeadingItem::freeResponse, 2}};
 };
 
-class WritingThreeKeywordsTrial : public WritingTrial {
+class WritingThreeKeywordsTrial : public WritingFlaggableTrial {
   public:
     WritingThreeKeywordsTrial() {
         trial.target = "a";
@@ -481,6 +491,10 @@ class WritingThreeKeywordsTrial : public WritingTrial {
         return headingLabels_;
     }
 
+    void flag() override { trial.flagged = true; }
+
+    void clearFlag() override { trial.flagged = false; }
+
   private:
     ThreeKeywordsTrial trial{};
     std::map<HeadingItem, gsl::index> headingLabels_{{HeadingItem::target, 1},
@@ -489,7 +503,8 @@ class WritingThreeKeywordsTrial : public WritingTrial {
         {HeadingItem::thirdKeywordEvaluation, 4}};
 };
 
-class WritingSyllableTrial : public WritingEvaluatedTrial {
+class WritingSyllableTrial : public WritingEvaluatedTrial,
+                             public WritingFlaggableTrial {
   public:
     WritingSyllableTrial() {
         trial.target = "a";
@@ -520,6 +535,10 @@ class WritingSyllableTrial : public WritingEvaluatedTrial {
     auto evaluationEntryIndex() -> gsl::index override {
         return at(headingLabels_, HeadingItem::evaluation);
     }
+
+    void flag() override { trial.flagged = true; }
+
+    void clearFlag() override { trial.flagged = false; }
 
   private:
     SyllableTrial trial{};
@@ -816,15 +835,15 @@ OUTPUT_FILE_TEST(writeCorrectSyllableTrial) {
 }
 
 OUTPUT_FILE_TEST(writeFlaggedFreeResponseTrial) {
-    freeResponseTrial.flagged = true;
-    write(file, freeResponseTrial);
+    writingFreeResponseTrial.flag();
+    run(writingFreeResponseTrial, file);
     assertNthEntryOfSecondLine(
         writer, "FLAGGED", writingFreeResponseTrial.headingLabels().size() + 1);
 }
 
 OUTPUT_FILE_TEST(writeNoFlagFreeResponseTrialOnlyTwoEntries) {
-    freeResponseTrial.flagged = false;
-    write(file, freeResponseTrial);
+    writingFreeResponseTrial.clearFlag();
+    run(writingFreeResponseTrial, file);
     const auto precedingNewLine{
         find_nth_element(writtenString(writer), 2 - 1, '\n')};
     const auto line_{writtenString(writer).substr(precedingNewLine + 1)};
@@ -837,17 +856,15 @@ OUTPUT_FILE_TEST(writeNoFlagFreeResponseTrialOnlyTwoEntries) {
 }
 
 OUTPUT_FILE_TEST(writeFlaggedSyllablesTrial) {
-    SyllableTrial syllableTrial;
-    syllableTrial.flagged = true;
-    file.write(syllableTrial);
+    writingSyllableTrial.flag();
+    run(writingSyllableTrial, file);
     assertNthEntryOfSecondLine(
         writer, "FLAGGED", writingSyllableTrial.headingLabels().size() + 1);
 }
 
 OUTPUT_FILE_TEST(writeNoFlagSyllablesTrialDoesNotHaveExtraEntry) {
-    SyllableTrial syllableTrial;
-    syllableTrial.flagged = false;
-    file.write(syllableTrial);
+    writingSyllableTrial.clearFlag();
+    run(writingSyllableTrial, file);
     const auto precedingNewLine{
         find_nth_element(writtenString(writer), 2 - 1, '\n')};
     const auto line_{writtenString(writer).substr(precedingNewLine + 1)};
