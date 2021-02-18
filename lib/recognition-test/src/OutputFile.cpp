@@ -57,7 +57,7 @@ static auto insertNewLine(std::ostream &stream) -> std::ostream & {
 }
 
 template <typename T>
-auto writeLabeledLine(std::ostream &stream, const std::string &label, T thing)
+auto insertLabeledLine(std::ostream &stream, const std::string &label, T thing)
     -> std::ostream & {
     return insertNewLine(insert(insert(insert(stream, label), ": "), thing));
 }
@@ -66,54 +66,55 @@ static auto string(const std::stringstream &stream) -> std::string {
     return stream.str();
 }
 
-static auto writeSubjectId(std::ostream &stream, const TestIdentity &p)
+static auto insertSubjectId(std::ostream &stream, const TestIdentity &p)
     -> std::ostream & {
-    return writeLabeledLine(stream, "subject", p.subjectId);
+    return insertLabeledLine(stream, "subject", p.subjectId);
 }
 
-static auto writeTester(std::ostream &stream, const TestIdentity &p)
+static auto insertTester(std::ostream &stream, const TestIdentity &p)
     -> std::ostream & {
-    return writeLabeledLine(stream, "tester", p.testerId);
+    return insertLabeledLine(stream, "tester", p.testerId);
 }
 
-static auto writeSession(std::ostream &stream, const TestIdentity &p)
+static auto insertSession(std::ostream &stream, const TestIdentity &p)
     -> std::ostream & {
-    return writeLabeledLine(stream, "session", p.session);
+    return insertLabeledLine(stream, "session", p.session);
 }
 
-static auto writeMethod(std::ostream &stream, const TestIdentity &p)
+static auto insertMethod(std::ostream &stream, const TestIdentity &p)
     -> std::ostream & {
-    return writeLabeledLine(stream, "method", p.method);
+    return insertLabeledLine(stream, "method", p.method);
 }
 
-static auto writeRmeSetting(std::ostream &stream, const TestIdentity &p)
+static auto insertRmeSetting(std::ostream &stream, const TestIdentity &p)
     -> std::ostream & {
-    return writeLabeledLine(stream, "RME setting", p.rmeSetting);
+    return insertLabeledLine(stream, "RME setting", p.rmeSetting);
 }
 
-static auto writeTransducer(std::ostream &stream, const TestIdentity &p)
+static auto insertTransducer(std::ostream &stream, const TestIdentity &p)
     -> std::ostream & {
-    return writeLabeledLine(stream, "transducer", p.transducer);
+    return insertLabeledLine(stream, "transducer", p.transducer);
 }
 
-static auto writeMasker(std::ostream &stream, const Test &p) -> std::ostream & {
-    return writeLabeledLine(stream, "masker", p.maskerFileUrl.path);
+static auto insertMasker(std::ostream &stream, const Test &p)
+    -> std::ostream & {
+    return insertLabeledLine(stream, "masker", p.maskerFileUrl.path);
 }
 
-static auto writeTargetPlaylist(std::ostream &stream, const Test &p)
+static auto insertTargetPlaylist(std::ostream &stream, const Test &p)
     -> std::ostream & {
-    return writeLabeledLine(stream, "targets", p.targetsUrl.path);
+    return insertLabeledLine(stream, "targets", p.targetsUrl.path);
 }
 
-static auto writeMaskerLevel(std::ostream &stream, const Test &p)
+static auto insertMaskerLevel(std::ostream &stream, const Test &p)
     -> std::ostream & {
-    return writeLabeledLine(
+    return insertLabeledLine(
         stream, "masker level (dB SPL)", p.maskerLevel.dB_SPL);
 }
 
-static auto writeCondition(std::ostream &stream, const Test &p)
+static auto insertCondition(std::ostream &stream, const Test &p)
     -> std::ostream & {
-    return writeLabeledLine(stream, "condition", name(p.condition));
+    return insertLabeledLine(stream, "condition", name(p.condition));
 }
 
 constexpr auto correct{"correct"};
@@ -144,11 +145,11 @@ static auto identity(const Test &test) -> TestIdentity { return test.identity; }
 
 static auto operator<<(std::ostream &stream, const TestIdentity &identity)
     -> std::ostream & {
-    return writeTransducer(
-        writeRmeSetting(
-            writeMethod(
-                writeSession(
-                    writeTester(writeSubjectId(stream, identity), identity),
+    return insertTransducer(
+        insertRmeSetting(
+            insertMethod(
+                insertSession(
+                    insertTester(insertSubjectId(stream, identity), identity),
                     identity),
                 identity),
             identity),
@@ -158,11 +159,11 @@ static auto operator<<(std::ostream &stream, const TestIdentity &identity)
 static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
     -> std::ostream & {
     stream << identity(test);
-    writeMasker(stream, test);
-    writeTargetPlaylist(stream, test);
-    writeMaskerLevel(stream, test);
-    writeLabeledLine(stream, "starting SNR (dB)", test.startingSnr.dB);
-    writeCondition(stream, test);
+    insertMasker(stream, test);
+    insertTargetPlaylist(stream, test);
+    insertMaskerLevel(stream, test);
+    insertLabeledLine(stream, "starting SNR (dB)", test.startingSnr.dB);
+    insertCondition(stream, test);
     std::vector<int> up;
     std::vector<int> down;
     std::vector<int> runCounts;
@@ -173,22 +174,22 @@ static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
         runCounts.push_back(sequence.runCount);
         stepSizes.push_back(sequence.stepSize);
     }
-    writeLabeledLine(stream, "up", up);
-    writeLabeledLine(stream, "down", down);
-    writeLabeledLine(stream, "reversals per step size", runCounts);
-    writeLabeledLine(stream, "step sizes (dB)", stepSizes);
-    writeLabeledLine(stream, "threshold reversals", test.thresholdReversals);
+    insertLabeledLine(stream, "up", up);
+    insertLabeledLine(stream, "down", down);
+    insertLabeledLine(stream, "reversals per step size", runCounts);
+    insertLabeledLine(stream, "step sizes (dB)", stepSizes);
+    insertLabeledLine(stream, "threshold reversals", test.thresholdReversals);
     return insertNewLine(stream);
 }
 
 static auto operator<<(std::ostream &stream, const FixedLevelTest &test)
     -> std::ostream & {
     stream << identity(test);
-    writeMasker(stream, test);
-    writeTargetPlaylist(stream, test);
-    writeMaskerLevel(stream, test);
-    writeLabeledLine(stream, "SNR (dB)", test.snr.dB);
-    writeCondition(stream, test);
+    insertMasker(stream, test);
+    insertTargetPlaylist(stream, test);
+    insertMaskerLevel(stream, test);
+    insertLabeledLine(stream, "SNR (dB)", test.snr.dB);
+    insertCondition(stream, test);
     return insertNewLine(stream);
 }
 
@@ -216,7 +217,7 @@ static auto operator<<(std::ostream &stream,
 
 static auto operator<<(std::ostream &stream, TargetStartTime t)
     -> std::ostream & {
-    return writeLabeledLine(stream, "target start time (ns)", t.nanoseconds);
+    return insertLabeledLine(stream, "target start time (ns)", t.nanoseconds);
 }
 
 static auto operator<<(std::ostream &stream,
@@ -233,7 +234,7 @@ static auto operator<<(std::ostream &stream,
 
 static auto operator<<(std::ostream &stream, const AdaptiveTestResult &result)
     -> std::ostream & {
-    return writeLabeledLine(
+    return insertLabeledLine(
         stream, "threshold for " + result.targetsUrl.path, result.threshold);
 }
 
@@ -241,8 +242,8 @@ namespace {
 class TrialFormatter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TrialFormatter);
-    virtual auto putHeading(std::ostream &s) -> std::ostream & = 0;
-    virtual auto putTrial(std::ostream &s) -> std::ostream & = 0;
+    virtual auto insertHeading(std::ostream &s) -> std::ostream & = 0;
+    virtual auto insertTrial(std::ostream &s) -> std::ostream & = 0;
 };
 
 class FixedLevelCoordinateResponseTrialFormatter : public TrialFormatter {
@@ -251,7 +252,7 @@ class FixedLevelCoordinateResponseTrialFormatter : public TrialFormatter {
         const coordinate_response_measure::FixedLevelTrial &trial_)
         : trial_{trial_} {}
 
-    auto putHeading(std::ostream &stream) -> std::ostream & override {
+    auto insertHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::correctNumber);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::subjectNumber);
@@ -266,7 +267,7 @@ class FixedLevelCoordinateResponseTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto putTrial(std::ostream &stream) -> std::ostream & override {
+    auto insertTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.correctNumber);
         insertCommaAndSpace(stream);
         insert(stream, trial_.subjectNumber);
@@ -291,7 +292,7 @@ class AdaptiveCoordinateResponseTrialFormatter : public TrialFormatter {
         const coordinate_response_measure::AdaptiveTrial &trial_)
         : trial_{trial_} {}
 
-    auto putHeading(std::ostream &stream) -> std::ostream & override {
+    auto insertHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::snr_dB);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::correctNumber);
@@ -308,7 +309,7 @@ class AdaptiveCoordinateResponseTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto putTrial(std::ostream &stream) -> std::ostream & override {
+    auto insertTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.snr.dB);
         insertCommaAndSpace(stream);
         insert(stream, trial_.correctNumber);
@@ -334,14 +335,14 @@ class FreeResponseTrialFormatter : public TrialFormatter {
     explicit FreeResponseTrialFormatter(const FreeResponseTrial &trial_)
         : trial_{trial_} {}
 
-    auto putHeading(std::ostream &stream) -> std::ostream & override {
+    auto insertHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::target);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::freeResponse);
         return insertNewLine(stream);
     }
 
-    auto putTrial(std::ostream &stream) -> std::ostream & override {
+    auto insertTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.target);
         insertCommaAndSpace(stream);
         insert(stream, trial_.response);
@@ -362,7 +363,7 @@ class OpenSetAdaptiveTrialFormatter : public TrialFormatter {
         const open_set::AdaptiveTrial &trial_)
         : trial_{trial_} {}
 
-    auto putHeading(std::ostream &stream) -> std::ostream & override {
+    auto insertHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::snr_dB);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::target);
@@ -373,7 +374,7 @@ class OpenSetAdaptiveTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto putTrial(std::ostream &stream) -> std::ostream & override {
+    auto insertTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.snr.dB);
         insertCommaAndSpace(stream);
         insert(stream, trial_.target);
@@ -393,7 +394,7 @@ class CorrectKeywordsTrialFormatter : public TrialFormatter {
     explicit CorrectKeywordsTrialFormatter(const CorrectKeywordsTrial &trial_)
         : trial_{trial_} {}
 
-    auto putHeading(std::ostream &stream) -> std::ostream & override {
+    auto insertHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::snr_dB);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::target);
@@ -406,7 +407,7 @@ class CorrectKeywordsTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto putTrial(std::ostream &stream) -> std::ostream & override {
+    auto insertTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.snr.dB);
         insertCommaAndSpace(stream);
         insert(stream, trial_.target);
@@ -428,7 +429,7 @@ class ConsonantTrialFormatter : public TrialFormatter {
     explicit ConsonantTrialFormatter(const ConsonantTrial &trial_)
         : trial_{trial_} {}
 
-    auto putHeading(std::ostream &stream) -> std::ostream & override {
+    auto insertHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::correctConsonant);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::subjectConsonant);
@@ -439,7 +440,7 @@ class ConsonantTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto putTrial(std::ostream &stream) -> std::ostream & override {
+    auto insertTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.correctConsonant);
         insertCommaAndSpace(stream);
         insert(stream, trial_.subjectConsonant);
@@ -459,7 +460,7 @@ class ThreeKeywordsTrialFormatter : public TrialFormatter {
     explicit ThreeKeywordsTrialFormatter(const ThreeKeywordsTrial &trial_)
         : trial_{trial_} {}
 
-    auto putHeading(std::ostream &stream) -> std::ostream & override {
+    auto insertHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::target);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::firstKeywordEvaluation);
@@ -470,7 +471,7 @@ class ThreeKeywordsTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto putTrial(std::ostream &stream) -> std::ostream & override {
+    auto insertTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.target);
         insertCommaAndSpace(stream);
         insert(stream, evaluation(trial_.firstCorrect));
@@ -490,7 +491,7 @@ class SyllableTrialFormatter : public TrialFormatter {
     explicit SyllableTrialFormatter(const SyllableTrial &trial_)
         : trial_{trial_} {}
 
-    auto putHeading(std::ostream &stream) -> std::ostream & override {
+    auto insertHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::correctSyllable);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::subjectSyllable);
@@ -501,7 +502,7 @@ class SyllableTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto putTrial(std::ostream &stream) -> std::ostream & override {
+    auto insertTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.correctSyllable);
         insertCommaAndSpace(stream);
         insert(stream, trial_.subjectSyllable);
@@ -527,8 +528,8 @@ static void write(Writer &writer, TrialFormatter &formatter,
     OutputFileImpl::Trial &currentTrial, OutputFileImpl::Trial trial) {
     std::stringstream stream;
     if (currentTrial != trial)
-        formatter.putHeading(stream);
-    formatter.putTrial(stream);
+        formatter.insertHeading(stream);
+    formatter.insertTrial(stream);
     write(writer, string(stream));
     currentTrial = trial;
 }
