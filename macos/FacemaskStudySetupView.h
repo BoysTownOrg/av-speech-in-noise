@@ -18,7 +18,6 @@ class FacemaskStudySetupView : public TestSetupUI {
     void show() override;
     void hide() override;
     auto testSettingsFile() -> std::string override;
-    void setTestSettingsFile(std::string) override;
     void attach(Observer *) override;
     void populateTransducerMenu(std::vector<std::string>) override {}
     auto startingSnr() -> std::string override { return "0"; }

@@ -238,8 +238,6 @@ auto FacemaskStudySetupView::testSettingsFile() -> std::string {
     return found != conditionSelections.end() ? found->url.path : "";
 }
 
-void FacemaskStudySetupView::setTestSettingsFile(std::string) {}
-
 void FacemaskStudySetupView::attach(Observer *e) { listener_ = e; }
 
 void FacemaskStudySetupView::notifyThatConfirmButtonHasBeenClicked() {

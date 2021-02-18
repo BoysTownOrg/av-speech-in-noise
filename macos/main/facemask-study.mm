@@ -1,7 +1,6 @@
 #include "../run.h"
 #include "../FacemaskStudySetupView.h"
 #include "../EyeTrackerStub.hpp"
-#include <presentation/Method.hpp>
 #import <AppKit/AppKit.h>
 
 namespace av_speech_in_noise {
