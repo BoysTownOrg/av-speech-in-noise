@@ -850,6 +850,7 @@ ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
         nsButton(
             "Submit", actions, @selector(notifyThatSubmitButtonHasBeenClicked))
     };
+    [submitButton setKeyEquivalent:@"\r"];
     const auto actionButtons {
         [NSStackView
             stackViewWithViews:@[ resetButton, allWrongButton, submitButton ]]
@@ -857,6 +858,8 @@ ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
     responseView =
         [NSStackView stackViewWithViews:@[ keywordButtons, actionButtons ]];
     responseView.orientation = NSUserInterfaceLayoutOrientationVertical;
+    keywordButtons.orientation = NSUserInterfaceLayoutOrientationHorizontal;
+    actionButtons.orientation = NSUserInterfaceLayoutOrientationHorizontal;
     responseView.alignment = NSLayoutAttributeRight;
     addAutolayoutEnabledSubview(view(viewController), responseView);
     activateChildConstraintNestledInBottomRightCorner(
