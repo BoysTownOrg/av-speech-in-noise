@@ -440,6 +440,7 @@ AppKitTestUI::AppKitTestUI(NSViewController *viewController)
         @selector(notifyThatExitTestButtonHasBeenClicked));
     nextTrialButton = nsButton("Play Trial", actions,
         @selector(notifyThatPlayTrialButtonHasBeenClicked));
+    [nextTrialButton setKeyEquivalent:@"\r"];
     const auto topRow {
         [NSStackView stackViewWithViews:@[
             exitTestButton, primaryTextField, secondaryTextField
@@ -965,6 +966,7 @@ FreeResponseUI::FreeResponseUI(NSViewController *viewController)
         nsButton(
             "Submit", actions, @selector(notifyThatSubmitButtonHasBeenClicked))
     };
+    [submitButton setKeyEquivalent:@"\r"];
     setPlaceholder(responseField, "This is a sentence.");
     const auto innerView {
         [NSStackView stackViewWithViews:@[ flaggedButton, responseField ]]
@@ -972,6 +974,7 @@ FreeResponseUI::FreeResponseUI(NSViewController *viewController)
     responseView =
         [NSStackView stackViewWithViews:@[ innerView, submitButton ]];
     responseView.orientation = NSUserInterfaceLayoutOrientationVertical;
+    responseView.alignment = NSLayoutAttributeRight;
     innerView.distribution = NSStackViewDistributionFill;
     [flaggedButton
         setContentHuggingPriority:251
