@@ -241,9 +241,8 @@ namespace {
 class TrialFormatter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TrialFormatter);
-    virtual auto heading() -> std::string { return {}; }
     virtual auto trial() -> std::string { return {}; }
-    virtual auto putHeading(std::ostream &s) -> std::ostream & { return s; }
+    virtual auto putHeading(std::ostream &s) -> std::ostream & = 0;
     virtual auto putTrial(std::ostream &s) -> std::ostream & { return s; }
 };
 
@@ -253,8 +252,7 @@ class FixedLevelCoordinateResponseTrialFormatter : public TrialFormatter {
         const coordinate_response_measure::FixedLevelTrial &trial_)
         : trial_{trial_} {}
 
-    auto heading() -> std::string override {
-        std::stringstream stream;
+    auto putHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::correctNumber);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::subjectNumber);
@@ -266,8 +264,7 @@ class FixedLevelCoordinateResponseTrialFormatter : public TrialFormatter {
         insert(stream, HeadingItem::evaluation);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::target);
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
     auto trial() -> std::string override {
@@ -297,8 +294,7 @@ class AdaptiveCoordinateResponseTrialFormatter : public TrialFormatter {
         const coordinate_response_measure::AdaptiveTrial &trial_)
         : trial_{trial_} {}
 
-    auto heading() -> std::string override {
-        std::stringstream stream;
+    auto putHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::snr_dB);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::correctNumber);
@@ -312,8 +308,7 @@ class AdaptiveCoordinateResponseTrialFormatter : public TrialFormatter {
         insert(stream, HeadingItem::evaluation);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::reversals);
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
     auto trial() -> std::string override {
@@ -344,13 +339,11 @@ class FreeResponseTrialFormatter : public TrialFormatter {
     explicit FreeResponseTrialFormatter(const FreeResponseTrial &trial_)
         : trial_{trial_} {}
 
-    auto heading() -> std::string override {
-        std::stringstream stream;
+    auto putHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::target);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::freeResponse);
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
     auto trial() -> std::string override {
@@ -376,8 +369,7 @@ class OpenSetAdaptiveTrialFormatter : public TrialFormatter {
         const open_set::AdaptiveTrial &trial_)
         : trial_{trial_} {}
 
-    auto heading() -> std::string override {
-        std::stringstream stream;
+    auto putHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::snr_dB);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::target);
@@ -385,8 +377,7 @@ class OpenSetAdaptiveTrialFormatter : public TrialFormatter {
         insert(stream, HeadingItem::evaluation);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::reversals);
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
     auto trial() -> std::string override {
@@ -411,8 +402,7 @@ class CorrectKeywordsTrialFormatter : public TrialFormatter {
     explicit CorrectKeywordsTrialFormatter(const CorrectKeywordsTrial &trial_)
         : trial_{trial_} {}
 
-    auto heading() -> std::string override {
-        std::stringstream stream;
+    auto putHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::snr_dB);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::target);
@@ -422,8 +412,7 @@ class CorrectKeywordsTrialFormatter : public TrialFormatter {
         insert(stream, HeadingItem::evaluation);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::reversals);
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
     auto trial() -> std::string override {
@@ -450,8 +439,7 @@ class ConsonantTrialFormatter : public TrialFormatter {
     explicit ConsonantTrialFormatter(const ConsonantTrial &trial_)
         : trial_{trial_} {}
 
-    auto heading() -> std::string override {
-        std::stringstream stream;
+    auto putHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::correctConsonant);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::subjectConsonant);
@@ -459,8 +447,7 @@ class ConsonantTrialFormatter : public TrialFormatter {
         insert(stream, HeadingItem::evaluation);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::target);
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
     auto trial() -> std::string override {
@@ -485,8 +472,7 @@ class ThreeKeywordsTrialFormatter : public TrialFormatter {
     explicit ThreeKeywordsTrialFormatter(const ThreeKeywordsTrial &trial_)
         : trial_{trial_} {}
 
-    auto heading() -> std::string override {
-        std::stringstream stream;
+    auto putHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::target);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::firstKeywordEvaluation);
@@ -494,8 +480,7 @@ class ThreeKeywordsTrialFormatter : public TrialFormatter {
         insert(stream, HeadingItem::secondKeywordEvaluation);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::thirdKeywordEvaluation);
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
     auto trial() -> std::string override {
@@ -520,8 +505,7 @@ class SyllableTrialFormatter : public TrialFormatter {
     explicit SyllableTrialFormatter(const SyllableTrial &trial_)
         : trial_{trial_} {}
 
-    auto heading() -> std::string override {
-        std::stringstream stream;
+    auto putHeading(std::ostream &stream) -> std::ostream & override {
         insert(stream, HeadingItem::correctSyllable);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::subjectSyllable);
@@ -529,8 +513,7 @@ class SyllableTrialFormatter : public TrialFormatter {
         insert(stream, HeadingItem::evaluation);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::target);
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
     auto trial() -> std::string override {
@@ -559,9 +542,11 @@ static void write(Writer &writer, const std::string &s) { writer.write(s); }
 
 static void write(Writer &writer, TrialFormatter &formatter,
     OutputFileImpl::Trial &currentTrial, OutputFileImpl::Trial trial) {
+    std::stringstream stream;
     if (currentTrial != trial)
-        write(writer, formatter.heading());
-    write(writer, formatter.trial());
+        formatter.putHeading(stream);
+    stream << formatter.trial();
+    write(writer, string(stream));
     currentTrial = trial;
 }
 
