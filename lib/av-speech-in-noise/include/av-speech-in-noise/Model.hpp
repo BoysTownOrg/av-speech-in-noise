@@ -21,16 +21,18 @@ struct CorrectKeywords {
     int count{};
 };
 
-struct ThreeKeywordsResponse {
-    bool firstCorrect{};
-    bool secondCorrect{};
-    bool thirdCorrect{};
+struct Flaggable {
     bool flagged{};
 };
 
-struct FreeResponse {
+struct ThreeKeywordsResponse : Flaggable {
+    bool firstCorrect{};
+    bool secondCorrect{};
+    bool thirdCorrect{};
+};
+
+struct FreeResponse : Flaggable {
     std::string response;
-    bool flagged{};
 };
 
 struct TestIdentity {
@@ -72,9 +74,8 @@ enum class Syllable {
     unknown
 };
 
-struct SyllableResponse {
+struct SyllableResponse : Flaggable {
     Syllable syllable{};
-    bool flagged{};
 };
 
 enum class Condition { auditoryOnly, audioVisual };

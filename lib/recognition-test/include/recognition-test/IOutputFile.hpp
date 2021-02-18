@@ -53,6 +53,7 @@ struct SyllableTrial : open_set::Trial {
 };
 
 struct FreeResponseTrial : FreeResponse, open_set::Trial {};
+
 class OutputFile {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(OutputFile);

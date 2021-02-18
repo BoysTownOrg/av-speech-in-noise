@@ -124,12 +124,16 @@ static auto correct(ResponseEvaluatorImpl &evaluator, std::string_view s,
 
 static void assertIncorrect(
     ResponseEvaluatorImpl &evaluator, const std::string &s, Syllable r) {
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(correct(evaluator, s, SyllableResponse{r}));
+    SyllableResponse response;
+    response.syllable = r;
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(correct(evaluator, s, response));
 }
 
 static void assertCorrect(
     ResponseEvaluatorImpl &evaluator, const std::string &s, Syllable r) {
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(correct(evaluator, s, SyllableResponse{r}));
+    SyllableResponse response;
+    response.syllable = r;
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(correct(evaluator, s, response));
 }
 
 namespace {

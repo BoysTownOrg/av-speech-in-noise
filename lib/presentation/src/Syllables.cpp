@@ -16,8 +16,10 @@ static auto syllable(const std::map<std::string, Syllable, std::less<>> &map,
 }
 
 void SyllablesController::notifyThatResponseButtonHasBeenClicked() {
-    model.submit(
-        SyllableResponse{syllable(map, control.syllable()), control.flagged()});
+    SyllableResponse syllableResponse;
+    syllableResponse.flagged = control.flagged();
+    syllableResponse.syllable = syllable(map, control.syllable());
+    model.submit(syllableResponse);
     testController.notifyThatUserIsDoneResponding();
 }
 

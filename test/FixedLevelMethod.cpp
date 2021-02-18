@@ -583,12 +583,12 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     submitThreeKeywordsTracksTotalCorrectAndPercentCorrect) {
-    method.submit(ThreeKeywordsResponse{true, true, true, false});
-    method.submit(ThreeKeywordsResponse{true, true, false, false});
-    method.submit(ThreeKeywordsResponse{true, false, true, false});
-    method.submit(ThreeKeywordsResponse{false, false, true, false});
-    method.submit(ThreeKeywordsResponse{true, true, false, false});
-    method.submit(ThreeKeywordsResponse{true, true, true, false});
+    method.submit(ThreeKeywordsResponse{{}, true, true, true});
+    method.submit(ThreeKeywordsResponse{{}, true, true, false});
+    method.submit(ThreeKeywordsResponse{{}, true, false, true});
+    method.submit(ThreeKeywordsResponse{{}, false, false, true});
+    method.submit(ThreeKeywordsResponse{{}, true, true, false});
+    method.submit(ThreeKeywordsResponse{{}, true, true, true});
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
         13, method.keywordsTestResults().totalCorrect);
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
@@ -597,8 +597,8 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     submitThreeKeywordsResetsTotalCorrectAndPercentCorrect) {
-    method.submit(ThreeKeywordsResponse{true, true, true, false});
-    method.submit(ThreeKeywordsResponse{true, true, false, false});
+    method.submit(ThreeKeywordsResponse{{}, true, true, true});
+    method.submit(ThreeKeywordsResponse{{}, true, true, false});
     run(initializingMethod, method);
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
         0, method.keywordsTestResults().totalCorrect);

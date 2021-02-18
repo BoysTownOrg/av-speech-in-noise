@@ -8,7 +8,10 @@ FreeResponseController::FreeResponseController(
 }
 
 void FreeResponseController::notifyThatSubmitButtonHasBeenClicked() {
-    model.submit(FreeResponse{control.freeResponse(), control.flagged()});
+    FreeResponse freeResponse;
+    freeResponse.flagged = control.flagged();
+    freeResponse.response = control.freeResponse();
+    model.submit(freeResponse);
     testController.notifyThatUserIsDoneResponding();
 }
 
