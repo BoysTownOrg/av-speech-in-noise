@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_IOUTPUTFILE_HPP_
 
 #include <av-speech-in-noise/Model.hpp>
+#include <exception>
 
 namespace av_speech_in_noise {
 struct Target {
@@ -56,7 +57,7 @@ class OutputFile {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(OutputFile);
     virtual void openNewFile(const TestIdentity &) = 0;
-    class OpenFailure {};
+    class OpenFailure : std::exception {};
     virtual void write(const coordinate_response_measure::AdaptiveTrial &) = 0;
     virtual void write(
         const coordinate_response_measure::FixedLevelTrial &) = 0;
