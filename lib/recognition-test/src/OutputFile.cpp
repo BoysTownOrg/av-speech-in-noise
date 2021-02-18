@@ -479,6 +479,10 @@ class ThreeKeywordsTrialFormatter : public TrialFormatter {
         insert(stream, evaluation(trial_.secondCorrect));
         insertCommaAndSpace(stream);
         insert(stream, evaluation(trial_.thirdCorrect));
+        if (trial_.flagged) {
+            insertCommaAndSpace(stream);
+            insert(stream, "FLAGGED");
+        }
         return insertNewLine(stream);
     }
 

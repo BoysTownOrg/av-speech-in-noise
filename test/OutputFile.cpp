@@ -875,6 +875,15 @@ OUTPUT_FILE_TEST(writeNoFlagSyllablesTrialDoesNotHaveExtraEntry) {
         file, writer, writingSyllableTrial);
 }
 
+OUTPUT_FILE_TEST(writeFlaggedThreeKeywordsTrial) {
+    assertWritesFlaggedTrial(file, writer, writingThreeKeywordsTrial);
+}
+
+OUTPUT_FILE_TEST(writeNoFlagThreeKeywordsTrialDoesNotHaveExtraEntry) {
+    assertNonFlaggedTrialDoesNotWriteExtraEntry(
+        file, writer, writingThreeKeywordsTrial);
+}
+
 OUTPUT_FILE_TEST(uninitializedColorDoesNotBreak) {
     coordinate_response_measure::AdaptiveTrial uninitialized;
     file.write(uninitialized);
