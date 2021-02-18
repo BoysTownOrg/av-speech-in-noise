@@ -91,7 +91,7 @@ static auto mlstFileNameSentence(Model &model) -> std::string {
     stream >> ignore >> std::ws;
     std::string mlstFileNameSentence;
     std::getline(stream, mlstFileNameSentence, '.');
-    return mlstFileNameSentence;
+    return withoutApostrophesNorPeriods(mlstFileNameSentence);
 }
 
 void ChooseKeywordsPresenterImpl::showResponseSubmission() {

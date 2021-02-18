@@ -373,6 +373,21 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText3) {
         ".", view.textFollowingThirdKeywordButton());
 }
 
+CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText4) {
+    model.setTargetFileName("5 Tom won't pull the oar.mov");
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "Tom", view.textPrecedingFirstKeywordButton());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("won't", view.firstKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("", view.textFollowingFirstKeywordButton());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("pull", view.secondKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "the", view.textFollowingSecondKeywordButton());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("oar", view.thirdKeywordButtonText());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        ".", view.textFollowingThirdKeywordButton());
+}
+
 CHOOSE_KEYWORDS_PRESENTER_TEST(badMatchDoesNotThrow) {
     model.setTargetFileName("2 This is an example of a bad match.mov");
     presenter.showResponseSubmission();
