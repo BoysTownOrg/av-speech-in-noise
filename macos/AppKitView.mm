@@ -854,8 +854,8 @@ ChooseKeywordsUI::ChooseKeywordsUI(NSViewController *viewController)
         [NSStackView
             stackViewWithViews:@[ resetButton, allWrongButton, submitButton ]]
     };
-    responseView = [NSStackView
-        stackViewWithViews:@[ flaggedButton, keywordButtons, actionButtons ]];
+    responseView =
+        [NSStackView stackViewWithViews:@[ keywordButtons, actionButtons ]];
     responseView.orientation = NSUserInterfaceLayoutOrientationVertical;
     responseView.alignment = NSLayoutAttributeRight;
     addAutolayoutEnabledSubview(view(viewController), responseView);
@@ -1114,7 +1114,7 @@ SyllablesUI::SyllablesUI(NSViewController *viewController)
         ]];
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
     responseButtons.distribution = NSStackViewDistributionFillEqually;
-    view = [NSStackView stackViewWithViews:@[ flaggedButton, responseButtons ]];
+    view = [NSStackView stackViewWithViews:@[ responseButtons ]];
     view.orientation = NSUserInterfaceLayoutOrientationVertical;
     addAutolayoutEnabledSubview(av_speech_in_noise::view(viewController), view);
     activateChildConstraintNestledInBottomRightCorner(
