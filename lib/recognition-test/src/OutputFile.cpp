@@ -238,6 +238,15 @@ static auto operator<<(std::ostream &stream, const AdaptiveTestResult &result)
         stream, "threshold for " + result.targetsUrl.path, result.threshold);
 }
 
+static auto operator<<(std::ostream &stream, const Flaggable &flaggable)
+    -> std::ostream & {
+    if (flaggable.flagged) {
+        insertCommaAndSpace(stream);
+        insert(stream, "FLAGGED");
+    }
+    return stream;
+}
+
 namespace {
 class TrialFormatter {
   public:
@@ -346,10 +355,7 @@ class FreeResponseTrialFormatter : public TrialFormatter {
         insert(stream, trial_.target);
         insertCommaAndSpace(stream);
         insert(stream, trial_.response);
-        if (trial_.flagged) {
-            insertCommaAndSpace(stream);
-            insert(stream, "FLAGGED");
-        }
+        stream << static_cast<const Flaggable &>(trial_);
         return insertNewLine(stream);
     }
 
@@ -479,10 +485,7 @@ class ThreeKeywordsTrialFormatter : public TrialFormatter {
         insert(stream, evaluation(trial_.secondCorrect));
         insertCommaAndSpace(stream);
         insert(stream, evaluation(trial_.thirdCorrect));
-        if (trial_.flagged) {
-            insertCommaAndSpace(stream);
-            insert(stream, "FLAGGED");
-        }
+        stream << static_cast<const Flaggable &>(trial_);
         return insertNewLine(stream);
     }
 
@@ -514,10 +517,7 @@ class SyllableTrialFormatter : public TrialFormatter {
         insert(stream, evaluation(trial_));
         insertCommaAndSpace(stream);
         insert(stream, trial_.target);
-        if (trial_.flagged) {
-            insertCommaAndSpace(stream);
-            insert(stream, "FLAGGED");
-        }
+        stream << static_cast<const Flaggable &>(trial_);
         return insertNewLine(stream);
     }
 
