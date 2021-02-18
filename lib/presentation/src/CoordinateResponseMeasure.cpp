@@ -22,8 +22,9 @@ static auto subjectResponse(CoordinateResponseMeasureControl &control)
 }
 
 CoordinateResponseMeasureController::CoordinateResponseMeasureController(
-    Model &model, CoordinateResponseMeasureControl &control)
-    : model{model}, control{control} {
+    TestController &testController, Model &model,
+    CoordinateResponseMeasureControl &control)
+    : testController{testController}, model{model}, control{control} {
     control.attach(this);
 }
 
@@ -31,25 +32,16 @@ void CoordinateResponseMeasureController::attach(TaskController::Observer *e) {
     observer = e;
 }
 
-static void notifyThatUserIsReadyForNextTrial(TestController *c) {
-    c->notifyThatUserIsReadyForNextTrial();
-}
-
 void CoordinateResponseMeasureController::
     notifyThatReadyButtonHasBeenClicked() {
     observer->notifyThatTaskHasStarted();
-    notifyThatUserIsReadyForNextTrial(controller);
+    testController.notifyThatUserIsReadyForNextTrial();
 }
 
 void CoordinateResponseMeasureController::
     notifyThatResponseButtonHasBeenClicked() {
     model.submit(subjectResponse(control));
-    observer->notifyThatUserIsDoneResponding();
-    notifyThatUserIsReadyForNextTrial(controller);
-}
-
-void CoordinateResponseMeasureController::attach(TestController *c) {
-    controller = c;
+    testController.notifyThatUserIsDoneRespondingAndIsReadyForNextTrial();
 }
 
 static void hideResponseButtons(CoordinateResponseMeasureView &view) {
@@ -74,7 +66,7 @@ void CoordinateResponseMeasurePresenter::notifyThatTaskHasStarted() {
     view.hideNextTrialButton();
 }
 
-void CoordinateResponseMeasurePresenter::notifyThatUserIsDoneResponding() {
+void CoordinateResponseMeasurePresenter::hideResponseSubmission() {
     hideResponseButtons(view);
 }
 

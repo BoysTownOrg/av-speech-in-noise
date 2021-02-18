@@ -3,42 +3,9 @@
 #include <algorithm>
 #include <cctype>
 #include <regex>
+#include <filesystem>
 
 namespace av_speech_in_noise {
-static auto leadingPathLength(const std::string &filePath) -> gsl::index {
-    return filePath.find_last_of('/') + 1;
-}
-
-static auto subString(
-    const std::string &s, gsl::index position, gsl::index size) -> std::string {
-    return s.substr(position, size);
-}
-
-static auto subString(const std::string &s, gsl::index position)
-    -> std::string {
-    return s.substr(position);
-}
-
-int ResponseEvaluatorImpl::invalidNumber = -1;
-
-auto ResponseEvaluatorImpl::correct(const LocalUrl &filePath,
-    const coordinate_response_measure::Response &r) -> bool {
-    return correctNumber(filePath) == r.number &&
-        correctColor(filePath) == r.color &&
-        r.color != coordinate_response_measure::Color::unknown &&
-        r.number != invalidNumber;
-}
-
-static auto fileName(const LocalUrl &filePath) -> std::string {
-    return subString(filePath.path, leadingPathLength(filePath.path));
-}
-
-static auto stem(const LocalUrl &file) -> std::string {
-    const auto fileName{av_speech_in_noise::fileName(file)};
-    auto dot{fileName.find('.')};
-    return fileName.substr(0, dot);
-}
-
 static auto consonant(const std::string &match) -> char {
     if (match == "bi")
         return 'b';
@@ -67,50 +34,50 @@ static auto consonant(const std::string &match) -> char {
     return '\0';
 }
 
-auto ResponseEvaluatorImpl::correct(
-    const LocalUrl &file, const ConsonantResponse &r) -> bool {
-    auto stem{av_speech_in_noise::stem(file)};
-    std::regex pattern{"choose_(.*?)_.*"};
-    std::smatch match;
-    std::regex_search(stem, match, pattern);
-    return match.size() > 1 && consonant(match[1]) == r.consonant;
-}
-
-static auto colorNameLength(
-    const LocalUrl &filePath, gsl::index leadingPathLength_) -> gsl::index {
-    auto fileNameBeginning = filePath.path.begin() + leadingPathLength_;
-    auto notAlpha = std::find_if(fileNameBeginning, filePath.path.end(),
-        [](unsigned char c) { return std::isalpha(c) == 0; });
-    return std::distance(fileNameBeginning, notAlpha);
-}
-
-static auto correctNumber_(const LocalUrl &filePath) -> int {
-    auto leadingPathLength_ = leadingPathLength(filePath.path);
-    auto number = subString(filePath.path,
-        leadingPathLength_ + colorNameLength(filePath, leadingPathLength_), 1);
-    return std::stoi(number);
-}
-
-auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &filePath) -> int {
-    try {
-        return correctNumber_(filePath);
-    } catch (const std::invalid_argument &) {
-        return invalidNumber;
-    }
-}
-
-auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &file) -> char {
-    auto stem{av_speech_in_noise::stem(file)};
-    std::regex pattern{"choose_(.*?)_.*"};
-    std::smatch match;
-    std::regex_search(stem, match, pattern);
-    if (match.size() > 1)
-        return consonant(match[1]);
-    return '\0';
-}
-
-auto ResponseEvaluatorImpl::fileName(const LocalUrl &file) -> std::string {
-    return av_speech_in_noise::fileName(file);
+static auto syllable(const std::string &match) -> Syllable {
+    if (match == "bi")
+        return Syllable::bi;
+    if (match == "di")
+        return Syllable::di;
+    if (match == "dji")
+        return Syllable::dji;
+    if (match == "fi")
+        return Syllable::fi;
+    if (match == "gi")
+        return Syllable::gi;
+    if (match == "hi")
+        return Syllable::hi;
+    if (match == "ji")
+        return Syllable::ji;
+    if (match == "ki")
+        return Syllable::ki;
+    if (match == "li")
+        return Syllable::li;
+    if (match == "mi")
+        return Syllable::mi;
+    if (match == "ni")
+        return Syllable::ni;
+    if (match == "pi")
+        return Syllable::pi;
+    if (match == "ri")
+        return Syllable::ri;
+    if (match == "shi")
+        return Syllable::shi;
+    if (match == "si")
+        return Syllable::si;
+    if (match == "thi")
+        return Syllable::thi;
+    if (match == "ti")
+        return Syllable::ti;
+    if (match == "tsi")
+        return Syllable::tsi;
+    if (match == "vi")
+        return Syllable::vi;
+    if (match == "wi")
+        return Syllable::wi;
+    if (match == "zi")
+        return Syllable::zi;
+    return Syllable::unknown;
 }
 
 static auto color(const std::string &colorName)
@@ -128,11 +95,87 @@ static auto color(const std::string &colorName)
     return Color::unknown;
 }
 
-auto ResponseEvaluatorImpl::correctColor(const LocalUrl &filePath)
+static auto fileName(const LocalUrl &url) -> std::string {
+    return std::filesystem::path{url.path}.filename();
+}
+
+static auto stem(const LocalUrl &url) -> std::string {
+    return std::filesystem::path{url.path}.stem();
+}
+
+static auto correctConsonant(const LocalUrl &url) -> char {
+    const auto stem{av_speech_in_noise::stem(url)};
+    std::regex pattern{"choose_(.*?)_.*"};
+    std::smatch match;
+    std::regex_search(stem, match, pattern);
+    return match.size() > 1 ? consonant(match[1]) : '\0';
+}
+
+static auto correctSyllable(const LocalUrl &file) -> Syllable {
+    const auto stem{av_speech_in_noise::stem(file)};
+    std::regex pattern{"say_(.*?)_.*"};
+    std::smatch match;
+    std::regex_search(stem, match, pattern);
+    return match.size() > 1 ? syllable(match[1]) : Syllable::unknown;
+}
+
+static auto correctNumber(const LocalUrl &url) -> int {
+    const auto stem{av_speech_in_noise::stem(url)};
+    std::regex pattern{"[A-Za-z]*(\\d).*"};
+    std::smatch match;
+    std::regex_search(stem, match, pattern);
+    return match.size() > 1 ? std::stoi(match[1])
+                            : ResponseEvaluatorImpl::invalidNumber;
+}
+
+static auto correctColor(const LocalUrl &url)
     -> coordinate_response_measure::Color {
-    auto leadingPathLength_ = leadingPathLength(filePath.path);
-    auto colorName = subString(filePath.path, leadingPathLength_,
-        colorNameLength(filePath, leadingPathLength_));
-    return color(colorName);
+    const auto stem{av_speech_in_noise::stem(url)};
+    std::regex pattern{"([A-Za-z]*).*"};
+    std::smatch match;
+    std::regex_search(stem, match, pattern);
+    return match.size() > 1 ? color(match[1])
+                            : coordinate_response_measure::Color::unknown;
+}
+
+const int ResponseEvaluatorImpl::invalidNumber = -1;
+
+auto ResponseEvaluatorImpl::correctColor(const LocalUrl &url)
+    -> coordinate_response_measure::Color {
+    return av_speech_in_noise::correctColor(url);
+}
+
+auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &url) -> char {
+    return av_speech_in_noise::correctConsonant(url);
+}
+
+auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &url) -> int {
+    return av_speech_in_noise::correctNumber(url);
+}
+
+auto ResponseEvaluatorImpl::fileName(const LocalUrl &url) -> std::string {
+    return av_speech_in_noise::fileName(url);
+}
+
+auto ResponseEvaluatorImpl::correct(const LocalUrl &url,
+    const coordinate_response_measure::Response &r) -> bool {
+    return av_speech_in_noise::correctNumber(url) == r.number &&
+        av_speech_in_noise::correctColor(url) == r.color &&
+        r.color != coordinate_response_measure::Color::unknown &&
+        r.number != invalidNumber;
+}
+
+auto ResponseEvaluatorImpl::correct(
+    const LocalUrl &url, const ConsonantResponse &r) -> bool {
+    return av_speech_in_noise::correctConsonant(url) == r.consonant;
+}
+
+auto ResponseEvaluatorImpl::correct(
+    const LocalUrl &url, const SyllableResponse &response) -> bool {
+    return av_speech_in_noise::correctSyllable(url) == response.syllable;
+}
+
+auto ResponseEvaluatorImpl::correctSyllable(const LocalUrl &url) -> Syllable {
+    return av_speech_in_noise::correctSyllable(url);
 }
 }

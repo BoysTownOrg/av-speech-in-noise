@@ -11,10 +11,6 @@ namespace av_speech_in_noise {
 namespace {
 class TestSetupViewStub : public TestSetupView {
   public:
-    void setTestSettingsFile(std::string s) override {
-        testSettingsFile_ = std::move(s);
-    }
-
     void populateTransducerMenu(std::vector<std::string> v) override {
         transducers_ = std::move(v);
     }
@@ -29,11 +25,8 @@ class TestSetupViewStub : public TestSetupView {
 
     auto transducers() -> std::vector<std::string> { return transducers_; }
 
-    auto testSettingsFile() -> std::string { return testSettingsFile_; }
-
   private:
     std::vector<std::string> transducers_;
-    std::string testSettingsFile_;
     bool shown_{};
     bool hidden_{};
 };
@@ -45,10 +38,6 @@ class TestSetupControlStub : public TestSetupControl {
     }
 
     auto startingSnr() -> std::string override { return startingSnr_; }
-
-    void browseForTestSettingsFile() {
-        listener_->notifyThatBrowseForTestSettingsButtonHasBeenClicked();
-    }
 
     void confirmTestSetup() {
         listener_->notifyThatConfirmButtonHasBeenClicked();
@@ -116,9 +105,10 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return calibration_;
     }
 
-    void initialize(Model &m, const std::string &t, const TestIdentity &id,
-        SNR snr) override {
+    void initialize(Model &m, SessionController &sc, const std::string &t,
+        const TestIdentity &id, SNR snr) override {
         startingSnr_ = snr.dB;
+        sessionController_ = &sc;
         text_ = t;
         identity_ = id;
         if (initializeAnyTestOnApply_)
@@ -129,20 +119,13 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
 
     [[nodiscard]] auto identity() const -> TestIdentity { return identity_; }
 
-    [[nodiscard]] auto textForMethodQuery() const -> std::string {
-        return textForMethodQuery_;
-    }
-
     [[nodiscard]] auto startingSnr() const -> int { return startingSnr_; }
 
-    void setMethod(Method m) { method_ = m; }
-
-    auto method(const std::string &t) -> Method override {
-        textForMethodQuery_ = t;
-        return method_;
-    }
-
     void initializeAnyTestOnApply() { initializeAnyTestOnApply_ = true; }
+
+    auto sessionController() -> const SessionController * {
+        return sessionController_;
+    }
 
   private:
     std::string text_;
@@ -150,7 +133,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     TestIdentity identity_{};
     int startingSnr_{};
     const Calibration &calibration_;
-    Method method_{};
+    const SessionController *sessionController_{};
     bool initializeAnyTestOnApply_{};
 };
 
@@ -168,6 +151,20 @@ class TextFileReaderStub : public TextFileReader {
   private:
     std::string filePath_;
     std::string read_;
+};
+
+class TestSetupPresenterStub : public TestSetupPresenter {
+  public:
+    void start() override {}
+
+    void stop() override {}
+
+    void updateErrorMessage(std::string_view s) override { errorMessage_ = s; }
+
+    auto errorMessage() -> std::string { return errorMessage_; }
+
+  private:
+    std::string errorMessage_;
 };
 
 class UseCase {
@@ -247,68 +244,35 @@ auto errorMessage(SessionViewStub &view) -> std::string {
     return view.errorMessage();
 }
 
-void setAudioDevice(SessionViewStub &view, std::string s) {
+void setAudioDevice(SessionControlStub &view, std::string s) {
     view.setAudioDevice(std::move(s));
 }
-
-void setTestComplete(ModelStub &model) { model.setTestComplete(); }
 
 class SessionControllerStub : public SessionController {
   public:
     void notifyThatTestIsComplete() override {}
-    void prepare(Method m) override {
-        method_ = m;
-        prepareCalled_ = true;
-    }
-    auto method() -> Method { return method_; }
-    [[nodiscard]] auto prepareCalled() const -> bool { return prepareCalled_; }
+
+    void prepare(TaskPresenter &) override {}
 
   private:
-    Method method_{};
-    bool prepareCalled_{};
-};
-
-class TestSetupControllerObserverStub : public TestSetupController::Observer {
-  public:
-    void notifyThatUserHasSelectedTestSettingsFile(
-        const std::string &s) override {
-        testSettingsFile_ = s;
-        notifiedThatUserHasSelectedTestSettingsFile_ = true;
-    }
-
-    auto testSettingsFile() -> std::string { return testSettingsFile_; }
-
-    [[nodiscard]] auto notifiedThatUserHasSelectedTestSettingsFile() const
-        -> bool {
-        return notifiedThatUserHasSelectedTestSettingsFile_;
-    }
-
-  private:
-    std::string testSettingsFile_;
-    bool notifiedThatUserHasSelectedTestSettingsFile_{};
 };
 
 class TestSetupControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
-    SessionViewStub sessionView;
+    SessionControlStub sessionView;
     TestSetupControlStub control;
     Calibration calibration;
     TestSettingsInterpreterStub testSettingsInterpreter{calibration};
     TextFileReaderStub textFileReader;
-    TestSetupControllerImpl controller{
-        model, sessionView, control, testSettingsInterpreter, textFileReader};
+    SessionControllerStub sessionController;
+    TestSetupPresenterStub presenter;
+    TestSetupController controller{control, sessionController, sessionView,
+        presenter, model, testSettingsInterpreter, textFileReader};
     PlayingCalibration playingCalibration{control};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{control};
-    SessionControllerStub sessionController;
-    TestSetupControllerObserverStub testSetupControllerObserver;
     ConfirmingTestSetupImpl confirmingTestSetup{control};
-
-    TestSetupControllerTests() {
-        controller.attach(&sessionController);
-        controller.attach(&testSetupControllerObserver);
-    }
 
     void assertPassesTestSettingsFileToTextFileReader(UseCase &useCase) {
         control.setTestSettingsFile("a");
@@ -357,7 +321,8 @@ class TestSetupControllerTests : public ::testing::Test {
 class TestSetupPresenterTests : public ::testing::Test {
   protected:
     TestSetupViewStub view;
-    TestSetupPresenterImpl presenter{view};
+    SessionViewStub sessionView;
+    TestSetupPresenterImpl presenter{view, sessionView};
 };
 
 class RequestFailingModel : public Model {
@@ -442,6 +407,10 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
+    void submit(const ThreeKeywordsResponse &) override {
+        throw RequestFailure{errorMessage};
+    }
+
     void playCalibration(const Calibration &) override {
         throw RequestFailure{errorMessage};
     }
@@ -457,24 +426,35 @@ class RequestFailingModel : public Model {
     auto testComplete() -> bool override { return {}; }
     auto audioDevices() -> AudioDevices override { return {}; }
     auto adaptiveTestResults() -> AdaptiveTestResults override { return {}; }
+    auto keywordsTestResults() -> KeywordsTestResults override { return {}; }
     void attach(Observer *) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
+    void submit(const SyllableResponse &) override {}
     void restartAdaptiveTestWhilePreservingTargets() override {}
 };
 
 class TestSetupFailureTests : public ::testing::Test {
   protected:
     RequestFailingModel failingModel;
+    SessionControlStub sessionControl;
     SessionViewStub sessionView;
     TestSetupViewStub view;
     TestSetupControlStub control;
     Calibration calibration;
     TestSettingsInterpreterStub testSettingsInterpreter{calibration};
-    TestSetupPresenterImpl testSetupPresenter{view};
+    TestSetupPresenterImpl testSetupPresenter{view, sessionView};
     TextFileReaderStub textFileReader;
-    TestSetupControllerImpl controller{failingModel, sessionView, control,
-        testSettingsInterpreter, textFileReader};
+    SessionControllerStub sessionController;
+    TestSetupController controller{
+        control,
+        sessionController,
+        sessionControl,
+        testSetupPresenter,
+        failingModel,
+        testSettingsInterpreter,
+        textFileReader,
+    };
 };
 
 #define TEST_SETUP_CONTROLLER_TEST(a) TEST_F(TestSetupControllerTests, a)
@@ -483,18 +463,11 @@ class TestSetupFailureTests : public ::testing::Test {
 
 #define TEST_SETUP_FAILURE_TEST(a) TEST_F(TestSetupFailureTests, a)
 
-TEST_SETUP_CONTROLLER_TEST(controllerPreparesTestAfterConfirmButtonIsClicked) {
-    testSettingsInterpreter.setMethod(Method::adaptivePassFail);
+TEST_SETUP_CONTROLLER_TEST(
+    passesSessionControllerToTestSettingsInterpreterAfterConfirmButtonIsClicked) {
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Method::adaptivePassFail, sessionController.method());
-}
-
-TEST_SETUP_CONTROLLER_TEST(
-    controllerDoesNotPrepareTestAfterConfirmButtonIsClickedWhenTestWouldAlreadyBeComplete) {
-    setTestComplete(model);
-    run(confirmingTestSetup);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
+        &sessionController, testSettingsInterpreter.sessionController());
 }
 
 TEST_SETUP_CONTROLLER_TEST(
@@ -518,7 +491,7 @@ TEST_SETUP_CONTROLLER_TEST(
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"\"a\" is not a valid starting SNR."},
-        errorMessage(sessionView));
+        presenter.errorMessage());
 }
 
 TEST_SETUP_CONTROLLER_TEST(
@@ -551,14 +524,6 @@ TEST_SETUP_CONTROLLER_TEST(
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, testSettingsInterpreter.identity().transducer);
-}
-
-TEST_SETUP_CONTROLLER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery) {
-    textFileReader.setRead("a");
-    run(confirmingTestSetup);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, testSettingsInterpreter.textForMethodQuery());
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesLevel) {
@@ -640,22 +605,6 @@ TEST_SETUP_CONTROLLER_TEST(playingRightSpeakerCalibrationPassesAudioDevice) {
     assertPassesAudioDevice(playingRightSpeakerCalibration);
 }
 
-TEST_SETUP_CONTROLLER_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
-    sessionView.setBrowseForOpeningFileResult("a");
-    control.browseForTestSettingsFile();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        "a", testSetupControllerObserver.testSettingsFile());
-}
-
-TEST_SETUP_CONTROLLER_TEST(
-    browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
-    sessionView.setBrowseCancelled();
-    control.browseForTestSettingsFile();
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
-        testSetupControllerObserver
-            .notifiedThatUserHasSelectedTestSettingsFile());
-}
-
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesFullScaleLevel) {
     assertPassesFullScaleLevel(playingCalibration);
 }
@@ -678,10 +627,6 @@ TEST_SETUP_PRESENTER_TEST(presenterHidesViewWhenStopped) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-TEST_SETUP_PRESENTER_TEST(presenterSetsTestSettingsFileWhenNotified) {
-    presenter.notifyThatUserHasSelectedTestSettingsFile("a");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", view.testSettingsFile());
-}
 auto contains(const std::vector<std::string> &items, const std::string &item)
     -> bool {
     return std::find(items.begin(), items.end(), item) != items.end();

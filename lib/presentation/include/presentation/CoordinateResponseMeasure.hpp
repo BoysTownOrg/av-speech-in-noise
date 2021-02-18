@@ -3,6 +3,7 @@
 
 #include "View.hpp"
 #include "Task.hpp"
+#include "Test.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
@@ -37,28 +38,28 @@ class CoordinateResponseMeasureController
     : public TaskController,
       public CoordinateResponseMeasureControl::Observer {
   public:
-    explicit CoordinateResponseMeasureController(
-        Model &, CoordinateResponseMeasureControl &);
-    void attach(TaskController::Observer *) override;
+    CoordinateResponseMeasureController(
+        TestController &, Model &, CoordinateResponseMeasureControl &);
+    void attach(TaskController::Observer *);
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
-    void attach(TestController *) override;
 
   private:
+    TestController &testController;
     Model &model;
     CoordinateResponseMeasureControl &control;
     TaskController::Observer *observer{};
-    TestController *controller{};
 };
 
-class CoordinateResponseMeasurePresenter : public TaskPresenter {
+class CoordinateResponseMeasurePresenter : public TaskController::Observer,
+                                           public TaskPresenter {
   public:
     explicit CoordinateResponseMeasurePresenter(
         CoordinateResponseMeasureView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
-    void notifyThatUserIsDoneResponding() override;
+    void hideResponseSubmission() override;
     void showResponseSubmission() override;
 
   private:

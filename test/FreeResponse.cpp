@@ -1,7 +1,6 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "TestViewStub.hpp"
-#include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
 #include <presentation/FreeResponse.hpp>
 #include <gtest/gtest.h>
@@ -51,22 +50,23 @@ class FreeResponseViewStub : public FreeResponseView {
 
     void clearFreeResponse() override { freeResponseCleared_ = true; }
 
+    void clearFlag() override { flagCleared_ = true; }
+
     [[nodiscard]] auto freeResponseCleared() const -> bool {
         return freeResponseCleared_;
     }
+
+    [[nodiscard]] auto flagCleared() const -> bool { return flagCleared_; }
 
   private:
     bool freeResponseSubmissionShown_{};
     bool freeResponseSubmissionHidden_{};
     bool freeResponseCleared_{};
+    bool flagCleared_{};
 };
 
 void notifyThatSubmitButtonHasBeenClicked(FreeResponseControlStub &view) {
     view.notifyThatSubmitButtonHasBeenClicked();
-}
-
-void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
-    presenter.notifyThatUserIsDoneResponding();
 }
 
 void stop(TaskPresenter &presenter) { presenter.stop(); }
@@ -77,14 +77,8 @@ class FreeResponseControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
     FreeResponseControlStub control;
-    FreeResponseController controller{model, control};
     TestControllerStub testController;
-    TaskControllerObserverStub taskController;
-
-    FreeResponseControllerTests() {
-        controller.attach(&testController);
-        controller.attach(&taskController);
-    }
+    FreeResponseController controller{testController, model, control};
 };
 
 class FreeResponsePresenterTests : public ::testing::Test {
@@ -101,14 +95,8 @@ class FreeResponsePresenterTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).freeResponseSubmissionHidden())
 
-FREE_RESPONSE_PRESENTER_TEST(presenterHidesReadyButtonWhenTaskStarts) {
-    presenter.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
-}
-
-FREE_RESPONSE_PRESENTER_TEST(
-    presenterHidesResponseButtonsAfterUserIsDoneResponding) {
-    notifyThatUserIsDoneResponding(presenter);
+FREE_RESPONSE_PRESENTER_TEST(presenterHidesResponseSubmission) {
+    presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
@@ -134,6 +122,11 @@ FREE_RESPONSE_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.freeResponseCleared());
 }
 
+FREE_RESPONSE_PRESENTER_TEST(presenterClearsFlagWhenShowingResponseSubmission) {
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.flagCleared());
+}
+
 FREE_RESPONSE_CONTROLLER_TEST(
     responderSubmitsFreeResponseAfterResponseButtonIsClicked) {
     control.setFreeResponse("a");
@@ -154,13 +147,6 @@ FREE_RESPONSE_CONTROLLER_TEST(
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
-}
-
-FREE_RESPONSE_CONTROLLER_TEST(
-    responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        taskController.notifiedThatUserIsDoneResponding());
 }
 }
 }

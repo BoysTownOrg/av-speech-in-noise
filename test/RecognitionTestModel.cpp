@@ -28,6 +28,14 @@ class TestMethodStub : public TestMethod {
         return submittedFreeResponse_;
     }
 
+    auto threeKeywords() -> const ThreeKeywordsResponse * {
+        return threeKeywords_;
+    }
+
+    auto syllableResponse() -> const SyllableResponse * {
+        return syllableResponse_;
+    }
+
     void setSnr_dB(int x) { snr_dB_ = x; }
 
     auto snr() -> SNR override { return SNR{snr_dB_}; }
@@ -57,6 +65,16 @@ class TestMethodStub : public TestMethod {
         submittedFreeResponse_ = true;
     }
 
+    void submit(const ThreeKeywordsResponse &p) override {
+        insert(log_, "submitThreeKeywords ");
+        threeKeywords_ = &p;
+    }
+
+    void submit(const SyllableResponse &p) override {
+        insert(log_, "submitSyllableResponse ");
+        syllableResponse_ = &p;
+    }
+
     void submit(const coordinate_response_measure::Response &) override {
         insert(log_, "submitCoordinateResponse ");
     }
@@ -81,6 +99,8 @@ class TestMethodStub : public TestMethod {
     std::string currentTarget_{};
     std::string currentTargetWhenNextTarget_{};
     std::string nextTarget_{};
+    const ThreeKeywordsResponse *threeKeywords_{};
+    const SyllableResponse *syllableResponse_{};
     int snr_dB_{};
     bool complete_{};
     bool submittedFreeResponse_{};
@@ -265,6 +285,36 @@ class SubmittingFreeResponse : public TargetWritingUseCase {
 
   private:
     const FreeResponse &response;
+};
+
+class SubmittingThreeKeywords : public TargetWritingUseCase {
+  public:
+    explicit SubmittingThreeKeywords(const ThreeKeywordsResponse &response = {})
+        : response{response} {}
+
+    void run(RecognitionTestModelImpl &m) override { m.submit(response); }
+
+    auto target(OutputFileStub &file) -> std::string override {
+        return file.threeKeywordsTrial().target;
+    }
+
+  private:
+    const ThreeKeywordsResponse &response;
+};
+
+class SubmittingSyllable : public TargetWritingUseCase {
+  public:
+    explicit SubmittingSyllable(const SyllableResponse &response = {})
+        : response{response} {}
+
+    void run(RecognitionTestModelImpl &m) override { m.submit(response); }
+
+    auto target(OutputFileStub &file) -> std::string override {
+        return file.syllableTrial().target;
+    }
+
+  private:
+    const SyllableResponse &response;
 };
 
 class SubmittingCorrectKeywords : public TargetWritingUseCase {
@@ -596,6 +646,10 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingIncorrectResponse submittingIncorrectResponse;
     FreeResponse freeResponse{};
     SubmittingFreeResponse submittingFreeResponse{freeResponse};
+    ThreeKeywordsResponse threeKeywords;
+    SubmittingThreeKeywords submittingThreeKeywords{threeKeywords};
+    SyllableResponse syllableResponse;
+    SubmittingSyllable submittingSyllable{syllableResponse};
     AudioSampleTimeWithOffset fadeInCompleteTime{};
     SubmittingCorrectKeywords submittingCorrectKeywords;
     SubmittingConsonant submittingConsonant;
@@ -1216,6 +1270,16 @@ RECOGNITION_TEST_MODEL_TEST(submittingFreeResponseIncrementsTrialNumber) {
     assertYieldsTrialNumber(submittingFreeResponse, 2);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submittingThreeKeywordsIncrementsTrialNumber) {
+    run(initializingTest, model);
+    assertYieldsTrialNumber(submittingThreeKeywords, 2);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submittingSyllableIncrementsTrialNumber) {
+    run(initializingTest, model);
+    assertYieldsTrialNumber(submittingSyllable, 2);
+}
+
 RECOGNITION_TEST_MODEL_TEST(submittingCorrectKeywordsIncrementsTrialNumber) {
     run(initializingTest, model);
     assertYieldsTrialNumber(submittingCorrectKeywords, 2);
@@ -1263,6 +1327,12 @@ RECOGNITION_TEST_MODEL_TEST(
     submittingFreeResponsePassesNextTargetToTargetPlayer) {
     run(initializingTest, model);
     assertPassesNextTargetToPlayer(submittingFreeResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    submittingThreeKeywordsPassesNextTargetToTargetPlayer) {
+    run(initializingTest, model);
+    assertPassesNextTargetToPlayer(submittingThreeKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1503,6 +1573,15 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submitThreeKeywordsSavesOutputFileAfterWritingTrial) {
+    assertSavesOutputFileAfterWritingTrial(submittingThreeKeywords);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitSyllableSavesOutputFileAfterWritingTrial) {
+    assertSavesOutputFileAfterWritingTrial(submittingSyllable);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitCorrectKeywordsSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingCorrectKeywords);
 }
@@ -1671,6 +1750,61 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesResponse) {
         std::string{"a"}, freeResponseTrial(outputFile).response);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesEachKeywordEvaluation) {
+    threeKeywords.firstCorrect = true;
+    threeKeywords.secondCorrect = false;
+    threeKeywords.thirdCorrect = true;
+    run(submittingThreeKeywords, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        outputFile.threeKeywordsTrial().firstCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
+        outputFile.threeKeywordsTrial().secondCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        outputFile.threeKeywordsTrial().thirdCorrect);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesSubjectSyllable) {
+    syllableResponse.syllable = Syllable::gi;
+    run(submittingSyllable, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Syllable::gi, outputFile.syllableTrial().subjectSyllable);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesCorrectSyllable) {
+    evaluator.setCorrectSyllable(Syllable::gi);
+    run(submittingSyllable, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Syllable::gi, outputFile.syllableTrial().correctSyllable);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    submitSyllablePassesTargetToEvaluatorForCorrectSyllable) {
+    run(initializingTest, model);
+    testMethod.setCurrentTarget("a");
+    run(submittingSyllable, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", evaluator.correctSyllableUrl().path);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    submitSyllablePassesTargetNameToEvaluatorForCorrectness) {
+    run(initializingTest, model);
+    testMethod.setCurrentTarget("a");
+    run(submittingSyllable, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", evaluator.isSyllableCorrectUrl().path);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitCorrectSyllable) {
+    evaluator.setSyllableIsCorrect();
+    run(submittingSyllable, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().correct);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesFlagged) {
+    syllableResponse.flagged = true;
+    run(submittingSyllable, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().flagged);
+}
+
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesFlagged) {
     freeResponse.flagged = true;
     run(submittingFreeResponse, model);
@@ -1682,14 +1816,45 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesWithoutFlag) {
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(freeResponseTrial(outputFile).flagged);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesFlagged) {
+    threeKeywords.flagged = true;
+    run(submittingThreeKeywords, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.threeKeywordsTrial().flagged);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesWithoutFlag) {
+    run(submittingThreeKeywords, model);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.threeKeywordsTrial().flagged);
+}
+
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesTarget) {
     assertWritesTarget(submittingFreeResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesTarget) {
+    assertWritesTarget(submittingThreeKeywords);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesTarget) {
+    assertWritesTarget(submittingSyllable);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget) {
     assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
         submittingFreeResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    submitThreeKeywordsPassesCurrentTargetToEvaluatorBeforeAdvancingTarget) {
+    assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
+        submittingThreeKeywords);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    submitSyllablePassesCurrentTargetToEvaluatorBeforeAdvancingTarget) {
+    assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
+        submittingSyllable);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1708,6 +1873,19 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSubmitsResponse) {
     run(initializingTest, model);
     run(submittingFreeResponse, model);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFreeResponse());
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsSubmitsToTestMethod) {
+    run(initializingTest, model);
+    run(submittingThreeKeywords, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&threeKeywords, testMethod.threeKeywords());
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitSyllableSubmitsToTestMethod) {
+    run(initializingTest, model);
+    run(submittingSyllable, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &syllableResponse, testMethod.syllableResponse());
 }
 }
 }

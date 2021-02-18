@@ -4,7 +4,7 @@
 #include "AppKitView.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
-#include <presentation/SessionControllerImpl.hpp>
+#include <presentation/SessionController.hpp>
 #include <presentation/TestSettingsInterpreter.hpp>
 #include <recognition-test/Model.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
@@ -190,6 +190,7 @@ class TimeStampImpl : public TimeStamp {
 };
 
 class TextFileReaderImpl : public TextFileReader {
+  public:
     auto read(const LocalUrl &s) -> std::string override {
         std::ifstream file{s.path};
         std::stringstream stream;
@@ -214,7 +215,7 @@ static void addChild(NSTabViewController *parent, NSTabViewController *child) {
 }
 
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
-    AppKitTestSetupUIFactory &testSetupViewFactory,
+    AppKitTestSetupUIFactory &testSetupUIFactory,
     OutputFileNameFactory &outputFileNameFactory,
     SessionController::Observer *sessionControllerObserver,
     const std::string &relativeOutputDirectory) {
@@ -307,6 +308,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto viewController{nsTabViewControllerWithoutTabControl()};
     const auto window{
         [NSWindow windowWithContentViewController:viewController]};
+    window.title = @"AV Speech in Noise";
     [window makeKeyAndOrderFront:nil];
     const auto app{[NSApplication sharedApplication]};
     app.mainMenu = [[NSMenu alloc] init];
@@ -332,7 +334,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                    keyEquivalent:@"q"];
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
-    AppKitView view{app, preferencesViewController};
+    AppKitSessionUI sessionUI{app, preferencesViewController};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);
     testSetupViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -350,12 +352,22 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             constraintEqualToAnchor:viewController.view.trailingAnchor
                            constant:-8]
     ]];
-    const auto testSetupView{
-        testSetupViewFactory.make(testSetupViewController)};
-    const auto experimenterViewController{
+    const auto testSetupUI{testSetupUIFactory.make(testSetupViewController)};
+    const auto testViewController{nsTabViewControllerWithoutTabControl()};
+    addChild(viewController, testViewController);
+    const auto chooseKeywordsUIController{
         nsTabViewControllerWithoutTabControl()};
-    addChild(viewController, experimenterViewController);
-    AppKitTestUI experimenterView{experimenterViewController};
+    const auto freeResponseUIController{nsTabViewControllerWithoutTabControl()};
+    const auto correctKeywordsUIController{
+        nsTabViewControllerWithoutTabControl()};
+    const auto passFailUIController{nsTabViewControllerWithoutTabControl()};
+    const auto syllablesUIController{nsTabViewControllerWithoutTabControl()};
+    addChild(testViewController, chooseKeywordsUIController);
+    addChild(testViewController, freeResponseUIController);
+    addChild(testViewController, correctKeywordsUIController);
+    addChild(testViewController, passFailUIController);
+    addChild(testViewController, syllablesUIController);
+    AppKitTestUI testUI{testViewController};
     [window center];
     [window setDelegate:[[WindowDelegate alloc] init]];
     const auto subjectScreenFrame{subjectScreen.frame};
@@ -373,49 +385,90 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
-    TestSettingsInterpreterImpl testSettingsInterpreter;
-    ConsonantTaskController consonantTaskController{model, consonantView};
     ConsonantTaskPresenter consonantPresenter{consonantView};
-    FreeResponseController freeResponseController{model, experimenterView};
-    FreeResponsePresenter freeResponsePresenter{
-        experimenterView, experimenterView};
-    CorrectKeywordsController correctKeywordsController{
-        model, view, experimenterView};
+    FreeResponseUI freeResponseUI{freeResponseUIController};
+    FreeResponsePresenter freeResponsePresenter{testUI, freeResponseUI};
+    ChooseKeywordsUI chooseKeywordsUI{chooseKeywordsUIController};
+    ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model, testUI,
+        chooseKeywordsUI,
+        sentencesWithThreeKeywords(
+            TextFileReaderImpl{}.read(resourceUrl("mlst-c", "txt")))};
+    SyllablesUI syllablesUI{syllablesUIController};
+    SyllablesPresenterImpl syllablesPresenter{syllablesUI, testUI};
+    CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
     CorrectKeywordsPresenter correctKeywordsPresenter{
-        experimenterView, experimenterView};
-    PassFailController passFailController{model, experimenterView};
-    PassFailPresenter passFailPresenter{experimenterView, experimenterView};
-    CoordinateResponseMeasureController coordinateResponseMeasureController{
-        model, coordinateResponseMeasureView};
+        testUI, correctKeywordsUI};
+    PassFailUI passFailUI{passFailUIController};
+    PassFailPresenter passFailPresenter{testUI, passFailUI};
     CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
         coordinateResponseMeasureView};
-    TestSetupControllerImpl testSetupController{model, view,
-        *(testSetupView.get()), testSettingsInterpreter, textFileReader};
-    TestSetupPresenterImpl testSetupPresenter{*(testSetupView.get())};
-    TestControllerImpl testController{model, view, experimenterView};
-    consonantTaskController.attach(&testController);
+    TestSetupPresenterImpl testSetupPresenter{*(testSetupUI.get()), sessionUI};
+    UninitializedTaskPresenterImpl taskPresenter;
+    TestPresenterImpl testPresenter{model, testUI, &taskPresenter};
+    SessionControllerImpl sessionController{
+        model, sessionUI, testSetupPresenter, testPresenter};
+    TestControllerImpl testController{
+        sessionController, model, sessionUI, testUI, testPresenter};
+    ChooseKeywordsController chooseKeywordsController{
+        testController, model, chooseKeywordsUI, chooseKeywordsPresenter};
+    SyllablesController syllablesController{syllablesUI, testController, model,
+        {{"B", Syllable::bi}, {"D", Syllable::di}, {"G", Syllable::dji},
+            {"F", Syllable::fi}, {"Ghee", Syllable::gi}, {"H", Syllable::hi},
+            {"Yee", Syllable::ji}, {"K", Syllable::ki}, {"L", Syllable::li},
+            {"M", Syllable::mi}, {"N", Syllable::ni}, {"P", Syllable::pi},
+            {"R", Syllable::ri}, {"Sh", Syllable::shi}, {"S", Syllable::si},
+            {"Th", Syllable::thi}, {"T", Syllable::ti}, {"Ch", Syllable::tsi},
+            {"V", Syllable::vi}, {"W", Syllable::wi}, {"Z", Syllable::zi}}};
+    CorrectKeywordsController correctKeywordsController{
+        testController, model, sessionUI, correctKeywordsUI};
+    FreeResponseController freeResponseController{
+        testController, model, freeResponseUI};
+    PassFailController passFailController{testController, model, passFailUI};
+    ConsonantTaskController consonantTaskController{
+        testController, model, consonantView};
+    CoordinateResponseMeasureController coordinateResponseMeasureController{
+        testController, model, coordinateResponseMeasureView};
     consonantTaskController.attach(&consonantPresenter);
-    freeResponseController.attach(&testController);
-    freeResponseController.attach(&freeResponsePresenter);
-    correctKeywordsController.attach(&testController);
-    correctKeywordsController.attach(&correctKeywordsPresenter);
-    passFailController.attach(&testController);
-    passFailController.attach(&passFailPresenter);
-    coordinateResponseMeasureController.attach(&testController);
     coordinateResponseMeasureController.attach(
         &coordinateResponseMeasurePresenter);
-    UninitializedTaskPresenterImpl taskPresenter;
-    TestPresenterImpl experimenterPresenter{model, experimenterView,
-        &consonantPresenter, &coordinateResponseMeasurePresenter,
-        &freeResponsePresenter, &correctKeywordsPresenter, &passFailPresenter,
-        &taskPresenter};
-    SessionControllerImpl sessionController{
-        model, view, &testSetupPresenter, &experimenterPresenter};
+    TestSettingsInterpreterImpl testSettingsInterpreter{
+        {{Method::adaptiveCoordinateResponseMeasure,
+             coordinateResponseMeasurePresenter},
+            {Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
+                coordinateResponseMeasurePresenter},
+            {Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
+                coordinateResponseMeasurePresenter},
+            {Method::adaptiveCoordinateResponseMeasureWithEyeTracking,
+                coordinateResponseMeasurePresenter},
+            {Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+                coordinateResponseMeasurePresenter},
+            {Method::
+                    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
+                coordinateResponseMeasurePresenter},
+            {Method::
+                    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+                coordinateResponseMeasurePresenter},
+            {Method::fixedLevelFreeResponseWithAllTargets,
+                freeResponsePresenter},
+            {Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
+                freeResponsePresenter},
+            {Method::fixedLevelFreeResponseWithSilentIntervalTargets,
+                freeResponsePresenter},
+            {Method::fixedLevelFreeResponseWithTargetReplacement,
+                freeResponsePresenter},
+            {Method::fixedLevelChooseKeywordsWithAllTargets,
+                chooseKeywordsPresenter},
+            {Method::fixedLevelSyllablesWithAllTargets, syllablesPresenter},
+            {Method::adaptiveCorrectKeywords, correctKeywordsPresenter},
+            {Method::adaptiveCorrectKeywordsWithEyeTracking,
+                correctKeywordsPresenter},
+            {Method::fixedLevelConsonants, consonantPresenter},
+            {Method::adaptivePassFail, passFailPresenter},
+            {Method::adaptivePassFailWithEyeTracking, passFailPresenter}}};
+    TestSetupController testSetupController{*(testSetupUI.get()),
+        sessionController, sessionUI, testSetupPresenter, model,
+        testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);
-    testSetupController.attach(&sessionController);
-    testSetupController.attach(&testSetupPresenter);
-    testController.attach(&sessionController);
-    testController.attach(&experimenterPresenter);
     [app run];
 }
 }

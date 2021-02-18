@@ -1,18 +1,18 @@
-#ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_SESSIONCONTROLLERIMPL_HPP_
-#define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_SESSIONCONTROLLERIMPL_HPP_
+#ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_SESSIONCONTROLLER_HPP_
+#define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_SESSIONCONTROLLER_HPP_
 
 #include "TestSetup.hpp"
 #include "Test.hpp"
-#include "SessionView.hpp"
+#include "Session.hpp"
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
 class SessionControllerImpl : public SessionController {
   public:
     SessionControllerImpl(
-        Model &, SessionView &, TestSetupPresenter *, TestPresenter *);
+        Model &, SessionView &, TestSetupPresenter &, TestPresenter &);
     void notifyThatTestIsComplete() override;
-    void prepare(Method m) override;
+    void prepare(TaskPresenter &) override;
     void attach(Observer *) override;
 
     static constexpr RealLevel fullScaleLevel{119};
@@ -21,8 +21,8 @@ class SessionControllerImpl : public SessionController {
     static constexpr auto trackBumpLimit{10};
 
   private:
-    Presenter *testSetupPresenter;
-    TestPresenter *experimenterPresenter;
+    Presenter &testSetupPresenter;
+    TestPresenter &testPresenter;
     Observer *observer{};
 };
 }

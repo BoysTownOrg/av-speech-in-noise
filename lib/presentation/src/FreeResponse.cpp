@@ -2,21 +2,17 @@
 
 namespace av_speech_in_noise {
 FreeResponseController::FreeResponseController(
-    Model &model, FreeResponseControl &control)
-    : model{model}, control{control} {
+    TestController &testController, Model &model, FreeResponseControl &control)
+    : testController{testController}, model{model}, control{control} {
     control.attach(this);
 }
 
-void FreeResponseController::attach(TaskController::Observer *e) {
-    observer = e;
-}
-
-void FreeResponseController::attach(TestController *e) { controller = e; }
-
 void FreeResponseController::notifyThatSubmitButtonHasBeenClicked() {
-    model.submit(FreeResponse{control.freeResponse(), control.flagged()});
-    observer->notifyThatUserIsDoneResponding();
-    controller->notifyThatUserIsDoneResponding();
+    FreeResponse freeResponse;
+    freeResponse.flagged = control.flagged();
+    freeResponse.response = control.freeResponse();
+    model.submit(freeResponse);
+    testController.notifyThatUserIsDoneResponding();
 }
 
 FreeResponsePresenter::FreeResponsePresenter(
@@ -27,16 +23,13 @@ void FreeResponsePresenter::start() { testView.showNextTrialButton(); }
 
 void FreeResponsePresenter::stop() { view.hideFreeResponseSubmission(); }
 
-void FreeResponsePresenter::notifyThatTaskHasStarted() {
-    testView.hideNextTrialButton();
-}
-
-void FreeResponsePresenter::notifyThatUserIsDoneResponding() {
+void FreeResponsePresenter::hideResponseSubmission() {
     view.hideFreeResponseSubmission();
 }
 
 void FreeResponsePresenter::showResponseSubmission() {
     view.clearFreeResponse();
+    view.clearFlag();
     view.showFreeResponseSubmission();
 }
 }

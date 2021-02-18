@@ -171,6 +171,10 @@ void ModelImpl::submitIncorrectResponse() {
 
 void ModelImpl::submit(const FreeResponse &response) { model.submit(response); }
 
+void ModelImpl::submit(const ThreeKeywordsResponse &r) { model.submit(r); }
+
+void ModelImpl::submit(const SyllableResponse &r) { model.submit(r); }
+
 void ModelImpl::submit(const CorrectKeywords &k) {
     adaptiveMethod.submit(k);
     adaptiveMethod.writeLastCorrectKeywords(outputFile);
@@ -200,6 +204,7 @@ auto ModelImpl::testComplete() -> bool { return model.testComplete(); }
 auto ModelImpl::audioDevices() -> std::vector<std::string> {
     return model.audioDevices();
 }
+
 auto ModelImpl::adaptiveTestResults() -> AdaptiveTestResults {
     return adaptiveMethod.testResults();
 }
@@ -210,5 +215,9 @@ auto ModelImpl::trialNumber() -> int { return model.trialNumber(); }
 
 auto ModelImpl::targetFileName() -> std::string {
     return model.targetFileName();
+}
+
+auto ModelImpl::keywordsTestResults() -> KeywordsTestResults {
+    return fixedLevelMethod.keywordsTestResults();
 }
 }

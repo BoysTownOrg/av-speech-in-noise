@@ -3,7 +3,7 @@
 
 #include "Task.hpp"
 #include "Test.hpp"
-#include "SessionView.hpp"
+#include "Session.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
@@ -33,17 +33,15 @@ class CorrectKeywordsController : public TaskController,
                                   public CorrectKeywordsControl::Observer {
   public:
     explicit CorrectKeywordsController(
-        Model &, SessionView &, CorrectKeywordsControl &);
-    void attach(TaskController::Observer *) override;
-    void attach(TestController *) override;
+        TestController &, Model &, SessionView &, CorrectKeywordsControl &);
+    void attach(TestController *);
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
+    TestController &testController;
     Model &model;
     SessionView &sessionView;
     CorrectKeywordsControl &control;
-    TaskController::Observer *observer{};
-    TestController *controller{};
 };
 
 class CorrectKeywordsPresenter : public TaskPresenter {
@@ -51,9 +49,8 @@ class CorrectKeywordsPresenter : public TaskPresenter {
     explicit CorrectKeywordsPresenter(TestView &, CorrectKeywordsView &);
     void start() override;
     void stop() override;
-    void notifyThatTaskHasStarted() override;
-    void notifyThatUserIsDoneResponding() override;
     void showResponseSubmission() override;
+    void hideResponseSubmission() override;
 
   private:
     TestView &testView;

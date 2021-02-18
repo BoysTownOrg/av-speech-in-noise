@@ -24,7 +24,7 @@ void ConsonantTaskPresenter::notifyThatTaskHasStarted() {
     view.hideReadyButton();
 }
 
-void ConsonantTaskPresenter::notifyThatUserIsDoneResponding() {
+void ConsonantTaskPresenter::hideResponseSubmission() {
     hideResponseButtons(view);
 }
 
@@ -36,8 +36,8 @@ void ConsonantTaskPresenter::showResponseSubmission() {
 }
 
 ConsonantTaskController::ConsonantTaskController(
-    Model &model, ConsonantTaskControl &view)
-    : model{model}, control{view} {
+    TestController &testController, Model &model, ConsonantTaskControl &view)
+    : testController{testController}, model{model}, control{view} {
     view.attach(this);
 }
 
@@ -45,16 +45,15 @@ void ConsonantTaskController::attach(TaskController::Observer *e) {
     observer = e;
 }
 
-void ConsonantTaskController::attach(TestController *c) { controller = c; }
-
 void ConsonantTaskController::notifyThatReadyButtonHasBeenClicked() {
     observer->notifyThatTaskHasStarted();
-    controller->notifyThatUserIsReadyForNextTrial();
+    testController.notifyThatUserIsReadyForNextTrial();
+    observer->notifyThatTrialHasStarted();
 }
 
 void ConsonantTaskController::notifyThatResponseButtonHasBeenClicked() {
     model.submit(ConsonantResponse{control.consonant().front()});
-    observer->notifyThatUserIsDoneResponding();
-    controller->notifyThatUserIsReadyForNextTrial();
+    testController.notifyThatUserIsDoneRespondingAndIsReadyForNextTrial();
+    observer->notifyThatTrialHasStarted();
 }
 }

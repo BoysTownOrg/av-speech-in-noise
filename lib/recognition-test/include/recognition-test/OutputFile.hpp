@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_OUTPUTFILE_HPP_
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_OUTPUTFILE_HPP_
 
-#include "Model.hpp"
+#include "IOutputFile.hpp"
 #include <string>
 
 namespace av_speech_in_noise {
@@ -21,7 +21,12 @@ enum class HeadingItem {
     eyeTrackerTime,
     targetPlayerTime,
     correctConsonant,
-    subjectConsonant
+    subjectConsonant,
+    firstKeywordEvaluation,
+    secondKeywordEvaluation,
+    thirdKeywordEvaluation,
+    subjectSyllable,
+    correctSyllable
 };
 
 constexpr auto name(HeadingItem i) -> const char * {
@@ -58,6 +63,65 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "eye tracker time (us)";
     case HeadingItem::targetPlayerTime:
         return "target player time (ns)";
+    case HeadingItem::firstKeywordEvaluation:
+        return "first keyword evaluation";
+    case HeadingItem::secondKeywordEvaluation:
+        return "second keyword evaluation";
+    case HeadingItem::thirdKeywordEvaluation:
+        return "third keyword evaluation";
+    case HeadingItem::subjectSyllable:
+        return "subject syllable";
+    case HeadingItem::correctSyllable:
+        return "correct syllable";
+    }
+}
+
+constexpr auto name(Syllable i) -> const char * {
+    switch (i) {
+    case Syllable::bi:
+        return "bi";
+    case Syllable::di:
+        return "di";
+    case Syllable::dji:
+        return "dji";
+    case Syllable::fi:
+        return "fi";
+    case Syllable::gi:
+        return "gi";
+    case Syllable::hi:
+        return "hi";
+    case Syllable::ji:
+        return "ji";
+    case Syllable::ki:
+        return "ki";
+    case Syllable::li:
+        return "li";
+    case Syllable::mi:
+        return "mi";
+    case Syllable::ni:
+        return "ni";
+    case Syllable::pi:
+        return "pi";
+    case Syllable::ri:
+        return "ri";
+    case Syllable::shi:
+        return "shi";
+    case Syllable::si:
+        return "si";
+    case Syllable::thi:
+        return "thi";
+    case Syllable::ti:
+        return "ti";
+    case Syllable::tsi:
+        return "tsi";
+    case Syllable::vi:
+        return "vi";
+    case Syllable::wi:
+        return "wi";
+    case Syllable::zi:
+        return "zi";
+    case Syllable::unknown:
+        return "?";
     }
 }
 
@@ -108,10 +172,14 @@ class OutputFileImpl : public OutputFile {
     void write(const FreeResponseTrial &) override;
     void write(const CorrectKeywordsTrial &) override;
     void write(const ConsonantTrial &) override;
+    void write(const ThreeKeywordsTrial &) override;
     void write(const AdaptiveTestResults &) override;
     void write(const BinocularGazeSamples &) override;
     void write(TargetStartTime) override;
     void write(const EyeTrackerTargetPlayerSynchronization &) override;
+    void write(const SyllableTrial &) override;
+
+    enum class Trial : int;
 
   private:
     void write(const std::string &);
@@ -119,12 +187,7 @@ class OutputFileImpl : public OutputFile {
 
     Writer &writer;
     OutputFilePath &path;
-    bool justWroteFixedLevelCoordinateResponseTrial{};
-    bool justWroteAdaptiveCoordinateResponseTrial{};
-    bool justWroteFreeResponseTrial{};
-    bool justWroteOpenSetAdaptiveTrial{};
-    bool justWroteCorrectKeywordsTrial{};
-    bool justWroteConsonantTrial{};
+    Trial currentTrial;
 };
 }
 

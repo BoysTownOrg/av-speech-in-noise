@@ -54,7 +54,9 @@ static void down(Track *track) { track->down(); }
 
 static void up(Track *track) { track->up(); }
 
-static auto current(TargetPlaylist *list) -> LocalUrl { return list->current(); }
+static auto current(TargetPlaylist *list) -> LocalUrl {
+    return list->current();
+}
 
 static void assignTarget(open_set::Trial &trial, ResponseEvaluator &evaluator,
     TargetPlaylist *targetList) {
@@ -134,21 +136,20 @@ auto AdaptiveMethodImpl::currentTarget() -> LocalUrl {
 
 void AdaptiveMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
-    const auto lastX{x(snrTrack)};
-    if (correct(evaluator, targetList, response))
-        down(snrTrack);
-    else
-        up(snrTrack);
     lastCoordinateResponseMeasureTrial.subjectColor = response.color;
     lastCoordinateResponseMeasureTrial.subjectNumber = response.number;
-    assignReversals(lastCoordinateResponseMeasureTrial, snrTrack);
     lastCoordinateResponseMeasureTrial.correctColor =
         evaluator.correctColor(current(targetList));
     lastCoordinateResponseMeasureTrial.correctNumber =
         evaluator.correctNumber(current(targetList));
-    lastCoordinateResponseMeasureTrial.snr.dB = lastX;
-    lastCoordinateResponseMeasureTrial.correct =
-        correct(evaluator, targetList, response);
+    lastCoordinateResponseMeasureTrial.snr.dB = x(snrTrack);
+
+    if ((lastCoordinateResponseMeasureTrial.correct =
+                correct(evaluator, targetList, response)))
+        down(snrTrack);
+    else
+        up(snrTrack);
+    assignReversals(lastCoordinateResponseMeasureTrial, snrTrack);
     selectNextList();
 }
 
@@ -156,6 +157,7 @@ void AdaptiveMethodImpl::submitIncorrectResponse() {
     assignCorrectness(lastOpenSetTrial, false);
     assignSnr(lastOpenSetTrial, snrTrack);
     assignTarget(lastOpenSetTrial, evaluator, targetList);
+
     up(snrTrack);
     assignReversals(lastOpenSetTrial, snrTrack);
     selectNextList();
@@ -165,6 +167,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     assignCorrectness(lastOpenSetTrial, true);
     assignSnr(lastOpenSetTrial, snrTrack);
     assignTarget(lastOpenSetTrial, evaluator, targetList);
+
     down(snrTrack);
     assignReversals(lastOpenSetTrial, snrTrack);
     selectNextList();
@@ -175,6 +178,7 @@ void AdaptiveMethodImpl::submit(const CorrectKeywords &p) {
     assignCorrectness(lastCorrectKeywordsTrial, correct(p));
     assignSnr(lastCorrectKeywordsTrial, snrTrack);
     assignTarget(lastCorrectKeywordsTrial, evaluator, targetList);
+
     if (correct(p))
         down(snrTrack);
     else

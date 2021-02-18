@@ -3,48 +3,44 @@
 #include <functional>
 
 namespace av_speech_in_noise {
-static void displayTrialInformation(
-    Model &model, TestController::Observer *presenter) {
-    presenter->display("Trial " + std::to_string(model.trialNumber()));
-    presenter->secondaryDisplay(model.targetFileName());
+static void readyNextTrial(TestPresenter &presenter) {
+    presenter.updateTrialInformation();
+    presenter.notifyThatNextTrialIsReady();
 }
 
-static void readyNextTrial(Model &model, TestController::Observer *presenter) {
-    displayTrialInformation(model, presenter);
-    presenter->notifyThatNextTrialIsReady();
-}
-
-TestControllerImpl::TestControllerImpl(
-    Model &model, SessionView &sessionView, TestControl &control)
-    : model{model}, sessionView{sessionView} {
+TestControllerImpl::TestControllerImpl(SessionController &sessionController,
+    Model &model, SessionControl &sessionControl, TestControl &control,
+    TestPresenter &presenter)
+    : sessionController{sessionController}, model{model},
+      sessionControl{sessionControl}, presenter{presenter} {
     control.attach(this);
 }
 
-void TestControllerImpl::attach(TestController::Observer *e) { observer = e; }
-
-static void notifyThatTestIsComplete(SessionController *presenter) {
-    presenter->notifyThatTestIsComplete();
+static void notifyThatTestIsComplete(SessionController &controller) {
+    controller.notifyThatTestIsComplete();
 }
 
-void TestControllerImpl::exitTest() { notifyThatTestIsComplete(controller); }
+void TestControllerImpl::exitTest() {
+    notifyThatTestIsComplete(sessionController);
+}
 
 static void playTrial(
-    Model &model, SessionView &view, TestController::Observer *observer) {
-    model.playTrial(AudioSettings{view.audioDevice()});
-    observer->notifyThatTrialHasStarted();
+    Model &model, SessionControl &control, TestPresenter &presenter) {
+    model.playTrial(AudioSettings{control.audioDevice()});
+    presenter.notifyThatTrialHasStarted();
 }
 
 void TestControllerImpl::playTrial() {
-    av_speech_in_noise::playTrial(model, sessionView, observer);
+    av_speech_in_noise::playTrial(model, sessionControl, presenter);
 }
 
 void TestControllerImpl::declineContinuingTesting() {
-    notifyThatTestIsComplete(controller);
+    notifyThatTestIsComplete(sessionController);
 }
 
 void TestControllerImpl::acceptContinuingTesting() {
     model.restartAdaptiveTestWhilePreservingTargets();
-    readyNextTrial(model, observer);
+    readyNextTrial(presenter);
 }
 
 static void ifTestCompleteElse(Model &model, const std::function<void()> &f,
@@ -55,62 +51,57 @@ static void ifTestCompleteElse(Model &model, const std::function<void()> &f,
         g();
 }
 
-static void readyNextTrialIfTestIncompleteElse(Model &model,
-    TestController::Observer *observer, const std::function<void()> &f) {
-    ifTestCompleteElse(model, f, [&]() { readyNextTrial(model, observer); });
+static void readyNextTrialIfTestIncompleteElse(
+    Model &model, TestPresenter &presenter, const std::function<void()> &f) {
+    presenter.hideResponseSubmission();
+    ifTestCompleteElse(model, f, [&]() { readyNextTrial(presenter); });
 }
 
 static void notifyIfTestIsCompleteElse(Model &model,
-    SessionController *controller, const std::function<void()> &f) {
+    SessionController &controller, const std::function<void()> &f) {
     ifTestCompleteElse(
         model, [&]() { notifyThatTestIsComplete(controller); }, f);
 }
 
-void TestControllerImpl::
-    notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() {
-    readyNextTrialIfTestIncompleteElse(model, observer, [&] {
-        observer->showContinueTestingDialog();
-        std::stringstream thresholds;
-        thresholds << "thresholds (targets: dB SNR)";
-        for (const auto &result : model.adaptiveTestResults())
-            thresholds << '\n'
-                       << result.targetsUrl.path << ": " << result.threshold;
-        observer->setContinueTestingDialogMessage(thresholds.str());
+void TestControllerImpl::notifyThatUserIsDoneResponding() {
+    readyNextTrialIfTestIncompleteElse(model, presenter, [&]() {
+        presenter.completeTask();
+        notifyThatTestIsComplete(sessionController);
     });
 }
 
-void TestControllerImpl::notifyThatUserIsDoneResponding() {
-    notifyIfTestIsCompleteElse(
-        model, controller, [&]() { readyNextTrial(model, observer); });
+void TestControllerImpl::
+    notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() {
+    readyNextTrialIfTestIncompleteElse(
+        model, presenter, [&] { presenter.updateAdaptiveTestResults(); });
+}
+
+void TestControllerImpl::
+    notifyThatUserIsDoneRespondingAndIsReadyForNextTrial() {
+    presenter.hideResponseSubmission();
+    notifyIfTestIsCompleteElse(model, sessionController, [&]() {
+        presenter.updateTrialInformation();
+        av_speech_in_noise::playTrial(model, sessionControl, presenter);
+    });
 }
 
 void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
-    notifyIfTestIsCompleteElse(model, controller, [&]() {
-        displayTrialInformation(model, observer);
-        av_speech_in_noise::playTrial(model, sessionView, observer);
+    notifyIfTestIsCompleteElse(model, sessionController, [&]() {
+        presenter.updateTrialInformation();
+        av_speech_in_noise::playTrial(model, sessionControl, presenter);
     });
 }
 
-void TestControllerImpl::attach(SessionController *p) { controller = p; }
-
-TestPresenterImpl::TestPresenterImpl(Model &model, TestView &view,
-    TaskPresenter *consonantPresenter,
-    TaskPresenter *coordinateResponseMeasurePresenter,
-    TaskPresenter *freeResponsePresenter,
-    TaskPresenter *correctKeywordsPresenter, TaskPresenter *passFailPresenter,
-    UninitializedTaskPresenter *taskPresenter_)
-    : model{model}, view{view}, consonantPresenter{consonantPresenter},
-      coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
-      freeResponsePresenter{freeResponsePresenter},
-      correctKeywordsPresenter{correctKeywordsPresenter},
-      passFailPresenter{passFailPresenter}, taskPresenter_{taskPresenter_} {
+TestPresenterImpl::TestPresenterImpl(
+    Model &model, TestView &view, UninitializedTaskPresenter *taskPresenter)
+    : model{model}, view{view}, taskPresenter{taskPresenter} {
     model.attach(this);
 }
 
 void TestPresenterImpl::start() { view.show(); }
 
 void TestPresenterImpl::stop() {
-    taskPresenter_->stop();
+    taskPresenter->stop();
     view.hideContinueTestingDialog();
     view.hide();
 }
@@ -118,12 +109,11 @@ void TestPresenterImpl::stop() {
 void TestPresenterImpl::notifyThatTrialHasStarted() {
     view.hideExitTestButton();
     view.hideNextTrialButton();
-    taskPresenter_->notifyThatTrialHasStarted();
 }
 
 void TestPresenterImpl::trialComplete() {
     view.showExitTestButton();
-    taskPresenter_->showResponseSubmission();
+    taskPresenter->showResponseSubmission();
 }
 
 void TestPresenterImpl::notifyThatNextTrialIsReady() {
@@ -131,64 +121,32 @@ void TestPresenterImpl::notifyThatNextTrialIsReady() {
     view.showNextTrialButton();
 }
 
-void TestPresenterImpl::display(const std::string &s) { view.display(s); }
-
-void TestPresenterImpl::secondaryDisplay(const std::string &s) {
-    view.secondaryDisplay(s);
+void TestPresenterImpl::updateTrialInformation() {
+    std::stringstream stream;
+    stream << "Trial " << model.trialNumber();
+    view.display(stream.str());
+    view.secondaryDisplay(model.targetFileName());
 }
 
-void TestPresenterImpl::showContinueTestingDialog() {
+void TestPresenterImpl::updateAdaptiveTestResults() {
     view.showContinueTestingDialog();
+    std::stringstream thresholds;
+    thresholds << "thresholds (targets: dB SNR)";
+    for (const auto &result : model.adaptiveTestResults())
+        thresholds << '\n'
+                   << result.targetsUrl.path << ": " << result.threshold;
+    view.setContinueTestingDialogMessage(thresholds.str());
 }
 
-void TestPresenterImpl::setContinueTestingDialogMessage(const std::string &s) {
-    view.setContinueTestingDialogMessage(s);
+void TestPresenterImpl::initialize(TaskPresenter &p) {
+    updateTrialInformation();
+    taskPresenter->initialize(&p);
+    taskPresenter->start();
 }
 
-static auto coordinateResponseMeasure(Method m) -> bool {
-    return m == Method::adaptiveCoordinateResponseMeasure ||
-        m == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||
-        m == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker ||
-        m == Method::adaptiveCoordinateResponseMeasureWithEyeTracking ||
-        m == Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement ||
-        m ==
-        Method::
-            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking ||
-        m ==
-        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
+void TestPresenterImpl::hideResponseSubmission() {
+    taskPresenter->hideResponseSubmission();
 }
 
-static auto freeResponse(Method m) -> bool {
-    return m == Method::fixedLevelFreeResponseWithAllTargets ||
-        m == Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking ||
-        m == Method::fixedLevelFreeResponseWithSilentIntervalTargets ||
-        m == Method::fixedLevelFreeResponseWithTargetReplacement;
-}
-
-static auto correctKeywords(Method m) -> bool {
-    return m == Method::adaptiveCorrectKeywords ||
-        m == Method::adaptiveCorrectKeywordsWithEyeTracking;
-}
-
-static auto consonant(Method m) -> bool {
-    return m == Method::fixedLevelConsonants;
-}
-
-void TestPresenterImpl::initialize(Method m) {
-    displayTrialInformation(model, this);
-    taskPresenter_->initialize(taskPresenter(m));
-    taskPresenter_->start();
-}
-
-auto TestPresenterImpl::taskPresenter(Method m) -> TaskPresenter * {
-    if (coordinateResponseMeasure(m))
-        return coordinateResponseMeasurePresenter;
-    if (consonant(m))
-        return consonantPresenter;
-    if (freeResponse(m))
-        return freeResponsePresenter;
-    if (correctKeywords(m))
-        return correctKeywordsPresenter;
-    return passFailPresenter;
-}
+void TestPresenterImpl::completeTask() { taskPresenter->complete(); }
 }

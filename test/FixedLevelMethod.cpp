@@ -74,6 +74,26 @@ class SubmittingFreeResponse : public UseCase {
     void setFlagged() { response.flagged = true; }
 };
 
+class SubmittingThreeKeywords : public UseCase {
+
+  public:
+    void run(FixedLevelMethodImpl &m) override { m.submit(response); }
+    void setFlagged() { response.flagged = true; }
+
+  private:
+    ThreeKeywordsResponse response{};
+};
+
+class SubmittingSyllable : public UseCase {
+
+  public:
+    void run(FixedLevelMethodImpl &m) override { m.submit(response); }
+    void setFlagged() { response.flagged = true; }
+
+  private:
+    SyllableResponse response{};
+};
+
 class SubmittingConsonant : public UseCase {
     ConsonantResponse response{};
 
@@ -342,6 +362,8 @@ class FixedLevelMethodWithFiniteTargetPlaylistTests : public ::testing::Test {
         targetList, test};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
+    SubmittingThreeKeywords submittingThreeKeywords;
+    SubmittingSyllable submittingSyllable;
     SubmittingConsonant submittingConsonant;
 
     FixedLevelMethodWithFiniteTargetPlaylistTests() {
@@ -437,8 +459,25 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    completeWhenTestCompleteAfterThreeKeywords) {
+    assertTestCompleteOnlyAfter(submittingThreeKeywords, method, targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    completeWhenTestCompleteAfterSyllable) {
+    assertTestCompleteOnlyAfter(submittingSyllable, method, targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     completeWhenTestCompleteAfterInitializing) {
     assertTestCompleteOnlyAfter(initializingMethod, method, targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    initializeLoadsBeforeQueryingCompletion) {
+    run(initializingMethod, method);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        endsWith(targetList.log(), "loadFromDirectory empty "));
 }
 
 class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests
@@ -452,6 +491,8 @@ class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests
         initializingMethod{targetList, test};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
+    SubmittingThreeKeywords submittingThreeKeywords;
+    SubmittingSyllable submittingSyllable;
 
     FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests() {
         run(initializingMethod, method);
@@ -487,6 +528,16 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    completeWhenTestCompleteAfterThreeKeywords) {
+    assertTestCompleteOnlyAfter(submittingThreeKeywords, method, targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    completeWhenTestCompleteAfterSyllableResponse) {
+    assertTestCompleteOnlyAfter(submittingSyllable, method, targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     completeWhenTestCompleteAfterInitializing) {
     assertTestCompleteOnlyAfter(initializingMethod, method, targetList);
 }
@@ -498,42 +549,78 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    submitThreeKeywordsDoesNotReinsertCurrentTarget) {
+    run(submittingThreeKeywords, method);
+    assertCurrentTargetNotReinserted(targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    submitSyllableDoesNotReinsertCurrentTarget) {
+    run(submittingSyllable, method);
+    assertCurrentTargetNotReinserted(targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     submitFreeResponseReinsertsCurrentTargetIfFlagged) {
     submittingFreeResponse.setFlagged();
     run(submittingFreeResponse, method);
     assertCurrentTargetReinserted(targetList);
 }
 
-class TargetPlaylistTestConcluderComboStub
-    : public FiniteTargetPlaylistWithRepeatables {
-  public:
-    void loadFromDirectory(const LocalUrl &) override {}
-    auto directory() -> LocalUrl override { return {}; }
-    auto next() -> LocalUrl override { return {}; }
-    auto current() -> LocalUrl override { return {}; }
-    auto empty() -> bool override {
-        insert(log_, "empty ");
-        return {};
-    }
-    void reinsertCurrent() override { insert(log_, "reinsertCurrent "); }
-    auto log() const -> const std::stringstream & { return log_; }
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    submitThreeKeywordsReinsertsCurrentTargetIfFlagged) {
+    submittingThreeKeywords.setFlagged();
+    run(submittingThreeKeywords, method);
+    assertCurrentTargetReinserted(targetList);
+}
 
-  private:
-    std::stringstream log_;
-};
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    submitSyllableReinsertsCurrentTargetIfFlagged) {
+    submittingSyllable.setFlagged();
+    run(submittingSyllable, method);
+    assertCurrentTargetReinserted(targetList);
+}
 
-TEST(FixedLevelMethodTestsTBD,
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    submitThreeKeywordsTracksTotalCorrectAndPercentCorrect) {
+    method.submit(ThreeKeywordsResponse{{}, true, true, true});
+    method.submit(ThreeKeywordsResponse{{}, true, true, false});
+    method.submit(ThreeKeywordsResponse{{}, true, false, true});
+    method.submit(ThreeKeywordsResponse{{}, false, false, true});
+    method.submit(ThreeKeywordsResponse{{}, true, true, false});
+    method.submit(ThreeKeywordsResponse{{}, true, true, true});
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
+        13, method.keywordsTestResults().totalCorrect);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
+        13 * 100. / 18, method.keywordsTestResults().percentCorrect);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    submitThreeKeywordsResetsTotalCorrectAndPercentCorrect) {
+    method.submit(ThreeKeywordsResponse{{}, true, true, true});
+    method.submit(ThreeKeywordsResponse{{}, true, true, false});
+    run(initializingMethod, method);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
+        0, method.keywordsTestResults().totalCorrect);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
+        0, method.keywordsTestResults().percentCorrect);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     submitFreeResponseReinsertsCurrentTargetIfFlaggedBeforeQueryingCompletion) {
-    ResponseEvaluatorStub evaluator;
-    TargetPlaylistTestConcluderComboStub combo;
-    FixedLevelMethodImpl method{evaluator};
-    FixedLevelTest test;
-    method.initialize(test, &combo);
+    run(initializingMethod, method);
     FreeResponse response;
     response.flagged = true;
     method.submit(response);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        endsWith(combo.log(), "reinsertCurrent empty "));
+        endsWith(targetList.log(), "reinsertCurrent empty "));
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    initializeLoadsBeforeQueryingCompletion) {
+    run(initializingMethod, method);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        endsWith(targetList.log(), "loadFromDirectory empty "));
 }
 }
 }

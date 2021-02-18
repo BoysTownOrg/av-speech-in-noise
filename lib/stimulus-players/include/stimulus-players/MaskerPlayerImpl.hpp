@@ -2,7 +2,7 @@
 #define AV_SPEECH_IN_NOISE_STIMULUS_PLAYERS_INCLUDE_STIMULUS_PLAYERS_MASKERPLAYERIMPL_HPP_
 
 #include "AudioReader.hpp"
-#include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/IMaskerPlayer.hpp>
 #include <gsl/gsl>
 #include <string>
 #include <vector>

@@ -27,21 +27,19 @@ class FreeResponseView {
     virtual void showFreeResponseSubmission() = 0;
     virtual void hideFreeResponseSubmission() = 0;
     virtual void clearFreeResponse() = 0;
+    virtual void clearFlag() = 0;
 };
 
 class FreeResponseController : public TaskController,
                                public FreeResponseControl::Observer {
   public:
-    FreeResponseController(Model &, FreeResponseControl &);
-    void attach(TaskController::Observer *) override;
-    void attach(TestController *) override;
+    FreeResponseController(TestController &, Model &, FreeResponseControl &);
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
+    TestController &testController;
     Model &model;
     FreeResponseControl &control;
-    TaskController::Observer *observer{};
-    TestController *controller{};
 };
 
 class FreeResponsePresenter : public TaskPresenter {
@@ -49,8 +47,7 @@ class FreeResponsePresenter : public TaskPresenter {
     FreeResponsePresenter(TestView &, FreeResponseView &);
     void start() override;
     void stop() override;
-    void notifyThatTaskHasStarted() override;
-    void notifyThatUserIsDoneResponding() override;
+    void hideResponseSubmission() override;
     void showResponseSubmission() override;
 
   private:

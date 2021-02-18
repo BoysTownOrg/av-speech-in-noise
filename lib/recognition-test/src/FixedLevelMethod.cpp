@@ -9,37 +9,45 @@ static void loadFromDirectory(
     list->loadFromDirectory(test.targetsUrl);
 }
 
-void FixedLevelMethodImpl::initialize(
-    const FixedLevelFixedTrialsTest &test, TargetPlaylist *list) {
-    usingFiniteTargetPlaylist_ = false;
+static void initialize(TargetPlaylist *&targetList,
+    const FixedLevelTest *&test_, SNR &snr_, const FixedLevelTest &test,
+    TargetPlaylist *list) {
     targetList = list;
     test_ = &test;
-    trials_ = test.trials;
     snr_ = test.snr;
     loadFromDirectory(targetList, test);
 }
 
-void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &p, FiniteTargetPlaylistWithRepeatables *list) {
+static void initialize(bool &usingFiniteTargetPlaylist_,
+    FiniteTargetPlaylist *&finiteTargetPlaylist, bool &finiteTargetsExhausted_,
+    FiniteTargetPlaylist *list) {
     usingFiniteTargetPlaylist_ = true;
-    targetList = list;
     finiteTargetPlaylist = list;
-    finiteTargetPlaylistWithRepeatables = list;
-    test_ = &p;
-    snr_ = p.snr;
-    loadFromDirectory(targetList, p);
     finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
 }
 
 void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &p, FiniteTargetPlaylist *list) {
-    usingFiniteTargetPlaylist_ = true;
-    targetList = list;
-    finiteTargetPlaylist = list;
-    test_ = &p;
-    snr_ = p.snr;
-    loadFromDirectory(targetList, p);
-    finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
+    const FixedLevelFixedTrialsTest &test, TargetPlaylist *list) {
+    usingFiniteTargetPlaylist_ = false;
+    av_speech_in_noise::initialize(targetList, test_, snr_, test, list);
+    trials_ = test.trials;
+}
+
+void FixedLevelMethodImpl::initialize(
+    const FixedLevelTest &test, FiniteTargetPlaylistWithRepeatables *list) {
+    av_speech_in_noise::initialize(targetList, test_, snr_, test, list);
+    av_speech_in_noise::initialize(usingFiniteTargetPlaylist_,
+        finiteTargetPlaylist, finiteTargetsExhausted_, list);
+    finiteTargetPlaylistWithRepeatables = list;
+    totalKeywordsSubmitted_ = 0;
+    totalKeywordsCorrect_ = 0;
+}
+
+void FixedLevelMethodImpl::initialize(
+    const FixedLevelTest &test, FiniteTargetPlaylist *list) {
+    av_speech_in_noise::initialize(targetList, test_, snr_, test, list);
+    av_speech_in_noise::initialize(usingFiniteTargetPlaylist_,
+        finiteTargetPlaylist, finiteTargetsExhausted_, list);
 }
 
 auto FixedLevelMethodImpl::complete() -> bool {
@@ -99,12 +107,44 @@ void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile &file) {
     file.write(lastCoordinateResponseMeasureTrial);
 }
 
+static void update(
+    FiniteTargetPlaylistWithRepeatables *finiteTargetPlaylistWithRepeatables,
+    FiniteTargetPlaylist *finiteTargetPlaylist, bool flagged,
+    bool &finiteTargetsExhausted_) {
+    if (flagged)
+        finiteTargetPlaylistWithRepeatables->reinsertCurrent();
+    finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
+}
+
 void FixedLevelMethodImpl::submit(const FreeResponse &response) {
-    if (usingFiniteTargetPlaylist_) {
-        if (response.flagged)
-            finiteTargetPlaylistWithRepeatables->reinsertCurrent();
-        finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
-    } else
+    if (usingFiniteTargetPlaylist_)
+        update(finiteTargetPlaylistWithRepeatables, finiteTargetPlaylist,
+            response.flagged, finiteTargetsExhausted_);
+    else
         --trials_;
+}
+
+void FixedLevelMethodImpl::submit(const ThreeKeywordsResponse &response) {
+    update(finiteTargetPlaylistWithRepeatables, finiteTargetPlaylist,
+        response.flagged, finiteTargetsExhausted_);
+    totalKeywordsSubmitted_ += 3;
+    if (response.firstCorrect)
+        ++totalKeywordsCorrect_;
+    if (response.secondCorrect)
+        ++totalKeywordsCorrect_;
+    if (response.thirdCorrect)
+        ++totalKeywordsCorrect_;
+}
+
+void FixedLevelMethodImpl::submit(const SyllableResponse &response) {
+    update(finiteTargetPlaylistWithRepeatables, finiteTargetPlaylist,
+        response.flagged, finiteTargetsExhausted_);
+}
+
+auto FixedLevelMethodImpl::keywordsTestResults() -> KeywordsTestResults {
+    return KeywordsTestResults{totalKeywordsSubmitted_ == 0
+            ? 0
+            : totalKeywordsCorrect_ * 100. / totalKeywordsSubmitted_,
+        totalKeywordsCorrect_};
 }
 }

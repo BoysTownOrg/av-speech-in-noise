@@ -2,7 +2,6 @@
 #include "ModelStub.hpp"
 #include "SessionViewStub.hpp"
 #include "TestViewStub.hpp"
-#include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
 #include <presentation/CorrectKeywords.hpp>
 #include <gtest/gtest.h>
@@ -54,10 +53,6 @@ void notifyThatSubmitButtonHasBeenClicked(CorrectKeywordsControlStub &view) {
     view.notifyThatSubmitButtonHasBeenClicked();
 }
 
-void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
-    presenter.notifyThatUserIsDoneResponding();
-}
-
 void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
@@ -67,14 +62,9 @@ class CorrectKeywordsControllerTests : public ::testing::Test {
     ModelStub model;
     SessionViewStub sessionView;
     CorrectKeywordsControlStub control;
-    CorrectKeywordsController controller{model, sessionView, control};
     TestControllerStub testController;
-    TaskControllerObserverStub taskController;
-
-    CorrectKeywordsControllerTests() {
-        controller.attach(&testController);
-        controller.attach(&taskController);
-    }
+    CorrectKeywordsController controller{
+        testController, model, sessionView, control};
 };
 
 class CorrectKeywordsPresenterTests : public ::testing::Test {
@@ -93,14 +83,8 @@ class CorrectKeywordsPresenterTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).correctKeywordsSubmissionHidden())
 
-CORRECT_KEYWORDS_PRESENTER_TEST(presenterHidesReadyButtonWhenTaskStarts) {
-    presenter.notifyThatTaskHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonHidden());
-}
-
-CORRECT_KEYWORDS_PRESENTER_TEST(
-    presenterHidesResponseButtonsAfterUserIsDoneResponding) {
-    notifyThatUserIsDoneResponding(presenter);
+CORRECT_KEYWORDS_PRESENTER_TEST(presenterHidesResponseButtons) {
+    presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
@@ -133,13 +117,6 @@ CORRECT_KEYWORDS_CONTROLLER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
-}
-
-CORRECT_KEYWORDS_CONTROLLER_TEST(
-    responderNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        taskController.notifiedThatUserIsDoneResponding());
 }
 
 CORRECT_KEYWORDS_CONTROLLER_TEST(

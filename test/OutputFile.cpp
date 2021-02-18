@@ -107,6 +107,12 @@ class WritingEvaluatedTrial : public virtual WritingTrial {
     virtual auto evaluationEntryIndex() -> gsl::index = 0;
 };
 
+class WritingFlaggableTrial : public virtual WritingTrial {
+  public:
+    virtual void flag() = 0;
+    virtual void clearFlag() = 0;
+};
+
 void setCorrect(coordinate_response_measure::Trial &trial) {
     trial.correct = true;
 }
@@ -427,7 +433,7 @@ class WritingConsonantTrial : public WritingEvaluatedTrial {
         {HeadingItem::evaluation, 3}, {HeadingItem::target, 4}};
 };
 
-class WritingFreeResponseTrial : public WritingTrial {
+class WritingFreeResponseTrial : public WritingFlaggableTrial {
   public:
     WritingFreeResponseTrial() {
         trial.target = "a";
@@ -448,11 +454,121 @@ class WritingFreeResponseTrial : public WritingTrial {
         return headingLabels_;
     }
 
+    void flag() override { trial.flagged = true; }
+
+    void clearFlag() override { trial.flagged = false; }
+
   private:
     FreeResponseTrial trial{};
     std::map<HeadingItem, gsl::index> headingLabels_{
         {HeadingItem::target, 1}, {HeadingItem::freeResponse, 2}};
 };
+
+class WritingThreeKeywordsTrial : public WritingFlaggableTrial {
+  public:
+    WritingThreeKeywordsTrial() {
+        trial.target = "a";
+        trial.firstCorrect = true;
+        trial.secondCorrect = false;
+        trial.thirdCorrect = true;
+    }
+
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "a", at(headingLabels_, HeadingItem::target), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "correct",
+            at(headingLabels_, HeadingItem::firstKeywordEvaluation), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "incorrect",
+            at(headingLabels_, HeadingItem::secondKeywordEvaluation), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "correct",
+            at(headingLabels_, HeadingItem::thirdKeywordEvaluation), line);
+    }
+
+    void run(OutputFileImpl &file) override { file.write(trial); }
+
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return headingLabels_;
+    }
+
+    void flag() override { trial.flagged = true; }
+
+    void clearFlag() override { trial.flagged = false; }
+
+  private:
+    ThreeKeywordsTrial trial{};
+    std::map<HeadingItem, gsl::index> headingLabels_{{HeadingItem::target, 1},
+        {HeadingItem::firstKeywordEvaluation, 2},
+        {HeadingItem::secondKeywordEvaluation, 3},
+        {HeadingItem::thirdKeywordEvaluation, 4}};
+};
+
+class WritingSyllableTrial : public WritingEvaluatedTrial,
+                             public WritingFlaggableTrial {
+  public:
+    WritingSyllableTrial() {
+        trial.target = "a";
+        trial.subjectSyllable = Syllable::ki;
+        trial.correctSyllable = Syllable::zi;
+    }
+
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "a", at(headingLabels_, HeadingItem::target), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "ki",
+            at(headingLabels_, HeadingItem::subjectSyllable), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "zi",
+            at(headingLabels_, HeadingItem::correctSyllable), line);
+    }
+
+    void run(OutputFileImpl &file) override { file.write(trial); }
+
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return headingLabels_;
+    }
+
+    void incorrect() override { trial.correct = false; }
+
+    void correct() override { trial.correct = true; }
+
+    auto evaluationEntryIndex() -> gsl::index override {
+        return at(headingLabels_, HeadingItem::evaluation);
+    }
+
+    void flag() override { trial.flagged = true; }
+
+    void clearFlag() override { trial.flagged = false; }
+
+  private:
+    SyllableTrial trial{};
+    std::map<HeadingItem, gsl::index> headingLabels_{
+        {HeadingItem::correctSyllable, 1}, {HeadingItem::subjectSyllable, 2},
+        {HeadingItem::evaluation, 3}, {HeadingItem::target, 4}};
+};
+
+static void assertWritesFlaggedTrial(
+    OutputFileImpl &file, WriterStub &writer, WritingFlaggableTrial &useCase) {
+    useCase.flag();
+    run(useCase, file);
+    assertNthEntryOfSecondLine(
+        writer, "FLAGGED", useCase.headingLabels().size() + 1);
+}
+
+static void assertNonFlaggedTrialDoesNotWriteExtraEntry(
+    OutputFileImpl &file, WriterStub &writer, WritingFlaggableTrial &useCase) {
+    useCase.clearFlag();
+    run(useCase, file);
+    const auto precedingNewLine{
+        find_nth_element(writtenString(writer), 2 - 1, '\n')};
+    const auto line_{writtenString(writer).substr(precedingNewLine + 1)};
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        static_cast<
+            std::iterator_traits<std::string::iterator>::difference_type>(
+            useCase.headingLabels().size()) -
+            1,
+        std::count(line_.begin(), line_.end(), ','));
+}
 
 class OutputFileTests : public ::testing::Test {
   protected:
@@ -467,6 +583,8 @@ class OutputFileTests : public ::testing::Test {
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
     WritingConsonantTrial writingConsonantTrial;
     WritingFreeResponseTrial writingFreeResponseTrial;
+    WritingThreeKeywordsTrial writingThreeKeywordsTrial;
+    WritingSyllableTrial writingSyllableTrial;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
     FreeResponseTrial freeResponseTrial;
@@ -575,6 +693,14 @@ OUTPUT_FILE_TEST(writingFreeResponseTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingFreeResponseTrial);
 }
 
+OUTPUT_FILE_TEST(writingThreeKeywordsTrialWritesHeadingOnFirstLine) {
+    assertWritesHeadingOnFirstLine(writingThreeKeywordsTrial);
+}
+
+OUTPUT_FILE_TEST(writingSyllableTrialWritesHeadingOnFirstLine) {
+    assertWritesHeadingOnFirstLine(writingSyllableTrial);
+}
+
 OUTPUT_FILE_TEST(writingCorrectKeywordsTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingCorrectKeywordsTrial);
 }
@@ -604,6 +730,10 @@ OUTPUT_FILE_TEST(writeFreeResponseTrialWritesTrialOnSecondLine) {
     assertWritesTrialOnLine(writingFreeResponseTrial, 2);
 }
 
+OUTPUT_FILE_TEST(writeThreeKeywordsTrialWritesTrialOnSecondLine) {
+    assertWritesTrialOnLine(writingThreeKeywordsTrial, 2);
+}
+
 OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialWritesTrialOnSecondLine) {
     assertWritesTrialOnLine(writingOpenSetAdaptiveTrial, 2);
 }
@@ -630,6 +760,10 @@ OUTPUT_FILE_TEST(writingConsonantTrialTwiceDoesNotWriteHeadingTwice) {
 
 OUTPUT_FILE_TEST(writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
     assertWritesTrialOnLineAfterWritingTwice(writingFreeResponseTrial, 3);
+}
+
+OUTPUT_FILE_TEST(writeThreeKeywordsTrialTwiceDoesNotWriteHeadingTwice) {
+    assertWritesTrialOnLineAfterWritingTwice(writingThreeKeywordsTrial, 3);
 }
 
 OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialTwiceDoesNotWriteHeadingTwice) {
@@ -694,6 +828,10 @@ OUTPUT_FILE_TEST(writeIncorrectKeywordsTrial) {
     assertIncorrectTrialWritesEvaluation(writingCorrectKeywordsTrial);
 }
 
+OUTPUT_FILE_TEST(writeIncorrectSyllableTrial) {
+    assertIncorrectTrialWritesEvaluation(writingSyllableTrial);
+}
+
 OUTPUT_FILE_TEST(writeCorrectAdaptiveCoordinateResponseTrial) {
     assertCorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
 }
@@ -715,21 +853,35 @@ OUTPUT_FILE_TEST(writeCorrectKeywordsTrialWritesCorrectEvaluation) {
     assertCorrectTrialWritesEvaluation(writingCorrectKeywordsTrial);
 }
 
+OUTPUT_FILE_TEST(writeCorrectSyllableTrial) {
+    assertCorrectTrialWritesEvaluation(writingSyllableTrial);
+}
+
 OUTPUT_FILE_TEST(writeFlaggedFreeResponseTrial) {
-    freeResponseTrial.flagged = true;
-    write(file, freeResponseTrial);
-    assertNthEntryOfSecondLine(writer, "FLAGGED", 3);
+    assertWritesFlaggedTrial(file, writer, writingFreeResponseTrial);
 }
 
 OUTPUT_FILE_TEST(writeNoFlagFreeResponseTrialOnlyTwoEntries) {
-    freeResponseTrial.flagged = false;
-    write(file, freeResponseTrial);
-    const auto precedingNewLine{
-        find_nth_element(writtenString(writer), 2 - 1, '\n')};
-    const auto line_{writtenString(writer).substr(precedingNewLine + 1)};
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::iterator_traits<std::string::iterator>::difference_type{2 - 1},
-        std::count(line_.begin(), line_.end(), ','));
+    assertNonFlaggedTrialDoesNotWriteExtraEntry(
+        file, writer, writingFreeResponseTrial);
+}
+
+OUTPUT_FILE_TEST(writeFlaggedSyllablesTrial) {
+    assertWritesFlaggedTrial(file, writer, writingSyllableTrial);
+}
+
+OUTPUT_FILE_TEST(writeNoFlagSyllablesTrialDoesNotHaveExtraEntry) {
+    assertNonFlaggedTrialDoesNotWriteExtraEntry(
+        file, writer, writingSyllableTrial);
+}
+
+OUTPUT_FILE_TEST(writeFlaggedThreeKeywordsTrial) {
+    assertWritesFlaggedTrial(file, writer, writingThreeKeywordsTrial);
+}
+
+OUTPUT_FILE_TEST(writeNoFlagThreeKeywordsTrialDoesNotHaveExtraEntry) {
+    assertNonFlaggedTrialDoesNotWriteExtraEntry(
+        file, writer, writingThreeKeywordsTrial);
 }
 
 OUTPUT_FILE_TEST(uninitializedColorDoesNotBreak) {

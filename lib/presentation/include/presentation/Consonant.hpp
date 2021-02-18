@@ -3,6 +3,7 @@
 
 #include "View.hpp"
 #include "Task.hpp"
+#include "Test.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
@@ -31,15 +32,16 @@ class ConsonantTaskView : public virtual View {
     virtual void showResponseButtons() = 0;
 };
 
-class ConsonantTaskPresenter : public TaskPresenter {
+class ConsonantTaskPresenter : public TaskController::Observer,
+                               public TaskPresenter {
   public:
     explicit ConsonantTaskPresenter(ConsonantTaskView &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
-    void notifyThatUserIsDoneResponding() override;
     void notifyThatTrialHasStarted() override;
     void showResponseSubmission() override;
+    void hideResponseSubmission() override;
 
   private:
     ConsonantTaskView &view;
@@ -48,17 +50,16 @@ class ConsonantTaskPresenter : public TaskPresenter {
 class ConsonantTaskController : public TaskController,
                                 public ConsonantTaskControl::Observer {
   public:
-    ConsonantTaskController(Model &, ConsonantTaskControl &);
-    void attach(TaskController::Observer *) override;
-    void attach(TestController *) override;
+    ConsonantTaskController(TestController &, Model &, ConsonantTaskControl &);
+    void attach(TaskController::Observer *);
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
 
   private:
+    TestController &testController;
     Model &model;
     ConsonantTaskControl &control;
     TaskController::Observer *observer{};
-    TestController *controller{};
 };
 }
 

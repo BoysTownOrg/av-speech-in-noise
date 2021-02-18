@@ -3,10 +3,10 @@
 
 #include "View.hpp"
 #include "Presenter.hpp"
-#include "Method.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <vector>
 #include <string>
+#include <string_view>
 
 namespace av_speech_in_noise {
 class TestSetupControl {
@@ -20,7 +20,6 @@ class TestSetupControl {
         notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() = 0;
         virtual void
         notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() = 0;
-        virtual void notifyThatBrowseForTestSettingsButtonHasBeenClicked() = 0;
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestSetupControl);
     virtual void attach(Observer *) = 0;
@@ -36,24 +35,12 @@ class TestSetupControl {
 class TestSetupView : public virtual View {
   public:
     virtual void populateTransducerMenu(std::vector<std::string>) = 0;
-    virtual void setTestSettingsFile(std::string) = 0;
 };
 
-class TestSetupController {
+class TestSetupPresenter : public Presenter {
   public:
-    class Observer {
-      public:
-        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
-        virtual void notifyThatUserHasSelectedTestSettingsFile(
-            const std::string &) = 0;
-    };
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestSetupController);
-    virtual void attach(SessionController *) = 0;
-    virtual void attach(Observer *) = 0;
+    virtual void updateErrorMessage(std::string_view) = 0;
 };
-
-class TestSetupPresenter : public virtual TestSetupController::Observer,
-                           public virtual Presenter {};
 }
 
 #endif

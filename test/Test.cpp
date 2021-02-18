@@ -29,9 +29,7 @@ class TestControlStub : public TestControl {
 class TaskPresenterStub : public TaskPresenter {
   public:
     void showResponseSubmission() override {}
-    void notifyThatTaskHasStarted() override {}
-    void notifyThatUserIsDoneResponding() override {}
-    void notifyThatTrialHasStarted() override {}
+    void hideResponseSubmission() override {}
     void start() override {}
     void stop() override {}
 };
@@ -40,142 +38,6 @@ class PresenterUseCase {
   public:
     virtual ~PresenterUseCase() = default;
     virtual void run(TestPresenter &) = 0;
-};
-
-class InitializingAdaptiveCoordinateResponseMeasureMethod
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::adaptiveCoordinateResponseMeasure);
-    }
-};
-
-class InitializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
-    }
-};
-
-class InitializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
-    }
-};
-
-class InitializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
-    }
-};
-
-class InitializingAdaptivePassFailMethod : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::adaptivePassFail);
-    }
-};
-
-class InitializingAdaptivePassFailMethodWithEyeTracking
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::adaptivePassFailWithEyeTracking);
-    }
-};
-
-class InitializingAdaptiveCorrectKeywordsMethod : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::adaptiveCorrectKeywords);
-    }
-};
-
-class InitializingAdaptiveCorrectKeywordsMethodWithEyeTracking
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::adaptiveCorrectKeywordsWithEyeTracking);
-    }
-};
-
-class InitializingFixedLevelFreeResponseWithTargetReplacementMethod
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::fixedLevelFreeResponseWithTargetReplacement);
-    }
-};
-
-class InitializingFixedLevelConsonantMethod : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::fixedLevelConsonants);
-    }
-};
-
-class InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
-    }
-};
-
-class
-    InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::
-                fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
-    }
-};
-
-class
-    InitializingFixedLevelCoordinateResponseMeasureMethodWithSilentIntervalTargets
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::
-                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
-    }
-};
-
-class InitializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::fixedLevelFreeResponseWithSilentIntervalTargets);
-    }
-};
-
-class InitializingFixedLevelFreeResponseMethodWithAllTargets
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(Method::fixedLevelFreeResponseWithAllTargets);
-    }
-};
-
-class InitializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking
-    : public PresenterUseCase {
-  public:
-    void run(TestPresenter &presenter) override {
-        presenter.initialize(
-            Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
-    }
 };
 
 void exitTest(TestControlStub &c) { c.exitTest(); }
@@ -193,7 +55,7 @@ void notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
     c.notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
-void setAudioDevice(SessionViewStub &view, std::string s) {
+void setAudioDevice(SessionControlStub &view, std::string s) {
     view.setAudioDevice(std::move(s));
 }
 
@@ -208,52 +70,65 @@ class SessionControllerStub : public SessionController {
     [[nodiscard]] auto notifiedThatTestIsComplete() const -> bool {
         return notifiedThatTestIsComplete_;
     }
-    void prepare(Method) override {}
+    void prepare(TaskPresenter &) override {}
 
   private:
     bool notifiedThatTestIsComplete_{};
 };
 
-class TestControllerListenerStub : public TestController::Observer {
+class TestPresenterStub : public TestPresenter {
   public:
+    void start() override {}
+    void stop() override {}
+    void initialize(TaskPresenter &) override {}
+
     void notifyThatTrialHasStarted() override {
         notifiedThatTrialHasStarted_ = true;
     }
+
     [[nodiscard]] auto notifiedThatTrialHasStarted() const -> bool {
         return notifiedThatTrialHasStarted_;
     }
+
     void notifyThatNextTrialIsReady() override {
         notifiedThatNextTrialIsReady_ = true;
     }
+
     [[nodiscard]] auto notifiedThatNextTrialIsReady() const -> bool {
         return notifiedThatNextTrialIsReady_;
     }
-    void setContinueTestingDialogMessage(const std::string &s) override {
-        continueTestingDialogMessage_ = s;
+
+    void updateAdaptiveTestResults() override {
+        adaptiveTestResultsUpdated_ = true;
     }
-    auto continueTestingDialogMessage() -> std::string {
-        return continueTestingDialogMessage_;
+
+    [[nodiscard]] auto adaptiveTestResultsUpdated() const -> bool {
+        return adaptiveTestResultsUpdated_;
     }
-    void showContinueTestingDialog() override {
-        continueTestingDialogShown_ = true;
+
+    void updateTrialInformation() override { trialInformationUpdated_ = true; }
+
+    [[nodiscard]] auto trialInformationUpdated() const -> bool {
+        return trialInformationUpdated_;
     }
-    [[nodiscard]] auto continueTestingDialogShown() const -> bool {
-        return continueTestingDialogShown_;
+
+    [[nodiscard]] auto responseSubmissionHidden() const -> bool {
+        return responseSubmissionHidden_;
     }
-    void display(const std::string &s) override { displayed_ = s; }
-    auto displayed() -> std::string { return displayed_; }
-    void secondaryDisplay(const std::string &s) override {
-        displayedSecondary_ = s;
-    }
-    auto displayedSecondary() -> std::string { return displayedSecondary_; }
+
+    void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
+
+    [[nodiscard]] auto taskCompleted() const -> bool { return taskCompleted_; }
+
+    void completeTask() override { taskCompleted_ = true; }
 
   private:
-    std::string displayed_;
-    std::string displayedSecondary_;
-    std::string continueTestingDialogMessage_;
+    bool taskCompleted_{};
+    bool trialInformationUpdated_{};
+    bool responseSubmissionHidden_{};
     bool notifiedThatTrialHasStarted_{};
     bool notifiedThatNextTrialIsReady_{};
-    bool continueTestingDialogShown_{};
+    bool adaptiveTestResultsUpdated_{};
 };
 
 class ControllerUseCase {
@@ -343,41 +218,80 @@ class NotifyingThatUserIsReadyForNextTrial : public ControllerUseCase {
     TestControllerImpl &controller;
 };
 
-class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
+class NotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial
+    : public ControllerUseCase {
   public:
-    void initialize(TaskPresenter *p) override { presenter_ = p; }
-    auto presenter() -> TaskPresenter * { return presenter_; }
-    void showResponseSubmission() override { responseSubmissionShown_ = true; }
-    [[nodiscard]] auto responseSubmissionShown() const -> bool {
-        return responseSubmissionShown_;
-    }
-    void notifyThatTaskHasStarted() override {}
-    void notifyThatUserIsDoneResponding() override {}
-    void notifyThatTrialHasStarted() override {
-        notifiedThatTrialHasStarted_ = true;
-    }
-    void start() override { started_ = true; }
-    [[nodiscard]] auto started() const -> bool { return started_; }
-    void stop() override { stopped_ = true; }
-    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
-    [[nodiscard]] auto notifiedThatTrialHasStarted() const -> bool {
-        return notifiedThatTrialHasStarted_;
+    explicit NotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial(
+        TestControllerImpl &controller)
+        : controller{controller} {}
+
+    void run() override {
+        controller.notifyThatUserIsDoneRespondingAndIsReadyForNextTrial();
     }
 
   private:
+    TestControllerImpl &controller;
+};
+
+class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
+  public:
+    void initialize(TaskPresenter *p) override { presenter_ = p; }
+
+    auto presenter() -> TaskPresenter * { return presenter_; }
+
+    void showResponseSubmission() override { responseSubmissionShown_ = true; }
+
+    [[nodiscard]] auto responseSubmissionShown() const -> bool {
+        return responseSubmissionShown_;
+    }
+
+    void start() override { started_ = true; }
+
+    [[nodiscard]] auto started() const -> bool { return started_; }
+
+    void stop() override { stopped_ = true; }
+
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+
+    [[nodiscard]] auto responseSubmissionHidden() const -> bool {
+        return responseSubmissionHidden_;
+    }
+
+    void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
+
+    [[nodiscard]] auto completed() const -> bool { return completed_; }
+
+    void complete() override { completed_ = true; }
+
+  private:
     TaskPresenter *presenter_{};
+    bool responseSubmissionHidden_{};
+    bool completed_{};
     bool stopped_{};
     bool started_{};
-    bool notifiedThatTrialHasStarted_{};
     bool responseSubmissionShown_{};
+};
+
+class UpdatingTrialInformation : public PresenterUseCase {
+    void run(TestPresenter &p) override { p.updateTrialInformation(); }
+};
+
+class Initializing : public PresenterUseCase {
+    void run(TestPresenter &p) override { p.initialize(taskPresenter); }
+
+  private:
+    TaskPresenterStub taskPresenter;
 };
 
 class TestControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
-    SessionViewStub sessionView;
+    SessionControlStub sessionView;
     TestControlStub control;
-    TestControllerImpl controller{model, sessionView, control};
+    SessionControllerStub sessionController;
+    TestPresenterStub presenter;
+    TestControllerImpl controller{
+        sessionController, model, sessionView, control, presenter};
     DecliningContinuingTesting decliningContinuingTesting{control};
     AcceptingContinuingTesting acceptingContinuingTesting{control};
     ExitingTest exitingTest{control};
@@ -389,81 +303,48 @@ class TestControllerTests : public ::testing::Test {
         controller};
     NotifyingThatUserIsReadyForNextTrial notifyingThatUserIsReadyForNextTrial{
         controller};
-    SessionControllerStub sessionController;
-    TestControllerListenerStub experimenterControllerListener;
-
-    TestControllerTests() {
-        controller.attach(&sessionController);
-        controller.attach(&experimenterControllerListener);
-    }
+    NotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial
+        notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial{controller};
 };
 
 class TestPresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
     TestViewStub view;
-    TaskPresenterStub consonantPresenter;
-    TaskPresenterStub coordinateResponseMeasurePresenter;
-    TaskPresenterStub freeResponsePresenter;
-    TaskPresenterStub correctKeywordsPresenter;
-    TaskPresenterStub passFailPresenter;
     UninitializedTaskPresenterStub taskPresenter;
-    TestPresenterImpl presenter{model, view, &consonantPresenter,
-        &coordinateResponseMeasurePresenter, &freeResponsePresenter,
-        &correctKeywordsPresenter, &passFailPresenter, &taskPresenter};
-    InitializingAdaptiveCoordinateResponseMeasureMethod
-        initializingAdaptiveCoordinateResponseMeasureMethod;
-    InitializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker
-        initializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker;
-    InitializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker
-        initializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker;
-    InitializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking
-        initializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking;
-    InitializingAdaptivePassFailMethod initializingAdaptivePassFailMethod;
-    InitializingAdaptivePassFailMethodWithEyeTracking
-        initializingAdaptivePassFailMethodWithEyeTracking;
-    InitializingFixedLevelFreeResponseWithTargetReplacementMethod
-        initializingFixedLevelFreeResponseWithTargetReplacementMethod;
-    InitializingFixedLevelConsonantMethod initializingFixedLevelConsonantMethod;
-    InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement
-        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement;
-    InitializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking
-        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking;
-    InitializingAdaptiveCorrectKeywordsMethod
-        initializingAdaptiveCorrectKeywordsMethod;
-    InitializingAdaptiveCorrectKeywordsMethodWithEyeTracking
-        initializingAdaptiveCorrectKeywordsMethodWithEyeTracking;
-    InitializingFixedLevelCoordinateResponseMeasureMethodWithSilentIntervalTargets
-        initializingFixedLevelCoordinateResponseMeasureSilentIntervalsMethod;
-    InitializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod
-        initializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod;
-    InitializingFixedLevelFreeResponseMethodWithAllTargets
-        initializingFixedLevelFreeResponseMethodWithAllTargets;
-    InitializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking
-        initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking;
+    TestPresenterImpl presenter{model, view, &taskPresenter};
+    UpdatingTrialInformation updatingTrialInformation;
+    Initializing initializing;
 };
 
 void run(ControllerUseCase &useCase) { useCase.run(); }
 
-#define AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(                             \
-    model, useCase, experimenterControllerListener)                            \
-    model.setTargetFileName("a");                                              \
+void run(PresenterUseCase &useCase, TestPresenter &presenter) {
+    useCase.run(presenter);
+}
+
+#define AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(                   \
+    useCase, presenter)                                                        \
     run(useCase);                                                              \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"},                          \
-        (experimenterControllerListener).displayedSecondary())
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE((presenter).trialInformationUpdated())
+
+#define AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(                             \
+    presenter, model, useCase, view)                                           \
+    model.setTargetFileName("a");                                              \
+    run(useCase, presenter);                                                   \
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
+        std::string{"a"}, (view).secondaryDisplayed())
 
 #define AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(                              \
-    model, useCase, experimenterControllerListener)                            \
+    presenter, model, useCase, view)                                           \
     model.setTrialNumber(1);                                                   \
-    run(useCase);                                                              \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        std::string{"Trial 1"}, (experimenterControllerListener).displayed())
+    run(useCase, presenter);                                                   \
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"Trial 1"}, (view).displayed())
 
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(           \
-    useCase, experimenterControllerListener)                                   \
+    useCase, presenter)                                                        \
     run(useCase);                                                              \
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(                                            \
-        (experimenterControllerListener).notifiedThatNextTrialIsReady())
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE((presenter).notifiedThatNextTrialIsReady())
 
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(a)            \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).notifiedThatTestIsComplete())
@@ -475,8 +356,8 @@ void run(ControllerUseCase &useCase) { useCase.run(); }
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(                  \
-    useCase, experimenterPresenter, expected)                                  \
-    useCase.run(experimenterPresenter);                                        \
+    experimenterPresenter, expected)                                           \
+    experimenterPresenter.initialize(expected);                                \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         static_cast<TaskPresenter *>(&(expected)), taskPresenter.presenter())
 
@@ -487,10 +368,9 @@ void run(ControllerUseCase &useCase) { useCase.run(); }
         std::string{"a"}, (model).trialParameters().audioDevice)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_TRIAL_HAS_STARTED(             \
-    useCase, experimenterControllerListener)                                   \
+    useCase, presenter)                                                        \
     run(notifyingThatUserIsReadyForNextTrial);                                 \
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(                                            \
-        (experimenterControllerListener).notifiedThatTrialHasStarted())
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE((presenter).notifiedThatTrialHasStarted())
 
 #define TEST_CONTROLLER_TEST(a) TEST_F(TestControllerTests, a)
 
@@ -518,6 +398,13 @@ TEST_CONTROLLER_TEST(
         notifyingThatUserIsReadyForNextTrial, sessionController);
 }
 
+TEST_CONTROLLER_TEST(
+    notifiesThatTestIsCompleteAfterUserIsDoneRespondingAndIsReadyForNextTrial) {
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE_WHEN_COMPLETE(
+        notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial,
+        sessionController);
+}
+
 TEST_CONTROLLER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
     AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(playingTrial, sessionView, model);
 }
@@ -528,15 +415,28 @@ TEST_CONTROLLER_TEST(
         notifyingThatUserIsReadyForNextTrial, sessionView, model);
 }
 
+TEST_CONTROLLER_TEST(
+    responderPlaysTrialAfterNotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial) {
+    AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(
+        notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial, sessionView,
+        model);
+}
+
 TEST_CONTROLLER_TEST(notifiesThatTrialHasStartedAfterPlayTrialButtonClicked) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_TRIAL_HAS_STARTED(
-        playingTrial, experimenterControllerListener);
+        playingTrial, presenter);
 }
 
 TEST_CONTROLLER_TEST(
     notifiesThatTrialHasStartedAfterNotifyingThatUserIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_TRIAL_HAS_STARTED(
-        notifyingThatUserIsReadyForNextTrial, experimenterControllerListener);
+        notifyingThatUserIsReadyForNextTrial, presenter);
+}
+
+TEST_CONTROLLER_TEST(
+    notifiesThatTrialHasStartedAfterNotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial) {
+    AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_TRIAL_HAS_STARTED(
+        notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial, presenter);
 }
 
 TEST_CONTROLLER_TEST(
@@ -549,86 +449,94 @@ TEST_CONTROLLER_TEST(
 TEST_CONTROLLER_TEST(
     notifiesThatNextTrialIsReadyAfterContinueTestingDialogIsAccepted) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
-        acceptingContinuingTesting, experimenterControllerListener);
+        acceptingContinuingTesting, presenter);
 }
 
 TEST_CONTROLLER_TEST(
     notifiesThatNextTrialIsReadyAfterNotifyingThatUserIsDoneResponding) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
-        notifyingThatUserIsDoneResponding, experimenterControllerListener);
+        notifyingThatUserIsDoneResponding, presenter);
 }
 
 TEST_CONTROLLER_TEST(
     notifiesThatNextTrialIsReadyAfterNotShowingContinueTestingDialogWithResults) {
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_NEXT_TRIAL_IS_READY(
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
-        experimenterControllerListener);
-}
-
-TEST_CONTROLLER_TEST(responderDisplaysTargetAfterUserIsDoneResponding) {
-    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
-        notifyingThatUserIsDoneResponding, experimenterControllerListener);
+        presenter);
 }
 
 TEST_CONTROLLER_TEST(
-    displaysTargetFileNameAfterNotShowingContinueTestingDialogWithResults) {
-    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
+    responderUpdatesTrialInformationAfterUserIsDoneResponding) {
+    AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
+        notifyingThatUserIsDoneResponding, presenter);
+}
+
+TEST_CONTROLLER_TEST(
+    updatesTrialInformationAfterNotShowingContinueTestingDialogWithResults) {
+    AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
         notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
-        experimenterControllerListener);
+        presenter);
 }
 
 TEST_CONTROLLER_TEST(
-    responderDisplaysTargetFileNameAfterContinueTestingDialogIsAccepted) {
-    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(
-        model, acceptingContinuingTesting, experimenterControllerListener);
+    updatesTrialInformationAfterContinueTestingDialogIsAccepted) {
+    AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
+        acceptingContinuingTesting, presenter);
 }
 
 TEST_CONTROLLER_TEST(
-    responderDisplaysTargetFileNameAfterNotifyingThatUserIsReadyForNextTrial) {
-    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(model,
-        notifyingThatUserIsReadyForNextTrial, experimenterControllerListener);
-}
-
-TEST_CONTROLLER_TEST(responderDisplaysTrialNumberAfterUserIsDoneResponding) {
-    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
-        notifyingThatUserIsDoneResponding, experimenterControllerListener);
+    updatesTrialInformationAfterNotifyingThatUserIsReadyForNextTrial) {
+    AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
+        notifyingThatUserIsReadyForNextTrial, presenter);
 }
 
 TEST_CONTROLLER_TEST(
-    displaysTrialNumberAfterNotShowingContinueTestingDialogWithResults) {
-    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
-        notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion,
-        experimenterControllerListener);
+    updatesTrialInformationAfterNotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial) {
+    AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
+        notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial, presenter);
+}
+
+TEST_CONTROLLER_TEST(hidesResponseSubmissionAfterUserIsDoneResponding) {
+    run(notifyingThatUserIsDoneResponding);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.responseSubmissionHidden());
 }
 
 TEST_CONTROLLER_TEST(
-    responderDisplaysTrialNumberAfterContinueTestingDialogIsAccepted) {
-    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(
-        model, acceptingContinuingTesting, experimenterControllerListener);
+    hidesResponseSubmissionAfterUserIsDoneRespondingForATestThatMayContinueAfterCompletion) {
+    run(notifyingThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.responseSubmissionHidden());
 }
 
 TEST_CONTROLLER_TEST(
-    responderDisplaysTrialNumberAfterNotifyingThatUserIsReadyForNextTrial) {
-    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(model,
-        notifyingThatUserIsReadyForNextTrial, experimenterControllerListener);
+    hidesResponseSubmissionAfterUserIsDoneRespondingAndIsReadyForNextTrial) {
+    run(notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.responseSubmissionHidden());
 }
 
 TEST_CONTROLLER_TEST(showsContinueTestingDialog) {
     setTestComplete(model);
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
         controller);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        experimenterControllerListener.continueTestingDialogShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.adaptiveTestResultsUpdated());
 }
 
-TEST_CONTROLLER_TEST(showsAdaptiveTestResults) {
+TEST_CONTROLLER_TEST(completesTaskWhenTestIsComplete) {
     setTestComplete(model);
+    run(notifyingThatUserIsDoneResponding);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.taskCompleted());
+}
+
+TEST_PRESENTER_TEST(showsAdaptiveTestResults) {
     model.setAdaptiveTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
-    notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
-        controller);
+    presenter.updateAdaptiveTestResults();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3"},
-        experimenterControllerListener.continueTestingDialogMessage());
+        view.continueTestingDialogMessage());
+}
+
+TEST_PRESENTER_TEST(showsContinueTestingDialog) {
+    presenter.updateAdaptiveTestResults();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.continueTestingDialogShown());
 }
 
 TEST_PRESENTER_TEST(showsViewAfterStarting) {
@@ -661,9 +569,9 @@ TEST_PRESENTER_TEST(hidesNextTrialButtonAfterTrialStarts) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonHidden());
 }
 
-TEST_PRESENTER_TEST(notifiesTaskPresenterThatTrialHasStarted) {
-    presenter.notifyThatTrialHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.notifiedThatTrialHasStarted());
+TEST_PRESENTER_TEST(hidesResponseSubmission) {
+    presenter.hideResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionHidden());
 }
 
 TEST_PRESENTER_TEST(showsExitTestButtonWhenTrialCompletes) {
@@ -686,151 +594,47 @@ TEST_PRESENTER_TEST(showsNextTrialButtonAfterNextTrialIsReady) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonShown());
 }
 
-TEST_PRESENTER_TEST(displaysMessage) {
-    presenter.display("a");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, view.displayed());
-}
-
-TEST_PRESENTER_TEST(displaysSecondaryMessage) {
-    presenter.secondaryDisplay("a");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, view.secondaryDisplayed());
-}
-
-TEST_PRESENTER_TEST(showsContinueTestingDialog) {
-    presenter.showContinueTestingDialog();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.continueTestingDialogShown());
-}
-
-TEST_PRESENTER_TEST(setsContinueTestingDialogMessage) {
-    presenter.setContinueTestingDialogMessage("a");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, view.continueTestingDialogMessage());
-}
-
 TEST_PRESENTER_TEST(startsTaskPresenterWhenInitializing) {
-    presenter.initialize(Method::unknown);
+    TaskPresenterStub taskPresenter_;
+    presenter.initialize(taskPresenter_);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.started());
 }
 
-TEST_PRESENTER_TEST(
-    initializingAdaptiveCoordinateResponseMeasureMethodInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptiveCoordinateResponseMeasureMethod, presenter,
-        coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeakerInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptiveCoordinateResponseMeasureMethodWithSingleSpeaker,
-        presenter, coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMaskerInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptiveCoordinateResponseMeasureMethodWithDelayedMasker,
-        presenter, coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingAdaptiveCoordinateResponseMeasureMethodWithEyeTrackingInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptiveCoordinateResponseMeasureMethodWithEyeTracking,
-        presenter, coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacement,
-        presenter, coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTrackingInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelCoordinateResponseMeasureMethodWithTargetReplacementAndEyeTracking,
-        presenter, coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelCoordinateResponseMeasureSilentIntervalsMethodInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelCoordinateResponseMeasureSilentIntervalsMethod,
-        presenter, coordinateResponseMeasurePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelFreeResponseMethodWithAllTargetsInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelFreeResponseMethodWithAllTargets, presenter,
-        freeResponsePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTrackingInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelFreeResponseMethodWithAllTargetsAndEyeTracking,
-        presenter, freeResponsePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelFreeResponseWithSilentIntervalTargetsMethodInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelFreeResponseWithSilentIntervalTargetsMethod,
-        presenter, freeResponsePresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingFixedLevelFreeResponseWithTargetReplacementMethodInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelFreeResponseWithTargetReplacementMethod,
-        presenter, freeResponsePresenter);
-}
-
-TEST_PRESENTER_TEST(initializingAdaptiveCorrectKeywordsMethodInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptiveCorrectKeywordsMethod, presenter,
-        correctKeywordsPresenter);
-}
-
-TEST_PRESENTER_TEST(
-    initializingAdaptiveCorrectKeywordsMethodWithEyeTrackingInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptiveCorrectKeywordsMethodWithEyeTracking, presenter,
-        correctKeywordsPresenter);
-}
-
 TEST_PRESENTER_TEST(initializingFixedLevelConsonantMethodInitializesTask) {
+    TaskPresenterStub taskPresenter_;
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingFixedLevelConsonantMethod, presenter, consonantPresenter);
+        presenter, taskPresenter_);
 }
 
 TEST_PRESENTER_TEST(initializingAdaptivePassFailMethodInitializesTask) {
+    TaskPresenterStub taskPresenter_;
     AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptivePassFailMethod, presenter, passFailPresenter);
+        presenter, taskPresenter_);
 }
 
-TEST_PRESENTER_TEST(
-    initializingAdaptivePassFailMethodWithEyeTrackingInitializesTask) {
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        initializingAdaptivePassFailMethodWithEyeTracking, presenter,
-        passFailPresenter);
+TEST_PRESENTER_TEST(displaysTrialNumberWhenUpdatingTrialInformation) {
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(
+        presenter, model, updatingTrialInformation, view);
+}
+
+TEST_PRESENTER_TEST(displaysTargetWhenUpdatingTrialInformation) {
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(
+        presenter, model, updatingTrialInformation, view);
 }
 
 TEST_PRESENTER_TEST(displaysTrialNumberWhenInitializing) {
-    model.setTrialNumber(1);
-    presenter.initialize(Method::unknown);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"Trial 1"}, view.displayed());
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(
+        presenter, model, initializing, view);
 }
 
 TEST_PRESENTER_TEST(displaysTargetWhenInitializing) {
-    model.setTargetFileName("a");
-    presenter.initialize(Method::unknown);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, view.secondaryDisplayed());
+    AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(
+        presenter, model, initializing, view);
+}
+
+TEST_PRESENTER_TEST(completeTaskCompletesTask) {
+    presenter.completeTask();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.completed());
 }
 }
 }

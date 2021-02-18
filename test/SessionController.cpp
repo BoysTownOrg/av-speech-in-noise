@@ -1,7 +1,7 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "SessionViewStub.hpp"
-#include <presentation/SessionControllerImpl.hpp>
+#include <presentation/SessionController.hpp>
 #include <gtest/gtest.h>
 #include <utility>
 
@@ -9,29 +9,28 @@ namespace av_speech_in_noise {
 namespace {
 class TestPresenterStub : public TestPresenter {
   public:
-    void initialize(Method m) override { method_ = m; }
-    auto method() -> Method { return method_; }
     void start() override { started_ = true; }
     void stop() override { stopped_ = true; }
     void notifyThatTrialHasStarted() override {}
-    void setContinueTestingDialogMessage(const std::string &) override {}
-    void showContinueTestingDialog() override {}
-    void display(const std::string &) override {}
-    void secondaryDisplay(const std::string &) override {}
+    void updateAdaptiveTestResults() override {}
+    void updateTrialInformation() override {}
     void notifyThatNextTrialIsReady() override {}
     [[nodiscard]] auto started() const -> bool { return started_; }
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+    auto taskPresenter() -> TaskPresenter * { return taskPresenter_; }
+    void initialize(TaskPresenter &p) override { taskPresenter_ = &p; }
+    void hideResponseSubmission() override {}
+    void completeTask() override {}
 
   private:
-    Method method_{};
+    TaskPresenter *taskPresenter_{};
     bool started_{};
     bool stopped_{};
 };
 
 class TestSetupPresenterStub : public TestSetupPresenter {
   public:
-    void notifyThatUserHasSelectedTestSettingsFile(
-        const std::string &) override {}
+    void updateErrorMessage(std::string_view) override {}
     void start() override { started_ = true; }
     void stop() override { stopped_ = true; }
     [[nodiscard]] auto started() const -> bool { return started_; }
@@ -40,6 +39,14 @@ class TestSetupPresenterStub : public TestSetupPresenter {
   private:
     bool started_{};
     bool stopped_{};
+};
+
+class TaskPresenterStub : public TaskPresenter {
+  public:
+    void showResponseSubmission() override {}
+    void hideResponseSubmission() override {}
+    void start() override {}
+    void stop() override {}
 };
 
 class SessionControllerObserverStub : public SessionController::Observer {
@@ -48,7 +55,9 @@ class SessionControllerObserverStub : public SessionController::Observer {
         return notifiedThatTestIsComplete_;
     }
 
-    void notifyThatTestIsComplete() { notifiedThatTestIsComplete_ = true; }
+    void notifyThatTestIsComplete() override {
+        notifiedThatTestIsComplete_ = true;
+    }
 
   private:
     bool notifiedThatTestIsComplete_{};
@@ -61,25 +70,28 @@ class SessionControllerTests : public ::testing::Test {
     TestSetupPresenterStub testSetupPresenter;
     TestPresenterStub testPresenter;
     SessionControllerImpl controller{
-        model, view, &testSetupPresenter, &testPresenter};
+        model, view, testSetupPresenter, testPresenter};
 };
 
 #define SESSION_CONTROLLER_TEST(a) TEST_F(SessionControllerTests, a)
 
 SESSION_CONTROLLER_TEST(prepareStopsTestSetup) {
-    controller.prepare(Method::unknown);
+    TaskPresenterStub taskPresenter;
+    controller.prepare(taskPresenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testSetupPresenter.stopped());
 }
 
 SESSION_CONTROLLER_TEST(prepareStartsTest) {
-    controller.prepare(Method::unknown);
+    TaskPresenterStub taskPresenter;
+    controller.prepare(taskPresenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.started());
 }
 
-SESSION_CONTROLLER_TEST(prepareInitializesTest) {
-    controller.prepare(Method::adaptivePassFail);
+SESSION_CONTROLLER_TEST(preparePassesTaskPresenter) {
+    TaskPresenterStub taskPresenter;
+    controller.prepare(taskPresenter);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Method::adaptivePassFail, testPresenter.method());
+        &taskPresenter, testPresenter.taskPresenter());
 }
 
 SESSION_CONTROLLER_TEST(testStopsAfterTestIsComplete) {
@@ -108,7 +120,7 @@ TEST_F(SessionControllerTBDTests, constructorPopulatesAudioDeviceMenu) {
     TestPresenterStub testPresenter;
     model.setAudioDevices({"a", "b", "c"});
     SessionControllerImpl controller{
-        model, view, &testSetupPresenter, &testPresenter};
+        model, view, testSetupPresenter, testPresenter};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.audioDevices().at(0));
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(

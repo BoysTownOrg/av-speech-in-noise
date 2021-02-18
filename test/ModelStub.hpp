@@ -239,12 +239,28 @@ class ModelStub : public Model {
 
     void submit(const ConsonantResponse &s) override { consonantResponse_ = s; }
 
+    void submit(const ThreeKeywordsResponse &s) override { threeKeywords_ = s; }
+
+    void submit(const SyllableResponse &s) override { syllableResponse_ = s; }
+
     void restartAdaptiveTestWhilePreservingTargets() override {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
     }
 
     auto adaptiveTestResults() -> AdaptiveTestResults override {
         return adaptiveTestResults_;
+    }
+
+    auto threeKeywords() -> ThreeKeywordsResponse { return threeKeywords_; }
+
+    auto keywordsTestResults() -> KeywordsTestResults override {
+        return keywordsTestResults_;
+    }
+
+    auto syllableResponse() -> SyllableResponse { return syllableResponse_; }
+
+    void setKeywordTestResults(KeywordsTestResults k) {
+        keywordsTestResults_ = k;
     }
 
   private:
@@ -262,6 +278,9 @@ class ModelStub : public Model {
     FreeResponse freeResponse_{};
     ConsonantResponse consonantResponse_{};
     CorrectKeywords correctKeywords_{};
+    ThreeKeywordsResponse threeKeywords_{};
+    SyllableResponse syllableResponse_{};
+    KeywordsTestResults keywordsTestResults_{};
     std::string targetFileName_{};
     Observer *listener_{};
     int trialNumber_{};

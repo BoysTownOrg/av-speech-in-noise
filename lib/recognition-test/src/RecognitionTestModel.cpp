@@ -1,4 +1,5 @@
 #include "RecognitionTestModel.hpp"
+#include "IOutputFile.hpp"
 #include <gsl/gsl>
 #include <cmath>
 #include <functional>
@@ -104,9 +105,13 @@ static void play(TargetPlayer &player) { player.play(); }
 
 static void play(MaskerPlayer &player) { player.play(); }
 
+static auto currentTarget(TestMethod *testMethod) -> LocalUrl {
+    return testMethod->currentTarget();
+}
+
 static auto targetName(ResponseEvaluator &evaluator, TestMethod *testMethod)
     -> std::string {
-    return evaluator.fileName(testMethod->currentTarget());
+    return evaluator.fileName(currentTarget(testMethod));
 }
 
 static void save(OutputFile &file) { file.save(); }
@@ -159,7 +164,9 @@ static void throwRequestFailureOnInvalidAudioFile(
     }
 }
 
-static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }
+static auto nanoseconds(Delay x) -> std::uintmax_t {
+    return gsl::narrow_cast<std::uintmax_t>(x.seconds * 1e9);
+}
 
 static auto nanoseconds(MaskerPlayer &player, const PlayerTime &t)
     -> std::uintmax_t {
@@ -179,6 +186,89 @@ static auto offsetDuration(
 static constexpr auto operator-(const Duration &a, const Duration &b)
     -> Duration {
     return Duration{a.seconds - b.seconds};
+}
+
+static void play(TargetPlayer &targetPlayer, const Calibration &calibration) {
+    throwRequestFailureOnInvalidAudioDevice(
+        [&](auto device) { setAudioDevice(targetPlayer, device); },
+        calibration.audioDevice);
+    throwRequestFailureOnInvalidAudioFile(
+        [&](auto file) {
+            loadFile(targetPlayer, file);
+            apply(targetPlayer, levelAmplification(targetPlayer, calibration));
+        },
+        calibration.fileUrl);
+    show(targetPlayer);
+    play(targetPlayer);
+}
+
+static void play(MaskerPlayer &maskerPlayer, const Calibration &calibration) {
+    maskerPlayer.stop();
+    throwRequestFailureOnInvalidAudioDevice(
+        [&](auto device) { setAudioDevice(maskerPlayer, device); },
+        calibration.audioDevice);
+    throwRequestFailureOnInvalidAudioFile(
+        [&](auto file) {
+            loadFile(maskerPlayer, file);
+            apply(maskerPlayer, levelAmplification(maskerPlayer, calibration));
+        },
+        calibration.fileUrl);
+    play(maskerPlayer);
+}
+
+static auto maskerLevelAmplification(MaskerPlayer &maskerPlayer,
+    RealLevel maskerLevel, RealLevel fullScaleLevel) -> LevelAmplification {
+    return LevelAmplification{
+        DigitalLevel{maskerLevel - fullScaleLevel - maskerPlayer.digitalLevel()}
+            .dBov};
+}
+
+static auto targetLevelAmplification(TestMethod *testMethod,
+    MaskerPlayer &maskerPlayer, RealLevel maskerLevel,
+    RealLevel fullScaleLevel) {
+    return LevelAmplification{
+        maskerLevelAmplification(maskerPlayer, maskerLevel, fullScaleLevel).dB +
+        testMethod->snr().dB};
+}
+
+static void preparePlayersForNextTrial(TestMethod *testMethod,
+    Randomizer &randomizer, TargetPlayer &targetPlayer,
+    MaskerPlayer &maskerPlayer, RealLevel maskerLevel,
+    RealLevel fullScaleLevel) {
+    loadFile(targetPlayer, testMethod->nextTarget());
+    apply(targetPlayer,
+        targetLevelAmplification(
+            testMethod, maskerPlayer, maskerLevel, fullScaleLevel));
+    const auto maskerPlayerSeekTimeUpperLimit{
+        maskerPlayer.duration() - trialDuration(targetPlayer, maskerPlayer)};
+    maskerPlayer.seekSeconds(randomizer.betweenInclusive(
+        0., maskerPlayerSeekTimeUpperLimit.seconds));
+    maskerPlayer.setSteadyLevelFor(steadyLevelDuration(targetPlayer));
+}
+
+static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
+    OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
+    MaskerPlayer &maskerPlayer, RealLevel maskerLevel,
+    RealLevel fullScaleLevel) {
+    if (!testMethod->complete()) {
+        ++trialNumber_;
+        preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
+            maskerPlayer, maskerLevel, fullScaleLevel);
+    } else {
+        testMethod->writeTestResult(outputFile);
+        save(outputFile);
+    }
+}
+
+static void saveOutputFileAndPrepareNextTrialAfter(
+    const std::function<void()> &f, TestMethod *testMethod, int &trialNumber_,
+    OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
+    MaskerPlayer &maskerPlayer, RealLevel maskerLevel,
+    RealLevel fullScaleLevel) {
+    f();
+    save(outputFile);
+    prepareNextTrialIfNeeded(testMethod, trialNumber_, outputFile, randomizer,
+        targetPlayer, maskerPlayer, maskerLevel, fullScaleLevel);
 }
 
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
@@ -222,8 +312,10 @@ void RecognitionTestModelImpl::initialize_(
     condition = test.condition;
 
     hide(targetPlayer);
-    maskerPlayer.apply(maskerLevelAmplification());
-    preparePlayersForNextTrial();
+    maskerPlayer.apply(
+        maskerLevelAmplification(maskerPlayer, maskerLevel_, fullScaleLevel_));
+    preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
+        maskerPlayer, maskerLevel_, fullScaleLevel_);
     testMethod->writeTestingParameters(outputFile);
     trialNumber_ = 1;
 }
@@ -253,29 +345,6 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
     eyeTracking = true;
-}
-
-auto RecognitionTestModelImpl::maskerLevelAmplification()
-    -> LevelAmplification {
-    return LevelAmplification{DigitalLevel{
-        maskerLevel_ - fullScaleLevel_ - maskerPlayer.digitalLevel()}
-                                  .dBov};
-}
-
-void RecognitionTestModelImpl::preparePlayersForNextTrial() {
-    loadFile(targetPlayer, testMethod->nextTarget());
-    apply(targetPlayer, targetLevelAmplification());
-    const auto maskerPlayerSeekTimeUpperLimit{
-        maskerPlayer.duration() - trialDuration(targetPlayer, maskerPlayer)};
-    maskerPlayer.seekSeconds(randomizer.betweenInclusive(
-        0., maskerPlayerSeekTimeUpperLimit.seconds));
-    maskerPlayer.setSteadyLevelFor(steadyLevelDuration(targetPlayer));
-}
-
-auto RecognitionTestModelImpl::targetLevelAmplification()
-    -> LevelAmplification {
-    return LevelAmplification{
-        maskerLevelAmplification().dB + testMethod->snr().dB};
 }
 
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
@@ -339,85 +408,96 @@ void RecognitionTestModelImpl::fadeOutComplete() {
 }
 
 void RecognitionTestModelImpl::submitCorrectResponse() {
-    save(outputFile);
-    prepareNextTrialIfNeeded();
+    saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
+        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
+        fullScaleLevel_);
 }
 
 void RecognitionTestModelImpl::submitIncorrectResponse() {
-    save(outputFile);
-    prepareNextTrialIfNeeded();
+    saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
+        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
+        fullScaleLevel_);
 }
 
 void RecognitionTestModelImpl::submit(
     const coordinate_response_measure::Response &response) {
-    testMethod->submit(response);
-    testMethod->writeLastCoordinateResponse(outputFile);
-    if (eyeTracking) {
-        outputFile.write(lastTargetStartTime);
-        outputFile.write(lastEyeTrackerTargetPlayerSynchronization);
-        outputFile.write(eyeTracker.gazeSamples());
-    }
-    save(outputFile);
-    prepareNextTrialIfNeeded();
+    saveOutputFileAndPrepareNextTrialAfter(
+        [&]() {
+            testMethod->submit(response);
+            testMethod->writeLastCoordinateResponse(outputFile);
+            if (eyeTracking) {
+                outputFile.write(lastTargetStartTime);
+                outputFile.write(lastEyeTrackerTargetPlayerSynchronization);
+                outputFile.write(eyeTracker.gazeSamples());
+            }
+        },
+        testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
+        maskerPlayer, maskerLevel_, fullScaleLevel_);
 }
 
 void RecognitionTestModelImpl::submit(const FreeResponse &response) {
-    testMethod->submit(response);
-    FreeResponseTrial trial;
-    trial.response = response.response;
-    trial.target = targetName(evaluator, testMethod);
-    trial.flagged = response.flagged;
-    outputFile.write(trial);
-    save(outputFile);
-    prepareNextTrialIfNeeded();
+    saveOutputFileAndPrepareNextTrialAfter(
+        [&]() {
+            testMethod->submit(response);
+            FreeResponseTrial trial;
+            trial.response = response.response;
+            trial.target = targetName(evaluator, testMethod);
+            trial.flagged = response.flagged;
+            outputFile.write(trial);
+        },
+        testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
+        maskerPlayer, maskerLevel_, fullScaleLevel_);
+}
+
+void RecognitionTestModelImpl::submit(const ThreeKeywordsResponse &p) {
+    saveOutputFileAndPrepareNextTrialAfter(
+        [&]() {
+            testMethod->submit(p);
+            ThreeKeywordsTrial trial;
+            trial.firstCorrect = p.firstCorrect;
+            trial.secondCorrect = p.secondCorrect;
+            trial.thirdCorrect = p.thirdCorrect;
+            trial.target = targetName(evaluator, testMethod);
+            trial.flagged = p.flagged;
+            outputFile.write(trial);
+        },
+        testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
+        maskerPlayer, maskerLevel_, fullScaleLevel_);
+}
+
+void RecognitionTestModelImpl::submit(const SyllableResponse &p) {
+    saveOutputFileAndPrepareNextTrialAfter(
+        [&]() {
+            testMethod->submit(p);
+            SyllableTrial trial;
+            trial.subjectSyllable = p.syllable;
+            trial.target = targetName(evaluator, testMethod);
+            trial.correctSyllable =
+                evaluator.correctSyllable(currentTarget(testMethod));
+            trial.correct = evaluator.correct(currentTarget(testMethod), p);
+            trial.flagged = p.flagged;
+            outputFile.write(trial);
+        },
+        testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
+        maskerPlayer, maskerLevel_, fullScaleLevel_);
 }
 
 void RecognitionTestModelImpl::submit(const CorrectKeywords &) {
-    save(outputFile);
-    prepareNextTrialIfNeeded();
+    saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
+        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
+        fullScaleLevel_);
 }
 
 void RecognitionTestModelImpl::submit(const ConsonantResponse &) {
-    save(outputFile);
-    prepareNextTrialIfNeeded();
+    saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
+        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
+        fullScaleLevel_);
 }
 
 void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
-    if (!testMethod->complete()) {
-        ++trialNumber_;
-        preparePlayersForNextTrial();
-    } else {
-        testMethod->writeTestResult(outputFile);
-        save(outputFile);
-    }
-}
-
-static void play(TargetPlayer &targetPlayer, const Calibration &calibration) {
-    throwRequestFailureOnInvalidAudioDevice(
-        [&](auto device) { setAudioDevice(targetPlayer, device); },
-        calibration.audioDevice);
-    throwRequestFailureOnInvalidAudioFile(
-        [&](auto file) {
-            loadFile(targetPlayer, file);
-            apply(targetPlayer, levelAmplification(targetPlayer, calibration));
-        },
-        calibration.fileUrl);
-    show(targetPlayer);
-    play(targetPlayer);
-}
-
-static void play(MaskerPlayer &maskerPlayer, const Calibration &calibration) {
-    maskerPlayer.stop();
-    throwRequestFailureOnInvalidAudioDevice(
-        [&](auto device) { setAudioDevice(maskerPlayer, device); },
-        calibration.audioDevice);
-    throwRequestFailureOnInvalidAudioFile(
-        [&](auto file) {
-            loadFile(maskerPlayer, file);
-            apply(maskerPlayer, levelAmplification(maskerPlayer, calibration));
-        },
-        calibration.fileUrl);
-    play(maskerPlayer);
+    av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
+        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
+        fullScaleLevel_);
 }
 
 void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {

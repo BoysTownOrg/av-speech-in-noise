@@ -1,9 +1,11 @@
 #ifndef AV_SPEECH_IN_NOISE_AV_SPEECH_IN_NOISE_INCLUDE_AV_SPEECH_IN_NOISE_MODEL_HPP_
 #define AV_SPEECH_IN_NOISE_AV_SPEECH_IN_NOISE_INCLUDE_AV_SPEECH_IN_NOISE_MODEL_HPP_
 
+#include "Interface.hpp"
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace av_speech_in_noise {
 namespace coordinate_response_measure {
@@ -19,9 +21,18 @@ struct CorrectKeywords {
     int count{};
 };
 
-struct FreeResponse {
-    std::string response;
+struct Flaggable {
     bool flagged{};
+};
+
+struct ThreeKeywordsResponse : Flaggable {
+    bool firstCorrect{};
+    bool secondCorrect{};
+    bool thirdCorrect{};
+};
+
+struct FreeResponse : Flaggable {
+    std::string response;
 };
 
 struct TestIdentity {
@@ -36,6 +47,35 @@ struct TestIdentity {
 
 struct ConsonantResponse {
     char consonant{};
+};
+
+enum class Syllable {
+    bi,
+    di,
+    dji,
+    fi,
+    gi,
+    hi,
+    ji,
+    ki,
+    li,
+    mi,
+    ni,
+    pi,
+    ri,
+    shi,
+    si,
+    thi,
+    ti,
+    tsi,
+    vi,
+    wi,
+    zi,
+    unknown
+};
+
+struct SyllableResponse : Flaggable {
+    Syllable syllable{};
 };
 
 enum class Condition { auditoryOnly, audioVisual };
@@ -88,6 +128,11 @@ struct AdaptiveTestResult {
     double threshold{};
 };
 
+struct KeywordsTestResults {
+    double percentCorrect;
+    int totalCorrect;
+};
+
 using AdaptiveTestResults = typename std::vector<AdaptiveTestResult>;
 
 struct FixedLevelTest : Test {
@@ -114,11 +159,42 @@ struct Calibration : AudioSettings {
 
 using AudioDevices = typename std::vector<std::string>;
 
+struct EyeGaze {
+    float x;
+    float y;
+};
+
+struct EyeTrackerSystemTime {
+    std::int_least64_t microseconds;
+};
+
+struct TargetPlayerSystemTime {
+    std::uintmax_t nanoseconds;
+};
+
+struct EyeTrackerTargetPlayerSynchronization {
+    EyeTrackerSystemTime eyeTrackerSystemTime;
+    TargetPlayerSystemTime targetPlayerSystemTime;
+};
+
+struct BinocularGazeSample {
+    EyeTrackerSystemTime systemTime;
+    EyeGaze left;
+    EyeGaze right;
+};
+
+using BinocularGazeSamples = typename std::vector<BinocularGazeSample>;
+
+struct TargetStartTime : TargetPlayerSystemTime {
+    explicit constexpr TargetStartTime(std::uintmax_t nanoseconds = 0)
+        : TargetPlayerSystemTime{nanoseconds} {}
+};
+
 class Model {
   public:
     class Observer {
       public:
-        virtual ~Observer() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void trialComplete() = 0;
     };
 
@@ -127,7 +203,7 @@ class Model {
         explicit RequestFailure(const std::string &s) : std::runtime_error{s} {}
     };
 
-    virtual ~Model() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Model);
     virtual void attach(Observer *) = 0;
     virtual void initialize(const AdaptiveTest &) = 0;
     virtual void initializeWithTargetReplacement(
@@ -154,6 +230,8 @@ class Model {
     virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const CorrectKeywords &) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
+    virtual void submit(const ThreeKeywordsResponse &) = 0;
+    virtual void submit(const SyllableResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual auto testComplete() -> bool = 0;
@@ -162,6 +240,7 @@ class Model {
     virtual auto targetFileName() -> std::string = 0;
     virtual void restartAdaptiveTestWhilePreservingTargets() = 0;
     virtual auto adaptiveTestResults() -> AdaptiveTestResults = 0;
+    virtual auto keywordsTestResults() -> KeywordsTestResults = 0;
 };
 }
 

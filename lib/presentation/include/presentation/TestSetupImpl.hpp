@@ -2,24 +2,25 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETUPIMPL_HPP_
 
 #include "TestSetup.hpp"
-#include "SessionView.hpp"
+#include "Session.hpp"
 #include "Input.hpp"
 #include <av-speech-in-noise/Model.hpp>
+#include <av-speech-in-noise/Interface.hpp>
 #include <string>
 
 namespace av_speech_in_noise {
 class TestSettingsInterpreter {
   public:
-    virtual ~TestSettingsInterpreter() = default;
-    virtual void initialize(
-        Model &, const std::string &, const TestIdentity &, SNR) = 0;
-    virtual auto method(const std::string &) -> Method = 0;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        TestSettingsInterpreter);
+    virtual void initialize(Model &, SessionController &, const std::string &,
+        const TestIdentity &, SNR) = 0;
     virtual auto calibration(const std::string &) -> Calibration = 0;
 };
 
 class TextFileReader {
   public:
-    virtual ~TextFileReader() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TextFileReader);
     virtual auto read(const LocalUrl &) -> std::string = 0;
 };
 
@@ -38,39 +39,36 @@ constexpr auto name(Transducer c) -> const char * {
     }
 }
 
-class TestSetupControllerImpl : public TestSetupControl::Observer,
-                                public TestSetupController {
+class TestSetupController : public TestSetupControl::Observer {
   public:
-    explicit TestSetupControllerImpl(Model &, SessionView &, TestSetupControl &,
+    TestSetupController(TestSetupControl &, SessionController &,
+        SessionControl &, TestSetupPresenter &, Model &,
         TestSettingsInterpreter &, TextFileReader &);
     void notifyThatConfirmButtonHasBeenClicked() override;
     void notifyThatPlayCalibrationButtonHasBeenClicked() override;
     void notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() override;
     void notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() override;
-    void notifyThatBrowseForTestSettingsButtonHasBeenClicked() override;
-    void attach(SessionController *p) override;
-    void attach(TestSetupController::Observer *e) override;
 
   private:
-    Model &model;
-    SessionView &sessionView;
     TestSetupControl &control;
+    SessionController &sessionController;
+    SessionControl &sessionControl;
+    TestSetupPresenter &presenter;
+    Model &model;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
-    SessionController *controller{};
-    TestSetupController::Observer *observer{};
 };
 
 class TestSetupPresenterImpl : public TestSetupPresenter {
   public:
-    explicit TestSetupPresenterImpl(TestSetupView &view);
+    TestSetupPresenterImpl(TestSetupView &, SessionView &);
     void start() override;
     void stop() override;
-    void notifyThatUserHasSelectedTestSettingsFile(
-        const std::string &s) override;
+    void updateErrorMessage(std::string_view) override;
 
   private:
     TestSetupView &view;
+    SessionView &sessionView;
 };
 }
 

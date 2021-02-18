@@ -88,11 +88,7 @@ auto cursorHidden(ConsonantViewStub &view) -> bool {
     return view.cursorHidden();
 }
 
-void notifyThatUserIsDoneResponding(TaskPresenter &presenter) {
-    presenter.notifyThatUserIsDoneResponding();
-}
-
-void notifyThatTrialHasStarted(TaskPresenter &presenter) {
+void notifyThatTrialHasStarted(ConsonantTaskPresenter &presenter) {
     presenter.notifyThatTrialHasStarted();
 }
 
@@ -108,14 +104,11 @@ class ConsonantTaskControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
     ConsonantControlStub control;
-    ConsonantTaskController controller{model, control};
     TestControllerStub testController;
+    ConsonantTaskController controller{testController, model, control};
     TaskControllerObserverStub observer;
 
-    ConsonantTaskControllerTests() {
-        controller.attach(&testController);
-        controller.attach(&observer);
-    }
+    ConsonantTaskControllerTests() { controller.attach(&observer); }
 };
 
 class ConsonantTaskPresenterTests : public ::testing::Test {
@@ -145,8 +138,8 @@ CONSONANT_TASK_PRESENTER_TEST(hidesCursorAfterTrialHasStarted) {
     AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(view);
 }
 
-CONSONANT_TASK_PRESENTER_TEST(hidesResponseButtonsAfterUserIsDoneResponding) {
-    notifyThatUserIsDoneResponding(presenter);
+CONSONANT_TASK_PRESENTER_TEST(hidesResponseSubmission) {
+    presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
@@ -189,6 +182,12 @@ CONSONANT_TASK_CONTROLLER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatTaskHasStarted());
 }
 
+CONSONANT_TASK_CONTROLLER_TEST(
+    notifiesObserverThatTrialHasStartedAfterReadyButtonIsClicked) {
+    notifyThatReadyButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatTrialHasStarted());
+}
+
 CONSONANT_TASK_CONTROLLER_TEST(submitsConsonantAfterResponseButtonIsClicked) {
     control.setConsonant("b");
     notifyThatResponseButtonHasBeenClicked(control);
@@ -196,16 +195,17 @@ CONSONANT_TASK_CONTROLLER_TEST(submitsConsonantAfterResponseButtonIsClicked) {
 }
 
 CONSONANT_TASK_CONTROLLER_TEST(
-    notifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
+    notifiesThatUserIsDoneRespondingAndIsReadyForNextTrialAfterResponseButtonIsClicked) {
     notifyThatResponseButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController.notifiedThatUserIsReadyForNextTrial());
+        testController
+            .notifiedThatUserIsDoneRespondingAndIsReadyForNextTrial());
 }
 
 CONSONANT_TASK_CONTROLLER_TEST(
-    notifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
+    notifiesObserverThatTrialHasStartedAfterResponseButtonIsClicked) {
     notifyThatResponseButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatUserIsDoneResponding());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatTrialHasStarted());
 }
 }
 }

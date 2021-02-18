@@ -2,9 +2,32 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETTINGSINTERPRETER_HPP_
 
 #include "TestSetupImpl.hpp"
-#include "SessionControllerImpl.hpp"
+#include "SessionController.hpp"
+#include <map>
 
 namespace av_speech_in_noise {
+enum class Method {
+    adaptivePassFail,
+    adaptivePassFailWithEyeTracking,
+    adaptiveCorrectKeywords,
+    adaptiveCorrectKeywordsWithEyeTracking,
+    adaptiveCoordinateResponseMeasure,
+    adaptiveCoordinateResponseMeasureWithSingleSpeaker,
+    adaptiveCoordinateResponseMeasureWithDelayedMasker,
+    adaptiveCoordinateResponseMeasureWithEyeTracking,
+    fixedLevelFreeResponseWithTargetReplacement,
+    fixedLevelFreeResponseWithSilentIntervalTargets,
+    fixedLevelFreeResponseWithAllTargets,
+    fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
+    fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
+    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+    fixedLevelConsonants,
+    fixedLevelChooseKeywordsWithAllTargets,
+    fixedLevelSyllablesWithAllTargets,
+    unknown
+};
+
 constexpr auto name(Method c) -> const char * {
     switch (c) {
     case Method::adaptivePassFail:
@@ -38,8 +61,12 @@ constexpr auto name(Method c) -> const char * {
         return "fixed-level free response all stimuli";
     case Method::fixedLevelConsonants:
         return "fixed-level consonants";
+    case Method::fixedLevelChooseKeywordsWithAllTargets:
+        return "fixed-level choose keywords all stimuli";
     case Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking:
         return "fixed-level free response all stimuli eye tracking";
+    case Method::fixedLevelSyllablesWithAllTargets:
+        return "fixed-level syllables all stimuli";
     case Method::unknown:
         return "unknown";
     }
@@ -109,11 +136,14 @@ constexpr auto name(TestSetting p) -> const char * {
 
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
-    void initialize(
-        Model &, const std::string &, const TestIdentity &, SNR) override;
-    auto method(const std::string &) -> Method override;
+    TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>);
+    void initialize(Model &, SessionController &, const std::string &,
+        const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
+
+  private:
+    std::map<Method, TaskPresenter &> taskPresenters;
 };
 }
 

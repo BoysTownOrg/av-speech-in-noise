@@ -29,16 +29,13 @@ class PassFailView {
 class PassFailController : public TaskController,
                            public PassFailControl::Observer {
   public:
-    PassFailController(Model &, PassFailControl &);
-    void attach(TaskController::Observer *) override;
-    void attach(TestController *) override;
+    PassFailController(TestController &, Model &, PassFailControl &);
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
 
   private:
+    TestController &testController;
     Model &model;
-    TaskController::Observer *observer{};
-    TestController *controller{};
 };
 
 class PassFailPresenter : public TaskPresenter {
@@ -46,8 +43,7 @@ class PassFailPresenter : public TaskPresenter {
     PassFailPresenter(TestView &, PassFailView &);
     void start() override;
     void stop() override;
-    void notifyThatTaskHasStarted() override;
-    void notifyThatUserIsDoneResponding() override;
+    void hideResponseSubmission() override;
     void showResponseSubmission() override;
 
   private:

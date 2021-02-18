@@ -507,10 +507,12 @@ AvFoundationBufferedAudioReader::AvFoundationBufferedAudioReader(
                          nsString(url.path).stringByExpandingTildeInPath]
             commonFormat:AVAudioPCMFormatFloat32
              interleaved:NO
-                   error:nil]},
-      buffer{[[AVAudioPCMBuffer alloc] initWithPCMFormat:file.processingFormat
-                                           frameCapacity:file.length]} {
-    if (file == nil || [file readIntoBuffer:buffer error:nil] == NO)
+                   error:nil]} {
+    if (file == nil)
+        throw CannotReadFile{};
+    buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:file.processingFormat
+                                           frameCapacity:file.length];
+    if ([file readIntoBuffer:buffer error:nil] == NO)
         throw CannotReadFile{};
 }
 

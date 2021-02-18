@@ -3,7 +3,8 @@
 
 #include "View.hpp"
 #include "Presenter.hpp"
-#include "Method.hpp"
+#include "Session.hpp"
+#include "Task.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <string>
 
@@ -33,33 +34,28 @@ class TestView : public virtual View {
     virtual void hideNextTrialButton() = 0;
     virtual void display(std::string) = 0;
     virtual void secondaryDisplay(std::string) = 0;
+    virtual void showSheet(std::string_view) {}
 };
 
 class TestController {
   public:
-    class Observer {
-      public:
-        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
-        virtual void notifyThatTrialHasStarted() = 0;
-        virtual void setContinueTestingDialogMessage(const std::string &) = 0;
-        virtual void showContinueTestingDialog() = 0;
-        virtual void display(const std::string &) = 0;
-        virtual void secondaryDisplay(const std::string &) = 0;
-        virtual void notifyThatNextTrialIsReady() = 0;
-    };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestController);
-    virtual void attach(Observer *) = 0;
-    virtual void attach(SessionController *) = 0;
     virtual void
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() = 0;
     virtual void notifyThatUserIsDoneResponding() = 0;
     virtual void notifyThatUserIsReadyForNextTrial() = 0;
+    virtual void notifyThatUserIsDoneRespondingAndIsReadyForNextTrial() {}
 };
 
-class TestPresenter : public virtual TestController::Observer,
-                      public virtual Presenter {
+class TestPresenter : public Presenter {
   public:
-    virtual void initialize(Method) = 0;
+    virtual void initialize(TaskPresenter &) = 0;
+    virtual void notifyThatTrialHasStarted() = 0;
+    virtual void updateAdaptiveTestResults() = 0;
+    virtual void updateTrialInformation() = 0;
+    virtual void hideResponseSubmission() = 0;
+    virtual void notifyThatNextTrialIsReady() = 0;
+    virtual void completeTask() = 0;
 };
 }
 

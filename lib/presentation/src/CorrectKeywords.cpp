@@ -3,29 +3,24 @@
 
 namespace av_speech_in_noise {
 CorrectKeywordsController::CorrectKeywordsController(
-    Model &model, SessionView &view, CorrectKeywordsControl &keywordsView)
-    : model{model}, sessionView{view}, control{keywordsView} {
+    TestController &testController, Model &model, SessionView &view,
+    CorrectKeywordsControl &keywordsView)
+    : testController{testController}, model{model},
+      sessionView{view}, control{keywordsView} {
     keywordsView.attach(this);
 }
 
-void CorrectKeywordsController::attach(TaskController::Observer *e) {
-    observer = e;
-}
-
-void CorrectKeywordsController::attach(TestController *r) { controller = r; }
-
-static void submitCorrectKeywords(Model &model, CorrectKeywordsControl &control,
-    TaskController::Observer *observer, TestController *controller) {
+static void submitCorrectKeywords(
+    Model &model, CorrectKeywordsControl &control, TestController &controller) {
     model.submit(
         CorrectKeywords{readInteger(control.correctKeywords(), "number")});
-    observer->notifyThatUserIsDoneResponding();
     controller
-        ->notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
+        .notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
 void CorrectKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     try {
-        submitCorrectKeywords(model, control, observer, controller);
+        submitCorrectKeywords(model, control, testController);
     } catch (const std::runtime_error &e) {
         sessionView.showErrorMessage(e.what());
     }
@@ -39,11 +34,7 @@ void CorrectKeywordsPresenter::start() { testView.showNextTrialButton(); }
 
 void CorrectKeywordsPresenter::stop() { view.hideCorrectKeywordsSubmission(); }
 
-void CorrectKeywordsPresenter::notifyThatTaskHasStarted() {
-    testView.hideNextTrialButton();
-}
-
-void CorrectKeywordsPresenter::notifyThatUserIsDoneResponding() {
+void CorrectKeywordsPresenter::hideResponseSubmission() {
     view.hideCorrectKeywordsSubmission();
 }
 
