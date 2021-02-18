@@ -13,21 +13,22 @@ struct AdaptiveProgress {
     int reversals{};
 };
 
+struct Evaluative {
+    bool correct{};
+};
+
 namespace open_set {
 struct Trial : Target {};
 
-struct AdaptiveTrial : AdaptiveProgress, Trial {
-    bool correct{};
-};
+struct AdaptiveTrial : AdaptiveProgress, Trial, Evaluative {};
 }
 
 namespace coordinate_response_measure {
-struct Trial : Target {
+struct Trial : Target, Evaluative {
     int correctNumber{};
     int subjectNumber{};
     Color correctColor{};
     Color subjectColor{};
-    bool correct{};
 };
 
 struct AdaptiveTrial : AdaptiveProgress, Trial {};
@@ -37,19 +38,16 @@ struct FixedLevelTrial : Trial {};
 
 struct CorrectKeywordsTrial : CorrectKeywords, open_set::AdaptiveTrial {};
 
-struct ConsonantTrial : Target {
+struct ConsonantTrial : Target, Evaluative {
     char subjectConsonant{};
     char correctConsonant{};
-    bool correct{};
 };
 
 struct ThreeKeywordsTrial : ThreeKeywordsResponse, open_set::Trial {};
 
-struct SyllableTrial : open_set::Trial {
+struct SyllableTrial : open_set::Trial, Evaluative, Flaggable {
     Syllable correctSyllable{};
     Syllable subjectSyllable{};
-    bool correct{};
-    bool flagged{};
 };
 
 struct FreeResponseTrial : FreeResponse, open_set::Trial {};
