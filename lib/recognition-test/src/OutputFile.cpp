@@ -241,9 +241,8 @@ namespace {
 class TrialFormatter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TrialFormatter);
-    virtual auto trial() -> std::string { return {}; }
     virtual auto putHeading(std::ostream &s) -> std::ostream & = 0;
-    virtual auto putTrial(std::ostream &s) -> std::ostream & { return s; }
+    virtual auto putTrial(std::ostream &s) -> std::ostream & = 0;
 };
 
 class FixedLevelCoordinateResponseTrialFormatter : public TrialFormatter {
@@ -267,8 +266,7 @@ class FixedLevelCoordinateResponseTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto trial() -> std::string override {
-        std::stringstream stream;
+    auto putTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.correctNumber);
         insertCommaAndSpace(stream);
         insert(stream, trial_.subjectNumber);
@@ -280,8 +278,7 @@ class FixedLevelCoordinateResponseTrialFormatter : public TrialFormatter {
         insert(stream, evaluation(trial_));
         insertCommaAndSpace(stream);
         insert(stream, trial_.target);
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
   private:
@@ -311,8 +308,7 @@ class AdaptiveCoordinateResponseTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto trial() -> std::string override {
-        std::stringstream stream;
+    auto putTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.snr.dB);
         insertCommaAndSpace(stream);
         insert(stream, trial_.correctNumber);
@@ -326,8 +322,7 @@ class AdaptiveCoordinateResponseTrialFormatter : public TrialFormatter {
         insert(stream, evaluation(trial_));
         insertCommaAndSpace(stream);
         insert(stream, trial_.reversals);
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
   private:
@@ -346,8 +341,7 @@ class FreeResponseTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto trial() -> std::string override {
-        std::stringstream stream;
+    auto putTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.target);
         insertCommaAndSpace(stream);
         insert(stream, trial_.response);
@@ -355,8 +349,7 @@ class FreeResponseTrialFormatter : public TrialFormatter {
             insertCommaAndSpace(stream);
             insert(stream, "FLAGGED");
         }
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
   private:
@@ -380,8 +373,7 @@ class OpenSetAdaptiveTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto trial() -> std::string override {
-        std::stringstream stream;
+    auto putTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.snr.dB);
         insertCommaAndSpace(stream);
         insert(stream, trial_.target);
@@ -389,8 +381,7 @@ class OpenSetAdaptiveTrialFormatter : public TrialFormatter {
         insert(stream, evaluation(trial_));
         insertCommaAndSpace(stream);
         insert(stream, trial_.reversals);
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
   private:
@@ -415,8 +406,7 @@ class CorrectKeywordsTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto trial() -> std::string override {
-        std::stringstream stream;
+    auto putTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.snr.dB);
         insertCommaAndSpace(stream);
         insert(stream, trial_.target);
@@ -426,8 +416,7 @@ class CorrectKeywordsTrialFormatter : public TrialFormatter {
         insert(stream, evaluation(trial_));
         insertCommaAndSpace(stream);
         insert(stream, trial_.reversals);
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
   private:
@@ -450,8 +439,7 @@ class ConsonantTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto trial() -> std::string override {
-        std::stringstream stream;
+    auto putTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.correctConsonant);
         insertCommaAndSpace(stream);
         insert(stream, trial_.subjectConsonant);
@@ -459,8 +447,7 @@ class ConsonantTrialFormatter : public TrialFormatter {
         insert(stream, evaluation(trial_));
         insertCommaAndSpace(stream);
         insert(stream, trial_.target);
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
   private:
@@ -483,8 +470,7 @@ class ThreeKeywordsTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto trial() -> std::string override {
-        std::stringstream stream;
+    auto putTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.target);
         insertCommaAndSpace(stream);
         insert(stream, evaluation(trial_.firstCorrect));
@@ -492,8 +478,7 @@ class ThreeKeywordsTrialFormatter : public TrialFormatter {
         insert(stream, evaluation(trial_.secondCorrect));
         insertCommaAndSpace(stream);
         insert(stream, evaluation(trial_.thirdCorrect));
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
   private:
@@ -516,8 +501,7 @@ class SyllableTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto trial() -> std::string override {
-        std::stringstream stream;
+    auto putTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial_.correctSyllable);
         insertCommaAndSpace(stream);
         insert(stream, trial_.subjectSyllable);
@@ -529,8 +513,7 @@ class SyllableTrialFormatter : public TrialFormatter {
             insertCommaAndSpace(stream);
             insert(stream, "FLAGGED");
         }
-        insertNewLine(stream);
-        return string(stream);
+        return insertNewLine(stream);
     }
 
   private:
@@ -545,7 +528,7 @@ static void write(Writer &writer, TrialFormatter &formatter,
     std::stringstream stream;
     if (currentTrial != trial)
         formatter.putHeading(stream);
-    stream << formatter.trial();
+    formatter.putTrial(stream);
     write(writer, string(stream));
     currentTrial = trial;
 }
