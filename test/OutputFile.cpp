@@ -547,6 +547,14 @@ class WritingSyllableTrial : public WritingEvaluatedTrial,
         {HeadingItem::evaluation, 3}, {HeadingItem::target, 4}};
 };
 
+static void assertWritesFlaggedTrial(
+    OutputFileImpl &file, WriterStub &writer, WritingFlaggableTrial &useCase) {
+    useCase.flag();
+    run(useCase, file);
+    assertNthEntryOfSecondLine(
+        writer, "FLAGGED", useCase.headingLabels().size() + 1);
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -835,10 +843,7 @@ OUTPUT_FILE_TEST(writeCorrectSyllableTrial) {
 }
 
 OUTPUT_FILE_TEST(writeFlaggedFreeResponseTrial) {
-    writingFreeResponseTrial.flag();
-    run(writingFreeResponseTrial, file);
-    assertNthEntryOfSecondLine(
-        writer, "FLAGGED", writingFreeResponseTrial.headingLabels().size() + 1);
+    assertWritesFlaggedTrial(file, writer, writingFreeResponseTrial);
 }
 
 OUTPUT_FILE_TEST(writeNoFlagFreeResponseTrialOnlyTwoEntries) {
@@ -856,10 +861,7 @@ OUTPUT_FILE_TEST(writeNoFlagFreeResponseTrialOnlyTwoEntries) {
 }
 
 OUTPUT_FILE_TEST(writeFlaggedSyllablesTrial) {
-    writingSyllableTrial.flag();
-    run(writingSyllableTrial, file);
-    assertNthEntryOfSecondLine(
-        writer, "FLAGGED", writingSyllableTrial.headingLabels().size() + 1);
+    assertWritesFlaggedTrial(file, writer, writingSyllableTrial);
 }
 
 OUTPUT_FILE_TEST(writeNoFlagSyllablesTrialDoesNotHaveExtraEntry) {
