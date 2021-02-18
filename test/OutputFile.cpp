@@ -555,6 +555,21 @@ static void assertWritesFlaggedTrial(
         writer, "FLAGGED", useCase.headingLabels().size() + 1);
 }
 
+static void assertNonFlaggedTrialDoesNotWriteExtraEntry(
+    OutputFileImpl &file, WriterStub &writer, WritingFlaggableTrial &useCase) {
+    useCase.clearFlag();
+    run(useCase, file);
+    const auto precedingNewLine{
+        find_nth_element(writtenString(writer), 2 - 1, '\n')};
+    const auto line_{writtenString(writer).substr(precedingNewLine + 1)};
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        static_cast<
+            std::iterator_traits<std::string::iterator>::difference_type>(
+            useCase.headingLabels().size()) -
+            1,
+        std::count(line_.begin(), line_.end(), ','));
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -847,17 +862,8 @@ OUTPUT_FILE_TEST(writeFlaggedFreeResponseTrial) {
 }
 
 OUTPUT_FILE_TEST(writeNoFlagFreeResponseTrialOnlyTwoEntries) {
-    writingFreeResponseTrial.clearFlag();
-    run(writingFreeResponseTrial, file);
-    const auto precedingNewLine{
-        find_nth_element(writtenString(writer), 2 - 1, '\n')};
-    const auto line_{writtenString(writer).substr(precedingNewLine + 1)};
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        static_cast<
-            std::iterator_traits<std::string::iterator>::difference_type>(
-            writingFreeResponseTrial.headingLabels().size()) -
-            1,
-        std::count(line_.begin(), line_.end(), ','));
+    assertNonFlaggedTrialDoesNotWriteExtraEntry(
+        file, writer, writingFreeResponseTrial);
 }
 
 OUTPUT_FILE_TEST(writeFlaggedSyllablesTrial) {
@@ -865,17 +871,8 @@ OUTPUT_FILE_TEST(writeFlaggedSyllablesTrial) {
 }
 
 OUTPUT_FILE_TEST(writeNoFlagSyllablesTrialDoesNotHaveExtraEntry) {
-    writingSyllableTrial.clearFlag();
-    run(writingSyllableTrial, file);
-    const auto precedingNewLine{
-        find_nth_element(writtenString(writer), 2 - 1, '\n')};
-    const auto line_{writtenString(writer).substr(precedingNewLine + 1)};
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        static_cast<
-            std::iterator_traits<std::string::iterator>::difference_type>(
-            writingSyllableTrial.headingLabels().size()) -
-            1,
-        std::count(line_.begin(), line_.end(), ','));
+    assertNonFlaggedTrialDoesNotWriteExtraEntry(
+        file, writer, writingSyllableTrial);
 }
 
 OUTPUT_FILE_TEST(uninitializedColorDoesNotBreak) {
