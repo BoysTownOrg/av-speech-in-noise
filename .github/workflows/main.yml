@@ -5,12 +5,12 @@ on:
 
 jobs:
   build-and-test:
-    name: build apps using cmake/Xcode for macOS 10.13 and ctest library
+    name: build apps using cmake/Xcode for macOS 10.15 and ctest library
     runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v2
       - name: generate build system
-        run: cmake -S . -B build -GXcode -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 -DAV_SPEECH_IN_NOISE_ENABLE_TESTS=1
+        run: cmake -S . -B build -GXcode -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 -DAV_SPEECH_IN_NOISE_ENABLE_TESTS=1
       - name: build tests -- Release
         run: cmake --build build --target av-speech-in-noise-tests --config Release
       - name: test library -- Release
