@@ -312,8 +312,10 @@ void RecognitionTestModelImpl::initialize_(
     condition = test.condition;
 
     hide(targetPlayer);
-    maskerPlayer.apply(maskerLevelAmplification());
-    preparePlayersForNextTrial();
+    maskerPlayer.apply(
+        maskerLevelAmplification(maskerPlayer, maskerLevel_, fullScaleLevel_));
+    preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
+        maskerPlayer, maskerLevel_, fullScaleLevel_);
     testMethod->writeTestingParameters(outputFile);
     trialNumber_ = 1;
 }
@@ -343,23 +345,6 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
     eyeTracking = true;
-}
-
-auto RecognitionTestModelImpl::maskerLevelAmplification()
-    -> LevelAmplification {
-    return av_speech_in_noise::maskerLevelAmplification(
-        maskerPlayer, maskerLevel_, fullScaleLevel_);
-}
-
-void RecognitionTestModelImpl::preparePlayersForNextTrial() {
-    av_speech_in_noise::preparePlayersForNextTrial(testMethod, randomizer,
-        targetPlayer, maskerPlayer, maskerLevel_, fullScaleLevel_);
-}
-
-auto RecognitionTestModelImpl::targetLevelAmplification()
-    -> LevelAmplification {
-    return LevelAmplification{
-        maskerLevelAmplification().dB + testMethod->snr().dB};
 }
 
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {

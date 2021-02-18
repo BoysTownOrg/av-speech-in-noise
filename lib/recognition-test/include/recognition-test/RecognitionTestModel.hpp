@@ -56,10 +56,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
 
   private:
     void initialize_(TestMethod *, const Test &);
-    void preparePlayersForNextTrial();
     void seekRandomMaskerPosition();
-    auto targetLevelAmplification() -> LevelAmplification;
-    auto maskerLevelAmplification() -> LevelAmplification;
 
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
