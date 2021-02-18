@@ -2,6 +2,7 @@
 #include <av-speech-in-noise/name.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <sstream>
+#include <ostream>
 #include <algorithm>
 
 namespace av_speech_in_noise {
@@ -34,71 +35,88 @@ static auto operator<<(std::ostream &os, const std::vector<int> &v)
     return os;
 }
 
-static auto operator<<(std::ostream &os, HeadingItem item) { os << name(item); }
-
-static auto operator<<(std::ostream &os, Syllable item) { os << name(item); }
-
-template <typename T> void insert(std::stringstream &stream, T item) {
-    stream << item;
+static auto operator<<(std::ostream &os, HeadingItem item) -> std::ostream & {
+    return os << name(item);
 }
 
-static void insertCommaAndSpace(std::stringstream &stream) {
-    insert(stream, ", ");
+static auto operator<<(std::ostream &os, Syllable item) -> std::ostream & {
+    return os << name(item);
 }
-
-static void insertNewLine(std::stringstream &stream) { insert(stream, '\n'); }
 
 template <typename T>
-void writeLabeledLine(
-    std::stringstream &stream, const std::string &label, T thing) {
+auto insert(std::ostream &stream, T item) -> std::ostream & {
+    return stream << item;
+}
+
+static auto insertCommaAndSpace(std::ostream &stream) -> std::ostream & {
+    return insert(stream, ", ");
+}
+
+static auto insertNewLine(std::ostream &stream) -> std::ostream & {
+    return insert(stream, '\n');
+}
+
+template <typename T>
+auto writeLabeledLine(std::ostream &stream, const std::string &label, T thing)
+    -> std::ostream & {
     insert(stream, label);
     insert(stream, ": ");
     insert(stream, thing);
-    insertNewLine(stream);
+    return insertNewLine(stream);
 }
 
 static auto string(const std::stringstream &stream) -> std::string {
     return stream.str();
 }
 
-static void writeSubjectId(std::stringstream &stream, const TestIdentity &p) {
-    writeLabeledLine(stream, "subject", p.subjectId);
+static auto writeSubjectId(std::ostream &stream, const TestIdentity &p)
+    -> std::ostream & {
+    return writeLabeledLine(stream, "subject", p.subjectId);
 }
 
-static void writeTester(std::stringstream &stream, const TestIdentity &p) {
-    writeLabeledLine(stream, "tester", p.testerId);
+static auto writeTester(std::ostream &stream, const TestIdentity &p)
+    -> std::ostream & {
+    return writeLabeledLine(stream, "tester", p.testerId);
 }
 
-static void writeSession(std::stringstream &stream, const TestIdentity &p) {
-    writeLabeledLine(stream, "session", p.session);
+static auto writeSession(std::ostream &stream, const TestIdentity &p)
+    -> std::ostream & {
+    return writeLabeledLine(stream, "session", p.session);
 }
 
-static void writeMethod(std::stringstream &stream, const TestIdentity &p) {
-    writeLabeledLine(stream, "method", p.method);
+static auto writeMethod(std::ostream &stream, const TestIdentity &p)
+    -> std::ostream & {
+    return writeLabeledLine(stream, "method", p.method);
 }
 
-static void writeRmeSetting(std::stringstream &stream, const TestIdentity &p) {
-    writeLabeledLine(stream, "RME setting", p.rmeSetting);
+static auto writeRmeSetting(std::ostream &stream, const TestIdentity &p)
+    -> std::ostream & {
+    return writeLabeledLine(stream, "RME setting", p.rmeSetting);
 }
 
-static void writeTransducer(std::stringstream &stream, const TestIdentity &p) {
-    writeLabeledLine(stream, "transducer", p.transducer);
+static auto writeTransducer(std::ostream &stream, const TestIdentity &p)
+    -> std::ostream & {
+    return writeLabeledLine(stream, "transducer", p.transducer);
 }
 
-static void writeMasker(std::stringstream &stream, const Test &p) {
-    writeLabeledLine(stream, "masker", p.maskerFileUrl.path);
+static auto writeMasker(std::ostream &stream, const Test &p) -> std::ostream & {
+    return writeLabeledLine(stream, "masker", p.maskerFileUrl.path);
 }
 
-static void writeTargetPlaylist(std::stringstream &stream, const Test &p) {
-    writeLabeledLine(stream, "targets", p.targetsUrl.path);
+static auto writeTargetPlaylist(std::ostream &stream, const Test &p)
+    -> std::ostream & {
+    return writeLabeledLine(stream, "targets", p.targetsUrl.path);
 }
 
-static void writeMaskerLevel(std::stringstream &stream, const Test &p) {
-    writeLabeledLine(stream, "masker level (dB SPL)", p.maskerLevel.dB_SPL);
+static auto writeMaskerLevel(std::ostream &stream, const Test &p)
+    -> std::ostream & {
+    return writeLabeledLine(
+        stream, "masker level (dB SPL)", p.maskerLevel.dB_SPL);
 }
 
-static void writeCondition(std::stringstream &stream, const Test &p) {
-    writeLabeledLine(stream, "condition", name(p.condition));
+static auto writeCondition(std::ostream &stream, const Test &p)
+    -> std::ostream & {
+    return writeLabeledLine(stream, "condition", name(p.condition));
 }
 
 constexpr auto correct{"correct"};
@@ -229,8 +247,10 @@ namespace {
 class TrialFormatter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TrialFormatter);
-    virtual auto heading() -> std::string = 0;
-    virtual auto trial() -> std::string = 0;
+    virtual auto heading() -> std::string { return {}; }
+    virtual auto trial() -> std::string { return {}; }
+    virtual auto putHeading(std::ostream &s) -> std::ostream & { return s; }
+    virtual auto putTrial(std::ostream &s) -> std::ostream & { return s; }
 };
 
 class FixedLevelCoordinateResponseTrialFormatter : public TrialFormatter {
