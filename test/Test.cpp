@@ -535,13 +535,6 @@ TEST_CONTROLLER_TEST(completesTaskWhenTestIsComplete) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.taskCompleted());
 }
 
-TEST_CONTROLLER_TEST(
-    completesTaskWhenTestIsCompleteAfterUserIsDoneRespondingAndIsReadyForNextTrial) {
-    setTestComplete(model);
-    run(notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.taskCompleted());
-}
-
 TEST_PRESENTER_TEST(showsAdaptiveTestResults) {
     model.setAdaptiveTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
     presenter.updateAdaptiveTestResults();

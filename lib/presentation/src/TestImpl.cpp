@@ -58,15 +58,9 @@ static void readyNextTrialIfTestIncompleteElse(
 }
 
 static void notifyIfTestIsCompleteElse(Model &model,
-    SessionController &controller, TestPresenter &presenter,
-    const std::function<void()> &f) {
+    SessionController &controller, const std::function<void()> &f) {
     ifTestCompleteElse(
-        model,
-        [&]() {
-            notifyThatTestIsComplete(controller);
-            presenter.completeTask();
-        },
-        f);
+        model, [&]() { notifyThatTestIsComplete(controller); }, f);
 }
 
 void TestControllerImpl::notifyThatUserIsDoneResponding() {
@@ -85,14 +79,14 @@ void TestControllerImpl::
 void TestControllerImpl::
     notifyThatUserIsDoneRespondingAndIsReadyForNextTrial() {
     presenter.hideResponseSubmission();
-    notifyIfTestIsCompleteElse(model, sessionController, presenter, [&]() {
+    notifyIfTestIsCompleteElse(model, sessionController, [&]() {
         presenter.updateTrialInformation();
         av_speech_in_noise::playTrial(model, sessionControl, presenter);
     });
 }
 
 void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
-    notifyIfTestIsCompleteElse(model, sessionController, presenter, [&]() {
+    notifyIfTestIsCompleteElse(model, sessionController, [&]() {
         presenter.updateTrialInformation();
         av_speech_in_noise::playTrial(model, sessionControl, presenter);
     });
