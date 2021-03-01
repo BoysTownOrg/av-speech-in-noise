@@ -3,15 +3,11 @@
 
 #include "AppKitTestSetupUIFactory.h"
 #include <av-speech-in-noise/Model.hpp>
+#include <map>
 
 @class FacemaskStudySetupViewActions;
 
 namespace av_speech_in_noise {
-struct ConditionSelection {
-    NSButton *button;
-    LocalUrl url;
-};
-
 class FacemaskStudySetupView : public TestSetupUI {
   public:
     explicit FacemaskStudySetupView(NSViewController *);
@@ -33,9 +29,10 @@ class FacemaskStudySetupView : public TestSetupUI {
     void notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
 
   private:
-    std::vector<ConditionSelection> conditionSelections;
+    std::map<std::string, LocalUrl> conditionUrls;
     NSTextField *subjectIdField;
     NSButton *minusEightdBButton;
+    NSPopUpButton *condition;
     FacemaskStudySetupViewActions *actions;
     Observer *listener_{};
     NSViewController *controller;

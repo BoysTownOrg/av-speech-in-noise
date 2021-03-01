@@ -15,9 +15,6 @@
     av_speech_in_noise::FacemaskStudySetupView *controller;
 }
 
-- (void)notifyThatRadioButtonHasBeenClicked {
-}
-
 - (void)notifyThatConfirmButtonHasBeenClicked {
     controller->notifyThatConfirmButtonHasBeenClicked();
 }
@@ -81,14 +78,6 @@ static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
     return stack;
 }
 
-static auto nsButtonArray(const std::vector<ConditionSelection> &v)
-    -> NSArray<NSButton *> * {
-    std::vector<NSButton *> buttons(v.size());
-    std::transform(v.begin(), v.end(), buttons.begin(),
-        [](const ConditionSelection &c) { return c.button; });
-    return [NSArray arrayWithObjects:&buttons.front() count:buttons.size()];
-}
-
 static auto readContents(const LocalUrl &resourceUrl) -> std::string {
     std::ifstream file{resourceUrl.path};
     std::stringstream stream;
@@ -100,15 +89,11 @@ static auto meta(const LocalUrl &resourceUrl) -> std::string {
     return TestSettingsInterpreterImpl::meta(readContents(resourceUrl));
 }
 
-static void push_back(std::vector<ConditionSelection> &conditionSelections,
-    FacemaskStudySetupViewActions *actions, const std::string &stem) {
-    conditionSelections.push_back(ConditionSelection {
-        [NSButton radioButtonWithTitle:nsString(meta(resourceUrl(stem, "txt")))
-                                target:actions
-                                action:@selector
-                                (notifyThatRadioButtonHasBeenClicked)],
-            resourceUrl(stem, "txt")
-    });
+static void push_back(NSPopUpButton *button,
+    std::map<std::string, LocalUrl> &conditionUrls, const std::string &stem) {
+    const auto conditionName{meta(resourceUrl(stem, "txt"))};
+    conditionUrls[conditionName] = resourceUrl(stem, "txt");
+    [button addItemWithTitle:nsString(conditionName)];
 }
 
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
@@ -116,6 +101,8 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
       minusEightdBButton{[NSButton checkboxWithTitle:@"-8 dB SNR"
                                               target:nil
                                               action:nil]},
+      condition{[[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
+                                           pullsDown:NO]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
                                                                  controller} {
     actions->controller = this;
@@ -159,22 +146,22 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     logo.imageScaling = NSImageScaleProportionallyDown;
     logo.wantsLayer = YES;
     logo.layer.backgroundColor = NSColor.whiteColor.CGColor;
-    push_back(conditionSelections, actions, "NoMask_AO");
-    push_back(conditionSelections, actions, "NoMask_AV");
-    push_back(conditionSelections, actions, "ClearMask_AO");
-    push_back(conditionSelections, actions, "ClearMask_AV");
-    push_back(conditionSelections, actions, "CommunicatorMask_AO");
-    push_back(conditionSelections, actions, "CommunicatorMask_AV");
-    push_back(conditionSelections, actions, "FabricMask_AO");
-    push_back(conditionSelections, actions, "FabricMask_AV");
-    push_back(conditionSelections, actions, "HospitalMask_AO");
-    push_back(conditionSelections, actions, "HospitalMask_AV");
-    push_back(conditionSelections, actions, "NoMask_VO");
+    push_back(condition, conditionUrls, "NoMask_AO");
+    push_back(condition, conditionUrls, "NoMask_AV");
+    push_back(condition, conditionUrls, "ClearMask_AO");
+    push_back(condition, conditionUrls, "ClearMask_AV");
+    push_back(condition, conditionUrls, "CommunicatorMask_AO");
+    push_back(condition, conditionUrls, "CommunicatorMask_AV");
+    push_back(condition, conditionUrls, "FabricMask_AO");
+    push_back(condition, conditionUrls, "FabricMask_AV");
+    push_back(condition, conditionUrls, "HospitalMask_AO");
+    push_back(condition, conditionUrls, "HospitalMask_AV");
+    push_back(condition, conditionUrls, "NoMask_VO");
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
             labeledView(subjectIdField, "Subject ID:"), minusEightdBButton,
-            verticalStackView(nsButtonArray(conditionSelections)), confirmButton
+            labeledView(condition, "condition:"), confirmButton
         ])
     };
     [subjectIdField setFont:[NSFont systemFontOfSize:30]];
@@ -192,12 +179,6 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     };
     addAutolayoutEnabledSubview(controller.view, layoutStack);
     addAutolayoutEnabledSubview(controller.view, playCalibrationButtonsStack);
-    for (const auto &x : conditionSelections)
-        [NSLayoutConstraint activateConstraints:@[
-            [conditionSelections.front().button.leadingAnchor
-                constraintEqualToAnchor:x.button.leadingAnchor],
-        ]];
-    [conditionSelections.front().button setState:NSControlStateValueOn];
     [NSLayoutConstraint activateConstraints:@[
         [layoutStack.topAnchor constraintEqualToAnchor:controller.view.topAnchor
                                               constant:8],
@@ -234,11 +215,7 @@ void FacemaskStudySetupView::hide() {
 }
 
 auto FacemaskStudySetupView::testSettingsFile() -> std::string {
-    auto found{std::find_if(conditionSelections.begin(),
-        conditionSelections.end(), [](const ConditionSelection &selection) {
-            return selection.button.state == NSControlStateValueOn;
-        })};
-    return found != conditionSelections.end() ? found->url.path : "";
+    return conditionUrls.at(condition.titleOfSelectedItem.UTF8String).path;
 }
 
 void FacemaskStudySetupView::attach(Observer *e) { listener_ = e; }
