@@ -69,6 +69,8 @@ class ConsonantViewStub : public ConsonantTaskView {
 
     void showCursor() override { cursorShown_ = true; }
 
+    [[nodiscard]] auto cursorShown() const -> bool { return cursorShown_; }
+
   private:
     bool shown_{};
     bool hidden_{};
@@ -180,6 +182,11 @@ CONSONANT_TASK_PRESENTER_TEST(
     showsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseButtonsShown());
+}
+
+CONSONANT_TASK_PRESENTER_TEST(showsCursorWhenTaskCompletes) {
+    presenter.complete();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.cursorShown());
 }
 
 CONSONANT_TASK_CONTROLLER_TEST(
