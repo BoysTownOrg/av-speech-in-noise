@@ -4,8 +4,6 @@
 #include <presentation/TestSettingsInterpreter.hpp>
 #include <fstream>
 #include <sstream>
-#include <algorithm>
-#include <vector>
 
 @interface FacemaskStudySetupViewActions : NSObject
 @end
@@ -94,11 +92,6 @@ static void push_back(NSPopUpButton *button,
     const auto conditionName{meta(resourceUrl(stem, "txt"))};
     conditionUrls[conditionName] = resourceUrl(stem, "txt");
     [button addItemWithTitle:nsString(conditionName)];
-}
-
-static void addBorder(NSView *view) {
-    view.wantsLayer = YES;
-    view.layer.borderWidth = 1;
 }
 
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
