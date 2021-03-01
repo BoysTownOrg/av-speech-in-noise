@@ -65,6 +65,7 @@ class ConsonantTaskPresenterImpl : public ConsonantTaskPresenter,
     void complete() override;
     void hideCursor() override;
     void hideReadyButton() override;
+    void notifyThatTrialHasStarted() override;
 
   private:
     ConsonantTaskView &view;

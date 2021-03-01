@@ -153,6 +153,11 @@ CONSONANT_TASK_PRESENTER_TEST(hidesCursor) {
     AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(view);
 }
 
+CONSONANT_TASK_PRESENTER_TEST(hidesCursorAfterTrialStarts) {
+    presenter.notifyThatTrialHasStarted();
+    AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(view);
+}
+
 CONSONANT_TASK_PRESENTER_TEST(hidesResponseSubmission) {
     presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);

@@ -51,4 +51,8 @@ void ConsonantTaskPresenterImpl::showResponseSubmission() {
     view.showResponseButtons();
     view.showCursor();
 }
+
+void ConsonantTaskPresenterImpl::notifyThatTrialHasStarted() {
+    view.hideCursor();
+}
 }
