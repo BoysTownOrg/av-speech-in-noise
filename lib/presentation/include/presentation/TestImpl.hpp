@@ -62,6 +62,11 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
             presenter->complete();
     }
 
+    void notifyThatTrialHasStarted() override {
+        if (presenter != nullptr)
+            presenter->notifyThatTrialHasStarted();
+    }
+
   private:
     TaskPresenter *presenter{};
 };
