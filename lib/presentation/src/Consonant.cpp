@@ -41,8 +41,6 @@ void ConsonantTaskPresenterImpl::hideResponseSubmission() {
     hideResponseButtons(view);
 }
 
-void ConsonantTaskPresenterImpl::hideCursor() { view.hideCursor(); }
-
 void ConsonantTaskPresenterImpl::complete() { view.showCursor(); }
 
 void ConsonantTaskPresenterImpl::showResponseSubmission() {

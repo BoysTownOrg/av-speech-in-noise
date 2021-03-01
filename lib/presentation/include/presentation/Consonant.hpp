@@ -36,7 +36,6 @@ class ConsonantTaskPresenter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
         ConsonantTaskPresenter);
-    virtual void hideCursor() = 0;
     virtual void hideReadyButton() = 0;
 };
 
@@ -63,7 +62,6 @@ class ConsonantTaskPresenterImpl : public ConsonantTaskPresenter,
     void showResponseSubmission() override;
     void hideResponseSubmission() override;
     void complete() override;
-    void hideCursor() override;
     void hideReadyButton() override;
     void notifyThatTrialHasStarted() override;
 

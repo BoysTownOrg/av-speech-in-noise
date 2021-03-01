@@ -84,18 +84,13 @@ class ConsonantViewStub : public ConsonantTaskView {
 
 class ConsonantTaskPresenterStub : public ConsonantTaskPresenter {
   public:
-    void hideCursor() override { cursorHidden_ = true; }
-
     void hideReadyButton() override { readyButtonHidden_ = true; }
-
-    [[nodiscard]] auto cursorHidden() const -> bool { return cursorHidden_; }
 
     [[nodiscard]] auto readyButtonHidden() const -> bool {
         return readyButtonHidden_;
     }
 
   private:
-    bool cursorHidden_{};
     bool readyButtonHidden_{};
 };
 
@@ -146,11 +141,6 @@ class ConsonantTaskPresenterTests : public ::testing::Test {
 CONSONANT_TASK_PRESENTER_TEST(hidesReadyButton) {
     presenter.hideReadyButton();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.readyButtonHidden());
-}
-
-CONSONANT_TASK_PRESENTER_TEST(hidesCursor) {
-    presenter.hideCursor();
-    AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(view);
 }
 
 CONSONANT_TASK_PRESENTER_TEST(hidesCursorAfterTrialStarts) {
