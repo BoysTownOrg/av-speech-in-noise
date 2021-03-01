@@ -263,6 +263,14 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
 
     void complete() override { completed_ = true; }
 
+    void notifyThatTrialHasStarted() override {
+        notifiedThatTrialHasStarted_ = true;
+    }
+
+    [[nodiscard]] auto notifiedThatTrialHasStarted() const -> bool {
+        return notifiedThatTrialHasStarted_;
+    }
+
   private:
     TaskPresenter *presenter_{};
     bool responseSubmissionHidden_{};
@@ -270,6 +278,7 @@ class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
     bool stopped_{};
     bool started_{};
     bool responseSubmissionShown_{};
+    bool notifiedThatTrialHasStarted_{};
 };
 
 class UpdatingTrialInformation : public PresenterUseCase {
@@ -567,6 +576,11 @@ TEST_PRESENTER_TEST(hidesExitTestButtonAfterTrialStarts) {
 TEST_PRESENTER_TEST(hidesNextTrialButtonAfterTrialStarts) {
     presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonHidden());
+}
+
+TEST_PRESENTER_TEST(forwardsTrialStartNotification) {
+    presenter.notifyThatTrialHasStarted();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.notifiedThatTrialHasStarted());
 }
 
 TEST_PRESENTER_TEST(hidesResponseSubmission) {

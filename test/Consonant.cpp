@@ -69,6 +69,8 @@ class ConsonantViewStub : public ConsonantTaskView {
 
     void showCursor() override { cursorShown_ = true; }
 
+    [[nodiscard]] auto cursorShown() const -> bool { return cursorShown_; }
+
   private:
     bool shown_{};
     bool hidden_{};
@@ -80,16 +82,24 @@ class ConsonantViewStub : public ConsonantTaskView {
     bool cursorShown_{};
 };
 
+class ConsonantTaskPresenterStub : public ConsonantTaskPresenter {
+  public:
+    void hideReadyButton() override { readyButtonHidden_ = true; }
+
+    [[nodiscard]] auto readyButtonHidden() const -> bool {
+        return readyButtonHidden_;
+    }
+
+  private:
+    bool readyButtonHidden_{};
+};
+
 void notifyThatReadyButtonHasBeenClicked(ConsonantControlStub &view) {
     view.notifyThatReadyButtonHasBeenClicked();
 }
 
 auto cursorHidden(ConsonantViewStub &view) -> bool {
     return view.cursorHidden();
-}
-
-void notifyThatTrialHasStarted(ConsonantTaskPresenter &presenter) {
-    presenter.notifyThatTrialHasStarted();
 }
 
 void stop(TaskPresenter &presenter) { presenter.stop(); }
@@ -105,16 +115,16 @@ class ConsonantTaskControllerTests : public ::testing::Test {
     ModelStub model;
     ConsonantControlStub control;
     TestControllerStub testController;
-    ConsonantTaskController controller{testController, model, control};
+    ConsonantTaskPresenterStub presenter;
+    ConsonantTaskController controller{
+        testController, model, control, presenter};
     TaskControllerObserverStub observer;
-
-    ConsonantTaskControllerTests() { controller.attach(&observer); }
 };
 
 class ConsonantTaskPresenterTests : public ::testing::Test {
   protected:
     ConsonantViewStub view;
-    ConsonantTaskPresenter presenter{view};
+    ConsonantTaskPresenterImpl presenter{view};
 };
 
 #define CONSONANT_TASK_CONTROLLER_TEST(a)                                      \
@@ -128,13 +138,13 @@ class ConsonantTaskPresenterTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(a)                             \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(cursorHidden(a))
 
-CONSONANT_TASK_PRESENTER_TEST(hidesReadyButtonWhenTaskStarts) {
-    presenter.notifyThatTaskHasStarted();
+CONSONANT_TASK_PRESENTER_TEST(hidesReadyButton) {
+    presenter.hideReadyButton();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.readyButtonHidden());
 }
 
-CONSONANT_TASK_PRESENTER_TEST(hidesCursorAfterTrialHasStarted) {
-    notifyThatTrialHasStarted(presenter);
+CONSONANT_TASK_PRESENTER_TEST(hidesCursorAfterTrialStarts) {
+    presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_CURSOR_HIDDEN(view);
 }
 
@@ -169,6 +179,11 @@ CONSONANT_TASK_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseButtonsShown());
 }
 
+CONSONANT_TASK_PRESENTER_TEST(showsCursorWithResponseSubmission) {
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.cursorShown());
+}
+
 CONSONANT_TASK_CONTROLLER_TEST(
     notifiesThatUserIsReadyForNextTrialAfterReadyButtonIsClicked) {
     notifyThatReadyButtonHasBeenClicked(control);
@@ -176,16 +191,9 @@ CONSONANT_TASK_CONTROLLER_TEST(
         testController.notifiedThatUserIsReadyForNextTrial());
 }
 
-CONSONANT_TASK_CONTROLLER_TEST(
-    notifiesThatTaskHasStartedAfterReadyButtonIsClicked) {
+CONSONANT_TASK_CONTROLLER_TEST(hidesReadyButtonAfterClicked) {
     notifyThatReadyButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatTaskHasStarted());
-}
-
-CONSONANT_TASK_CONTROLLER_TEST(
-    notifiesObserverThatTrialHasStartedAfterReadyButtonIsClicked) {
-    notifyThatReadyButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatTrialHasStarted());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.readyButtonHidden());
 }
 
 CONSONANT_TASK_CONTROLLER_TEST(submitsConsonantAfterResponseButtonIsClicked) {
@@ -200,12 +208,6 @@ CONSONANT_TASK_CONTROLLER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController
             .notifiedThatUserIsDoneRespondingAndIsReadyForNextTrial());
-}
-
-CONSONANT_TASK_CONTROLLER_TEST(
-    notifiesObserverThatTrialHasStartedAfterResponseButtonIsClicked) {
-    notifyThatResponseButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatTrialHasStarted());
 }
 }
 }

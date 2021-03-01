@@ -20,6 +20,7 @@ class TaskPresenter : public Presenter {
     virtual void showResponseSubmission() = 0;
     virtual void hideResponseSubmission() = 0;
     virtual void complete() {}
+    virtual void notifyThatTrialHasStarted() {}
 };
 }
 

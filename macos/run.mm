@@ -385,7 +385,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
-    ConsonantTaskPresenter consonantPresenter{consonantView};
+    ConsonantTaskPresenterImpl consonantPresenter{consonantView};
     FreeResponseUI freeResponseUI{freeResponseUIController};
     FreeResponsePresenter freeResponsePresenter{testUI, freeResponseUI};
     ChooseKeywordsUI chooseKeywordsUI{chooseKeywordsUIController};
@@ -425,10 +425,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         testController, model, freeResponseUI};
     PassFailController passFailController{testController, model, passFailUI};
     ConsonantTaskController consonantTaskController{
-        testController, model, consonantView};
+        testController, model, consonantView, consonantPresenter};
     CoordinateResponseMeasureController coordinateResponseMeasureController{
         testController, model, coordinateResponseMeasureView};
-    consonantTaskController.attach(&consonantPresenter);
     coordinateResponseMeasureController.attach(
         &coordinateResponseMeasurePresenter);
     TestSettingsInterpreterImpl testSettingsInterpreter{
