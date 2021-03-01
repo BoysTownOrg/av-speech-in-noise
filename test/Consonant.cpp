@@ -201,11 +201,6 @@ CONSONANT_TASK_CONTROLLER_TEST(
         testController.notifiedThatUserIsReadyForNextTrial());
 }
 
-CONSONANT_TASK_CONTROLLER_TEST(hidesCursorAfterReadyButtonClicked) {
-    notifyThatReadyButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.cursorHidden());
-}
-
 CONSONANT_TASK_CONTROLLER_TEST(hidesReadyButtonAfterClicked) {
     notifyThatReadyButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.readyButtonHidden());
@@ -223,11 +218,6 @@ CONSONANT_TASK_CONTROLLER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController
             .notifiedThatUserIsDoneRespondingAndIsReadyForNextTrial());
-}
-
-CONSONANT_TASK_CONTROLLER_TEST(hidesCursorAfterResponseButtonIsClicked) {
-    notifyThatResponseButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.cursorHidden());
 }
 }
 }

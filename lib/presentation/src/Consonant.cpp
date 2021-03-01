@@ -10,13 +10,11 @@ ConsonantTaskController::ConsonantTaskController(TestController &testController,
 
 void ConsonantTaskController::notifyThatReadyButtonHasBeenClicked() {
     presenter.hideReadyButton();
-    presenter.hideCursor();
     testController.notifyThatUserIsReadyForNextTrial();
 }
 
 void ConsonantTaskController::notifyThatResponseButtonHasBeenClicked() {
     model.submit(ConsonantResponse{control.consonant().front()});
-    presenter.hideCursor();
     testController.notifyThatUserIsDoneRespondingAndIsReadyForNextTrial();
 }
 
