@@ -179,8 +179,8 @@ CONSONANT_TASK_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseButtonsShown());
 }
 
-CONSONANT_TASK_PRESENTER_TEST(showsCursorWhenTaskCompletes) {
-    presenter.complete();
+CONSONANT_TASK_PRESENTER_TEST(showsCursorWithResponseSubmission) {
+    presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.cursorShown());
 }
 

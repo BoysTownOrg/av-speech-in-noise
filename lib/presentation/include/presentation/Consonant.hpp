@@ -61,7 +61,6 @@ class ConsonantTaskPresenterImpl : public ConsonantTaskPresenter,
     void stop() override;
     void showResponseSubmission() override;
     void hideResponseSubmission() override;
-    void complete() override;
     void hideReadyButton() override;
     void notifyThatTrialHasStarted() override;
 
