@@ -385,7 +385,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
-    ConsonantTaskPresenter consonantPresenter{consonantView};
+    ConsonantTaskPresenterImpl consonantPresenter{consonantView};
     FreeResponseUI freeResponseUI{freeResponseUIController};
     FreeResponsePresenter freeResponsePresenter{testUI, freeResponseUI};
     ChooseKeywordsUI chooseKeywordsUI{chooseKeywordsUIController};

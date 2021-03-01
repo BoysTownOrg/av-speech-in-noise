@@ -32,26 +32,18 @@ class ConsonantTaskView : public virtual View {
     virtual void showResponseButtons() = 0;
 };
 
-class ConsonantTaskPresenter : public TaskController::Observer,
-                               public TaskPresenter {
+class ConsonantTaskPresenter {
   public:
-    explicit ConsonantTaskPresenter(ConsonantTaskView &);
-    void start() override;
-    void stop() override;
-    void notifyThatTaskHasStarted() override;
-    void notifyThatTrialHasStarted() override;
-    void showResponseSubmission() override;
-    void hideResponseSubmission() override;
-
-  private:
-    ConsonantTaskView &view;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        ConsonantTaskPresenter);
+    virtual void hideCursor() = 0;
+    virtual void hideReadyButton() = 0;
 };
 
-class ConsonantTaskController : public TaskController,
-                                public ConsonantTaskControl::Observer {
+class ConsonantTaskController : public ConsonantTaskControl::Observer {
   public:
-    ConsonantTaskController(TestController &, Model &, ConsonantTaskControl &);
-    void attach(TaskController::Observer *);
+    ConsonantTaskController(TestController &, Model &, ConsonantTaskControl &,
+        ConsonantTaskPresenter &);
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
 
@@ -59,7 +51,23 @@ class ConsonantTaskController : public TaskController,
     TestController &testController;
     Model &model;
     ConsonantTaskControl &control;
-    TaskController::Observer *observer{};
+    ConsonantTaskPresenter &presenter;
+};
+
+class ConsonantTaskPresenterImpl : public ConsonantTaskPresenter,
+                                   public TaskPresenter {
+  public:
+    explicit ConsonantTaskPresenterImpl(ConsonantTaskView &);
+    void start() override;
+    void stop() override;
+    void showResponseSubmission() override;
+    void hideResponseSubmission() override;
+    void complete() override;
+    void hideCursor() override;
+    void hideReadyButton() override;
+
+  private:
+    ConsonantTaskView &view;
 };
 }
 
