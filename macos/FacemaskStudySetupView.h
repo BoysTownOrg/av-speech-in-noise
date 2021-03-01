@@ -20,7 +20,7 @@ class FacemaskStudySetupView : public TestSetupUI {
     auto testSettingsFile() -> std::string override;
     void attach(Observer *) override;
     void populateTransducerMenu(std::vector<std::string>) override {}
-    auto startingSnr() -> std::string override { return "0"; }
+    auto startingSnr() -> std::string override;
     auto testerId() -> std::string override { return {}; }
     auto subjectId() -> std::string override {
         return subjectIdField.stringValue.UTF8String;
@@ -35,6 +35,7 @@ class FacemaskStudySetupView : public TestSetupUI {
   private:
     std::vector<ConditionSelection> conditionSelections;
     NSTextField *subjectIdField;
+    NSButton *minusEightdBButton;
     FacemaskStudySetupViewActions *actions;
     Observer *listener_{};
     NSViewController *controller;

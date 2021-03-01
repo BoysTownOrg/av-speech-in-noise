@@ -113,6 +113,9 @@ static void push_back(std::vector<ConditionSelection> &conditionSelections,
 
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : subjectIdField{[NSTextField textFieldWithString:@""]},
+      minusEightdBButton{[NSButton checkboxWithTitle:@"-8 dB SNR"
+                                              target:nil
+                                              action:nil]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
                                                                  controller} {
     actions->controller = this;
@@ -170,7 +173,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
-            labeledView(subjectIdField, "Subject ID:"),
+            labeledView(subjectIdField, "Subject ID:"), minusEightdBButton,
             verticalStackView(nsButtonArray(conditionSelections)), confirmButton
         ])
     };
@@ -252,5 +255,9 @@ void FacemaskStudySetupView::
 void FacemaskStudySetupView::
     notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked() {
     listener_->notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
+}
+
+auto FacemaskStudySetupView::startingSnr() -> std::string {
+    return minusEightdBButton.state == NSControlStateValueOn ? "-8" : "0";
 }
 }
