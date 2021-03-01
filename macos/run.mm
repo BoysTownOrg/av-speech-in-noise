@@ -425,10 +425,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         testController, model, freeResponseUI};
     PassFailController passFailController{testController, model, passFailUI};
     ConsonantTaskController consonantTaskController{
-        testController, model, consonantView};
+        testController, model, consonantView, consonantPresenter};
     CoordinateResponseMeasureController coordinateResponseMeasureController{
         testController, model, coordinateResponseMeasureView};
-    consonantTaskController.attach(&consonantPresenter);
     coordinateResponseMeasureController.attach(
         &coordinateResponseMeasurePresenter);
     TestSettingsInterpreterImpl testSettingsInterpreter{
