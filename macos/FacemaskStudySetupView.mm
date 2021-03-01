@@ -96,6 +96,11 @@ static void push_back(NSPopUpButton *button,
     [button addItemWithTitle:nsString(conditionName)];
 }
 
+static void addBorder(NSView *view) {
+    view.wantsLayer = YES;
+    view.layer.borderWidth = 1;
+}
+
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : subjectIdField{[NSTextField textFieldWithString:@""]},
       minusEightdBButton{[NSButton checkboxWithTitle:@"-8 dB SNR"
@@ -157,13 +162,18 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     push_back(condition, conditionUrls, "HospitalMask_AO");
     push_back(condition, conditionUrls, "HospitalMask_AV");
     push_back(condition, conditionUrls, "NoMask_VO");
+    const auto subjectIdWithLabel{labeledView(subjectIdField, "Subject ID:")};
+    subjectIdWithLabel.alignment = NSLayoutAttributeFirstBaseline;
+    subjectIdWithLabel.distribution = NSStackViewDistributionFill;
+    const auto conditionWithLabel{labeledView(condition, "condition:")};
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
-            labeledView(subjectIdField, "Subject ID:"), minusEightdBButton,
-            labeledView(condition, "condition:"), confirmButton
+            subjectIdWithLabel, conditionWithLabel, minusEightdBButton,
+            playLeftSpeakerCalibrationButton, playRightSpeakerCalibrationButton
         ])
     };
+    layoutStack.alignment = NSLayoutAttributeLeft;
     [subjectIdField setFont:[NSFont systemFontOfSize:30]];
     [subjectIdField setTextColor:NSColor.blackColor];
     subjectIdField.wantsLayer = YES;
@@ -172,18 +182,13 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
         setContentCompressionResistancePriority:751
                                  forOrientation:
                                      NSLayoutConstraintOrientationHorizontal];
-    const auto playCalibrationButtonsStack {
-        verticalStackView(@[
-            playLeftSpeakerCalibrationButton, playRightSpeakerCalibrationButton
-        ])
-    };
     addAutolayoutEnabledSubview(controller.view, layoutStack);
-    addAutolayoutEnabledSubview(controller.view, playCalibrationButtonsStack);
+    addAutolayoutEnabledSubview(controller.view, confirmButton);
     [NSLayoutConstraint activateConstraints:@[
         [layoutStack.topAnchor constraintEqualToAnchor:controller.view.topAnchor
                                               constant:8],
         [layoutStack.bottomAnchor
-            constraintEqualToAnchor:playCalibrationButtonsStack.topAnchor
+            constraintEqualToAnchor:confirmButton.topAnchor
                            constant:-8],
         [layoutStack.leadingAnchor
             constraintEqualToAnchor:controller.view.leadingAnchor
@@ -191,10 +196,9 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
         [layoutStack.trailingAnchor
             constraintEqualToAnchor:controller.view.trailingAnchor
                            constant:-8],
-        [playCalibrationButtonsStack.trailingAnchor
-            constraintEqualToAnchor:controller.view.trailingAnchor
-                           constant:-8],
-        [playCalibrationButtonsStack.bottomAnchor
+        [confirmButton.centerXAnchor
+            constraintEqualToAnchor:controller.view.centerXAnchor],
+        [confirmButton.bottomAnchor
             constraintEqualToAnchor:controller.view.bottomAnchor
                            constant:-8],
         [confirmButton.widthAnchor constraintEqualToConstant:1.4 *
