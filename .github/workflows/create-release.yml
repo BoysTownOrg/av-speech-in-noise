@@ -17,7 +17,7 @@ jobs:
           p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
       - uses: actions/checkout@v2
       - name: generate build system
-        run: cmake -S . -B build -G Xcode -DCMAKE_OSX_ARCHITECTURES=x86_64;arm64 -DAV_SPEECH_IN_NOISE_MACOS_OTHER_CODE_SIGN_FLAGS:STRING=--timestamp --options=runtime -DAV_SPEECH_IN_NOISE_MACOS_CODE_SIGN_IDENTITY:STRING="${{ secrets.CODE_SIGN_IDENTITY }}" -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15
+        run: cmake -S . -B build -G Xcode "-DCMAKE_OSX_ARCHITECTURES=x86_64;arm64" "-DAV_SPEECH_IN_NOISE_MACOS_OTHER_CODE_SIGN_FLAGS:STRING=--timestamp --options=runtime" "-DAV_SPEECH_IN_NOISE_MACOS_CODE_SIGN_IDENTITY:STRING=${{ secrets.CODE_SIGN_IDENTITY }}" -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15
       - name: build app -- Release
         run: cmake --build build --target av-speech-in-noise-bundle --config Release
       - name: build facemask study -- Release
