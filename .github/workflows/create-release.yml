@@ -26,6 +26,6 @@ jobs:
         run: |
           xcrun altool --store-password-in-keychain-item "AC_PASSWORD"
                -u "${{ secrets.APP_CONNECT_NOTARIZATION_USERNAME }}"
-               -p ${{ secrets.APP_CONNECT_NOTARIZATION_PASSWORD }}
+               -p "${{ secrets.APP_CONNECT_NOTARIZATION_PASSWORD }}"
           xcnotary notarize build/macos/Release/AV Speech in Noise.app --developer-account ${{ secrets.APP_CONNECT_NOTARIZATION_USERNAME }}--developer-password-keychain-item AC_PASSWORD
           xcnotary notarize build/macos/Release/Facemask Study.app --developer-account ${{ secrets.APP_CONNECT_NOTARIZATION_USERNAME }}--developer-password-keychain-item AC_PASSWORD
