@@ -22,3 +22,5 @@ jobs:
         run: |
           ditto -c -k --keepParent "./build/macos/Release/AV Speech in Noise.app" "./build/macos/Release/AV Speech in Noise.app.zip"
           xcrun altool --notarize-app --primary-bundle-id org.boystown.av-speech-in-noise --username ${{ secrets.APP_CONNECT_NOTARIZATION_USERNAME }} --password ${{ secrets.APP_CONNECT_NOTARIZATION_PASSWORD }} --file "./build/macos/Release/AV Speech in Noise.app.zip"
+          ditto -c -k --keepParent "./build/macos/Release/Facemask Study.app" "./build/macos/Release/Facemask Study.app.zip"
+          xcrun altool --notarize-app --primary-bundle-id org.boystown.av-speech-in-noise-facemask-study --username ${{ secrets.APP_CONNECT_NOTARIZATION_USERNAME }} --password ${{ secrets.APP_CONNECT_NOTARIZATION_PASSWORD }} --file "./build/macos/Release/Facemask Study.app.zip"
