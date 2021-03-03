@@ -39,8 +39,6 @@ jobs:
       - name: create GitHub release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            "./build/macos/Release/AV Speech in Noise.app.zip"
-            "./build/macos/Release/Facemask Study.app.zip"
+          files: build/macos/Release/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
