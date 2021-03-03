@@ -12,7 +12,7 @@ jobs:
           p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
           p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
       - name: install osfclient
-        run: pip install osfclient
+        run: pip3 install osfclient
       - uses: actions/checkout@v2
       - name: download resources
         run: |
