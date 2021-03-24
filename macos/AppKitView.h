@@ -28,7 +28,8 @@
 namespace av_speech_in_noise {
 class AppKitSessionUI : public SessionView, public SessionControl {
   public:
-    explicit AppKitSessionUI(NSApplication *, NSViewController *);
+    explicit AppKitSessionUI(
+        NSApplication *, NSViewController *, NSPopUpButton *audioDeviceMenu);
     void eventLoop() override;
     void showErrorMessage(std::string_view) override;
     auto audioDevice() -> std::string override;

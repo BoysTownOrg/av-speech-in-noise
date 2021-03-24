@@ -23,6 +23,7 @@
 #include <fstream>
 #include <sstream>
 #include <utility>
+#include <string_view>
 #include <functional>
 
 @interface ResizesToContentsViewController : NSTabViewController
@@ -65,6 +66,21 @@
 
 @interface CallbackScheduler : NSObject
 @end
+
+// https://stackoverflow.com/a/116220
+static auto read_file(std::string_view path) -> std::string {
+    constexpr auto read_size = std::size_t{4096};
+    auto stream = std::ifstream{path.data()};
+    stream.exceptions(std::ios_base::badbit);
+
+    auto out = std::string{};
+    auto buf = std::string(read_size, '\0');
+    while (stream.read(&buf[0], read_size)) {
+        out.append(buf, 0, stream.gcount());
+    }
+    out.append(buf, 0, stream.gcount());
+    return out;
+}
 
 namespace av_speech_in_noise {
 namespace {
@@ -192,10 +208,7 @@ class TimeStampImpl : public TimeStamp {
 class TextFileReaderImpl : public TextFileReader {
   public:
     auto read(const LocalUrl &s) -> std::string override {
-        std::ifstream file{s.path};
-        std::stringstream stream;
-        stream << file.rdbuf();
-        return stream.str();
+        return read_file(s.path);
     }
 };
 
@@ -334,7 +347,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                    keyEquivalent:@"q"];
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
-    AppKitSessionUI sessionUI{app, preferencesViewController};
+    const auto audioDeviceMenu{
+        [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
+                                   pullsDown:NO]};
+    AppKitSessionUI sessionUI{app, preferencesViewController, audioDeviceMenu};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);
     testSetupViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -392,7 +408,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model, testUI,
         chooseKeywordsUI,
         sentencesWithThreeKeywords(
-            TextFileReaderImpl{}.read(resourceUrl("mlst-c", "txt")))};
+            read_file(resourceUrl("mlst-c", "txt").path))};
     SyllablesUI syllablesUI{syllablesUIController};
     SyllablesPresenterImpl syllablesPresenter{syllablesUI, testUI};
     CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
@@ -407,6 +423,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     TestPresenterImpl testPresenter{model, testUI, &taskPresenter};
     SessionControllerImpl sessionController{
         model, sessionUI, testSetupPresenter, testPresenter};
+    [audioDeviceMenu selectItemWithTitle:nsString(read_file(resourceUrl(
+                                             "default-audio-device", "txt")
+                                                                .path))];
     TestControllerImpl testController{
         sessionController, model, sessionUI, testUI, testPresenter};
     ChooseKeywordsController chooseKeywordsController{

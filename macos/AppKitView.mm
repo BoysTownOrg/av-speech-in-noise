@@ -241,11 +241,9 @@ static auto view(NSViewController *viewController) -> NSView * {
     return viewController.view;
 }
 
-AppKitSessionUI::AppKitSessionUI(
-    NSApplication *app, NSViewController *viewController)
-    : app{app}, audioDeviceMenu{
-                    [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
-                                               pullsDown:NO]} {
+AppKitSessionUI::AppKitSessionUI(NSApplication *app,
+    NSViewController *viewController, NSPopUpButton *audioDeviceMenu)
+    : app{app}, audioDeviceMenu{audioDeviceMenu} {
     const auto audioDeviceStack {
         [NSStackView
             stackViewWithViews:@[ label("audio output:"), audioDeviceMenu ]]
