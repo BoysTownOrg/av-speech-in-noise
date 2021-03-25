@@ -49,8 +49,8 @@ static auto applicationDataDirectory() -> NSURL * {
     NSFileManager *fm = [NSFileManager defaultManager];
     NSURL *dirPath = nil;
     // Find the application support directory in the home directory.
-    NSArray *appSupportDir = [fm URLsForDirectory:NSApplicationSupportDirectory
-                                        inDomains:NSUserDomainMask];
+    auto appSupportDir = [fm URLsForDirectory:NSApplicationSupportDirectory
+                                    inDomains:NSUserDomainMask];
     if ([appSupportDir count] > 0) {
         // Append the bundle ID to the URL for the
         // Application Support directory
