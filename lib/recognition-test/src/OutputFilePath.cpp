@@ -68,11 +68,11 @@ auto OutputFilePathImpl::outputDirectory() -> std::string {
 }
 
 auto OutputFilePathImpl::outputDirectory_() -> std::string {
-    return systemPath.homeDirectory() / relativePath_;
+    return systemPath.homeDirectory() / relativeOutputDirectory;
 }
 
 void OutputFilePathImpl::setRelativeOutputDirectory(std::filesystem::path s) {
-    relativePath_ = std::move(s);
+    relativeOutputDirectory = std::move(s);
     systemPath.createDirectory(outputDirectory_());
 }
 }

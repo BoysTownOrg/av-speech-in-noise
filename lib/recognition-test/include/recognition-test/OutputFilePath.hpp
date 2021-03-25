@@ -58,7 +58,7 @@ class OutputFilePathImpl : public OutputFilePath {
   private:
     auto outputDirectory_() -> std::string;
 
-    std::filesystem::path relativePath_{};
+    std::filesystem::path relativeOutputDirectory{};
     OutputFileName &outputFileName;
     FileSystemPath &systemPath;
 };
