@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_OUTPUTFILEPATH_HPP_
 
 #include "OutputFile.hpp"
+#include <filesystem>
 
 namespace av_speech_in_noise {
 class TimeStamp {
@@ -20,7 +21,7 @@ class FileSystemPath {
   public:
     virtual ~FileSystemPath() = default;
     virtual auto homeDirectory() -> std::string = 0;
-    virtual void createDirectory(std::string) = 0;
+    virtual void createDirectory(const std::filesystem::path &) = 0;
 };
 
 class OutputFileName {

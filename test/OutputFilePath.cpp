@@ -74,8 +74,8 @@ class FileSystemPathStub : public FileSystemPath {
 
     [[nodiscard]] auto directoryCreated() const { return directoryCreated_; }
 
-    void createDirectory(std::string s) override {
-        directoryCreated_ = std::move(s);
+    void createDirectory(const std::filesystem::path & s) override {
+        directoryCreated_ = s;
     }
 };
 

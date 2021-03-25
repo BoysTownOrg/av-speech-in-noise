@@ -220,12 +220,8 @@ class UnixFileSystemPath : public FileSystemPath {
             .fileSystemRepresentation;
     }
 
-    void createDirectory(std::string s) override {
-        [[NSFileManager defaultManager]
-                   createDirectoryAtURL:[NSURL fileURLWithPath:nsString(s)]
-            withIntermediateDirectories:YES
-                             attributes:nil
-                                  error:nil];
+    void createDirectory(const std::filesystem::path &p) override {
+        create_directory(p);
     }
 };
 
