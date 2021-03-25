@@ -162,13 +162,12 @@ class TimerImpl : public Timer {
 @end
 
 namespace av_speech_in_noise {
-namespace {
-auto contents(NSString *parent) -> NSArray<NSString *> * {
+static auto contents(NSString *parent) -> NSArray<NSString *> * {
     return [[NSFileManager defaultManager] contentsOfDirectoryAtPath:parent
                                                                error:nil];
 }
 
-auto collectContentsIf(const LocalUrl &directory,
+static auto collectContentsIf(const LocalUrl &directory,
     const std::function<bool(NSString *)> &predicate) -> std::vector<LocalUrl> {
     std::vector<LocalUrl> items{};
     const auto parent{nsString(directory.path).stringByExpandingTildeInPath};
@@ -180,14 +179,15 @@ auto collectContentsIf(const LocalUrl &directory,
     return items;
 }
 
-auto isDirectory(NSString *path) -> bool {
+static auto isDirectory(NSString *path) -> bool {
     BOOL isDir{NO};
     [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
     return isDir == YES;
 }
 
-auto notADirectory(NSString *path) -> bool { return !isDirectory(path); }
+static auto notADirectory(NSString *path) -> bool { return !isDirectory(path); }
 
+namespace {
 class MacOsDirectoryReader : public DirectoryReader {
     auto filesIn(const LocalUrl &directory) -> std::vector<LocalUrl> override {
         return collectContentsIf(directory, notADirectory);
