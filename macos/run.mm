@@ -70,6 +70,12 @@ static auto applicationDataDirectory() -> NSURL * {
     return dirPath;
 }
 
+static auto defaultAudioDeviceFilePath() -> std::filesystem::path {
+    return [applicationDataDirectory()
+        URLByAppendingPathComponent:@"default-audio-device.txt"]
+        .fileSystemRepresentation;
+}
+
 @interface ApplicationDelegate : NSObject <NSApplicationDelegate>
 @end
 
@@ -79,9 +85,7 @@ static auto applicationDataDirectory() -> NSURL * {
 }
 - (void)applicationWillTerminate:(NSNotification *)notification {
     if (audioDeviceMenu.titleOfSelectedItem != nil) {
-        std::ofstream defaultAudioDeviceFile{[applicationDataDirectory()
-            URLByAppendingPathComponent:@"default-audio-device.txt"]
-                                                 .fileSystemRepresentation};
+        std::ofstream defaultAudioDeviceFile{defaultAudioDeviceFilePath()};
         defaultAudioDeviceFile
             << audioDeviceMenu.titleOfSelectedItem.UTF8String;
     }
@@ -476,9 +480,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     TestPresenterImpl testPresenter{model, testUI, &taskPresenter};
     SessionControllerImpl sessionController{
         model, sessionUI, testSetupPresenter, testPresenter};
-    std::ifstream defaultAudioDeviceFile{[applicationDataDirectory()
-        URLByAppendingPathComponent:@"default-audio-device.txt"]
-                                             .fileSystemRepresentation};
+    std::ifstream defaultAudioDeviceFile{defaultAudioDeviceFilePath()};
     if (defaultAudioDeviceFile) {
         std::string defaultAudioDevice;
         std::getline(defaultAudioDeviceFile, defaultAudioDevice);
