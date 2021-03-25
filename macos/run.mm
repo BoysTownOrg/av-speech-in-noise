@@ -24,6 +24,7 @@
 #include <utility>
 #include <string_view>
 #include <functional>
+#include <filesystem>
 
 @interface ResizesToContentsViewController : NSTabViewController
 @end
@@ -279,7 +280,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     AppKitTestSetupUIFactory &testSetupUIFactory,
     OutputFileNameFactory &outputFileNameFactory,
     SessionController::Observer *sessionControllerObserver,
-    const std::string &relativeOutputDirectory) {
+    std::filesystem::path relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
@@ -294,7 +295,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     UnixFileSystemPath systemPath;
     const auto outputFileName{outputFileNameFactory.make(timeStamp)};
     OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
-    outputFilePath.setRelativeOutputDirectory(relativeOutputDirectory);
+    outputFilePath.setRelativeOutputDirectory(
+        std::move(relativeOutputDirectory));
     OutputFileImpl outputFile{fileWriter, outputFilePath};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;

@@ -71,7 +71,7 @@ auto OutputFilePathImpl::outputDirectory_() -> std::string {
     return systemPath.homeDirectory() / relativePath_;
 }
 
-void OutputFilePathImpl::setRelativeOutputDirectory(std::string s) {
+void OutputFilePathImpl::setRelativeOutputDirectory(std::filesystem::path s) {
     relativePath_ = std::move(s);
     systemPath.createDirectory(outputDirectory_());
 }
