@@ -79,11 +79,9 @@ static auto applicationDataDirectory() -> NSURL * {
 }
 - (void)applicationWillTerminate:(NSNotification *)notification {
     if (audioDeviceMenu.titleOfSelectedItem != nil) {
-        auto defaultAudioDeviceUrl{[applicationDataDirectory()
-            URLByAppendingPathComponent:@"default-audio-device.txt"]};
-        std::ofstream defaultAudioDeviceFile;
-        defaultAudioDeviceFile.open(
-            defaultAudioDeviceUrl.fileSystemRepresentation);
+        std::ofstream defaultAudioDeviceFile{[applicationDataDirectory()
+            URLByAppendingPathComponent:@"default-audio-device.txt"]
+                                                 .fileSystemRepresentation};
         defaultAudioDeviceFile
             << audioDeviceMenu.titleOfSelectedItem.UTF8String;
     }
@@ -118,7 +116,7 @@ static auto applicationDataDirectory() -> NSURL * {
 // https://stackoverflow.com/a/116220
 static auto read_file(std::string_view path) -> std::string {
     constexpr auto read_size = std::size_t{4096};
-    auto stream = std::ifstream{path.data()};
+    auto stream = std::ifstream{path};
     stream.exceptions(std::ios_base::badbit);
 
     auto out = std::string{};
@@ -474,9 +472,14 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     TestPresenterImpl testPresenter{model, testUI, &taskPresenter};
     SessionControllerImpl sessionController{
         model, sessionUI, testSetupPresenter, testPresenter};
-    [audioDeviceMenu selectItemWithTitle:nsString(read_file(resourceUrl(
-                                             "default-audio-device", "txt")
-                                                                .path))];
+    std::ifstream defaultAudioDeviceFile{[applicationDataDirectory()
+        URLByAppendingPathComponent:@"default-audio-device.txt"]
+                                             .fileSystemRepresentation};
+    if (defaultAudioDeviceFile) {
+        std::string defaultAudioDevice;
+        std::getline(defaultAudioDeviceFile, defaultAudioDevice);
+        [audioDeviceMenu selectItemWithTitle:nsString(defaultAudioDevice)];
+    }
     TestControllerImpl testController{
         sessionController, model, sessionUI, testUI, testPresenter};
     ChooseKeywordsController chooseKeywordsController{
