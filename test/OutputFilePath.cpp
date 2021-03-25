@@ -70,12 +70,14 @@ class FileSystemPathStub : public FileSystemPath {
   public:
     void setHomeDirectory(std::string s) { homeDirectory_ = std::move(s); }
 
-    auto homeDirectory() -> std::string override { return homeDirectory_; }
+    auto homeDirectory() -> std::filesystem::path override {
+        return homeDirectory_;
+    }
 
     [[nodiscard]] auto directoryCreated() const { return directoryCreated_; }
 
-    void createDirectory(std::string s) override {
-        directoryCreated_ = std::move(s);
+    void createDirectory(const std::filesystem::path &s) override {
+        directoryCreated_ = s;
     }
 };
 
@@ -91,7 +93,7 @@ class OutputFileNameStub : public OutputFileName {
     auto testIdentity() -> const TestIdentity * { return testIdentity_; }
 
   private:
-    const TestIdentity *testIdentity_;
+    const TestIdentity *testIdentity_{};
     std::string name;
 };
 

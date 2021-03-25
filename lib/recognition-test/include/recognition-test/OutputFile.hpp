@@ -154,7 +154,6 @@ class OutputFilePath {
   public:
     virtual ~OutputFilePath() = default;
     virtual auto generateFileName(const TestIdentity &) -> std::string = 0;
-    virtual auto homeDirectory() -> std::string = 0;
     virtual auto outputDirectory() -> std::string = 0;
 };
 

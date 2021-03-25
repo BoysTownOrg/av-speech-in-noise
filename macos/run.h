@@ -7,6 +7,7 @@
 #include <recognition-test/OutputFilePath.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <memory>
+#include <filesystem>
 
 namespace av_speech_in_noise {
 class OutputFileNameFactory {
@@ -26,7 +27,7 @@ class DefaultOutputFileNameFactory : public OutputFileNameFactory {
 
 void initializeAppAndRunEventLoop(EyeTracker &, AppKitTestSetupUIFactory &,
     OutputFileNameFactory &, SessionController::Observer * = nullptr,
-    const std::string &relativeOutputDirectory =
+    std::filesystem::path relativeOutputDirectory =
         "Documents/AvSpeechInNoise Data");
 }
 

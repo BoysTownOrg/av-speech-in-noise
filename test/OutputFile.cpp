@@ -45,8 +45,6 @@ class OutputFilePathStub : public OutputFilePath {
         return fileName_;
     }
 
-    auto homeDirectory() -> std::string override { return homeDirectory_; }
-
     void setFileName(std::string s) { fileName_ = std::move(s); }
 
     [[nodiscard]] auto testIdentity() const -> const TestIdentity * {
@@ -57,7 +55,6 @@ class OutputFilePathStub : public OutputFilePath {
 
   private:
     std::string fileName_;
-    std::string homeDirectory_;
     std::string outputDirectory_;
     const TestIdentity *testIdentity_{};
 };
@@ -133,10 +130,6 @@ auto writtenString(WriterStub &writer) -> std::string {
 
 void openNewFile(OutputFileImpl &file, const TestIdentity &identity = {}) {
     file.openNewFile(identity);
-}
-
-void write(OutputFileImpl &file, const FreeResponseTrial &trial) {
-    file.write(trial);
 }
 
 void write(OutputFileImpl &file, const BinocularGazeSamples &gazeSamples) {

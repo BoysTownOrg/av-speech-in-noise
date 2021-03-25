@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_OUTPUTFILEPATH_HPP_
 
 #include "OutputFile.hpp"
+#include <filesystem>
 
 namespace av_speech_in_noise {
 class TimeStamp {
@@ -19,8 +20,8 @@ class TimeStamp {
 class FileSystemPath {
   public:
     virtual ~FileSystemPath() = default;
-    virtual auto homeDirectory() -> std::string = 0;
-    virtual void createDirectory(std::string) = 0;
+    virtual auto homeDirectory() -> std::filesystem::path = 0;
+    virtual void createDirectory(const std::filesystem::path &) = 0;
 };
 
 class OutputFileName {
@@ -31,7 +32,7 @@ class OutputFileName {
 
 class DefaultOutputFileName : public OutputFileName {
   public:
-    DefaultOutputFileName(TimeStamp &timeStamp);
+    explicit DefaultOutputFileName(TimeStamp &timeStamp);
     auto generate(const TestIdentity &identity) -> std::string override;
 
   private:
@@ -40,7 +41,7 @@ class DefaultOutputFileName : public OutputFileName {
 
 class MetaConditionOutputFileName : public OutputFileName {
   public:
-    MetaConditionOutputFileName(TimeStamp &timeStamp);
+    explicit MetaConditionOutputFileName(TimeStamp &timeStamp);
     auto generate(const TestIdentity &identity) -> std::string override;
 
   private:
@@ -51,15 +52,13 @@ class OutputFilePathImpl : public OutputFilePath {
   public:
     OutputFilePathImpl(OutputFileName &, FileSystemPath &);
     auto generateFileName(const TestIdentity &) -> std::string override;
-    auto homeDirectory() -> std::string override;
     auto outputDirectory() -> std::string override;
-    void setRelativeOutputDirectory(std::string);
+    void setRelativeOutputDirectory(std::filesystem::path);
 
   private:
-    auto homeDirectory_() -> std::string;
     auto outputDirectory_() -> std::string;
 
-    std::string relativePath_{};
+    std::filesystem::path relativeOutputDirectory{};
     OutputFileName &outputFileName;
     FileSystemPath &systemPath;
 };

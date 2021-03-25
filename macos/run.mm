@@ -19,12 +19,12 @@
 #include <target-playlists/RandomizedTargetPlaylists.hpp>
 #include <target-playlists/FileFilterDecorator.hpp>
 #include <adaptive-track/AdaptiveTrack.hpp>
-#include <sys/stat.h>
 #include <fstream>
 #include <sstream>
 #include <utility>
 #include <string_view>
 #include <functional>
+#include <filesystem>
 
 @interface ResizesToContentsViewController : NSTabViewController
 @end
@@ -49,8 +49,8 @@ static auto applicationDataDirectory() -> NSURL * {
     NSFileManager *fm = [NSFileManager defaultManager];
     NSURL *dirPath = nil;
     // Find the application support directory in the home directory.
-    NSArray *appSupportDir = [fm URLsForDirectory:NSApplicationSupportDirectory
-                                        inDomains:NSUserDomainMask];
+    auto appSupportDir = [fm URLsForDirectory:NSApplicationSupportDirectory
+                                    inDomains:NSUserDomainMask];
     if ([appSupportDir count] > 0) {
         // Append the bundle ID to the URL for the
         // Application Support directory
@@ -70,6 +70,12 @@ static auto applicationDataDirectory() -> NSURL * {
     return dirPath;
 }
 
+static auto defaultAudioDeviceFilePath() -> std::filesystem::path {
+    return [applicationDataDirectory()
+        URLByAppendingPathComponent:@"default-audio-device.txt"]
+        .fileSystemRepresentation;
+}
+
 @interface ApplicationDelegate : NSObject <NSApplicationDelegate>
 @end
 
@@ -79,9 +85,7 @@ static auto applicationDataDirectory() -> NSURL * {
 }
 - (void)applicationWillTerminate:(NSNotification *)notification {
     if (audioDeviceMenu.titleOfSelectedItem != nil) {
-        std::ofstream defaultAudioDeviceFile{[applicationDataDirectory()
-            URLByAppendingPathComponent:@"default-audio-device.txt"]
-                                                 .fileSystemRepresentation};
+        std::ofstream defaultAudioDeviceFile{defaultAudioDeviceFilePath()};
         defaultAudioDeviceFile
             << audioDeviceMenu.titleOfSelectedItem.UTF8String;
     }
@@ -163,13 +167,12 @@ class TimerImpl : public Timer {
 @end
 
 namespace av_speech_in_noise {
-namespace {
-auto contents(NSString *parent) -> NSArray<NSString *> * {
+static auto contents(NSString *parent) -> NSArray<NSString *> * {
     return [[NSFileManager defaultManager] contentsOfDirectoryAtPath:parent
                                                                error:nil];
 }
 
-auto collectContentsIf(const LocalUrl &directory,
+static auto collectContentsIf(const LocalUrl &directory,
     const std::function<bool(NSString *)> &predicate) -> std::vector<LocalUrl> {
     std::vector<LocalUrl> items{};
     const auto parent{nsString(directory.path).stringByExpandingTildeInPath};
@@ -181,14 +184,15 @@ auto collectContentsIf(const LocalUrl &directory,
     return items;
 }
 
-auto isDirectory(NSString *path) -> bool {
+static auto isDirectory(NSString *path) -> bool {
     BOOL isDir{NO};
     [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
     return isDir == YES;
 }
 
-auto notADirectory(NSString *path) -> bool { return !isDirectory(path); }
+static auto notADirectory(NSString *path) -> bool { return !isDirectory(path); }
 
+namespace {
 class MacOsDirectoryReader : public DirectoryReader {
     auto filesIn(const LocalUrl &directory) -> std::vector<LocalUrl> override {
         return collectContentsIf(directory, notADirectory);
@@ -216,10 +220,13 @@ class FileWriter : public Writer {
 };
 
 class UnixFileSystemPath : public FileSystemPath {
-    auto homeDirectory() -> std::string override { return std::getenv("HOME"); }
+    auto homeDirectory() -> std::filesystem::path override {
+        return [NSURL fileURLWithPath:@"~".stringByExpandingTildeInPath]
+            .fileSystemRepresentation;
+    }
 
-    void createDirectory(std::string s) override {
-        mkdir(s.c_str(), ACCESSPERMS);
+    void createDirectory(const std::filesystem::path &p) override {
+        create_directory(p);
     }
 };
 
@@ -277,7 +284,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     AppKitTestSetupUIFactory &testSetupUIFactory,
     OutputFileNameFactory &outputFileNameFactory,
     SessionController::Observer *sessionControllerObserver,
-    const std::string &relativeOutputDirectory) {
+    std::filesystem::path relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
@@ -292,7 +299,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     UnixFileSystemPath systemPath;
     const auto outputFileName{outputFileNameFactory.make(timeStamp)};
     OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
-    outputFilePath.setRelativeOutputDirectory(relativeOutputDirectory);
+    outputFilePath.setRelativeOutputDirectory(
+        std::move(relativeOutputDirectory));
     OutputFileImpl outputFile{fileWriter, outputFilePath};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
@@ -472,9 +480,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     TestPresenterImpl testPresenter{model, testUI, &taskPresenter};
     SessionControllerImpl sessionController{
         model, sessionUI, testSetupPresenter, testPresenter};
-    std::ifstream defaultAudioDeviceFile{[applicationDataDirectory()
-        URLByAppendingPathComponent:@"default-audio-device.txt"]
-                                             .fileSystemRepresentation};
+    std::ifstream defaultAudioDeviceFile{defaultAudioDeviceFilePath()};
     if (defaultAudioDeviceFile) {
         std::string defaultAudioDevice;
         std::getline(defaultAudioDeviceFile, defaultAudioDevice);
