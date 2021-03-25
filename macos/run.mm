@@ -19,7 +19,6 @@
 #include <target-playlists/RandomizedTargetPlaylists.hpp>
 #include <target-playlists/FileFilterDecorator.hpp>
 #include <adaptive-track/AdaptiveTrack.hpp>
-#include <sys/stat.h>
 #include <fstream>
 #include <sstream>
 #include <utility>
@@ -219,7 +218,11 @@ class UnixFileSystemPath : public FileSystemPath {
     auto homeDirectory() -> std::string override { return std::getenv("HOME"); }
 
     void createDirectory(std::string s) override {
-        mkdir(s.c_str(), ACCESSPERMS);
+        [[NSFileManager defaultManager]
+                   createDirectoryAtURL:[NSURL fileURLWithPath:nsString(s)]
+            withIntermediateDirectories:YES
+                             attributes:nil
+                                  error:nil];
     }
 };
 
