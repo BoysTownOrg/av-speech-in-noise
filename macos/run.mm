@@ -23,6 +23,7 @@
 #include <fstream>
 #include <sstream>
 #include <utility>
+#include <string_view>
 #include <functional>
 
 @interface ResizesToContentsViewController : NSTabViewController
@@ -38,6 +39,52 @@
 - (void)viewWillAppear {
     [super viewWillAppear];
     self.preferredContentSize = self.view.fittingSize;
+}
+@end
+
+// https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/ManagingFIlesandDirectories/ManagingFIlesandDirectories.html#//apple_ref/doc/uid/TP40010672-CH6-SW2
+// Listing 6-1
+static auto applicationDataDirectory() -> NSURL * {
+    NSString *bundleID = [[NSBundle mainBundle] bundleIdentifier];
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSURL *dirPath = nil;
+    // Find the application support directory in the home directory.
+    NSArray *appSupportDir = [fm URLsForDirectory:NSApplicationSupportDirectory
+                                        inDomains:NSUserDomainMask];
+    if ([appSupportDir count] > 0) {
+        // Append the bundle ID to the URL for the
+        // Application Support directory
+        dirPath = [[appSupportDir objectAtIndex:0]
+            URLByAppendingPathComponent:bundleID];
+        // If the directory does not exist, this method creates it.
+        // This method is only available in macOS 10.7 and iOS 5.0 or later.
+        NSError *theError = nil;
+        if ([fm createDirectoryAtURL:dirPath
+                withIntermediateDirectories:YES
+                                 attributes:nil
+                                      error:&theError] == 0) {
+            // Handle the error.
+            return nil;
+        }
+    }
+    return dirPath;
+}
+
+@interface ApplicationDelegate : NSObject <NSApplicationDelegate>
+@end
+
+@implementation ApplicationDelegate {
+  @public
+    NSPopUpButton *audioDeviceMenu;
+}
+- (void)applicationWillTerminate:(NSNotification *)notification {
+    if (audioDeviceMenu.titleOfSelectedItem != nil) {
+        std::ofstream defaultAudioDeviceFile{[applicationDataDirectory()
+            URLByAppendingPathComponent:@"default-audio-device.txt"]
+                                                 .fileSystemRepresentation};
+        defaultAudioDeviceFile
+            << audioDeviceMenu.titleOfSelectedItem.UTF8String;
+    }
 }
 @end
 
@@ -65,6 +112,21 @@
 
 @interface CallbackScheduler : NSObject
 @end
+
+// https://stackoverflow.com/a/116220
+static auto read_file(std::string_view path) -> std::string {
+    constexpr auto read_size = std::size_t{4096};
+    auto stream = std::ifstream{path};
+    stream.exceptions(std::ios_base::badbit);
+
+    auto out = std::string{};
+    auto buf = std::string(read_size, '\0');
+    while (stream.read(&buf[0], read_size)) {
+        out.append(buf, 0, stream.gcount());
+    }
+    out.append(buf, 0, stream.gcount());
+    return out;
+}
 
 namespace av_speech_in_noise {
 namespace {
@@ -192,10 +254,7 @@ class TimeStampImpl : public TimeStamp {
 class TextFileReaderImpl : public TextFileReader {
   public:
     auto read(const LocalUrl &s) -> std::string override {
-        std::ifstream file{s.path};
-        std::stringstream stream;
-        stream << file.rdbuf();
-        return stream.str();
+        return read_file(s.path);
     }
 };
 
@@ -334,7 +393,13 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                    keyEquivalent:@"q"];
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
-    AppKitSessionUI sessionUI{app, preferencesViewController};
+    const auto audioDeviceMenu{
+        [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
+                                   pullsDown:NO]};
+    const auto applicationDelegate{[[ApplicationDelegate alloc] init]};
+    applicationDelegate->audioDeviceMenu = audioDeviceMenu;
+    [app setDelegate:applicationDelegate];
+    AppKitSessionUI sessionUI{app, preferencesViewController, audioDeviceMenu};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);
     testSetupViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -392,7 +457,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model, testUI,
         chooseKeywordsUI,
         sentencesWithThreeKeywords(
-            TextFileReaderImpl{}.read(resourceUrl("mlst-c", "txt")))};
+            read_file(resourceUrl("mlst-c", "txt").path))};
     SyllablesUI syllablesUI{syllablesUIController};
     SyllablesPresenterImpl syllablesPresenter{syllablesUI, testUI};
     CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
@@ -407,6 +472,14 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     TestPresenterImpl testPresenter{model, testUI, &taskPresenter};
     SessionControllerImpl sessionController{
         model, sessionUI, testSetupPresenter, testPresenter};
+    std::ifstream defaultAudioDeviceFile{[applicationDataDirectory()
+        URLByAppendingPathComponent:@"default-audio-device.txt"]
+                                             .fileSystemRepresentation};
+    if (defaultAudioDeviceFile) {
+        std::string defaultAudioDevice;
+        std::getline(defaultAudioDeviceFile, defaultAudioDevice);
+        [audioDeviceMenu selectItemWithTitle:nsString(defaultAudioDevice)];
+    }
     TestControllerImpl testController{
         sessionController, model, sessionUI, testUI, testPresenter};
     ChooseKeywordsController chooseKeywordsController{
