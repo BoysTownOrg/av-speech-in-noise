@@ -63,20 +63,12 @@ auto OutputFilePathImpl::generateFileName(const TestIdentity &identity)
     return outputFileName.generate(identity);
 }
 
-auto OutputFilePathImpl::homeDirectory() -> std::string {
-    return homeDirectory_();
-}
-
-auto OutputFilePathImpl::homeDirectory_() -> std::string {
-    return systemPath.homeDirectory();
-}
-
 auto OutputFilePathImpl::outputDirectory() -> std::string {
     return outputDirectory_();
 }
 
 auto OutputFilePathImpl::outputDirectory_() -> std::string {
-    return homeDirectory_() + "/" + relativePath_;
+    return systemPath.homeDirectory() / relativePath_;
 }
 
 void OutputFilePathImpl::setRelativeOutputDirectory(std::string s) {

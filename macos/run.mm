@@ -215,7 +215,7 @@ class FileWriter : public Writer {
 };
 
 class UnixFileSystemPath : public FileSystemPath {
-    auto homeDirectory() -> std::string override {
+    auto homeDirectory() -> std::filesystem::path override {
         return [NSURL fileURLWithPath:@"~".stringByExpandingTildeInPath]
             .fileSystemRepresentation;
     }
