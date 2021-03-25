@@ -215,7 +215,10 @@ class FileWriter : public Writer {
 };
 
 class UnixFileSystemPath : public FileSystemPath {
-    auto homeDirectory() -> std::string override { return std::getenv("HOME"); }
+    auto homeDirectory() -> std::string override {
+        return [NSURL fileURLWithPath:@"~".stringByExpandingTildeInPath]
+            .fileSystemRepresentation;
+    }
 
     void createDirectory(std::string s) override {
         [[NSFileManager defaultManager]
