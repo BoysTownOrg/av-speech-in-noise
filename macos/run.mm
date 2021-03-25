@@ -42,6 +42,54 @@
 }
 @end
 
+// https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/ManagingFIlesandDirectories/ManagingFIlesandDirectories.html#//apple_ref/doc/uid/TP40010672-CH6-SW2
+// Listing 6-1
+static auto applicationDataDirectory() -> NSURL * {
+    NSString *bundleID = [[NSBundle mainBundle] bundleIdentifier];
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSURL *dirPath = nil;
+    // Find the application support directory in the home directory.
+    NSArray *appSupportDir = [fm URLsForDirectory:NSApplicationSupportDirectory
+                                        inDomains:NSUserDomainMask];
+    if ([appSupportDir count] > 0) {
+        // Append the bundle ID to the URL for the
+        // Application Support directory
+        dirPath = [[appSupportDir objectAtIndex:0]
+            URLByAppendingPathComponent:bundleID];
+        // If the directory does not exist, this method creates it.
+        // This method is only available in macOS 10.7 and iOS 5.0 or later.
+        NSError *theError = nil;
+        if ([fm createDirectoryAtURL:dirPath
+                withIntermediateDirectories:YES
+                                 attributes:nil
+                                      error:&theError] == 0) {
+            // Handle the error.
+            return nil;
+        }
+    }
+    return dirPath;
+}
+
+@interface ApplicationDelegate : NSObject <NSApplicationDelegate>
+@end
+
+@implementation ApplicationDelegate {
+  @public
+    NSPopUpButton *audioDeviceMenu;
+}
+- (void)applicationWillTerminate:(NSNotification *)notification {
+    if (audioDeviceMenu.titleOfSelectedItem != nil) {
+        auto defaultAudioDeviceUrl{[applicationDataDirectory()
+            URLByAppendingPathComponent:@"default-audio-device.txt"]};
+        std::ofstream defaultAudioDeviceFile;
+        defaultAudioDeviceFile.open(
+            defaultAudioDeviceUrl.fileSystemRepresentation);
+        defaultAudioDeviceFile
+            << audioDeviceMenu.titleOfSelectedItem.UTF8String;
+    }
+}
+@end
+
 @interface WindowDelegate : NSObject <NSWindowDelegate>
 @end
 
@@ -350,6 +398,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto audioDeviceMenu{
         [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                    pullsDown:NO]};
+    const auto applicationDelegate{[[ApplicationDelegate alloc] init]};
+    applicationDelegate->audioDeviceMenu = audioDeviceMenu;
+    [app setDelegate:applicationDelegate];
     AppKitSessionUI sessionUI{app, preferencesViewController, audioDeviceMenu};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);

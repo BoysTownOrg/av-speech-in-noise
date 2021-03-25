@@ -276,7 +276,9 @@ void AppKitSessionUI::showErrorMessage(std::string_view s) {
 }
 
 auto AppKitSessionUI::audioDevice() -> std::string {
-    return audioDeviceMenu.titleOfSelectedItem.UTF8String;
+    return audioDeviceMenu.titleOfSelectedItem == nil
+        ? ""
+        : audioDeviceMenu.titleOfSelectedItem.UTF8String;
 }
 
 void AppKitSessionUI::populateAudioDeviceMenu(std::vector<std::string> items) {
