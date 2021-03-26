@@ -63,7 +63,8 @@ static auto applicationDataDirectory() -> NSURL * {
                 withIntermediateDirectories:YES
                                  attributes:nil
                                       error:&theError] == 0) {
-            // Handle the error.
+            NSAlert *theAlert = [NSAlert alertWithError:theError];
+            [theAlert runModal];
             return nil;
         }
     }
