@@ -2,7 +2,6 @@
 #include "../AppKitView.h"
 #include <tobii_research.h>
 #include <tobii_research_streams.h>
-#include <dlfcn.h>
 #include <gsl/gsl>
 #include <vector>
 
@@ -25,7 +24,6 @@ class TobiiEyeTracker : public EyeTracker {
     std::vector<TobiiResearchGazeData> gazeData{};
     TobiiResearchEyeTrackers *eyeTrackers{};
     std::size_t head{};
-    void *library;
 };
 
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
@@ -35,53 +33,30 @@ static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
         : eyeTrackers->eyetrackers[0];
 }
 
-TobiiEyeTracker::TobiiEyeTracker()
-    : library{dlopen(
-          "/usr/local/lib/tobii_research/libtobii_research.dylib", RTLD_LAZY)} {
-    auto tobii_research_find_all_eyetrackers_ =
-        reinterpret_cast<decltype(&tobii_research_find_all_eyetrackers)>(
-            dlsym(library, "tobii_research_find_all_eyetrackers"));
-    if (tobii_research_find_all_eyetrackers_ != nullptr)
-        tobii_research_find_all_eyetrackers_(&eyeTrackers);
+TobiiEyeTracker::TobiiEyeTracker() {
+    tobii_research_find_all_eyetrackers(&eyeTrackers);
 }
 
 TobiiEyeTracker::~TobiiEyeTracker() {
-    auto tobii_research_free_eyetrackers_ =
-        reinterpret_cast<decltype(&tobii_research_free_eyetrackers)>(
-            dlsym(library, "tobii_research_free_eyetrackers"));
-    if (tobii_research_free_eyetrackers_ != nullptr)
-        tobii_research_free_eyetrackers_(eyeTrackers);
-    dlclose(library);
+    tobii_research_free_eyetrackers(eyeTrackers);
 }
 
 void TobiiEyeTracker::allocateRecordingTimeSeconds(double seconds) {
     float gaze_output_frequency_Hz{};
-    auto tobii_research_get_gaze_output_frequency_ =
-        reinterpret_cast<decltype(&tobii_research_get_gaze_output_frequency)>(
-            dlsym(library, "tobii_research_get_gaze_output_frequency"));
-    if (tobii_research_get_gaze_output_frequency_ != nullptr)
-        tobii_research_get_gaze_output_frequency_(
-            eyeTracker(eyeTrackers), &gaze_output_frequency_Hz);
+    tobii_research_get_gaze_output_frequency(
+        eyeTracker(eyeTrackers), &gaze_output_frequency_Hz);
     gazeData.resize(std::ceil(gaze_output_frequency_Hz * seconds) + 1);
     head = 0;
 }
 
 void TobiiEyeTracker::start() {
-    auto tobii_research_subscribe_to_gaze_data_ =
-        reinterpret_cast<decltype(&tobii_research_subscribe_to_gaze_data)>(
-            dlsym(library, "tobii_research_subscribe_to_gaze_data"));
-    if (tobii_research_subscribe_to_gaze_data_ != nullptr)
-        tobii_research_subscribe_to_gaze_data_(
-            eyeTracker(eyeTrackers), gaze_data_callback, this);
+    tobii_research_subscribe_to_gaze_data(
+        eyeTracker(eyeTrackers), gaze_data_callback, this);
 }
 
 void TobiiEyeTracker::stop() {
-    auto tobii_research_unsubscribe_from_gaze_data_ =
-        reinterpret_cast<decltype(&tobii_research_unsubscribe_from_gaze_data)>(
-            dlsym(library, "tobii_research_unsubscribe_from_gaze_data"));
-    if (tobii_research_unsubscribe_from_gaze_data_ != nullptr)
-        tobii_research_unsubscribe_from_gaze_data_(
-            eyeTracker(eyeTrackers), gaze_data_callback);
+    tobii_research_unsubscribe_from_gaze_data(
+        eyeTracker(eyeTrackers), gaze_data_callback);
 }
 
 void TobiiEyeTracker::gaze_data_callback(
@@ -156,11 +131,7 @@ auto TobiiEyeTracker::gazeSamples() -> BinocularGazeSamples {
 auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     EyeTrackerSystemTime currentSystemTime{};
     int64_t microseconds = 0;
-    auto tobii_research_get_system_time_stamp_ =
-        reinterpret_cast<decltype(&tobii_research_get_system_time_stamp)>(
-            dlsym(library, "tobii_research_get_system_time_stamp"));
-    if (tobii_research_get_system_time_stamp_ != nullptr)
-        tobii_research_get_system_time_stamp_(&microseconds);
+    tobii_research_get_system_time_stamp(&microseconds);
     currentSystemTime.microseconds = microseconds;
     return currentSystemTime;
 }
