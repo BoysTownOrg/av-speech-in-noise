@@ -168,8 +168,8 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
 
 int main() {
     av_speech_in_noise::TobiiEyeTracker eyeTracker;
-    av_speech_in_noise::AppKitTestSetupViewFactory testSetupViewFactory;
+    av_speech_in_noise::AppKitTestSetupUIFactoryImpl testSetupViewFactory;
     av_speech_in_noise::DefaultOutputFileNameFactory outputFileNameFactory;
-    av_speech_in_noise::main(
+    av_speech_in_noise::initializeAppAndRunEventLoop(
         eyeTracker, testSetupViewFactory, outputFileNameFactory);
 }
