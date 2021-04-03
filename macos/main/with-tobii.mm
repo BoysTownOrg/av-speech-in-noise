@@ -4,6 +4,7 @@
 #include <tobii_research_streams.h>
 #include <gsl/gsl>
 #include <vector>
+#import <AppKit/AppKit.h>
 
 namespace av_speech_in_noise {
 class TobiiEyeTracker : public EyeTracker {
@@ -138,6 +139,17 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
 }
 
 int main() {
+    const auto alert{[[NSAlert alloc] init]};
+    [alert setMessageText:@""];
+    [alert setInformativeText:
+               @"This software will store your eye tracking data.\n\nWe do so "
+               @"only for the purpose of <description> and we never "
+               @"<description of limitations>.\n\nThe benefit to you is "
+               @"<description of benefits>"];
+    [alert addButtonWithTitle:@"No, I do not accept"];
+    [alert addButtonWithTitle:@"Yes, I accept"];
+    if ([alert runModal] == NSAlertFirstButtonReturn)
+        return 0;
     av_speech_in_noise::TobiiEyeTracker eyeTracker;
     av_speech_in_noise::AppKitTestSetupUIFactoryImpl testSetupViewFactory;
     av_speech_in_noise::DefaultOutputFileNameFactory outputFileNameFactory;
