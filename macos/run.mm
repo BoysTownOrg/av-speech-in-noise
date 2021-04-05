@@ -108,10 +108,15 @@ static auto defaultAudioDeviceFilePath() -> std::filesystem::path {
 @implementation MenuActions {
   @public
     NSWindow *preferencesWindow;
+    NSWindow *aboutWindow;
 }
 
 - (void)notifyThatPreferencesHasBeenClicked {
     [preferencesWindow makeKeyAndOrderFront:nil];
+}
+
+- (void)notifyThatAboutHasBeenClicked {
+    [aboutWindow makeKeyAndOrderFront:nil];
 }
 @end
 
@@ -382,6 +387,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     app.mainMenu = [[NSMenu alloc] init];
     auto appMenu{[[NSMenuItem alloc] init]};
     auto appSubMenu{[[NSMenu alloc] init]};
+    auto aboutMenuItem {
+        [appSubMenu addItemWithTitle:@"About AV Speech in Noise"
+                              action:@selector(notifyThatAboutHasBeenClicked)
+                       keyEquivalent:@""]
+    };
     auto preferencesMenuItem {
         [appSubMenu
             addItemWithTitle:@"Preferences..."
@@ -389,13 +399,20 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                keyEquivalent:@","]
     };
     auto menuActions{[[MenuActions alloc] init]};
+    const auto aboutViewController{
+        [[ResizesToContentsViewController alloc] init]};
+    const auto aboutWindow{
+        [NSWindow windowWithContentViewController:aboutViewController]};
+    aboutWindow.styleMask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
     const auto preferencesViewController{
         [[ResizesToContentsViewController alloc] init]};
     const auto preferencesWindow{
         [NSWindow windowWithContentViewController:preferencesViewController]};
     preferencesWindow.styleMask =
         NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
+    menuActions->aboutWindow = aboutWindow;
     menuActions->preferencesWindow = preferencesWindow;
+    aboutMenuItem.target = menuActions;
     preferencesMenuItem.target = menuActions;
     [appSubMenu addItemWithTitle:@"Quit"
                           action:@selector(stop:)
