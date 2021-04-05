@@ -141,11 +141,15 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
 int main() {
     const auto alert{[[NSAlert alloc] init]};
     [alert setMessageText:@""];
-    [alert setInformativeText:
-               @"This software will store your eye tracking data.\n\nWe do so "
-               @"only for the purpose of <description> and we never "
-               @"<description of limitations>.\n\nThe benefit to you is "
-               @"<description of benefits>"];
+    [alert
+        setInformativeText:
+            @"This software will store your eye tracking data.\n\nWe do so "
+            @"only for the purpose of non-commercial scientific research. We "
+            @"may share your eye tracking data with other researchers, but we "
+            @"will not reveal your identity unless required by law.\n\nThere "
+            @"is no direct benefit to you for doing this study, but what we "
+            @"learn from this study may help doctors treat children who have a "
+            @"hard time hearing when it is noisy."];
     [alert addButtonWithTitle:@"No, I do not accept"];
     [alert addButtonWithTitle:@"Yes, I accept"];
     if ([alert runModal] == NSAlertFirstButtonReturn)
