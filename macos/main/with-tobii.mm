@@ -1,5 +1,6 @@
 #include "../run.h"
 #include "../AppKitView.h"
+#include "../AppKit-utility.h"
 #include <tobii_research.h>
 #include <tobii_research_streams.h>
 #include <gsl/gsl>
@@ -157,6 +158,14 @@ int main() {
     av_speech_in_noise::TobiiEyeTracker eyeTracker;
     av_speech_in_noise::AppKitTestSetupUIFactoryImpl testSetupViewFactory;
     av_speech_in_noise::DefaultOutputFileNameFactory outputFileNameFactory;
+    const auto aboutViewController{
+        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+    const auto aboutWindow{
+        [NSWindow windowWithContentViewController:aboutViewController]};
+    aboutWindow.styleMask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
+    av_speech_in_noise::addAutolayoutEnabledSubview(aboutViewController.view,
+        [NSImageView
+            imageViewWithImage:[NSImage imageNamed:@"tobii-pro-logo.jpg"]]);
     av_speech_in_noise::initializeAppAndRunEventLoop(
-        eyeTracker, testSetupViewFactory, outputFileNameFactory);
+        eyeTracker, testSetupViewFactory, outputFileNameFactory, aboutWindow);
 }

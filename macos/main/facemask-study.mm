@@ -1,6 +1,7 @@
 #include "../run.h"
 #include "../FacemaskStudySetupView.h"
 #include "../EyeTrackerStub.hpp"
+#include "../AppKit-utility.h"
 #import <AppKit/AppKit.h>
 
 namespace av_speech_in_noise {
@@ -28,8 +29,12 @@ static void main() {
     FacemaskStudySetupViewFactory testSetupViewFactory;
     MetaConditionOutputFileNameFactory outputFileNameFactory;
     CongratulatesUserWhenTestCompletes congratulatesUserWhenTestCompletes;
+    const auto aboutViewController{nsTabViewControllerWithoutTabControl()};
+    const auto aboutWindow{
+        [NSWindow windowWithContentViewController:aboutViewController]};
+    aboutWindow.styleMask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
-        outputFileNameFactory, &congratulatesUserWhenTestCompletes,
+        outputFileNameFactory, aboutWindow, &congratulatesUserWhenTestCompletes,
         "Desktop/check your data here");
 }
 }

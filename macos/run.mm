@@ -288,7 +288,7 @@ static void addChild(NSTabViewController *parent, NSTabViewController *child) {
 
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     AppKitTestSetupUIFactory &testSetupUIFactory,
-    OutputFileNameFactory &outputFileNameFactory,
+    OutputFileNameFactory &outputFileNameFactory, NSWindow *aboutWindow,
     SessionController::Observer *sessionControllerObserver,
     std::filesystem::path relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
@@ -392,6 +392,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                               action:@selector(notifyThatAboutHasBeenClicked)
                        keyEquivalent:@""]
     };
+    [appSubMenu addItem:[NSMenuItem separatorItem]];
     auto preferencesMenuItem {
         [appSubMenu
             addItemWithTitle:@"Preferences..."
@@ -399,11 +400,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                keyEquivalent:@","]
     };
     auto menuActions{[[MenuActions alloc] init]};
-    const auto aboutViewController{
-        [[ResizesToContentsViewController alloc] init]};
-    const auto aboutWindow{
-        [NSWindow windowWithContentViewController:aboutViewController]};
-    aboutWindow.styleMask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
     const auto preferencesViewController{
         [[ResizesToContentsViewController alloc] init]};
     const auto preferencesWindow{
