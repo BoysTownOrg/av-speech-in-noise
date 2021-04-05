@@ -30,12 +30,9 @@ static void main() {
     MetaConditionOutputFileNameFactory outputFileNameFactory;
     CongratulatesUserWhenTestCompletes congratulatesUserWhenTestCompletes;
     const auto aboutViewController{nsTabViewControllerWithoutTabControl()};
-    const auto aboutWindow{
-        [NSWindow windowWithContentViewController:aboutViewController]};
-    aboutWindow.styleMask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
-        outputFileNameFactory, aboutWindow, &congratulatesUserWhenTestCompletes,
-        "Desktop/check your data here");
+        outputFileNameFactory, aboutViewController,
+        &congratulatesUserWhenTestCompletes, "Desktop/check your data here");
 }
 }
 

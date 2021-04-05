@@ -159,13 +159,32 @@ int main() {
     av_speech_in_noise::AppKitTestSetupUIFactoryImpl testSetupViewFactory;
     av_speech_in_noise::DefaultOutputFileNameFactory outputFileNameFactory;
     const auto aboutViewController{
-        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
-    const auto aboutWindow{
-        [NSWindow windowWithContentViewController:aboutViewController]};
-    aboutWindow.styleMask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
-    av_speech_in_noise::addAutolayoutEnabledSubview(aboutViewController.view,
-        [NSImageView
-            imageViewWithImage:[NSImage imageNamed:@"tobii-pro-logo.jpg"]]);
-    av_speech_in_noise::initializeAppAndRunEventLoop(
-        eyeTracker, testSetupViewFactory, outputFileNameFactory, aboutWindow);
+        [[ResizesToContentsViewController alloc] init]};
+    const auto stack {
+        [NSStackView stackViewWithViews:@[
+            [NSImageView
+                imageViewWithImage:[NSImage imageNamed:@"tobii-pro-logo.jpg"]],
+            [NSTextField
+                labelWithString:@"This application is powered by Tobii Pro"]
+        ]]
+    };
+    stack.orientation = NSUserInterfaceLayoutOrientationVertical;
+    av_speech_in_noise::addAutolayoutEnabledSubview(
+        aboutViewController.view, stack);
+    [NSLayoutConstraint activateConstraints:@[
+        [stack.topAnchor
+            constraintEqualToAnchor:aboutViewController.view.topAnchor
+                           constant:8],
+        [stack.bottomAnchor
+            constraintEqualToAnchor:aboutViewController.view.bottomAnchor
+                           constant:-8],
+        [stack.leadingAnchor
+            constraintEqualToAnchor:aboutViewController.view.leadingAnchor
+                           constant:8],
+        [stack.trailingAnchor
+            constraintEqualToAnchor:aboutViewController.view.trailingAnchor
+                           constant:-8]
+    ]];
+    av_speech_in_noise::initializeAppAndRunEventLoop(eyeTracker,
+        testSetupViewFactory, outputFileNameFactory, aboutViewController);
 }

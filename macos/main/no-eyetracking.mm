@@ -9,11 +9,8 @@ static void main() {
     AppKitTestSetupUIFactoryImpl testSetupViewFactory;
     DefaultOutputFileNameFactory outputFileNameFactory;
     const auto aboutViewController{nsTabViewControllerWithoutTabControl()};
-    const auto aboutWindow{
-        [NSWindow windowWithContentViewController:aboutViewController]};
-    aboutWindow.styleMask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
-    initializeAppAndRunEventLoop(
-        eyeTracker, testSetupViewFactory, outputFileNameFactory, aboutWindow);
+    initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
+        outputFileNameFactory, aboutViewController);
 }
 }
 

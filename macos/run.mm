@@ -26,22 +26,6 @@
 #include <functional>
 #include <filesystem>
 
-@interface ResizesToContentsViewController : NSTabViewController
-@end
-
-@implementation ResizesToContentsViewController
-- (instancetype)init {
-    if ((self = [super init]) != nullptr) {
-        [self setTabStyle:NSTabViewControllerTabStyleUnspecified];
-    }
-    return self;
-}
-- (void)viewWillAppear {
-    [super viewWillAppear];
-    self.preferredContentSize = self.view.fittingSize;
-}
-@end
-
 // https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/ManagingFIlesandDirectories/ManagingFIlesandDirectories.html#//apple_ref/doc/uid/TP40010672-CH6-SW2
 // Listing 6-1
 static auto applicationDataDirectory() -> NSURL * {
@@ -288,7 +272,8 @@ static void addChild(NSTabViewController *parent, NSTabViewController *child) {
 
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     AppKitTestSetupUIFactory &testSetupUIFactory,
-    OutputFileNameFactory &outputFileNameFactory, NSWindow *aboutWindow,
+    OutputFileNameFactory &outputFileNameFactory,
+    NSViewController *aboutViewController,
     SessionController::Observer *sessionControllerObserver,
     std::filesystem::path relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
@@ -400,6 +385,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                keyEquivalent:@","]
     };
     auto menuActions{[[MenuActions alloc] init]};
+    const auto aboutWindow{
+        [NSWindow windowWithContentViewController:aboutViewController]};
+    aboutWindow.styleMask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
+    aboutWindow.title = @"About AV Speech in Noise";
     const auto preferencesViewController{
         [[ResizesToContentsViewController alloc] init]};
     const auto preferencesWindow{
