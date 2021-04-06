@@ -1,6 +1,7 @@
 #include "../run.h"
 #include "../AppKitView.h"
 #include "../AppKit-utility.h"
+#include <exception>
 #include <tobii_research.h>
 #include <tobii_research_streams.h>
 #include <gsl/gsl>
@@ -137,27 +138,11 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     currentSystemTime.microseconds = microseconds;
     return currentSystemTime;
 }
-}
 
-int main() {
-    const auto alert{[[NSAlert alloc] init]};
-    [alert setMessageText:@""];
-    [alert
-        setInformativeText:
-            @"This software will store your eye tracking data.\n\nWe do so "
-            @"only for the purpose of non-commercial scientific research. We "
-            @"may share your eye tracking data with other researchers, but we "
-            @"will not reveal your identity unless required by law.\n\nThere "
-            @"is no direct benefit to you for doing this study, but what we "
-            @"learn from this study may help doctors treat children who have a "
-            @"hard time hearing when it is noisy."];
-    [alert addButtonWithTitle:@"No, I do not accept"];
-    [alert addButtonWithTitle:@"Yes, I accept"];
-    if ([alert runModal] == NSAlertFirstButtonReturn)
-        return 0;
-    av_speech_in_noise::TobiiEyeTracker eyeTracker;
-    av_speech_in_noise::AppKitTestSetupUIFactoryImpl testSetupViewFactory;
-    av_speech_in_noise::DefaultOutputFileNameFactory outputFileNameFactory;
+void main() {
+    TobiiEyeTracker eyeTracker;
+    AppKitTestSetupUIFactoryImpl testSetupViewFactory;
+    DefaultOutputFileNameFactory outputFileNameFactory;
     const auto aboutViewController{
         [[ResizesToContentsViewController alloc] init]};
     const auto stack {
@@ -169,8 +154,7 @@ int main() {
         ]]
     };
     stack.orientation = NSUserInterfaceLayoutOrientationVertical;
-    av_speech_in_noise::addAutolayoutEnabledSubview(
-        aboutViewController.view, stack);
+    addAutolayoutEnabledSubview(aboutViewController.view, stack);
     [NSLayoutConstraint activateConstraints:@[
         [stack.topAnchor
             constraintEqualToAnchor:aboutViewController.view.topAnchor
@@ -185,6 +169,56 @@ int main() {
             constraintEqualToAnchor:aboutViewController.view.trailingAnchor
                            constant:-8]
     ]];
-    av_speech_in_noise::initializeAppAndRunEventLoop(eyeTracker,
-        testSetupViewFactory, outputFileNameFactory, aboutViewController);
+    initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
+        outputFileNameFactory, aboutViewController);
+}
+}
+
+int main() {
+    const auto subjectScreen{[[NSScreen screens] lastObject]};
+    const auto subjectScreenFrame{subjectScreen.frame};
+    const auto subjectScreenOrigin{subjectScreenFrame.origin};
+    const auto subjectScreenSize{subjectScreenFrame.size};
+    const auto subjectViewHeight{subjectScreenSize.height / 4};
+    const auto subjectScreenWidth{subjectScreenSize.width};
+    const auto subjectViewWidth{subjectScreenWidth / 3};
+    auto subjectViewLeadingEdge =
+        subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
+    const auto alertWindow{[[NSWindow alloc]
+        initWithContentRect:NSMakeRect(
+                                subjectScreenOrigin.x + subjectScreenWidth / 4,
+                                subjectScreenOrigin.y +
+                                    subjectScreenSize.height / 12,
+                                subjectScreenWidth / 2,
+                                subjectScreenSize.height / 2)
+                  styleMask:NSWindowStyleMaskBorderless
+                    backing:NSBackingStoreBuffered
+                      defer:YES]};
+    const auto alert{[[NSAlert alloc] init]};
+    [alert setMessageText:@""];
+    [alert
+        setInformativeText:
+            @"This software will store your eye tracking data.\n\nWe do so "
+            @"only for the purpose of non-commercial scientific research. We "
+            @"may share your eye tracking data with other researchers, but we "
+            @"will not reveal your identity unless required by law.\n\nThere "
+            @"is no direct benefit to you for doing this study, but what we "
+            @"learn from this study may help doctors treat children who have a "
+            @"hard time hearing when it is noisy."];
+    [alert addButtonWithTitle:@"No, I do not accept"];
+    [alert addButtonWithTitle:@"Yes, I accept"];
+    [alertWindow makeKeyAndOrderFront:nil];
+    [alert beginSheetModalForWindow:alertWindow
+                  completionHandler:^(NSModalResponse returnCode) {
+                    [alertWindow orderOut:nil];
+                    [NSApp stopModalWithCode:returnCode];
+                  }];
+    if ([NSApp runModalForWindow:alertWindow] == NSAlertFirstButtonReturn) {
+        const auto terminatingAlert{[[NSAlert alloc] init]};
+        [terminatingAlert setMessageText:@""];
+        [terminatingAlert setInformativeText:@"User does not accept eye "
+                                             @"tracking terms. Terminating."];
+        [terminatingAlert runModal];
+    } else
+        av_speech_in_noise::main();
 }
