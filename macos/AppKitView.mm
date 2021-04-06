@@ -531,11 +531,12 @@ void AppKitTestUI::showSheet(std::string_view s) {
 static auto consonantImageButton(
     std::unordered_map<void *, std::string> &consonants,
     ConsonantUIActions *actions, const std::string &consonant) -> NSButton * {
-    const auto image{[[NSImage alloc]
-        initWithContentsOfFile:nsString(resourceUrl(consonant, "bmp").path)]};
+    const auto image{[NSImage imageNamed:nsString(consonant + ".bmp")]};
     const auto button {
         [NSButton
-            buttonWithImage:image
+            buttonWithImage:image != nil
+                ? image
+                : [NSImage imageNamed:NSImageNameApplicationIcon]
                      target:actions
                      action:@selector(notifyThatResponseButtonHasBeenClicked:)]
     };

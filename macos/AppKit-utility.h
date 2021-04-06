@@ -4,6 +4,9 @@
 #import <AppKit/AppKit.h>
 #include <string>
 
+@interface ResizesToContentsViewController : NSTabViewController
+@end
+
 namespace av_speech_in_noise {
 auto nsTabViewControllerWithoutTabControl() -> NSTabViewController *;
 auto nsButton(const std::string &s, id target, SEL action) -> NSButton *;

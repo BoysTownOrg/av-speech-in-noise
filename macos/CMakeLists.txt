@@ -13,8 +13,9 @@ function(add_macos_bundle target identifier output_name)
     "-framework AppKit -framework AVFoundation -framework CoreMedia -framework MediaToolbox -framework AudioToolbox -framework CoreAudio"
   )
   if(${AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING})
-    target_include_directories(${target}
-                               PRIVATE "/usr/local/include/tobii_research")
+    include(FindPkgConfig)
+    pkg_check_modules(TOBIIRESEARCH IMPORTED_TARGET tobii_research) 
+    target_link_libraries(${target} PkgConfig::TOBIIRESEARCH)
   endif()
   set_target_properties(
     ${target}

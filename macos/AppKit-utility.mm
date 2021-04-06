@@ -1,6 +1,19 @@
 #include "AppKit-utility.h"
 #include "Foundation-utility.h"
 
+@implementation ResizesToContentsViewController
+- (instancetype)init {
+    if ((self = [super init]) != nullptr) {
+        [self setTabStyle:NSTabViewControllerTabStyleUnspecified];
+    }
+    return self;
+}
+- (void)viewWillAppear {
+    [super viewWillAppear];
+    self.preferredContentSize = self.view.fittingSize;
+}
+@end
+
 namespace av_speech_in_noise {
 auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
     const auto controller{[[NSTabViewController alloc] init]};

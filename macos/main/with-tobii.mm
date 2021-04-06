@@ -1,10 +1,12 @@
 #include "../run.h"
 #include "../AppKitView.h"
+#include "../AppKit-utility.h"
+#include <exception>
 #include <tobii_research.h>
 #include <tobii_research_streams.h>
-#include <dlfcn.h>
 #include <gsl/gsl>
 #include <vector>
+#import <AppKit/AppKit.h>
 
 namespace av_speech_in_noise {
 class TobiiEyeTracker : public EyeTracker {
@@ -25,7 +27,6 @@ class TobiiEyeTracker : public EyeTracker {
     std::vector<TobiiResearchGazeData> gazeData{};
     TobiiResearchEyeTrackers *eyeTrackers{};
     std::size_t head{};
-    void *library;
 };
 
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
@@ -35,53 +36,30 @@ static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
         : eyeTrackers->eyetrackers[0];
 }
 
-TobiiEyeTracker::TobiiEyeTracker()
-    : library{dlopen(
-          "/usr/local/lib/tobii_research/libtobii_research.dylib", RTLD_LAZY)} {
-    auto tobii_research_find_all_eyetrackers_ =
-        reinterpret_cast<decltype(&tobii_research_find_all_eyetrackers)>(
-            dlsym(library, "tobii_research_find_all_eyetrackers"));
-    if (tobii_research_find_all_eyetrackers_ != nullptr)
-        tobii_research_find_all_eyetrackers_(&eyeTrackers);
+TobiiEyeTracker::TobiiEyeTracker() {
+    tobii_research_find_all_eyetrackers(&eyeTrackers);
 }
 
 TobiiEyeTracker::~TobiiEyeTracker() {
-    auto tobii_research_free_eyetrackers_ =
-        reinterpret_cast<decltype(&tobii_research_free_eyetrackers)>(
-            dlsym(library, "tobii_research_free_eyetrackers"));
-    if (tobii_research_free_eyetrackers_ != nullptr)
-        tobii_research_free_eyetrackers_(eyeTrackers);
-    dlclose(library);
+    tobii_research_free_eyetrackers(eyeTrackers);
 }
 
 void TobiiEyeTracker::allocateRecordingTimeSeconds(double seconds) {
     float gaze_output_frequency_Hz{};
-    auto tobii_research_get_gaze_output_frequency_ =
-        reinterpret_cast<decltype(&tobii_research_get_gaze_output_frequency)>(
-            dlsym(library, "tobii_research_get_gaze_output_frequency"));
-    if (tobii_research_get_gaze_output_frequency_ != nullptr)
-        tobii_research_get_gaze_output_frequency_(
-            eyeTracker(eyeTrackers), &gaze_output_frequency_Hz);
+    tobii_research_get_gaze_output_frequency(
+        eyeTracker(eyeTrackers), &gaze_output_frequency_Hz);
     gazeData.resize(std::ceil(gaze_output_frequency_Hz * seconds) + 1);
     head = 0;
 }
 
 void TobiiEyeTracker::start() {
-    auto tobii_research_subscribe_to_gaze_data_ =
-        reinterpret_cast<decltype(&tobii_research_subscribe_to_gaze_data)>(
-            dlsym(library, "tobii_research_subscribe_to_gaze_data"));
-    if (tobii_research_subscribe_to_gaze_data_ != nullptr)
-        tobii_research_subscribe_to_gaze_data_(
-            eyeTracker(eyeTrackers), gaze_data_callback, this);
+    tobii_research_subscribe_to_gaze_data(
+        eyeTracker(eyeTrackers), gaze_data_callback, this);
 }
 
 void TobiiEyeTracker::stop() {
-    auto tobii_research_unsubscribe_from_gaze_data_ =
-        reinterpret_cast<decltype(&tobii_research_unsubscribe_from_gaze_data)>(
-            dlsym(library, "tobii_research_unsubscribe_from_gaze_data"));
-    if (tobii_research_unsubscribe_from_gaze_data_ != nullptr)
-        tobii_research_unsubscribe_from_gaze_data_(
-            eyeTracker(eyeTrackers), gaze_data_callback);
+    tobii_research_unsubscribe_from_gaze_data(
+        eyeTracker(eyeTrackers), gaze_data_callback);
 }
 
 void TobiiEyeTracker::gaze_data_callback(
@@ -156,20 +134,93 @@ auto TobiiEyeTracker::gazeSamples() -> BinocularGazeSamples {
 auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     EyeTrackerSystemTime currentSystemTime{};
     int64_t microseconds = 0;
-    auto tobii_research_get_system_time_stamp_ =
-        reinterpret_cast<decltype(&tobii_research_get_system_time_stamp)>(
-            dlsym(library, "tobii_research_get_system_time_stamp"));
-    if (tobii_research_get_system_time_stamp_ != nullptr)
-        tobii_research_get_system_time_stamp_(&microseconds);
+    tobii_research_get_system_time_stamp(&microseconds);
     currentSystemTime.microseconds = microseconds;
     return currentSystemTime;
+}
+
+void main() {
+    TobiiEyeTracker eyeTracker;
+    AppKitTestSetupUIFactoryImpl testSetupViewFactory;
+    DefaultOutputFileNameFactory outputFileNameFactory;
+    const auto aboutViewController{
+        [[ResizesToContentsViewController alloc] init]};
+    const auto stack {
+        [NSStackView stackViewWithViews:@[
+            [NSImageView
+                imageViewWithImage:[NSImage imageNamed:@"tobii-pro-logo.jpg"]],
+            [NSTextField
+                labelWithString:@"This application is powered by Tobii Pro"]
+        ]]
+    };
+    stack.orientation = NSUserInterfaceLayoutOrientationVertical;
+    addAutolayoutEnabledSubview(aboutViewController.view, stack);
+    [NSLayoutConstraint activateConstraints:@[
+        [stack.topAnchor
+            constraintEqualToAnchor:aboutViewController.view.topAnchor
+                           constant:8],
+        [stack.bottomAnchor
+            constraintEqualToAnchor:aboutViewController.view.bottomAnchor
+                           constant:-8],
+        [stack.leadingAnchor
+            constraintEqualToAnchor:aboutViewController.view.leadingAnchor
+                           constant:8],
+        [stack.trailingAnchor
+            constraintEqualToAnchor:aboutViewController.view.trailingAnchor
+                           constant:-8]
+    ]];
+    initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
+        outputFileNameFactory, aboutViewController);
 }
 }
 
 int main() {
-    av_speech_in_noise::TobiiEyeTracker eyeTracker;
-    av_speech_in_noise::AppKitTestSetupViewFactory testSetupViewFactory;
-    av_speech_in_noise::DefaultOutputFileNameFactory outputFileNameFactory;
-    av_speech_in_noise::main(
-        eyeTracker, testSetupViewFactory, outputFileNameFactory);
+    const auto subjectScreen{[[NSScreen screens] lastObject]};
+    const auto subjectScreenFrame{subjectScreen.frame};
+    const auto subjectScreenOrigin{subjectScreenFrame.origin};
+    const auto subjectScreenSize{subjectScreenFrame.size};
+    const auto subjectViewHeight{subjectScreenSize.height / 4};
+    const auto subjectScreenWidth{subjectScreenSize.width};
+    const auto subjectViewWidth{subjectScreenWidth / 3};
+    auto subjectViewLeadingEdge =
+        subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
+    const auto alertWindow{[[NSWindow alloc]
+        initWithContentRect:NSMakeRect(
+                                subjectScreenOrigin.x + subjectScreenWidth / 4,
+                                subjectScreenOrigin.y +
+                                    subjectScreenSize.height / 12,
+                                subjectScreenWidth / 2,
+                                subjectScreenSize.height / 2)
+                  styleMask:NSWindowStyleMaskBorderless
+                    backing:NSBackingStoreBuffered
+                      defer:YES]};
+    const auto alert{[[NSAlert alloc] init]};
+    [alert setMessageText:@""];
+    [alert
+        setInformativeText:
+            @"This software will store your eye tracking data.\n\nWe do so "
+            @"only for the purpose of the current study (17-13-XP). We never "
+            @"sell, distribute, or make profit on the collected data. Only "
+            @"staff and research personnel on the existing IRB will have "
+            @"access to the data. Any data used for publication or "
+            @"collaborative and/or learning purposes will be "
+            @"deidentified.\n\nThere is no direct benefit to you for doing "
+            @"this study. What we learn from this study may help doctors treat "
+            @"children who have a hard time hearing when it is noisy."];
+    [alert addButtonWithTitle:@"No, I do not accept"];
+    [alert addButtonWithTitle:@"Yes, I accept"];
+    [alertWindow makeKeyAndOrderFront:nil];
+    [alert beginSheetModalForWindow:alertWindow
+                  completionHandler:^(NSModalResponse returnCode) {
+                    [alertWindow orderOut:nil];
+                    [NSApp stopModalWithCode:returnCode];
+                  }];
+    if ([NSApp runModalForWindow:alertWindow] == NSAlertFirstButtonReturn) {
+        const auto terminatingAlert{[[NSAlert alloc] init]};
+        [terminatingAlert setMessageText:@""];
+        [terminatingAlert setInformativeText:@"User does not accept eye "
+                                             @"tracking terms. Terminating."];
+        [terminatingAlert runModal];
+    } else
+        av_speech_in_noise::main();
 }

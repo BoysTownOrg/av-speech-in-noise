@@ -26,7 +26,8 @@ class DefaultOutputFileNameFactory : public OutputFileNameFactory {
 };
 
 void initializeAppAndRunEventLoop(EyeTracker &, AppKitTestSetupUIFactory &,
-    OutputFileNameFactory &, SessionController::Observer * = nullptr,
+    OutputFileNameFactory &, NSViewController *aboutViewController,
+    SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =
         "Documents/AvSpeechInNoise Data");
 }
