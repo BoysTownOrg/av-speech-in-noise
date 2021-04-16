@@ -96,9 +96,9 @@ static void push_back(NSPopUpButton *button,
 
 FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     : subjectIdField{[NSTextField textFieldWithString:@""]},
-      minusEightdBButton{[NSButton checkboxWithTitle:@"-8 dB SNR"
-                                              target:nil
-                                              action:nil]},
+      minusTendBButton{[NSButton checkboxWithTitle:@"-10 dB SNR"
+                                            target:nil
+                                            action:nil]},
       condition{[[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                            pullsDown:NO]},
       actions{[[FacemaskStudySetupViewActions alloc] init]}, controller{
@@ -140,7 +140,10 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
                                                                alpha:1]];
 
     const auto logoImage{[NSImage imageNamed:@"btnrh.png"]};
-    const auto logo{[NSImageView imageViewWithImage:logoImage]};
+    const auto logo{
+        [NSImageView imageViewWithImage:logoImage != nil
+                         ? logoImage
+                         : [NSImage imageNamed:NSImageNameApplicationIcon]]};
     logo.imageScaling = NSImageScaleProportionallyDown;
     logo.wantsLayer = YES;
     logo.layer.backgroundColor = NSColor.whiteColor.CGColor;
@@ -162,7 +165,7 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     const auto layoutStack {
         verticalStackView(@[
             [NSStackView stackViewWithViews:@[ logo, titleLabel ]],
-            subjectIdWithLabel, conditionWithLabel, minusEightdBButton,
+            subjectIdWithLabel, conditionWithLabel, minusTendBButton,
             playLeftSpeakerCalibrationButton, playRightSpeakerCalibrationButton
         ])
     };
@@ -232,6 +235,6 @@ void FacemaskStudySetupView::
 }
 
 auto FacemaskStudySetupView::startingSnr() -> std::string {
-    return minusEightdBButton.state == NSControlStateValueOn ? "-8" : "0";
+    return minusTendBButton.state == NSControlStateValueOn ? "-10" : "0";
 }
 }
