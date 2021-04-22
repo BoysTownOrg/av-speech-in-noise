@@ -22,6 +22,13 @@
 @end
 
 namespace av_speech_in_noise {
+static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
+    -> TobiiResearchEyeTracker * {
+    return eyeTrackers == nullptr || eyeTrackers->count == 0U
+        ? nullptr
+        : eyeTrackers->eyetrackers[0];
+}
+
 class TobiiEyeTracker : public EyeTracker {
   public:
     TobiiEyeTracker();
@@ -31,6 +38,11 @@ class TobiiEyeTracker : public EyeTracker {
     void stop() override;
     auto gazeSamples() -> BinocularGazeSamples override;
     auto currentSystemTime() -> EyeTrackerSystemTime override;
+    void calibrate(float x, float y) {
+        Calibration calibration{eyeTracker(eyeTrackers)};
+        calibration.collect(x, y);
+        calibration.successfullyComputesAndApplies();
+    }
 
   private:
     static void gaze_data_callback(
@@ -40,14 +52,59 @@ class TobiiEyeTracker : public EyeTracker {
     std::vector<TobiiResearchGazeData> gazeData{};
     TobiiResearchEyeTrackers *eyeTrackers{};
     std::size_t head{};
-};
 
-static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
-    -> TobiiResearchEyeTracker * {
-    return eyeTrackers == nullptr || eyeTrackers->count == 0U
-        ? nullptr
-        : eyeTrackers->eyetrackers[0];
-}
+    class Calibration {
+      public:
+        Calibration(TobiiResearchEyeTracker *eyetracker) {
+            tobii_research_screen_based_calibration_enter_calibration_mode(
+                eyetracker);
+        }
+
+        void collect(float x, float y) {
+            tobii_research_screen_based_calibration_collect_data(
+                eyetracker, x, y);
+        }
+
+        void discard(float x, float y) {
+            tobii_research_screen_based_calibration_discard_data(
+                eyetracker, x, y);
+        }
+
+        auto successfullyComputesAndApplies() -> bool {
+            ComputeAndApply computeAndApply{eyetracker};
+            return computeAndApply.success();
+        }
+
+        ~Calibration() {
+            tobii_research_screen_based_calibration_leave_calibration_mode(
+                eyetracker);
+        }
+
+      private:
+        TobiiResearchEyeTracker *eyetracker;
+
+        class ComputeAndApply {
+          public:
+            ComputeAndApply(TobiiResearchEyeTracker *eyetracker) {
+                tobii_research_screen_based_calibration_compute_and_apply(
+                    eyetracker, &calibration_result);
+            }
+
+            auto success() -> bool {
+                return calibration_result->status ==
+                    TOBII_RESEARCH_CALIBRATION_SUCCESS;
+            }
+
+            ~ComputeAndApply() {
+                tobii_research_free_screen_based_calibration_result(
+                    calibration_result);
+            }
+
+          private:
+            TobiiResearchCalibrationResult *calibration_result{};
+        };
+    };
+};
 
 TobiiEyeTracker::TobiiEyeTracker() {
     tobii_research_find_all_eyetrackers(&eyeTrackers);
@@ -152,136 +209,6 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     return currentSystemTime;
 }
 
-class TobiiEyeTrackerCalibration {
-  public:
-    TobiiEyeTrackerCalibration(TobiiResearchEyeTracker *eyetracker) {
-        tobii_research_screen_based_calibration_enter_calibration_mode(
-            eyetracker);
-    }
-
-    void collect(float x, float y) {
-        tobii_research_screen_based_calibration_collect_data(eyetracker, x, y);
-    }
-
-    void discard(float x, float y) {
-        tobii_research_screen_based_calibration_discard_data(eyetracker, x, y);
-    }
-
-    auto successfullyComputesAndApplies() -> bool {
-        ComputeAndApply computeAndApply{eyetracker};
-        return computeAndApply.success();
-    }
-
-    ~TobiiEyeTrackerCalibration() {
-        tobii_research_screen_based_calibration_leave_calibration_mode(
-            eyetracker);
-    }
-
-  private:
-    TobiiResearchEyeTracker *eyetracker;
-
-    class ComputeAndApply {
-      public:
-        ComputeAndApply(TobiiResearchEyeTracker *eyetracker) {
-            tobii_research_screen_based_calibration_compute_and_apply(
-                eyetracker, &calibration_result);
-        }
-
-        auto success() -> bool {
-            return calibration_result->status ==
-                TOBII_RESEARCH_CALIBRATION_SUCCESS;
-        }
-
-        ~ComputeAndApply() {
-            tobii_research_free_screen_based_calibration_result(
-                calibration_result);
-        }
-
-      private:
-        TobiiResearchCalibrationResult *calibration_result{};
-    };
-};
-
-void calibration_example(TobiiResearchEyeTracker *eyetracker) {
-    /* Enter calibration mode. */
-    TobiiResearchStatus status =
-        tobii_research_screen_based_calibration_enter_calibration_mode(
-            eyetracker);
-    char *serial_number;
-    tobii_research_get_serial_number(eyetracker, &serial_number);
-    printf("Entered calibration mode for eye tracker with serial number %s \n.",
-        serial_number);
-    tobii_research_free_string(serial_number);
-    /* Define the points on screen we should calibrate at. */
-    /* The coordinates are normalized, i.e. (0.0, 0.0) is the upper left corner
-     * and (1.0, 1.0) is the lower right corner. */
-    {
-        TobiiResearchNormalizedPoint2D points_to_calibrate[5] = {{0.5f, 0.5f},
-            {0.1f, 0.1f}, {0.1f, 0.9f}, {0.9f, 0.1f}, {0.9f, 0.9f}};
-        size_t i = 0;
-        for (; i < 5; i++) {
-            TobiiResearchNormalizedPoint2D *point = &points_to_calibrate[i];
-            printf("Show a point on screen at (%f,%f).\n", point->x, point->y);
-            //  Wait a little for user to focus.
-            // sleep_ms(700);
-            printf("Collecting data at (%f,%f).\n", point->x, point->y);
-            if (tobii_research_screen_based_calibration_collect_data(eyetracker,
-                    point->x, point->y) != TOBII_RESEARCH_STATUS_OK) {
-                /* Try again if it didn't go well the first time. */
-                /* Not all eye tracker models will fail at this point, but
-                 * instead fail on ComputeAndApply. */
-                tobii_research_screen_based_calibration_collect_data(
-                    eyetracker, point->x, point->y);
-            }
-        }
-        printf("Computing and applying calibration.\n");
-        TobiiResearchCalibrationResult *calibration_result = NULL;
-        status = tobii_research_screen_based_calibration_compute_and_apply(
-            eyetracker, &calibration_result);
-        if (status == TOBII_RESEARCH_STATUS_OK &&
-            calibration_result->status == TOBII_RESEARCH_CALIBRATION_SUCCESS) {
-            printf(
-                "Compute and apply returned %i and collected at %zu points.\n",
-                status, calibration_result->calibration_point_count);
-        } else {
-            printf("Calibration failed!\n");
-        }
-        /* Free calibration result when done using it */
-        tobii_research_free_screen_based_calibration_result(calibration_result);
-        /* Analyze the data and maybe remove points that weren't good. */
-        TobiiResearchNormalizedPoint2D *recalibrate_point =
-            &points_to_calibrate[1];
-        printf("Removing calibration point at (%f,%f).\n", recalibrate_point->x,
-            recalibrate_point->y);
-        status = tobii_research_screen_based_calibration_discard_data(
-            eyetracker, recalibrate_point->x, recalibrate_point->y);
-        /* Redo collection at the discarded point */
-        printf("Show a point on screen at (%f,%f).\n", recalibrate_point->x,
-            recalibrate_point->y);
-        tobii_research_screen_based_calibration_collect_data(
-            eyetracker, recalibrate_point->x, recalibrate_point->y);
-        /* Compute and apply again. */
-        printf("Computing and applying calibration.\n");
-        status = tobii_research_screen_based_calibration_compute_and_apply(
-            eyetracker, &calibration_result);
-        if (status == TOBII_RESEARCH_STATUS_OK &&
-            calibration_result->status == TOBII_RESEARCH_CALIBRATION_SUCCESS) {
-            printf(
-                "Compute and apply returned %i and collected at %zu points.\n",
-                status, calibration_result->calibration_point_count);
-        } else {
-            printf("Calibration failed!\n");
-        }
-        /* Free calibration result when done using it */
-        tobii_research_free_screen_based_calibration_result(calibration_result);
-        /* See that you're happy with the result. */
-    }
-    /* The calibration is done. Leave calibration mode. */
-    status = tobii_research_screen_based_calibration_leave_calibration_mode(
-        eyetracker);
-    printf("Left calibration mode.\n");
-}
-
 void main() {
     TobiiEyeTracker eyeTracker;
     AppKitTestSetupUIFactoryImpl testSetupViewFactory;
@@ -312,6 +239,49 @@ void main() {
             constraintEqualToAnchor:aboutViewController.view.trailingAnchor
                            constant:-8]
     ]];
+
+    const auto calibrationViewController{
+        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+    const auto subjectScreen{[[NSScreen screens] lastObject]};
+    const auto subjectScreenFrame{subjectScreen.frame};
+    const auto subjectScreenSize{subjectScreenFrame.size};
+    calibrationViewController.view.frame = subjectScreenFrame;
+    const auto circleView{
+        [[CircleView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)]};
+    [calibrationViewController.view addSubview:circleView];
+    const auto animatingWindow{
+        [NSWindow windowWithContentViewController:calibrationViewController]};
+    [animatingWindow makeKeyAndOrderFront:nil];
+    auto firstViewDict = [NSMutableDictionary dictionaryWithCapacity:3];
+    [firstViewDict setObject:circleView forKey:NSViewAnimationTargetKey];
+    [firstViewDict setObject:[NSValue valueWithRect:[circleView frame]]
+                      forKey:NSViewAnimationStartFrameKey];
+    [firstViewDict
+        setObject:[NSValue
+                      valueWithRect:NSMakeRect(
+                                        (subjectScreenSize.width - 100) / 2,
+                                        (subjectScreenSize.height - 100) / 2,
+                                        100, 100)]
+           forKey:NSViewAnimationEndFrameKey];
+    auto theAnim = [[NSViewAnimation alloc]
+        initWithViewAnimations:[NSArray arrayWithObjects:firstViewDict, nil]];
+    [theAnim setDuration:5.5];
+    [theAnim setAnimationCurve:NSAnimationEaseIn];
+    theAnim.animationBlockingMode = NSAnimationBlocking;
+    [theAnim startAnimation];
+    auto secondViewDict = [NSMutableDictionary dictionaryWithCapacity:3];
+    [secondViewDict setObject:circleView forKey:NSViewAnimationTargetKey];
+    [secondViewDict
+        setObject:[NSValue
+                      valueWithRect:NSMakeRect(
+                                        (subjectScreenSize.width - 25) / 2,
+                                        (subjectScreenSize.height - 25) / 2, 25,
+                                        25)]
+           forKey:NSViewAnimationEndFrameKey];
+    theAnim.viewAnimations = [NSArray arrayWithObjects:secondViewDict, nil];
+    [theAnim setDuration:0.5];
+    [theAnim startAnimation];
+    eyeTracker.calibrate(0.5, 0.5);
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController);
 }
@@ -327,57 +297,6 @@ int main() {
     const auto subjectViewWidth{subjectScreenWidth / 3};
     auto subjectViewLeadingEdge =
         subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
-    {
-        const auto contentViewController{
-            av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
-        contentViewController.view.frame = subjectScreenFrame;
-        const auto circleView{
-            [[CircleView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)]};
-        [contentViewController.view addSubview:circleView];
-        const auto animatingWindow{
-            [NSWindow windowWithContentViewController:contentViewController]};
-        [animatingWindow makeKeyAndOrderFront:nil];
-        // firstView, secondView are outlets
-        NSViewAnimation *theAnim;
-        NSRect firstViewFrame;
-        NSRect newViewFrame;
-        NSMutableDictionary *firstViewDict;
-        // Create the attributes dictionary for the first view.
-        firstViewDict = [NSMutableDictionary dictionaryWithCapacity:3];
-        firstViewFrame = [circleView frame];
-        // Specify which view to modify.
-        [firstViewDict setObject:circleView forKey:NSViewAnimationTargetKey];
-        // Specify the starting position of the view.
-        [firstViewDict setObject:[NSValue valueWithRect:firstViewFrame]
-                          forKey:NSViewAnimationStartFrameKey];
-        // Change the ending position of the view.
-        newViewFrame = firstViewFrame;
-        newViewFrame.origin.x += 500;
-        newViewFrame.origin.y += 500;
-        [firstViewDict setObject:[NSValue valueWithRect:newViewFrame]
-                          forKey:NSViewAnimationEndFrameKey];
-        // Create the attributes dictionary for the second view.
-        auto secondViewDict = [NSMutableDictionary dictionaryWithCapacity:3];
-        // Set the target object to the second view.
-        [secondViewDict setObject:circleView forKey:NSViewAnimationTargetKey];
-        // Shrink the view from its current size to nothing.
-        NSRect viewZeroSize = newViewFrame;
-        viewZeroSize.size.width = 25;
-        viewZeroSize.size.height = 25;
-        [secondViewDict setObject:[NSValue valueWithRect:viewZeroSize]
-                           forKey:NSViewAnimationEndFrameKey];
-        theAnim = [[NSViewAnimation alloc]
-            initWithViewAnimations:[NSArray
-                                       arrayWithObjects:firstViewDict, nil]];
-        // Set some additional attributes for the animation.
-        [theAnim setDuration:5.5]; // One and a half seconds.
-        [theAnim setAnimationCurve:NSAnimationEaseIn];
-        theAnim.animationBlockingMode = NSAnimationBlocking;
-        // Run the animation.
-        [theAnim startAnimation];
-        theAnim.viewAnimations = [NSArray arrayWithObjects:secondViewDict, nil];
-        [theAnim startAnimation];
-    }
     const auto alertWindow{[[NSWindow alloc]
         initWithContentRect:NSMakeRect(
                                 subjectScreenOrigin.x + subjectScreenWidth / 4,
