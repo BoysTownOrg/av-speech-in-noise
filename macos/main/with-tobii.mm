@@ -251,6 +251,8 @@ void main() {
     [calibrationViewController.view addSubview:circleView];
     const auto animatingWindow{
         [NSWindow windowWithContentViewController:calibrationViewController]};
+    [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
+    [animatingWindow setFrame:subjectScreenFrame display:YES];
     [animatingWindow makeKeyAndOrderFront:nil];
     const auto mutableDictionary {
         [NSMutableDictionary
@@ -272,7 +274,7 @@ void main() {
     const auto viewAnimation{[[NSViewAnimation alloc]
         initWithViewAnimations:[NSArray
                                    arrayWithObjects:mutableDictionary, nil]]};
-    [viewAnimation setDuration:3];
+    [viewAnimation setDuration:1.5];
     [viewAnimation setAnimationCurve:NSAnimationEaseIn];
     viewAnimation.animationBlockingMode = NSAnimationBlocking;
     [viewAnimation startAnimation];
@@ -286,7 +288,7 @@ void main() {
                                         (subjectScreenSize.height - 25) / 2, 25,
                                         25)]
            forKey:NSViewAnimationEndFrameKey];
-    [viewAnimation setDuration:1.5];
+    [viewAnimation setDuration:0.5];
     [viewAnimation startAnimation];
     eyeTracker.calibrate(0.5, 0.5);
     [mutableDictionary
@@ -299,7 +301,7 @@ void main() {
                                         (subjectScreenSize.height - 100) / 2,
                                         100, 100)]
            forKey:NSViewAnimationEndFrameKey];
-    [viewAnimation setDuration:3];
+    [viewAnimation setDuration:1.5];
     [viewAnimation startAnimation];
     [mutableDictionary
         setObject:[mutableDictionary valueForKey:NSViewAnimationEndFrameKey]
@@ -307,12 +309,12 @@ void main() {
     [mutableDictionary
         setObject:[NSValue
                       valueWithRect:NSMakeRect(
-                                        (subjectScreenSize.width - 100) / 10,
-                                        9 * (subjectScreenSize.height - 100) /
-                                            10,
+                                        subjectScreenSize.width / 10 - 100. / 2,
+                                        9 * subjectScreenSize.height / 10 -
+                                            100. / 2,
                                         100, 100)]
            forKey:NSViewAnimationEndFrameKey];
-    [viewAnimation setDuration:3];
+    [viewAnimation setDuration:1.5];
     [viewAnimation startAnimation];
     [mutableDictionary
         setObject:[mutableDictionary valueForKey:NSViewAnimationEndFrameKey]
@@ -320,12 +322,12 @@ void main() {
     [mutableDictionary
         setObject:[NSValue
                       valueWithRect:NSMakeRect(
-                                        (subjectScreenSize.width - 25) / 10,
-                                        9 * (subjectScreenSize.height - 25) /
-                                            10,
+                                        subjectScreenSize.width / 10 - 25. / 2,
+                                        9 * subjectScreenSize.height / 10 -
+                                            25. / 2,
                                         25, 25)]
            forKey:NSViewAnimationEndFrameKey];
-    [viewAnimation setDuration:1.5];
+    [viewAnimation setDuration:0.5];
     [viewAnimation startAnimation];
     eyeTracker.calibrate(0.1, 0.1);
 
