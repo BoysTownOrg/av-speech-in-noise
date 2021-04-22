@@ -209,6 +209,32 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     return currentSystemTime;
 }
 
+static void setAnimationEndFrame(
+    NSMutableDictionary *mutableDictionary, double x, double y, double size) {
+    const auto subjectScreen{[[NSScreen screens] lastObject]};
+    const auto subjectScreenFrame{subjectScreen.frame};
+    const auto subjectScreenSize{subjectScreenFrame.size};
+    [mutableDictionary
+        setObject:[NSValue
+                      valueWithRect:NSMakeRect(
+                                        x * subjectScreenSize.width - size / 2,
+                                        (1 - y) * subjectScreenSize.height -
+                                            size / 2,
+                                        size, size)]
+           forKey:NSViewAnimationEndFrameKey];
+}
+
+static void animate(NSViewAnimation *viewAnimation,
+    NSMutableDictionary *mutableDictionary, double x, double y, double size,
+    double durationSeconds) {
+    [mutableDictionary
+        setObject:[mutableDictionary valueForKey:NSViewAnimationEndFrameKey]
+           forKey:NSViewAnimationStartFrameKey];
+    setAnimationEndFrame(mutableDictionary, x, y, size);
+    [viewAnimation setDuration:durationSeconds];
+    [viewAnimation startAnimation];
+}
+
 void main() {
     TobiiEyeTracker eyeTracker;
     AppKitTestSetupUIFactoryImpl testSetupViewFactory;
@@ -263,73 +289,31 @@ void main() {
     };
     [mutableDictionary setObject:circleView forKey:NSViewAnimationTargetKey];
     [mutableDictionary setObject:[NSValue valueWithRect:[circleView frame]]
-                          forKey:NSViewAnimationStartFrameKey];
-    [mutableDictionary
-        setObject:[NSValue
-                      valueWithRect:NSMakeRect(
-                                        (subjectScreenSize.width - 100) / 2,
-                                        (subjectScreenSize.height - 100) / 2,
-                                        100, 100)]
-           forKey:NSViewAnimationEndFrameKey];
+                          forKey:NSViewAnimationEndFrameKey];
     const auto viewAnimation{[[NSViewAnimation alloc]
         initWithViewAnimations:[NSArray
                                    arrayWithObjects:mutableDictionary, nil]]};
-    [viewAnimation setDuration:1.5];
-    [viewAnimation setAnimationCurve:NSAnimationEaseIn];
+    [viewAnimation setAnimationCurve:NSAnimationEaseInOut];
     viewAnimation.animationBlockingMode = NSAnimationBlocking;
-    [viewAnimation startAnimation];
-    [mutableDictionary
-        setObject:[mutableDictionary valueForKey:NSViewAnimationEndFrameKey]
-           forKey:NSViewAnimationStartFrameKey];
-    [mutableDictionary
-        setObject:[NSValue
-                      valueWithRect:NSMakeRect(
-                                        (subjectScreenSize.width - 25) / 2,
-                                        (subjectScreenSize.height - 25) / 2, 25,
-                                        25)]
-           forKey:NSViewAnimationEndFrameKey];
-    [viewAnimation setDuration:0.5];
-    [viewAnimation startAnimation];
+    animate(viewAnimation, mutableDictionary, 0.5, 0.5, 100, 1.5);
+    animate(viewAnimation, mutableDictionary, 0.5, 0.5, 25, 0.5);
     eyeTracker.calibrate(0.5, 0.5);
-    [mutableDictionary
-        setObject:[mutableDictionary valueForKey:NSViewAnimationEndFrameKey]
-           forKey:NSViewAnimationStartFrameKey];
-    [mutableDictionary
-        setObject:[NSValue
-                      valueWithRect:NSMakeRect(
-                                        (subjectScreenSize.width - 100) / 2,
-                                        (subjectScreenSize.height - 100) / 2,
-                                        100, 100)]
-           forKey:NSViewAnimationEndFrameKey];
-    [viewAnimation setDuration:1.5];
-    [viewAnimation startAnimation];
-    [mutableDictionary
-        setObject:[mutableDictionary valueForKey:NSViewAnimationEndFrameKey]
-           forKey:NSViewAnimationStartFrameKey];
-    [mutableDictionary
-        setObject:[NSValue
-                      valueWithRect:NSMakeRect(
-                                        subjectScreenSize.width / 10 - 100. / 2,
-                                        9 * subjectScreenSize.height / 10 -
-                                            100. / 2,
-                                        100, 100)]
-           forKey:NSViewAnimationEndFrameKey];
-    [viewAnimation setDuration:1.5];
-    [viewAnimation startAnimation];
-    [mutableDictionary
-        setObject:[mutableDictionary valueForKey:NSViewAnimationEndFrameKey]
-           forKey:NSViewAnimationStartFrameKey];
-    [mutableDictionary
-        setObject:[NSValue
-                      valueWithRect:NSMakeRect(
-                                        subjectScreenSize.width / 10 - 25. / 2,
-                                        9 * subjectScreenSize.height / 10 -
-                                            25. / 2,
-                                        25, 25)]
-           forKey:NSViewAnimationEndFrameKey];
-    [viewAnimation setDuration:0.5];
-    [viewAnimation startAnimation];
+    animate(viewAnimation, mutableDictionary, 0.5, 0.5, 100, 1.5);
+    animate(viewAnimation, mutableDictionary, 0.1, 0.1, 100, 1.5);
+    animate(viewAnimation, mutableDictionary, 0.1, 0.1, 25, 0.5);
     eyeTracker.calibrate(0.1, 0.1);
+    animate(viewAnimation, mutableDictionary, 0.1, 0.1, 100, 1.5);
+    animate(viewAnimation, mutableDictionary, 0.1, 0.9, 100, 1.5);
+    animate(viewAnimation, mutableDictionary, 0.1, 0.9, 25, 0.5);
+    eyeTracker.calibrate(0.1, 0.9);
+    animate(viewAnimation, mutableDictionary, 0.1, 0.9, 100, 1.5);
+    animate(viewAnimation, mutableDictionary, 0.9, 0.1, 100, 1.5);
+    animate(viewAnimation, mutableDictionary, 0.9, 0.1, 25, 0.5);
+    eyeTracker.calibrate(0.9, 0.1);
+    animate(viewAnimation, mutableDictionary, 0.9, 0.1, 100, 1.5);
+    animate(viewAnimation, mutableDictionary, 0.9, 0.9, 100, 1.5);
+    animate(viewAnimation, mutableDictionary, 0.9, 0.9, 25, 0.5);
+    eyeTracker.calibrate(0.9, 0.9);
 
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController);
