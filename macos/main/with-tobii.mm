@@ -38,21 +38,16 @@ class TobiiEyeTracker : public EyeTracker {
     void stop() override;
     auto gazeSamples() -> BinocularGazeSamples override;
     auto currentSystemTime() -> EyeTrackerSystemTime override;
-    void calibrate(float x, float y) {
-        Calibration calibration{eyeTracker(eyeTrackers)};
-        calibration.collect(x, y);
-        calibration.successfullyComputesAndApplies();
+
+  private:
+    class Calibration;
+
+  public:
+    auto calibration() -> Calibration {
+        return Calibration{eyeTracker(eyeTrackers)};
     }
 
   private:
-    static void gaze_data_callback(
-        TobiiResearchGazeData *gaze_data, void *self);
-    void gazeDataReceived(TobiiResearchGazeData *gaze_data);
-
-    std::vector<TobiiResearchGazeData> gazeData{};
-    TobiiResearchEyeTrackers *eyeTrackers{};
-    std::size_t head{};
-
     class Calibration {
       public:
         Calibration(TobiiResearchEyeTracker *eyetracker) {
@@ -104,6 +99,14 @@ class TobiiEyeTracker : public EyeTracker {
             TobiiResearchCalibrationResult *calibration_result{};
         };
     };
+
+    static void gaze_data_callback(
+        TobiiResearchGazeData *gaze_data, void *self);
+    void gazeDataReceived(TobiiResearchGazeData *gaze_data);
+
+    std::vector<TobiiResearchGazeData> gazeData{};
+    TobiiResearchEyeTrackers *eyeTrackers{};
+    std::size_t head{};
 };
 
 TobiiEyeTracker::TobiiEyeTracker() {
@@ -295,25 +298,27 @@ void main() {
                                    arrayWithObjects:mutableDictionary, nil]]};
     [viewAnimation setAnimationCurve:NSAnimationEaseInOut];
     viewAnimation.animationBlockingMode = NSAnimationBlocking;
+    auto calibration{eyeTracker.calibration()};
     animate(viewAnimation, mutableDictionary, 0.5, 0.5, 100, 1.5);
     animate(viewAnimation, mutableDictionary, 0.5, 0.5, 25, 0.5);
-    eyeTracker.calibrate(0.5, 0.5);
+    calibration.collect(0.5, 0.5);
     animate(viewAnimation, mutableDictionary, 0.5, 0.5, 100, 1.5);
     animate(viewAnimation, mutableDictionary, 0.1, 0.1, 100, 1.5);
     animate(viewAnimation, mutableDictionary, 0.1, 0.1, 25, 0.5);
-    eyeTracker.calibrate(0.1, 0.1);
+    calibration.collect(0.1, 0.1);
     animate(viewAnimation, mutableDictionary, 0.1, 0.1, 100, 1.5);
     animate(viewAnimation, mutableDictionary, 0.1, 0.9, 100, 1.5);
     animate(viewAnimation, mutableDictionary, 0.1, 0.9, 25, 0.5);
-    eyeTracker.calibrate(0.1, 0.9);
+    calibration.collect(0.1, 0.9);
     animate(viewAnimation, mutableDictionary, 0.1, 0.9, 100, 1.5);
     animate(viewAnimation, mutableDictionary, 0.9, 0.1, 100, 1.5);
     animate(viewAnimation, mutableDictionary, 0.9, 0.1, 25, 0.5);
-    eyeTracker.calibrate(0.9, 0.1);
+    calibration.collect(0.9, 0.1);
     animate(viewAnimation, mutableDictionary, 0.9, 0.1, 100, 1.5);
     animate(viewAnimation, mutableDictionary, 0.9, 0.9, 100, 1.5);
     animate(viewAnimation, mutableDictionary, 0.9, 0.9, 25, 0.5);
-    eyeTracker.calibrate(0.9, 0.9);
+    calibration.collect(0.9, 0.9);
+    calibration.successfullyComputesAndApplies();
 
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController);
