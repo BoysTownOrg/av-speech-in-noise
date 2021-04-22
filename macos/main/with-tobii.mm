@@ -9,6 +9,25 @@
 #include <vector>
 #import <AppKit/AppKit.h>
 
+@interface CircleView : NSView
+@end
+
+@implementation CircleView
+- (id)initWithFrame:(NSRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+    }
+    return self;
+}
+
+- (void)drawRect:(NSRect)rect {
+    [[NSColor whiteColor] set];
+    NSBezierPath *thePath = [NSBezierPath bezierPath];
+    [thePath appendBezierPathWithOvalInRect:rect];
+    [thePath stroke];
+}
+@end
+
 namespace av_speech_in_noise {
 class TobiiEyeTracker : public EyeTracker {
   public:
@@ -315,6 +334,44 @@ int main() {
     const auto subjectViewWidth{subjectScreenWidth / 3};
     auto subjectViewLeadingEdge =
         subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
+    {
+        const auto contentViewController{
+            av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+        contentViewController.view.frame = subjectScreenFrame;
+        const auto circleView{
+            [[CircleView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)]};
+        [contentViewController.view addSubview:circleView];
+        const auto animatingWindow{
+            [NSWindow windowWithContentViewController:contentViewController]};
+        [animatingWindow makeKeyAndOrderFront:nil];
+        // firstView, secondView are outlets
+        NSViewAnimation *theAnim;
+        NSRect firstViewFrame;
+        NSRect newViewFrame;
+        NSMutableDictionary *firstViewDict;
+        // Create the attributes dictionary for the first view.
+        firstViewDict = [NSMutableDictionary dictionaryWithCapacity:3];
+        firstViewFrame = [circleView frame];
+        // Specify which view to modify.
+        [firstViewDict setObject:circleView forKey:NSViewAnimationTargetKey];
+        // Specify the starting position of the view.
+        [firstViewDict setObject:[NSValue valueWithRect:firstViewFrame]
+                          forKey:NSViewAnimationStartFrameKey];
+        // Change the ending position of the view.
+        newViewFrame = firstViewFrame;
+        newViewFrame.origin.x += 500;
+        newViewFrame.origin.y += 500;
+        [firstViewDict setObject:[NSValue valueWithRect:newViewFrame]
+                          forKey:NSViewAnimationEndFrameKey];
+        theAnim = [[NSViewAnimation alloc]
+            initWithViewAnimations:[NSArray
+                                       arrayWithObjects:firstViewDict, nil]];
+        // Set some additional attributes for the animation.
+        [theAnim setDuration:5.5]; // One and a half seconds.
+        [theAnim setAnimationCurve:NSAnimationEaseIn];
+        // Run the animation.
+        [theAnim startAnimation];
+    }
     const auto alertWindow{[[NSWindow alloc]
         initWithContentRect:NSMakeRect(
                                 subjectScreenOrigin.x + subjectScreenWidth / 4,
