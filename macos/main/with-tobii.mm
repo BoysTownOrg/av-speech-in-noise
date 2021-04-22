@@ -252,36 +252,83 @@ void main() {
     const auto animatingWindow{
         [NSWindow windowWithContentViewController:calibrationViewController]};
     [animatingWindow makeKeyAndOrderFront:nil];
-    auto firstViewDict = [NSMutableDictionary dictionaryWithCapacity:3];
-    [firstViewDict setObject:circleView forKey:NSViewAnimationTargetKey];
-    [firstViewDict setObject:[NSValue valueWithRect:[circleView frame]]
-                      forKey:NSViewAnimationStartFrameKey];
-    [firstViewDict
+    const auto mutableDictionary {
+        [NSMutableDictionary
+            dictionaryWithSharedKeySet:[NSDictionary sharedKeySetForKeys:@[
+                NSViewAnimationTargetKey, NSViewAnimationStartFrameKey,
+                NSViewAnimationEndFrameKey
+            ]]]
+    };
+    [mutableDictionary setObject:circleView forKey:NSViewAnimationTargetKey];
+    [mutableDictionary setObject:[NSValue valueWithRect:[circleView frame]]
+                          forKey:NSViewAnimationStartFrameKey];
+    [mutableDictionary
         setObject:[NSValue
                       valueWithRect:NSMakeRect(
                                         (subjectScreenSize.width - 100) / 2,
                                         (subjectScreenSize.height - 100) / 2,
                                         100, 100)]
            forKey:NSViewAnimationEndFrameKey];
-    auto theAnim = [[NSViewAnimation alloc]
-        initWithViewAnimations:[NSArray arrayWithObjects:firstViewDict, nil]];
-    [theAnim setDuration:5.5];
-    [theAnim setAnimationCurve:NSAnimationEaseIn];
-    theAnim.animationBlockingMode = NSAnimationBlocking;
-    [theAnim startAnimation];
-    auto secondViewDict = [NSMutableDictionary dictionaryWithCapacity:3];
-    [secondViewDict setObject:circleView forKey:NSViewAnimationTargetKey];
-    [secondViewDict
+    const auto viewAnimation{[[NSViewAnimation alloc]
+        initWithViewAnimations:[NSArray
+                                   arrayWithObjects:mutableDictionary, nil]]};
+    [viewAnimation setDuration:3];
+    [viewAnimation setAnimationCurve:NSAnimationEaseIn];
+    viewAnimation.animationBlockingMode = NSAnimationBlocking;
+    [viewAnimation startAnimation];
+    [mutableDictionary
+        setObject:[mutableDictionary valueForKey:NSViewAnimationEndFrameKey]
+           forKey:NSViewAnimationStartFrameKey];
+    [mutableDictionary
         setObject:[NSValue
                       valueWithRect:NSMakeRect(
                                         (subjectScreenSize.width - 25) / 2,
                                         (subjectScreenSize.height - 25) / 2, 25,
                                         25)]
            forKey:NSViewAnimationEndFrameKey];
-    theAnim.viewAnimations = [NSArray arrayWithObjects:secondViewDict, nil];
-    [theAnim setDuration:0.5];
-    [theAnim startAnimation];
+    [viewAnimation setDuration:1.5];
+    [viewAnimation startAnimation];
     eyeTracker.calibrate(0.5, 0.5);
+    [mutableDictionary
+        setObject:[mutableDictionary valueForKey:NSViewAnimationEndFrameKey]
+           forKey:NSViewAnimationStartFrameKey];
+    [mutableDictionary
+        setObject:[NSValue
+                      valueWithRect:NSMakeRect(
+                                        (subjectScreenSize.width - 100) / 2,
+                                        (subjectScreenSize.height - 100) / 2,
+                                        100, 100)]
+           forKey:NSViewAnimationEndFrameKey];
+    [viewAnimation setDuration:3];
+    [viewAnimation startAnimation];
+    [mutableDictionary
+        setObject:[mutableDictionary valueForKey:NSViewAnimationEndFrameKey]
+           forKey:NSViewAnimationStartFrameKey];
+    [mutableDictionary
+        setObject:[NSValue
+                      valueWithRect:NSMakeRect(
+                                        (subjectScreenSize.width - 100) / 10,
+                                        9 * (subjectScreenSize.height - 100) /
+                                            10,
+                                        100, 100)]
+           forKey:NSViewAnimationEndFrameKey];
+    [viewAnimation setDuration:3];
+    [viewAnimation startAnimation];
+    [mutableDictionary
+        setObject:[mutableDictionary valueForKey:NSViewAnimationEndFrameKey]
+           forKey:NSViewAnimationStartFrameKey];
+    [mutableDictionary
+        setObject:[NSValue
+                      valueWithRect:NSMakeRect(
+                                        (subjectScreenSize.width - 25) / 10,
+                                        9 * (subjectScreenSize.height - 25) /
+                                            10,
+                                        25, 25)]
+           forKey:NSViewAnimationEndFrameKey];
+    [viewAnimation setDuration:1.5];
+    [viewAnimation startAnimation];
+    eyeTracker.calibrate(0.1, 0.1);
+
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController);
 }
