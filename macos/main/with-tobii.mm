@@ -13,18 +13,11 @@
 @end
 
 @implementation CircleView
-- (id)initWithFrame:(NSRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-    }
-    return self;
-}
-
 - (void)drawRect:(NSRect)rect {
-    [[NSColor whiteColor] set];
     NSBezierPath *thePath = [NSBezierPath bezierPath];
     [thePath appendBezierPathWithOvalInRect:rect];
-    [thePath stroke];
+    [[NSColor whiteColor] set];
+    [thePath fill];
 }
 @end
 
@@ -363,13 +356,26 @@ int main() {
         newViewFrame.origin.y += 500;
         [firstViewDict setObject:[NSValue valueWithRect:newViewFrame]
                           forKey:NSViewAnimationEndFrameKey];
+        // Create the attributes dictionary for the second view.
+        auto secondViewDict = [NSMutableDictionary dictionaryWithCapacity:3];
+        // Set the target object to the second view.
+        [secondViewDict setObject:circleView forKey:NSViewAnimationTargetKey];
+        // Shrink the view from its current size to nothing.
+        NSRect viewZeroSize = newViewFrame;
+        viewZeroSize.size.width = 25;
+        viewZeroSize.size.height = 25;
+        [secondViewDict setObject:[NSValue valueWithRect:viewZeroSize]
+                           forKey:NSViewAnimationEndFrameKey];
         theAnim = [[NSViewAnimation alloc]
             initWithViewAnimations:[NSArray
                                        arrayWithObjects:firstViewDict, nil]];
         // Set some additional attributes for the animation.
         [theAnim setDuration:5.5]; // One and a half seconds.
         [theAnim setAnimationCurve:NSAnimationEaseIn];
+        theAnim.animationBlockingMode = NSAnimationBlocking;
         // Run the animation.
+        [theAnim startAnimation];
+        theAnim.viewAnimations = [NSArray arrayWithObjects:secondViewDict, nil];
         [theAnim startAnimation];
     }
     const auto alertWindow{[[NSWindow alloc]
