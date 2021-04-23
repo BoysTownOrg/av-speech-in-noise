@@ -12,6 +12,7 @@
 #include <gsl/gsl>
 #include <vector>
 #include <thread>
+#include <cstddef>
 #import <AppKit/AppKit.h>
 
 @interface CircleView : NSView
@@ -128,8 +129,8 @@ class TobiiEyeTracker : public EyeTracker {
 
             auto leftEyeMappedPoints() -> std::vector<Point> {
                 std::vector<Point> mappedPoints;
-                for (int i{0}; i < result->calibration_point_count; ++i)
-                    for (int j{0}; j <
+                for (std::size_t i{0}; i < result->calibration_point_count; ++i)
+                    for (std::size_t j{0}; j <
                          result->calibration_points[i].calibration_sample_count;
                          ++j)
                         mappedPoints.push_back(
@@ -139,6 +140,7 @@ class TobiiEyeTracker : public EyeTracker {
                                 result->calibration_points[i]
                                     .calibration_samples[j]
                                     .left_eye.position_on_display_area.y});
+                return mappedPoints;
             }
 
             ~ComputeAndApply() {
@@ -359,9 +361,9 @@ static void setAnimationEndFrame(
 static void animate(NSViewAnimation *viewAnimation,
     NSMutableDictionary *mutableDictionary, float x, float y, double size,
     double durationSeconds) {
-    [mutableDictionary
-        setObject:[mutableDictionary valueForKey:NSViewAnimationEndFrameKey]
-           forKey:NSViewAnimationStartFrameKey];
+    const id lastFrame{
+        [mutableDictionary valueForKey:NSViewAnimationEndFrameKey]};
+    [mutableDictionary setObject:lastFrame forKey:NSViewAnimationStartFrameKey];
     setAnimationEndFrame(mutableDictionary, x, y, size);
     [viewAnimation setDuration:durationSeconds];
     [viewAnimation startAnimation];
@@ -415,7 +417,6 @@ void main() {
         av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     const auto subjectScreenFrame{subjectScreen.frame};
-    const auto subjectScreenSize{subjectScreenFrame.size};
     calibrationViewController.view.frame = subjectScreenFrame;
     const auto circleView{
         [[CircleView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)]};
@@ -444,29 +445,29 @@ void main() {
         auto calibration{eyeTracker.calibration()};
         collect(calibration, viewAnimation, mutableDictionary, 0.5, 0.5, 100,
             25, 1.5, 0.5);
-        collect(calibration, viewAnimation, mutableDictionary, 0.1, 0.1, 100,
+        collect(calibration, viewAnimation, mutableDictionary, 0.1F, 0.1F, 100,
             25, 1.5, 0.5);
-        collect(calibration, viewAnimation, mutableDictionary, 0.1, 0.9, 100,
+        collect(calibration, viewAnimation, mutableDictionary, 0.1F, 0.9F, 100,
             25, 1.5, 0.5);
-        collect(calibration, viewAnimation, mutableDictionary, 0.9, 0.1, 100,
+        collect(calibration, viewAnimation, mutableDictionary, 0.9F, 0.1F, 100,
             25, 1.5, 0.5);
-        collect(calibration, viewAnimation, mutableDictionary, 0.9, 0.9, 100,
+        collect(calibration, viewAnimation, mutableDictionary, 0.9F, 0.9F, 100,
             25, 1.5, 0.5);
         auto applied{calibration.computeAndApply()};
     }
     {
         auto validation{eyeTracker.calibrationValidation()};
         auto enter{validation.enter()};
-        collect(enter, viewAnimation, mutableDictionary, 0.3, 0.3, 100, 25, 1.5,
-            0.5);
-        collect(enter, viewAnimation, mutableDictionary, 0.3, 0.7, 100, 25, 1.5,
-            0.5);
+        collect(enter, viewAnimation, mutableDictionary, 0.3F, 0.3F, 100, 25,
+            1.5, 0.5);
+        collect(enter, viewAnimation, mutableDictionary, 0.3F, 0.7F, 100, 25,
+            1.5, 0.5);
         collect(enter, viewAnimation, mutableDictionary, 0.5, 0.5, 100, 25, 1.5,
             0.5);
-        collect(enter, viewAnimation, mutableDictionary, 0.7, 0.3, 100, 25, 1.5,
-            0.5);
-        collect(enter, viewAnimation, mutableDictionary, 0.7, 0.7, 100, 25, 1.5,
-            0.5);
+        collect(enter, viewAnimation, mutableDictionary, 0.7F, 0.3F, 100, 25,
+            1.5, 0.5);
+        collect(enter, viewAnimation, mutableDictionary, 0.7F, 0.7F, 100, 25,
+            1.5, 0.5);
         auto result{enter.result()};
     }
 
@@ -480,11 +481,7 @@ int main() {
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenOrigin{subjectScreenFrame.origin};
     const auto subjectScreenSize{subjectScreenFrame.size};
-    const auto subjectViewHeight{subjectScreenSize.height / 4};
     const auto subjectScreenWidth{subjectScreenSize.width};
-    const auto subjectViewWidth{subjectScreenWidth / 3};
-    auto subjectViewLeadingEdge =
-        subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
     const auto alertWindow{[[NSWindow alloc]
         initWithContentRect:NSMakeRect(
                                 subjectScreenOrigin.x + subjectScreenWidth / 4,
