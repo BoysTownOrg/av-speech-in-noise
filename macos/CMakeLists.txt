@@ -13,9 +13,7 @@ function(add_macos_bundle target identifier output_name)
     "-framework AppKit -framework AVFoundation -framework CoreMedia -framework MediaToolbox -framework AudioToolbox -framework CoreAudio"
   )
   if(${AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING})
-    include(FindPkgConfig)
-    pkg_check_modules(TOBIIRESEARCH IMPORTED_TARGET tobii_research) 
-    target_link_libraries(${target} PkgConfig::TOBIIRESEARCH)
+    target_link_libraries(${target} PkgConfig::TOBIIRESEARCH tobii-research-addons)
   endif()
   set_target_properties(
     ${target}
@@ -34,8 +32,13 @@ endfunction()
 
 option(AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING "Enables tobii eye tracking"
        OFF)
+
 if(${AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING})
   set(MAIN_IMPL_FILE main/with-tobii.mm)
+  include(FindPkgConfig)
+  pkg_check_modules(TOBIIRESEARCH IMPORTED_TARGET tobii_research)
+  add_library(tobii-research-addons SHARED IMPORTED)
+  set_target_properties(tobii-research-addons PROPERTIES IMPORTED_LOCATION "/usr/local/lib/tobii_research/libtobii_research_addons.dylib")
 else()
   set(MAIN_IMPL_FILE main/no-eyetracking.mm)
 endif()
