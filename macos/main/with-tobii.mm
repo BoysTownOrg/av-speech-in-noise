@@ -127,12 +127,16 @@ class TobiiEyeTracker : public EyeTracker {
         };
     };
 
+    class InvalidTracker {};
+
     class CalibrationValidation {
       public:
         CalibrationValidation(TobiiResearchEyeTracker *eyetracker) {
             Address address{eyetracker};
-            tobii_research_screen_based_calibration_validation_init_default(
-                address.get(), &validator);
+            if (tobii_research_screen_based_calibration_validation_init_default(
+                    address.get(), &validator) ==
+                CALIBRATION_VALIDATION_STATUS_INVALID_EYETRACKER)
+                validator = nullptr;
         }
 
         class Enter;
@@ -140,22 +144,25 @@ class TobiiEyeTracker : public EyeTracker {
         auto enter() -> Enter { return {validator}; }
 
         ~CalibrationValidation() {
-            tobii_research_screen_based_calibration_validation_destroy(
-                validator);
+            if (validator)
+                tobii_research_screen_based_calibration_validation_destroy(
+                    validator);
         }
 
         class Enter : public NormalizedScreenCoordinateCollector {
           public:
             Enter(CalibrationValidator *validator) : validator{validator} {
-                tobii_research_screen_based_calibration_validation_enter_validation_mode(
-                    validator);
+                if (validator)
+                    tobii_research_screen_based_calibration_validation_enter_validation_mode(
+                        validator);
             }
 
             void collect(float x, float y) override {
                 TobiiResearchNormalizedPoint2D point{x, y};
-                tobii_research_screen_based_calibration_validation_start_collecting_data(
-                    validator, &point);
-                while (
+                if (validator)
+                    tobii_research_screen_based_calibration_validation_start_collecting_data(
+                        validator, &point);
+                while (validator &&
                     tobii_research_screen_based_calibration_validation_is_collecting_data(
                         validator))
                     std::this_thread::sleep_for(std::chrono::milliseconds{100});
@@ -166,15 +173,17 @@ class TobiiEyeTracker : public EyeTracker {
             auto result() -> Result { return {validator}; }
 
             ~Enter() {
-                tobii_research_screen_based_calibration_validation_leave_validation_mode(
-                    validator);
+                if (validator)
+                    tobii_research_screen_based_calibration_validation_leave_validation_mode(
+                        validator);
             }
 
             class Result {
               public:
                 Result(CalibrationValidator *validator) {
-                    tobii_research_screen_based_calibration_validation_compute(
-                        validator, &result);
+                    if (validator)
+                        tobii_research_screen_based_calibration_validation_compute(
+                            validator, &result);
                 }
 
                 ~Result() {
