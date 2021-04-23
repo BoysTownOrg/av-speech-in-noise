@@ -38,19 +38,15 @@ class TobiiEyeTracker : public EyeTracker {
     void stop() override;
     auto gazeSamples() -> BinocularGazeSamples override;
     auto currentSystemTime() -> EyeTrackerSystemTime override;
-
-  private:
     class Calibration;
-
-  public:
     auto calibration() -> Calibration {
         return Calibration{eyeTracker(eyeTrackers)};
     }
 
-  private:
     class Calibration {
       public:
-        Calibration(TobiiResearchEyeTracker *eyetracker) {
+        Calibration(TobiiResearchEyeTracker *eyetracker)
+            : eyetracker{eyetracker} {
             tobii_research_screen_based_calibration_enter_calibration_mode(
                 eyetracker);
         }
@@ -76,7 +72,7 @@ class TobiiEyeTracker : public EyeTracker {
         }
 
       private:
-        TobiiResearchEyeTracker *eyetracker;
+        TobiiResearchEyeTracker *eyetracker{};
 
         class ComputeAndApply {
           public:
@@ -100,6 +96,7 @@ class TobiiEyeTracker : public EyeTracker {
         };
     };
 
+  private:
     static void gaze_data_callback(
         TobiiResearchGazeData *gaze_data, void *self);
     void gazeDataReceived(TobiiResearchGazeData *gaze_data);
@@ -238,6 +235,19 @@ static void animate(NSViewAnimation *viewAnimation,
     [viewAnimation startAnimation];
 }
 
+static void calibrate(TobiiEyeTracker::Calibration &calibration,
+    NSViewAnimation *viewAnimation, NSMutableDictionary *mutableDictionary,
+    double x, double y, double fullSize, double shrunkSize,
+    double translateDurationSeconds, double growShrinkDurationSeconds) {
+    animate(viewAnimation, mutableDictionary, x, y, fullSize,
+        translateDurationSeconds);
+    animate(viewAnimation, mutableDictionary, x, y, shrunkSize,
+        growShrinkDurationSeconds);
+    calibration.collect(x, y);
+    animate(viewAnimation, mutableDictionary, x, y, fullSize,
+        growShrinkDurationSeconds);
+}
+
 void main() {
     TobiiEyeTracker eyeTracker;
     AppKitTestSetupUIFactoryImpl testSetupViewFactory;
@@ -298,27 +308,20 @@ void main() {
                                    arrayWithObjects:mutableDictionary, nil]]};
     [viewAnimation setAnimationCurve:NSAnimationEaseInOut];
     viewAnimation.animationBlockingMode = NSAnimationBlocking;
-    auto calibration{eyeTracker.calibration()};
-    animate(viewAnimation, mutableDictionary, 0.5, 0.5, 100, 1.5);
-    animate(viewAnimation, mutableDictionary, 0.5, 0.5, 25, 0.5);
-    calibration.collect(0.5, 0.5);
-    animate(viewAnimation, mutableDictionary, 0.5, 0.5, 100, 1.5);
-    animate(viewAnimation, mutableDictionary, 0.1, 0.1, 100, 1.5);
-    animate(viewAnimation, mutableDictionary, 0.1, 0.1, 25, 0.5);
-    calibration.collect(0.1, 0.1);
-    animate(viewAnimation, mutableDictionary, 0.1, 0.1, 100, 1.5);
-    animate(viewAnimation, mutableDictionary, 0.1, 0.9, 100, 1.5);
-    animate(viewAnimation, mutableDictionary, 0.1, 0.9, 25, 0.5);
-    calibration.collect(0.1, 0.9);
-    animate(viewAnimation, mutableDictionary, 0.1, 0.9, 100, 1.5);
-    animate(viewAnimation, mutableDictionary, 0.9, 0.1, 100, 1.5);
-    animate(viewAnimation, mutableDictionary, 0.9, 0.1, 25, 0.5);
-    calibration.collect(0.9, 0.1);
-    animate(viewAnimation, mutableDictionary, 0.9, 0.1, 100, 1.5);
-    animate(viewAnimation, mutableDictionary, 0.9, 0.9, 100, 1.5);
-    animate(viewAnimation, mutableDictionary, 0.9, 0.9, 25, 0.5);
-    calibration.collect(0.9, 0.9);
-    calibration.successfullyComputesAndApplies();
+    {
+        auto calibration{eyeTracker.calibration()};
+        calibrate(calibration, viewAnimation, mutableDictionary, 0.5, 0.5, 100,
+            25, 1.5, 0.5);
+        calibrate(calibration, viewAnimation, mutableDictionary, 0.1, 0.1, 100,
+            25, 1.5, 0.5);
+        calibrate(calibration, viewAnimation, mutableDictionary, 0.1, 0.9, 100,
+            25, 1.5, 0.5);
+        calibrate(calibration, viewAnimation, mutableDictionary, 0.9, 0.1, 100,
+            25, 1.5, 0.5);
+        calibrate(calibration, viewAnimation, mutableDictionary, 0.9, 0.9, 100,
+            25, 1.5, 0.5);
+        calibration.successfullyComputesAndApplies();
+    }
 
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController);
