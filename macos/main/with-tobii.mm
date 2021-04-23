@@ -12,6 +12,7 @@
 #include <gsl/gsl>
 #include <vector>
 #include <thread>
+#include <algorithm>
 #include <cstddef>
 #import <AppKit/AppKit.h>
 
@@ -127,19 +128,28 @@ class TobiiEyeTracker : public EyeTracker {
                 return result->status == TOBII_RESEARCH_CALIBRATION_SUCCESS;
             }
 
-            auto leftEyeMappedPoints() -> std::vector<Point> {
+            auto leftEyeMappedPoints(Point pointOfInterest)
+                -> std::vector<Point> {
                 std::vector<Point> mappedPoints;
-                for (std::size_t i{0}; i < result->calibration_point_count; ++i)
-                    for (std::size_t j{0}; j <
-                         result->calibration_points[i].calibration_sample_count;
-                         ++j)
-                        mappedPoints.push_back(
-                            {result->calibration_points[i]
-                                    .calibration_samples[j]
-                                    .left_eye.position_on_display_area.x,
-                                result->calibration_points[i]
-                                    .calibration_samples[j]
-                                    .left_eye.position_on_display_area.y});
+                const gsl::span<TobiiResearchCalibrationPoint>
+                    calibrationPoints{result->calibration_points,
+                        result->calibration_point_count};
+                const auto calibrationPoint{std::find_if(
+                    calibrationPoints.begin(), calibrationPoints.end(),
+                    [=](const TobiiResearchCalibrationPoint &p) {
+                        return p.position_on_display_area.x ==
+                            pointOfInterest.x &&
+                            p.position_on_display_area.y == pointOfInterest.y;
+                    })};
+                const gsl::span<TobiiResearchCalibrationSample>
+                    calibrationSamples{calibrationPoint->calibration_samples,
+                        calibrationPoint->calibration_sample_count};
+                std::transform(calibrationSamples.begin(),
+                    calibrationSamples.end(), std::back_inserter(mappedPoints),
+                    [](const TobiiResearchCalibrationSample &sample) {
+                        return Point{sample.left_eye.position_on_display_area.x,
+                            sample.left_eye.position_on_display_area.y};
+                    });
                 return mappedPoints;
             }
 
