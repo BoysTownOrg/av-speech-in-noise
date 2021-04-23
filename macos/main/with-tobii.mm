@@ -1,6 +1,7 @@
 #include "../run.h"
 #include "../AppKitView.h"
 #include "../AppKit-utility.h"
+#include <chrono>
 #include <exception>
 #include <tobii_research.h>
 #include <tobii_research_eyetracker.h>
@@ -9,6 +10,7 @@
 #include <screen_based_calibration_validation.h>
 #include <gsl/gsl>
 #include <vector>
+#include <thread>
 #import <AppKit/AppKit.h>
 
 @interface CircleView : NSView
@@ -124,6 +126,48 @@ class TobiiEyeTracker : public EyeTracker {
             tobii_research_screen_based_calibration_validation_destroy(
                 validator);
         }
+
+        class Enter {
+          public:
+            Enter(CalibrationValidator *validator) : validator{validator} {
+                tobii_research_screen_based_calibration_validation_enter_validation_mode(
+                    validator);
+            }
+
+            void collect(float x, float y) {
+                TobiiResearchNormalizedPoint2D point{x, y};
+                tobii_research_screen_based_calibration_validation_start_collecting_data(
+                    validator, &point);
+                while (
+                    tobii_research_screen_based_calibration_validation_is_collecting_data(
+                        validator))
+                    std::this_thread::sleep_for(std::chrono::milliseconds{100});
+            }
+
+            ~Enter() {
+                tobii_research_screen_based_calibration_validation_leave_validation_mode(
+                    validator);
+            }
+
+            class Result {
+              public:
+                Result(CalibrationValidator *validator) {
+                    tobii_research_screen_based_calibration_validation_compute(
+                        validator, &result);
+                }
+
+                ~Result() {
+                    tobii_research_screen_based_calibration_validation_destroy_result(
+                        result);
+                }
+
+              private:
+                CalibrationValidationResult *result{};
+            };
+
+          private:
+            CalibrationValidator *validator{};
+        };
 
       private:
         CalibrationValidator *validator{};
