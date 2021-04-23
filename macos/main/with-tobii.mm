@@ -34,6 +34,11 @@ static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
         : eyeTrackers->eyetrackers[0];
 }
 
+struct Point {
+    float x;
+    float y;
+};
+
 class NormalizedScreenCoordinateCollector {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
@@ -54,15 +59,17 @@ class TobiiEyeTracker : public EyeTracker {
     class Calibration;
     class CalibrationValidation;
 
-    auto calibration() -> Calibration { return {eyeTracker(eyeTrackers)}; }
+    auto calibration() -> Calibration {
+        return Calibration{eyeTracker(eyeTrackers)};
+    }
 
     auto calibrationValidation() -> CalibrationValidation {
-        return {eyeTracker(eyeTrackers)};
+        return CalibrationValidation{eyeTracker(eyeTrackers)};
     }
 
     class Address {
       public:
-        Address(TobiiResearchEyeTracker *eyetracker) {
+        explicit Address(TobiiResearchEyeTracker *eyetracker) {
             tobii_research_get_address(eyetracker, &address);
         }
 
@@ -76,7 +83,7 @@ class TobiiEyeTracker : public EyeTracker {
 
     class Calibration : public NormalizedScreenCoordinateCollector {
       public:
-        Calibration(TobiiResearchEyeTracker *eyetracker)
+        explicit Calibration(TobiiResearchEyeTracker *eyetracker)
             : eyetracker{eyetracker} {
             tobii_research_screen_based_calibration_enter_calibration_mode(
                 eyetracker);
@@ -97,41 +104,58 @@ class TobiiEyeTracker : public EyeTracker {
             return computeAndApply.success();
         }
 
-        ~Calibration() {
+        class ComputeAndApply;
+
+        auto computeAndApply() -> ComputeAndApply {
+            return ComputeAndApply{eyetracker};
+        }
+
+        ~Calibration() override {
             tobii_research_screen_based_calibration_leave_calibration_mode(
                 eyetracker);
         }
 
-      private:
-        TobiiResearchEyeTracker *eyetracker{};
-
         class ComputeAndApply {
           public:
-            ComputeAndApply(TobiiResearchEyeTracker *eyetracker) {
+            explicit ComputeAndApply(TobiiResearchEyeTracker *eyetracker) {
                 tobii_research_screen_based_calibration_compute_and_apply(
-                    eyetracker, &calibration_result);
+                    eyetracker, &result);
             }
 
             auto success() -> bool {
-                return calibration_result->status ==
-                    TOBII_RESEARCH_CALIBRATION_SUCCESS;
+                return result->status == TOBII_RESEARCH_CALIBRATION_SUCCESS;
+            }
+
+            auto leftEyeMappedPoints() -> std::vector<Point> {
+                std::vector<Point> mappedPoints;
+                for (int i{0}; i < result->calibration_point_count; ++i)
+                    for (int j{0}; j <
+                         result->calibration_points[i].calibration_sample_count;
+                         ++j)
+                        mappedPoints.push_back(
+                            {result->calibration_points[i]
+                                    .calibration_samples[j]
+                                    .left_eye.position_on_display_area.x,
+                                result->calibration_points[i]
+                                    .calibration_samples[j]
+                                    .left_eye.position_on_display_area.y});
             }
 
             ~ComputeAndApply() {
-                tobii_research_free_screen_based_calibration_result(
-                    calibration_result);
+                tobii_research_free_screen_based_calibration_result(result);
             }
 
           private:
-            TobiiResearchCalibrationResult *calibration_result{};
+            TobiiResearchCalibrationResult *result{};
         };
-    };
 
-    class InvalidTracker {};
+      private:
+        TobiiResearchEyeTracker *eyetracker{};
+    };
 
     class CalibrationValidation {
       public:
-        CalibrationValidation(TobiiResearchEyeTracker *eyetracker) {
+        explicit CalibrationValidation(TobiiResearchEyeTracker *eyetracker) {
             Address address{eyetracker};
             if (tobii_research_screen_based_calibration_validation_init_default(
                     address.get(), &validator) ==
@@ -141,47 +165,48 @@ class TobiiEyeTracker : public EyeTracker {
 
         class Enter;
 
-        auto enter() -> Enter { return {validator}; }
+        auto enter() -> Enter { return Enter{validator}; }
 
         ~CalibrationValidation() {
-            if (validator)
+            if (validator != nullptr)
                 tobii_research_screen_based_calibration_validation_destroy(
                     validator);
         }
 
         class Enter : public NormalizedScreenCoordinateCollector {
           public:
-            Enter(CalibrationValidator *validator) : validator{validator} {
-                if (validator)
+            explicit Enter(CalibrationValidator *validator)
+                : validator{validator} {
+                if (validator != nullptr)
                     tobii_research_screen_based_calibration_validation_enter_validation_mode(
                         validator);
             }
 
             void collect(float x, float y) override {
                 TobiiResearchNormalizedPoint2D point{x, y};
-                if (validator)
+                if (validator != nullptr)
                     tobii_research_screen_based_calibration_validation_start_collecting_data(
                         validator, &point);
-                while (validator &&
-                    tobii_research_screen_based_calibration_validation_is_collecting_data(
-                        validator))
+                while ((validator != nullptr) &&
+                    (tobii_research_screen_based_calibration_validation_is_collecting_data(
+                         validator) != 0))
                     std::this_thread::sleep_for(std::chrono::milliseconds{100});
             }
 
             class Result;
 
-            auto result() -> Result { return {validator}; }
+            auto result() -> Result { return Result{validator}; }
 
-            ~Enter() {
-                if (validator)
+            ~Enter() override {
+                if (validator != nullptr)
                     tobii_research_screen_based_calibration_validation_leave_validation_mode(
                         validator);
             }
 
             class Result {
               public:
-                Result(CalibrationValidator *validator) {
-                    if (validator)
+                explicit Result(CalibrationValidator *validator) {
+                    if (validator != nullptr)
                         tobii_research_screen_based_calibration_validation_compute(
                             validator, &result);
                 }
@@ -317,7 +342,7 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
 }
 
 static void setAnimationEndFrame(
-    NSMutableDictionary *mutableDictionary, double x, double y, double size) {
+    NSMutableDictionary *mutableDictionary, float x, float y, double size) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenSize{subjectScreenFrame.size};
@@ -332,7 +357,7 @@ static void setAnimationEndFrame(
 }
 
 static void animate(NSViewAnimation *viewAnimation,
-    NSMutableDictionary *mutableDictionary, double x, double y, double size,
+    NSMutableDictionary *mutableDictionary, float x, float y, double size,
     double durationSeconds) {
     [mutableDictionary
         setObject:[mutableDictionary valueForKey:NSViewAnimationEndFrameKey]
@@ -344,7 +369,7 @@ static void animate(NSViewAnimation *viewAnimation,
 
 static void collect(NormalizedScreenCoordinateCollector &collector,
     NSViewAnimation *viewAnimation, NSMutableDictionary *mutableDictionary,
-    double x, double y, double fullSize, double shrunkSize,
+    float x, float y, double fullSize, double shrunkSize,
     double translateDurationSeconds, double growShrinkDurationSeconds) {
     animate(viewAnimation, mutableDictionary, x, y, fullSize,
         translateDurationSeconds);
@@ -427,7 +452,7 @@ void main() {
             25, 1.5, 0.5);
         collect(calibration, viewAnimation, mutableDictionary, 0.9, 0.9, 100,
             25, 1.5, 0.5);
-        calibration.successfullyComputesAndApplies();
+        auto applied{calibration.computeAndApply()};
     }
     {
         auto validation{eyeTracker.calibrationValidation()};
