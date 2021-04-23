@@ -141,6 +141,8 @@ class TobiiEyeTracker : public EyeTracker {
                             pointOfInterest.x &&
                             p.position_on_display_area.y == pointOfInterest.y;
                     })};
+                if (calibrationPoint == calibrationPoints.end())
+                    return mappedPoints;
                 const gsl::span<TobiiResearchCalibrationSample>
                     calibrationSamples{calibrationPoint->calibration_samples,
                         calibrationPoint->calibration_sample_count};
@@ -464,6 +466,7 @@ void main() {
         collect(calibration, viewAnimation, mutableDictionary, 0.9F, 0.9F, 100,
             25, 1.5, 0.5);
         auto applied{calibration.computeAndApply()};
+        const auto leftEyeMappedPoints{applied.leftEyeMappedPoints({0.5, 0.5})};
     }
     {
         auto validation{eyeTracker.calibrationValidation()};
