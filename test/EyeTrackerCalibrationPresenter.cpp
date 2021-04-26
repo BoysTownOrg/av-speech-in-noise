@@ -55,15 +55,14 @@ void Presenter::present(Point x) {
     if (dotState == DotState::shrunk) {
         view.growDot();
         dotState = DotState::growing;
-    } else {
+    } else
         moveDotTo(view, pointPresenting, dotState);
-    }
 }
 
 void Presenter::notifyThatAnimationHasFinished() {
-    if (dotState == DotState::growing) {
+    if (dotState == DotState::growing)
         moveDotTo(view, pointPresenting, dotState);
-    } else if (dotState == DotState::shrinking) {
+    else if (dotState == DotState::shrinking) {
         if (observer != nullptr)
             observer->notifyThatPointIsReady();
         dotState = DotState::shrunk;
