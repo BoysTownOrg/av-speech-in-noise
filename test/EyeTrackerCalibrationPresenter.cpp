@@ -8,8 +8,14 @@ struct Point {
 
 class EyeTrackerCalibrationView {
   public:
+    class Observer {
+      public:
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
+        virtual void notifyThatAnimationHasFinished() = 0;
+    };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
         EyeTrackerCalibrationView);
+    virtual void attach(Observer *) = 0;
     virtual void moveDotTo(Point) = 0;
     virtual void shrinkDot() = 0;
 };
@@ -42,6 +48,8 @@ static void assertEqual(Point expected, Point actual) {
 namespace {
 class EyeTrackerCalibrationViewStub : public EyeTrackerCalibrationView {
   public:
+    void attach(Observer *a) override { observer = a; }
+
     auto pointDotMovedTo() -> Point { return pointDotMovedTo_; }
 
     void moveDotTo(Point x) override {
@@ -58,8 +66,13 @@ class EyeTrackerCalibrationViewStub : public EyeTrackerCalibrationView {
 
     auto logStream() -> const std::stringstream & { return logStream_; }
 
+    void notifyObserverThatAnimationHasFinished() {
+        observer->notifyThatAnimationHasFinished();
+    }
+
   private:
     std::stringstream logStream_{};
+    Observer *observer{};
     Point pointDotMovedTo_{};
     bool dotShrinked_{};
 };
@@ -88,6 +101,14 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterMoving) {
     EyeTrackerCalibrationPresenter presenter{view};
     presenter.present({});
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(beginsWith(view.logStream(), "moveDotTo"));
+}
+
+EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
+    EyeTrackerCalibrationViewStub view;
+    EyeTrackerCalibrationPresenter presenter{view};
+    presenter.present({});
+    view.notifyObserverThatAnimationHasFinished();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotShrinked());
 }
 }
 }
