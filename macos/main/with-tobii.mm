@@ -4,6 +4,7 @@
 #include "av-speech-in-noise/Interface.hpp"
 #include <chrono>
 #include <exception>
+#include <iterator>
 #include <tobii_research.h>
 #include <tobii_research_eyetracker.h>
 #include <tobii_research_streams.h>
@@ -187,33 +188,46 @@ class TobiiEyeTracker : public EyeTracker {
                 return result->status == TOBII_RESEARCH_CALIBRATION_SUCCESS;
             }
 
-            auto leftEyeMappedPoints(Point pointOfInterest)
-                -> std::vector<Point> {
-                std::vector<Point> mappedPoints;
+            auto results() -> std::vector<CalibrationResult> {
                 if (result == nullptr)
-                    return mappedPoints;
+                    return {};
+                std::vector<CalibrationResult> results{
+                    result->calibration_point_count};
                 const gsl::span<TobiiResearchCalibrationPoint>
                     calibrationPoints{result->calibration_points,
                         result->calibration_point_count};
-                const auto calibrationPoint{std::find_if(
-                    calibrationPoints.begin(), calibrationPoints.end(),
-                    [=](const TobiiResearchCalibrationPoint &p) {
-                        return p.position_on_display_area.x ==
-                            pointOfInterest.x &&
-                            p.position_on_display_area.y == pointOfInterest.y;
-                    })};
-                if (calibrationPoint == calibrationPoints.end())
-                    return mappedPoints;
-                const gsl::span<TobiiResearchCalibrationSample>
-                    calibrationSamples{calibrationPoint->calibration_samples,
-                        calibrationPoint->calibration_sample_count};
-                std::transform(calibrationSamples.begin(),
-                    calibrationSamples.end(), std::back_inserter(mappedPoints),
-                    [](const TobiiResearchCalibrationSample &sample) {
-                        return Point{sample.left_eye.position_on_display_area.x,
-                            sample.left_eye.position_on_display_area.y};
+                std::transform(calibrationPoints.begin(),
+                    calibrationPoints.end(), std::back_inserter(results),
+                    [](const TobiiResearchCalibrationPoint &p) {
+                        CalibrationResult transformedResult;
+                        const gsl::span<TobiiResearchCalibrationSample>
+                            calibrationSamples{p.calibration_samples,
+                                p.calibration_sample_count};
+                        std::transform(calibrationSamples.begin(),
+                            calibrationSamples.end(),
+                            std::back_inserter(
+                                transformedResult.leftEyeMappedPoints),
+                            [](const TobiiResearchCalibrationSample &sample) {
+                                return Point{
+                                    sample.left_eye.position_on_display_area.x,
+                                    sample.left_eye.position_on_display_area.y};
+                            });
+                        std::transform(calibrationSamples.begin(),
+                            calibrationSamples.end(),
+                            std::back_inserter(
+                                transformedResult.rightEyeMappedPoints),
+                            [](const TobiiResearchCalibrationSample &sample) {
+                                return Point{
+                                    sample.right_eye.position_on_display_area.x,
+                                    sample.right_eye.position_on_display_area
+                                        .y};
+                            });
+                        transformedResult.point = {p.position_on_display_area.x,
+                            p.position_on_display_area.y};
+                        return transformedResult;
                     });
-                return mappedPoints;
+
+                return results;
             }
 
             ~ComputeAndApply() {
@@ -455,7 +469,7 @@ static void collect(NormalizedScreenCoordinateCollector &collector,
         growShrinkDurationSeconds);
 }
 
-void calibrate(TobiiEyeTracker &eyeTracker) {
+static void calibrate(TobiiEyeTracker &eyeTracker) {
     const auto calibrationViewController{
         av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
     const auto subjectScreen{[[NSScreen screens] lastObject]};
