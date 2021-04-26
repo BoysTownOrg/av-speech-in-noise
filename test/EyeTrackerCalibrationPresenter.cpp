@@ -11,6 +11,7 @@ class EyeTrackerCalibrationView {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
         EyeTrackerCalibrationView);
     virtual void moveDotTo(Point) = 0;
+    virtual void shrinkDot() = 0;
 };
 
 class EyeTrackerCalibrationPresenter {
@@ -18,7 +19,10 @@ class EyeTrackerCalibrationPresenter {
     explicit EyeTrackerCalibrationPresenter(EyeTrackerCalibrationView &view)
         : view{view} {}
 
-    void present(Point x) { view.moveDotTo(x); }
+    void present(Point x) {
+        view.shrinkDot();
+        view.moveDotTo(x);
+    }
 
   private:
     EyeTrackerCalibrationView &view;
@@ -39,10 +43,15 @@ class EyeTrackerCalibrationViewStub : public EyeTrackerCalibrationView {
   public:
     auto pointDotMovedTo() -> Point { return pointDotMovedTo_; }
 
-    void moveDotTo(Point x) { pointDotMovedTo_ = x; }
+    void moveDotTo(Point x) override { pointDotMovedTo_ = x; }
+
+    [[nodiscard]] auto dotShrinked() const -> bool { return dotShrinked_; }
+
+    void shrinkDot() { dotShrinked_ = true; }
 
   private:
-    Point pointDotMovedTo_;
+    Point pointDotMovedTo_{};
+    bool dotShrinked_{};
 };
 
 class EyeTrackerCalibrationPresenterTests : public ::testing::Test {};
@@ -55,6 +64,13 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotToPoint) {
     EyeTrackerCalibrationPresenter presenter{view};
     presenter.present({0.1F, 0.2F});
     assertEqual(Point{0.1F, 0.2F}, view.pointDotMovedTo());
+}
+
+EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDot) {
+    EyeTrackerCalibrationViewStub view;
+    EyeTrackerCalibrationPresenter presenter{view};
+    presenter.present({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotShrinked());
 }
 }
 }
