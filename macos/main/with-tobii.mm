@@ -1,7 +1,8 @@
 #include "../run.h"
 #include "../AppKitView.h"
 #include "../AppKit-utility.h"
-#include "av-speech-in-noise/Interface.hpp"
+#include <av-speech-in-noise/Interface.hpp>
+#include <presentation/EyeTrackerCalibration.hpp>
 #include <chrono>
 #include <exception>
 #include <iterator>
@@ -18,15 +19,10 @@
 #import <AppKit/AppKit.h>
 
 namespace av_speech_in_noise {
-struct Point {
-    float x;
-    float y;
-};
-
 struct CalibrationResult {
     std::vector<Point> leftEyeMappedPoints;
     std::vector<Point> rightEyeMappedPoints;
-    Point point;
+    Point point{};
 };
 }
 
@@ -99,6 +95,67 @@ struct CalibrationResult {
 @end
 
 namespace av_speech_in_noise {
+namespace eye_tracker_calibration {
+namespace {
+class TobiiView : public View {
+  public:
+    static constexpr auto normalDotSizePixels{100};
+    static constexpr auto shrunkenDotSizePixels{25};
+
+    explicit TobiiView(NSWindow *animatingWindow)
+        : circleView{[[CircleView alloc]
+              initWithFrame:NSMakeRect(0, 0, normalDotSizePixels,
+                                normalDotSizePixels)]} {
+        [animatingWindow.contentViewController.view addSubview:circleView];
+    }
+
+    void attach(Observer *a) override { observer = a; }
+
+    void moveDotTo(Point point) override {
+        const auto mutableDictionary {
+            [NSMutableDictionary
+                dictionaryWithSharedKeySet:[NSDictionary sharedKeySetForKeys:@[
+                    NSViewAnimationTargetKey, NSViewAnimationStartFrameKey,
+                    NSViewAnimationEndFrameKey
+                ]]]
+        };
+        [mutableDictionary setObject:circleView
+                              forKey:NSViewAnimationTargetKey];
+        [mutableDictionary setObject:[NSValue valueWithRect:circleView.frame]
+                              forKey:NSViewAnimationStartFrameKey];
+        [mutableDictionary
+            setObject:[NSValue
+                          valueWithRect:
+                              NSMakeRect(point.x *
+                                          circleView.window.contentLayoutRect
+                                              .size.width -
+                                      circleView.frame.size.width / 2,
+                                  (1 - point.y) *
+                                          circleView.window.contentLayoutRect
+                                              .size.height -
+                                      circleView.frame.size.height / 2,
+                                  normalDotSizePixels, normalDotSizePixels)]
+               forKey:NSViewAnimationEndFrameKey];
+        const auto viewAnimation{[[NSViewAnimation alloc]
+            initWithViewAnimations:[NSArray arrayWithObjects:mutableDictionary,
+                                            nil]]};
+        [viewAnimation setAnimationCurve:NSAnimationEaseInOut];
+        viewAnimation.animationBlockingMode = NSAnimationNonblocking;
+        [viewAnimation setDuration:1.5];
+        [viewAnimation startAnimation];
+    }
+
+    void shrinkDot() override {}
+
+    void growDot() override {}
+
+  private:
+    Observer *observer{};
+    CircleView *circleView;
+};
+}
+}
+
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
     -> TobiiResearchEyeTracker * {
     return eyeTrackers == nullptr || eyeTrackers->count == 0U
