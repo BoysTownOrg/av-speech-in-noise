@@ -18,6 +18,7 @@ class View {
     virtual void attach(Observer *) = 0;
     virtual void moveDotTo(Point) = 0;
     virtual void shrinkDot() = 0;
+    virtual void growDot() = 0;
 };
 
 class Presenter : public View::Observer {
@@ -37,6 +38,7 @@ class Presenter : public View::Observer {
     void present(Point x) {
         view.moveDotTo(x);
         dotState = DotState::moving;
+        view.growDot();
     }
 
     void notifyThatAnimationHasFinished() override {
@@ -98,10 +100,15 @@ class ViewStub : public View {
         observer->notifyThatAnimationHasFinished();
     }
 
+    [[nodiscard]] auto dotGrew() const -> bool { return dotGrew_; }
+
+    void growDot() { dotGrew_ = true; }
+
   private:
     Observer *observer{};
     Point pointDotMovedTo_{};
     bool dotShrinked_{};
+    bool dotGrew_{};
 };
 
 class EyeTrackerCalibrationPresenterTests : public ::testing::Test {};
@@ -135,6 +142,16 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(observer.notifiedThatPointIsReady());
     view.notifyObserverThatAnimationHasFinished();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatPointIsReady());
+}
+
+EYE_TRACKER_CALIBRATION_PRESENTER_TEST(growsDotIfShrunk) {
+    ViewStub view;
+    Presenter presenter{view};
+    presenter.present({});
+    view.notifyObserverThatAnimationHasFinished();
+    view.notifyObserverThatAnimationHasFinished();
+    presenter.present({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotGrew());
 }
 }
 }
