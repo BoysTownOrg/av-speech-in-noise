@@ -20,15 +20,17 @@ class EyeTrackerCalibrationView {
     virtual void shrinkDot() = 0;
 };
 
-class EyeTrackerCalibrationPresenter {
+class EyeTrackerCalibrationPresenter
+    : public EyeTrackerCalibrationView::Observer {
   public:
     explicit EyeTrackerCalibrationPresenter(EyeTrackerCalibrationView &view)
-        : view{view} {}
-
-    void present(Point x) {
-        view.moveDotTo(x);
-        view.shrinkDot();
+        : view{view} {
+        view.attach(this);
     }
+
+    void present(Point x) { view.moveDotTo(x); }
+
+    void notifyThatAnimationHasFinished() override { view.shrinkDot(); }
 
   private:
     EyeTrackerCalibrationView &view;
@@ -52,26 +54,17 @@ class EyeTrackerCalibrationViewStub : public EyeTrackerCalibrationView {
 
     auto pointDotMovedTo() -> Point { return pointDotMovedTo_; }
 
-    void moveDotTo(Point x) override {
-        logStream_ << "moveDotTo";
-        pointDotMovedTo_ = x;
-    }
+    void moveDotTo(Point x) override { pointDotMovedTo_ = x; }
 
     [[nodiscard]] auto dotShrinked() const -> bool { return dotShrinked_; }
 
-    void shrinkDot() override {
-        logStream_ << "shrinkDot";
-        dotShrinked_ = true;
-    }
-
-    auto logStream() -> const std::stringstream & { return logStream_; }
+    void shrinkDot() override { dotShrinked_ = true; }
 
     void notifyObserverThatAnimationHasFinished() {
         observer->notifyThatAnimationHasFinished();
     }
 
   private:
-    std::stringstream logStream_{};
     Observer *observer{};
     Point pointDotMovedTo_{};
     bool dotShrinked_{};
@@ -87,20 +80,6 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotToPoint) {
     EyeTrackerCalibrationPresenter presenter{view};
     presenter.present({0.1F, 0.2F});
     assertEqual(Point{0.1F, 0.2F}, view.pointDotMovedTo());
-}
-
-EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDot) {
-    EyeTrackerCalibrationViewStub view;
-    EyeTrackerCalibrationPresenter presenter{view};
-    presenter.present({});
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotShrinked());
-}
-
-EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterMoving) {
-    EyeTrackerCalibrationViewStub view;
-    EyeTrackerCalibrationPresenter presenter{view};
-    presenter.present({});
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(beginsWith(view.logStream(), "moveDotTo"));
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
