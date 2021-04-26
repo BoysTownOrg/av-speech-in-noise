@@ -16,6 +16,13 @@
 #include <cstddef>
 #import <AppKit/AppKit.h>
 
+namespace av_speech_in_noise {
+struct Point {
+    float x;
+    float y;
+};
+}
+
 @interface CircleView : NSView
 @end
 
@@ -28,6 +35,32 @@
 }
 @end
 
+@interface CalibrationResultView : NSView
+@end
+
+@implementation CalibrationResultView {
+  @public
+    std::vector<av_speech_in_noise::Point> leftEyeMappedPoints;
+    std::vector<av_speech_in_noise::Point> rightEyeMappedPoints;
+    av_speech_in_noise::Point calibrationPoint;
+}
+- (void)drawRect:(NSRect)rect {
+    NSBezierPath *thePath = [NSBezierPath bezierPath];
+    for (const auto point : leftEyeMappedPoints) {
+        [thePath moveToPoint:NSMakePoint(calibrationPoint.x * rect.size.width +
+                                     rect.origin.x,
+                                 (1 - calibrationPoint.y) * rect.size.height +
+                                     rect.origin.y)];
+        [thePath
+            lineToPoint:NSMakePoint(point.x * rect.size.width + rect.origin.x,
+                            (1 - point.y) * rect.size.height + rect.origin.y)];
+    }
+    [thePath closePath];
+    [[NSColor redColor] set];
+    [thePath stroke];
+}
+@end
+
 namespace av_speech_in_noise {
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
     -> TobiiResearchEyeTracker * {
@@ -35,11 +68,6 @@ static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
         ? nullptr
         : eyeTrackers->eyetrackers[0];
 }
-
-struct Point {
-    float x;
-    float y;
-};
 
 class NormalizedScreenCoordinateCollector {
   public:
@@ -101,11 +129,6 @@ class TobiiEyeTracker : public EyeTracker {
                 eyetracker, x, y);
         }
 
-        auto successfullyComputesAndApplies() -> bool {
-            ComputeAndApply computeAndApply{eyetracker};
-            return computeAndApply.success();
-        }
-
         class ComputeAndApply;
 
         auto computeAndApply() -> ComputeAndApply {
@@ -131,6 +154,8 @@ class TobiiEyeTracker : public EyeTracker {
             auto leftEyeMappedPoints(Point pointOfInterest)
                 -> std::vector<Point> {
                 std::vector<Point> mappedPoints;
+                if (result == nullptr)
+                    return mappedPoints;
                 const gsl::span<TobiiResearchCalibrationPoint>
                     calibrationPoints{result->calibration_points,
                         result->calibration_point_count};
@@ -466,7 +491,13 @@ void main() {
         collect(calibration, viewAnimation, mutableDictionary, 0.9F, 0.9F, 100,
             25, 1.5, 0.5);
         auto applied{calibration.computeAndApply()};
-        const auto leftEyeMappedPoints{applied.leftEyeMappedPoints({0.5, 0.5})};
+        const auto calibrationResultView{[[CalibrationResultView alloc]
+            initWithFrame:NSMakeRect(0, 0, 500, 500)]};
+        calibrationResultView->leftEyeMappedPoints = {{0.51F, 0.502F},
+            {0.49F, 0.495F}, {0.48F, 0.503F}, {0.5, 0.49F}, {0.52F, 0.51F}};
+        // applied.leftEyeMappedPoints({0.5, 0.5});
+        calibrationResultView->calibrationPoint = {0.5, 0.5};
+        [calibrationViewController.view addSubview:calibrationResultView];
     }
     {
         auto validation{eyeTracker.calibrationValidation()};
