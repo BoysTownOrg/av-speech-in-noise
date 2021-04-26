@@ -10,7 +10,8 @@ add_library(
   src/TestImpl.cpp
   src/TestSetupImpl.cpp
   src/ChooseKeywords.cpp
-  src/Syllables.cpp)
+  src/Syllables.cpp
+  src/EyeTrackerCalibration.cpp)
 target_include_directories(
   presentation
   PUBLIC include
