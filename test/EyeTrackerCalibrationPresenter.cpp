@@ -35,36 +35,43 @@ class Presenter : public View::Observer {
 
     void attach(Observer *a) { observer = a; }
 
-    void present(Point x) {
-        pointPresenting = x;
-        if (dotState == DotState::shrunk) {
-            view.growDot();
-            dotState = DotState::growing;
-        } else {
-            view.moveDotTo(pointPresenting);
-            dotState = DotState::moving;
-        }
-    }
-
-    void notifyThatAnimationHasFinished() override {
-        if (dotState == DotState::growing) {
-            view.moveDotTo(pointPresenting);
-        } else if (dotState == DotState::shrinking) {
-            if (observer != nullptr)
-                observer->notifyThatPointIsReady();
-            dotState = DotState::shrunk;
-        } else {
-            view.shrinkDot();
-            dotState = DotState::shrinking;
-        }
-    }
+    void present(Point x);
+    void notifyThatAnimationHasFinished() override;
 
   private:
-    Point pointPresenting;
+    Point pointPresenting{};
     View &view;
     Observer *observer{};
     DotState dotState{DotState::idle};
 };
+
+static void moveDotTo(View &view, Point x, Presenter::DotState &dotState) {
+    view.moveDotTo(x);
+    dotState = Presenter::DotState::moving;
+}
+
+void Presenter::present(Point x) {
+    pointPresenting = x;
+    if (dotState == DotState::shrunk) {
+        view.growDot();
+        dotState = DotState::growing;
+    } else {
+        moveDotTo(view, pointPresenting, dotState);
+    }
+}
+
+void Presenter::notifyThatAnimationHasFinished() {
+    if (dotState == DotState::growing) {
+        moveDotTo(view, pointPresenting, dotState);
+    } else if (dotState == DotState::shrinking) {
+        if (observer != nullptr)
+            observer->notifyThatPointIsReady();
+        dotState = DotState::shrunk;
+    } else {
+        view.shrinkDot();
+        dotState = DotState::shrinking;
+    }
+}
 }
 }
 
