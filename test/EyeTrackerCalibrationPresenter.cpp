@@ -23,17 +23,30 @@ class EyeTrackerCalibrationView {
 class EyeTrackerCalibrationPresenter
     : public EyeTrackerCalibrationView::Observer {
   public:
+    class Observer {
+      public:
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
+        virtual void notifyThatPointIsReady() = 0;
+    };
+
     explicit EyeTrackerCalibrationPresenter(EyeTrackerCalibrationView &view)
         : view{view} {
         view.attach(this);
     }
 
+    void attach(Observer *a) { observer = a; }
+
     void present(Point x) { view.moveDotTo(x); }
 
-    void notifyThatAnimationHasFinished() override { view.shrinkDot(); }
+    void notifyThatAnimationHasFinished() override {
+        view.shrinkDot();
+        if (observer != nullptr)
+            observer->notifyThatPointIsReady();
+    }
 
   private:
     EyeTrackerCalibrationView &view;
+    Observer *observer{};
 };
 }
 
@@ -48,6 +61,19 @@ static void assertEqual(Point expected, Point actual) {
 }
 
 namespace {
+class EyeTrackerCalibrationPresenterObserverStub
+    : public EyeTrackerCalibrationPresenter::Observer {
+  public:
+    [[nodiscard]] auto notifiedThatPointIsReady() const -> bool {
+        return notifiedThatPointIsReady_;
+    }
+
+    void notifyThatPointIsReady() override { notifiedThatPointIsReady_ = true; }
+
+  private:
+    bool notifiedThatPointIsReady_{};
+};
+
 class EyeTrackerCalibrationViewStub : public EyeTrackerCalibrationView {
   public:
     void attach(Observer *a) override { observer = a; }
@@ -88,6 +114,18 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
     presenter.present({});
     view.notifyObserverThatAnimationHasFinished();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotShrinked());
+}
+
+EYE_TRACKER_CALIBRATION_PRESENTER_TEST(
+    notifiesObserverThatPointIsReadyAfterDotShrinks) {
+    EyeTrackerCalibrationViewStub view;
+    EyeTrackerCalibrationPresenter presenter{view};
+    EyeTrackerCalibrationPresenterObserverStub observer;
+    presenter.attach(&observer);
+    presenter.present({});
+    view.notifyObserverThatAnimationHasFinished();
+    view.notifyObserverThatAnimationHasFinished();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatPointIsReady());
 }
 }
 }
