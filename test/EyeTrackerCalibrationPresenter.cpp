@@ -86,6 +86,8 @@ static void assertEqual(Point expected, Point actual) {
 }
 
 namespace eye_tracker_calibration {
+static void present(Presenter &p, Point x = {}) { p.present(x); }
+
 namespace {
 class PresenterObserverStub : public Presenter::Observer {
   public:
@@ -117,7 +119,7 @@ class ViewStub : public View {
 
     [[nodiscard]] auto dotGrew() const -> bool { return dotGrew_; }
 
-    void growDot() { dotGrew_ = true; }
+    void growDot() override { dotGrew_ = true; }
 
   private:
     Observer *observer{};
@@ -125,7 +127,13 @@ class ViewStub : public View {
     bool dotShrinked_{};
     bool dotGrew_{};
 };
+}
 
+static void notifyObserverThatAnimationHasFinished(ViewStub &view) {
+    view.notifyObserverThatAnimationHasFinished();
+}
+
+namespace {
 class EyeTrackerCalibrationPresenterTests : public ::testing::Test {};
 
 #define EYE_TRACKER_CALIBRATION_PRESENTER_TEST(a)                              \
@@ -134,15 +142,15 @@ class EyeTrackerCalibrationPresenterTests : public ::testing::Test {};
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotToPoint) {
     ViewStub view;
     Presenter presenter{view};
-    presenter.present({0.1F, 0.2F});
+    present(presenter, {0.1F, 0.2F});
     assertEqual(Point{0.1F, 0.2F}, view.pointDotMovedTo());
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
     ViewStub view;
     Presenter presenter{view};
-    presenter.present({});
-    view.notifyObserverThatAnimationHasFinished();
+    present(presenter);
+    notifyObserverThatAnimationHasFinished(view);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotShrinked());
 }
 
@@ -152,32 +160,32 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(
     Presenter presenter{view};
     PresenterObserverStub observer;
     presenter.attach(&observer);
-    presenter.present({});
-    view.notifyObserverThatAnimationHasFinished();
+    present(presenter);
+    notifyObserverThatAnimationHasFinished(view);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(observer.notifiedThatPointIsReady());
-    view.notifyObserverThatAnimationHasFinished();
+    notifyObserverThatAnimationHasFinished(view);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatPointIsReady());
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(growsDotIfShrunk) {
     ViewStub view;
     Presenter presenter{view};
-    presenter.present({});
+    present(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.dotGrew());
-    view.notifyObserverThatAnimationHasFinished();
-    view.notifyObserverThatAnimationHasFinished();
-    presenter.present({});
+    notifyObserverThatAnimationHasFinished(view);
+    notifyObserverThatAnimationHasFinished(view);
+    present(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotGrew());
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotAfterItGrows) {
     ViewStub view;
     Presenter presenter{view};
-    presenter.present({});
-    view.notifyObserverThatAnimationHasFinished();
-    view.notifyObserverThatAnimationHasFinished();
-    presenter.present({0.1F, 0.2F});
-    view.notifyObserverThatAnimationHasFinished();
+    present(presenter);
+    notifyObserverThatAnimationHasFinished(view);
+    notifyObserverThatAnimationHasFinished(view);
+    present(presenter, {0.1F, 0.2F});
+    notifyObserverThatAnimationHasFinished(view);
     assertEqual(Point{0.1F, 0.2F}, view.pointDotMovedTo());
 }
 }
