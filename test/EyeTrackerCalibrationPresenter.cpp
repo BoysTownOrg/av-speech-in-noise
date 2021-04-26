@@ -20,8 +20,8 @@ class EyeTrackerCalibrationPresenter {
         : view{view} {}
 
     void present(Point x) {
-        view.shrinkDot();
         view.moveDotTo(x);
+        view.shrinkDot();
     }
 
   private:
@@ -29,6 +29,7 @@ class EyeTrackerCalibrationPresenter {
 };
 }
 
+#include "LogString.hpp"
 #include "assert-utility.hpp"
 #include <gtest/gtest.h>
 
@@ -43,13 +44,22 @@ class EyeTrackerCalibrationViewStub : public EyeTrackerCalibrationView {
   public:
     auto pointDotMovedTo() -> Point { return pointDotMovedTo_; }
 
-    void moveDotTo(Point x) override { pointDotMovedTo_ = x; }
+    void moveDotTo(Point x) override {
+        logStream_ << "moveDotTo";
+        pointDotMovedTo_ = x;
+    }
 
     [[nodiscard]] auto dotShrinked() const -> bool { return dotShrinked_; }
 
-    void shrinkDot() { dotShrinked_ = true; }
+    void shrinkDot() override {
+        logStream_ << "shrinkDot";
+        dotShrinked_ = true;
+    }
+
+    auto logStream() -> const std::stringstream & { return logStream_; }
 
   private:
+    std::stringstream logStream_{};
     Point pointDotMovedTo_{};
     bool dotShrinked_{};
 };
@@ -71,6 +81,13 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDot) {
     EyeTrackerCalibrationPresenter presenter{view};
     presenter.present({});
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotShrinked());
+}
+
+EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterMoving) {
+    EyeTrackerCalibrationViewStub view;
+    EyeTrackerCalibrationPresenter presenter{view};
+    presenter.present({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(beginsWith(view.logStream(), "moveDotTo"));
 }
 }
 }
