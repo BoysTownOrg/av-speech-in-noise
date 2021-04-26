@@ -455,37 +455,7 @@ static void collect(NormalizedScreenCoordinateCollector &collector,
         growShrinkDurationSeconds);
 }
 
-void main() {
-    TobiiEyeTracker eyeTracker;
-    AppKitTestSetupUIFactoryImpl testSetupViewFactory;
-    DefaultOutputFileNameFactory outputFileNameFactory;
-    const auto aboutViewController{
-        [[ResizesToContentsViewController alloc] init]};
-    const auto stack {
-        [NSStackView stackViewWithViews:@[
-            [NSImageView
-                imageViewWithImage:[NSImage imageNamed:@"tobii-pro-logo.jpg"]],
-            [NSTextField
-                labelWithString:@"This application is powered by Tobii Pro"]
-        ]]
-    };
-    stack.orientation = NSUserInterfaceLayoutOrientationVertical;
-    addAutolayoutEnabledSubview(aboutViewController.view, stack);
-    [NSLayoutConstraint activateConstraints:@[
-        [stack.topAnchor
-            constraintEqualToAnchor:aboutViewController.view.topAnchor
-                           constant:8],
-        [stack.bottomAnchor
-            constraintEqualToAnchor:aboutViewController.view.bottomAnchor
-                           constant:-8],
-        [stack.leadingAnchor
-            constraintEqualToAnchor:aboutViewController.view.leadingAnchor
-                           constant:8],
-        [stack.trailingAnchor
-            constraintEqualToAnchor:aboutViewController.view.trailingAnchor
-                           constant:-8]
-    ]];
-
+void calibrate(TobiiEyeTracker &eyeTracker) {
     const auto calibrationViewController{
         av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
     const auto subjectScreen{[[NSScreen screens] lastObject]};
@@ -573,6 +543,40 @@ void main() {
             1.5, 0.5);
         auto result{enter.result()};
     }
+}
+
+void main() {
+    TobiiEyeTracker eyeTracker;
+    AppKitTestSetupUIFactoryImpl testSetupViewFactory;
+    DefaultOutputFileNameFactory outputFileNameFactory;
+    const auto aboutViewController{
+        [[ResizesToContentsViewController alloc] init]};
+    const auto stack {
+        [NSStackView stackViewWithViews:@[
+            [NSImageView
+                imageViewWithImage:[NSImage imageNamed:@"tobii-pro-logo.jpg"]],
+            [NSTextField
+                labelWithString:@"This application is powered by Tobii Pro"]
+        ]]
+    };
+    stack.orientation = NSUserInterfaceLayoutOrientationVertical;
+    addAutolayoutEnabledSubview(aboutViewController.view, stack);
+    [NSLayoutConstraint activateConstraints:@[
+        [stack.topAnchor
+            constraintEqualToAnchor:aboutViewController.view.topAnchor
+                           constant:8],
+        [stack.bottomAnchor
+            constraintEqualToAnchor:aboutViewController.view.bottomAnchor
+                           constant:-8],
+        [stack.leadingAnchor
+            constraintEqualToAnchor:aboutViewController.view.leadingAnchor
+                           constant:8],
+        [stack.trailingAnchor
+            constraintEqualToAnchor:aboutViewController.view.trailingAnchor
+                           constant:-8]
+    ]];
+
+    calibrate(eyeTracker);
 
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController);
