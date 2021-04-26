@@ -185,7 +185,8 @@ class TobiiEyeTracker : public EyeTracker {
             }
 
             auto success() -> bool {
-                return result->status == TOBII_RESEARCH_CALIBRATION_SUCCESS;
+                return result != nullptr &&
+                    result->status == TOBII_RESEARCH_CALIBRATION_SUCCESS;
             }
 
             auto results() -> std::vector<CalibrationResult> {
@@ -539,7 +540,6 @@ static void calibrate(TobiiEyeTracker &eyeTracker) {
                 {{0.88F, 0.902F}, {0.89F, 0.895F}, {0.9F, 0.903F},
                     {0.91F, 0.89F}, {0.92F, 0.91F}},
                 {0.9F, 0.9F}}};
-        // applied.leftEyeMappedPoints({0.5, 0.5});
         [calibrationViewController.view addSubview:calibrationResultView];
     }
     {
