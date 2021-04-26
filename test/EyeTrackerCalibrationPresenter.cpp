@@ -29,23 +29,27 @@ class Presenter : public View::Observer {
         virtual void notifyThatPointIsReady() = 0;
     };
 
-    enum class DotState { idle, moving, shrinking };
+    enum class DotState { idle, moving, shrinking, shrunk, growing };
 
     explicit Presenter(View &view) : view{view} { view.attach(this); }
 
     void attach(Observer *a) { observer = a; }
 
     void present(Point x) {
-        view.moveDotTo(x);
-        dotState = DotState::moving;
-        view.growDot();
+        if (dotState == DotState::shrunk) {
+            view.growDot();
+            dotState = DotState::growing;
+        } else {
+            view.moveDotTo(x);
+            dotState = DotState::moving;
+        }
     }
 
     void notifyThatAnimationHasFinished() override {
         if (dotState == DotState::shrinking) {
             if (observer != nullptr)
                 observer->notifyThatPointIsReady();
-            dotState = DotState::idle;
+            dotState = DotState::shrunk;
         } else {
             view.shrinkDot();
             dotState = DotState::shrinking;
@@ -148,6 +152,7 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(growsDotIfShrunk) {
     ViewStub view;
     Presenter presenter{view};
     presenter.present({});
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.dotGrew());
     view.notifyObserverThatAnimationHasFinished();
     view.notifyObserverThatAnimationHasFinished();
     presenter.present({});
