@@ -36,17 +36,20 @@ class Presenter : public View::Observer {
     void attach(Observer *a) { observer = a; }
 
     void present(Point x) {
+        pointPresenting = x;
         if (dotState == DotState::shrunk) {
             view.growDot();
             dotState = DotState::growing;
         } else {
-            view.moveDotTo(x);
+            view.moveDotTo(pointPresenting);
             dotState = DotState::moving;
         }
     }
 
     void notifyThatAnimationHasFinished() override {
-        if (dotState == DotState::shrinking) {
+        if (dotState == DotState::growing) {
+            view.moveDotTo(pointPresenting);
+        } else if (dotState == DotState::shrinking) {
             if (observer != nullptr)
                 observer->notifyThatPointIsReady();
             dotState = DotState::shrunk;
@@ -57,6 +60,7 @@ class Presenter : public View::Observer {
     }
 
   private:
+    Point pointPresenting;
     View &view;
     Observer *observer{};
     DotState dotState{DotState::idle};
@@ -157,6 +161,17 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(growsDotIfShrunk) {
     view.notifyObserverThatAnimationHasFinished();
     presenter.present({});
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotGrew());
+}
+
+EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotAfterItGrows) {
+    ViewStub view;
+    Presenter presenter{view};
+    presenter.present({});
+    view.notifyObserverThatAnimationHasFinished();
+    view.notifyObserverThatAnimationHasFinished();
+    presenter.present({0.1F, 0.2F});
+    view.notifyObserverThatAnimationHasFinished();
+    assertEqual(Point{0.1F, 0.2F}, view.pointDotMovedTo());
 }
 }
 }
