@@ -6,22 +6,21 @@ struct Point {
     float y;
 };
 
-class EyeTrackerCalibrationView {
+namespace eye_tracker_calibration {
+class View {
   public:
     class Observer {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatAnimationHasFinished() = 0;
     };
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
-        EyeTrackerCalibrationView);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(View);
     virtual void attach(Observer *) = 0;
     virtual void moveDotTo(Point) = 0;
     virtual void shrinkDot() = 0;
 };
 
-class EyeTrackerCalibrationPresenter
-    : public EyeTrackerCalibrationView::Observer {
+class Presenter : public View::Observer {
   public:
     class Observer {
       public:
@@ -29,10 +28,7 @@ class EyeTrackerCalibrationPresenter
         virtual void notifyThatPointIsReady() = 0;
     };
 
-    explicit EyeTrackerCalibrationPresenter(EyeTrackerCalibrationView &view)
-        : view{view} {
-        view.attach(this);
-    }
+    explicit Presenter(View &view) : view{view} { view.attach(this); }
 
     void attach(Observer *a) { observer = a; }
 
@@ -45,9 +41,10 @@ class EyeTrackerCalibrationPresenter
     }
 
   private:
-    EyeTrackerCalibrationView &view;
+    View &view;
     Observer *observer{};
 };
+}
 }
 
 #include "LogString.hpp"
@@ -60,9 +57,9 @@ static void assertEqual(Point expected, Point actual) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.y, actual.y);
 }
 
+namespace eye_tracker_calibration {
 namespace {
-class EyeTrackerCalibrationPresenterObserverStub
-    : public EyeTrackerCalibrationPresenter::Observer {
+class PresenterObserverStub : public Presenter::Observer {
   public:
     [[nodiscard]] auto notifiedThatPointIsReady() const -> bool {
         return notifiedThatPointIsReady_;
@@ -74,7 +71,7 @@ class EyeTrackerCalibrationPresenterObserverStub
     bool notifiedThatPointIsReady_{};
 };
 
-class EyeTrackerCalibrationViewStub : public EyeTrackerCalibrationView {
+class ViewStub : public View {
   public:
     void attach(Observer *a) override { observer = a; }
 
@@ -102,15 +99,15 @@ class EyeTrackerCalibrationPresenterTests : public ::testing::Test {};
     TEST_F(EyeTrackerCalibrationPresenterTests, a)
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotToPoint) {
-    EyeTrackerCalibrationViewStub view;
-    EyeTrackerCalibrationPresenter presenter{view};
+    ViewStub view;
+    Presenter presenter{view};
     presenter.present({0.1F, 0.2F});
     assertEqual(Point{0.1F, 0.2F}, view.pointDotMovedTo());
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
-    EyeTrackerCalibrationViewStub view;
-    EyeTrackerCalibrationPresenter presenter{view};
+    ViewStub view;
+    Presenter presenter{view};
     presenter.present({});
     view.notifyObserverThatAnimationHasFinished();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotShrinked());
@@ -118,14 +115,15 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(
     notifiesObserverThatPointIsReadyAfterDotShrinks) {
-    EyeTrackerCalibrationViewStub view;
-    EyeTrackerCalibrationPresenter presenter{view};
-    EyeTrackerCalibrationPresenterObserverStub observer;
+    ViewStub view;
+    Presenter presenter{view};
+    PresenterObserverStub observer;
     presenter.attach(&observer);
     presenter.present({});
     view.notifyObserverThatAnimationHasFinished();
     view.notifyObserverThatAnimationHasFinished();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatPointIsReady());
+}
 }
 }
 }
