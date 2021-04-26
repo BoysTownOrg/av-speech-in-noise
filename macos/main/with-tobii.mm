@@ -21,6 +21,12 @@ struct Point {
     float x;
     float y;
 };
+
+struct CalibrationResult {
+    std::vector<Point> leftEyeMappedPoints;
+    std::vector<Point> rightEyeMappedPoints;
+    Point point;
+};
 }
 
 @interface CircleView : NSView
@@ -40,24 +46,54 @@ struct Point {
 
 @implementation CalibrationResultView {
   @public
-    std::vector<av_speech_in_noise::Point> leftEyeMappedPoints;
-    std::vector<av_speech_in_noise::Point> rightEyeMappedPoints;
-    av_speech_in_noise::Point calibrationPoint;
+    std::vector<av_speech_in_noise::CalibrationResult> calibrationResults;
 }
 - (void)drawRect:(NSRect)rect {
-    NSBezierPath *thePath = [NSBezierPath bezierPath];
-    for (const auto point : leftEyeMappedPoints) {
-        [thePath moveToPoint:NSMakePoint(calibrationPoint.x * rect.size.width +
-                                     rect.origin.x,
-                                 (1 - calibrationPoint.y) * rect.size.height +
-                                     rect.origin.y)];
-        [thePath
-            lineToPoint:NSMakePoint(point.x * rect.size.width + rect.origin.x,
-                            (1 - point.y) * rect.size.height + rect.origin.y)];
+    for (const auto &result : calibrationResults) {
+        NSBezierPath *leftEyeErrorPath = [NSBezierPath bezierPath];
+        for (const auto point : result.leftEyeMappedPoints) {
+            [leftEyeErrorPath
+                moveToPoint:NSMakePoint(result.point.x * rect.size.width +
+                                    rect.origin.x,
+                                (1 - result.point.y) * rect.size.height +
+                                    rect.origin.y)];
+            [leftEyeErrorPath
+                lineToPoint:NSMakePoint(
+                                point.x * rect.size.width + rect.origin.x,
+                                (1 - point.y) * rect.size.height +
+                                    rect.origin.y)];
+        }
+        [leftEyeErrorPath closePath];
+        [[NSColor redColor] set];
+        [leftEyeErrorPath stroke];
+        NSBezierPath *rightEyeErrorPath = [NSBezierPath bezierPath];
+        for (const auto point : result.rightEyeMappedPoints) {
+            [rightEyeErrorPath
+                moveToPoint:NSMakePoint(result.point.x * rect.size.width +
+                                    rect.origin.x,
+                                (1 - result.point.y) * rect.size.height +
+                                    rect.origin.y)];
+            [rightEyeErrorPath
+                lineToPoint:NSMakePoint(
+                                point.x * rect.size.width + rect.origin.x,
+                                (1 - point.y) * rect.size.height +
+                                    rect.origin.y)];
+        }
+        [rightEyeErrorPath closePath];
+        [[NSColor greenColor] set];
+        [rightEyeErrorPath stroke];
+        NSBezierPath *circlePath = [NSBezierPath bezierPath];
+        [circlePath
+            appendBezierPathWithOvalInRect:NSMakeRect(result.point.x *
+                                                       rect.size.width -
+                                                   25 / 2,
+                                               (1 - result.point.y) *
+                                                       rect.size.height -
+                                                   25 / 2,
+                                               25, 25)];
+        [[NSColor whiteColor] set];
+        [circlePath fill];
     }
-    [thePath closePath];
-    [[NSColor redColor] set];
-    [thePath stroke];
 }
 @end
 
@@ -491,12 +527,35 @@ void main() {
         collect(calibration, viewAnimation, mutableDictionary, 0.9F, 0.9F, 100,
             25, 1.5, 0.5);
         auto applied{calibration.computeAndApply()};
-        const auto calibrationResultView{[[CalibrationResultView alloc]
-            initWithFrame:NSMakeRect(0, 0, 500, 500)]};
-        calibrationResultView->leftEyeMappedPoints = {{0.51F, 0.502F},
-            {0.49F, 0.495F}, {0.48F, 0.503F}, {0.5, 0.49F}, {0.52F, 0.51F}};
+        const auto calibrationResultView{
+            [[CalibrationResultView alloc] initWithFrame:subjectScreenFrame]};
+        calibrationResultView->calibrationResults = {
+            {{{0.51F, 0.502F}, {0.49F, 0.495F}, {0.48F, 0.503F}, {0.5, 0.49F},
+                 {0.52F, 0.51F}},
+                {{0.51F, 0.503F}, {0.49F, 0.499F}, {0.48F, 0.513F},
+                    {0.5, 0.493F}, {0.52F, 0.502F}},
+                {0.5, 0.5}},
+            {{{0.08F, 0.102F}, {0.09F, 0.095F}, {0.1F, 0.103F}, {0.11F, 0.09F},
+                 {0.12F, 0.11F}},
+                {{0.08F, 0.102F}, {0.09F, 0.095F}, {0.1F, 0.103F},
+                    {0.11F, 0.09F}, {0.12F, 0.11F}},
+                {0.1F, 0.1F}},
+            {{{0.08F, 0.902F}, {0.09F, 0.895F}, {0.1F, 0.903F}, {0.11F, 0.89F},
+                 {0.12F, 0.91F}},
+                {{0.08F, 0.902F}, {0.09F, 0.895F}, {0.1F, 0.903F},
+                    {0.11F, 0.89F}, {0.12F, 0.91F}},
+                {0.1F, 0.9F}},
+            {{{0.88F, 0.102F}, {0.89F, 0.095F}, {0.9F, 0.103F}, {0.91F, 0.09F},
+                 {0.92F, 0.11F}},
+                {{0.88F, 0.102F}, {0.89F, 0.095F}, {0.9F, 0.103F},
+                    {0.91F, 0.09F}, {0.92F, 0.11F}},
+                {0.9F, 0.1F}},
+            {{{0.88F, 0.902F}, {0.89F, 0.895F}, {0.9F, 0.903F}, {0.91F, 0.89F},
+                 {0.92F, 0.91F}},
+                {{0.88F, 0.902F}, {0.89F, 0.895F}, {0.9F, 0.903F},
+                    {0.91F, 0.89F}, {0.92F, 0.91F}},
+                {0.9F, 0.9F}}};
         // applied.leftEyeMappedPoints({0.5, 0.5});
-        calibrationResultView->calibrationPoint = {0.5, 0.5};
         [calibrationViewController.view addSubview:calibrationResultView];
     }
     {
