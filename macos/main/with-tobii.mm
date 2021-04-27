@@ -94,9 +94,23 @@ struct CalibrationResult {
 }
 @end
 
+@interface EyeTrackerCalibrationAnimationDelegate
+    : NSObject <NSAnimationDelegate>
+@end
+
+@implementation EyeTrackerCalibrationAnimationDelegate {
+  @public
+    av_speech_in_noise::eye_tracker_calibration::View::Observer *observer;
+}
+- (void)animationDidEnd:(NSAnimation *)animation {
+    observer->notifyThatAnimationHasFinished();
+}
+@end
+
 namespace av_speech_in_noise {
 namespace eye_tracker_calibration {
-static void animate(NSView *view, NSRect endFrame, double durationSeconds) {
+static void animate(NSView *view, NSRect endFrame, double durationSeconds,
+    View::Observer *observer) {
     const auto mutableDictionary {
         [NSMutableDictionary
             dictionaryWithSharedKeySet:[NSDictionary sharedKeySetForKeys:@[
@@ -112,6 +126,9 @@ static void animate(NSView *view, NSRect endFrame, double durationSeconds) {
     const auto viewAnimation{[[NSViewAnimation alloc]
         initWithViewAnimations:[NSArray
                                    arrayWithObjects:mutableDictionary, nil]]};
+    const auto delegate{[[EyeTrackerCalibrationAnimationDelegate alloc] init]};
+    delegate->observer = observer;
+    [viewAnimation setDelegate:delegate];
     [viewAnimation setAnimationCurve:NSAnimationEaseInOut];
     viewAnimation.animationBlockingMode = NSAnimationNonblocking;
     [viewAnimation setDuration:durationSeconds];
@@ -121,13 +138,13 @@ static void animate(NSView *view, NSRect endFrame, double durationSeconds) {
 namespace {
 class TobiiView : public View {
   public:
-    static constexpr auto normalDotSizePixels{100};
-    static constexpr auto shrunkenDotSizePixels{25};
+    static constexpr auto normalDotDiameterPoints{100};
+    static constexpr auto shrunkenDotDiameterPoints{25};
 
     explicit TobiiView(NSWindow *animatingWindow)
         : circleView{[[CircleView alloc]
-              initWithFrame:NSMakeRect(0, 0, normalDotSizePixels,
-                                normalDotSizePixels)]} {
+              initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
+                                normalDotDiameterPoints)]} {
         [animatingWindow.contentViewController.view addSubview:circleView];
     }
 
@@ -141,21 +158,32 @@ class TobiiView : public View {
                 (1 - point.y) *
                         circleView.window.contentLayoutRect.size.height -
                     circleView.frame.size.height / 2,
-                normalDotSizePixels, normalDotSizePixels),
-            1.5);
+                circleView.frame.size.width, circleView.frame.size.height),
+            1.5, observer);
     }
 
     void shrinkDot() override {
         animate(circleView,
             NSMakeRect(circleView.frame.origin.x +
-                    (circleView.frame.size.width - shrunkenDotSizePixels) / 2,
+                    (circleView.frame.size.width - shrunkenDotDiameterPoints) /
+                        2,
                 circleView.frame.origin.y +
-                    (circleView.frame.size.height - shrunkenDotSizePixels) / 2,
-                shrunkenDotSizePixels, shrunkenDotSizePixels),
-            0.5);
+                    (circleView.frame.size.height - shrunkenDotDiameterPoints) /
+                        2,
+                shrunkenDotDiameterPoints, shrunkenDotDiameterPoints),
+            0.5, observer);
     }
 
-    void growDot() override {}
+    void growDot() override {
+        animate(circleView,
+            NSMakeRect(circleView.frame.origin.x +
+                    (circleView.frame.size.width - normalDotDiameterPoints) / 2,
+                circleView.frame.origin.y +
+                    (circleView.frame.size.height - normalDotDiameterPoints) /
+                        2,
+                normalDotDiameterPoints, normalDotDiameterPoints),
+            0.5, observer);
+    }
 
   private:
     Observer *observer{};
