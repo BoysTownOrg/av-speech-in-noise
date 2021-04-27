@@ -145,7 +145,39 @@ class TobiiView : public View {
         [viewAnimation startAnimation];
     }
 
-    void shrinkDot() override {}
+    void shrinkDot() override {
+        const auto mutableDictionary {
+            [NSMutableDictionary
+                dictionaryWithSharedKeySet:[NSDictionary sharedKeySetForKeys:@[
+                    NSViewAnimationTargetKey, NSViewAnimationStartFrameKey,
+                    NSViewAnimationEndFrameKey
+                ]]]
+        };
+        [mutableDictionary setObject:circleView
+                              forKey:NSViewAnimationTargetKey];
+        [mutableDictionary setObject:[NSValue valueWithRect:circleView.frame]
+                              forKey:NSViewAnimationStartFrameKey];
+        [mutableDictionary
+            setObject:[NSValue
+                          valueWithRect:NSMakeRect(circleView.frame.origin.x +
+                                                (circleView.frame.size.width -
+                                                    shrunkenDotSizePixels) /
+                                                    2,
+                                            circleView.frame.origin.y +
+                                                (circleView.frame.size.height -
+                                                    shrunkenDotSizePixels) /
+                                                    2,
+                                            shrunkenDotSizePixels,
+                                            shrunkenDotSizePixels)]
+               forKey:NSViewAnimationEndFrameKey];
+        const auto viewAnimation{[[NSViewAnimation alloc]
+            initWithViewAnimations:[NSArray arrayWithObjects:mutableDictionary,
+                                            nil]]};
+        [viewAnimation setAnimationCurve:NSAnimationEaseInOut];
+        viewAnimation.animationBlockingMode = NSAnimationNonblocking;
+        [viewAnimation setDuration:0.5];
+        [viewAnimation startAnimation];
+    }
 
     void growDot() override {}
 
