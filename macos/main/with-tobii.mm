@@ -96,6 +96,28 @@ struct CalibrationResult {
 
 namespace av_speech_in_noise {
 namespace eye_tracker_calibration {
+static void animate(NSView *view, NSRect endFrame, double durationSeconds) {
+    const auto mutableDictionary {
+        [NSMutableDictionary
+            dictionaryWithSharedKeySet:[NSDictionary sharedKeySetForKeys:@[
+                NSViewAnimationTargetKey, NSViewAnimationStartFrameKey,
+                NSViewAnimationEndFrameKey
+            ]]]
+    };
+    [mutableDictionary setObject:view forKey:NSViewAnimationTargetKey];
+    [mutableDictionary setObject:[NSValue valueWithRect:view.frame]
+                          forKey:NSViewAnimationStartFrameKey];
+    [mutableDictionary setObject:[NSValue valueWithRect:endFrame]
+                          forKey:NSViewAnimationEndFrameKey];
+    const auto viewAnimation{[[NSViewAnimation alloc]
+        initWithViewAnimations:[NSArray
+                                   arrayWithObjects:mutableDictionary, nil]]};
+    [viewAnimation setAnimationCurve:NSAnimationEaseInOut];
+    viewAnimation.animationBlockingMode = NSAnimationNonblocking;
+    [viewAnimation setDuration:durationSeconds];
+    [viewAnimation startAnimation];
+}
+
 namespace {
 class TobiiView : public View {
   public:
@@ -112,71 +134,25 @@ class TobiiView : public View {
     void attach(Observer *a) override { observer = a; }
 
     void moveDotTo(Point point) override {
-        const auto mutableDictionary {
-            [NSMutableDictionary
-                dictionaryWithSharedKeySet:[NSDictionary sharedKeySetForKeys:@[
-                    NSViewAnimationTargetKey, NSViewAnimationStartFrameKey,
-                    NSViewAnimationEndFrameKey
-                ]]]
-        };
-        [mutableDictionary setObject:circleView
-                              forKey:NSViewAnimationTargetKey];
-        [mutableDictionary setObject:[NSValue valueWithRect:circleView.frame]
-                              forKey:NSViewAnimationStartFrameKey];
-        [mutableDictionary
-            setObject:[NSValue
-                          valueWithRect:
-                              NSMakeRect(point.x *
-                                          circleView.window.contentLayoutRect
-                                              .size.width -
-                                      circleView.frame.size.width / 2,
-                                  (1 - point.y) *
-                                          circleView.window.contentLayoutRect
-                                              .size.height -
-                                      circleView.frame.size.height / 2,
-                                  normalDotSizePixels, normalDotSizePixels)]
-               forKey:NSViewAnimationEndFrameKey];
-        const auto viewAnimation{[[NSViewAnimation alloc]
-            initWithViewAnimations:[NSArray arrayWithObjects:mutableDictionary,
-                                            nil]]};
-        [viewAnimation setAnimationCurve:NSAnimationEaseInOut];
-        viewAnimation.animationBlockingMode = NSAnimationNonblocking;
-        [viewAnimation setDuration:1.5];
-        [viewAnimation startAnimation];
+        animate(circleView,
+            NSMakeRect(
+                point.x * circleView.window.contentLayoutRect.size.width -
+                    circleView.frame.size.width / 2,
+                (1 - point.y) *
+                        circleView.window.contentLayoutRect.size.height -
+                    circleView.frame.size.height / 2,
+                normalDotSizePixels, normalDotSizePixels),
+            1.5);
     }
 
     void shrinkDot() override {
-        const auto mutableDictionary {
-            [NSMutableDictionary
-                dictionaryWithSharedKeySet:[NSDictionary sharedKeySetForKeys:@[
-                    NSViewAnimationTargetKey, NSViewAnimationStartFrameKey,
-                    NSViewAnimationEndFrameKey
-                ]]]
-        };
-        [mutableDictionary setObject:circleView
-                              forKey:NSViewAnimationTargetKey];
-        [mutableDictionary setObject:[NSValue valueWithRect:circleView.frame]
-                              forKey:NSViewAnimationStartFrameKey];
-        [mutableDictionary
-            setObject:[NSValue
-                          valueWithRect:NSMakeRect(circleView.frame.origin.x +
-                                                (circleView.frame.size.width -
-                                                    shrunkenDotSizePixels) /
-                                                    2,
-                                            circleView.frame.origin.y +
-                                                (circleView.frame.size.height -
-                                                    shrunkenDotSizePixels) /
-                                                    2,
-                                            shrunkenDotSizePixels,
-                                            shrunkenDotSizePixels)]
-               forKey:NSViewAnimationEndFrameKey];
-        const auto viewAnimation{[[NSViewAnimation alloc]
-            initWithViewAnimations:[NSArray arrayWithObjects:mutableDictionary,
-                                            nil]]};
-        [viewAnimation setAnimationCurve:NSAnimationEaseInOut];
-        viewAnimation.animationBlockingMode = NSAnimationNonblocking;
-        [viewAnimation setDuration:0.5];
-        [viewAnimation startAnimation];
+        animate(circleView,
+            NSMakeRect(circleView.frame.origin.x +
+                    (circleView.frame.size.width - shrunkenDotSizePixels) / 2,
+                circleView.frame.origin.y +
+                    (circleView.frame.size.height - shrunkenDotSizePixels) / 2,
+                shrunkenDotSizePixels, shrunkenDotSizePixels),
+            0.5);
     }
 
     void growDot() override {}
