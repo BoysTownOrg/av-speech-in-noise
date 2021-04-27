@@ -19,9 +19,9 @@ void Presenter::notifyThatAnimationHasFinished() {
     if (dotState == DotState::growing)
         moveDotTo(view, pointPresenting, dotState);
     else if (dotState == DotState::shrinking) {
+        dotState = DotState::shrunk;
         if (observer != nullptr)
             observer->notifyThatPointIsReady();
-        dotState = DotState::shrunk;
     } else {
         view.shrinkDot();
         dotState = DotState::shrinking;

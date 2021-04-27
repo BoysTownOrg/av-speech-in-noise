@@ -1,5 +1,6 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
+#include <functional>
 #include <presentation/EyeTrackerCalibration.hpp>
 #include <gtest/gtest.h>
 
@@ -19,9 +20,18 @@ class PresenterObserverStub : public Presenter::Observer {
         return notifiedThatPointIsReady_;
     }
 
-    void notifyThatPointIsReady() override { notifiedThatPointIsReady_ = true; }
+    void notifyThatPointIsReady() override {
+        notifiedThatPointIsReady_ = true;
+        if (callWhenNotifiedThatPointIsReady_)
+            callWhenNotifiedThatPointIsReady_();
+    }
+
+    void callWhenNotifiedThatPointIsReady(std::function<void()> f) {
+        callWhenNotifiedThatPointIsReady_ = std::move(f);
+    }
 
   private:
+    std::function<void()> callWhenNotifiedThatPointIsReady_;
     bool notifiedThatPointIsReady_{};
 };
 
@@ -94,11 +104,14 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(growsDotIfShrunk) {
     ViewStub view;
     Presenter presenter{view};
+    PresenterObserverStub observer;
+    presenter.attach(&observer);
     present(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.dotGrew());
     notifyObserverThatAnimationHasFinished(view);
+    observer.callWhenNotifiedThatPointIsReady(
+        [&presenter]() { present(presenter); });
     notifyObserverThatAnimationHasFinished(view);
-    present(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotGrew());
 }
 
