@@ -12,6 +12,7 @@
 #include <tobii_research_calibration.h>
 #include <screen_based_calibration_validation.h>
 #include <gsl/gsl>
+#include <utility>
 #include <vector>
 #include <thread>
 #include <algorithm>
@@ -110,7 +111,7 @@ struct CalibrationResult {
 namespace av_speech_in_noise {
 namespace eye_tracker_calibration {
 static void animate(NSView *view, NSRect endFrame, double durationSeconds,
-    View::Observer *observer) {
+    id<NSAnimationDelegate> delegate) {
     const auto mutableDictionary {
         [NSMutableDictionary
             dictionaryWithSharedKeySet:[NSDictionary sharedKeySetForKeys:@[
@@ -126,8 +127,6 @@ static void animate(NSView *view, NSRect endFrame, double durationSeconds,
     const auto viewAnimation{[[NSViewAnimation alloc]
         initWithViewAnimations:[NSArray
                                    arrayWithObjects:mutableDictionary, nil]]};
-    const auto delegate{[[EyeTrackerCalibrationAnimationDelegate alloc] init]};
-    delegate->observer = observer;
     [viewAnimation setDelegate:delegate];
     [viewAnimation setAnimationCurve:NSAnimationEaseInOut];
     viewAnimation.animationBlockingMode = NSAnimationNonblocking;
@@ -136,19 +135,20 @@ static void animate(NSView *view, NSRect endFrame, double durationSeconds,
 }
 
 namespace {
-class TobiiView : public View {
+class AppKitView : public View {
   public:
     static constexpr auto normalDotDiameterPoints{100};
     static constexpr auto shrunkenDotDiameterPoints{25};
 
-    explicit TobiiView(NSWindow *animatingWindow)
+    explicit AppKitView(NSWindow *animatingWindow)
         : circleView{[[CircleView alloc]
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
-                                normalDotDiameterPoints)]} {
+                                normalDotDiameterPoints)]},
+          delegate{[[EyeTrackerCalibrationAnimationDelegate alloc] init]} {
         [animatingWindow.contentViewController.view addSubview:circleView];
     }
 
-    void attach(Observer *a) override { observer = a; }
+    void attach(Observer *a) override { delegate->observer = a; }
 
     void moveDotTo(Point point) override {
         animate(circleView,
@@ -159,7 +159,7 @@ class TobiiView : public View {
                         circleView.window.contentLayoutRect.size.height -
                     circleView.frame.size.height / 2,
                 circleView.frame.size.width, circleView.frame.size.height),
-            1.5, observer);
+            1.5, delegate);
     }
 
     void shrinkDot() override {
@@ -171,7 +171,7 @@ class TobiiView : public View {
                     (circleView.frame.size.height - shrunkenDotDiameterPoints) /
                         2,
                 shrunkenDotDiameterPoints, shrunkenDotDiameterPoints),
-            0.5, observer);
+            0.5, delegate);
     }
 
     void growDot() override {
@@ -182,12 +182,12 @@ class TobiiView : public View {
                     (circleView.frame.size.height - normalDotDiameterPoints) /
                         2,
                 normalDotDiameterPoints, normalDotDiameterPoints),
-            0.5, observer);
+            0.5, delegate);
     }
 
   private:
-    Observer *observer{};
     CircleView *circleView;
+    EyeTrackerCalibrationAnimationDelegate *delegate;
 };
 }
 }
@@ -524,6 +524,42 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     return currentSystemTime;
 }
 
+namespace eye_tracker_calibration {
+static void present(
+    Presenter &presenter, std::vector<Point> &points, Point &point) {
+    if (!points.empty()) {
+        point = points.front();
+        points.erase(points.begin());
+        presenter.present(point);
+    }
+}
+
+namespace {
+class TobiiPresenterObserverStub : Presenter::Observer {
+  public:
+    explicit TobiiPresenterObserverStub(Presenter &presenter,
+        TobiiEyeTracker &eyeTracker, std::vector<Point> points)
+        : calibration{eyeTracker.calibration()}, points{std::move(points)},
+          presenter{presenter} {
+        presenter.attach(this);
+    }
+
+    void calibrate() { present(presenter, points, point); }
+
+    void notifyThatPointIsReady() override {
+        calibration.collect(point.x, point.y);
+        present(presenter, points, point);
+    }
+
+  private:
+    Point point{};
+    TobiiEyeTracker::Calibration calibration;
+    std::vector<Point> points;
+    Presenter &presenter;
+};
+}
+}
+
 static void setAnimationEndFrame(
     NSMutableDictionary *mutableDictionary, float x, float y, double size) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
@@ -683,7 +719,26 @@ void main() {
                            constant:-8]
     ]];
 
-    calibrate(eyeTracker);
+    const auto calibrationViewController{
+        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+    const auto subjectScreen{[[NSScreen screens] lastObject]};
+    const auto subjectScreenFrame{subjectScreen.frame};
+    calibrationViewController.view.frame = subjectScreenFrame;
+    const auto animatingWindow{
+        [NSWindow windowWithContentViewController:calibrationViewController]};
+    [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
+    [animatingWindow setFrame:subjectScreenFrame display:YES];
+    eye_tracker_calibration::AppKitView eyeTrackerCalibrationView{
+        animatingWindow};
+    eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
+        eyeTrackerCalibrationView};
+    eye_tracker_calibration::TobiiPresenterObserverStub
+        eyeTrackerCalibrationPresenterObserver{eyeTrackerCalibrationPresenter,
+            eyeTracker,
+            {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F},
+                {0.9F, 0.9F}}};
+    [animatingWindow makeKeyAndOrderFront:nil];
+    eyeTrackerCalibrationPresenterObserver.calibrate();
 
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController);
