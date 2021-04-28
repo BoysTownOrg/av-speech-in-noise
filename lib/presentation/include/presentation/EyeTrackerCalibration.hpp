@@ -2,14 +2,9 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_EYETRACKERCALIBRATION_HPP_
 
 #include <av-speech-in-noise/Interface.hpp>
+#include <recognition-test/EyeTrackerCalibration.hpp>
 
-namespace av_speech_in_noise {
-struct Point {
-    float x;
-    float y;
-};
-
-namespace eye_tracker_calibration {
+namespace av_speech_in_noise::eye_tracker_calibration {
 class View {
   public:
     class Observer {
@@ -24,28 +19,21 @@ class View {
     virtual void growDot() = 0;
 };
 
-class Presenter : public View::Observer {
+class Presenter : public View::Observer, public IPresenter {
   public:
-    class Observer {
-      public:
-        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
-        virtual void notifyThatPointIsReady() = 0;
-    };
-
     enum class DotState { idle, moving, shrinking, shrunk, growing };
 
     explicit Presenter(View &view) : view{view} { view.attach(this); }
-    void attach(Observer *a) { observer = a; }
-    void present(Point x);
+    void attach(IPresenter::Observer *a) override { observer = a; }
+    void present(Point x) override;
     void notifyThatAnimationHasFinished() override;
 
   private:
     Point pointPresenting{};
     View &view;
-    Observer *observer{};
+    IPresenter::Observer *observer{};
     DotState dotState{DotState::idle};
 };
-}
 }
 
 #endif

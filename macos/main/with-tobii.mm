@@ -535,7 +535,7 @@ static void present(
 }
 
 namespace {
-class TobiiPresenterObserverStub : Presenter::Observer {
+class TobiiPresenterObserverStub : IPresenter::Observer {
   public:
     explicit TobiiPresenterObserverStub(Presenter &presenter,
         TobiiEyeTracker &eyeTracker, std::vector<Point> points)

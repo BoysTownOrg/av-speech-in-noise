@@ -14,7 +14,7 @@ namespace eye_tracker_calibration {
 static void present(Presenter &p, Point x = {}) { p.present(x); }
 
 namespace {
-class PresenterObserverStub : public Presenter::Observer {
+class PresenterObserverStub : public IPresenter::Observer {
   public:
     [[nodiscard]] auto notifiedThatPointIsReady() const -> bool {
         return notifiedThatPointIsReady_;
