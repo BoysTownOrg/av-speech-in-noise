@@ -2,6 +2,8 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_EYE_TRACKER_CALIBRATION_HPP_
 
 #include <av-speech-in-noise/Interface.hpp>
+#include <utility>
+#include <vector>
 
 namespace av_speech_in_noise {
 struct Point {
@@ -22,7 +24,25 @@ class IPresenter {
     virtual void present(Point) = 0;
 };
 
-class Interactor {};
+class EyeTrackerCalibrator {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(EyeTrackerCalibrator);
+    virtual void calibrate(Point) = 0;
+};
+
+class Interactor : public IPresenter::Observer {
+  public:
+    explicit Interactor(IPresenter &presenter,
+        EyeTrackerCalibrator &eyeTrackerCalibrator, std::vector<Point> points)
+        : points{std::move(points)}, presenter{presenter} {}
+
+    void notifyThatPointIsReady() override {}
+    void calibrate() { presenter.present(points.front()); }
+
+  private:
+    std::vector<Point> points;
+    IPresenter &presenter;
+};
 }
 }
 
