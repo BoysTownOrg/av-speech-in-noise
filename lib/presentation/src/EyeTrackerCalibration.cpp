@@ -27,4 +27,9 @@ void Presenter::notifyThatAnimationHasFinished() {
         dotState = DotState::shrinking;
     }
 }
+
+void Presenter::present(const std::vector<Result> &results) {
+    view.drawRed(
+        {results.front().point, results.front().leftEyeMappedPoints.front()});
+}
 }

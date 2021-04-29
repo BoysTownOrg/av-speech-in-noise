@@ -5,6 +5,11 @@
 #include <recognition-test/EyeTrackerCalibration.hpp>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
+struct Line {
+    Point a;
+    Point b;
+};
+
 class View {
   public:
     class Observer {
@@ -17,6 +22,7 @@ class View {
     virtual void moveDotTo(Point) = 0;
     virtual void shrinkDot() = 0;
     virtual void growDot() = 0;
+    virtual void drawRed(Line) = 0;
 };
 
 class Presenter : public View::Observer, public IPresenter {
@@ -26,7 +32,7 @@ class Presenter : public View::Observer, public IPresenter {
     explicit Presenter(View &view) : view{view} { view.attach(this); }
     void attach(IPresenter::Observer *a) override { observer = a; }
     void present(Point x) override;
-    void present(const std::vector<Result> &) override {}
+    void present(const std::vector<Result> &) override;
     void notifyThatAnimationHasFinished() override;
 
   private:

@@ -13,6 +13,19 @@ static void assertEqual(Point expected, Point actual) {
 namespace eye_tracker_calibration {
 static void present(Presenter &p, Point x = {}) { p.present(x); }
 
+static void assertEqual(Line expected, Line actual) {
+    assertEqual(expected.a, actual.a);
+    assertEqual(expected.b, actual.b);
+}
+
+template <typename T>
+static void assertEqual(
+    const std::vector<T> &expected, const std::vector<T> &actual) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.size(), actual.size());
+    for (typename std::vector<T>::size_type i{0}; i < expected.size(); ++i)
+        assertEqual(expected.at(i), actual.at(i));
+}
+
 namespace {
 class PresenterObserverStub : public IPresenter::Observer {
   public:
@@ -39,7 +52,9 @@ class ViewStub : public View {
   public:
     void attach(Observer *a) override { observer = a; }
 
-    auto pointDotMovedTo() -> Point { return pointDotMovedTo_; }
+    [[nodiscard]] auto pointDotMovedTo() const -> Point {
+        return pointDotMovedTo_;
+    }
 
     void moveDotTo(Point x) override { pointDotMovedTo_ = x; }
 
@@ -47,7 +62,7 @@ class ViewStub : public View {
 
     void shrinkDot() override { dotShrinked_ = true; }
 
-    void notifyObserverThatAnimationHasFinished() {
+    void notifyObserverThatAnimationHasFinished() const {
         observer->notifyThatAnimationHasFinished();
     }
 
@@ -55,7 +70,12 @@ class ViewStub : public View {
 
     void growDot() override { dotGrew_ = true; }
 
+    auto redLinesDrawn() -> std::vector<Line> { return redLinesDrawn_; }
+
+    void drawRed(Line line) { redLinesDrawn_.push_back(line); }
+
   private:
+    std::vector<Line> redLinesDrawn_;
     Observer *observer{};
     Point pointDotMovedTo_{};
     bool dotShrinked_{};
@@ -124,6 +144,18 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotAfterItGrows) {
     present(presenter, {0.1F, 0.2F});
     notifyObserverThatAnimationHasFinished(view);
     assertEqual(Point{0.1F, 0.2F}, view.pointDotMovedTo());
+}
+
+EYE_TRACKER_CALIBRATION_PRESENTER_TEST(results) {
+    ViewStub view;
+    Presenter presenter{view};
+    presenter.present({{{{0.11F, 0.22F}, {0.33F, 0.44F}},
+                           {{0.55F, 0.66F}, {0.77F, 0.88F}}, {0.1F, 0.2F}},
+        {{{0.99F, 0.111F}, {0.222F, 0.333F}},
+            {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
+        {{{0.888F, 0.999F}, {0.01F, 0.02F}}, {{0.03F, 0.04F}, {0.05F, 0.06F}},
+            {0.5F, 0.6F}}});
+    assertEqual(Line{{0.1F, 0.2F}, {0.11F, 0.22F}}, view.redLinesDrawn().at(0));
 }
 }
 }
