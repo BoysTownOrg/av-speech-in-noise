@@ -12,6 +12,12 @@ struct Point {
 };
 
 namespace eye_tracker_calibration {
+struct Result {
+    std::vector<Point> leftEyeMappedPoints;
+    std::vector<Point> rightEyeMappedPoints;
+    Point point{};
+};
+
 class IPresenter {
   public:
     class Observer {
@@ -22,12 +28,14 @@ class IPresenter {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(IPresenter);
     virtual void attach(Observer *) = 0;
     virtual void present(Point) = 0;
+    virtual void present(const Result &) = 0;
 };
 
 class EyeTrackerCalibrator {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(EyeTrackerCalibrator);
     virtual void calibrate(Point) = 0;
+    virtual auto result() -> const Result & = 0;
 };
 
 class Interactor : public IPresenter::Observer {

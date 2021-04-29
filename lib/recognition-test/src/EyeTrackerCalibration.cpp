@@ -21,6 +21,8 @@ Interactor::Interactor(IPresenter &presenter, EyeTrackerCalibrator &calibrator,
 void Interactor::notifyThatPointIsReady() {
     calibrator.calibrate(consumeOne(points));
     present(presenter, points);
+    if (points.empty())
+        presenter.present(calibrator.result());
 }
 
 void Interactor::calibrate() { present(presenter, points); }

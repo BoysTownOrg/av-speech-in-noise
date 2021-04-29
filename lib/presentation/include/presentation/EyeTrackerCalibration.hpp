@@ -26,6 +26,7 @@ class Presenter : public View::Observer, public IPresenter {
     explicit Presenter(View &view) : view{view} { view.attach(this); }
     void attach(IPresenter::Observer *a) override { observer = a; }
     void present(Point x) override;
+    void present(const Result &) override {}
     void notifyThatAnimationHasFinished() override;
 
   private:

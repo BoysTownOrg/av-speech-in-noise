@@ -13,11 +13,14 @@ class IPresenterStub : public IPresenter {
   public:
     void attach(Observer *a) override { observer = a; }
     void present(Point x) override { presentedPoint_ = x; }
+    void present(const Result &r) { result_ = &r; }
     void notifyThatPointIsReady() { observer->notifyThatPointIsReady(); }
     auto presentedPoint() -> Point { return presentedPoint_; }
+    auto result() -> const Result * { return result_; }
 
   private:
     Point presentedPoint_{};
+    const Result *result_{};
     Observer *observer{};
 };
 
@@ -27,7 +30,12 @@ class EyeTrackerCalibratorStub : public EyeTrackerCalibrator {
 
     auto calibratedPoint() -> Point { return calibratedPoint_; }
 
+    void set(const Result &r) { result_ = &r; }
+
+    auto result() -> const Result & override { return *result_; }
+
   private:
+    const Result *result_{};
     Point calibratedPoint_{};
 };
 
@@ -63,6 +71,16 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(doesNotPresentAnymorePoints) {
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
     assertEqual(Point{0.5F, 0.6F}, presenter.presentedPoint());
+}
+
+EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
+    presentsResultsAfterFinalPointCalibrated) {
+    Result result;
+    calibrator.set(result);
+    presenter.notifyThatPointIsReady();
+    presenter.notifyThatPointIsReady();
+    presenter.notifyThatPointIsReady();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&result, presenter.result());
 }
 }
 }
