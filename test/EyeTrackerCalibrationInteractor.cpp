@@ -31,25 +31,23 @@ class EyeTrackerCalibratorStub : public EyeTrackerCalibrator {
     Point calibratedPoint_{};
 };
 
-class EyeTrackerCalibrationInteractorTests : public ::testing::Test {};
+class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
+  protected:
+    IPresenterStub presenter;
+    EyeTrackerCalibratorStub calibrator;
+    Interactor interactor{
+        presenter, calibrator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
+};
 
 #define EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(a)                             \
     TEST_F(EyeTrackerCalibrationInteractorTests, a)
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsFirstPointOnCalibrate) {
-    IPresenterStub presenter;
-    EyeTrackerCalibratorStub calibrator;
-    Interactor interactor{
-        presenter, calibrator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
     interactor.calibrate();
     assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(calibratesPointWhenPointReady) {
-    IPresenterStub presenter;
-    EyeTrackerCalibratorStub calibrator;
-    Interactor interactor{
-        presenter, calibrator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
     presenter.notifyThatPointIsReady();
     assertEqual(Point{0.1F, 0.2F}, calibrator.calibratedPoint());
 }
