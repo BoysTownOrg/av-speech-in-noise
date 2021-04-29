@@ -73,7 +73,7 @@ class ViewStub : public View {
         return whiteCircleCenters_;
     }
 
-    void drawWhiteCircleWithCenter(Point x) {
+    void drawWhiteCircleWithCenter(Point x) override {
         whiteCircleCenters_.push_back(x);
     }
 
