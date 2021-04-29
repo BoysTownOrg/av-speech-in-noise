@@ -37,7 +37,8 @@ static auto consumeOne(std::vector<Point> &x) -> Point {
 }
 
 static void present(IPresenter &presenter, const std::vector<Point> &points) {
-    presenter.present(points.front());
+    if (!points.empty())
+        presenter.present(points.front());
 }
 
 class Interactor : public IPresenter::Observer {
