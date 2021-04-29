@@ -29,7 +29,9 @@ void Presenter::notifyThatAnimationHasFinished() {
 }
 
 void Presenter::present(const std::vector<Result> &results) {
-    view.drawRed(
-        {results.front().point, results.front().leftEyeMappedPoints.front()});
+    for (const auto &result : results) {
+        for (const auto leftEyeMappedPoint : result.leftEyeMappedPoints)
+            view.drawRed({result.point, leftEyeMappedPoint});
+    }
 }
 }

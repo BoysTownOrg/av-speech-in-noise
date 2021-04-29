@@ -148,6 +148,7 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(results) {
         {{{0.888F, 0.999F}, {0.01F, 0.02F}}, {{0.03F, 0.04F}, {0.05F, 0.06F}},
             {0.5F, 0.6F}}});
     assertEqual(Line{{0.1F, 0.2F}, {0.11F, 0.22F}}, view.redLinesDrawn().at(0));
+    assertEqual(Line{{0.1F, 0.2F}, {0.33F, 0.44F}}, view.redLinesDrawn().at(1));
 }
 }
 }
