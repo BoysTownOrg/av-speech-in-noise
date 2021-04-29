@@ -23,6 +23,7 @@ class View {
     virtual void shrinkDot() = 0;
     virtual void growDot() = 0;
     virtual void drawRed(Line) = 0;
+    virtual void drawGreen(Line) = 0;
 };
 
 class Presenter : public View::Observer, public IPresenter {

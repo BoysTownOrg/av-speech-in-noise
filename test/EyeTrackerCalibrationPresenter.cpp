@@ -64,10 +64,15 @@ class ViewStub : public View {
 
     auto redLinesDrawn() -> std::vector<Line> { return redLinesDrawn_; }
 
-    void drawRed(Line line) { redLinesDrawn_.push_back(line); }
+    void drawRed(Line line) override { redLinesDrawn_.push_back(line); }
+
+    void drawGreen(Line line) { greenLinesDrawn_.push_back(line); }
+
+    auto greenLinesDrawn() -> std::vector<Line> { return greenLinesDrawn_; }
 
   private:
     std::vector<Line> redLinesDrawn_;
+    std::vector<Line> greenLinesDrawn_;
     Observer *observer{};
     Point pointDotMovedTo_{};
     bool dotShrinked_{};
@@ -152,6 +157,11 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(results) {
             {{0.3F, 0.4F}, {0.99F, 0.111F}}, {{0.3F, 0.4F}, {0.222F, 0.333F}},
             {{0.5F, 0.6F}, {0.888F, 0.999F}}, {{0.5F, 0.6F}, {0.01F, 0.02F}}},
         view.redLinesDrawn(), assertEqual);
+    ::assertEqual<Line>(
+        {{{0.1F, 0.2F}, {0.55F, 0.66F}}, {{0.1F, 0.2F}, {0.77F, 0.88F}},
+            {{0.3F, 0.4F}, {0.444F, 0.555F}}, {{0.3F, 0.4F}, {0.666F, 0.777F}},
+            {{0.5F, 0.6F}, {0.03F, 0.04F}}, {{0.5F, 0.6F}, {0.05F, 0.06F}}},
+        view.greenLinesDrawn(), assertEqual);
 }
 }
 }

@@ -30,8 +30,10 @@ void Presenter::notifyThatAnimationHasFinished() {
 
 void Presenter::present(const std::vector<Result> &results) {
     for (const auto &result : results) {
-        for (const auto leftEyeMappedPoint : result.leftEyeMappedPoints)
-            view.drawRed({result.point, leftEyeMappedPoint});
+        for (const auto point : result.leftEyeMappedPoints)
+            view.drawRed({result.point, point});
+        for (const auto point : result.rightEyeMappedPoints)
+            view.drawGreen({result.point, point});
     }
 }
 }
