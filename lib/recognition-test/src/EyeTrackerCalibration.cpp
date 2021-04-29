@@ -22,7 +22,7 @@ void Interactor::notifyThatPointIsReady() {
     calibrator.calibrate(consumeOne(points));
     present(presenter, points);
     if (points.empty())
-        presenter.present(calibrator.result());
+        presenter.present(calibrator.results());
 }
 
 void Interactor::calibrate() { present(presenter, points); }

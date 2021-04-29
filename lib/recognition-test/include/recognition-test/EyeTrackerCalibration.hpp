@@ -28,14 +28,14 @@ class IPresenter {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(IPresenter);
     virtual void attach(Observer *) = 0;
     virtual void present(Point) = 0;
-    virtual void present(const Result &) = 0;
+    virtual void present(const std::vector<Result> &) = 0;
 };
 
 class EyeTrackerCalibrator {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(EyeTrackerCalibrator);
     virtual void calibrate(Point) = 0;
-    virtual auto result() -> const Result & = 0;
+    virtual auto results() -> const std::vector<Result> & = 0;
 };
 
 class Interactor : public IPresenter::Observer {

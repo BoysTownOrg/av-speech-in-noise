@@ -13,14 +13,14 @@ class IPresenterStub : public IPresenter {
   public:
     void attach(Observer *a) override { observer = a; }
     void present(Point x) override { presentedPoint_ = x; }
-    void present(const Result &r) { result_ = &r; }
+    void present(const std::vector<Result> &r) override { results_ = &r; }
     void notifyThatPointIsReady() { observer->notifyThatPointIsReady(); }
     auto presentedPoint() -> Point { return presentedPoint_; }
-    auto result() -> const Result * { return result_; }
+    auto results() -> const std::vector<Result> * { return results_; }
 
   private:
     Point presentedPoint_{};
-    const Result *result_{};
+    const std::vector<Result> *results_{};
     Observer *observer{};
 };
 
@@ -30,12 +30,12 @@ class EyeTrackerCalibratorStub : public EyeTrackerCalibrator {
 
     auto calibratedPoint() -> Point { return calibratedPoint_; }
 
-    void set(const Result &r) { result_ = &r; }
+    void set(const std::vector<Result> &r) { results_ = &r; }
 
-    auto result() -> const Result & override { return *result_; }
+    auto results() -> const std::vector<Result> & override { return *results_; }
 
   private:
-    const Result *result_{};
+    const std::vector<Result> *results_{};
     Point calibratedPoint_{};
 };
 
@@ -75,12 +75,12 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(doesNotPresentAnymorePoints) {
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     presentsResultsAfterFinalPointCalibrated) {
-    Result result;
-    calibrator.set(result);
+    std::vector<Result> results;
+    calibrator.set(results);
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&result, presenter.result());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&results, presenter.results());
 }
 }
 }

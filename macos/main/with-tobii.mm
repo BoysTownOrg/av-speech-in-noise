@@ -266,6 +266,8 @@ class TobiiEyeTracker : public EyeTracker {
                 eyetracker, p.x, p.y);
         }
 
+        auto result() -> const eye_tracker_calibration::Result & {}
+
         class ComputeAndApply;
 
         auto computeAndApply() -> ComputeAndApply {
