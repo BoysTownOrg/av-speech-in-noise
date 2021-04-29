@@ -32,9 +32,9 @@ void Presenter::present(const std::vector<Result> &results) {
     for (const auto &result : results) {
         view.drawWhiteCircleWithCenter(result.point);
         for (const auto point : result.leftEyeMappedPoints)
-            view.drawRed({result.point, point});
+            view.drawRed(Line{result.point, point});
         for (const auto point : result.rightEyeMappedPoints)
-            view.drawGreen({result.point, point});
+            view.drawGreen(Line{result.point, point});
     }
 }
 }
