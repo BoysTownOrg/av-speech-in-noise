@@ -531,17 +531,6 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     return currentSystemTime;
 }
 
-namespace eye_tracker_calibration {
-static void present(
-    Presenter &presenter, std::vector<Point> &points, Point &point) {
-    if (!points.empty()) {
-        point = points.front();
-        points.erase(points.begin());
-        presenter.present(point);
-    }
-}
-}
-
 static void setAnimationEndFrame(
     NSMutableDictionary *mutableDictionary, float x, float y, double size) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
