@@ -266,7 +266,8 @@ class TobiiEyeTracker : public EyeTracker {
                 eyetracker, p.x, p.y);
         }
 
-        auto results() -> const std::vector<eye_tracker_calibration::Result> & {
+        auto results()
+            -> std::vector<eye_tracker_calibration::Result> override {
             ComputeAndApply computeAndApply{eyetracker};
             return computeAndApply.results();
         }
