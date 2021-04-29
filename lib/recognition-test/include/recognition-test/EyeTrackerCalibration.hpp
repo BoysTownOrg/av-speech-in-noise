@@ -36,6 +36,10 @@ static auto consumeOne(std::vector<Point> &x) -> Point {
     return point;
 }
 
+static void present(IPresenter &presenter, const std::vector<Point> &points) {
+    presenter.present(points.front());
+}
+
 class Interactor : public IPresenter::Observer {
   public:
     explicit Interactor(IPresenter &presenter, EyeTrackerCalibrator &calibrator,
@@ -47,10 +51,10 @@ class Interactor : public IPresenter::Observer {
 
     void notifyThatPointIsReady() override {
         calibrator.calibrate(consumeOne(points));
-        presenter.present(points.front());
+        present(presenter, points);
     }
 
-    void calibrate() { presenter.present(points.front()); }
+    void calibrate() { present(presenter, points); }
 
   private:
     std::vector<Point> points;
