@@ -266,7 +266,10 @@ class TobiiEyeTracker : public EyeTracker {
                 eyetracker, p.x, p.y);
         }
 
-        auto result() -> const eye_tracker_calibration::Result & {}
+        auto results() -> const std::vector<eye_tracker_calibration::Result> & {
+            ComputeAndApply computeAndApply{eyetracker};
+            return computeAndApply.results();
+        }
 
         class ComputeAndApply;
 
@@ -291,10 +294,10 @@ class TobiiEyeTracker : public EyeTracker {
                     result->status == TOBII_RESEARCH_CALIBRATION_SUCCESS;
             }
 
-            auto results() -> std::vector<CalibrationResult> {
+            auto results() -> std::vector<eye_tracker_calibration::Result> {
                 if (result == nullptr)
                     return {};
-                std::vector<CalibrationResult> results{
+                std::vector<eye_tracker_calibration::Result> results{
                     result->calibration_point_count};
                 const gsl::span<TobiiResearchCalibrationPoint>
                     calibrationPoints{result->calibration_points,

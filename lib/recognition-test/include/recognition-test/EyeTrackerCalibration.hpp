@@ -35,7 +35,7 @@ class EyeTrackerCalibrator {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(EyeTrackerCalibrator);
     virtual void calibrate(Point) = 0;
-    virtual auto results() -> const std::vector<Result> & = 0;
+    virtual auto results() -> std::vector<Result> = 0;
 };
 
 class Interactor : public IPresenter::Observer {

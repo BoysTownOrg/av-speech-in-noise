@@ -1,5 +1,6 @@
 #include "assert-utility.hpp"
 #include <recognition-test/EyeTrackerCalibration.hpp>
+#include <utility>
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
@@ -8,19 +9,33 @@ static void assertEqual(Point expected, Point actual) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.y, actual.y);
 }
 
+template <typename T>
+static void assertEqual(
+    const std::vector<T> &expected, const std::vector<T> &actual) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.size(), actual.size());
+    for (typename std::vector<T>::size_type i{0}; i < expected.size(); ++i)
+        assertEqual(expected.at(i), actual.at(i));
+}
+
+static void assertEqual(const Result &expected, const Result &actual) {
+    assertEqual(expected.leftEyeMappedPoints, actual.leftEyeMappedPoints);
+    assertEqual(expected.rightEyeMappedPoints, actual.rightEyeMappedPoints);
+    assertEqual(expected.point, actual.point);
+}
+
 namespace {
 class IPresenterStub : public IPresenter {
   public:
     void attach(Observer *a) override { observer = a; }
     void present(Point x) override { presentedPoint_ = x; }
-    void present(const std::vector<Result> &r) override { results_ = &r; }
+    void present(const std::vector<Result> &r) override { results_ = r; }
     void notifyThatPointIsReady() { observer->notifyThatPointIsReady(); }
     auto presentedPoint() -> Point { return presentedPoint_; }
-    auto results() -> const std::vector<Result> * { return results_; }
+    auto results() -> std::vector<Result> { return results_; }
 
   private:
     Point presentedPoint_{};
-    const std::vector<Result> *results_{};
+    std::vector<Result> results_{};
     Observer *observer{};
 };
 
@@ -30,12 +45,12 @@ class EyeTrackerCalibratorStub : public EyeTrackerCalibrator {
 
     auto calibratedPoint() -> Point { return calibratedPoint_; }
 
-    void set(const std::vector<Result> &r) { results_ = &r; }
+    void set(std::vector<Result> r) { results_ = std::move(r); }
 
-    auto results() -> const std::vector<Result> & override { return *results_; }
+    auto results() -> std::vector<Result> override { return results_; }
 
   private:
-    const std::vector<Result> *results_{};
+    std::vector<Result> results_{};
     Point calibratedPoint_{};
 };
 
@@ -76,11 +91,22 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(doesNotPresentAnymorePoints) {
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     presentsResultsAfterFinalPointCalibrated) {
     std::vector<Result> results;
-    calibrator.set(results);
+    calibrator.set({{{{0.11F, 0.22F}, {0.33F, 0.44F}},
+                        {{0.55F, 0.66F}, {0.77F, 0.88F}}, {0.1F, 0.2F}},
+        {{{0.99F, 0.111F}, {0.222F, 0.333F}},
+            {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
+        {{{0.888F, 0.999F}, {0.01F, 0.02F}}, {{0.03F, 0.04F}, {0.05F, 0.06F}},
+            {0.5F, 0.6F}}});
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&results, presenter.results());
+    assertEqual({{{{0.11F, 0.22F}, {0.33F, 0.44F}},
+                     {{0.55F, 0.66F}, {0.77F, 0.88F}}, {0.1F, 0.2F}},
+                    {{{0.99F, 0.111F}, {0.222F, 0.333F}},
+                        {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
+                    {{{0.888F, 0.999F}, {0.01F, 0.02F}},
+                        {{0.03F, 0.04F}, {0.05F, 0.06F}}, {0.5F, 0.6F}}},
+        presenter.results());
 }
 }
 }
