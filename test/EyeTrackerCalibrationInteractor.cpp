@@ -51,5 +51,11 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(calibratesPointWhenPointReady) {
     presenter.notifyThatPointIsReady();
     assertEqual(Point{0.1F, 0.2F}, calibrator.calibratedPoint());
 }
+
+EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
+    presentsNextPointAfterCalibratingPrevious) {
+    presenter.notifyThatPointIsReady();
+    assertEqual(Point{0.3F, 0.4F}, presenter.presentedPoint());
+}
 }
 }

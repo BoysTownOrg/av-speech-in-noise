@@ -30,6 +30,12 @@ class EyeTrackerCalibrator {
     virtual void calibrate(Point) = 0;
 };
 
+static auto consumeOne(std::vector<Point> &x) -> Point {
+    auto point = x.front();
+    x.erase(x.begin());
+    return point;
+}
+
 class Interactor : public IPresenter::Observer {
   public:
     explicit Interactor(IPresenter &presenter, EyeTrackerCalibrator &calibrator,
@@ -40,7 +46,8 @@ class Interactor : public IPresenter::Observer {
     }
 
     void notifyThatPointIsReady() override {
-        calibrator.calibrate(points.front());
+        calibrator.calibrate(consumeOne(points));
+        presenter.present(points.front());
     }
 
     void calibrate() { presenter.present(points.front()); }
