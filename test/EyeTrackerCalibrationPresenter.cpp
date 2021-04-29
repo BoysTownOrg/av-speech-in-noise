@@ -4,13 +4,12 @@
 #include <presentation/EyeTrackerCalibration.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise {
+namespace av_speech_in_noise::eye_tracker_calibration {
 static void assertEqual(Point expected, Point actual) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.x, actual.x);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.y, actual.y);
 }
 
-namespace eye_tracker_calibration {
 static void present(Presenter &p, Point x = {}) { p.present(x); }
 
 static void assertEqual(Line expected, Line actual) {
@@ -66,13 +65,22 @@ class ViewStub : public View {
 
     void drawRed(Line line) override { redLinesDrawn_.push_back(line); }
 
-    void drawGreen(Line line) { greenLinesDrawn_.push_back(line); }
+    void drawGreen(Line line) override { greenLinesDrawn_.push_back(line); }
 
     auto greenLinesDrawn() -> std::vector<Line> { return greenLinesDrawn_; }
+
+    auto whiteCircleCenters() -> std::vector<Point> {
+        return whiteCircleCenters_;
+    }
+
+    void drawWhiteCircleWithCenter(Point x) {
+        whiteCircleCenters_.push_back(x);
+    }
 
   private:
     std::vector<Line> redLinesDrawn_;
     std::vector<Line> greenLinesDrawn_;
+    std::vector<Point> whiteCircleCenters_;
     Observer *observer{};
     Point pointDotMovedTo_{};
     bool dotShrinked_{};
@@ -156,13 +164,17 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(results) {
         {{{0.1F, 0.2F}, {0.11F, 0.22F}}, {{0.1F, 0.2F}, {0.33F, 0.44F}},
             {{0.3F, 0.4F}, {0.99F, 0.111F}}, {{0.3F, 0.4F}, {0.222F, 0.333F}},
             {{0.5F, 0.6F}, {0.888F, 0.999F}}, {{0.5F, 0.6F}, {0.01F, 0.02F}}},
-        view.redLinesDrawn(), assertEqual);
+        view.redLinesDrawn(),
+        [](const Line &a, const Line &b) { assertEqual(a, b); });
     ::assertEqual<Line>(
         {{{0.1F, 0.2F}, {0.55F, 0.66F}}, {{0.1F, 0.2F}, {0.77F, 0.88F}},
             {{0.3F, 0.4F}, {0.444F, 0.555F}}, {{0.3F, 0.4F}, {0.666F, 0.777F}},
             {{0.5F, 0.6F}, {0.03F, 0.04F}}, {{0.5F, 0.6F}, {0.05F, 0.06F}}},
-        view.greenLinesDrawn(), assertEqual);
-}
+        view.greenLinesDrawn(),
+        [](const Line &a, const Line &b) { assertEqual(a, b); });
+    ::assertEqual<Point>({{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5F, 0.6F}},
+        view.whiteCircleCenters(),
+        [](const Point &a, const Point &b) { assertEqual(a, b); });
 }
 }
 }

@@ -30,6 +30,7 @@ void Presenter::notifyThatAnimationHasFinished() {
 
 void Presenter::present(const std::vector<Result> &results) {
     for (const auto &result : results) {
+        view.drawWhiteCircleWithCenter(result.point);
         for (const auto point : result.leftEyeMappedPoints)
             view.drawRed({result.point, point});
         for (const auto point : result.rightEyeMappedPoints)
