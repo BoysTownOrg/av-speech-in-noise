@@ -20,14 +20,6 @@
 #include <cstddef>
 #import <AppKit/AppKit.h>
 
-namespace av_speech_in_noise {
-struct CalibrationResult {
-    std::vector<Point> leftEyeMappedPoints;
-    std::vector<Point> rightEyeMappedPoints;
-    Point point{};
-};
-}
-
 @interface CircleView : NSView
 @end
 
@@ -45,7 +37,8 @@ struct CalibrationResult {
 
 @implementation CalibrationResultView {
   @public
-    std::vector<av_speech_in_noise::CalibrationResult> calibrationResults;
+    std::vector<av_speech_in_noise::eye_tracker_calibration::Result>
+        calibrationResults;
 }
 - (void)drawRect:(NSRect)rect {
     for (const auto &result : calibrationResults) {
@@ -306,7 +299,7 @@ class TobiiEyeTracker : public EyeTracker {
                 std::transform(calibrationPoints.begin(),
                     calibrationPoints.end(), std::back_inserter(results),
                     [](const TobiiResearchCalibrationPoint &p) {
-                        CalibrationResult transformedResult;
+                        eye_tracker_calibration::Result transformedResult;
                         const gsl::span<TobiiResearchCalibrationSample>
                             calibrationSamples{p.calibration_samples,
                                 p.calibration_sample_count};
