@@ -23,7 +23,12 @@ class IPresenterStub : public IPresenter {
 
 class EyeTrackerCalibratorStub : public EyeTrackerCalibrator {
   public:
-    void calibrate(Point) override {}
+    void calibrate(Point x) override { calibratedPoint_ = x; }
+
+    auto calibratedPoint() -> Point { return calibratedPoint_; }
+
+  private:
+    Point calibratedPoint_{};
 };
 
 class EyeTrackerCalibrationInteractorTests : public ::testing::Test {};
@@ -38,6 +43,15 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsFirstPointOnCalibrate) {
         presenter, calibrator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
     interactor.calibrate();
     assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
+}
+
+EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(calibratesPointWhenPointReady) {
+    IPresenterStub presenter;
+    EyeTrackerCalibratorStub calibrator;
+    Interactor interactor{
+        presenter, calibrator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
+    presenter.notifyThatPointIsReady();
+    assertEqual(Point{0.1F, 0.2F}, calibrator.calibratedPoint());
 }
 }
 }

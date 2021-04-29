@@ -32,16 +32,23 @@ class EyeTrackerCalibrator {
 
 class Interactor : public IPresenter::Observer {
   public:
-    explicit Interactor(IPresenter &presenter,
-        EyeTrackerCalibrator &eyeTrackerCalibrator, std::vector<Point> points)
-        : points{std::move(points)}, presenter{presenter} {}
+    explicit Interactor(IPresenter &presenter, EyeTrackerCalibrator &calibrator,
+        std::vector<Point> points)
+        : points{std::move(points)}, presenter{presenter}, calibrator{
+                                                               calibrator} {
+        presenter.attach(this);
+    }
 
-    void notifyThatPointIsReady() override {}
+    void notifyThatPointIsReady() override {
+        calibrator.calibrate(points.front());
+    }
+
     void calibrate() { presenter.present(points.front()); }
 
   private:
     std::vector<Point> points;
     IPresenter &presenter;
+    EyeTrackerCalibrator &calibrator;
 };
 }
 }
