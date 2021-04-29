@@ -18,14 +18,6 @@ static void assertEqual(Line expected, Line actual) {
     assertEqual(expected.b, actual.b);
 }
 
-template <typename T>
-static void assertEqual(
-    const std::vector<T> &expected, const std::vector<T> &actual) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.size(), actual.size());
-    for (typename std::vector<T>::size_type i{0}; i < expected.size(); ++i)
-        assertEqual(expected.at(i), actual.at(i));
-}
-
 namespace {
 class PresenterObserverStub : public IPresenter::Observer {
   public:

@@ -4,22 +4,18 @@
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
-static void assertEqual(Point expected, Point actual) {
+static void assertEqual(const Point &expected, const Point &actual) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.x, actual.x);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.y, actual.y);
 }
 
-template <typename T>
-static void assertEqual(
-    const std::vector<T> &expected, const std::vector<T> &actual) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.size(), actual.size());
-    for (typename std::vector<T>::size_type i{0}; i < expected.size(); ++i)
-        assertEqual(expected.at(i), actual.at(i));
-}
-
 static void assertEqual(const Result &expected, const Result &actual) {
-    assertEqual(expected.leftEyeMappedPoints, actual.leftEyeMappedPoints);
-    assertEqual(expected.rightEyeMappedPoints, actual.rightEyeMappedPoints);
+    ::assertEqual<Point>(expected.leftEyeMappedPoints,
+        actual.leftEyeMappedPoints,
+        [](const Point &a, const Point &b) { assertEqual(a, b); });
+    ::assertEqual<Point>(expected.rightEyeMappedPoints,
+        actual.rightEyeMappedPoints,
+        [](const Point &a, const Point &b) { assertEqual(a, b); });
     assertEqual(expected.point, actual.point);
 }
 
@@ -100,13 +96,15 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
-    assertEqual({{{{0.11F, 0.22F}, {0.33F, 0.44F}},
-                     {{0.55F, 0.66F}, {0.77F, 0.88F}}, {0.1F, 0.2F}},
-                    {{{0.99F, 0.111F}, {0.222F, 0.333F}},
-                        {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
-                    {{{0.888F, 0.999F}, {0.01F, 0.02F}},
-                        {{0.03F, 0.04F}, {0.05F, 0.06F}}, {0.5F, 0.6F}}},
-        presenter.results());
+    ::assertEqual<Result>(
+        {{{{0.11F, 0.22F}, {0.33F, 0.44F}}, {{0.55F, 0.66F}, {0.77F, 0.88F}},
+             {0.1F, 0.2F}},
+            {{{0.99F, 0.111F}, {0.222F, 0.333F}},
+                {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
+            {{{0.888F, 0.999F}, {0.01F, 0.02F}},
+                {{0.03F, 0.04F}, {0.05F, 0.06F}}, {0.5F, 0.6F}}},
+        presenter.results(),
+        [](const Result &a, const Result &b) { assertEqual(a, b); });
 }
 }
 }
