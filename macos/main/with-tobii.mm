@@ -3,6 +3,7 @@
 #include "../AppKit-utility.h"
 #include <av-speech-in-noise/Interface.hpp>
 #include <presentation/EyeTrackerCalibration.hpp>
+#include <recognition-test/EyeTrackerCalibration.hpp>
 #include <chrono>
 #include <exception>
 #include <iterator>
@@ -241,7 +242,8 @@ class TobiiEyeTracker : public EyeTracker {
         char *address{};
     };
 
-    class Calibration : public NormalizedScreenCoordinateCollector {
+    class Calibration : public NormalizedScreenCoordinateCollector,
+                        public eye_tracker_calibration::EyeTrackerCalibrator {
       public:
         explicit Calibration(TobiiResearchEyeTracker *eyetracker)
             : eyetracker{eyetracker} {
@@ -257,6 +259,11 @@ class TobiiEyeTracker : public EyeTracker {
         void discard(float x, float y) {
             tobii_research_screen_based_calibration_discard_data(
                 eyetracker, x, y);
+        }
+
+        void calibrate(Point p) override {
+            tobii_research_screen_based_calibration_collect_data(
+                eyetracker, p.x, p.y);
         }
 
         class ComputeAndApply;
@@ -533,31 +540,6 @@ static void present(
         presenter.present(point);
     }
 }
-
-namespace {
-class TobiiPresenterObserverStub : IPresenter::Observer {
-  public:
-    explicit TobiiPresenterObserverStub(Presenter &presenter,
-        TobiiEyeTracker &eyeTracker, std::vector<Point> points)
-        : calibration{eyeTracker.calibration()}, points{std::move(points)},
-          presenter{presenter} {
-        presenter.attach(this);
-    }
-
-    void calibrate() { present(presenter, points, point); }
-
-    void notifyThatPointIsReady() override {
-        calibration.collect(point.x, point.y);
-        present(presenter, points, point);
-    }
-
-  private:
-    Point point{};
-    TobiiEyeTracker::Calibration calibration;
-    std::vector<Point> points;
-    Presenter &presenter;
-};
-}
 }
 
 static void setAnimationEndFrame(
@@ -732,13 +714,12 @@ void main() {
         animatingWindow};
     eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
         eyeTrackerCalibrationView};
-    eye_tracker_calibration::TobiiPresenterObserverStub
-        eyeTrackerCalibrationPresenterObserver{eyeTrackerCalibrationPresenter,
-            eyeTracker,
-            {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F},
-                {0.9F, 0.9F}}};
+    auto calibrator{eyeTracker.calibration()};
+    eye_tracker_calibration::Interactor interactor{
+        eyeTrackerCalibrationPresenter, calibrator,
+        {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
     [animatingWindow makeKeyAndOrderFront:nil];
-    eyeTrackerCalibrationPresenterObserver.calibrate();
+    interactor.calibrate();
 
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController);
