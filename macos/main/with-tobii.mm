@@ -32,10 +32,27 @@
 }
 @end
 
-@interface CalibrationResultView : NSView
+@interface AvSpeechInNoiseEyeTrackerCalibrationView : NSView
 @end
 
-@implementation CalibrationResultView {
+namespace av_speech_in_noise::eye_tracker_calibration {
+static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
+    NSBezierPath *path = [NSBezierPath bezierPath];
+    for (const auto &line : lines) {
+        [path
+            moveToPoint:NSMakePoint(line.a.x * rect.size.width + rect.origin.x,
+                            (1 - line.a.y) * rect.size.height + rect.origin.y)];
+        [path
+            lineToPoint:NSMakePoint(line.b.x * rect.size.width + rect.origin.x,
+                            (1 - line.b.y) * rect.size.height + rect.origin.y)];
+    }
+    [path closePath];
+    [color set];
+    [path stroke];
+}
+}
+
+@implementation AvSpeechInNoiseEyeTrackerCalibrationView {
   @public
     std::vector<av_speech_in_noise::eye_tracker_calibration::Line> redLines;
     std::vector<av_speech_in_noise::eye_tracker_calibration::Line> greenLines;
@@ -55,38 +72,16 @@
     }
     [[NSColor whiteColor] set];
     [circlePath fill];
-    NSBezierPath *greenLinePath = [NSBezierPath bezierPath];
-    for (const auto &line : greenLines) {
-        [greenLinePath
-            moveToPoint:NSMakePoint(line.a.x * rect.size.width + rect.origin.x,
-                            (1 - line.a.y) * rect.size.height + rect.origin.y)];
-        [greenLinePath
-            lineToPoint:NSMakePoint(line.b.x * rect.size.width + rect.origin.x,
-                            (1 - line.b.y) * rect.size.height + rect.origin.y)];
-    }
-    [greenLinePath closePath];
-    [[NSColor greenColor] set];
-    [greenLinePath stroke];
-    NSBezierPath *redLinePath = [NSBezierPath bezierPath];
-    for (const auto &line : redLines) {
-        [redLinePath
-            moveToPoint:NSMakePoint(line.a.x * rect.size.width + rect.origin.x,
-                            (1 - line.a.y) * rect.size.height + rect.origin.y)];
-        [redLinePath
-            lineToPoint:NSMakePoint(line.b.x * rect.size.width + rect.origin.x,
-                            (1 - line.b.y) * rect.size.height + rect.origin.y)];
-    }
-    [redLinePath closePath];
-    [[NSColor redColor] set];
-    [redLinePath stroke];
+    draw(rect, greenLines, [NSColor greenColor]);
+    draw(rect, redLines, [NSColor redColor]);
 }
 @end
 
-@interface EyeTrackerCalibrationAnimationDelegate
+@interface AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate
     : NSObject <NSAnimationDelegate>
 @end
 
-@implementation EyeTrackerCalibrationAnimationDelegate {
+@implementation AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate {
   @public
     av_speech_in_noise::eye_tracker_calibration::View::Observer *observer;
 }
@@ -131,9 +126,10 @@ class AppKitView : public View {
         : circleView{[[CircleView alloc]
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
                                 normalDotDiameterPoints)]},
-          view{[[CalibrationResultView alloc]
+          view{[[AvSpeechInNoiseEyeTrackerCalibrationView alloc]
               initWithFrame:animatingWindow.frame]},
-          delegate{[[EyeTrackerCalibrationAnimationDelegate alloc] init]} {
+          delegate{[[AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate
+              alloc] init]} {
         [animatingWindow.contentViewController.view addSubview:view];
         [view addSubview:circleView];
     }
@@ -183,8 +179,8 @@ class AppKitView : public View {
 
   private:
     CircleView *circleView;
-    CalibrationResultView *view;
-    EyeTrackerCalibrationAnimationDelegate *delegate;
+    AvSpeechInNoiseEyeTrackerCalibrationView *view;
+    AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate *delegate;
 };
 }
 }
