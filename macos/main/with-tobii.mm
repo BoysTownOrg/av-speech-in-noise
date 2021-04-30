@@ -192,13 +192,6 @@ static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
         : eyeTrackers->eyetrackers[0];
 }
 
-class NormalizedScreenCoordinateCollector {
-  public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
-        NormalizedScreenCoordinateCollector);
-    virtual void collect(float x, float y) = 0;
-};
-
 class TobiiEyeTracker : public EyeTracker {
   public:
     TobiiEyeTracker();
@@ -234,18 +227,12 @@ class TobiiEyeTracker : public EyeTracker {
         char *address{};
     };
 
-    class Calibration : public NormalizedScreenCoordinateCollector,
-                        public eye_tracker_calibration::EyeTrackerCalibrator {
+    class Calibration : public eye_tracker_calibration::EyeTrackerCalibrator {
       public:
         explicit Calibration(TobiiResearchEyeTracker *eyetracker)
             : eyetracker{eyetracker} {
             tobii_research_screen_based_calibration_enter_calibration_mode(
                 eyetracker);
-        }
-
-        void collect(float x, float y) override {
-            tobii_research_screen_based_calibration_collect_data(
-                eyetracker, x, y);
         }
 
         void discard(float x, float y) {
@@ -394,7 +381,7 @@ class TobiiEyeTracker : public EyeTracker {
                     validator);
         }
 
-        class Enter : public NormalizedScreenCoordinateCollector {
+        class Enter {
           public:
             explicit Enter(CalibrationValidator *validator)
                 : validator{validator} {
@@ -403,7 +390,7 @@ class TobiiEyeTracker : public EyeTracker {
                         validator);
             }
 
-            void collect(float x, float y) override {
+            void collect(float x, float y) {
                 TobiiResearchNormalizedPoint2D point{x, y};
                 if (validator != nullptr)
                     tobii_research_screen_based_calibration_validation_start_collecting_data(
@@ -418,7 +405,7 @@ class TobiiEyeTracker : public EyeTracker {
 
             auto result() -> Result { return Result{validator}; }
 
-            ~Enter() override {
+            ~Enter() {
                 if (validator != nullptr)
                     tobii_research_screen_based_calibration_validation_leave_validation_mode(
                         validator);
@@ -588,80 +575,7 @@ static void animate(NSViewAnimation *viewAnimation,
     [viewAnimation startAnimation];
 }
 
-static void collect(NormalizedScreenCoordinateCollector &collector,
-    NSViewAnimation *viewAnimation, NSMutableDictionary *mutableDictionary,
-    float x, float y, double fullSize, double shrunkSize,
-    double translateDurationSeconds, double growShrinkDurationSeconds) {
-    animate(viewAnimation, mutableDictionary, x, y, fullSize,
-        translateDurationSeconds);
-    animate(viewAnimation, mutableDictionary, x, y, shrunkSize,
-        growShrinkDurationSeconds);
-    collector.collect(x, y);
-    animate(viewAnimation, mutableDictionary, x, y, fullSize,
-        growShrinkDurationSeconds);
-}
-
-static void calibrate(TobiiEyeTracker &eyeTracker) {
-    const auto calibrationViewController{
-        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
-    const auto subjectScreen{[[NSScreen screens] lastObject]};
-    const auto subjectScreenFrame{subjectScreen.frame};
-    calibrationViewController.view.frame = subjectScreenFrame;
-    const auto circleView{
-        [[CircleView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)]};
-    [calibrationViewController.view addSubview:circleView];
-    const auto animatingWindow{
-        [NSWindow windowWithContentViewController:calibrationViewController]};
-    [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
-    [animatingWindow setFrame:subjectScreenFrame display:YES];
-    [animatingWindow makeKeyAndOrderFront:nil];
-    const auto mutableDictionary {
-        [NSMutableDictionary
-            dictionaryWithSharedKeySet:[NSDictionary sharedKeySetForKeys:@[
-                NSViewAnimationTargetKey, NSViewAnimationStartFrameKey,
-                NSViewAnimationEndFrameKey
-            ]]]
-    };
-    [mutableDictionary setObject:circleView forKey:NSViewAnimationTargetKey];
-    [mutableDictionary setObject:[NSValue valueWithRect:[circleView frame]]
-                          forKey:NSViewAnimationEndFrameKey];
-    const auto viewAnimation{[[NSViewAnimation alloc]
-        initWithViewAnimations:[NSArray
-                                   arrayWithObjects:mutableDictionary, nil]]};
-    [viewAnimation setAnimationCurve:NSAnimationEaseInOut];
-    viewAnimation.animationBlockingMode = NSAnimationBlocking;
-    {
-        auto calibration{eyeTracker.calibration()};
-        collect(calibration, viewAnimation, mutableDictionary, 0.5, 0.5, 100,
-            25, 1.5, 0.5);
-        collect(calibration, viewAnimation, mutableDictionary, 0.1F, 0.1F, 100,
-            25, 1.5, 0.5);
-        collect(calibration, viewAnimation, mutableDictionary, 0.1F, 0.9F, 100,
-            25, 1.5, 0.5);
-        collect(calibration, viewAnimation, mutableDictionary, 0.9F, 0.1F, 100,
-            25, 1.5, 0.5);
-        collect(calibration, viewAnimation, mutableDictionary, 0.9F, 0.9F, 100,
-            25, 1.5, 0.5);
-        auto applied{calibration.computeAndApply()};
-    }
-    {
-        auto validation{eyeTracker.calibrationValidation()};
-        auto enter{validation.enter()};
-        collect(enter, viewAnimation, mutableDictionary, 0.3F, 0.3F, 100, 25,
-            1.5, 0.5);
-        collect(enter, viewAnimation, mutableDictionary, 0.3F, 0.7F, 100, 25,
-            1.5, 0.5);
-        collect(enter, viewAnimation, mutableDictionary, 0.5, 0.5, 100, 25, 1.5,
-            0.5);
-        collect(enter, viewAnimation, mutableDictionary, 0.7F, 0.3F, 100, 25,
-            1.5, 0.5);
-        collect(enter, viewAnimation, mutableDictionary, 0.7F, 0.7F, 100, 25,
-            1.5, 0.5);
-        auto result{enter.result()};
-    }
-}
-
-void main() {
+static void main() {
     TobiiEyeTracker eyeTracker;
     AppKitTestSetupUIFactoryImpl testSetupViewFactory;
     DefaultOutputFileNameFactory outputFileNameFactory;
