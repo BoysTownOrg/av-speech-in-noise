@@ -18,6 +18,12 @@ struct Result {
     Point point{};
 };
 
+class IInteractor {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(IInteractor);
+    virtual void redo(Point) = 0;
+};
+
 class IPresenter {
   public:
     class Observer {
@@ -38,11 +44,12 @@ class EyeTrackerCalibrator {
     virtual auto results() -> std::vector<Result> = 0;
 };
 
-class Interactor : public IPresenter::Observer {
+class Interactor : public IPresenter::Observer, public IInteractor {
   public:
     Interactor(IPresenter &, EyeTrackerCalibrator &, std::vector<Point>);
     void notifyThatPointIsReady() override;
     void calibrate();
+    void redo(Point) override {}
 
   private:
     std::vector<Point> points;
