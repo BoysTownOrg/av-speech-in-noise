@@ -37,55 +37,48 @@
 
 @implementation CalibrationResultView {
   @public
-    std::vector<av_speech_in_noise::eye_tracker_calibration::Result>
-        calibrationResults;
+    std::vector<av_speech_in_noise::eye_tracker_calibration::Line> redLines;
+    std::vector<av_speech_in_noise::eye_tracker_calibration::Line> greenLines;
+    std::vector<av_speech_in_noise::Point> whiteCircleCenters;
 }
 - (void)drawRect:(NSRect)rect {
-    for (const auto &result : calibrationResults) {
-        NSBezierPath *leftEyeErrorPath = [NSBezierPath bezierPath];
-        for (const auto point : result.leftEyeMappedPoints) {
-            [leftEyeErrorPath
-                moveToPoint:NSMakePoint(result.point.x * rect.size.width +
-                                    rect.origin.x,
-                                (1 - result.point.y) * rect.size.height +
-                                    rect.origin.y)];
-            [leftEyeErrorPath
-                lineToPoint:NSMakePoint(
-                                point.x * rect.size.width + rect.origin.x,
-                                (1 - point.y) * rect.size.height +
-                                    rect.origin.y)];
-        }
-        [leftEyeErrorPath closePath];
-        [[NSColor redColor] set];
-        [leftEyeErrorPath stroke];
-        NSBezierPath *rightEyeErrorPath = [NSBezierPath bezierPath];
-        for (const auto point : result.rightEyeMappedPoints) {
-            [rightEyeErrorPath
-                moveToPoint:NSMakePoint(result.point.x * rect.size.width +
-                                    rect.origin.x,
-                                (1 - result.point.y) * rect.size.height +
-                                    rect.origin.y)];
-            [rightEyeErrorPath
-                lineToPoint:NSMakePoint(
-                                point.x * rect.size.width + rect.origin.x,
-                                (1 - point.y) * rect.size.height +
-                                    rect.origin.y)];
-        }
-        [rightEyeErrorPath closePath];
-        [[NSColor greenColor] set];
-        [rightEyeErrorPath stroke];
-        NSBezierPath *circlePath = [NSBezierPath bezierPath];
+    NSBezierPath *circlePath = [NSBezierPath bezierPath];
+    for (const auto &center : whiteCircleCenters) {
         [circlePath
-            appendBezierPathWithOvalInRect:NSMakeRect(result.point.x *
-                                                       rect.size.width -
+            appendBezierPathWithOvalInRect:NSMakeRect(
+                                               center.x * rect.size.width -
                                                    25 / 2,
-                                               (1 - result.point.y) *
+                                               (1 - center.y) *
                                                        rect.size.height -
                                                    25 / 2,
                                                25, 25)];
-        [[NSColor whiteColor] set];
-        [circlePath fill];
     }
+    [[NSColor whiteColor] set];
+    [circlePath fill];
+    NSBezierPath *greenLinePath = [NSBezierPath bezierPath];
+    for (const auto &line : greenLines) {
+        [greenLinePath
+            moveToPoint:NSMakePoint(line.a.x * rect.size.width + rect.origin.x,
+                            (1 - line.a.y) * rect.size.height + rect.origin.y)];
+        [greenLinePath
+            lineToPoint:NSMakePoint(line.b.x * rect.size.width + rect.origin.x,
+                            (1 - line.b.y) * rect.size.height + rect.origin.y)];
+    }
+    [greenLinePath closePath];
+    [[NSColor greenColor] set];
+    [greenLinePath stroke];
+    NSBezierPath *redLinePath = [NSBezierPath bezierPath];
+    for (const auto &line : redLines) {
+        [redLinePath
+            moveToPoint:NSMakePoint(line.a.x * rect.size.width + rect.origin.x,
+                            (1 - line.a.y) * rect.size.height + rect.origin.y)];
+        [redLinePath
+            lineToPoint:NSMakePoint(line.b.x * rect.size.width + rect.origin.x,
+                            (1 - line.b.y) * rect.size.height + rect.origin.y)];
+    }
+    [redLinePath closePath];
+    [[NSColor redColor] set];
+    [redLinePath stroke];
 }
 @end
 
@@ -138,19 +131,20 @@ class AppKitView : public View {
         : circleView{[[CircleView alloc]
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
                                 normalDotDiameterPoints)]},
+          view{[[CalibrationResultView alloc]
+              initWithFrame:animatingWindow.frame]},
           delegate{[[EyeTrackerCalibrationAnimationDelegate alloc] init]} {
-        [animatingWindow.contentViewController.view addSubview:circleView];
+        [animatingWindow.contentViewController.view addSubview:view];
+        [view addSubview:circleView];
     }
 
     void attach(Observer *a) override { delegate->observer = a; }
 
     void moveDotTo(Point point) override {
         animate(circleView,
-            NSMakeRect(
-                point.x * circleView.window.contentLayoutRect.size.width -
+            NSMakeRect(point.x * view.frame.size.width -
                     circleView.frame.size.width / 2,
-                (1 - point.y) *
-                        circleView.window.contentLayoutRect.size.height -
+                (1 - point.y) * view.frame.size.height -
                     circleView.frame.size.height / 2,
                 circleView.frame.size.width, circleView.frame.size.height),
             1.5, delegate);
@@ -179,8 +173,17 @@ class AppKitView : public View {
             0.5, delegate);
     }
 
+    void drawRed(Line line) override { view->redLines.push_back(line); }
+
+    void drawGreen(Line line) override { view->greenLines.push_back(line); }
+
+    void drawWhiteCircleWithCenter(Point point) override {
+        view->whiteCircleCenters.push_back(point);
+    }
+
   private:
     CircleView *circleView;
+    CalibrationResultView *view;
     EyeTrackerCalibrationAnimationDelegate *delegate;
 };
 }
@@ -262,7 +265,40 @@ class TobiiEyeTracker : public EyeTracker {
         auto results()
             -> std::vector<eye_tracker_calibration::Result> override {
             ComputeAndApply computeAndApply{eyetracker};
-            return computeAndApply.results();
+            return true
+                ? std::vector<
+                      eye_tracker_calibration::Result>{{{{0.51F, 0.502F},
+                                                            {0.49F, 0.495F},
+                                                            {0.48F, 0.503F},
+                                                            {0.5, 0.49F},
+                                                            {0.52F, 0.51F}},
+                                                           {{0.51F, 0.503F},
+                                                               {0.49F, 0.499F},
+                                                               {0.48F, 0.513F},
+                                                               {0.5, 0.493F},
+                                                               {0.52F, 0.502F}},
+                                                           {0.5, 0.5}},
+                      {{{0.08F, 0.102F}, {0.09F, 0.095F}, {0.1F, 0.103F},
+                           {0.11F, 0.09F}, {0.12F, 0.11F}},
+                          {{0.08F, 0.102F}, {0.09F, 0.095F}, {0.1F, 0.103F},
+                              {0.11F, 0.09F}, {0.12F, 0.11F}},
+                          {0.1F, 0.1F}},
+                      {{{0.08F, 0.902F}, {0.09F, 0.895F}, {0.1F, 0.903F},
+                           {0.11F, 0.89F}, {0.12F, 0.91F}},
+                          {{0.08F, 0.902F}, {0.09F, 0.895F}, {0.1F, 0.903F},
+                              {0.11F, 0.89F}, {0.12F, 0.91F}},
+                          {0.1F, 0.9F}},
+                      {{{0.88F, 0.102F}, {0.89F, 0.095F}, {0.9F, 0.103F},
+                           {0.91F, 0.09F}, {0.92F, 0.11F}},
+                          {{0.88F, 0.102F}, {0.89F, 0.095F}, {0.9F, 0.103F},
+                              {0.91F, 0.09F}, {0.92F, 0.11F}},
+                          {0.9F, 0.1F}},
+                      {{{0.88F, 0.902F}, {0.89F, 0.895F}, {0.9F, 0.903F},
+                           {0.91F, 0.89F}, {0.92F, 0.91F}},
+                          {{0.88F, 0.902F}, {0.89F, 0.895F}, {0.9F, 0.903F},
+                              {0.91F, 0.89F}, {0.92F, 0.91F}},
+                          {0.9F, 0.9F}}}
+                : computeAndApply.results();
         }
 
         class ComputeAndApply;
@@ -611,35 +647,6 @@ static void calibrate(TobiiEyeTracker &eyeTracker) {
         collect(calibration, viewAnimation, mutableDictionary, 0.9F, 0.9F, 100,
             25, 1.5, 0.5);
         auto applied{calibration.computeAndApply()};
-        const auto calibrationResultView{
-            [[CalibrationResultView alloc] initWithFrame:subjectScreenFrame]};
-        calibrationResultView->calibrationResults = {
-            {{{0.51F, 0.502F}, {0.49F, 0.495F}, {0.48F, 0.503F}, {0.5, 0.49F},
-                 {0.52F, 0.51F}},
-                {{0.51F, 0.503F}, {0.49F, 0.499F}, {0.48F, 0.513F},
-                    {0.5, 0.493F}, {0.52F, 0.502F}},
-                {0.5, 0.5}},
-            {{{0.08F, 0.102F}, {0.09F, 0.095F}, {0.1F, 0.103F}, {0.11F, 0.09F},
-                 {0.12F, 0.11F}},
-                {{0.08F, 0.102F}, {0.09F, 0.095F}, {0.1F, 0.103F},
-                    {0.11F, 0.09F}, {0.12F, 0.11F}},
-                {0.1F, 0.1F}},
-            {{{0.08F, 0.902F}, {0.09F, 0.895F}, {0.1F, 0.903F}, {0.11F, 0.89F},
-                 {0.12F, 0.91F}},
-                {{0.08F, 0.902F}, {0.09F, 0.895F}, {0.1F, 0.903F},
-                    {0.11F, 0.89F}, {0.12F, 0.91F}},
-                {0.1F, 0.9F}},
-            {{{0.88F, 0.102F}, {0.89F, 0.095F}, {0.9F, 0.103F}, {0.91F, 0.09F},
-                 {0.92F, 0.11F}},
-                {{0.88F, 0.102F}, {0.89F, 0.095F}, {0.9F, 0.103F},
-                    {0.91F, 0.09F}, {0.92F, 0.11F}},
-                {0.9F, 0.1F}},
-            {{{0.88F, 0.902F}, {0.89F, 0.895F}, {0.9F, 0.903F}, {0.91F, 0.89F},
-                 {0.92F, 0.91F}},
-                {{0.88F, 0.902F}, {0.89F, 0.895F}, {0.9F, 0.903F},
-                    {0.91F, 0.89F}, {0.92F, 0.91F}},
-                {0.9F, 0.9F}}};
-        [calibrationViewController.view addSubview:calibrationResultView];
     }
     {
         auto validation{eyeTracker.calibrationValidation()};
