@@ -11,8 +11,7 @@ static auto transferOne(std::vector<Point> &a, std::vector<Point> &b) -> Point {
 }
 
 static void present(IPresenter &presenter, const std::vector<Point> &points) {
-    if (!points.empty())
-        presenter.present(points.front());
+    presenter.present(points.front());
 }
 
 Interactor::Interactor(IPresenter &presenter, EyeTrackerCalibrator &calibrator,
@@ -24,9 +23,10 @@ Interactor::Interactor(IPresenter &presenter, EyeTrackerCalibrator &calibrator,
 
 void Interactor::notifyThatPointIsReady() {
     calibrator.calibrate(transferOne(pointsToCalibrate, pointsCalibrated));
-    present(presenter, pointsToCalibrate);
     if (pointsToCalibrate.empty())
         presenter.present(calibrator.results());
+    else
+        present(presenter, pointsToCalibrate);
 }
 
 void Interactor::calibrate() { present(presenter, pointsToCalibrate); }
