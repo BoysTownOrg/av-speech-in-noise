@@ -111,5 +111,11 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsPointForRedo) {
     interactor.redo(Point{0.1F, 0.2F});
     assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
 }
+
+EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
+    findsPointClosestToThatRequestedWhenRedoing) {
+    interactor.redo(Point{0.31F, 0.42F});
+    assertEqual(Point{0.3F, 0.4F}, presenter.presentedPoint());
+}
 }
 }

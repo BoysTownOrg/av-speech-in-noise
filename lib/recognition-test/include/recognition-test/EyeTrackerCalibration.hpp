@@ -53,6 +53,7 @@ class Interactor : public IPresenter::Observer, public IInteractor {
 
   private:
     std::vector<Point> points;
+    std::vector<Point>::iterator pointIterator;
     IPresenter &presenter;
     EyeTrackerCalibrator &calibrator;
 };
