@@ -26,10 +26,12 @@ void Interactor::notifyThatPointIsReady() {
 void Interactor::calibrate() { present(presenter, points, pointIterator); }
 
 void Interactor::redo(Point p) {
-    presenter.present(
+    const auto closestPoint{
         *min_element(points.begin(), points.end(), [p](Point a, Point b) {
             return std::hypot(p.x - a.x, p.y - a.y) <
                 std::hypot(p.x - b.x, p.y - b.y);
-        }));
+        })};
+    calibrator.discard(closestPoint);
+    presenter.present(closestPoint);
 }
 }

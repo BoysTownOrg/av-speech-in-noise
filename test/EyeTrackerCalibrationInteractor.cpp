@@ -45,8 +45,13 @@ class EyeTrackerCalibratorStub : public EyeTrackerCalibrator {
 
     auto results() -> std::vector<Result> override { return results_; }
 
+    auto discardedPoint() -> Point { return discardedPoint_; }
+
+    void discard(Point x) { discardedPoint_ = x; }
+
   private:
     std::vector<Result> results_{};
+    Point discardedPoint_{};
     Point calibratedPoint_{};
 };
 
@@ -116,6 +121,12 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     findsPointClosestToThatRequestedWhenRedoing) {
     interactor.redo(Point{0.31F, 0.42F});
     assertEqual(Point{0.3F, 0.4F}, presenter.presentedPoint());
+}
+
+EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
+    removesDataCollectedForPointBeingRedone) {
+    interactor.redo(Point{0.31F, 0.42F});
+    assertEqual(Point{0.3F, 0.4F}, calibrator.discardedPoint());
 }
 }
 }
