@@ -1,8 +1,10 @@
 #include "EyeTrackerCalibration.hpp"
 
 namespace av_speech_in_noise::eye_tracker_calibration {
-static void moveDotTo(View &view, Point x, Presenter::DotState &dotState) {
-    view.moveDotTo(x);
+static auto windowPoint(Point p) -> WindowPoint { return {p.x, 1 - p.y}; }
+
+static void moveDotTo(View &view, Point p, Presenter::DotState &dotState) {
+    view.moveDotTo(windowPoint(p));
     dotState = Presenter::DotState::moving;
 }
 
@@ -30,11 +32,11 @@ void Presenter::notifyThatAnimationHasFinished() {
 
 void Presenter::present(const std::vector<Result> &results) {
     for (const auto &result : results) {
-        view.drawWhiteCircleWithCenter(result.point);
+        view.drawWhiteCircleWithCenter(windowPoint(result.point));
         for (const auto point : result.leftEyeMappedPoints)
-            view.drawRed(Line{result.point, point});
+            view.drawRed(Line{windowPoint(result.point), windowPoint(point)});
         for (const auto point : result.rightEyeMappedPoints)
-            view.drawGreen(Line{result.point, point});
+            view.drawGreen(Line{windowPoint(result.point), windowPoint(point)});
     }
 }
 }

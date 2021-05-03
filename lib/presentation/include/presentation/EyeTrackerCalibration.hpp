@@ -5,9 +5,14 @@
 #include <recognition-test/EyeTrackerCalibration.hpp>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
+struct WindowPoint {
+    double x;
+    double y;
+};
+
 struct Line {
-    Point a;
-    Point b;
+    WindowPoint a;
+    WindowPoint b;
 };
 
 class View {
@@ -19,12 +24,12 @@ class View {
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(View);
     virtual void attach(Observer *) = 0;
-    virtual void moveDotTo(Point) = 0;
+    virtual void moveDotTo(WindowPoint) = 0;
     virtual void shrinkDot() = 0;
     virtual void growDot() = 0;
     virtual void drawRed(Line) = 0;
     virtual void drawGreen(Line) = 0;
-    virtual void drawWhiteCircleWithCenter(Point) = 0;
+    virtual void drawWhiteCircleWithCenter(WindowPoint) = 0;
 };
 
 class Presenter : public View::Observer, public IPresenter {
@@ -42,11 +47,6 @@ class Presenter : public View::Observer, public IPresenter {
     View &view;
     IPresenter::Observer *observer{};
     DotState dotState{DotState::idle};
-};
-
-struct WindowPoint {
-    double x;
-    double y;
 };
 
 class Control {
@@ -69,7 +69,7 @@ class Controller : public Control::Observer {
 
     void notifyObserverThatWindowHasBeenTouched(WindowPoint p) override {
         interactor.redo(
-            Point{1.F - static_cast<float>(p.x), static_cast<float>(p.y)});
+            Point{static_cast<float>(p.x), 1 - static_cast<float>(p.y)});
     }
 
   private:

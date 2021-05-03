@@ -25,7 +25,7 @@ class InteractorStub : public IInteractor {
   public:
     auto redoPoint() -> Point { return redoPoint_; }
 
-    void redo(Point x) { redoPoint_ = x; }
+    void redo(Point x) override { redoPoint_ = x; }
 
   private:
     Point redoPoint_{};
@@ -41,7 +41,7 @@ EYE_TRACKER_CALIBRATION_CONTROLLER_TEST(tbd) {
     InteractorStub interactor;
     Controller controller{control, interactor};
     control.notifyObserverThatWindowHasBeenTouched(WindowPoint{0.1, 0.2});
-    assertEqual(Point{0.9F, 0.2F}, interactor.redoPoint());
+    assertEqual(Point{0.1F, 1 - 0.2}, interactor.redoPoint());
 }
 }
 }

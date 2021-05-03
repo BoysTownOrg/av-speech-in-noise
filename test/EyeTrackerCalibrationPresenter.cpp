@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
-static void assertEqual(Point expected, Point actual) {
+static void assertEqual(WindowPoint expected, WindowPoint actual) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.x, actual.x);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.y, actual.y);
 }
@@ -43,11 +43,11 @@ class ViewStub : public View {
   public:
     void attach(Observer *a) override { observer = a; }
 
-    [[nodiscard]] auto pointDotMovedTo() const -> Point {
+    [[nodiscard]] auto pointDotMovedTo() const -> WindowPoint {
         return pointDotMovedTo_;
     }
 
-    void moveDotTo(Point x) override { pointDotMovedTo_ = x; }
+    void moveDotTo(WindowPoint x) override { pointDotMovedTo_ = x; }
 
     [[nodiscard]] auto dotShrinked() const -> bool { return dotShrinked_; }
 
@@ -69,20 +69,20 @@ class ViewStub : public View {
 
     auto greenLinesDrawn() -> std::vector<Line> { return greenLinesDrawn_; }
 
-    auto whiteCircleCenters() -> std::vector<Point> {
+    auto whiteCircleCenters() -> std::vector<WindowPoint> {
         return whiteCircleCenters_;
     }
 
-    void drawWhiteCircleWithCenter(Point x) override {
+    void drawWhiteCircleWithCenter(WindowPoint x) override {
         whiteCircleCenters_.push_back(x);
     }
 
   private:
     std::vector<Line> redLinesDrawn_;
     std::vector<Line> greenLinesDrawn_;
-    std::vector<Point> whiteCircleCenters_;
+    std::vector<WindowPoint> whiteCircleCenters_;
     Observer *observer{};
-    Point pointDotMovedTo_{};
+    WindowPoint pointDotMovedTo_{};
     bool dotShrinked_{};
     bool dotGrew_{};
 };
@@ -102,7 +102,7 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotToPoint) {
     ViewStub view;
     Presenter presenter{view};
     present(presenter, {0.1F, 0.2F});
-    assertEqual(Point{0.1F, 0.2F}, view.pointDotMovedTo());
+    assertEqual(WindowPoint{0.1F, 0.8F}, view.pointDotMovedTo());
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
@@ -148,7 +148,7 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotAfterItGrows) {
     notifyObserverThatAnimationHasFinished(view);
     present(presenter, {0.1F, 0.2F});
     notifyObserverThatAnimationHasFinished(view);
-    assertEqual(Point{0.1F, 0.2F}, view.pointDotMovedTo());
+    assertEqual(WindowPoint{0.1F, 1 - 0.2F}, view.pointDotMovedTo());
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(results) {
@@ -160,21 +160,26 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(results) {
             {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
         {{{0.888F, 0.999F}, {0.01F, 0.02F}}, {{0.03F, 0.04F}, {0.05F, 0.06F}},
             {0.5F, 0.6F}}});
-    ::assertEqual<Line>(
-        {{{0.1F, 0.2F}, {0.11F, 0.22F}}, {{0.1F, 0.2F}, {0.33F, 0.44F}},
-            {{0.3F, 0.4F}, {0.99F, 0.111F}}, {{0.3F, 0.4F}, {0.222F, 0.333F}},
-            {{0.5F, 0.6F}, {0.888F, 0.999F}}, {{0.5F, 0.6F}, {0.01F, 0.02F}}},
+    ::assertEqual<Line>({{{0.1F, 1 - 0.2F}, {0.11F, 1 - 0.22F}},
+                            {{0.1F, 1 - 0.2F}, {0.33F, 1 - 0.44F}},
+                            {{0.3F, 1 - 0.4F}, {0.99F, 1 - 0.111F}},
+                            {{0.3F, 1 - 0.4F}, {0.222F, 1 - 0.333F}},
+                            {{0.5F, 1 - 0.6F}, {0.888F, 1 - 0.999F}},
+                            {{0.5F, 1 - 0.6F}, {0.01F, 1 - 0.02F}}},
         view.redLinesDrawn(),
         [](const Line &a, const Line &b) { assertEqual(a, b); });
-    ::assertEqual<Line>(
-        {{{0.1F, 0.2F}, {0.55F, 0.66F}}, {{0.1F, 0.2F}, {0.77F, 0.88F}},
-            {{0.3F, 0.4F}, {0.444F, 0.555F}}, {{0.3F, 0.4F}, {0.666F, 0.777F}},
-            {{0.5F, 0.6F}, {0.03F, 0.04F}}, {{0.5F, 0.6F}, {0.05F, 0.06F}}},
+    ::assertEqual<Line>({{{0.1F, 1 - 0.2F}, {0.55F, 1 - 0.66F}},
+                            {{0.1F, 1 - 0.2F}, {0.77F, 1 - 0.88F}},
+                            {{0.3F, 1 - 0.4F}, {0.444F, 1 - 0.555F}},
+                            {{0.3F, 1 - 0.4F}, {0.666F, 1 - 0.777F}},
+                            {{0.5F, 1 - 0.6F}, {0.03F, 1 - 0.04F}},
+                            {{0.5F, 1 - 0.6F}, {0.05F, 1 - 0.06F}}},
         view.greenLinesDrawn(),
         [](const Line &a, const Line &b) { assertEqual(a, b); });
-    ::assertEqual<Point>({{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5F, 0.6F}},
+    ::assertEqual<WindowPoint>(
+        {{0.1F, 1 - 0.2F}, {0.3F, 1 - 0.4F}, {0.5F, 1 - 0.6F}},
         view.whiteCircleCenters(),
-        [](const Point &a, const Point &b) { assertEqual(a, b); });
+        [](const WindowPoint &a, const WindowPoint &b) { assertEqual(a, b); });
 }
 }
 }
