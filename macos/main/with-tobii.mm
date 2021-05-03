@@ -84,8 +84,9 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
 - (void)mouseUp:(NSEvent *)event {
     const auto mousePoint{[self convertPoint:[event locationInWindow]
                                     fromView:nil]};
-    observer->notifyObserverThatWindowHasBeenTouched(
-        {mousePoint.x, mousePoint.y});
+    observer->notifyThatWindowHasBeenTouched(
+        {mousePoint.x / self.frame.size.width,
+            mousePoint.y / self.frame.size.height});
     //[super mouseUp:theEvent];
 }
 @end
@@ -192,6 +193,14 @@ class AppKitUI : public View, public Control {
         view->whiteCircleCenters.push_back(point);
     }
 
+    auto whiteCircleCenters() -> std::vector<WindowPoint> override {
+        return view->whiteCircleCenters;
+    }
+
+    auto whiteCircleDiameter() -> double override {
+        return 25 / view.frame.size.width;
+    }
+
   private:
     CircleView *circleView;
     AvSpeechInNoiseEyeTrackerCalibrationView *view;
@@ -250,9 +259,9 @@ class TobiiEyeTracker : public EyeTracker {
                 eyetracker);
         }
 
-        void discard(float x, float y) {
+        void discard(Point p) override {
             tobii_research_screen_based_calibration_discard_data(
-                eyetracker, x, y);
+                eyetracker, p.x, p.y);
         }
 
         void calibrate(Point p) override {
@@ -638,6 +647,8 @@ static void main() {
     eye_tracker_calibration::Interactor interactor{
         eyeTrackerCalibrationPresenter, calibrator,
         {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
+    eye_tracker_calibration::Controller eyeTrackerCalibrationController{
+        eyeTrackerCalibrationView, interactor};
     [animatingWindow makeKeyAndOrderFront:nil];
     interactor.calibrate();
 
