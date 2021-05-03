@@ -573,32 +573,6 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     return currentSystemTime;
 }
 
-static void setAnimationEndFrame(
-    NSMutableDictionary *mutableDictionary, float x, float y, double size) {
-    const auto subjectScreen{[[NSScreen screens] lastObject]};
-    const auto subjectScreenFrame{subjectScreen.frame};
-    const auto subjectScreenSize{subjectScreenFrame.size};
-    [mutableDictionary
-        setObject:[NSValue
-                      valueWithRect:NSMakeRect(
-                                        x * subjectScreenSize.width - size / 2,
-                                        (1 - y) * subjectScreenSize.height -
-                                            size / 2,
-                                        size, size)]
-           forKey:NSViewAnimationEndFrameKey];
-}
-
-static void animate(NSViewAnimation *viewAnimation,
-    NSMutableDictionary *mutableDictionary, float x, float y, double size,
-    double durationSeconds) {
-    const id lastFrame{
-        [mutableDictionary valueForKey:NSViewAnimationEndFrameKey]};
-    [mutableDictionary setObject:lastFrame forKey:NSViewAnimationStartFrameKey];
-    setAnimationEndFrame(mutableDictionary, x, y, size);
-    [viewAnimation setDuration:durationSeconds];
-    [viewAnimation startAnimation];
-}
-
 static void main() {
     TobiiEyeTracker eyeTracker;
     AppKitTestSetupUIFactoryImpl testSetupViewFactory;
