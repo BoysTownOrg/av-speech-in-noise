@@ -26,4 +26,6 @@ void Interactor::notifyThatPointIsReady() {
 }
 
 void Interactor::calibrate() { present(presenter, points); }
+
+void Interactor::redo(Point p) { presenter.present(p); }
 }

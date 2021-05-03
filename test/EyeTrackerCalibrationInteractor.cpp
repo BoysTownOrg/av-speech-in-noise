@@ -106,5 +106,10 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
         presenter.results(),
         [](const Result &a, const Result &b) { assertEqual(a, b); });
 }
+
+EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsPointForRedo) {
+    interactor.redo(Point{0.1F, 0.2F});
+    assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
+}
 }
 }
