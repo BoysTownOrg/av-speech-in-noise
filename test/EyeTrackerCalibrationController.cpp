@@ -12,13 +12,29 @@ namespace {
 class ControlStub : public Control {
   public:
     void notifyObserverThatWindowHasBeenTouched(WindowPoint x) {
-        observer->notifyObserverThatWindowHasBeenTouched(x);
+        observer->notifyThatWindowHasBeenTouched(x);
     }
 
     void attach(Observer *a) override { observer = a; }
 
+    void setWhiteCircleCenters(std::vector<WindowPoint> v) {
+        whiteCircleCenters_ = std::move(v);
+    }
+
+    auto whiteCircleCenters() -> std::vector<WindowPoint> override {
+        return whiteCircleCenters_;
+    }
+
+    void setWhiteCircleDiameter(double x) { whiteCircleDiameter_ = x; }
+
+    auto whiteCircleDiameter() -> double override {
+        return whiteCircleDiameter_;
+    }
+
   private:
+    std::vector<WindowPoint> whiteCircleCenters_;
     Observer *observer{};
+    double whiteCircleDiameter_{};
 };
 
 class InteractorStub : public IInteractor {
@@ -40,8 +56,10 @@ EYE_TRACKER_CALIBRATION_CONTROLLER_TEST(respondsToWindowTouch) {
     ControlStub control;
     InteractorStub interactor;
     Controller controller{control, interactor};
-    control.notifyObserverThatWindowHasBeenTouched(WindowPoint{0.1, 0.2});
-    assertEqual(Point{0.1F, 1 - 0.2}, interactor.redoPoint());
+    control.setWhiteCircleCenters({{0.1, 0.2}, {0.3, 0.4}, {0.5, 0.6}});
+    control.setWhiteCircleDiameter(0.07);
+    control.notifyObserverThatWindowHasBeenTouched({0.305, 0.406});
+    assertEqual(Point{0.3, 1 - 0.4}, interactor.redoPoint());
 }
 }
 }

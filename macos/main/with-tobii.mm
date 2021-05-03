@@ -41,10 +41,10 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
     for (const auto &line : lines) {
         [path
             moveToPoint:NSMakePoint(line.a.x * rect.size.width + rect.origin.x,
-                            (1 - line.a.y) * rect.size.height + rect.origin.y)];
+                            line.a.y * rect.size.height + rect.origin.y)];
         [path
             lineToPoint:NSMakePoint(line.b.x * rect.size.width + rect.origin.x,
-                            (1 - line.b.y) * rect.size.height + rect.origin.y)];
+                            line.b.y * rect.size.height + rect.origin.y)];
     }
     [path closePath];
     [color set];
@@ -56,7 +56,9 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
   @public
     std::vector<av_speech_in_noise::eye_tracker_calibration::Line> redLines;
     std::vector<av_speech_in_noise::eye_tracker_calibration::Line> greenLines;
-    std::vector<av_speech_in_noise::Point> whiteCircleCenters;
+    std::vector<av_speech_in_noise::eye_tracker_calibration::WindowPoint>
+        whiteCircleCenters;
+    av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
 }
 - (void)drawRect:(NSRect)rect {
     NSBezierPath *circlePath = [NSBezierPath bezierPath];
@@ -64,16 +66,27 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
         [circlePath
             appendBezierPathWithOvalInRect:NSMakeRect(
                                                center.x * rect.size.width -
-                                                   25 / 2,
-                                               (1 - center.y) *
-                                                       rect.size.height -
-                                                   25 / 2,
+                                                   25. / 2,
+                                               center.y * rect.size.height -
+                                                   25. / 2,
                                                25, 25)];
     }
     [[NSColor whiteColor] set];
     [circlePath fill];
     draw(rect, greenLines, [NSColor greenColor]);
     draw(rect, redLines, [NSColor redColor]);
+}
+
+- (BOOL)acceptsFirstResponder {
+    return YES;
+}
+
+- (void)mouseUp:(NSEvent *)event {
+    const auto mousePoint{[self convertPoint:[event locationInWindow]
+                                    fromView:nil]};
+    observer->notifyObserverThatWindowHasBeenTouched(
+        {mousePoint.x, mousePoint.y});
+    //[super mouseUp:theEvent];
 }
 @end
 
@@ -117,12 +130,12 @@ static void animate(NSView *view, NSRect endFrame, double durationSeconds,
 }
 
 namespace {
-class AppKitView : public View {
+class AppKitUI : public View, public Control {
   public:
     static constexpr auto normalDotDiameterPoints{100};
     static constexpr auto shrunkenDotDiameterPoints{25};
 
-    explicit AppKitView(NSWindow *animatingWindow)
+    explicit AppKitUI(NSWindow *animatingWindow)
         : circleView{[[CircleView alloc]
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
                                 normalDotDiameterPoints)]},
@@ -134,13 +147,15 @@ class AppKitView : public View {
         [view addSubview:circleView];
     }
 
-    void attach(Observer *a) override { delegate->observer = a; }
+    void attach(View::Observer *a) override { delegate->observer = a; }
 
-    void moveDotTo(Point point) override {
+    void attach(Control::Observer *a) override { view->observer = a; }
+
+    void moveDotTo(WindowPoint point) override {
         animate(circleView,
             NSMakeRect(point.x * view.frame.size.width -
                     circleView.frame.size.width / 2,
-                (1 - point.y) * view.frame.size.height -
+                point.y * view.frame.size.height -
                     circleView.frame.size.height / 2,
                 circleView.frame.size.width, circleView.frame.size.height),
             1.5, delegate);
@@ -173,7 +188,7 @@ class AppKitView : public View {
 
     void drawGreen(Line line) override { view->greenLines.push_back(line); }
 
-    void drawWhiteCircleWithCenter(Point point) override {
+    void drawWhiteCircleWithCenter(WindowPoint point) override {
         view->whiteCircleCenters.push_back(point);
     }
 
@@ -615,7 +630,7 @@ static void main() {
         [NSWindow windowWithContentViewController:calibrationViewController]};
     [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
     [animatingWindow setFrame:subjectScreenFrame display:YES];
-    eye_tracker_calibration::AppKitView eyeTrackerCalibrationView{
+    eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
         animatingWindow};
     eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
         eyeTrackerCalibrationView};
