@@ -259,12 +259,12 @@ class TobiiEyeTracker : public EyeTracker {
                 eyetracker);
         }
 
-        void discard(Point p) override {
+        void discard(eye_tracker_calibration::Point p) override {
             tobii_research_screen_based_calibration_discard_data(
                 eyetracker, p.x, p.y);
         }
 
-        void calibrate(Point p) override {
+        void calibrate(eye_tracker_calibration::Point p) override {
             tobii_research_screen_based_calibration_collect_data(
                 eyetracker, p.x, p.y);
         }
@@ -351,7 +351,7 @@ class TobiiEyeTracker : public EyeTracker {
                             std::back_inserter(
                                 transformedResult.leftEyeMappedPoints),
                             [](const TobiiResearchCalibrationSample &sample) {
-                                return Point{
+                                return eye_tracker_calibration::Point{
                                     sample.left_eye.position_on_display_area.x,
                                     sample.left_eye.position_on_display_area.y};
                             });
@@ -360,7 +360,7 @@ class TobiiEyeTracker : public EyeTracker {
                             std::back_inserter(
                                 transformedResult.rightEyeMappedPoints),
                             [](const TobiiResearchCalibrationSample &sample) {
-                                return Point{
+                                return eye_tracker_calibration::Point{
                                     sample.right_eye.position_on_display_area.x,
                                     sample.right_eye.position_on_display_area
                                         .y};
