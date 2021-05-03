@@ -36,7 +36,7 @@ class EyeTrackerCalibrationControllerTests : public ::testing::Test {};
 #define EYE_TRACKER_CALIBRATION_CONTROLLER_TEST(a)                             \
     TEST_F(EyeTrackerCalibrationControllerTests, a)
 
-EYE_TRACKER_CALIBRATION_CONTROLLER_TEST(tbd) {
+EYE_TRACKER_CALIBRATION_CONTROLLER_TEST(respondsToWindowTouch) {
     ControlStub control;
     InteractorStub interactor;
     Controller controller{control, interactor};
