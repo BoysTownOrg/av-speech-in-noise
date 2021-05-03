@@ -10,6 +10,10 @@ static auto transferOne(std::vector<Point> &a, std::vector<Point> &b) -> Point {
     return p;
 }
 
+static auto distance(Point a, Point b) -> float {
+    return std::hypot(a.x - b.x, a.y - b.y);
+}
+
 static void present(IPresenter &presenter, const std::vector<Point> &points) {
     presenter.present(points.front());
 }
@@ -34,11 +38,9 @@ void Interactor::calibrate() { present(presenter, pointsToCalibrate); }
 void Interactor::redo(Point p) {
     if (pointsCalibrated.empty())
         return;
-    const auto closestPoint{min_element(pointsCalibrated.begin(),
-        pointsCalibrated.end(), [p](Point a, Point b) {
-            return std::hypot(p.x - a.x, p.y - a.y) <
-                std::hypot(p.x - b.x, p.y - b.y);
-        })};
+    const auto closestPoint{
+        min_element(pointsCalibrated.begin(), pointsCalibrated.end(),
+            [p](Point a, Point b) { return distance(p, a) < distance(p, b); })};
     calibrator.discard(*closestPoint);
     pointsToCalibrate.push_back(*closestPoint);
     pointsCalibrated.erase(closestPoint);

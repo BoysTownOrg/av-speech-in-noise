@@ -5,13 +5,12 @@
 #include <utility>
 #include <vector>
 
-namespace av_speech_in_noise {
+namespace av_speech_in_noise::eye_tracker_calibration {
 struct Point {
     float x;
     float y;
 };
 
-namespace eye_tracker_calibration {
 struct Result {
     std::vector<Point> leftEyeMappedPoints;
     std::vector<Point> rightEyeMappedPoints;
@@ -58,7 +57,6 @@ class Interactor : public IPresenter::Observer, public IInteractor {
     IPresenter &presenter;
     EyeTrackerCalibrator &calibrator;
 };
-}
 }
 
 #endif
