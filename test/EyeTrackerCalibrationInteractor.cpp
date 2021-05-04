@@ -37,7 +37,7 @@ class IPresenterStub : public IPresenter {
 
 class EyeTrackerCalibratorStub : public EyeTrackerCalibrator {
   public:
-    void calibrate(Point x) override { calibratedPoint_ = x; }
+    void collect(Point x) override { calibratedPoint_ = x; }
 
     auto calibratedPoint() -> Point { return calibratedPoint_; }
 
@@ -47,12 +47,19 @@ class EyeTrackerCalibratorStub : public EyeTrackerCalibrator {
 
     auto discardedPoint() -> Point { return discardedPoint_; }
 
-    void discard(Point x) { discardedPoint_ = x; }
+    void discard(Point x) override { discardedPoint_ = x; }
+
+    [[nodiscard]] auto acquired() const -> bool { return acquired_; }
+
+    void acquire() override { acquired_ = true; }
+
+    void release() override {}
 
   private:
     std::vector<Result> results_{};
     Point discardedPoint_{};
     Point calibratedPoint_{};
+    bool acquired_{};
 };
 
 class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
@@ -65,6 +72,11 @@ class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
 
 #define EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(a)                             \
     TEST_F(EyeTrackerCalibrationInteractorTests, a)
+
+EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(acquiresCalibratorOnCalibrate) {
+    interactor.calibrate();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(calibrator.acquired());
+}
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsFirstPointOnCalibrate) {
     interactor.calibrate();
