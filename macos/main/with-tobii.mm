@@ -137,16 +137,28 @@ class AppKitUI : public View, public Control {
     static constexpr auto normalDotDiameterPoints{100};
     static constexpr auto shrunkenDotDiameterPoints{25};
 
-    explicit AppKitUI(NSWindow *animatingWindow)
+    explicit AppKitUI(
+        NSWindow *animatingWindow, NSViewController *resultsViewController)
         : circleView{[[CircleView alloc]
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
                                 normalDotDiameterPoints)]},
-          view{[[AvSpeechInNoiseEyeTrackerCalibrationView alloc]
-              initWithFrame:animatingWindow.frame]},
+          view{[[AvSpeechInNoiseEyeTrackerCalibrationView alloc] init]},
           delegate{[[AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate
               alloc] init]} {
-        [animatingWindow.contentViewController.view addSubview:view];
-        [view addSubview:circleView];
+        [animatingWindow.contentViewController.view addSubview:circleView];
+        addAutolayoutEnabledSubview(resultsViewController.view, view);
+        [NSLayoutConstraint activateConstraints:@[
+            [view.leadingAnchor
+                constraintEqualToAnchor:resultsViewController.view
+                                            .leadingAnchor],
+            [view.trailingAnchor
+                constraintEqualToAnchor:resultsViewController.view
+                                            .trailingAnchor],
+            [view.topAnchor
+                constraintEqualToAnchor:resultsViewController.view.topAnchor],
+            [view.bottomAnchor
+                constraintEqualToAnchor:resultsViewController.view.bottomAnchor]
+        ]];
     }
 
     void attach(View::Observer *a) override { delegate->observer = a; }
@@ -155,9 +167,9 @@ class AppKitUI : public View, public Control {
 
     void moveDotTo(WindowPoint point) override {
         animate(circleView,
-            NSMakeRect(point.x * view.frame.size.width -
+            NSMakeRect(point.x * circleView.superview.frame.size.width -
                     circleView.frame.size.width / 2,
-                point.y * view.frame.size.height -
+                point.y * circleView.superview.frame.size.height -
                     circleView.frame.size.height / 2,
                 circleView.frame.size.width, circleView.frame.size.height),
             1.5, delegate);
@@ -659,8 +671,13 @@ static void main() {
         [NSWindow windowWithContentViewController:calibrationViewController]};
     [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
     [animatingWindow setFrame:subjectScreenFrame display:YES];
+    const auto calibrationResultsViewController{
+        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+    const auto calibrationResultsWindow{[NSWindow
+        windowWithContentViewController:calibrationResultsViewController]};
+    [calibrationResultsWindow makeKeyAndOrderFront:nil];
     eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
-        animatingWindow};
+        animatingWindow, calibrationResultsViewController};
     eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
         eyeTrackerCalibrationView};
     auto calibrator{eyeTracker.calibration()};
