@@ -573,6 +573,31 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     return currentSystemTime;
 }
 
+static void calibrate(TobiiEyeTracker &eyeTracker) {
+    const auto calibrationViewController{
+        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+    const auto subjectScreen{[[NSScreen screens] lastObject]};
+    const auto subjectScreenFrame{subjectScreen.frame};
+    calibrationViewController.view.frame = subjectScreenFrame;
+    const auto animatingWindow{
+        [NSWindow windowWithContentViewController:calibrationViewController]};
+    [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
+    [animatingWindow setFrame:subjectScreenFrame display:YES];
+    eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
+        animatingWindow};
+    eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
+        eyeTrackerCalibrationView};
+    auto calibrator{eyeTracker.calibration()};
+    eye_tracker_calibration::Interactor interactor{
+        eyeTrackerCalibrationPresenter, calibrator,
+        {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
+    eye_tracker_calibration::Controller eyeTrackerCalibrationController{
+        eyeTrackerCalibrationView, interactor};
+    [animatingWindow makeKeyAndOrderFront:nil];
+    interactor.calibrate();
+    [NSApp runModalForWindow:animatingWindow];
+}
+
 static void main() {
     TobiiEyeTracker eyeTracker;
     AppKitTestSetupUIFactoryImpl testSetupViewFactory;
@@ -603,28 +628,7 @@ static void main() {
             constraintEqualToAnchor:aboutViewController.view.trailingAnchor
                            constant:-8]
     ]];
-
-    const auto calibrationViewController{
-        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
-    const auto subjectScreen{[[NSScreen screens] lastObject]};
-    const auto subjectScreenFrame{subjectScreen.frame};
-    calibrationViewController.view.frame = subjectScreenFrame;
-    const auto animatingWindow{
-        [NSWindow windowWithContentViewController:calibrationViewController]};
-    [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
-    [animatingWindow setFrame:subjectScreenFrame display:YES];
-    eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
-        animatingWindow};
-    eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
-        eyeTrackerCalibrationView};
-    auto calibrator{eyeTracker.calibration()};
-    eye_tracker_calibration::Interactor interactor{
-        eyeTrackerCalibrationPresenter, calibrator,
-        {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
-    eye_tracker_calibration::Controller eyeTrackerCalibrationController{
-        eyeTrackerCalibrationView, interactor};
-    [animatingWindow makeKeyAndOrderFront:nil];
-    interactor.calibrate();
+    calibrate(eyeTracker);
 
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController);
