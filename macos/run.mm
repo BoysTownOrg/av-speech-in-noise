@@ -275,7 +275,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     OutputFileNameFactory &outputFileNameFactory,
     NSViewController *aboutViewController,
     SessionController::Observer *sessionControllerObserver,
-    std::filesystem::path relativeOutputDirectory) {
+    std::filesystem::path relativeOutputDirectory,
+    AppKitRunMenuInitializer *appKitRunMenuInitializer) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
@@ -370,16 +371,16 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     [window makeKeyAndOrderFront:nil];
     const auto app{[NSApplication sharedApplication]};
     app.mainMenu = [[NSMenu alloc] init];
-    auto appMenu{[[NSMenuItem alloc] init]};
-    auto appSubMenu{[[NSMenu alloc] init]};
+    auto appMenuItem{[[NSMenuItem alloc] init]};
+    auto appSubmenu{[[NSMenu alloc] init]};
     auto aboutMenuItem {
-        [appSubMenu addItemWithTitle:@"About AV Speech in Noise"
+        [appSubmenu addItemWithTitle:@"About AV Speech in Noise"
                               action:@selector(notifyThatAboutHasBeenClicked)
                        keyEquivalent:@""]
     };
-    [appSubMenu addItem:[NSMenuItem separatorItem]];
+    [appSubmenu addItem:[NSMenuItem separatorItem]];
     auto preferencesMenuItem {
-        [appSubMenu
+        [appSubmenu
             addItemWithTitle:@"Preferences..."
                       action:@selector(notifyThatPreferencesHasBeenClicked)
                keyEquivalent:@","]
@@ -399,11 +400,18 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     menuActions->preferencesWindow = preferencesWindow;
     aboutMenuItem.target = menuActions;
     preferencesMenuItem.target = menuActions;
-    [appSubMenu addItemWithTitle:@"Quit"
+    [appSubmenu addItemWithTitle:@"Quit"
                           action:@selector(stop:)
                    keyEquivalent:@"q"];
-    [appMenu setSubmenu:appSubMenu];
-    [app.mainMenu addItem:appMenu];
+    [appMenuItem setSubmenu:appSubmenu];
+    [app.mainMenu addItem:appMenuItem];
+    if (appKitRunMenuInitializer != nullptr) {
+        const auto runMenuItem{[[NSMenuItem alloc] init]};
+        const auto runSubmenu{[[NSMenu alloc] initWithTitle:@"Run"]};
+        appKitRunMenuInitializer->initialize(runSubmenu);
+        [runMenuItem setSubmenu:runSubmenu];
+        [app.mainMenu addItem:runMenuItem];
+    }
     const auto audioDeviceMenu{
         [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                    pullsDown:NO]};

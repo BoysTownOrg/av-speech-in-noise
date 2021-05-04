@@ -4,21 +4,22 @@
 #include <av-speech-in-noise/Interface.hpp>
 #include <presentation/EyeTrackerCalibration.hpp>
 #include <recognition-test/EyeTrackerCalibration.hpp>
-#include <chrono>
-#include <exception>
-#include <iterator>
+#import <AppKit/AppKit.h>
 #include <tobii_research.h>
 #include <tobii_research_eyetracker.h>
 #include <tobii_research_streams.h>
 #include <tobii_research_calibration.h>
 #include <screen_based_calibration_validation.h>
 #include <gsl/gsl>
+#include <exception>
+#include <iterator>
+#include <chrono>
 #include <utility>
 #include <vector>
 #include <thread>
 #include <algorithm>
 #include <cstddef>
-#import <AppKit/AppKit.h>
+#include <functional>
 
 @interface CircleView : NSView
 @end
@@ -573,7 +574,7 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     return currentSystemTime;
 }
 
-static void calibrate(TobiiEyeTracker &eyeTracker) {
+static void calibrate(TobiiEyeTracker &eyeTracker, NSApplication *app) {
     const auto calibrationViewController{
         av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
     const auto subjectScreen{[[NSScreen screens] lastObject]};
@@ -595,7 +596,48 @@ static void calibrate(TobiiEyeTracker &eyeTracker) {
         eyeTrackerCalibrationView, interactor};
     [animatingWindow makeKeyAndOrderFront:nil];
     interactor.calibrate();
-    [NSApp runModalForWindow:animatingWindow];
+    [app runModalForWindow:animatingWindow];
+}
+}
+
+@interface AppKitEyeTrackerCalibrationMenuActions : NSObject
+@end
+
+@implementation AppKitEyeTrackerCalibrationMenuActions {
+  @public
+    av_speech_in_noise::TobiiEyeTracker *eyeTracker;
+    NSApplication *app;
+}
+
+- (void)notifyThatRunEyeTrackerCalibrationHasBeenClicked {
+    calibrate(*eyeTracker, app);
+}
+@end
+
+namespace av_speech_in_noise {
+namespace {
+class EyeTrackerRunMenuInitializer : public AppKitRunMenuInitializer {
+  public:
+    explicit EyeTrackerRunMenuInitializer(
+        TobiiEyeTracker &eyeTracker, NSApplication *app)
+        : menuActions{[[AppKitEyeTrackerCalibrationMenuActions alloc] init]} {
+        menuActions->eyeTracker = &eyeTracker;
+        menuActions->app = app;
+    }
+
+    void initialize(NSMenu *menu) override {
+        const auto eyeTrackerCalibrationMenuItem {
+            [menu addItemWithTitle:@"Eye Tracker Calibration"
+                            action:@selector
+                            (notifyThatRunEyeTrackerCalibrationHasBeenClicked)
+                     keyEquivalent:@""]
+        };
+        eyeTrackerCalibrationMenuItem.target = menuActions;
+    }
+
+  private:
+    AppKitEyeTrackerCalibrationMenuActions *menuActions;
+};
 }
 
 static void main() {
@@ -628,10 +670,12 @@ static void main() {
             constraintEqualToAnchor:aboutViewController.view.trailingAnchor
                            constant:-8]
     ]];
-    calibrate(eyeTracker);
+    EyeTrackerRunMenuInitializer runMenuInitializer{
+        eyeTracker, [NSApplication sharedApplication]};
 
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
-        outputFileNameFactory, aboutViewController);
+        outputFileNameFactory, aboutViewController, nullptr,
+        "Documents/AvSpeechInNoise Data", &runMenuInitializer);
 }
 }
 

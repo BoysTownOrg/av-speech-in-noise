@@ -25,11 +25,19 @@ class DefaultOutputFileNameFactory : public OutputFileNameFactory {
     }
 };
 
+class AppKitRunMenuInitializer {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        AppKitRunMenuInitializer);
+    virtual void initialize(NSMenu *) = 0;
+};
+
 void initializeAppAndRunEventLoop(EyeTracker &, AppKitTestSetupUIFactory &,
     OutputFileNameFactory &, NSViewController *aboutViewController,
     SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =
-        "Documents/AvSpeechInNoise Data");
+        "Documents/AvSpeechInNoise Data",
+    AppKitRunMenuInitializer * = nullptr);
 }
 
 #endif
