@@ -53,13 +53,16 @@ class EyeTrackerCalibratorStub : public EyeTrackerCalibrator {
 
     void acquire() override { acquired_ = true; }
 
-    void release() override {}
+    void release() override { released_ = true; }
+
+    [[nodiscard]] auto released() const -> bool { return released_; }
 
   private:
     std::vector<Result> results_{};
     Point discardedPoint_{};
     Point calibratedPoint_{};
     bool acquired_{};
+    bool released_{};
 };
 
 class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
@@ -74,12 +77,17 @@ class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
     TEST_F(EyeTrackerCalibrationInteractorTests, a)
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(acquiresCalibratorOnCalibrate) {
-    interactor.calibrate();
+    interactor.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(calibrator.acquired());
 }
 
+EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(releasesCalibratorOnFinish) {
+    interactor.finish();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(calibrator.released());
+}
+
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsFirstPointOnCalibrate) {
-    interactor.calibrate();
+    interactor.start();
     assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
 }
 

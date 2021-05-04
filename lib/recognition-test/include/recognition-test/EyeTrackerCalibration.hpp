@@ -50,7 +50,8 @@ class Interactor : public IPresenter::Observer, public IInteractor {
   public:
     Interactor(IPresenter &, EyeTrackerCalibrator &, std::vector<Point>);
     void notifyThatPointIsReady() override;
-    void calibrate();
+    void start();
+    void finish();
     void redo(Point) override;
 
   private:

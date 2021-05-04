@@ -33,10 +33,12 @@ void Interactor::notifyThatPointIsReady() {
         present(presenter, pointsToCalibrate);
 }
 
-void Interactor::calibrate() {
+void Interactor::start() {
     calibrator.acquire();
     present(presenter, pointsToCalibrate);
 }
+
+void Interactor::finish() { calibrator.release(); }
 
 void Interactor::redo(Point p) {
     if (pointsCalibrated.empty())

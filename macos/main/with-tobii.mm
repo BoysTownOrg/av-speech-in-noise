@@ -595,7 +595,7 @@ static void calibrate(TobiiEyeTracker &eyeTracker, NSApplication *app) {
     eye_tracker_calibration::Controller eyeTrackerCalibrationController{
         eyeTrackerCalibrationView, interactor};
     [animatingWindow makeKeyAndOrderFront:nil];
-    interactor.calibrate();
+    interactor.start();
     [app runModalForWindow:animatingWindow];
 }
 }
