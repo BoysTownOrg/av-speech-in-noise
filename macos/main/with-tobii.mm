@@ -255,8 +255,15 @@ class TobiiEyeTracker : public EyeTracker {
     class Calibration : public eye_tracker_calibration::EyeTrackerCalibrator {
       public:
         explicit Calibration(TobiiResearchEyeTracker *eyetracker)
-            : eyetracker{eyetracker} {
+            : eyetracker{eyetracker} {}
+
+        void acquire() override {
             tobii_research_screen_based_calibration_enter_calibration_mode(
+                eyetracker);
+        }
+
+        void release() override {
+            tobii_research_screen_based_calibration_leave_calibration_mode(
                 eyetracker);
         }
 
@@ -265,7 +272,7 @@ class TobiiEyeTracker : public EyeTracker {
                 eyetracker, p.x, p.y);
         }
 
-        void calibrate(eye_tracker_calibration::Point p) override {
+        void collect(eye_tracker_calibration::Point p) override {
             tobii_research_screen_based_calibration_collect_data(
                 eyetracker, p.x, p.y);
         }
@@ -313,11 +320,6 @@ class TobiiEyeTracker : public EyeTracker {
 
         auto computeAndApply() -> ComputeAndApply {
             return ComputeAndApply{eyetracker};
-        }
-
-        ~Calibration() override {
-            tobii_research_screen_based_calibration_leave_calibration_mode(
-                eyetracker);
         }
 
         class ComputeAndApply {
@@ -573,31 +575,6 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     currentSystemTime.microseconds = microseconds;
     return currentSystemTime;
 }
-
-static void calibrate(TobiiEyeTracker &eyeTracker, NSApplication *app) {
-    const auto calibrationViewController{
-        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
-    const auto subjectScreen{[[NSScreen screens] lastObject]};
-    const auto subjectScreenFrame{subjectScreen.frame};
-    calibrationViewController.view.frame = subjectScreenFrame;
-    const auto animatingWindow{
-        [NSWindow windowWithContentViewController:calibrationViewController]};
-    [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
-    [animatingWindow setFrame:subjectScreenFrame display:YES];
-    eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
-        animatingWindow};
-    eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
-        eyeTrackerCalibrationView};
-    auto calibrator{eyeTracker.calibration()};
-    eye_tracker_calibration::Interactor interactor{
-        eyeTrackerCalibrationPresenter, calibrator,
-        {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
-    eye_tracker_calibration::Controller eyeTrackerCalibrationController{
-        eyeTrackerCalibrationView, interactor};
-    [animatingWindow makeKeyAndOrderFront:nil];
-    interactor.start();
-    [app runModalForWindow:animatingWindow];
-}
 }
 
 @interface AppKitEyeTrackerCalibrationMenuActions : NSObject
@@ -605,24 +582,25 @@ static void calibrate(TobiiEyeTracker &eyeTracker, NSApplication *app) {
 
 @implementation AppKitEyeTrackerCalibrationMenuActions {
   @public
-    av_speech_in_noise::TobiiEyeTracker *eyeTracker;
-    NSApplication *app;
+    av_speech_in_noise::eye_tracker_calibration::Interactor *interactor;
+    NSWindow *window;
 }
 
 - (void)notifyThatRunEyeTrackerCalibrationHasBeenClicked {
-    calibrate(*eyeTracker, app);
+    [window makeKeyAndOrderFront:nil];
+    interactor->start();
 }
 @end
 
 namespace av_speech_in_noise {
+namespace eye_tracker_calibration {
 namespace {
-class EyeTrackerRunMenuInitializer : public AppKitRunMenuInitializer {
+class RunMenuInitializer : public AppKitRunMenuInitializer {
   public:
-    explicit EyeTrackerRunMenuInitializer(
-        TobiiEyeTracker &eyeTracker, NSApplication *app)
+    explicit RunMenuInitializer(Interactor &interactor, NSWindow *window)
         : menuActions{[[AppKitEyeTrackerCalibrationMenuActions alloc] init]} {
-        menuActions->eyeTracker = &eyeTracker;
-        menuActions->app = app;
+        menuActions->interactor = &interactor;
+        menuActions->window = window;
     }
 
     void initialize(NSMenu *menu) override {
@@ -638,6 +616,7 @@ class EyeTrackerRunMenuInitializer : public AppKitRunMenuInitializer {
   private:
     AppKitEyeTrackerCalibrationMenuActions *menuActions;
 };
+}
 }
 
 static void main() {
@@ -670,8 +649,28 @@ static void main() {
             constraintEqualToAnchor:aboutViewController.view.trailingAnchor
                            constant:-8]
     ]];
-    EyeTrackerRunMenuInitializer runMenuInitializer{
-        eyeTracker, [NSApplication sharedApplication]};
+
+    const auto calibrationViewController{
+        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+    const auto subjectScreen{[[NSScreen screens] lastObject]};
+    const auto subjectScreenFrame{subjectScreen.frame};
+    calibrationViewController.view.frame = subjectScreenFrame;
+    const auto animatingWindow{
+        [NSWindow windowWithContentViewController:calibrationViewController]};
+    [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
+    [animatingWindow setFrame:subjectScreenFrame display:YES];
+    eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
+        animatingWindow};
+    eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
+        eyeTrackerCalibrationView};
+    auto calibrator{eyeTracker.calibration()};
+    eye_tracker_calibration::Interactor eyeTrackerCalibrationInteractor{
+        eyeTrackerCalibrationPresenter, calibrator,
+        {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
+    eye_tracker_calibration::Controller eyeTrackerCalibrationController{
+        eyeTrackerCalibrationView, eyeTrackerCalibrationInteractor};
+    eye_tracker_calibration::RunMenuInitializer runMenuInitializer{
+        eyeTrackerCalibrationInteractor, animatingWindow};
 
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController, nullptr,
