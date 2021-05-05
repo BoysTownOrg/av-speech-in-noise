@@ -1,7 +1,5 @@
 function(add_macos_bundle target identifier output_name)
   target_compile_features(${target} PRIVATE cxx_std_17)
-  target_compile_options(${target} PRIVATE "-fobjc-arc"
-                                           ${AV_SPEECH_IN_NOISE_WARNINGS})
   target_link_libraries(
     ${target}
     recognition-test
@@ -57,10 +55,13 @@ add_executable(
   AppKit-utility.mm
   Foundation-utility.mm
   run.mm
+  hi.swift
+  HelloWorldObjc.mm
   ${MAIN_IMPL_FILE}
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
 add_macos_bundle(av-speech-in-noise-bundle org.boystown.av-speech-in-noise
                  "AV Speech in Noise")
+set_target_properties(av-speech-in-noise-bundle PROPERTIES XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/objective-c-bridge.h)
 add_executable(
   av-speech-in-noise-facemask-study MACOSX_BUNDLE
   AvFoundationPlayers.mm
@@ -74,5 +75,15 @@ add_executable(
 add_macos_bundle(
   av-speech-in-noise-facemask-study
   org.boystown.av-speech-in-noise-facemask-study "Facemask Study")
+  set_source_files_properties(
+    AvFoundationPlayers.mm
+    AppKitView.mm
+    AppKit-utility.mm
+    Foundation-utility.mm
+    FacemaskStudySetupView.mm
+    run.mm
+    main/facemask-study.mm
+    HellowWorldObjc.mm
+    ${MAIN_IMPL_FILE} PROPERTIES COMPILE_OPTIONS "-fobjc-arc;${AV_SPEECH_IN_NOISE_WARNINGS}")
 add_library(boystown-av-speech-in-noise-swift hi.swift)
 set_target_properties(boystown-av-speech-in-noise-swift PROPERTIES Swift_MODULE_NAME BoystownAvSpeechInNoiseSwift)

@@ -174,7 +174,7 @@ void main() {
 }
 }
 
-int main() {
+int mainz() {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenOrigin{subjectScreenFrame.origin};
