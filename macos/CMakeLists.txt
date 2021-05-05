@@ -74,3 +74,5 @@ add_executable(
 add_macos_bundle(
   av-speech-in-noise-facemask-study
   org.boystown.av-speech-in-noise-facemask-study "Facemask Study")
+add_library(boystown-av-speech-in-noise-swift hi.swift)
+set_target_properties(boystown-av-speech-in-noise-swift PROPERTIES Swift_MODULE_NAME BoystownAvSpeechInNoiseSwift)
