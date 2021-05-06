@@ -31,8 +31,13 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
 }
 
 class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
+    let view: SwiftTestSetupView
+    init(view: SwiftTestSetupView){
+        self.view = view
+    }
+
     func make(_ viewController: NSViewController!) -> TestSetupUI! {
-        return SwiftTestSetupUI(view: SwiftTestSetupView());
+        return SwiftTestSetupUI(view: view);
     }
 }
 
@@ -54,10 +59,11 @@ struct ContentView: View {
 
 @main
 struct SwiftCPPApp: App {
-    init() {HelloWorldObjc.doEverything(SwiftTestSetupUIFactory())}
+    let testSetupView = SwiftTestSetupView()
+    init() {HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(view: testSetupView))}
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            testSetupView
         }
     }
 }
