@@ -1,5 +1,6 @@
 import SwiftUI
 import Foundation
+import AppKit
 
 struct SwiftTestSetupView: View {
     @State var testerId: String = ""
@@ -29,6 +30,12 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     func attach() {}
 }
 
+class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
+    func make(_ viewController: NSViewController!) -> TestSetupUI! {
+        return SwiftTestSetupUI(view: SwiftTestSetupView());
+    }
+}
+
 class MySwiftClass : NSObject, PrintProtocolDelegate {
     func someFunction() -> String {
         return HelloWorldObjc().sayHello(self)
@@ -40,20 +47,14 @@ class MySwiftClass : NSObject, PrintProtocolDelegate {
 }
 
 struct ContentView: View {
-    let testSetup: SwiftTestSetupView = SwiftTestSetupView()
-    let testSetupUI: SwiftTestSetupUI
-    init() {
-        testSetupUI = SwiftTestSetupUI(view: testSetup)
-    }
     var body: some View {
         Text(MySwiftClass().someFunction()).padding()
-        testSetup
     }
 }
 
 @main
 struct SwiftCPPApp: App {
-    init() {HelloWorldObjc.doEverything()}
+    init() {HelloWorldObjc.doEverything(SwiftTestSetupUIFactory())}
     var body: some Scene {
         WindowGroup {
             ContentView()
