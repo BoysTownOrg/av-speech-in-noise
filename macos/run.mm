@@ -288,7 +288,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static FileWriter fileWriter;
     static TimeStampImpl timeStamp;
     static UnixFileSystemPath systemPath;
-    const auto outputFileName{outputFileNameFactory.make(timeStamp)};
+    static auto outputFileName{outputFileNameFactory.make(timeStamp)};
     static OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
     outputFilePath.setRelativeOutputDirectory(
         std::move(relativeOutputDirectory));

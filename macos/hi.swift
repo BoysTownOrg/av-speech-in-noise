@@ -31,7 +31,7 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     func subjectId() -> String {return "a"}
     func session() -> String {return ""}
     func testSettingsFile() -> String {return "/Users/basset/Documents/FaceMaskStimuli/ClearMask_AV_corrected.txt"}
-    func startingSnr() -> String {return ""}
+    func startingSnr() -> String {return "0"}
     func transducer() -> String {return ""}
     func rmeSetting() -> String {return ""}
     func populateTransducerMenu() {}

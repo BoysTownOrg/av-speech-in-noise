@@ -28,10 +28,10 @@ class TestSetupUIImpl : public TestSetupUI {
     void show() override { return [testSetupUI show]; }
     void hide() override { return [testSetupUI hide]; }
     auto testerId() -> std::string override {
-        return true ? "" : [testSetupUI testerId].UTF8String;
+        return [testSetupUI testerId].UTF8String;
     }
     auto subjectId() -> std::string override {
-        return true ? "" : [testSetupUI subjectId].UTF8String;
+        return [testSetupUI subjectId].UTF8String;
     }
     auto session() -> std::string override {
         return [testSetupUI session].UTF8String;
