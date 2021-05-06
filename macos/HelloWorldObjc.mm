@@ -8,6 +8,18 @@
 #include "AppKit-utility.h"
 #include "EyeTrackerStub.hpp"
 
+@interface TestSetupUIObserverImpl : NSObject <TestSetupUIObserver>
+@end
+
+@implementation TestSetupUIObserverImpl {
+  @public
+    av_speech_in_noise::TestSetupControl::Observer *observer;
+}
+- (void)notifyThatConfirmButtonHasBeenClicked {
+    observer->notifyThatConfirmButtonHasBeenClicked();
+}
+@end
+
 namespace av_speech_in_noise {
 class TestSetupUIImpl : public TestSetupUI {
   public:
@@ -16,10 +28,10 @@ class TestSetupUIImpl : public TestSetupUI {
     void show() override { return [testSetupUI show]; }
     void hide() override { return [testSetupUI hide]; }
     auto testerId() -> std::string override {
-        return [testSetupUI testerId].UTF8String;
+        return true ? "" : [testSetupUI testerId].UTF8String;
     }
     auto subjectId() -> std::string override {
-        return [testSetupUI subjectId].UTF8String;
+        return true ? "" : [testSetupUI subjectId].UTF8String;
     }
     auto session() -> std::string override {
         return [testSetupUI session].UTF8String;
@@ -37,7 +49,11 @@ class TestSetupUIImpl : public TestSetupUI {
         return [testSetupUI rmeSetting].UTF8String;
     }
     void populateTransducerMenu(std::vector<std::string>) override {}
-    void attach(Observer *) override {}
+    void attach(Observer *a) override {
+        const auto adapted{[[TestSetupUIObserverImpl alloc] init]};
+        adapted->observer = a;
+        [testSetupUI attach:adapted];
+    }
 
   private:
     NSObject<TestSetupUI> *testSetupUI;

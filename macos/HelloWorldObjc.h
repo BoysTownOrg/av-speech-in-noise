@@ -5,6 +5,10 @@
 - (NSInteger)favoriteNumber;
 @end
 
+@protocol TestSetupUIObserver
+- (void)notifyThatConfirmButtonHasBeenClicked;
+@end
+
 @protocol TestSetupUI
 - (void)show;
 - (void)hide;
@@ -16,7 +20,7 @@
 - (NSString *)transducer;
 - (NSString *)rmeSetting;
 - (void)populateTransducerMenu;
-- (void)attach;
+- (void)attach:(id<TestSetupUIObserver>)observer;
 @end
 
 @protocol TestSetupUIFactory

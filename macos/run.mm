@@ -411,7 +411,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto applicationDelegate{[[ApplicationDelegate alloc] init]};
     applicationDelegate->audioDeviceMenu = audioDeviceMenu;
     [app setDelegate:applicationDelegate];
-    AppKitSessionUI sessionUI{app, preferencesViewController, audioDeviceMenu};
+    static AppKitSessionUI sessionUI{
+        app, preferencesViewController, audioDeviceMenu};
     const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testSetupViewController);
     testSetupViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -429,7 +430,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             constraintEqualToAnchor:viewController.view.trailingAnchor
                            constant:-8]
     ]];
-    const auto testSetupUI{testSetupUIFactory.make(testSetupViewController)};
+    static auto testSetupUI{testSetupUIFactory.make(testSetupViewController)};
     const auto testViewController{nsTabViewControllerWithoutTabControl()};
     addChild(viewController, testViewController);
     const auto chooseKeywordsUIController{
