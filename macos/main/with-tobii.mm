@@ -105,6 +105,29 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
 }
 @end
 
+@interface AvSpeechInNoiseEyeTrackerCalibrationAppKitActions : NSObject
+@end
+
+@implementation AvSpeechInNoiseEyeTrackerCalibrationAppKitActions {
+  @public
+    av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
+    NSWindow *subjectWindow;
+    NSWindow *testerWindow;
+}
+
+- (void)notifyThatRunEyeTrackerCalibrationHasBeenClicked {
+    [testerWindow makeKeyAndOrderFront:nil];
+    [subjectWindow makeKeyAndOrderFront:nil];
+    observer->notifyThatMenuHasBeenSelected();
+}
+
+- (void)notifyThatSubmitButtonHasBeenClicked {
+    observer->notifyThatSubmitButtonHasBeenClicked();
+    [testerWindow orderOut:nil];
+    [subjectWindow orderOut:nil];
+}
+@end
+
 namespace av_speech_in_noise {
 namespace eye_tracker_calibration {
 static void animate(NSView *view, NSRect endFrame, double durationSeconds,
@@ -137,16 +160,23 @@ class AppKitUI : public View, public Control {
     static constexpr auto normalDotDiameterPoints{100};
     static constexpr auto shrunkenDotDiameterPoints{25};
 
-    explicit AppKitUI(
-        NSWindow *animatingWindow, NSViewController *resultsViewController)
+    explicit AppKitUI(NSWindow *animatingWindow,
+        NSViewController *resultsViewController,
+        AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *actions)
         : circleView{[[CircleView alloc]
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
                                 normalDotDiameterPoints)]},
           view{[[AvSpeechInNoiseEyeTrackerCalibrationView alloc] init]},
           delegate{[[AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate
-              alloc] init]} {
+              alloc] init]},
+          actions{actions} {
         [animatingWindow.contentViewController.view addSubview:circleView];
+        const auto submitButton {
+            nsButton("confirm", actions,
+                @selector(notifyThatSubmitButtonHasBeenClicked))
+        };
         addAutolayoutEnabledSubview(resultsViewController.view, view);
+        addAutolayoutEnabledSubview(resultsViewController.view, submitButton);
         [NSLayoutConstraint activateConstraints:@[
             [view.leadingAnchor
                 constraintEqualToAnchor:resultsViewController.view
@@ -156,14 +186,23 @@ class AppKitUI : public View, public Control {
                                             .trailingAnchor],
             [view.topAnchor
                 constraintEqualToAnchor:resultsViewController.view.topAnchor],
-            [view.bottomAnchor
-                constraintEqualToAnchor:resultsViewController.view.bottomAnchor]
+            [view.bottomAnchor constraintEqualToAnchor:submitButton.topAnchor],
+            [submitButton.trailingAnchor
+                constraintEqualToAnchor:resultsViewController.view
+                                            .trailingAnchor
+                               constant:-8],
+            [submitButton.bottomAnchor
+                constraintEqualToAnchor:resultsViewController.view.bottomAnchor
+                               constant:-8]
         ]];
     }
 
     void attach(View::Observer *a) override { delegate->observer = a; }
 
-    void attach(Control::Observer *a) override { view->observer = a; }
+    void attach(Control::Observer *a) override {
+        view->observer = a;
+        actions->observer = a;
+    }
 
     void moveDotTo(WindowPoint point) override {
         animate(circleView,
@@ -218,6 +257,7 @@ class AppKitUI : public View, public Control {
     CircleView *circleView;
     AvSpeechInNoiseEyeTrackerCalibrationView *view;
     AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate *delegate;
+    AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *actions;
 };
 }
 }
@@ -589,31 +629,14 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
 }
 }
 
-@interface AppKitEyeTrackerCalibrationMenuActions : NSObject
-@end
-
-@implementation AppKitEyeTrackerCalibrationMenuActions {
-  @public
-    av_speech_in_noise::eye_tracker_calibration::Interactor *interactor;
-    NSWindow *window;
-}
-
-- (void)notifyThatRunEyeTrackerCalibrationHasBeenClicked {
-    [window makeKeyAndOrderFront:nil];
-    interactor->start();
-}
-@end
-
 namespace av_speech_in_noise {
 namespace eye_tracker_calibration {
 namespace {
 class RunMenuInitializer : public AppKitRunMenuInitializer {
   public:
-    explicit RunMenuInitializer(Interactor &interactor, NSWindow *window)
-        : menuActions{[[AppKitEyeTrackerCalibrationMenuActions alloc] init]} {
-        menuActions->interactor = &interactor;
-        menuActions->window = window;
-    }
+    explicit RunMenuInitializer(
+        AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *menuActions)
+        : menuActions{menuActions} {}
 
     void initialize(NSMenu *menu) override {
         const auto eyeTrackerCalibrationMenuItem {
@@ -626,7 +649,7 @@ class RunMenuInitializer : public AppKitRunMenuInitializer {
     }
 
   private:
-    AppKitEyeTrackerCalibrationMenuActions *menuActions;
+    AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *menuActions;
 };
 }
 }
@@ -675,9 +698,12 @@ static void main() {
         av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
     const auto calibrationResultsWindow{[NSWindow
         windowWithContentViewController:calibrationResultsViewController]};
-    [calibrationResultsWindow makeKeyAndOrderFront:nil];
+    const auto eyeTrackerActions{
+        [[AvSpeechInNoiseEyeTrackerCalibrationAppKitActions alloc] init]};
+    eyeTrackerActions->subjectWindow = animatingWindow;
+    eyeTrackerActions->testerWindow = calibrationResultsWindow;
     eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
-        animatingWindow, calibrationResultsViewController};
+        animatingWindow, calibrationResultsViewController, eyeTrackerActions};
     eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
         eyeTrackerCalibrationView};
     auto calibrator{eyeTracker.calibration()};
@@ -687,7 +713,7 @@ static void main() {
     eye_tracker_calibration::Controller eyeTrackerCalibrationController{
         eyeTrackerCalibrationView, eyeTrackerCalibrationInteractor};
     eye_tracker_calibration::RunMenuInitializer runMenuInitializer{
-        eyeTrackerCalibrationInteractor, animatingWindow};
+        eyeTrackerActions};
 
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController, nullptr,

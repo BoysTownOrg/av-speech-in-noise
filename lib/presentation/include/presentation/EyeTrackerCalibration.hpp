@@ -57,6 +57,8 @@ class Control {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatWindowHasBeenTouched(WindowPoint) = 0;
+        virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
+        virtual void notifyThatMenuHasBeenSelected() = 0;
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
     virtual void attach(Observer *) = 0;
@@ -83,6 +85,12 @@ class Controller : public Control::Observer {
             interactor.redo(Point{static_cast<float>(found->x),
                 1 - static_cast<float>(found->y)});
     }
+
+    void notifyThatSubmitButtonHasBeenClicked() override {
+        interactor.finish();
+    }
+
+    void notifyThatMenuHasBeenSelected() override { interactor.start(); }
 
   private:
     IInteractor &interactor;

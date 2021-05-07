@@ -21,6 +21,8 @@ class IInteractor {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(IInteractor);
     virtual void redo(Point) = 0;
+    virtual void finish() = 0;
+    virtual void start() = 0;
 };
 
 class IPresenter {
@@ -50,8 +52,8 @@ class Interactor : public IPresenter::Observer, public IInteractor {
   public:
     Interactor(IPresenter &, EyeTrackerCalibrator &, std::vector<Point>);
     void notifyThatPointIsReady() override;
-    void start();
-    void finish();
+    void start() override;
+    void finish() override;
     void redo(Point) override;
 
   private:
