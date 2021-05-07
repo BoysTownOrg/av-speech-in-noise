@@ -52,7 +52,6 @@ struct SwiftTestSetupView: View {
         self.ui = ui
         testSettingsPathControl.pathStyle = NSPathControl.Style.popUp
         testSettingsPathControl.allowedTypes = ["txt"]
-        ui.view = self;
     }
     
     var body: some View {
@@ -82,7 +81,8 @@ struct SwiftTestSetupView: View {
             text: $startingSnr)
             .disableAutocorrection(true)
         Button(action: {
-            ui.notifyThatConfirmButtonHasBeenClicked()
+            print(startingSnr)
+            ui.notifyThatConfirmButtonHasBeenClicked(view: self)
         }) {
             Text("Confirm")
         }
@@ -104,14 +104,12 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     func session() -> String { return view.session }
     
     func testSettingsFile() -> String {
-        return view.testSettingsPathControl.url?.absoluteString ?? ""
+        return view.testSettingsPathControl.url?.path ?? ""
     }
     
     func startingSnr() -> String {
-        if (view.startingSnr == "") {
-            print("no")
-        }
-        return view.startingSnr}
+        return view.startingSnr
+    }
     
     func transducer() -> String {return view.transducer}
     
@@ -119,7 +117,8 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     
     func populateTransducerMenu() {}
     
-    func notifyThatConfirmButtonHasBeenClicked() {
+    func notifyThatConfirmButtonHasBeenClicked(view: SwiftTestSetupView) {
+        self.view = view
         observer.notifyThatConfirmButtonHasBeenClicked();
     }
     
