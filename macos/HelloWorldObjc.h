@@ -1,10 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
-@protocol PrintProtocolDelegate
-- (NSInteger)favoriteNumber;
-@end
-
 @protocol TestSetupUIObserver
 - (void)notifyThatConfirmButtonHasBeenClicked;
 - (void)notifyThatPlayCalibrationButtonHasBeenClicked;
@@ -29,6 +25,5 @@
 @end
 
 @interface HelloWorldObjc : NSObject
-- (NSString *)sayHello:(NSObject<PrintProtocolDelegate> *)me;
 + (void)doEverything:(NSObject<TestSetupUIFactory> *)testSetupUIFactory;
 @end
