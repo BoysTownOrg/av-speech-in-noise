@@ -14,4 +14,4 @@ static void main() {
 }
 }
 
-int main() { av_speech_in_noise::main(); }
+int mainz() { av_speech_in_noise::main(); }

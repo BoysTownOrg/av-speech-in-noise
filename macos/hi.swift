@@ -54,12 +54,13 @@ struct SwiftTestSetupView: View {
     @State var startingSnr: String = ""
     @State var transducer: String = ""
     @State var rmeSetting: String = ""
-    @ObservedObject var transducers = Transducers()
+    @ObservedObject var transducers: Transducers
     let testSettingsPathControl = NSPathControl()
     var ui: SwiftTestSetupUI
     
     init(ui: SwiftTestSetupUI){
         self.ui = ui
+        transducers = ui.transducers
         testSettingsPathControl.pathStyle = NSPathControl.Style.popUp
         testSettingsPathControl.allowedTypes = ["txt"]
         ui.view = self
@@ -114,6 +115,7 @@ struct SwiftTestSetupView: View {
 class SwiftTestSetupUI : NSObject, TestSetupUI {
     var view: SwiftTestSetupView! = nil
     var observer: TestSetupUIObserver! = nil
+    var transducers = Transducers()
     
     func show() {}
     
@@ -139,7 +141,7 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     
     func populateTransducerMenu(_ transducers: Array<String>) {
         for transducer in transducers {
-            view.transducers.items.append(Transducer(name: transducer))
+            self.transducers.items.append(Transducer(name: transducer))
         }
     }
     
