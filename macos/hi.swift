@@ -129,10 +129,20 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     var view: SwiftTestSetupView? = nil
     let transducers = Transducers()
     let observableObserver = TestSetupUIObserverObservable()
+    var showing = ObservableBool()
     
-    func show() {}
+    override init() {
+        showing.value = true
+        super.init()
+    }
     
-    func hide() {}
+    func show() {
+        showing.value = true
+    }
+    
+    func hide() {
+        showing.value = false
+    }
     
     func testerId() -> String { return view?.testerId ?? "" }
     
@@ -246,8 +256,10 @@ class SwiftTestUI : NSObject, TestUI {
 
 class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
     let testSetupUI: TestSetupUI?
+    
     init(testSetupUI: TestSetupUI?){
         self.testSetupUI = testSetupUI
+        super.init()
     }
     
     func make(_ viewController: NSViewController!) -> TestSetupUI! {
@@ -261,15 +273,18 @@ struct SwiftCPPApp: App {
     let testSetupView: SwiftTestSetupView
     let testUI = SwiftTestUI()
     let testView: SwiftTestView
-    @State var settingUpTest = true
+    @ObservedObject var showingTestSetup: ObservableBool
+    
     init() {
         testSetupView = SwiftTestSetupView(ui: testSetupUI)
         testView = SwiftTestView(ui: testUI)
+        showingTestSetup = testSetupUI.showing
         HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI))
     }
+    
     var body: some Scene {
         WindowGroup {
-            if settingUpTest {
+            if showingTestSetup.value {
                 testSetupView
             }
             else {

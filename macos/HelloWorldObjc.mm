@@ -2,7 +2,6 @@
 #include "Foundation-utility.h"
 #import "HelloWorldObjc.h"
 #include "run.h"
-#include "AppKitView.h"
 #include "AppKit-utility.h"
 #include "EyeTrackerStub.hpp"
 #import <Foundation/Foundation.h>
@@ -169,6 +168,34 @@ class TestUIImpl : public TestView, public TestControl {
 
   private:
     NSObject<TestUI> *testUI;
+};
+
+class SessionUIImpl : public SessionView, public SessionControl {
+  public:
+    explicit SessionUIImpl(NSObject<SessionUI> *sessionUI)
+        : sessionUI{sessionUI} {}
+
+    void eventLoop() override { [sessionUI eventLoop]; }
+
+    void showErrorMessage(std::string_view s) override {
+        [sessionUI showErrorMessage:nsString(std::string{s})];
+    }
+
+    auto audioDevice() -> std::string override {
+        return [sessionUI audioDevice].UTF8String;
+    }
+
+    void populateAudioDeviceMenu(std::vector<std::string> v) override {
+        id nsstrings = [NSMutableArray new];
+        for_each(v.begin(), v.end(), [&nsstrings](const std::string &str) {
+            id nsstr = [NSString stringWithUTF8String:str.c_str()];
+            [nsstrings addObject:nsstr];
+        });
+        [sessionUI populateAudioDeviceMenu:nsstrings];
+    }
+
+  private:
+    NSObject<SessionUI> *sessionUI;
 };
 
 static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory) {

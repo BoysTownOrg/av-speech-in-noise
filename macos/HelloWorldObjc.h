@@ -43,6 +43,13 @@
 - (void)showSheet:(NSString *)something;
 @end
 
+@protocol SessionUI
+- (void)eventLoop;
+- (void)showErrorMessage:(NSString *)something;
+- (NSString *)audioDevice;
+- (void)populateAudioDeviceMenu:(NSArray<NSString *> *)devices;
+@end
+
 @protocol TestSetupUIFactory
 - (id<TestSetupUI>)make:(NSViewController *)viewController;
 @end
