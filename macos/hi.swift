@@ -47,7 +47,7 @@ class Transducers: ObservableObject {
 }
 
 class TestSetupUIObserverObservable : ObservableObject {
-    @Published var observer : TestSetupUIObserver! = nil
+    @Published var observer : TestSetupUIObserver? = nil
 }
 
 struct SwiftTestSetupView: View {
@@ -61,7 +61,7 @@ struct SwiftTestSetupView: View {
     @ObservedObject var transducers: Transducers
     @ObservedObject var observableObserver: TestSetupUIObserverObservable
     let testSettingsPathControl = NSPathControl()
-    var ui: SwiftTestSetupUI
+    let ui: SwiftTestSetupUI
     
     init(ui: SwiftTestSetupUI){
         self.ui = ui
@@ -98,7 +98,7 @@ struct SwiftTestSetupView: View {
                 Wrap(testSettingsPathControl)
                 Button(action: {
                     self.ui.view = self
-                    observableObserver.observer.notifyThatPlayCalibrationButtonHasBeenClicked()
+                    observableObserver.observer?.notifyThatPlayCalibrationButtonHasBeenClicked()
                 }) {
                     Text("Play Calibration")
                 }
@@ -109,7 +109,7 @@ struct SwiftTestSetupView: View {
                 .disableAutocorrection(true)
             Button(action: {
                 self.ui.view = self
-                observableObserver.observer.notifyThatConfirmButtonHasBeenClicked()
+                observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
             }) {
                 Text("Confirm")
             }
@@ -118,8 +118,8 @@ struct SwiftTestSetupView: View {
 }
 
 class SwiftTestSetupUI : NSObject, TestSetupUI {
-    var view: SwiftTestSetupView! = nil
-    var observer: TestSetupUIObserver! = nil
+    var view: SwiftTestSetupView? = nil
+    var observer: TestSetupUIObserver? = nil
     var transducers = Transducers()
     var observableObserver = TestSetupUIObserverObservable()
     
@@ -127,23 +127,23 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     
     func hide() {}
     
-    func testerId() -> String { return view.testerId }
+    func testerId() -> String { return view?.testerId ?? "" }
     
-    func subjectId() -> String { return view.subjectId }
+    func subjectId() -> String { return view?.subjectId ?? "" }
     
-    func session() -> String { return view.session }
+    func session() -> String { return view?.session ?? "" }
     
     func testSettingsFile() -> String {
-        return view.testSettingsPathControl.url?.path ?? ""
+        return view?.testSettingsPathControl.url?.path ?? ""
     }
     
     func startingSnr() -> String {
-        return view.startingSnr
+        return view?.startingSnr ?? ""
     }
     
-    func transducer() -> String {return view.transducer}
+    func transducer() -> String {return view?.transducer ?? ""}
     
-    func rmeSetting() -> String {return view.rmeSetting}
+    func rmeSetting() -> String {return view?.rmeSetting ?? ""}
     
     func populateTransducerMenu(_ transducers: Array<String>) {
         for transducer in transducers {
