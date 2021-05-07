@@ -66,41 +66,47 @@ struct SwiftTestSetupView: View {
     }
     
     var body: some View {
-        TextField(
-            "subject ID",
-            text: $subjectId)
-            .disableAutocorrection(true)
-        TextField(
-            "tester ID",
-            text: $testerId)
-            .disableAutocorrection(true)
-        TextField(
-            "session",
-            text: $session)
-            .disableAutocorrection(true)
-        TextField(
-            "RME setting",
-            text: $rmeSetting)
-            .disableAutocorrection(true)
-        TextField(
-            "transducer",
-            text: $transducer)
-            .disableAutocorrection(true)
-        Picker("Flavor", selection: $transducer) {
-            ForEach(transducers.items) {
-                Text($0.name)
+        Form() {
+            TextField(
+                "subject ID",
+                text: $subjectId)
+                .disableAutocorrection(true)
+            TextField(
+                "tester ID",
+                text: $testerId)
+                .disableAutocorrection(true)
+            TextField(
+                "session",
+                text: $session)
+                .disableAutocorrection(true)
+            TextField(
+                "RME setting",
+                text: $rmeSetting)
+                .disableAutocorrection(true)
+            Picker("Transducer", selection: $transducer) {
+                ForEach(transducers.items) {
+                    Text($0.name)
+                }
             }
-        }
-        Wrap(testSettingsPathControl)
-        TextField(
-            "starting SNR (dB)",
-            text: $startingSnr)
-            .disableAutocorrection(true)
-        Button(action: {
-            print(startingSnr)
-            ui.notifyThatConfirmButtonHasBeenClicked(view: self)
-        }) {
-            Text("Confirm")
+            HStack() {
+                Wrap(testSettingsPathControl)
+                Button(action: {
+                    print(startingSnr)
+                    ui.notifyThatPlayCalibrationButtonHasBeenClicked()
+                }) {
+                    Text("Play Calibration")
+                }
+            }
+            TextField(
+                "starting SNR (dB)",
+                text: $startingSnr)
+                .disableAutocorrection(true)
+            Button(action: {
+                print(startingSnr)
+                ui.notifyThatConfirmButtonHasBeenClicked(view: self)
+            }) {
+                Text("Confirm")
+            }
         }
     }
 }
@@ -142,6 +148,10 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
         observer.notifyThatConfirmButtonHasBeenClicked();
     }
     
+    func notifyThatPlayCalibrationButtonHasBeenClicked() {
+        observer.notifyThatPlayCalibrationButtonHasBeenClicked();
+    }
+    
     func attach(_ observer: TestSetupUIObserver!) {
         self.observer = observer
     }
@@ -155,22 +165,6 @@ class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
     
     func make(_ viewController: NSViewController!) -> TestSetupUI! {
         return testSetupUI;
-    }
-}
-
-class MySwiftClass : NSObject, PrintProtocolDelegate {
-    func someFunction() -> String {
-        return HelloWorldObjc().sayHello(self)
-    }
-    
-    func favoriteNumber() -> NSInteger {
-        return 42;
-    }
-}
-
-struct ContentView: View {
-    var body: some View {
-        Text(MySwiftClass().someFunction()).padding()
     }
 }
 

@@ -19,6 +19,9 @@
 - (void)notifyThatConfirmButtonHasBeenClicked {
     observer->notifyThatConfirmButtonHasBeenClicked();
 }
+- (void)notifyThatPlayCalibrationButtonHasBeenClicked {
+    observer->notifyThatPlayCalibrationButtonHasBeenClicked();
+}
 @end
 
 namespace av_speech_in_noise {

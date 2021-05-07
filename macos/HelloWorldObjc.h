@@ -7,6 +7,7 @@
 
 @protocol TestSetupUIObserver
 - (void)notifyThatConfirmButtonHasBeenClicked;
+- (void)notifyThatPlayCalibrationButtonHasBeenClicked;
 @end
 
 @protocol TestSetupUI
