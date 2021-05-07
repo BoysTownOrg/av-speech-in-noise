@@ -50,6 +50,14 @@ class TestSetupUIObserverObservable : ObservableObject {
     @Published var observer : TestSetupUIObserver? = nil
 }
 
+class TestUIObserverObservable : ObservableObject {
+    @Published var observer : TestUIObserver? = nil
+}
+
+class ObservableBool : ObservableObject {
+    @Published var value = false
+}
+
 struct SwiftTestSetupView: View {
     @State var testerId: String = ""
     @State var subjectId: String = ""
@@ -119,9 +127,8 @@ struct SwiftTestSetupView: View {
 
 class SwiftTestSetupUI : NSObject, TestSetupUI {
     var view: SwiftTestSetupView? = nil
-    var observer: TestSetupUIObserver? = nil
-    var transducers = Transducers()
-    var observableObserver = TestSetupUIObserverObservable()
+    let transducers = Transducers()
+    let observableObserver = TestSetupUIObserverObservable()
     
     func show() {}
     
@@ -156,6 +163,87 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     }
 }
 
+struct SwiftTestView : View {
+    @ObservedObject var observableObserver: TestUIObserverObservable
+    @ObservedObject var exitTestButtonDisabled: ObservableBool
+    @ObservedObject var nextTrialButtonDisabled: ObservableBool
+    
+    init(ui: SwiftTestUI) {
+        observableObserver = ui.observableObserver
+        exitTestButtonDisabled = ui.exitTestButtonDisabled
+        nextTrialButtonDisabled = ui.nextTrialButtonDisabled
+    }
+    
+    var body: some View {
+        Button(action: {
+            observableObserver.observer?.exitTest()
+        }) {
+            Text("Exit Test")
+        }.disabled(exitTestButtonDisabled.value)
+        Button(action: {
+            observableObserver.observer?.playTrial()
+        }) {
+            Text("Play Trial")
+        }.disabled(nextTrialButtonDisabled.value)
+    }
+}
+
+class SwiftTestUI : NSObject, TestUI {
+    var observableObserver = TestUIObserverObservable()
+    var exitTestButtonDisabled = ObservableBool()
+    var nextTrialButtonDisabled = ObservableBool()
+    
+    func attach(_ observer: TestUIObserver!) {
+        observableObserver.observer = observer
+    }
+    
+    func showExitTestButton() {
+        exitTestButtonDisabled.value = false
+    }
+    
+    func hideExitTestButton() {
+        exitTestButtonDisabled.value = true
+    }
+    
+    func show() {
+    }
+    
+    func hide() {
+    }
+    
+    func display(_ something: String!) {
+        
+    }
+    
+    func secondaryDisplay(_ something: String!) {
+        
+    }
+    
+    func showNextTrialButton() {
+        nextTrialButtonDisabled.value = false
+    }
+    
+    func hideNextTrialButton() {
+        nextTrialButtonDisabled.value = true
+    }
+    
+    func showContinueTestingDialog() {
+        
+    }
+    
+    func hideContinueTestingDialog() {
+        
+    }
+    
+    func setContinueTestingDialogMessage(_ something: String!) {
+        
+    }
+    
+    func showSheet(_ something: String!) {
+        
+    }
+}
+
 class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
     let testSetupUI: TestSetupUI?
     init(testSetupUI: TestSetupUI?){
@@ -171,13 +259,22 @@ class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
 struct SwiftCPPApp: App {
     let testSetupUI = SwiftTestSetupUI()
     let testSetupView: SwiftTestSetupView
+    let testUI = SwiftTestUI()
+    let testView: SwiftTestView
+    @State var settingUpTest = true
     init() {
         testSetupView = SwiftTestSetupView(ui: testSetupUI)
+        testView = SwiftTestView(ui: testUI)
         HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI))
     }
     var body: some Scene {
         WindowGroup {
-            testSetupView
+            if settingUpTest {
+                testSetupView
+            }
+            else {
+                testView
+            }
         }
     }
 }

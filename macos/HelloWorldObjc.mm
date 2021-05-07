@@ -1,4 +1,5 @@
 #include "AppKitTestSetupUIFactory.h"
+#include "Foundation-utility.h"
 #import "HelloWorldObjc.h"
 #include "run.h"
 #include "AppKitView.h"
@@ -23,6 +24,31 @@
 
 - (void)notifyThatPlayCalibrationButtonHasBeenClicked {
     observer->notifyThatPlayCalibrationButtonHasBeenClicked();
+}
+@end
+
+@interface TestUIObserverImpl : NSObject <TestUIObserver>
+@end
+
+@implementation TestUIObserverImpl {
+  @public
+    av_speech_in_noise::TestControl::Observer *observer;
+}
+
+- (void)playTrial {
+    observer->playTrial();
+}
+
+- (void)exitTest {
+    observer->exitTest();
+}
+
+- (void)declineContinuingTesting {
+    observer->declineContinuingTesting();
+}
+
+- (void)acceptContinuingTesting {
+    observer->acceptContinuingTesting();
 }
 @end
 
@@ -95,6 +121,54 @@ class TestSetupUIFactoryImpl : public AppKitTestSetupUIFactory {
 
   private:
     NSObject<TestSetupUIFactory> *testSetupUIFactory;
+};
+
+class TestUIImpl : public TestView, public TestControl {
+  public:
+    explicit TestUIImpl(NSObject<TestUI> *testUI) : testUI{testUI} {}
+
+    void attach(TestControl::Observer *a) override {
+        const auto adapted{[[TestUIObserverImpl alloc] init]};
+        adapted->observer = a;
+        [testUI attach:adapted];
+    }
+
+    void showExitTestButton() override { [testUI showExitTestButton]; }
+
+    void hideExitTestButton() override { [testUI hideExitTestButton]; }
+
+    void show() override { [testUI show]; }
+
+    void hide() override { [testUI hide]; }
+
+    void display(std::string s) override { [testUI display:nsString(s)]; }
+
+    void secondaryDisplay(std::string s) override {
+        [testUI secondaryDisplay:nsString(s)];
+    }
+
+    void showNextTrialButton() override { [testUI showNextTrialButton]; }
+
+    void hideNextTrialButton() override { [testUI hideNextTrialButton]; }
+
+    void showContinueTestingDialog() override {
+        [testUI showContinueTestingDialog];
+    }
+
+    void hideContinueTestingDialog() override {
+        [testUI hideContinueTestingDialog];
+    }
+
+    void setContinueTestingDialogMessage(const std::string &s) override {
+        [testUI setContinueTestingDialogMessage:nsString(s)];
+    }
+
+    void showSheet(std::string_view s) override {
+        [testUI showSheet:nsString(std::string{s})];
+    }
+
+  private:
+    NSObject<TestUI> *testUI;
 };
 
 static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory) {
