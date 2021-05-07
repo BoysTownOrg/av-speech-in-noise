@@ -157,8 +157,8 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
 }
 
 class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
-    let testSetupUI: TestSetupUI!
-    init(testSetupUI: TestSetupUI!){
+    let testSetupUI: TestSetupUI?
+    init(testSetupUI: TestSetupUI?){
         self.testSetupUI = testSetupUI
     }
     
