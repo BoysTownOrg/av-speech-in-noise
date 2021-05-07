@@ -46,6 +46,10 @@ class Transducers: ObservableObject {
     @Published var items = [Transducer]()
 }
 
+class TestSetupUIObserverObservable : ObservableObject {
+    @Published var observer : TestSetupUIObserver! = nil
+}
+
 struct SwiftTestSetupView: View {
     @State var testerId: String = ""
     @State var subjectId: String = ""
@@ -55,15 +59,16 @@ struct SwiftTestSetupView: View {
     @State var transducer: String = ""
     @State var rmeSetting: String = ""
     @ObservedObject var transducers: Transducers
+    @ObservedObject var observableObserver: TestSetupUIObserverObservable
     let testSettingsPathControl = NSPathControl()
     var ui: SwiftTestSetupUI
     
     init(ui: SwiftTestSetupUI){
         self.ui = ui
         transducers = ui.transducers
+        observableObserver = ui.observableObserver
         testSettingsPathControl.pathStyle = NSPathControl.Style.popUp
         testSettingsPathControl.allowedTypes = ["txt"]
-        ui.view = self
     }
     
     var body: some View {
@@ -92,8 +97,8 @@ struct SwiftTestSetupView: View {
             HStack() {
                 Wrap(testSettingsPathControl)
                 Button(action: {
-                    print(startingSnr)
-                    ui.notifyThatPlayCalibrationButtonHasBeenClicked()
+                    self.ui.view = self
+                    observableObserver.observer.notifyThatPlayCalibrationButtonHasBeenClicked()
                 }) {
                     Text("Play Calibration")
                 }
@@ -103,8 +108,8 @@ struct SwiftTestSetupView: View {
                 text: $startingSnr)
                 .disableAutocorrection(true)
             Button(action: {
-                print(startingSnr)
-                ui.notifyThatConfirmButtonHasBeenClicked(view: self)
+                self.ui.view = self
+                observableObserver.observer.notifyThatConfirmButtonHasBeenClicked()
             }) {
                 Text("Confirm")
             }
@@ -116,6 +121,7 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     var view: SwiftTestSetupView! = nil
     var observer: TestSetupUIObserver! = nil
     var transducers = Transducers()
+    var observableObserver = TestSetupUIObserverObservable()
     
     func show() {}
     
@@ -145,17 +151,8 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
         }
     }
     
-    func notifyThatConfirmButtonHasBeenClicked(view: SwiftTestSetupView) {
-        self.view = view
-        observer.notifyThatConfirmButtonHasBeenClicked();
-    }
-    
-    func notifyThatPlayCalibrationButtonHasBeenClicked() {
-        observer.notifyThatPlayCalibrationButtonHasBeenClicked();
-    }
-    
     func attach(_ observer: TestSetupUIObserver!) {
-        self.observer = observer
+        observableObserver.observer = observer
     }
 }
 
