@@ -37,6 +37,15 @@ extension Wrap {
     }
 }
 
+struct Transducer : Identifiable {
+    let name: String
+    var id: String { name }
+}
+
+class Transducers: ObservableObject {
+    @Published var items = [Transducer]()
+}
+
 struct SwiftTestSetupView: View {
     @State var testerId: String = ""
     @State var subjectId: String = ""
@@ -45,6 +54,7 @@ struct SwiftTestSetupView: View {
     @State var startingSnr: String = ""
     @State var transducer: String = ""
     @State var rmeSetting: String = ""
+    @ObservedObject var transducers = Transducers()
     let testSettingsPathControl = NSPathControl()
     var ui: SwiftTestSetupUI
     
@@ -52,6 +62,7 @@ struct SwiftTestSetupView: View {
         self.ui = ui
         testSettingsPathControl.pathStyle = NSPathControl.Style.popUp
         testSettingsPathControl.allowedTypes = ["txt"]
+        ui.view = self
     }
     
     var body: some View {
@@ -75,6 +86,11 @@ struct SwiftTestSetupView: View {
             "transducer",
             text: $transducer)
             .disableAutocorrection(true)
+        Picker("Flavor", selection: $transducer) {
+            ForEach(transducers.items) {
+                Text($0.name)
+            }
+        }
         Wrap(testSettingsPathControl)
         TextField(
             "starting SNR (dB)",
@@ -115,7 +131,11 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     
     func rmeSetting() -> String {return view.rmeSetting}
     
-    func populateTransducerMenu() {}
+    func populateTransducerMenu(_ transducers: Array<String>) {
+        for transducer in transducers {
+            view.transducers.items.append(Transducer(name: transducer))
+        }
+    }
     
     func notifyThatConfirmButtonHasBeenClicked(view: SwiftTestSetupView) {
         self.view = view

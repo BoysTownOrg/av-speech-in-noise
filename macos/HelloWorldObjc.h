@@ -19,7 +19,7 @@
 - (NSString *)startingSnr;
 - (NSString *)transducer;
 - (NSString *)rmeSetting;
-- (void)populateTransducerMenu;
+- (void)populateTransducerMenu:(NSArray<NSString *> *)transducers;
 - (void)attach:(id<TestSetupUIObserver>)observer;
 @end
 

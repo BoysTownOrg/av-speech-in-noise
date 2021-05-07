@@ -1,12 +1,13 @@
 #include "AppKitTestSetupUIFactory.h"
 #import <Foundation/Foundation.h>
-#include <string>
-#include <sstream>
 #import "HelloWorldObjc.h"
 #include "run.h"
 #include "AppKitView.h"
 #include "AppKit-utility.h"
 #include "EyeTrackerStub.hpp"
+#include <algorithm>
+#include <string>
+#include <sstream>
 
 @interface TestSetupUIObserverImpl : NSObject <TestSetupUIObserver>
 @end
@@ -48,7 +49,15 @@ class TestSetupUIImpl : public TestSetupUI {
     auto rmeSetting() -> std::string override {
         return [testSetupUI rmeSetting].UTF8String;
     }
-    void populateTransducerMenu(std::vector<std::string>) override {}
+    void populateTransducerMenu(std::vector<std::string> v) override {
+        id nsstrings = [NSMutableArray new];
+        std::for_each(v.begin(), v.end(),
+            [&nsstrings](std::string str) {
+                id nsstr = [NSString stringWithUTF8String:str.c_str()];
+                [nsstrings addObject:nsstr];
+            });
+        [testSetupUI populateTransducerMenu:nsstrings];
+    }
     void attach(Observer *a) override {
         const auto adapted{[[TestSetupUIObserverImpl alloc] init]};
         adapted->observer = a;
