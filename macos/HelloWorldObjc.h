@@ -55,5 +55,6 @@
 @end
 
 @interface HelloWorldObjc : NSObject
-+ (void)doEverything:(NSObject<TestSetupUIFactory> *)testSetupUIFactory;
++ (void)doEverything:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
+       withSessionUI:(NSObject<SessionUI> *)sessionUI;
 @end

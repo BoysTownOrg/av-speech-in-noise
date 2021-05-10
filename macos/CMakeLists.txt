@@ -55,7 +55,7 @@ add_executable(
   AppKit-utility.mm
   Foundation-utility.mm
   run.mm
-  hi.swift
+  SwiftUI.swift
   HelloWorldObjc.mm
   ${MAIN_IMPL_FILE}
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
@@ -85,5 +85,4 @@ add_macos_bundle(
     main/facemask-study.mm
     HelloWorldObjc.mm
     ${MAIN_IMPL_FILE} PROPERTIES COMPILE_OPTIONS "-fobjc-arc;${AV_SPEECH_IN_NOISE_WARNINGS}")
-add_library(boystown-av-speech-in-noise-swift hi.swift)
-set_target_properties(boystown-av-speech-in-noise-swift PROPERTIES Swift_MODULE_NAME BoystownAvSpeechInNoiseSwift)
+  

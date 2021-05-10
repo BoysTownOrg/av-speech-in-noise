@@ -275,7 +275,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     OutputFileNameFactory &outputFileNameFactory,
     NSViewController *aboutViewController,
     SessionController::Observer *sessionControllerObserver,
-    std::filesystem::path relativeOutputDirectory) {
+    std::filesystem::path relativeOutputDirectory, SessionUI *sessionUIMaybe,
+    TestUI *testUIMaybe) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     static AvFoundationVideoPlayer videoPlayer{subjectScreen};
     static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
@@ -480,20 +481,25 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static PassFailPresenter passFailPresenter{testUI, passFailUI};
     static CoordinateResponseMeasurePresenter
         coordinateResponseMeasurePresenter{coordinateResponseMeasureView};
-    static TestSetupPresenterImpl testSetupPresenter{
-        *(testSetupUI.get()), sessionUI};
+    static TestSetupPresenterImpl testSetupPresenter{*(testSetupUI.get()),
+        sessionUIMaybe != nullptr ? *sessionUIMaybe
+                                  : static_cast<SessionView &>(sessionUI)};
     static UninitializedTaskPresenterImpl taskPresenter;
     static TestPresenterImpl testPresenter{model, testUI, &taskPresenter};
-    static SessionControllerImpl sessionController{
-        model, sessionUI, testSetupPresenter, testPresenter};
+    static SessionControllerImpl sessionController{model,
+        sessionUIMaybe != nullptr ? *sessionUIMaybe
+                                  : static_cast<SessionView &>(sessionUI),
+        testSetupPresenter, testPresenter};
     std::ifstream defaultAudioDeviceFile{defaultAudioDeviceFilePath()};
     if (defaultAudioDeviceFile) {
         std::string defaultAudioDevice;
         std::getline(defaultAudioDeviceFile, defaultAudioDevice);
         [audioDeviceMenu selectItemWithTitle:nsString(defaultAudioDevice)];
     }
-    static TestControllerImpl testController{
-        sessionController, model, sessionUI, testUI, testPresenter};
+    static TestControllerImpl testController{sessionController, model,
+        sessionUIMaybe != nullptr ? *sessionUIMaybe
+                                  : static_cast<SessionControl &>(sessionUI),
+        testUI, testPresenter};
     static ChooseKeywordsController chooseKeywordsController{
         testController, model, chooseKeywordsUI, chooseKeywordsPresenter};
     static SyllablesController syllablesController{syllablesUI, testController,
@@ -505,8 +511,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {"R", Syllable::ri}, {"Sh", Syllable::shi}, {"S", Syllable::si},
             {"Th", Syllable::thi}, {"T", Syllable::ti}, {"Ch", Syllable::tsi},
             {"V", Syllable::vi}, {"W", Syllable::wi}, {"Z", Syllable::zi}}};
-    static CorrectKeywordsController correctKeywordsController{
-        testController, model, sessionUI, correctKeywordsUI};
+    static CorrectKeywordsController correctKeywordsController{testController,
+        model,
+        sessionUIMaybe != nullptr ? *sessionUIMaybe
+                                  : static_cast<SessionView &>(sessionUI),
+        correctKeywordsUI};
     static FreeResponseController freeResponseController{
         testController, model, freeResponseUI};
     static PassFailController passFailController{
@@ -553,8 +562,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {Method::adaptivePassFail, passFailPresenter},
             {Method::adaptivePassFailWithEyeTracking, passFailPresenter}}};
     static TestSetupController testSetupController{*(testSetupUI.get()),
-        sessionController, sessionUI, testSetupPresenter, model,
-        testSettingsInterpreter, textFileReader};
+        sessionController,
+        sessionUIMaybe != nullptr ? *sessionUIMaybe
+                                  : static_cast<SessionControl &>(sessionUI),
+        testSetupPresenter, model, testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);
 }
 }

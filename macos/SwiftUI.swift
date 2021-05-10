@@ -348,7 +348,7 @@ struct SwiftCPPApp: App {
         testSetupView = SwiftTestSetupView(ui: testSetupUI, testSettingsPathControl:testSettingsPathControl)
         testView = SwiftTestView(ui: testUI)
         showingTestSetup = testSetupUI.showing
-        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI))
+        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI)
     }
     
     var body: some Scene {

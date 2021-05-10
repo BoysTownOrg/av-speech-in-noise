@@ -25,11 +25,16 @@ class DefaultOutputFileNameFactory : public OutputFileNameFactory {
     }
 };
 
+class TestUI : public TestView, public TestControl {};
+
+class SessionUI : public SessionView, public SessionControl {};
+
 void initializeAppAndRunEventLoop(EyeTracker &, AppKitTestSetupUIFactory &,
     OutputFileNameFactory &, NSViewController *aboutViewController,
     SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =
-        "Documents/AvSpeechInNoise Data");
+        "Documents/AvSpeechInNoise Data",
+    SessionUI * = nullptr, TestUI * = nullptr);
 }
 
 #endif
