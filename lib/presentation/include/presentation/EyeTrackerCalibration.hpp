@@ -32,6 +32,7 @@ class View {
     virtual void drawRed(Line) = 0;
     virtual void drawGreen(Line) = 0;
     virtual void drawWhiteCircleWithCenter(WindowPoint) = 0;
+    virtual void clear() = 0;
 };
 
 class Presenter : public View::Observer, public IPresenter {

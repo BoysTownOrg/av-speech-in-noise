@@ -43,6 +43,10 @@ class InteractorStub : public IInteractor {
 
     void redo(Point x) override { redoPoint_ = x; }
 
+    void finish() override {}
+
+    void start() override {}
+
   private:
     Point redoPoint_{};
 };
