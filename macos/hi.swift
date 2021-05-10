@@ -115,13 +115,13 @@ struct SwiftTestSetupView: View {
                 "starting SNR (dB)",
                 text: $startingSnr)
                 .disableAutocorrection(true)
-            Button(action: {
-                self.ui.view = self
-                observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
-            }) {
-                Text("Confirm")
-            }
-        }
+        }.padding()
+        Button(action: {
+            self.ui.view = self
+            observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
+        }) {
+            Text("Confirm")
+        }.keyboardShortcut(.defaultAction)
     }
 }
 
