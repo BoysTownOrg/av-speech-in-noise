@@ -113,9 +113,12 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
     av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
     NSWindow *subjectWindow;
     NSWindow *testerWindow;
+    NSMenuItem *menuItem;
 }
 
-- (void)notifyThatRunEyeTrackerCalibrationHasBeenClicked {
+- (void)notifyThatRunEyeTrackerCalibrationHasBeenClicked:(id)sender {
+    menuItem = sender;
+    menuItem.enabled = NO;
     [testerWindow makeKeyAndOrderFront:nil];
     [subjectWindow makeKeyAndOrderFront:nil];
     observer->notifyThatMenuHasBeenSelected();
@@ -125,6 +128,7 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
     observer->notifyThatSubmitButtonHasBeenClicked();
     [testerWindow orderOut:nil];
     [subjectWindow orderOut:nil];
+    menuItem.enabled = YES;
 }
 @end
 
@@ -251,6 +255,12 @@ class AppKitUI : public View, public Control {
 
     auto whiteCircleDiameter() -> double override {
         return 25 / view.frame.size.width;
+    }
+
+    void clear() override {
+        view->redLines.clear();
+        view->greenLines.clear();
+        view->whiteCircleCenters.clear();
     }
 
   private:
@@ -639,10 +649,11 @@ class RunMenuInitializer : public AppKitRunMenuInitializer {
         : menuActions{menuActions} {}
 
     void initialize(NSMenu *menu) override {
+        menu.autoenablesItems = NO;
         const auto eyeTrackerCalibrationMenuItem {
             [menu addItemWithTitle:@"Eye Tracker Calibration"
                             action:@selector
-                            (notifyThatRunEyeTrackerCalibrationHasBeenClicked)
+                            (notifyThatRunEyeTrackerCalibrationHasBeenClicked:)
                      keyEquivalent:@""]
         };
         eyeTrackerCalibrationMenuItem.target = menuActions;
@@ -698,6 +709,8 @@ static void main() {
         av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
     const auto calibrationResultsWindow{[NSWindow
         windowWithContentViewController:calibrationResultsViewController]};
+    calibrationResultsWindow.styleMask =
+        NSWindowStyleMaskResizable | NSWindowStyleMaskTitled;
     const auto eyeTrackerActions{
         [[AvSpeechInNoiseEyeTrackerCalibrationAppKitActions alloc] init]};
     eyeTrackerActions->subjectWindow = animatingWindow;
