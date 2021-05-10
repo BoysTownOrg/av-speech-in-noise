@@ -13,6 +13,10 @@
 - (void)acceptContinuingTesting;
 @end
 
+@protocol FreeResponseUIObserver
+- (void)notifyThatSubmitButtonHasBeenClicked;
+@end
+
 @protocol TestSetupUI
 - (void)show;
 - (void)hide;
@@ -50,12 +54,23 @@
 - (void)populateAudioDeviceMenu:(NSArray<NSString *> *)devices;
 @end
 
+@protocol FreeResponseUI
+- (void)attach:(id<FreeResponseUIObserver>)observer;
+- (void)showFreeResponseSubmission;
+- (void)hideFreeResponseSubmission;
+- (NSString *)freeResponse;
+- (BOOL)flagged;
+- (void)clearFreeResponse;
+- (void)clearFlag;
+@end
+
 @protocol TestSetupUIFactory
 - (id<TestSetupUI>)make:(NSViewController *)viewController;
 @end
 
 @interface HelloWorldObjc : NSObject
 + (void)doEverything:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
-       withSessionUI:(NSObject<SessionUI> *)sessionUI
-          withTestUI:(NSObject<TestUI> *)testUI;
+         withSessionUI:(NSObject<SessionUI> *)sessionUI
+            withTestUI:(NSObject<TestUI> *)testUI
+    withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI;
 @end

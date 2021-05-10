@@ -3,6 +3,7 @@
 
 #include "AppKitTestSetupUIFactory.h"
 #include <presentation/SessionController.hpp>
+#include <presentation/FreeResponse.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/OutputFilePath.hpp>
 #include <av-speech-in-noise/Interface.hpp>
@@ -29,12 +30,14 @@ class TestUI : public TestView, public TestControl {};
 
 class SessionUI : public SessionView, public SessionControl {};
 
+class FreeResponseUI : public FreeResponseView, public FreeResponseControl {};
+
 void initializeAppAndRunEventLoop(EyeTracker &, AppKitTestSetupUIFactory &,
     OutputFileNameFactory &, NSViewController *aboutViewController,
     SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =
         "Documents/AvSpeechInNoise Data",
-    SessionUI * = nullptr, TestUI * = nullptr);
+    SessionUI * = nullptr, TestUI * = nullptr, FreeResponseUI * = nullptr);
 }
 
 #endif

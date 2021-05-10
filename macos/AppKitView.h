@@ -163,9 +163,10 @@ class SyllablesUI : public SyllablesControl, public SyllablesView {
     NSButton *flaggedButton;
 };
 
-class FreeResponseUI : public FreeResponseView, public FreeResponseControl {
+class FreeResponseUIAppKit : public FreeResponseView,
+                             public FreeResponseControl {
   public:
-    explicit FreeResponseUI(NSViewController *);
+    explicit FreeResponseUIAppKit(NSViewController *);
     void attach(Observer *) override;
     void showFreeResponseSubmission() override;
     void hideFreeResponseSubmission() override;

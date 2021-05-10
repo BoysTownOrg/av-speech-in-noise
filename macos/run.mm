@@ -276,7 +276,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     NSViewController *aboutViewController,
     SessionController::Observer *sessionControllerObserver,
     std::filesystem::path relativeOutputDirectory, SessionUI *sessionUIMaybe,
-    TestUI *testUIMaybe) {
+    TestUI *testUIMaybe, FreeResponseUI *freeResponseUIMaybe) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     static AvFoundationVideoPlayer videoPlayer{subjectScreen};
     static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
@@ -465,10 +465,12 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
     static ConsonantTaskPresenterImpl consonantPresenter{consonantView};
-    static FreeResponseUI freeResponseUI{freeResponseUIController};
+    static FreeResponseUIAppKit freeResponseUI{freeResponseUIController};
     static FreeResponsePresenter freeResponsePresenter{
         testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
-        freeResponseUI};
+        freeResponseUIMaybe != nullptr
+            ? *freeResponseUIMaybe
+            : static_cast<FreeResponseView &>(freeResponseUI)};
     static ChooseKeywordsUI chooseKeywordsUI{chooseKeywordsUIController};
     static ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model,
         testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
@@ -528,8 +530,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         sessionUIMaybe != nullptr ? *sessionUIMaybe
                                   : static_cast<SessionView &>(sessionUI),
         correctKeywordsUI};
-    static FreeResponseController freeResponseController{
-        testController, model, freeResponseUI};
+    static FreeResponseController freeResponseController{testController, model,
+        freeResponseUIMaybe != nullptr
+            ? *freeResponseUIMaybe
+            : static_cast<FreeResponseControl &>(freeResponseUI)};
     static PassFailController passFailController{
         testController, model, passFailUI};
     static ConsonantTaskController consonantTaskController{

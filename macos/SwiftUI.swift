@@ -54,6 +54,10 @@ class TestUIObserverObservable : ObservableObject {
     @Published var observer : TestUIObserver? = nil
 }
 
+class FreeResponseUIObserverObservable : ObservableObject {
+    @Published var observer : FreeResponseUIObserver? = nil
+}
+
 class ObservableBool : ObservableObject {
     @Published var value = false
 }
@@ -239,13 +243,13 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
 
 struct SwiftTestView : View {
     @ObservedObject var observableObserver: TestUIObserverObservable
-    @ObservedObject var exitTestButtonDisabled: ObservableBool
-    @ObservedObject var nextTrialButtonDisabled: ObservableBool
+    @ObservedObject var exitTestButtonEnabled: ObservableBool
+    @ObservedObject var nextTrialButtonEnabled: ObservableBool
     
     init(ui: SwiftTestUI) {
         observableObserver = ui.observableObserver
-        exitTestButtonDisabled = ui.exitTestButtonDisabled
-        nextTrialButtonDisabled = ui.nextTrialButtonDisabled
+        exitTestButtonEnabled = ui.exitTestButtonEnabled
+        nextTrialButtonEnabled = ui.nextTrialButtonEnabled
     }
     
     var body: some View {
@@ -253,30 +257,31 @@ struct SwiftTestView : View {
             observableObserver.observer?.exitTest()
         }) {
             Text("Exit Test")
-        }.disabled(exitTestButtonDisabled.value)
+        }.disabled(!exitTestButtonEnabled.value)
         Button(action: {
             observableObserver.observer?.playTrial()
         }) {
             Text("Play Trial")
-        }.disabled(nextTrialButtonDisabled.value)
+        }.keyboardShortcut(.defaultAction)
+        .disabled(!nextTrialButtonEnabled.value)
     }
 }
 
 class SwiftTestUI : NSObject, TestUI {
     let observableObserver = TestUIObserverObservable()
-    let exitTestButtonDisabled = ObservableBool()
-    let nextTrialButtonDisabled = ObservableBool()
+    let exitTestButtonEnabled = ObservableBool()
+    let nextTrialButtonEnabled = ObservableBool()
     
     func attach(_ observer: TestUIObserver!) {
         observableObserver.observer = observer
     }
     
     func showExitTestButton() {
-        exitTestButtonDisabled.value = false
+        exitTestButtonEnabled.value = true
     }
     
     func hideExitTestButton() {
-        exitTestButtonDisabled.value = true
+        exitTestButtonEnabled.value = false
     }
     
     func show() {
@@ -294,11 +299,11 @@ class SwiftTestUI : NSObject, TestUI {
     }
     
     func showNextTrialButton() {
-        nextTrialButtonDisabled.value = false
+        nextTrialButtonEnabled.value = true
     }
     
     func hideNextTrialButton() {
-        nextTrialButtonDisabled.value = true
+        nextTrialButtonEnabled.value = false
     }
     
     func showContinueTestingDialog() {
@@ -315,6 +320,69 @@ class SwiftTestUI : NSObject, TestUI {
     
     func showSheet(_ something: String!) {
         
+    }
+}
+
+struct SwiftFreeResponseView : View {
+    @ObservedObject var freeResponse: ObservableString
+    @ObservedObject var flagged: ObservableBool
+    @ObservedObject var observableObserver: FreeResponseUIObserverObservable
+    @ObservedObject var showing: ObservableBool
+    
+    init(ui: SwiftFreeResponseUI) {
+        freeResponse = ui.freeResponse_
+        flagged = ui.flagged_
+        showing = ui.showing
+        observableObserver = ui.observableObserver
+    }
+    
+    var body: some View {
+        if showing.value {
+            Form {
+                Toggle("flagged", isOn: $flagged.value)
+                TextField("response", text: $freeResponse.string)
+            }.padding()
+            Button(action: {
+                observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
+            }) {
+                Text("Submit")
+            }.keyboardShortcut(.defaultAction)
+        }
+    }
+}
+
+class SwiftFreeResponseUI : NSObject, FreeResponseUI {
+    let freeResponse_ = ObservableString()
+    let flagged_ = ObservableBool()
+    let observableObserver = FreeResponseUIObserverObservable()
+    let showing = ObservableBool()
+    
+    func attach(_ observer: FreeResponseUIObserver!) {
+        observableObserver.observer = observer
+    }
+    
+    func showFreeResponseSubmission() {
+        showing.value = true
+    }
+    
+    func hideFreeResponseSubmission() {
+        showing.value = false
+    }
+    
+    func freeResponse() -> String! {
+        return freeResponse_.string
+    }
+    
+    func flagged() -> Bool {
+        return flagged_.value
+    }
+    
+    func clearFreeResponse() {
+        freeResponse_.string = ""
+    }
+    
+    func clearFlag() {
+        flagged_.value = false
     }
 }
 
@@ -340,6 +408,8 @@ struct SwiftCPPApp: App {
     let testSetupView: SwiftTestSetupView
     let testUI = SwiftTestUI()
     let testView: SwiftTestView
+    let freeResponseUI = SwiftFreeResponseUI()
+    let freeResponseView: SwiftFreeResponseView
     @ObservedObject var showingTestSetup: ObservableBool
     
     init() {
@@ -347,8 +417,9 @@ struct SwiftCPPApp: App {
         sessionView = SwiftSessionView(ui: sessionUI)
         testSetupView = SwiftTestSetupView(ui: testSetupUI, testSettingsPathControl:testSettingsPathControl)
         testView = SwiftTestView(ui: testUI)
+        freeResponseView = SwiftFreeResponseView(ui: freeResponseUI)
         showingTestSetup = testSetupUI.showing
-        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: testUI)
+        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: testUI, with: freeResponseUI)
     }
     
     var body: some Scene {
@@ -359,6 +430,7 @@ struct SwiftCPPApp: App {
             }
             else {
                 testView
+                freeResponseView
             }
         }
     }

@@ -957,7 +957,7 @@ void ChooseKeywordsUI::setTextFollowingThirdKeywordButton(
     [textFieldAfterThirdKeywordButton setStringValue:nsString(s)];
 }
 
-FreeResponseUI::FreeResponseUI(NSViewController *viewController)
+FreeResponseUIAppKit::FreeResponseUIAppKit(NSViewController *viewController)
     : responseField{emptyTextField()}, flaggedButton{[NSButton
                                            checkboxWithTitle:@"flagged"
                                                       target:nil
@@ -1001,27 +1001,27 @@ FreeResponseUI::FreeResponseUI(NSViewController *viewController)
     av_speech_in_noise::hide(responseView);
 }
 
-void FreeResponseUI::attach(Observer *e) { actions->observer = e; }
+void FreeResponseUIAppKit::attach(Observer *e) { actions->observer = e; }
 
-void FreeResponseUI::showFreeResponseSubmission() {
+void FreeResponseUIAppKit::showFreeResponseSubmission() {
     av_speech_in_noise::show(responseView);
 }
 
-void FreeResponseUI::hideFreeResponseSubmission() {
+void FreeResponseUIAppKit::hideFreeResponseSubmission() {
     av_speech_in_noise::hide(responseView);
 }
 
-void FreeResponseUI::clearFreeResponse() { set(responseField, ""); }
+void FreeResponseUIAppKit::clearFreeResponse() { set(responseField, ""); }
 
-void FreeResponseUI::clearFlag() {
+void FreeResponseUIAppKit::clearFlag() {
     flaggedButton.state = NSControlStateValueOff;
 }
 
-auto FreeResponseUI::freeResponse() -> std::string {
+auto FreeResponseUIAppKit::freeResponse() -> std::string {
     return string(responseField);
 }
 
-auto FreeResponseUI::flagged() -> bool {
+auto FreeResponseUIAppKit::flagged() -> bool {
     return flaggedButton.state == NSControlStateValueOn;
 }
 

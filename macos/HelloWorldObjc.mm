@@ -51,6 +51,19 @@
 }
 @end
 
+@interface FreeResponseUIObserverImpl : NSObject <FreeResponseUIObserver>
+@end
+
+@implementation FreeResponseUIObserverImpl {
+  @public
+    av_speech_in_noise::FreeResponseControl::Observer *observer;
+}
+
+- (void)notifyThatSubmitButtonHasBeenClicked {
+    observer->notifyThatSubmitButtonHasBeenClicked();
+}
+@end
+
 namespace av_speech_in_noise {
 class TestSetupUIImpl : public TestSetupUI {
   public:
@@ -198,24 +211,62 @@ class SessionUIImpl : public SessionUI {
     NSObject<SessionUI> *sessionUI;
 };
 
+class FreeResponseUIImpl : public FreeResponseUI {
+  public:
+    explicit FreeResponseUIImpl(NSObject<FreeResponseUI> *freeResponseUI)
+        : freeResponseUI{freeResponseUI} {}
+
+    void attach(Observer *a) override {
+        const auto adapted{[[FreeResponseUIObserverImpl alloc] init]};
+        adapted->observer = a;
+        [freeResponseUI attach:adapted];
+    }
+
+    void showFreeResponseSubmission() override {
+        [freeResponseUI showFreeResponseSubmission];
+    }
+
+    void hideFreeResponseSubmission() override {
+        [freeResponseUI hideFreeResponseSubmission];
+    }
+
+    auto freeResponse() -> std::string override {
+        return [freeResponseUI freeResponse].UTF8String;
+    }
+
+    auto flagged() -> bool override { return [freeResponseUI flagged] == YES; }
+
+    void clearFreeResponse() override { [freeResponseUI clearFreeResponse]; }
+
+    void clearFlag() override { [freeResponseUI clearFlag]; }
+
+  private:
+    NSObject<FreeResponseUI> *freeResponseUI;
+};
+
 static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
-    NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI) {
+    NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI,
+    NSObject<FreeResponseUI> *freeResponseUI) {
     static EyeTrackerStub eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
     const auto aboutViewController{nsTabViewControllerWithoutTabControl()};
     static SessionUIImpl sessionUIAdapted{sessionUI};
     static TestUIImpl testUIAdapted{testUI};
+    static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController, nullptr,
-        "Documents/AvSpeechInNoise Data", &sessionUIAdapted, &testUIAdapted);
+        "Documents/AvSpeechInNoise Data", &sessionUIAdapted, &testUIAdapted,
+        &freeResponseUIAdapted);
 }
 }
 
 @implementation HelloWorldObjc
 + (void)doEverything:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
-       withSessionUI:(NSObject<SessionUI> *)sessionUI
-          withTestUI:(NSObject<TestUI> *)testUI {
-    av_speech_in_noise::main(testSetupUIFactory, sessionUI, testUI);
+         withSessionUI:(NSObject<SessionUI> *)sessionUI
+            withTestUI:(NSObject<TestUI> *)testUI
+    withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI {
+    av_speech_in_noise::main(
+        testSetupUIFactory, sessionUI, testUI, freeResponseUI);
 }
 @end
