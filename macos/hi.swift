@@ -127,21 +127,21 @@ struct SwiftTestSetupView: View {
     @State var testerId: String = ""
     @State var subjectId: String = ""
     @State var session: String = ""
-    @State var testSettingsFile: String = ""
     @State var startingSnr: String = ""
     @State var transducer: String = ""
     @State var rmeSetting: String = ""
     @ObservedObject var transducers: Transducers
     @ObservedObject var observableObserver: TestSetupUIObserverObservable
-    let testSettingsPathControl = NSPathControl()
+    let testSettingsPathControl: NSPathControl
     let ui: SwiftTestSetupUI
     
-    init(ui: SwiftTestSetupUI){
+    init(ui: SwiftTestSetupUI, testSettingsPathControl: NSPathControl){
         self.ui = ui
+        self.testSettingsPathControl = testSettingsPathControl
         transducers = ui.transducers
         observableObserver = ui.observableObserver
-        testSettingsPathControl.pathStyle = NSPathControl.Style.popUp
-        testSettingsPathControl.allowedTypes = ["txt"]
+        self.testSettingsPathControl.pathStyle = NSPathControl.Style.popUp
+        self.testSettingsPathControl.allowedTypes = ["txt"]
     }
     
     var body: some View {
@@ -195,8 +195,10 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     let transducers = Transducers()
     let observableObserver = TestSetupUIObserverObservable()
     var showing = ObservableBool()
+    let testSettingsPathControl: NSPathControl
     
-    override init() {
+    init(testSettingsPathControl: NSPathControl) {
+        self.testSettingsPathControl = testSettingsPathControl
         showing.value = true
         super.init()
     }
@@ -216,7 +218,7 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     func session() -> String { return view?.session ?? "" }
     
     func testSettingsFile() -> String {
-        return view?.testSettingsPathControl.url?.path ?? ""
+        return testSettingsPathControl.url?.path ?? ""
     }
     
     func startingSnr() -> String {
@@ -336,15 +338,17 @@ class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
 struct SwiftCPPApp: App {
     let sessionUI = SwiftSessionUI()
     let sessionView: SwiftSessionView
-    let testSetupUI = SwiftTestSetupUI()
+    let testSettingsPathControl = NSPathControl()
+    let testSetupUI: SwiftTestSetupUI
     let testSetupView: SwiftTestSetupView
     let testUI = SwiftTestUI()
     let testView: SwiftTestView
     @ObservedObject var showingTestSetup: ObservableBool
     
     init() {
+        testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
         sessionView = SwiftSessionView(ui: sessionUI)
-        testSetupView = SwiftTestSetupView(ui: testSetupUI)
+        testSetupView = SwiftTestSetupView(ui: testSetupUI, testSettingsPathControl:testSettingsPathControl)
         testView = SwiftTestView(ui: testUI)
         showingTestSetup = testSetupUI.showing
         HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI))
