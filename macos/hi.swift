@@ -46,6 +46,15 @@ class Transducers: ObservableObject {
     @Published var items = [Transducer]()
 }
 
+struct IdentifiableString : Identifiable {
+    let string: String
+    var id: String { string }
+}
+
+class ObservableStringCollection: ObservableObject {
+    @Published var items = [IdentifiableString]()
+}
+
 class TestSetupUIObserverObservable : ObservableObject {
     @Published var observer : TestSetupUIObserver? = nil
 }
@@ -56,6 +65,62 @@ class TestUIObserverObservable : ObservableObject {
 
 class ObservableBool : ObservableObject {
     @Published var value = false
+}
+
+class ObservableString : ObservableObject {
+    @Published var string = ""
+}
+
+struct SwiftSessionView : View {
+    @ObservedObject var audioDevice: ObservableString
+    @ObservedObject var showErrorMessage: ObservableBool
+    @ObservedObject var errorMessage: ObservableString
+    @ObservedObject var audioDevices: ObservableStringCollection
+    
+    init(ui: SwiftSessionUI) {
+        audioDevices = ui.audioDevices
+        audioDevice = ui.audioDevice_
+        errorMessage = ui.errorMessage
+        showErrorMessage = ui.showErrorMessage
+    }
+    
+    var body: some View {
+        Picker("Audio Device", selection: $audioDevice.string) {
+            ForEach(audioDevices.items) {
+                Text($0.string)
+            }
+        }
+        .alert(isPresented: $showErrorMessage.value) {
+            Alert(
+                title: Text("Error"),
+                message: Text(errorMessage.string)
+            )
+        }
+    }
+}
+
+class SwiftSessionUI : NSObject, SessionUI {
+    var showErrorMessage = ObservableBool()
+    var errorMessage = ObservableString()
+    var audioDevices = ObservableStringCollection()
+    var audioDevice_ = ObservableString()
+    
+    func eventLoop() {}
+    
+    func showErrorMessage(_ something: String!) {
+        showErrorMessage.value = true
+        errorMessage.string = something
+    }
+    
+    func audioDevice() -> String! {
+        return audioDevice_.string
+    }
+    
+    func populateAudioDeviceMenu(_ devices: [String]!) {
+        for each in devices {
+            audioDevices.items.append(IdentifiableString(string: each))
+        }
+    }
 }
 
 struct SwiftTestSetupView: View {
@@ -269,6 +334,8 @@ class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
 
 @main
 struct SwiftCPPApp: App {
+    let sessionUI = SwiftSessionUI()
+    let sessionView: SwiftSessionView
     let testSetupUI = SwiftTestSetupUI()
     let testSetupView: SwiftTestSetupView
     let testUI = SwiftTestUI()
@@ -276,6 +343,7 @@ struct SwiftCPPApp: App {
     @ObservedObject var showingTestSetup: ObservableBool
     
     init() {
+        sessionView = SwiftSessionView(ui: sessionUI)
         testSetupView = SwiftTestSetupView(ui: testSetupUI)
         testView = SwiftTestView(ui: testUI)
         showingTestSetup = testSetupUI.showing
@@ -284,6 +352,7 @@ struct SwiftCPPApp: App {
     
     var body: some Scene {
         WindowGroup {
+            sessionView
             if showingTestSetup.value {
                 testSetupView
             }
