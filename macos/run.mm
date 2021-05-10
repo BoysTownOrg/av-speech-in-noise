@@ -466,26 +466,36 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             subjectViewWidth, subjectViewHeight)};
     static ConsonantTaskPresenterImpl consonantPresenter{consonantView};
     static FreeResponseUI freeResponseUI{freeResponseUIController};
-    static FreeResponsePresenter freeResponsePresenter{testUI, freeResponseUI};
+    static FreeResponsePresenter freeResponsePresenter{
+        testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
+        freeResponseUI};
     static ChooseKeywordsUI chooseKeywordsUI{chooseKeywordsUIController};
-    static ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model, testUI,
+    static ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model,
+        testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
         chooseKeywordsUI,
         sentencesWithThreeKeywords(
             read_file(resourceUrl("mlst-c", "txt").path))};
     static SyllablesUI syllablesUI{syllablesUIController};
-    static SyllablesPresenterImpl syllablesPresenter{syllablesUI, testUI};
+    static SyllablesPresenterImpl syllablesPresenter{syllablesUI,
+        testUIMaybe != nullptr ? *testUIMaybe
+                               : static_cast<TestView &>(testUI)};
     static CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
     static CorrectKeywordsPresenter correctKeywordsPresenter{
-        testUI, correctKeywordsUI};
+        testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
+        correctKeywordsUI};
     static PassFailUI passFailUI{passFailUIController};
-    static PassFailPresenter passFailPresenter{testUI, passFailUI};
+    static PassFailPresenter passFailPresenter{
+        testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
+        passFailUI};
     static CoordinateResponseMeasurePresenter
         coordinateResponseMeasurePresenter{coordinateResponseMeasureView};
     static TestSetupPresenterImpl testSetupPresenter{*(testSetupUI.get()),
         sessionUIMaybe != nullptr ? *sessionUIMaybe
                                   : static_cast<SessionView &>(sessionUI)};
     static UninitializedTaskPresenterImpl taskPresenter;
-    static TestPresenterImpl testPresenter{model, testUI, &taskPresenter};
+    static TestPresenterImpl testPresenter{model,
+        testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
+        &taskPresenter};
     static SessionControllerImpl sessionController{model,
         sessionUIMaybe != nullptr ? *sessionUIMaybe
                                   : static_cast<SessionView &>(sessionUI),
@@ -499,7 +509,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static TestControllerImpl testController{sessionController, model,
         sessionUIMaybe != nullptr ? *sessionUIMaybe
                                   : static_cast<SessionControl &>(sessionUI),
-        testUI, testPresenter};
+        testUIMaybe != nullptr ? *testUIMaybe
+                               : static_cast<TestControl &>(testUI),
+        testPresenter};
     static ChooseKeywordsController chooseKeywordsController{
         testController, model, chooseKeywordsUI, chooseKeywordsPresenter};
     static SyllablesController syllablesController{syllablesUI, testController,

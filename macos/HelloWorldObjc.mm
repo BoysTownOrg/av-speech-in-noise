@@ -122,7 +122,7 @@ class TestSetupUIFactoryImpl : public AppKitTestSetupUIFactory {
     NSObject<TestSetupUIFactory> *testSetupUIFactory;
 };
 
-class TestUIImpl : public TestView, public TestControl {
+class TestUIImpl : public TestUI {
   public:
     explicit TestUIImpl(NSObject<TestUI> *testUI) : testUI{testUI} {}
 
@@ -199,21 +199,23 @@ class SessionUIImpl : public SessionUI {
 };
 
 static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
-    NSObject<SessionUI> *sessionUI) {
+    NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI) {
     static EyeTrackerStub eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
     const auto aboutViewController{nsTabViewControllerWithoutTabControl()};
     static SessionUIImpl sessionUIAdapted{sessionUI};
+    static TestUIImpl testUIAdapted{testUI};
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController, nullptr,
-        "Documents/AvSpeechInNoise Data", &sessionUIAdapted);
+        "Documents/AvSpeechInNoise Data", &sessionUIAdapted, &testUIAdapted);
 }
 }
 
 @implementation HelloWorldObjc
 + (void)doEverything:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
-       withSessionUI:(NSObject<SessionUI> *)sessionUI {
-    av_speech_in_noise::main(testSetupUIFactory, sessionUI);
+       withSessionUI:(NSObject<SessionUI> *)sessionUI
+          withTestUI:(NSObject<TestUI> *)testUI {
+    av_speech_in_noise::main(testSetupUIFactory, sessionUI, testUI);
 }
 @end
