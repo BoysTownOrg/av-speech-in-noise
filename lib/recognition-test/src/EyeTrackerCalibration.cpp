@@ -41,7 +41,7 @@ void Interactor::start() {
 void Interactor::finish() { calibrator.release(); }
 
 void Interactor::redo(Point p) {
-    if (pointsCalibrated.empty())
+    if (pointsCalibrated.empty() || !pointsToCalibrate.empty())
         return;
     const auto closestPoint{
         min_element(pointsCalibrated.begin(), pointsCalibrated.end(),

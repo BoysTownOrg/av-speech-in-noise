@@ -157,5 +157,15 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     interactor.redo(Point{0.31F, 0.42F});
     assertEqual(Point{0.3F, 0.4F}, calibrator.discardedPoint());
 }
+
+EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
+    doesNotAcceptAdditionalRedosWhileOneInProgress) {
+    presenter.notifyThatPointIsReady();
+    presenter.notifyThatPointIsReady();
+    presenter.notifyThatPointIsReady();
+    interactor.redo(Point{0.31F, 0.42F});
+    interactor.redo(Point{0.51F, 0.62F});
+    assertEqual(Point{0.3F, 0.4F}, calibrator.discardedPoint());
+}
 }
 }
