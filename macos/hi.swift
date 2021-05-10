@@ -37,15 +37,6 @@ extension Wrap {
     }
 }
 
-struct Transducer : Identifiable {
-    let name: String
-    var id: String { name }
-}
-
-class Transducers: ObservableObject {
-    @Published var items = [Transducer]()
-}
-
 struct IdentifiableString : Identifiable {
     let string: String
     var id: String { string }
@@ -130,12 +121,11 @@ struct SwiftTestSetupView: View {
     @ObservedObject var startingSnr: ObservableString
     @ObservedObject var transducer: ObservableString
     @ObservedObject var rmeSetting: ObservableString
-    @ObservedObject var transducers: Transducers
+    @ObservedObject var transducers: ObservableStringCollection
     @ObservedObject var observableObserver: TestSetupUIObserverObservable
     let testSettingsPathControl: NSPathControl
     
     init(ui: SwiftTestSetupUI, testSettingsPathControl: NSPathControl){
-        self.testSettingsPathControl = testSettingsPathControl
         transducers = ui.transducers
         rmeSetting = ui.rmeSetting_
         testerId = ui.testerId_
@@ -144,6 +134,7 @@ struct SwiftTestSetupView: View {
         startingSnr = ui.startingSnr_
         transducer = ui.transducer_
         observableObserver = ui.observableObserver
+        self.testSettingsPathControl = testSettingsPathControl
         self.testSettingsPathControl.pathStyle = NSPathControl.Style.popUp
         self.testSettingsPathControl.allowedTypes = ["txt"]
     }
@@ -168,7 +159,7 @@ struct SwiftTestSetupView: View {
                 .disableAutocorrection(true)
             Picker("Transducer", selection: $transducer.string) {
                 ForEach(transducers.items) {
-                    Text($0.name)
+                    Text($0.string)
                 }
             }
             HStack() {
@@ -193,16 +184,16 @@ struct SwiftTestSetupView: View {
 }
 
 class SwiftTestSetupUI : NSObject, TestSetupUI {
-    let transducers = Transducers()
+    let transducers = ObservableStringCollection()
     let observableObserver = TestSetupUIObserverObservable()
-    var showing = ObservableBool()
+    let showing = ObservableBool()
+    let rmeSetting_ = ObservableString()
+    let testerId_ = ObservableString()
+    let subjectId_ = ObservableString()
+    let session_ = ObservableString()
+    let startingSnr_ = ObservableString()
+    let transducer_ = ObservableString()
     let testSettingsPathControl: NSPathControl
-    var rmeSetting_ = ObservableString()
-    var testerId_ = ObservableString()
-    var subjectId_ = ObservableString()
-    var session_ = ObservableString()
-    var startingSnr_ = ObservableString()
-    var transducer_ = ObservableString()
     
     init(testSettingsPathControl: NSPathControl) {
         self.testSettingsPathControl = testSettingsPathControl
@@ -231,13 +222,13 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
         return startingSnr_.string
     }
     
-    func transducer() -> String {return transducer_.string }
+    func transducer() -> String { return transducer_.string }
     
-    func rmeSetting() -> String {return rmeSetting_.string }
+    func rmeSetting() -> String { return rmeSetting_.string }
     
     func populateTransducerMenu(_ transducers: Array<String>) {
         for transducer in transducers {
-            self.transducers.items.append(Transducer(name: transducer))
+            self.transducers.items.append(IdentifiableString(string: transducer))
         }
     }
     
@@ -272,9 +263,9 @@ struct SwiftTestView : View {
 }
 
 class SwiftTestUI : NSObject, TestUI {
-    var observableObserver = TestUIObserverObservable()
-    var exitTestButtonDisabled = ObservableBool()
-    var nextTrialButtonDisabled = ObservableBool()
+    let observableObserver = TestUIObserverObservable()
+    let exitTestButtonDisabled = ObservableBool()
+    let nextTrialButtonDisabled = ObservableBool()
     
     func attach(_ observer: TestUIObserver!) {
         observableObserver.observer = observer
@@ -328,9 +319,9 @@ class SwiftTestUI : NSObject, TestUI {
 }
 
 class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
-    let testSetupUI: TestSetupUI?
+    let testSetupUI: TestSetupUI
     
-    init(testSetupUI: TestSetupUI?){
+    init(testSetupUI: TestSetupUI){
         self.testSetupUI = testSetupUI
         super.init()
     }
@@ -342,9 +333,9 @@ class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
 
 @main
 struct SwiftCPPApp: App {
+    let testSettingsPathControl = NSPathControl()
     let sessionUI = SwiftSessionUI()
     let sessionView: SwiftSessionView
-    let testSettingsPathControl = NSPathControl()
     let testSetupUI: SwiftTestSetupUI
     let testSetupView: SwiftTestSetupView
     let testUI = SwiftTestUI()
