@@ -129,7 +129,7 @@ struct SwiftTestSetupView: View {
     @State var session: String = ""
     @State var startingSnr: String = ""
     @State var transducer: String = ""
-    @State var rmeSetting: String = ""
+    @ObservedObject var rmeSetting: ObservableString
     @ObservedObject var transducers: Transducers
     @ObservedObject var observableObserver: TestSetupUIObserverObservable
     let testSettingsPathControl: NSPathControl
@@ -139,6 +139,7 @@ struct SwiftTestSetupView: View {
         self.ui = ui
         self.testSettingsPathControl = testSettingsPathControl
         transducers = ui.transducers
+        rmeSetting = ui.rmeSetting_
         observableObserver = ui.observableObserver
         self.testSettingsPathControl.pathStyle = NSPathControl.Style.popUp
         self.testSettingsPathControl.allowedTypes = ["txt"]
@@ -160,7 +161,7 @@ struct SwiftTestSetupView: View {
                 .disableAutocorrection(true)
             TextField(
                 "RME setting",
-                text: $rmeSetting)
+                text: $rmeSetting.string)
                 .disableAutocorrection(true)
             Picker("Transducer", selection: $transducer) {
                 ForEach(transducers.items) {
@@ -196,11 +197,11 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     let observableObserver = TestSetupUIObserverObservable()
     var showing = ObservableBool()
     let testSettingsPathControl: NSPathControl
+    var rmeSetting_ = ObservableString()
     
     init(testSettingsPathControl: NSPathControl) {
         self.testSettingsPathControl = testSettingsPathControl
         showing.value = true
-        super.init()
     }
     
     func show() {
@@ -227,7 +228,7 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
     
     func transducer() -> String {return view?.transducer ?? ""}
     
-    func rmeSetting() -> String {return view?.rmeSetting ?? ""}
+    func rmeSetting() -> String {return rmeSetting_.string }
     
     func populateTransducerMenu(_ transducers: Array<String>) {
         for transducer in transducers {
