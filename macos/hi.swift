@@ -124,22 +124,25 @@ class SwiftSessionUI : NSObject, SessionUI {
 }
 
 struct SwiftTestSetupView: View {
-    @State var testerId: String = ""
-    @State var subjectId: String = ""
-    @State var session: String = ""
-    @State var startingSnr: String = ""
-    @State var transducer: String = ""
+    @ObservedObject var testerId: ObservableString
+    @ObservedObject var subjectId: ObservableString
+    @ObservedObject var session: ObservableString
+    @ObservedObject var startingSnr: ObservableString
+    @ObservedObject var transducer: ObservableString
     @ObservedObject var rmeSetting: ObservableString
     @ObservedObject var transducers: Transducers
     @ObservedObject var observableObserver: TestSetupUIObserverObservable
     let testSettingsPathControl: NSPathControl
-    let ui: SwiftTestSetupUI
     
     init(ui: SwiftTestSetupUI, testSettingsPathControl: NSPathControl){
-        self.ui = ui
         self.testSettingsPathControl = testSettingsPathControl
         transducers = ui.transducers
         rmeSetting = ui.rmeSetting_
+        testerId = ui.testerId_
+        subjectId = ui.subjectId_
+        session = ui.session_
+        startingSnr = ui.startingSnr_
+        transducer = ui.transducer_
         observableObserver = ui.observableObserver
         self.testSettingsPathControl.pathStyle = NSPathControl.Style.popUp
         self.testSettingsPathControl.allowedTypes = ["txt"]
@@ -149,21 +152,21 @@ struct SwiftTestSetupView: View {
         Form() {
             TextField(
                 "subject ID",
-                text: $subjectId)
+                text: $subjectId.string)
                 .disableAutocorrection(true)
             TextField(
                 "tester ID",
-                text: $testerId)
+                text: $testerId.string)
                 .disableAutocorrection(true)
             TextField(
                 "session",
-                text: $session)
+                text: $session.string)
                 .disableAutocorrection(true)
             TextField(
                 "RME setting",
                 text: $rmeSetting.string)
                 .disableAutocorrection(true)
-            Picker("Transducer", selection: $transducer) {
+            Picker("Transducer", selection: $transducer.string) {
                 ForEach(transducers.items) {
                     Text($0.name)
                 }
@@ -171,7 +174,6 @@ struct SwiftTestSetupView: View {
             HStack() {
                 Wrap(testSettingsPathControl)
                 Button(action: {
-                    self.ui.view = self
                     observableObserver.observer?.notifyThatPlayCalibrationButtonHasBeenClicked()
                 }) {
                     Text("Play Calibration")
@@ -179,11 +181,10 @@ struct SwiftTestSetupView: View {
             }
             TextField(
                 "starting SNR (dB)",
-                text: $startingSnr)
+                text: $startingSnr.string)
                 .disableAutocorrection(true)
         }.padding()
         Button(action: {
-            self.ui.view = self
             observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
         }) {
             Text("Confirm")
@@ -192,12 +193,16 @@ struct SwiftTestSetupView: View {
 }
 
 class SwiftTestSetupUI : NSObject, TestSetupUI {
-    var view: SwiftTestSetupView? = nil
     let transducers = Transducers()
     let observableObserver = TestSetupUIObserverObservable()
     var showing = ObservableBool()
     let testSettingsPathControl: NSPathControl
     var rmeSetting_ = ObservableString()
+    var testerId_ = ObservableString()
+    var subjectId_ = ObservableString()
+    var session_ = ObservableString()
+    var startingSnr_ = ObservableString()
+    var transducer_ = ObservableString()
     
     init(testSettingsPathControl: NSPathControl) {
         self.testSettingsPathControl = testSettingsPathControl
@@ -212,21 +217,21 @@ class SwiftTestSetupUI : NSObject, TestSetupUI {
         showing.value = false
     }
     
-    func testerId() -> String { return view?.testerId ?? "" }
+    func testerId() -> String { return testerId_.string }
     
-    func subjectId() -> String { return view?.subjectId ?? "" }
+    func subjectId() -> String { return subjectId_.string }
     
-    func session() -> String { return view?.session ?? "" }
+    func session() -> String { return session_.string }
     
     func testSettingsFile() -> String {
         return testSettingsPathControl.url?.path ?? ""
     }
     
     func startingSnr() -> String {
-        return view?.startingSnr ?? ""
+        return startingSnr_.string
     }
     
-    func transducer() -> String {return view?.transducer ?? ""}
+    func transducer() -> String {return transducer_.string }
     
     func rmeSetting() -> String {return rmeSetting_.string }
     
