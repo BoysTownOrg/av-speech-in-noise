@@ -17,6 +17,19 @@
 - (void)notifyThatSubmitButtonHasBeenClicked;
 @end
 
+@protocol SyllablesUIObserver
+- (void)notifyThatResponseButtonHasBeenClicked;
+@end
+
+@protocol SyllablesUI
+- (void)hide;
+- (void)show;
+- (NSString *)syllable;
+- (BOOL)flagged;
+- (void)clearFlag;
+- (void)attach:(id<SyllablesUIObserver>)observer;
+@end
+
 @protocol TestSetupUI
 - (void)show;
 - (void)hide;
@@ -72,5 +85,6 @@
 + (void)doEverything:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
          withSessionUI:(NSObject<SessionUI> *)sessionUI
             withTestUI:(NSObject<TestUI> *)testUI
-    withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI;
+    withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
+       withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI;
 @end

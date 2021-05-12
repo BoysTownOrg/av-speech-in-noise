@@ -64,7 +64,47 @@
 }
 @end
 
+@interface SyllablesUIObserverImpl : NSObject <SyllablesUIObserver>
+@end
+
+@implementation SyllablesUIObserverImpl {
+  @public
+    av_speech_in_noise::SyllablesControl::Observer *observer;
+}
+
+- (void)notifyThatResponseButtonHasBeenClicked {
+    observer->notifyThatResponseButtonHasBeenClicked();
+}
+@end
+
 namespace av_speech_in_noise {
+class SyllablesUIImpl : public SyllablesUI_ {
+  public:
+    explicit SyllablesUIImpl(NSObject<SyllablesUI> *syllablesUI)
+        : syllablesUI{syllablesUI} {}
+
+    void attach(Observer *a) override {
+        const auto adapted{[[SyllablesUIObserverImpl alloc] init]};
+        adapted->observer = a;
+        [syllablesUI attach:adapted];
+    }
+
+    void hide() override { [syllablesUI hide]; }
+
+    void show() override { [syllablesUI show]; }
+
+    auto syllable() -> std::string override {
+        return [syllablesUI syllable].UTF8String;
+    }
+
+    auto flagged() -> bool override { return [syllablesUI flagged] == YES; }
+
+    void clearFlag() override { [syllablesUI clearFlag]; }
+
+  private:
+    NSObject<SyllablesUI> *syllablesUI;
+};
+
 class TestSetupUIImpl : public TestSetupUI {
   public:
     explicit TestSetupUIImpl(NSObject<TestSetupUI> *testSetupUI)
@@ -246,7 +286,8 @@ class FreeResponseUIImpl : public FreeResponseUI {
 
 static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI,
-    NSObject<FreeResponseUI> *freeResponseUI) {
+    NSObject<FreeResponseUI> *freeResponseUI,
+    NSObject<SyllablesUI> *syllablesUI) {
     static EyeTrackerStub eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
@@ -254,10 +295,11 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static SessionUIImpl sessionUIAdapted{sessionUI};
     static TestUIImpl testUIAdapted{testUI};
     static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};
+    static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController, nullptr,
         "Documents/AvSpeechInNoise Data", &sessionUIAdapted, &testUIAdapted,
-        &freeResponseUIAdapted);
+        &freeResponseUIAdapted, &syllablesUIAdapted);
 }
 }
 
@@ -265,8 +307,9 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
 + (void)doEverything:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
          withSessionUI:(NSObject<SessionUI> *)sessionUI
             withTestUI:(NSObject<TestUI> *)testUI
-    withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI {
+    withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
+       withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI {
     av_speech_in_noise::main(
-        testSetupUIFactory, sessionUI, testUI, freeResponseUI);
+        testSetupUIFactory, sessionUI, testUI, freeResponseUI, syllablesUI);
 }
 @end

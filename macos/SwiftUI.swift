@@ -42,6 +42,11 @@ struct IdentifiableString : Identifiable {
     var id: String { string }
 }
 
+struct IdentifiableStringCollection : Identifiable {
+    var id: String
+    let items: [IdentifiableString]
+}
+
 class ObservableStringCollection: ObservableObject {
     @Published var items = [IdentifiableString]()
 }
@@ -56,6 +61,10 @@ class TestUIObserverObservable : ObservableObject {
 
 class FreeResponseUIObserverObservable : ObservableObject {
     @Published var observer : FreeResponseUIObserver? = nil
+}
+
+class SyllablesUIObserverObservable : ObservableObject {
+    @Published var observer : SyllablesUIObserver? = nil
 }
 
 class ObservableBool : ObservableObject {
@@ -323,6 +332,97 @@ class SwiftTestUI : NSObject, TestUI {
     }
 }
 
+struct SwiftSyllablesView : View {
+    @ObservedObject var syllable: ObservableString
+    @ObservedObject var flagged: ObservableBool
+    @ObservedObject var observableObserver: SyllablesUIObserverObservable
+    @ObservedObject var showing: ObservableBool
+    
+    init(ui: SwiftSyllablesUI) {
+        syllable = ui.syllable_
+        flagged = ui.flagged_
+        showing = ui.showing
+        observableObserver = ui.observableObserver
+    }
+    
+    private let syllables: [IdentifiableStringCollection] = [
+        IdentifiableStringCollection(id: "a", items:[
+            IdentifiableString(string: "B"),
+            IdentifiableString(string: "D"),
+            IdentifiableString(string: "G"),
+            IdentifiableString(string: "F"),
+            IdentifiableString(string: "Ghee"),
+            IdentifiableString(string: "H"),
+            IdentifiableString(string: "Yee"),
+        ]),
+        IdentifiableStringCollection(id: "b", items:[
+            IdentifiableString(string: "K"),
+            IdentifiableString(string: "L"),
+            IdentifiableString(string: "M"),
+            IdentifiableString(string: "N"),
+            IdentifiableString(string: "P"),
+            IdentifiableString(string: "R"),
+            IdentifiableString(string: "Sh"),
+        ]),
+        IdentifiableStringCollection(id: "c", items:[
+            IdentifiableString(string: "S"),
+            IdentifiableString(string: "Th"),
+            IdentifiableString(string: "T"),
+            IdentifiableString(string: "Ch"),
+            IdentifiableString(string: "V"),
+            IdentifiableString(string: "W"),
+            IdentifiableString(string: "Z")
+        ])
+    ]
+    
+    var body: some View {
+        if showing.value {
+            Toggle("flagged", isOn: $flagged.value)
+            ForEach(syllables, content: { row in
+                HStack() {
+                    ForEach(row.items, content: { column in
+                        Button(column.string, action: {
+                            syllable.string = column.string
+                            observableObserver.observer?.notifyThatResponseButtonHasBeenClicked()
+                        })
+                    })
+                }
+            })
+        }
+    }
+}
+
+class SwiftSyllablesUI : NSObject, SyllablesUI {
+    let syllable_ = ObservableString()
+    let flagged_ = ObservableBool()
+    let observableObserver = SyllablesUIObserverObservable()
+    let showing = ObservableBool()
+    
+    func hide() {
+        showing.value = false
+    }
+    
+    func show() {
+        showing.value = true
+    }
+    
+    func syllable() -> String! {
+        return syllable_.string;
+    }
+    
+    func flagged() -> Bool {
+        return flagged_.value;
+    }
+    
+    func clearFlag() {
+        flagged_.value = false
+    }
+    
+    func attach(_ observer: SyllablesUIObserver!) {
+        observableObserver.observer = observer
+    }
+}
+
 struct SwiftFreeResponseView : View {
     @ObservedObject var freeResponse: ObservableString
     @ObservedObject var flagged: ObservableBool
@@ -410,6 +510,8 @@ struct SwiftCPPApp: App {
     let testView: SwiftTestView
     let freeResponseUI = SwiftFreeResponseUI()
     let freeResponseView: SwiftFreeResponseView
+    let syllablesUI = SwiftSyllablesUI()
+    let syllablesView: SwiftSyllablesView
     @ObservedObject var showingTestSetup: ObservableBool
     
     init() {
@@ -418,8 +520,9 @@ struct SwiftCPPApp: App {
         testSetupView = SwiftTestSetupView(ui: testSetupUI, testSettingsPathControl:testSettingsPathControl)
         testView = SwiftTestView(ui: testUI)
         freeResponseView = SwiftFreeResponseView(ui: freeResponseUI)
+        syllablesView = SwiftSyllablesView(ui: syllablesUI)
         showingTestSetup = testSetupUI.showing
-        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: testUI, with: freeResponseUI)
+        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: testUI, with: freeResponseUI, with: syllablesUI)
     }
     
     var body: some Scene {
@@ -431,6 +534,7 @@ struct SwiftCPPApp: App {
             else {
                 testView
                 freeResponseView
+                syllablesView
             }
         }
     }

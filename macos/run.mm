@@ -276,7 +276,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     NSViewController *aboutViewController,
     SessionController::Observer *sessionControllerObserver,
     std::filesystem::path relativeOutputDirectory, SessionUI *sessionUIMaybe,
-    TestUI *testUIMaybe, FreeResponseUI *freeResponseUIMaybe) {
+    TestUI *testUIMaybe, FreeResponseUI *freeResponseUIMaybe,
+    SyllablesUI_ *syllablesUIMaybe) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     static AvFoundationVideoPlayer videoPlayer{subjectScreen};
     static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
@@ -478,7 +479,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         sentencesWithThreeKeywords(
             read_file(resourceUrl("mlst-c", "txt").path))};
     static SyllablesUI syllablesUI{syllablesUIController};
-    static SyllablesPresenterImpl syllablesPresenter{syllablesUI,
+    static SyllablesPresenterImpl syllablesPresenter{syllablesUIMaybe != nullptr
+            ? *syllablesUIMaybe
+            : static_cast<SyllablesView &>(syllablesUI),
         testUIMaybe != nullptr ? *testUIMaybe
                                : static_cast<TestView &>(testUI)};
     static CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
@@ -516,8 +519,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         testPresenter};
     static ChooseKeywordsController chooseKeywordsController{
         testController, model, chooseKeywordsUI, chooseKeywordsPresenter};
-    static SyllablesController syllablesController{syllablesUI, testController,
-        model,
+    static SyllablesController syllablesController{syllablesUIMaybe != nullptr
+            ? *syllablesUIMaybe
+            : static_cast<SyllablesControl &>(syllablesUI),
+        testController, model,
         {{"B", Syllable::bi}, {"D", Syllable::di}, {"G", Syllable::dji},
             {"F", Syllable::fi}, {"Ghee", Syllable::gi}, {"H", Syllable::hi},
             {"Yee", Syllable::ji}, {"K", Syllable::ki}, {"L", Syllable::li},
