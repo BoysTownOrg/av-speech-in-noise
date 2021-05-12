@@ -21,6 +21,39 @@
 - (void)notifyThatResponseButtonHasBeenClicked;
 @end
 
+@protocol ChooseKeywordsUIObserver
+- (void)notifyThatFirstKeywordButtonIsClicked;
+- (void)notifyThatSecondKeywordButtonIsClicked;
+- (void)notifyThatThirdKeywordButtonIsClicked;
+- (void)notifyThatAllWrongButtonHasBeenClicked;
+- (void)notifyThatResetButtonIsClicked;
+- (void)notifyThatSubmitButtonHasBeenClicked;
+@end
+
+@protocol ChooseKeywordsUI
+- (void)attach:(id<ChooseKeywordsUIObserver>)observer;
+- (BOOL)firstKeywordCorrect;
+- (BOOL)secondKeywordCorrect;
+- (BOOL)thirdKeywordCorrect;
+- (BOOL)flagged;
+- (void)clearFlag;
+- (void)markFirstKeywordIncorrect;
+- (void)markSecondKeywordIncorrect;
+- (void)markThirdKeywordIncorrect;
+- (void)markFirstKeywordCorrect;
+- (void)markSecondKeywordCorrect;
+- (void)markThirdKeywordCorrect;
+- (void)hideResponseSubmission;
+- (void)showResponseSubmission;
+- (void)setFirstKeywordButtonText:(NSString *)text;
+- (void)setSecondKeywordButtonText:(NSString *)text;
+- (void)setThirdKeywordButtonText:(NSString *)text;
+- (void)setTextPrecedingFirstKeywordButton:(NSString *)text;
+- (void)setTextFollowingFirstKeywordButton:(NSString *)text;
+- (void)setTextFollowingSecondKeywordButton:(NSString *)text;
+- (void)setTextFollowingThirdKeywordButton:(NSString *)text;
+@end
+
 @protocol SyllablesUI
 - (void)hide;
 - (void)show;
@@ -83,8 +116,9 @@
 
 @interface HelloWorldObjc : NSObject
 + (void)doEverything:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
-         withSessionUI:(NSObject<SessionUI> *)sessionUI
-            withTestUI:(NSObject<TestUI> *)testUI
-    withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
-       withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI;
+           withSessionUI:(NSObject<SessionUI> *)sessionUI
+              withTestUI:(NSObject<TestUI> *)testUI
+      withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
+         withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
+    withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI;
 @end

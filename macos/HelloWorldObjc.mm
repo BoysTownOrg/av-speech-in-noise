@@ -77,7 +77,120 @@
 }
 @end
 
+@interface ChooseKeywordsUIObserverImpl : NSObject <ChooseKeywordsUIObserver>
+@end
+
+@implementation ChooseKeywordsUIObserverImpl {
+  @public
+    av_speech_in_noise::ChooseKeywordsControl::Observer *observer;
+}
+
+- (void)notifyThatFirstKeywordButtonIsClicked {
+    observer->notifyThatFirstKeywordButtonIsClicked();
+}
+
+- (void)notifyThatSecondKeywordButtonIsClicked {
+    observer->notifyThatSecondKeywordButtonIsClicked();
+}
+
+- (void)notifyThatThirdKeywordButtonIsClicked {
+    observer->notifyThatThirdKeywordButtonIsClicked();
+}
+
+- (void)notifyThatAllWrongButtonHasBeenClicked {
+    observer->notifyThatAllWrongButtonHasBeenClicked();
+}
+
+- (void)notifyThatResetButtonIsClicked {
+    observer->notifyThatResetButtonIsClicked();
+}
+
+- (void)notifyThatSubmitButtonHasBeenClicked {
+    observer->notifyThatSubmitButtonHasBeenClicked();
+}
+@end
+
 namespace av_speech_in_noise {
+class ChooseKeywordsUIImpl : public ChooseKeywordsUI_ {
+  public:
+    explicit ChooseKeywordsUIImpl(NSObject<ChooseKeywordsUI> *ui) : ui{ui} {}
+
+    void attach(Observer *a) override {
+        const auto adapted{[[ChooseKeywordsUIObserverImpl alloc] init]};
+        adapted->observer = a;
+        [ui attach:adapted];
+    }
+
+    auto firstKeywordCorrect() -> bool override {
+        return [ui firstKeywordCorrect] == YES;
+    }
+
+    auto secondKeywordCorrect() -> bool override {
+        return [ui secondKeywordCorrect] == YES;
+    }
+
+    auto thirdKeywordCorrect() -> bool override {
+        return [ui thirdKeywordCorrect] == YES;
+    }
+
+    auto flagged() -> bool override { return [ui flagged] == YES; }
+
+    void clearFlag() override { [ui clearFlag]; }
+
+    void markFirstKeywordIncorrect() override {
+        [ui markFirstKeywordIncorrect];
+    }
+
+    void markSecondKeywordIncorrect() override {
+        [ui markSecondKeywordIncorrect];
+    }
+
+    void markThirdKeywordIncorrect() override {
+        [ui markThirdKeywordIncorrect];
+    }
+
+    void markFirstKeywordCorrect() override { [ui markFirstKeywordCorrect]; }
+
+    void markSecondKeywordCorrect() override { [ui markSecondKeywordCorrect]; }
+
+    void markThirdKeywordCorrect() override { [ui markThirdKeywordCorrect]; }
+
+    void hideResponseSubmission() override { [ui hideResponseSubmission]; }
+
+    void showResponseSubmission() override { [ui showResponseSubmission]; }
+
+    void setFirstKeywordButtonText(const std::string &s) override {
+        [ui setFirstKeywordButtonText:nsString(s)];
+    }
+
+    void setSecondKeywordButtonText(const std::string &s) override {
+        [ui setSecondKeywordButtonText:nsString(s)];
+    }
+
+    void setThirdKeywordButtonText(const std::string &s) override {
+        [ui setThirdKeywordButtonText:nsString(s)];
+    }
+
+    void setTextPrecedingFirstKeywordButton(const std::string &s) override {
+        [ui setTextPrecedingFirstKeywordButton:nsString(s)];
+    }
+
+    void setTextFollowingFirstKeywordButton(const std::string &s) override {
+        [ui setTextFollowingFirstKeywordButton:nsString(s)];
+    }
+
+    void setTextFollowingSecondKeywordButton(const std::string &s) override {
+        [ui setTextFollowingSecondKeywordButton:nsString(s)];
+    }
+
+    void setTextFollowingThirdKeywordButton(const std::string &s) override {
+        [ui setTextFollowingThirdKeywordButton:nsString(s)];
+    }
+
+  private:
+    NSObject<ChooseKeywordsUI> *ui;
+};
+
 class SyllablesUIImpl : public SyllablesUI_ {
   public:
     explicit SyllablesUIImpl(NSObject<SyllablesUI> *syllablesUI)
@@ -287,7 +400,8 @@ class FreeResponseUIImpl : public FreeResponseUI {
 static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI,
     NSObject<FreeResponseUI> *freeResponseUI,
-    NSObject<SyllablesUI> *syllablesUI) {
+    NSObject<SyllablesUI> *syllablesUI,
+    NSObject<ChooseKeywordsUI> *chooseKeywordsUI) {
     static EyeTrackerStub eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
@@ -296,20 +410,22 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static TestUIImpl testUIAdapted{testUI};
     static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};
     static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
+    static ChooseKeywordsUIImpl chooseKeywordsUIAdapted{chooseKeywordsUI};
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController, nullptr,
         "Documents/AvSpeechInNoise Data", &sessionUIAdapted, &testUIAdapted,
-        &freeResponseUIAdapted, &syllablesUIAdapted);
+        &freeResponseUIAdapted, &syllablesUIAdapted, &chooseKeywordsUIAdapted);
 }
 }
 
 @implementation HelloWorldObjc
 + (void)doEverything:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
-         withSessionUI:(NSObject<SessionUI> *)sessionUI
-            withTestUI:(NSObject<TestUI> *)testUI
-    withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
-       withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI {
-    av_speech_in_noise::main(
-        testSetupUIFactory, sessionUI, testUI, freeResponseUI, syllablesUI);
+           withSessionUI:(NSObject<SessionUI> *)sessionUI
+              withTestUI:(NSObject<TestUI> *)testUI
+      withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
+         withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
+    withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI {
+    av_speech_in_noise::main(testSetupUIFactory, sessionUI, testUI,
+        freeResponseUI, syllablesUI, chooseKeywordsUI);
 }
 @end

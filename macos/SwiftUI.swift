@@ -67,6 +67,10 @@ class SyllablesUIObserverObservable : ObservableObject {
     @Published var observer : SyllablesUIObserver? = nil
 }
 
+class ChooseKeywordsUIObserverObservable : ObservableObject {
+    @Published var observer : ChooseKeywordsUIObserver? = nil
+}
+
 class ObservableBool : ObservableObject {
     @Published var value = false
 }
@@ -486,6 +490,170 @@ class SwiftFreeResponseUI : NSObject, FreeResponseUI {
     }
 }
 
+struct SwiftChooseKeywordsView : View {
+    @ObservedObject var firstKeywordCorrect_: ObservableBool
+    @ObservedObject var secondKeywordCorrect_: ObservableBool
+    @ObservedObject var thirdKeywordCorrect_: ObservableBool
+    @ObservedObject var flagged_: ObservableBool
+    @ObservedObject var firstKeywordButtonText: ObservableString
+    @ObservedObject var secondKeywordButtonText: ObservableString
+    @ObservedObject var thirdKeywordButtonText: ObservableString
+    @ObservedObject var textPrecedingFirstKeywordButton: ObservableString
+    @ObservedObject var textFollowingFirstKeywordButton: ObservableString
+    @ObservedObject var textFollowingSecondKeywordButton: ObservableString
+    @ObservedObject var textFollowingThirdKeywordButton: ObservableString
+    @ObservedObject var showing: ObservableBool
+    @ObservedObject var observableObserver: ChooseKeywordsUIObserverObservable
+    
+    init(ui: SwiftChooseKeywordsUI) {
+        firstKeywordButtonText = ui.firstKeywordButtonText
+        secondKeywordButtonText = ui.secondKeywordButtonText
+        thirdKeywordButtonText = ui.thirdKeywordButtonText
+        flagged_ = ui.flagged_
+        firstKeywordCorrect_ = ui.firstKeywordCorrect_
+        secondKeywordCorrect_ = ui.secondKeywordCorrect_
+        thirdKeywordCorrect_ = ui.thirdKeywordCorrect_
+        textPrecedingFirstKeywordButton = ui.textPrecedingFirstKeywordButton
+        textFollowingFirstKeywordButton = ui.textFollowingFirstKeywordButton
+        textFollowingSecondKeywordButton = ui.textFollowingSecondKeywordButton
+        textFollowingThirdKeywordButton = ui.textFollowingThirdKeywordButton
+        showing = ui.showing
+        observableObserver = ui.observableObserver
+    }
+    
+    var body: some View {
+        if showing.value {
+            Toggle("flagged", isOn: $flagged_.value)
+            HStack() {
+                Text(textPrecedingFirstKeywordButton.string)
+                Button(firstKeywordButtonText.string, action: {
+                    observableObserver.observer?.notifyThatFirstKeywordButtonIsClicked()
+                })
+                Text(textFollowingFirstKeywordButton.string)
+                Button(secondKeywordButtonText.string, action: {
+                    observableObserver.observer?.notifyThatSecondKeywordButtonIsClicked()
+                })
+                Text(textFollowingSecondKeywordButton.string)
+                Button(thirdKeywordButtonText.string, action: {
+                    observableObserver.observer?.notifyThatThirdKeywordButtonIsClicked()
+                })
+                Text(textFollowingThirdKeywordButton.string)
+            }
+            HStack() {
+                Button("Reset", action: {
+                    observableObserver.observer?.notifyThatResetButtonIsClicked()
+                })
+                Button("All wrong", action: {
+                    observableObserver.observer?.notifyThatAllWrongButtonHasBeenClicked()
+                })
+                Button("Submit", action: {
+                    observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
+                }).keyboardShortcut(.defaultAction)
+            }
+        }
+    }
+}
+
+class SwiftChooseKeywordsUI : NSObject, ChooseKeywordsUI {
+    let firstKeywordCorrect_ = ObservableBool()
+    let secondKeywordCorrect_ = ObservableBool()
+    let thirdKeywordCorrect_ = ObservableBool()
+    let flagged_ = ObservableBool()
+    let firstKeywordButtonText = ObservableString()
+    let secondKeywordButtonText = ObservableString()
+    let thirdKeywordButtonText = ObservableString()
+    let textPrecedingFirstKeywordButton = ObservableString()
+    let textFollowingFirstKeywordButton = ObservableString()
+    let textFollowingSecondKeywordButton = ObservableString()
+    let textFollowingThirdKeywordButton = ObservableString()
+    let showing = ObservableBool()
+    let observableObserver = ChooseKeywordsUIObserverObservable()
+    
+    func attach(_ observer: ChooseKeywordsUIObserver!) {
+        observableObserver.observer = observer
+    }
+    
+    func firstKeywordCorrect() -> Bool {
+        return firstKeywordCorrect_.value
+    }
+    
+    func secondKeywordCorrect() -> Bool {
+        return secondKeywordCorrect_.value
+    }
+    
+    func thirdKeywordCorrect() -> Bool {
+        return thirdKeywordCorrect_.value
+    }
+    
+    func flagged() -> Bool {
+        return flagged_.value
+    }
+    
+    func clearFlag() {
+        flagged_.value = false
+    }
+    
+    func markFirstKeywordIncorrect() {
+        firstKeywordCorrect_.value = false
+    }
+    
+    func markSecondKeywordIncorrect() {
+        secondKeywordCorrect_.value = false
+    }
+    
+    func markThirdKeywordIncorrect() {
+        thirdKeywordCorrect_.value = false
+    }
+    
+    func markFirstKeywordCorrect() {
+        firstKeywordCorrect_.value = true
+    }
+    
+    func markSecondKeywordCorrect() {
+        secondKeywordCorrect_.value = true
+    }
+    
+    func markThirdKeywordCorrect() {
+        thirdKeywordCorrect_.value = true
+    }
+    
+    func hideResponseSubmission() {
+        showing.value = false
+    }
+    
+    func showResponseSubmission() {
+        showing.value = true
+    }
+    
+    func setFirstKeywordButtonText(_ text: String!) {
+        firstKeywordButtonText.string = text
+    }
+    
+    func setSecondKeywordButtonText(_ text: String!) {
+        secondKeywordButtonText.string = text
+    }
+    
+    func setThirdKeywordButtonText(_ text: String!) {
+        thirdKeywordButtonText.string = text
+    }
+    
+    func setTextPrecedingFirstKeywordButton(_ text: String!) {
+        textPrecedingFirstKeywordButton.string = text
+    }
+    
+    func setTextFollowingFirstKeywordButton(_ text: String!) {
+        textFollowingFirstKeywordButton.string = text
+    }
+    
+    func setTextFollowingSecondKeywordButton(_ text: String!) {
+        textFollowingSecondKeywordButton.string = text
+    }
+    
+    func setTextFollowingThirdKeywordButton(_ text: String!) {
+        textFollowingThirdKeywordButton.string = text
+    }
+}
+
 class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
     let testSetupUI: TestSetupUI
     
@@ -512,6 +680,8 @@ struct SwiftCPPApp: App {
     let freeResponseView: SwiftFreeResponseView
     let syllablesUI = SwiftSyllablesUI()
     let syllablesView: SwiftSyllablesView
+    let chooseKeywordsUI = SwiftChooseKeywordsUI()
+    let chooseKeywordsView: SwiftChooseKeywordsView
     @ObservedObject var showingTestSetup: ObservableBool
     
     init() {
@@ -521,8 +691,9 @@ struct SwiftCPPApp: App {
         testView = SwiftTestView(ui: testUI)
         freeResponseView = SwiftFreeResponseView(ui: freeResponseUI)
         syllablesView = SwiftSyllablesView(ui: syllablesUI)
+        chooseKeywordsView = SwiftChooseKeywordsView(ui: chooseKeywordsUI)
         showingTestSetup = testSetupUI.showing
-        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: testUI, with: freeResponseUI, with: syllablesUI)
+        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: testUI, with: freeResponseUI, with: syllablesUI, with: chooseKeywordsUI)
     }
     
     var body: some Scene {
@@ -535,6 +706,7 @@ struct SwiftCPPApp: App {
                 testView
                 freeResponseView
                 syllablesView
+                chooseKeywordsView
             }
         }
     }

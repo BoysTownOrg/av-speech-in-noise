@@ -2,9 +2,11 @@
 #define AV_SPEECH_IN_NOISE_MACOS_RUN_H_
 
 #include "AppKitTestSetupUIFactory.h"
+#include "presentation/Consonant.hpp"
 #include "presentation/Syllables.hpp"
 #include <presentation/SessionController.hpp>
 #include <presentation/FreeResponse.hpp>
+#include <presentation/ChooseKeywords.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/OutputFilePath.hpp>
 #include <av-speech-in-noise/Interface.hpp>
@@ -35,13 +37,16 @@ class FreeResponseUI : public FreeResponseView, public FreeResponseControl {};
 
 class SyllablesUI_ : public SyllablesView, public SyllablesControl {};
 
+class ChooseKeywordsUI_ : public ChooseKeywordsView,
+                          public ChooseKeywordsControl {};
+
 void initializeAppAndRunEventLoop(EyeTracker &, AppKitTestSetupUIFactory &,
     OutputFileNameFactory &, NSViewController *aboutViewController,
     SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =
         "Documents/AvSpeechInNoise Data",
     SessionUI * = nullptr, TestUI * = nullptr, FreeResponseUI * = nullptr,
-    SyllablesUI_ * = nullptr);
+    SyllablesUI_ * = nullptr, ChooseKeywordsUI_ * = nullptr);
 }
 
 #endif

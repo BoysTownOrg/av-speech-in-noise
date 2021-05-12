@@ -277,7 +277,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     SessionController::Observer *sessionControllerObserver,
     std::filesystem::path relativeOutputDirectory, SessionUI *sessionUIMaybe,
     TestUI *testUIMaybe, FreeResponseUI *freeResponseUIMaybe,
-    SyllablesUI_ *syllablesUIMaybe) {
+    SyllablesUI_ *syllablesUIMaybe, ChooseKeywordsUI_ *chooseKeywordsUIMaybe) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     static AvFoundationVideoPlayer videoPlayer{subjectScreen};
     static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
@@ -475,7 +475,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static ChooseKeywordsUI chooseKeywordsUI{chooseKeywordsUIController};
     static ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model,
         testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
-        chooseKeywordsUI,
+        chooseKeywordsUIMaybe != nullptr
+            ? *chooseKeywordsUIMaybe
+            : static_cast<ChooseKeywordsView &>(chooseKeywordsUI),
         sentencesWithThreeKeywords(
             read_file(resourceUrl("mlst-c", "txt").path))};
     static SyllablesUI syllablesUI{syllablesUIController};
@@ -517,8 +519,12 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         testUIMaybe != nullptr ? *testUIMaybe
                                : static_cast<TestControl &>(testUI),
         testPresenter};
-    static ChooseKeywordsController chooseKeywordsController{
-        testController, model, chooseKeywordsUI, chooseKeywordsPresenter};
+    static ChooseKeywordsController chooseKeywordsController{testController,
+        model,
+        chooseKeywordsUIMaybe != nullptr
+            ? *chooseKeywordsUIMaybe
+            : static_cast<ChooseKeywordsControl &>(chooseKeywordsUI),
+        chooseKeywordsPresenter};
     static SyllablesController syllablesController{syllablesUIMaybe != nullptr
             ? *syllablesUIMaybe
             : static_cast<SyllablesControl &>(syllablesUI),
