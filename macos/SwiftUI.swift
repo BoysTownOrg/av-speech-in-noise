@@ -764,29 +764,93 @@ struct SwiftFacemaskStudyTestSetupView : View {
     @ObservedObject var subjectID_: ObservableString
     @ObservedObject var testSettingsShortName: ObservableString
     @ObservedObject var observableObserver: TestSetupUIObserverObservable
+    @ObservedObject var showing: ObservableBool
+    @ObservedObject var minusTenDBStartingSnr: ObservableBool
     
     private let testSettingsShortNames = [IdentifiableString]()
     
+    init(ui: SwiftFacemaskStudyTestSetupUI) {
+        subjectID_ = ui.subjectID_
+        showing = ui.showing
+        testSettingsShortName = ui.testSettingsShortName
+        observableObserver = ui.observableObserver
+        minusTenDBStartingSnr = ui.minusTenDBStartingSnr
+    }
+    
     var body: some View {
-        HStack() {
-            Image("btnrh.png")
-            Text("Facemask Study")
-        }
-        TextField("Subject ID", text: $subjectID_.string)
-        Picker("Test Settings", selection: $testSettingsShortName.string) {
-            ForEach(testSettingsShortNames) {
-                Text($0.string)
+        if showing.value {
+            HStack() {
+                Image("btnrh.png")
+                Text("Facemask Study")
             }
-        }.pickerStyle(RadioGroupPickerStyle())
-        Button("START", action: {
-            observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
-        })
-        Button("play left speaker", action: {
-            observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
-        })
-        Button("play right speaker", action: {
-            observableObserver.observer?.notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked()
-        })
+            TextField("Subject ID", text: $subjectID_.string)
+            Picker("Test Settings", selection: $testSettingsShortName.string) {
+                ForEach(testSettingsShortNames) {
+                    Text($0.string)
+                }
+            }.pickerStyle(RadioGroupPickerStyle())
+            Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
+            Button("START", action: {
+                observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
+            })
+            Button("play left speaker", action: {
+                observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
+            })
+            Button("play right speaker", action: {
+                observableObserver.observer?.notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked()
+            })
+        }
+    }
+}
+
+class SwiftFacemaskStudyTestSetupUI : NSObject, TestSetupUI {
+    let subjectID_ = ObservableString()
+    let testSettingsShortName = ObservableString()
+    let observableObserver = TestSetupUIObserverObservable()
+    let showing = ObservableBool()
+    let minusTenDBStartingSnr = ObservableBool()
+    
+    func show() {
+        showing.value = true
+    }
+    
+    func hide() {
+        showing.value = false
+    }
+    
+    func testerId() -> String! {
+        return ""
+    }
+    
+    func subjectId() -> String! {
+        return subjectID_.string
+    }
+    
+    func session() -> String! {
+        return ""
+    }
+    
+    func testSettingsFile() -> String! {
+        return ""
+    }
+    
+    func startingSnr() -> String! {
+        return minusTenDBStartingSnr.value ? "-10" : "0"
+    }
+    
+    func transducer() -> String! {
+        return ""
+    }
+    
+    func rmeSetting() -> String! {
+        return ""
+    }
+    
+    func populateTransducerMenu(_ transducers: [String]!) {
+    }
+    
+    func attach(_ observer: TestSetupUIObserver!) {
+        observableObserver.observer = observer
     }
 }
 
