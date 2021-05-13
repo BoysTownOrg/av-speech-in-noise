@@ -4,6 +4,8 @@
 @protocol TestSetupUIObserver
 - (void)notifyThatConfirmButtonHasBeenClicked;
 - (void)notifyThatPlayCalibrationButtonHasBeenClicked;
+- (void)notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked;
+- (void)notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked;
 @end
 
 @protocol TestUIObserver

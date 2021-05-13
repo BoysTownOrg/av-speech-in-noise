@@ -760,6 +760,36 @@ class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
     }
 }
 
+struct SwiftFacemaskStudyTestSetupView : View {
+    @ObservedObject var subjectID_: ObservableString
+    @ObservedObject var testSettingsShortName: ObservableString
+    @ObservedObject var observableObserver: TestSetupUIObserverObservable
+    
+    private let testSettingsShortNames = [IdentifiableString]()
+    
+    var body: some View {
+        HStack() {
+            Image("btnrh.png")
+            Text("Facemask Study")
+        }
+        TextField("Subject ID", text: $subjectID_.string)
+        Picker("Test Settings", selection: $testSettingsShortName.string) {
+            ForEach(testSettingsShortNames) {
+                Text($0.string)
+            }
+        }.pickerStyle(RadioGroupPickerStyle())
+        Button("START", action: {
+            observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
+        })
+        Button("play left speaker", action: {
+            observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
+        })
+        Button("play right speaker", action: {
+            observableObserver.observer?.notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked()
+        })
+    }
+}
+
 @main
 struct SwiftCPPApp: App {
     let testSettingsPathControl = NSPathControl()

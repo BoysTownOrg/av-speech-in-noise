@@ -24,6 +24,14 @@
 - (void)notifyThatPlayCalibrationButtonHasBeenClicked {
     observer->notifyThatPlayCalibrationButtonHasBeenClicked();
 }
+
+- (void)notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked {
+    observer->notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked();
+}
+
+- (void)notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked {
+    observer->notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked();
+}
 @end
 
 @interface TestUIObserverImpl : NSObject <TestUIObserver>
