@@ -92,12 +92,28 @@ struct SwiftSessionView : View {
     @ObservedObject var showErrorMessage: ObservableBool
     @ObservedObject var errorMessage: ObservableString
     @ObservedObject var audioDevices: ObservableStringCollection
+    @ObservedObject var showingTestSetup: ObservableBool
+    let testSetupView: SwiftTestSetupView
+    let testView: SwiftTestView
+    let freeResponseView: SwiftFreeResponseView
+    let syllablesView: SwiftSyllablesView
+    let chooseKeywordsView: SwiftChooseKeywordsView
+    let correctKeywordsView: SwiftCorrectKeywordsView
+    let passFailView: SwiftPassFailView
     
     init(ui: SwiftSessionUI) {
         audioDevices = ui.audioDevices
         audioDevice = ui.audioDevice_
         errorMessage = ui.errorMessage
         showErrorMessage = ui.showErrorMessage
+        testSetupView = SwiftTestSetupView(ui: ui.testSetupUI, testSettingsPathControl:ui.testSettingsPathControl)
+        testView = SwiftTestView(ui: ui.testUI)
+        freeResponseView = SwiftFreeResponseView(ui: ui.freeResponseUI)
+        syllablesView = SwiftSyllablesView(ui: ui.syllablesUI)
+        chooseKeywordsView = SwiftChooseKeywordsView(ui: ui.chooseKeywordsUI)
+        correctKeywordsView = SwiftCorrectKeywordsView(ui: ui.correctKeywordsUI)
+        passFailView = SwiftPassFailView(ui: ui.passFailUI)
+        showingTestSetup = ui.testSetupUI.showing
     }
     
     var body: some View {
@@ -112,6 +128,17 @@ struct SwiftSessionView : View {
                 message: Text(errorMessage.string)
             )
         }
+        if showingTestSetup.value {
+            testSetupView
+        }
+        else {
+            testView
+            freeResponseView
+            syllablesView
+            chooseKeywordsView
+            correctKeywordsView
+            passFailView
+        }
     }
 }
 
@@ -120,6 +147,20 @@ class SwiftSessionUI : NSObject, SessionUI {
     var errorMessage = ObservableString()
     var audioDevices = ObservableStringCollection()
     var audioDevice_ = ObservableString()
+    let testSettingsPathControl = NSPathControl()
+    let testSetupUI: SwiftTestSetupUI
+    let testUI = SwiftTestUI()
+    let freeResponseUI = SwiftFreeResponseUI()
+    let syllablesUI = SwiftSyllablesUI()
+    let chooseKeywordsUI = SwiftChooseKeywordsUI()
+    let correctKeywordsUI = SwiftCorrectKeywordsUI()
+    let passFailUI = SwiftPassFailUI()
+    
+    override init() {
+        testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
+        super.init()
+        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: self, with: testUI, with: freeResponseUI, with: syllablesUI, with: chooseKeywordsUI, with: correctKeywordsUI, with: passFailUI)
+    }
     
     func eventLoop() {}
     
@@ -881,53 +922,16 @@ class SwiftFacemaskStudyTestSetupUI : NSObject, TestSetupUI {
 
 @main
 struct SwiftCPPApp: App {
-    let testSettingsPathControl = NSPathControl()
     let sessionUI = SwiftSessionUI()
     let sessionView: SwiftSessionView
-    let testSetupUI: SwiftTestSetupUI
-    let testSetupView: SwiftTestSetupView
-    let testUI = SwiftTestUI()
-    let testView: SwiftTestView
-    let freeResponseUI = SwiftFreeResponseUI()
-    let freeResponseView: SwiftFreeResponseView
-    let syllablesUI = SwiftSyllablesUI()
-    let syllablesView: SwiftSyllablesView
-    let chooseKeywordsUI = SwiftChooseKeywordsUI()
-    let chooseKeywordsView: SwiftChooseKeywordsView
-    let correctKeywordsUI = SwiftCorrectKeywordsUI()
-    let correctKeywordsView: SwiftCorrectKeywordsView
-    let passFailUI = SwiftPassFailUI()
-    let passFailView: SwiftPassFailView
-    @ObservedObject var showingTestSetup: ObservableBool
     
     init() {
-        testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
         sessionView = SwiftSessionView(ui: sessionUI)
-        testSetupView = SwiftTestSetupView(ui: testSetupUI, testSettingsPathControl:testSettingsPathControl)
-        testView = SwiftTestView(ui: testUI)
-        freeResponseView = SwiftFreeResponseView(ui: freeResponseUI)
-        syllablesView = SwiftSyllablesView(ui: syllablesUI)
-        chooseKeywordsView = SwiftChooseKeywordsView(ui: chooseKeywordsUI)
-        correctKeywordsView = SwiftCorrectKeywordsView(ui: correctKeywordsUI)
-        passFailView = SwiftPassFailView(ui: passFailUI)
-        showingTestSetup = testSetupUI.showing
-        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: testUI, with: freeResponseUI, with: syllablesUI, with: chooseKeywordsUI, with: correctKeywordsUI, with: passFailUI)
     }
     
     var body: some Scene {
         WindowGroup {
             sessionView
-            if showingTestSetup.value {
-                testSetupView
-            }
-            else {
-                testView
-                freeResponseView
-                syllablesView
-                chooseKeywordsView
-                correctKeywordsView
-                passFailView
-            }
         }
     }
 }
