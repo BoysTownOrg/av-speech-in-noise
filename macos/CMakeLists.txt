@@ -56,7 +56,6 @@ add_executable(
   Foundation-utility.mm
   run.mm
   SwiftUI.swift
-  HelloWorldObjc.mm
   ${MAIN_IMPL_FILE}
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
 add_macos_bundle(av-speech-in-noise-bundle org.boystown.av-speech-in-noise
@@ -75,14 +74,14 @@ add_executable(
 add_macos_bundle(
   av-speech-in-noise-facemask-study
   org.boystown.av-speech-in-noise-facemask-study "Facemask Study")
-  set_source_files_properties(
-    AvFoundationPlayers.mm
-    AppKitView.mm
-    AppKit-utility.mm
-    Foundation-utility.mm
-    FacemaskStudySetupView.mm
-    run.mm
-    main/facemask-study.mm
-    HelloWorldObjc.mm
-    ${MAIN_IMPL_FILE} PROPERTIES COMPILE_OPTIONS "-fobjc-arc;${AV_SPEECH_IN_NOISE_WARNINGS}")
+set_source_files_properties(
+  AvFoundationPlayers.mm
+  AppKitView.mm
+  AppKit-utility.mm
+  Foundation-utility.mm
+  FacemaskStudySetupView.mm
+  run.mm
+  main/facemask-study.mm
+  main/no-eyetracking.mm
+  main/with-tobii.mm PROPERTIES COMPILE_OPTIONS "-fobjc-arc;${AV_SPEECH_IN_NOISE_WARNINGS}")
   
