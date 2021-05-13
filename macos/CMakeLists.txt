@@ -55,6 +55,7 @@ add_executable(
   AppKit-utility.mm
   Foundation-utility.mm
   run.mm
+  utility.mm
   SwiftUI.swift
   ${MAIN_IMPL_FILE}
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
@@ -68,6 +69,7 @@ add_executable(
   AppKit-utility.mm
   Foundation-utility.mm
   FacemaskStudySetupView.mm
+  utility.mm
   run.mm
   main/facemask-study.mm
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
@@ -81,6 +83,7 @@ set_source_files_properties(
   Foundation-utility.mm
   FacemaskStudySetupView.mm
   run.mm
+  utility.mm
   main/facemask-study.mm
   main/no-eyetracking.mm
   main/with-tobii.mm PROPERTIES COMPILE_OPTIONS "-fobjc-arc;${AV_SPEECH_IN_NOISE_WARNINGS}")

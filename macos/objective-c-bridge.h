@@ -148,3 +148,8 @@
     withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI
            withPassFailUI:(NSObject<PassFailUI> *)passFailUI;
 @end
+
+@interface AvSpeechInNoiseUtility : NSObject
++ (NSString *)meta:(NSString *)stem withExtension:(NSString *)extension;
++ (NSString *)resourcePath:(NSString *)stem withExtension:(NSString *)extension;
+@end

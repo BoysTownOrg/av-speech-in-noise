@@ -760,14 +760,20 @@ class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
     }
 }
 
+func conditionShortName(stem: String, testSettingsForShortName: inout [String : String]) -> String {
+    let name = AvSpeechInNoiseUtility.meta(stem, withExtension: "txt") ?? ""
+    testSettingsForShortName[name] = AvSpeechInNoiseUtility.resourcePath(stem, withExtension: "txt")
+    return name
+}
+
 struct SwiftFacemaskStudyTestSetupView : View {
     @ObservedObject var subjectID_: ObservableString
     @ObservedObject var testSettingsShortName: ObservableString
     @ObservedObject var observableObserver: TestSetupUIObserverObservable
     @ObservedObject var showing: ObservableBool
     @ObservedObject var minusTenDBStartingSnr: ObservableBool
+    @ObservedObject var testSettingsShortNames: ObservableStringCollection
     
-    private let testSettingsShortNames = [IdentifiableString]()
     
     init(ui: SwiftFacemaskStudyTestSetupUI) {
         subjectID_ = ui.subjectID_
@@ -775,6 +781,7 @@ struct SwiftFacemaskStudyTestSetupView : View {
         testSettingsShortName = ui.testSettingsShortName
         observableObserver = ui.observableObserver
         minusTenDBStartingSnr = ui.minusTenDBStartingSnr
+        testSettingsShortNames = ui.testSettingsShortNames
     }
     
     var body: some View {
@@ -785,7 +792,7 @@ struct SwiftFacemaskStudyTestSetupView : View {
             }
             TextField("Subject ID", text: $subjectID_.string)
             Picker("Test Settings", selection: $testSettingsShortName.string) {
-                ForEach(testSettingsShortNames) {
+                ForEach(testSettingsShortNames.items) {
                     Text($0.string)
                 }
             }.pickerStyle(RadioGroupPickerStyle())
@@ -809,6 +816,24 @@ class SwiftFacemaskStudyTestSetupUI : NSObject, TestSetupUI {
     let observableObserver = TestSetupUIObserverObservable()
     let showing = ObservableBool()
     let minusTenDBStartingSnr = ObservableBool()
+    let testSettingsShortNames = ObservableStringCollection()
+    var testSettingsForShortName = [String: String]()
+    
+    override init() {
+        testSettingsShortNames.items = [
+            IdentifiableString(string: conditionShortName(stem: "NoMask_AO", testSettingsForShortName: &testSettingsForShortName)),
+            IdentifiableString(string: conditionShortName(stem: "NoMask_AV", testSettingsForShortName: &testSettingsForShortName)),
+            IdentifiableString(string: conditionShortName(stem: "ClearMask_AO", testSettingsForShortName: &testSettingsForShortName)),
+            IdentifiableString(string: conditionShortName(stem: "ClearMask_AV", testSettingsForShortName: &testSettingsForShortName)),
+            IdentifiableString(string: conditionShortName(stem: "CommunicatorMask_AO", testSettingsForShortName: &testSettingsForShortName)),
+            IdentifiableString(string: conditionShortName(stem: "CommunicatorMask_AV", testSettingsForShortName: &testSettingsForShortName)),
+            IdentifiableString(string: conditionShortName(stem: "FabricMask_AO", testSettingsForShortName: &testSettingsForShortName)),
+            IdentifiableString(string: conditionShortName(stem: "FabricMask_AV", testSettingsForShortName: &testSettingsForShortName)),
+            IdentifiableString(string: conditionShortName(stem: "HospitalMask_AO", testSettingsForShortName: &testSettingsForShortName)),
+            IdentifiableString(string: conditionShortName(stem: "HospitalMask_AV", testSettingsForShortName: &testSettingsForShortName)),
+            IdentifiableString(string: conditionShortName(stem: "NoMask_VO", testSettingsForShortName: &testSettingsForShortName)),
+        ]
+    }
     
     func show() {
         showing.value = true
@@ -831,7 +856,7 @@ class SwiftFacemaskStudyTestSetupUI : NSObject, TestSetupUI {
     }
     
     func testSettingsFile() -> String! {
-        return ""
+        return testSettingsForShortName[testSettingsShortName.string]
     }
     
     func startingSnr() -> String! {
