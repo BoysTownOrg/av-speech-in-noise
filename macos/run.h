@@ -4,6 +4,7 @@
 #include "AppKitTestSetupUIFactory.h"
 #include "presentation/Consonant.hpp"
 #include "presentation/CorrectKeywords.hpp"
+#include "presentation/PassFail.hpp"
 #include "presentation/Syllables.hpp"
 #include <presentation/SessionController.hpp>
 #include <presentation/FreeResponse.hpp>
@@ -44,6 +45,8 @@ class ChooseKeywordsUI_ : public ChooseKeywordsView,
 class CorrectKeywordsUI_ : public CorrectKeywordsView,
                            public CorrectKeywordsControl {};
 
+class PassFailUI_ : public PassFailView, public PassFailControl {};
+
 void initializeAppAndRunEventLoop(EyeTracker &, AppKitTestSetupUIFactory &,
     OutputFileNameFactory &, NSViewController *aboutViewController,
     SessionController::Observer * = nullptr,
@@ -51,7 +54,7 @@ void initializeAppAndRunEventLoop(EyeTracker &, AppKitTestSetupUIFactory &,
         "Documents/AvSpeechInNoise Data",
     SessionUI * = nullptr, TestUI * = nullptr, FreeResponseUI * = nullptr,
     SyllablesUI_ * = nullptr, ChooseKeywordsUI_ * = nullptr,
-    CorrectKeywordsUI_ * = nullptr);
+    CorrectKeywordsUI_ * = nullptr, PassFailUI_ * = nullptr);
 }
 
 #endif

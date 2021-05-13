@@ -79,6 +79,23 @@
 }
 @end
 
+@interface PassFailUIObserverImpl : NSObject <PassFailUIObserver>
+@end
+
+@implementation PassFailUIObserverImpl {
+  @public
+    av_speech_in_noise::PassFailControl::Observer *observer;
+}
+
+- (void)notifyThatCorrectButtonHasBeenClicked {
+    observer->notifyThatCorrectButtonHasBeenClicked();
+}
+
+- (void)notifyThatIncorrectButtonHasBeenClicked {
+    observer->notifyThatIncorrectButtonHasBeenClicked();
+}
+@end
+
 @interface SyllablesUIObserverImpl : NSObject <SyllablesUIObserver>
 @end
 
@@ -438,12 +455,31 @@ class CorrectKeywordsUIImpl : public CorrectKeywordsUI_ {
     NSObject<CorrectKeywordsUI> *ui;
 };
 
+class PassFailUIImpl : public PassFailUI_ {
+  public:
+    explicit PassFailUIImpl(NSObject<PassFailUI> *ui) : ui{ui} {}
+
+    void attach(Observer *a) override {
+        const auto adapted{[[PassFailUIObserverImpl alloc] init]};
+        adapted->observer = a;
+        [ui attach:adapted];
+    }
+
+    void showEvaluationButtons() override { [ui showEvaluationButtons]; }
+
+    void hideEvaluationButtons() override { [ui hideEvaluationButtons]; }
+
+  private:
+    NSObject<PassFailUI> *ui;
+};
+
 static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI,
     NSObject<FreeResponseUI> *freeResponseUI,
     NSObject<SyllablesUI> *syllablesUI,
     NSObject<ChooseKeywordsUI> *chooseKeywordsUI,
-    NSObject<CorrectKeywordsUI> *correctKeywordsUI) {
+    NSObject<CorrectKeywordsUI> *correctKeywordsUI,
+    NSObject<PassFailUI> *passFailUI) {
     static EyeTrackerStub eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
@@ -454,11 +490,12 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
     static ChooseKeywordsUIImpl chooseKeywordsUIAdapted{chooseKeywordsUI};
     static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
+    static PassFailUIImpl passFailUIAdapted{passFailUI};
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController, nullptr,
         "Documents/AvSpeechInNoise Data", &sessionUIAdapted, &testUIAdapted,
         &freeResponseUIAdapted, &syllablesUIAdapted, &chooseKeywordsUIAdapted,
-        &correctKeywordsUIAdapted);
+        &correctKeywordsUIAdapted, &passFailUIAdapted);
 }
 }
 
@@ -469,8 +506,10 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
        withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
           withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
      withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
-    withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI {
+    withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI
+           withPassFailUI:(NSObject<PassFailUI> *)passFailUI {
     av_speech_in_noise::main(testSetupUIFactory, sessionUI, testUI,
-        freeResponseUI, syllablesUI, chooseKeywordsUI, correctKeywordsUI);
+        freeResponseUI, syllablesUI, chooseKeywordsUI, correctKeywordsUI,
+        passFailUI);
 }
 @end

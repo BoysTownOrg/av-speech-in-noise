@@ -34,6 +34,11 @@
 - (void)notifyThatSubmitButtonHasBeenClicked;
 @end
 
+@protocol PassFailUIObserver
+- (void)notifyThatCorrectButtonHasBeenClicked;
+- (void)notifyThatIncorrectButtonHasBeenClicked;
+@end
+
 @protocol ChooseKeywordsUI
 - (void)attach:(id<ChooseKeywordsUIObserver>)observer;
 - (BOOL)firstKeywordCorrect;
@@ -121,6 +126,12 @@
 - (NSString *)correctKeywords;
 @end
 
+@protocol PassFailUI
+- (void)attach:(id<PassFailUIObserver>)observer;
+- (void)hideEvaluationButtons;
+- (void)showEvaluationButtons;
+@end
+
 @protocol TestSetupUIFactory
 - (id<TestSetupUI>)make:(NSViewController *)viewController;
 @end
@@ -132,5 +143,6 @@
        withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
           withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
      withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
-    withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI;
+    withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI
+           withPassFailUI:(NSObject<PassFailUI> *)passFailUI;
 @end

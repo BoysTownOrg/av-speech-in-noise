@@ -278,7 +278,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     std::filesystem::path relativeOutputDirectory, SessionUI *sessionUIMaybe,
     TestUI *testUIMaybe, FreeResponseUI *freeResponseUIMaybe,
     SyllablesUI_ *syllablesUIMaybe, ChooseKeywordsUI_ *chooseKeywordsUIMaybe,
-    CorrectKeywordsUI_ *correctKeywordsUIMaybe) {
+    CorrectKeywordsUI_ *correctKeywordsUIMaybe, PassFailUI_ *passFailUIMaybe) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     static AvFoundationVideoPlayer videoPlayer{subjectScreen};
     static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
@@ -496,7 +496,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static PassFailUI passFailUI{passFailUIController};
     static PassFailPresenter passFailPresenter{
         testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
-        passFailUI};
+        passFailUIMaybe != nullptr ? *passFailUIMaybe
+                                   : static_cast<PassFailView &>(passFailUI)};
     static CoordinateResponseMeasurePresenter
         coordinateResponseMeasurePresenter{coordinateResponseMeasureView};
     static TestSetupPresenterImpl testSetupPresenter{*(testSetupUI.get()),
@@ -550,8 +551,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         freeResponseUIMaybe != nullptr
             ? *freeResponseUIMaybe
             : static_cast<FreeResponseControl &>(freeResponseUI)};
-    static PassFailController passFailController{
-        testController, model, passFailUI};
+    static PassFailController passFailController{testController, model,
+        passFailUIMaybe != nullptr
+            ? *passFailUIMaybe
+            : static_cast<PassFailControl &>(passFailUI)};
     static ConsonantTaskController consonantTaskController{
         testController, model, consonantView, consonantPresenter};
     static CoordinateResponseMeasureController

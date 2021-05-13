@@ -75,6 +75,10 @@ class CorrectKeywordsUIObserverObservable : ObservableObject {
     @Published var observer : CorrectKeywordsUIObserver? = nil
 }
 
+class PassFailUIObserverObservable : ObservableObject {
+    @Published var observer : PassFailUIObserver? = nil
+}
+
 class ObservableBool : ObservableObject {
     @Published var value = false
 }
@@ -703,6 +707,46 @@ class SwiftCorrectKeywordsUI : NSObject, CorrectKeywordsUI {
     }
 }
 
+struct SwiftPassFailView : View {
+    @ObservedObject var showing: ObservableBool
+    @ObservedObject var observableObserver: PassFailUIObserverObservable
+    
+    init(ui: SwiftPassFailUI) {
+        showing = ui.showing
+        observableObserver = ui.observableObserver
+    }
+    
+    var body: some View {
+        if showing.value {
+            HStack() {
+                Button("Incorrect", action: {
+                    observableObserver.observer?.notifyThatIncorrectButtonHasBeenClicked()
+                })
+                Button("Correct", action: {
+                    observableObserver.observer?.notifyThatCorrectButtonHasBeenClicked()
+                })
+            }
+        }
+    }
+}
+
+class SwiftPassFailUI : NSObject, PassFailUI {
+    let showing = ObservableBool()
+    let observableObserver = PassFailUIObserverObservable()
+    
+    func attach(_ observer: PassFailUIObserver!) {
+        observableObserver.observer = observer
+    }
+    
+    func hideEvaluationButtons() {
+        showing.value = false
+    }
+    
+    func showEvaluationButtons() {
+        showing.value = true
+    }
+}
+
 class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
     let testSetupUI: TestSetupUI
     
@@ -733,6 +777,8 @@ struct SwiftCPPApp: App {
     let chooseKeywordsView: SwiftChooseKeywordsView
     let correctKeywordsUI = SwiftCorrectKeywordsUI()
     let correctKeywordsView: SwiftCorrectKeywordsView
+    let passFailUI = SwiftPassFailUI()
+    let passFailView: SwiftPassFailView
     @ObservedObject var showingTestSetup: ObservableBool
     
     init() {
@@ -744,8 +790,9 @@ struct SwiftCPPApp: App {
         syllablesView = SwiftSyllablesView(ui: syllablesUI)
         chooseKeywordsView = SwiftChooseKeywordsView(ui: chooseKeywordsUI)
         correctKeywordsView = SwiftCorrectKeywordsView(ui: correctKeywordsUI)
+        passFailView = SwiftPassFailView(ui: passFailUI)
         showingTestSetup = testSetupUI.showing
-        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: testUI, with: freeResponseUI, with: syllablesUI, with: chooseKeywordsUI, with: correctKeywordsUI)
+        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: testUI, with: freeResponseUI, with: syllablesUI, with: chooseKeywordsUI, with: correctKeywordsUI, with: passFailUI)
     }
     
     var body: some Scene {
@@ -760,6 +807,7 @@ struct SwiftCPPApp: App {
                 syllablesView
                 chooseKeywordsView
                 correctKeywordsView
+                passFailView
             }
         }
     }
