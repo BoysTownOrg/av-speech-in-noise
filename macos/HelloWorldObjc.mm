@@ -1,6 +1,8 @@
 #include "AppKitTestSetupUIFactory.h"
+#include "AppKitView.h"
 #include "Foundation-utility.h"
 #import "HelloWorldObjc.h"
+#include "presentation/CorrectKeywords.hpp"
 #include "run.h"
 #include "AppKit-utility.h"
 #include "EyeTrackerStub.hpp"
@@ -57,6 +59,19 @@
 @implementation FreeResponseUIObserverImpl {
   @public
     av_speech_in_noise::FreeResponseControl::Observer *observer;
+}
+
+- (void)notifyThatSubmitButtonHasBeenClicked {
+    observer->notifyThatSubmitButtonHasBeenClicked();
+}
+@end
+
+@interface CorrectKeywordsUIObserverImpl : NSObject <CorrectKeywordsUIObserver>
+@end
+
+@implementation CorrectKeywordsUIObserverImpl {
+  @public
+    av_speech_in_noise::CorrectKeywordsControl::Observer *observer;
 }
 
 - (void)notifyThatSubmitButtonHasBeenClicked {
@@ -397,11 +412,38 @@ class FreeResponseUIImpl : public FreeResponseUI {
     NSObject<FreeResponseUI> *freeResponseUI;
 };
 
+class CorrectKeywordsUIImpl : public CorrectKeywordsUI_ {
+  public:
+    explicit CorrectKeywordsUIImpl(NSObject<CorrectKeywordsUI> *ui) : ui{ui} {}
+
+    void attach(Observer *a) override {
+        const auto adapted{[[CorrectKeywordsUIObserverImpl alloc] init]};
+        adapted->observer = a;
+        [ui attach:adapted];
+    }
+
+    auto correctKeywords() -> std::string override {
+        return [ui correctKeywords].UTF8String;
+    }
+
+    void showCorrectKeywordsSubmission() override {
+        [ui showCorrectKeywordsSubmission];
+    }
+
+    void hideCorrectKeywordsSubmission() override {
+        [ui hideCorrectKeywordsSubmission];
+    }
+
+  private:
+    NSObject<CorrectKeywordsUI> *ui;
+};
+
 static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI,
     NSObject<FreeResponseUI> *freeResponseUI,
     NSObject<SyllablesUI> *syllablesUI,
-    NSObject<ChooseKeywordsUI> *chooseKeywordsUI) {
+    NSObject<ChooseKeywordsUI> *chooseKeywordsUI,
+    NSObject<CorrectKeywordsUI> *correctKeywordsUI) {
     static EyeTrackerStub eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
@@ -411,21 +453,24 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};
     static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
     static ChooseKeywordsUIImpl chooseKeywordsUIAdapted{chooseKeywordsUI};
+    static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
         outputFileNameFactory, aboutViewController, nullptr,
         "Documents/AvSpeechInNoise Data", &sessionUIAdapted, &testUIAdapted,
-        &freeResponseUIAdapted, &syllablesUIAdapted, &chooseKeywordsUIAdapted);
+        &freeResponseUIAdapted, &syllablesUIAdapted, &chooseKeywordsUIAdapted,
+        &correctKeywordsUIAdapted);
 }
 }
 
 @implementation HelloWorldObjc
 + (void)doEverything:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
-           withSessionUI:(NSObject<SessionUI> *)sessionUI
-              withTestUI:(NSObject<TestUI> *)testUI
-      withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
-         withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
-    withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI {
+            withSessionUI:(NSObject<SessionUI> *)sessionUI
+               withTestUI:(NSObject<TestUI> *)testUI
+       withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
+          withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
+     withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
+    withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI {
     av_speech_in_noise::main(testSetupUIFactory, sessionUI, testUI,
-        freeResponseUI, syllablesUI, chooseKeywordsUI);
+        freeResponseUI, syllablesUI, chooseKeywordsUI, correctKeywordsUI);
 }
 @end

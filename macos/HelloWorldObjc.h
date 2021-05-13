@@ -30,6 +30,10 @@
 - (void)notifyThatSubmitButtonHasBeenClicked;
 @end
 
+@protocol CorrectKeywordsUIObserver
+- (void)notifyThatSubmitButtonHasBeenClicked;
+@end
+
 @protocol ChooseKeywordsUI
 - (void)attach:(id<ChooseKeywordsUIObserver>)observer;
 - (BOOL)firstKeywordCorrect;
@@ -110,15 +114,23 @@
 - (void)clearFlag;
 @end
 
+@protocol CorrectKeywordsUI
+- (void)attach:(id<CorrectKeywordsUIObserver>)observer;
+- (void)hideCorrectKeywordsSubmission;
+- (void)showCorrectKeywordsSubmission;
+- (NSString *)correctKeywords;
+@end
+
 @protocol TestSetupUIFactory
 - (id<TestSetupUI>)make:(NSViewController *)viewController;
 @end
 
 @interface HelloWorldObjc : NSObject
 + (void)doEverything:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
-           withSessionUI:(NSObject<SessionUI> *)sessionUI
-              withTestUI:(NSObject<TestUI> *)testUI
-      withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
-         withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
-    withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI;
+            withSessionUI:(NSObject<SessionUI> *)sessionUI
+               withTestUI:(NSObject<TestUI> *)testUI
+       withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
+          withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
+     withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
+    withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI;
 @end

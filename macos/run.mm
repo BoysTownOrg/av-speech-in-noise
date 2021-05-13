@@ -277,7 +277,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     SessionController::Observer *sessionControllerObserver,
     std::filesystem::path relativeOutputDirectory, SessionUI *sessionUIMaybe,
     TestUI *testUIMaybe, FreeResponseUI *freeResponseUIMaybe,
-    SyllablesUI_ *syllablesUIMaybe, ChooseKeywordsUI_ *chooseKeywordsUIMaybe) {
+    SyllablesUI_ *syllablesUIMaybe, ChooseKeywordsUI_ *chooseKeywordsUIMaybe,
+    CorrectKeywordsUI_ *correctKeywordsUIMaybe) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     static AvFoundationVideoPlayer videoPlayer{subjectScreen};
     static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
@@ -489,7 +490,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
     static CorrectKeywordsPresenter correctKeywordsPresenter{
         testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
-        correctKeywordsUI};
+        correctKeywordsUIMaybe != nullptr
+            ? *correctKeywordsUIMaybe
+            : static_cast<CorrectKeywordsView &>(correctKeywordsUI)};
     static PassFailUI passFailUI{passFailUIController};
     static PassFailPresenter passFailPresenter{
         testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
@@ -540,7 +543,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         model,
         sessionUIMaybe != nullptr ? *sessionUIMaybe
                                   : static_cast<SessionView &>(sessionUI),
-        correctKeywordsUI};
+        correctKeywordsUIMaybe != nullptr
+            ? *correctKeywordsUIMaybe
+            : static_cast<CorrectKeywordsControl &>(correctKeywordsUI)};
     static FreeResponseController freeResponseController{testController, model,
         freeResponseUIMaybe != nullptr
             ? *freeResponseUIMaybe

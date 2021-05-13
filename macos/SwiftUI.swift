@@ -71,6 +71,10 @@ class ChooseKeywordsUIObserverObservable : ObservableObject {
     @Published var observer : ChooseKeywordsUIObserver? = nil
 }
 
+class CorrectKeywordsUIObserverObservable : ObservableObject {
+    @Published var observer : CorrectKeywordsUIObserver? = nil
+}
+
 class ObservableBool : ObservableObject {
     @Published var value = false
 }
@@ -654,6 +658,51 @@ class SwiftChooseKeywordsUI : NSObject, ChooseKeywordsUI {
     }
 }
 
+struct SwiftCorrectKeywordsView : View {
+    @ObservedObject var showing: ObservableBool
+    @ObservedObject var correctKeywords_: ObservableString
+    @ObservedObject var observableObserver: CorrectKeywordsUIObserverObservable
+    
+    init(ui: SwiftCorrectKeywordsUI) {
+        showing = ui.showing
+        correctKeywords_ = ui.correctKeywords_
+        observableObserver = ui.observableObserver
+    }
+    
+    var body: some View {
+        if showing.value {
+            Form {
+                TextField("# keywords correct", text: $correctKeywords_.string)
+                Button("Submit", action: {
+                    observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
+                }).keyboardShortcut(.defaultAction)
+            }
+        }
+    }
+}
+
+class SwiftCorrectKeywordsUI : NSObject, CorrectKeywordsUI {
+    let showing = ObservableBool()
+    let correctKeywords_ = ObservableString()
+    let observableObserver = CorrectKeywordsUIObserverObservable()
+    
+    func attach(_ observer: CorrectKeywordsUIObserver!) {
+        observableObserver.observer = observer
+    }
+    
+    func hideCorrectKeywordsSubmission() {
+        showing.value = false
+    }
+    
+    func showCorrectKeywordsSubmission() {
+        showing.value = true
+    }
+    
+    func correctKeywords() -> String! {
+        return correctKeywords_.string
+    }
+}
+
 class SwiftTestSetupUIFactory : NSObject, TestSetupUIFactory {
     let testSetupUI: TestSetupUI
     
@@ -682,6 +731,8 @@ struct SwiftCPPApp: App {
     let syllablesView: SwiftSyllablesView
     let chooseKeywordsUI = SwiftChooseKeywordsUI()
     let chooseKeywordsView: SwiftChooseKeywordsView
+    let correctKeywordsUI = SwiftCorrectKeywordsUI()
+    let correctKeywordsView: SwiftCorrectKeywordsView
     @ObservedObject var showingTestSetup: ObservableBool
     
     init() {
@@ -692,8 +743,9 @@ struct SwiftCPPApp: App {
         freeResponseView = SwiftFreeResponseView(ui: freeResponseUI)
         syllablesView = SwiftSyllablesView(ui: syllablesUI)
         chooseKeywordsView = SwiftChooseKeywordsView(ui: chooseKeywordsUI)
+        correctKeywordsView = SwiftCorrectKeywordsView(ui: correctKeywordsUI)
         showingTestSetup = testSetupUI.showing
-        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: testUI, with: freeResponseUI, with: syllablesUI, with: chooseKeywordsUI)
+        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: testUI, with: freeResponseUI, with: syllablesUI, with: chooseKeywordsUI, with: correctKeywordsUI)
     }
     
     var body: some Scene {
@@ -707,6 +759,7 @@ struct SwiftCPPApp: App {
                 freeResponseView
                 syllablesView
                 chooseKeywordsView
+                correctKeywordsView
             }
         }
     }

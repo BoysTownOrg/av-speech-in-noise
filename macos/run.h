@@ -3,6 +3,7 @@
 
 #include "AppKitTestSetupUIFactory.h"
 #include "presentation/Consonant.hpp"
+#include "presentation/CorrectKeywords.hpp"
 #include "presentation/Syllables.hpp"
 #include <presentation/SessionController.hpp>
 #include <presentation/FreeResponse.hpp>
@@ -40,13 +41,17 @@ class SyllablesUI_ : public SyllablesView, public SyllablesControl {};
 class ChooseKeywordsUI_ : public ChooseKeywordsView,
                           public ChooseKeywordsControl {};
 
+class CorrectKeywordsUI_ : public CorrectKeywordsView,
+                           public CorrectKeywordsControl {};
+
 void initializeAppAndRunEventLoop(EyeTracker &, AppKitTestSetupUIFactory &,
     OutputFileNameFactory &, NSViewController *aboutViewController,
     SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =
         "Documents/AvSpeechInNoise Data",
     SessionUI * = nullptr, TestUI * = nullptr, FreeResponseUI * = nullptr,
-    SyllablesUI_ * = nullptr, ChooseKeywordsUI_ * = nullptr);
+    SyllablesUI_ * = nullptr, ChooseKeywordsUI_ * = nullptr,
+    CorrectKeywordsUI_ * = nullptr);
 }
 
 #endif
