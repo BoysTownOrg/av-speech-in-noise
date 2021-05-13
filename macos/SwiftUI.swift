@@ -87,13 +87,13 @@ class ObservableString : ObservableObject {
     @Published var string = ""
 }
 
-struct SwiftSessionView : View {
+struct SwiftSessionView<Content: View> : View {
     @ObservedObject var audioDevice: ObservableString
     @ObservedObject var showErrorMessage: ObservableBool
     @ObservedObject var errorMessage: ObservableString
     @ObservedObject var audioDevices: ObservableStringCollection
     @ObservedObject var showingTestSetup: ObservableBool
-    let testSetupView: SwiftTestSetupView
+    let testSetupView: Content
     let testView: SwiftTestView
     let freeResponseView: SwiftFreeResponseView
     let syllablesView: SwiftSyllablesView
@@ -101,19 +101,19 @@ struct SwiftSessionView : View {
     let correctKeywordsView: SwiftCorrectKeywordsView
     let passFailView: SwiftPassFailView
     
-    init(ui: SwiftSessionUI) {
+    init(ui: SwiftSessionUI, showingTestSetup: ObservableBool, @ViewBuilder testSetupView: @escaping () -> Content) {
         audioDevices = ui.audioDevices
         audioDevice = ui.audioDevice_
         errorMessage = ui.errorMessage
         showErrorMessage = ui.showErrorMessage
-        testSetupView = SwiftTestSetupView(ui: ui.testSetupUI, testSettingsPathControl:ui.testSettingsPathControl)
         testView = SwiftTestView(ui: ui.testUI)
         freeResponseView = SwiftFreeResponseView(ui: ui.freeResponseUI)
         syllablesView = SwiftSyllablesView(ui: ui.syllablesUI)
         chooseKeywordsView = SwiftChooseKeywordsView(ui: ui.chooseKeywordsUI)
         correctKeywordsView = SwiftCorrectKeywordsView(ui: ui.correctKeywordsUI)
         passFailView = SwiftPassFailView(ui: ui.passFailUI)
-        showingTestSetup = ui.testSetupUI.showing
+        self.showingTestSetup = showingTestSetup
+        self.testSetupView = testSetupView()
     }
     
     var body: some View {
@@ -143,12 +143,10 @@ struct SwiftSessionView : View {
 }
 
 class SwiftSessionUI : NSObject, SessionUI {
-    var showErrorMessage = ObservableBool()
-    var errorMessage = ObservableString()
-    var audioDevices = ObservableStringCollection()
-    var audioDevice_ = ObservableString()
-    let testSettingsPathControl = NSPathControl()
-    let testSetupUI: SwiftTestSetupUI
+    let showErrorMessage = ObservableBool()
+    let errorMessage = ObservableString()
+    let audioDevices = ObservableStringCollection()
+    let audioDevice_ = ObservableString()
     let testUI = SwiftTestUI()
     let freeResponseUI = SwiftFreeResponseUI()
     let syllablesUI = SwiftSyllablesUI()
@@ -156,8 +154,7 @@ class SwiftSessionUI : NSObject, SessionUI {
     let correctKeywordsUI = SwiftCorrectKeywordsUI()
     let passFailUI = SwiftPassFailUI()
     
-    override init() {
-        testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
+    init(testSetupUI: TestSetupUI) {
         super.init()
         HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: self, with: testUI, with: freeResponseUI, with: syllablesUI, with: chooseKeywordsUI, with: correctKeywordsUI, with: passFailUI)
     }
@@ -922,16 +919,20 @@ class SwiftFacemaskStudyTestSetupUI : NSObject, TestSetupUI {
 
 @main
 struct SwiftCPPApp: App {
-    let sessionUI = SwiftSessionUI()
-    let sessionView: SwiftSessionView
+    let testSettingsPathControl = NSPathControl()
+    let sessionUI: SwiftSessionUI
+    let testSetupUI: SwiftTestSetupUI
     
     init() {
-        sessionView = SwiftSessionView(ui: sessionUI)
+        testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
+        sessionUI = SwiftSessionUI(testSetupUI: testSetupUI)
     }
     
     var body: some Scene {
         WindowGroup {
-            sessionView
+            SwiftSessionView(ui: sessionUI, showingTestSetup: testSetupUI.showing) {
+                SwiftTestSetupView(ui: testSetupUI, testSettingsPathControl:testSettingsPathControl)
+            }
         }
     }
 }
