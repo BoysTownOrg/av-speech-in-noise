@@ -57,6 +57,7 @@ add_executable(
   run.mm
   utility.mm
   SwiftUI.swift
+  main/default.swift
   ${MAIN_IMPL_FILE}
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
 add_macos_bundle(av-speech-in-noise-bundle org.boystown.av-speech-in-noise
@@ -71,6 +72,8 @@ add_executable(
   FacemaskStudySetupView.mm
   utility.mm
   run.mm
+  SwiftUI.swift
+  main/facemask-study.swift
   main/facemask-study.mm
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
 add_macos_bundle(
