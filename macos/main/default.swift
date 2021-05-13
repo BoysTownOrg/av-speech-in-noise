@@ -8,7 +8,8 @@ struct SwiftCPPApp: App {
     
     init() {
         testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
-        sessionUI = SwiftSessionUI(testSetupUI: testSetupUI)
+        sessionUI = SwiftSessionUI()
+        AvSpeechInNoiseMain.default(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI)
     }
     
     var body: some Scene {

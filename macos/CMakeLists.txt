@@ -35,7 +35,7 @@ option(AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING "Enables tobii eye tracking"
 if(${AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING})
   set(MAIN_IMPL_FILE main/with-tobii.mm)
 else()
-  set(MAIN_IMPL_FILE main/no-eyetracking.mm)
+  set(MAIN_IMPL_FILE main/default.mm)
 endif()
 
 set(AV_SPEECH_IN_NOISE_MACOS_RESOURCES
@@ -56,6 +56,7 @@ add_executable(
   Foundation-utility.mm
   run.mm
   utility.mm
+  objective-c-adapters.mm
   SwiftUI.swift
   main/default.swift
   ${MAIN_IMPL_FILE}
@@ -73,12 +74,14 @@ add_executable(
   utility.mm
   run.mm
   SwiftUI.swift
+  objective-c-adapters.mm
   main/facemask-study.swift
   main/facemask-study.mm
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
 add_macos_bundle(
   av-speech-in-noise-facemask-study
   org.boystown.av-speech-in-noise-facemask-study "Facemask Study")
+  set_target_properties(av-speech-in-noise-facemask-study PROPERTIES XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/objective-c-bridge.h)
 set_source_files_properties(
   AvFoundationPlayers.mm
   AppKitView.mm
@@ -87,7 +90,8 @@ set_source_files_properties(
   FacemaskStudySetupView.mm
   run.mm
   utility.mm
+  objective-c-adapters.mm
+  main/default.mm
   main/facemask-study.mm
-  main/no-eyetracking.mm
   main/with-tobii.mm PROPERTIES COMPILE_OPTIONS "-fobjc-arc;${AV_SPEECH_IN_NOISE_WARNINGS}")
   

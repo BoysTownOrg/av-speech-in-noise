@@ -154,10 +154,6 @@ class SwiftSessionUI : NSObject, SessionUI {
     let correctKeywordsUI = SwiftCorrectKeywordsUI()
     let passFailUI = SwiftPassFailUI()
     
-    init(testSetupUI: TestSetupUI) {
-        super.init()
-        HelloWorldObjc.doEverything(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: self, with: testUI, with: freeResponseUI, with: syllablesUI, with: chooseKeywordsUI, with: correctKeywordsUI, with: passFailUI)
-    }
     
     func eventLoop() {}
     
@@ -808,14 +804,12 @@ struct SwiftFacemaskStudyTestSetupView : View {
     @ObservedObject var subjectID_: ObservableString
     @ObservedObject var testSettingsShortName: ObservableString
     @ObservedObject var observableObserver: TestSetupUIObserverObservable
-    @ObservedObject var showing: ObservableBool
     @ObservedObject var minusTenDBStartingSnr: ObservableBool
     @ObservedObject var testSettingsShortNames: ObservableStringCollection
     
     
     init(ui: SwiftFacemaskStudyTestSetupUI) {
         subjectID_ = ui.subjectID_
-        showing = ui.showing
         testSettingsShortName = ui.testSettingsShortName
         observableObserver = ui.observableObserver
         minusTenDBStartingSnr = ui.minusTenDBStartingSnr
@@ -823,28 +817,26 @@ struct SwiftFacemaskStudyTestSetupView : View {
     }
     
     var body: some View {
-        if showing.value {
-            HStack() {
-                Image("btnrh.png")
-                Text("Facemask Study")
-            }
-            TextField("Subject ID", text: $subjectID_.string)
-            Picker("Test Settings", selection: $testSettingsShortName.string) {
-                ForEach(testSettingsShortNames.items) {
-                    Text($0.string)
-                }
-            }.pickerStyle(RadioGroupPickerStyle())
-            Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
-            Button("START", action: {
-                observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
-            })
-            Button("play left speaker", action: {
-                observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
-            })
-            Button("play right speaker", action: {
-                observableObserver.observer?.notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked()
-            })
+        HStack() {
+            Image("btnrh.png")
+            Text("Facemask Study")
         }
+        TextField("Subject ID", text: $subjectID_.string)
+        Picker("Test Settings", selection: $testSettingsShortName.string) {
+            ForEach(testSettingsShortNames.items) {
+                Text($0.string)
+            }
+        }.pickerStyle(RadioGroupPickerStyle())
+        Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
+        Button("START", action: {
+            observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
+        })
+        Button("play left speaker", action: {
+            observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
+        })
+        Button("play right speaker", action: {
+            observableObserver.observer?.notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked()
+        })
     }
 }
 
@@ -871,6 +863,7 @@ class SwiftFacemaskStudyTestSetupUI : NSObject, TestSetupUI {
             IdentifiableString(string: conditionShortName(stem: "HospitalMask_AV", testSettingsForShortName: &testSettingsForShortName)),
             IdentifiableString(string: conditionShortName(stem: "NoMask_VO", testSettingsForShortName: &testSettingsForShortName)),
         ]
+        showing.value = true
     }
     
     func show() {

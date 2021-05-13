@@ -1,30 +1,10 @@
-#include "../run.h"
 #include "../objective-c-adapters.h"
 #include "../objective-c-bridge.h"
 #include "../EyeTrackerStub.hpp"
 #include "../AppKit-utility.h"
-#import <AppKit/AppKit.h>
+#include "../run.h"
 
 namespace av_speech_in_noise {
-class MetaConditionOutputFileNameFactory : public OutputFileNameFactory {
-  public:
-    auto make(TimeStamp &timeStamp)
-        -> std::unique_ptr<OutputFileName> override {
-        return std::make_unique<MetaConditionOutputFileName>(timeStamp);
-    }
-};
-
-class CongratulatesUserWhenTestCompletes : public SessionController::Observer {
-  public:
-    void notifyThatTestIsComplete() override {
-        const auto alert{[[NSAlert alloc] init]};
-        [alert setMessageText:@""];
-        [alert setInformativeText:@"Condition complete, great work!"];
-        [alert addButtonWithTitle:@"Continue"];
-        [alert runModal];
-    }
-};
-
 static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI,
     NSObject<FreeResponseUI> *freeResponseUI,
@@ -34,9 +14,8 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<PassFailUI> *passFailUI) {
     static EyeTrackerStub eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
+    static DefaultOutputFileNameFactory outputFileNameFactory;
     const auto aboutViewController{nsTabViewControllerWithoutTabControl()};
-    MetaConditionOutputFileNameFactory outputFileNameFactory;
-    CongratulatesUserWhenTestCompletes congratulatesUserWhenTestCompletes;
     static SessionUIImpl sessionUIAdapted{sessionUI};
     static TestUIImpl testUIAdapted{testUI};
     static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};
@@ -45,16 +24,15 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
     static PassFailUIImpl passFailUIAdapted{passFailUI};
     initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
-        outputFileNameFactory, aboutViewController,
-        &congratulatesUserWhenTestCompletes, "Desktop/check your data here",
-        &sessionUIAdapted, &testUIAdapted, &freeResponseUIAdapted,
-        &syllablesUIAdapted, &chooseKeywordsUIAdapted,
+        outputFileNameFactory, aboutViewController, nullptr,
+        "Documents/AvSpeechInNoise Data", &sessionUIAdapted, &testUIAdapted,
+        &freeResponseUIAdapted, &syllablesUIAdapted, &chooseKeywordsUIAdapted,
         &correctKeywordsUIAdapted, &passFailUIAdapted);
 }
 }
 
 @implementation AvSpeechInNoiseMain
-+ (void)facemaskStudy:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
++ (void)default:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
             withSessionUI:(NSObject<SessionUI> *)sessionUI
                withTestUI:(NSObject<TestUI> *)testUI
        withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI

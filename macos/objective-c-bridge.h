@@ -138,8 +138,17 @@
 - (id<TestSetupUI>)make:(NSViewController *)viewController;
 @end
 
-@interface HelloWorldObjc : NSObject
-+ (void)doEverything:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
+@interface AvSpeechInNoiseMain : NSObject
++ (void)default:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
+            withSessionUI:(NSObject<SessionUI> *)sessionUI
+               withTestUI:(NSObject<TestUI> *)testUI
+       withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
+          withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
+     withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
+    withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI
+           withPassFailUI:(NSObject<PassFailUI> *)passFailUI;
+
++ (void)facemaskStudy:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
             withSessionUI:(NSObject<SessionUI> *)sessionUI
                withTestUI:(NSObject<TestUI> *)testUI
        withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
