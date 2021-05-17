@@ -69,7 +69,6 @@ add_executable(
   AppKitView.mm
   AppKit-utility.mm
   Foundation-utility.mm
-  FacemaskStudySetupView.mm
   utility.mm
   run.mm
   SwiftUI.swift
@@ -86,7 +85,6 @@ set_source_files_properties(
   AppKitView.mm
   AppKit-utility.mm
   Foundation-utility.mm
-  FacemaskStudySetupView.mm
   run.mm
   utility.mm
   objective-c-adapters.mm

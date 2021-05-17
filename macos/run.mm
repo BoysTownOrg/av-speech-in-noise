@@ -6,6 +6,7 @@
 #include "AppKit-utility.h"
 #include <presentation/SessionController.hpp>
 #include <presentation/TestSettingsInterpreter.hpp>
+#include <presentation/TestImpl.hpp>
 #include <recognition-test/Model.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/AdaptiveMethod.hpp>
