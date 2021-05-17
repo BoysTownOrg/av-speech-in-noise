@@ -37,24 +37,22 @@ class SessionUI : public SessionView, public SessionControl {};
 
 class FreeResponseUI : public FreeResponseView, public FreeResponseControl {};
 
-class SyllablesUI_ : public SyllablesView, public SyllablesControl {};
+class SyllablesUI : public SyllablesView, public SyllablesControl {};
 
-class ChooseKeywordsUI_ : public ChooseKeywordsView,
-                          public ChooseKeywordsControl {};
+class ChooseKeywordsUI : public ChooseKeywordsView,
+                         public ChooseKeywordsControl {};
 
-class CorrectKeywordsUI_ : public CorrectKeywordsView,
-                           public CorrectKeywordsControl {};
+class CorrectKeywordsUI : public CorrectKeywordsView,
+                          public CorrectKeywordsControl {};
 
-class PassFailUI_ : public PassFailView, public PassFailControl {};
+class PassFailUI : public PassFailView, public PassFailControl {};
 
-void initializeAppAndRunEventLoop(EyeTracker &, AppKitTestSetupUIFactory &,
-    OutputFileNameFactory &, NSViewController *aboutViewController,
+void initializeAppAndRunEventLoop(EyeTracker &, OutputFileNameFactory &,
+    AppKitTestSetupUIFactory &, SessionUI &, TestUI &, FreeResponseUI &,
+    SyllablesUI &, ChooseKeywordsUI &, CorrectKeywordsUI &, PassFailUI &,
     SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =
-        "Documents/AvSpeechInNoise Data",
-    SessionUI * = nullptr, TestUI * = nullptr, FreeResponseUI * = nullptr,
-    SyllablesUI_ * = nullptr, ChooseKeywordsUI_ * = nullptr,
-    CorrectKeywordsUI_ * = nullptr, PassFailUI_ * = nullptr);
+        "Documents/AvSpeechInNoise Data");
 }
 
 #endif

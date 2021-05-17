@@ -194,13 +194,13 @@ static void addChild(NSTabViewController *parent, NSTabViewController *child) {
 }
 
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
-    AppKitTestSetupUIFactory &testSetupUIFactory,
-    OutputFileNameFactory &outputFileNameFactory, NSViewController *,
+    OutputFileNameFactory &outputFileNameFactory,
+    AppKitTestSetupUIFactory &testSetupUIFactory, SessionUI &sessionUIMaybe,
+    TestUI &testUIMaybe, FreeResponseUI &freeResponseUIMaybe,
+    SyllablesUI &syllablesUIMaybe, ChooseKeywordsUI &chooseKeywordsUIMaybe,
+    CorrectKeywordsUI &correctKeywordsUIMaybe, PassFailUI &passFailUIMaybe,
     SessionController::Observer *sessionControllerObserver,
-    std::filesystem::path relativeOutputDirectory, SessionUI *sessionUIMaybe,
-    TestUI *testUIMaybe, FreeResponseUI *freeResponseUIMaybe,
-    SyllablesUI_ *syllablesUIMaybe, ChooseKeywordsUI_ *chooseKeywordsUIMaybe,
-    CorrectKeywordsUI_ *correctKeywordsUIMaybe, PassFailUI_ *passFailUIMaybe) {
+    std::filesystem::path relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     static AvFoundationVideoPlayer videoPlayer{subjectScreen};
     static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
@@ -312,29 +312,29 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             subjectViewWidth, subjectViewHeight)};
     static ConsonantTaskPresenterImpl consonantPresenter{consonantView};
     static FreeResponsePresenter freeResponsePresenter{
-        *testUIMaybe, *freeResponseUIMaybe};
+        testUIMaybe, freeResponseUIMaybe};
     static ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model,
-        *testUIMaybe, *chooseKeywordsUIMaybe,
+        testUIMaybe, chooseKeywordsUIMaybe,
         sentencesWithThreeKeywords(
             read_file(resourceUrl("mlst-c", "txt").path))};
     static SyllablesPresenterImpl syllablesPresenter{
-        *syllablesUIMaybe, *testUIMaybe};
+        syllablesUIMaybe, testUIMaybe};
     static CorrectKeywordsPresenter correctKeywordsPresenter{
-        *testUIMaybe, *correctKeywordsUIMaybe};
-    static PassFailPresenter passFailPresenter{*testUIMaybe, *passFailUIMaybe};
+        testUIMaybe, correctKeywordsUIMaybe};
+    static PassFailPresenter passFailPresenter{testUIMaybe, passFailUIMaybe};
     static CoordinateResponseMeasurePresenter
         coordinateResponseMeasurePresenter{coordinateResponseMeasureView};
     static TestSetupPresenterImpl testSetupPresenter{
-        *(testSetupUI.get()), *sessionUIMaybe};
+        *(testSetupUI.get()), sessionUIMaybe};
     static UninitializedTaskPresenterImpl taskPresenter;
-    static TestPresenterImpl testPresenter{model, *testUIMaybe, &taskPresenter};
+    static TestPresenterImpl testPresenter{model, testUIMaybe, &taskPresenter};
     static SessionControllerImpl sessionController{
-        model, *sessionUIMaybe, testSetupPresenter, testPresenter};
+        model, sessionUIMaybe, testSetupPresenter, testPresenter};
     static TestControllerImpl testController{
-        sessionController, model, *sessionUIMaybe, *testUIMaybe, testPresenter};
+        sessionController, model, sessionUIMaybe, testUIMaybe, testPresenter};
     static ChooseKeywordsController chooseKeywordsController{
-        testController, model, *chooseKeywordsUIMaybe, chooseKeywordsPresenter};
-    static SyllablesController syllablesController{*syllablesUIMaybe,
+        testController, model, chooseKeywordsUIMaybe, chooseKeywordsPresenter};
+    static SyllablesController syllablesController{syllablesUIMaybe,
         testController, model,
         {{"B", Syllable::bi}, {"D", Syllable::di}, {"G", Syllable::dji},
             {"F", Syllable::fi}, {"Ghee", Syllable::gi}, {"H", Syllable::hi},
@@ -344,11 +344,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {"Th", Syllable::thi}, {"T", Syllable::ti}, {"Ch", Syllable::tsi},
             {"V", Syllable::vi}, {"W", Syllable::wi}, {"Z", Syllable::zi}}};
     static CorrectKeywordsController correctKeywordsController{
-        testController, model, *sessionUIMaybe, *correctKeywordsUIMaybe};
+        testController, model, sessionUIMaybe, correctKeywordsUIMaybe};
     static FreeResponseController freeResponseController{
-        testController, model, *freeResponseUIMaybe};
+        testController, model, freeResponseUIMaybe};
     static PassFailController passFailController{
-        testController, model, *passFailUIMaybe};
+        testController, model, passFailUIMaybe};
     static ConsonantTaskController consonantTaskController{
         testController, model, consonantView, consonantPresenter};
     static CoordinateResponseMeasureController
@@ -391,7 +391,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {Method::adaptivePassFail, passFailPresenter},
             {Method::adaptivePassFailWithEyeTracking, passFailPresenter}}};
     static TestSetupController testSetupController{*(testSetupUI.get()),
-        sessionController, *sessionUIMaybe, testSetupPresenter, model,
+        sessionController, sessionUIMaybe, testSetupPresenter, model,
         testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);
 }

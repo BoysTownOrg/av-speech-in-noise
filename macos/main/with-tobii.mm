@@ -234,12 +234,10 @@ void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
                 constraintEqualToAnchor:aboutViewController.view.trailingAnchor
                                constant:-8]
         ]];
-        initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
-            outputFileNameFactory, aboutViewController, nullptr,
-            "Documents/AvSpeechInNoise Data", &sessionUIAdapted, &testUIAdapted,
-            &freeResponseUIAdapted, &syllablesUIAdapted,
-            &chooseKeywordsUIAdapted, &correctKeywordsUIAdapted,
-            &passFailUIAdapted);
+        initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
+            testSetupViewFactory, sessionUIAdapted, testUIAdapted,
+            freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
+            correctKeywordsUIAdapted, passFailUIAdapted);
     }
 }
 }

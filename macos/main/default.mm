@@ -23,11 +23,10 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static ChooseKeywordsUIImpl chooseKeywordsUIAdapted{chooseKeywordsUI};
     static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
     static PassFailUIImpl passFailUIAdapted{passFailUI};
-    initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
-        outputFileNameFactory, aboutViewController, nullptr,
-        "Documents/AvSpeechInNoise Data", &sessionUIAdapted, &testUIAdapted,
-        &freeResponseUIAdapted, &syllablesUIAdapted, &chooseKeywordsUIAdapted,
-        &correctKeywordsUIAdapted, &passFailUIAdapted);
+    initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
+        testSetupViewFactory, sessionUIAdapted, testUIAdapted,
+        freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
+        correctKeywordsUIAdapted, passFailUIAdapted);
 }
 }
 

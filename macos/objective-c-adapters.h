@@ -5,7 +5,7 @@
 #include "run.h"
 
 namespace av_speech_in_noise {
-class ChooseKeywordsUIImpl : public ChooseKeywordsUI_ {
+class ChooseKeywordsUIImpl : public ChooseKeywordsUI {
   public:
     explicit ChooseKeywordsUIImpl(NSObject<ChooseKeywordsUI> *);
     void attach(Observer *a) override;
@@ -34,7 +34,7 @@ class ChooseKeywordsUIImpl : public ChooseKeywordsUI_ {
     NSObject<ChooseKeywordsUI> *ui;
 };
 
-class SyllablesUIImpl : public SyllablesUI_ {
+class SyllablesUIImpl : public SyllablesUI {
   public:
     explicit SyllablesUIImpl(NSObject<SyllablesUI> *);
     void attach(Observer *a) override;
@@ -124,7 +124,7 @@ class FreeResponseUIImpl : public FreeResponseUI {
     NSObject<FreeResponseUI> *freeResponseUI;
 };
 
-class CorrectKeywordsUIImpl : public CorrectKeywordsUI_ {
+class CorrectKeywordsUIImpl : public CorrectKeywordsUI {
   public:
     explicit CorrectKeywordsUIImpl(NSObject<CorrectKeywordsUI> *);
     void attach(Observer *a) override;
@@ -136,7 +136,7 @@ class CorrectKeywordsUIImpl : public CorrectKeywordsUI_ {
     NSObject<CorrectKeywordsUI> *ui;
 };
 
-class PassFailUIImpl : public PassFailUI_ {
+class PassFailUIImpl : public PassFailUI {
   public:
     explicit PassFailUIImpl(NSObject<PassFailUI> *);
     void attach(Observer *a) override;
