@@ -27,84 +27,6 @@
 #include <functional>
 #include <filesystem>
 
-// https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/ManagingFIlesandDirectories/ManagingFIlesandDirectories.html#//apple_ref/doc/uid/TP40010672-CH6-SW2
-// Listing 6-1
-static auto applicationDataDirectory() -> NSURL * {
-    NSString *bundleID = [[NSBundle mainBundle] bundleIdentifier];
-    NSFileManager *fm = [NSFileManager defaultManager];
-    NSURL *dirPath = nil;
-    // Find the application support directory in the home directory.
-    auto appSupportDir = [fm URLsForDirectory:NSApplicationSupportDirectory
-                                    inDomains:NSUserDomainMask];
-    if ([appSupportDir count] > 0) {
-        // Append the bundle ID to the URL for the
-        // Application Support directory
-        dirPath = [[appSupportDir objectAtIndex:0]
-            URLByAppendingPathComponent:bundleID];
-        // If the directory does not exist, this method creates it.
-        // This method is only available in macOS 10.7 and iOS 5.0 or later.
-        NSError *theError = nil;
-        if ([fm createDirectoryAtURL:dirPath
-                withIntermediateDirectories:YES
-                                 attributes:nil
-                                      error:&theError] == 0) {
-            NSAlert *theAlert = [NSAlert alertWithError:theError];
-            [theAlert runModal];
-            return nil;
-        }
-    }
-    return dirPath;
-}
-
-static auto defaultAudioDeviceFilePath() -> std::filesystem::path {
-    return [applicationDataDirectory()
-        URLByAppendingPathComponent:@"default-audio-device.txt"]
-        .fileSystemRepresentation;
-}
-
-@interface ApplicationDelegate : NSObject <NSApplicationDelegate>
-@end
-
-@implementation ApplicationDelegate {
-  @public
-    NSPopUpButton *audioDeviceMenu;
-}
-- (void)applicationWillTerminate:(NSNotification *)notification {
-    if (audioDeviceMenu.titleOfSelectedItem != nil) {
-        std::ofstream defaultAudioDeviceFile{defaultAudioDeviceFilePath()};
-        defaultAudioDeviceFile
-            << audioDeviceMenu.titleOfSelectedItem.UTF8String;
-    }
-}
-@end
-
-@interface WindowDelegate : NSObject <NSWindowDelegate>
-@end
-
-@implementation WindowDelegate
-- (void)windowWillClose:(NSNotification *)__unused notification {
-    [NSApp terminate:self];
-}
-@end
-
-@interface MenuActions : NSObject
-@end
-
-@implementation MenuActions {
-  @public
-    NSWindow *preferencesWindow;
-    NSWindow *aboutWindow;
-}
-
-- (void)notifyThatPreferencesHasBeenClicked {
-    [preferencesWindow makeKeyAndOrderFront:nil];
-}
-
-- (void)notifyThatAboutHasBeenClicked {
-    [aboutWindow makeKeyAndOrderFront:nil];
-}
-@end
-
 @interface CallbackScheduler : NSObject
 @end
 
@@ -372,9 +294,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto audioDeviceMenu{
         [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                    pullsDown:NO]};
-    const auto applicationDelegate{[[ApplicationDelegate alloc] init]};
-    applicationDelegate->audioDeviceMenu = audioDeviceMenu;
-    [app setDelegate:applicationDelegate];
     static auto testSetupUI{testSetupUIFactory.make(nil)};
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenOrigin{subjectScreenFrame.origin};
@@ -411,12 +330,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static TestPresenterImpl testPresenter{model, *testUIMaybe, &taskPresenter};
     static SessionControllerImpl sessionController{
         model, *sessionUIMaybe, testSetupPresenter, testPresenter};
-    std::ifstream defaultAudioDeviceFile{defaultAudioDeviceFilePath()};
-    if (defaultAudioDeviceFile) {
-        std::string defaultAudioDevice;
-        std::getline(defaultAudioDeviceFile, defaultAudioDevice);
-        [audioDeviceMenu selectItemWithTitle:nsString(defaultAudioDevice)];
-    }
     static TestControllerImpl testController{
         sessionController, model, *sessionUIMaybe, *testUIMaybe, testPresenter};
     static ChooseKeywordsController chooseKeywordsController{
