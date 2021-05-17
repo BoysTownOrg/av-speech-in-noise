@@ -1,7 +1,41 @@
 import SwiftUI
 
+// https://stackoverflow.com/a/66200850
+struct AboutView: View {
+    var body: some View {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                Text("Hello, World!")
+                Spacer()
+            }
+            Spacer()
+        }
+        .frame(minWidth: 300, minHeight: 300)
+    }
+}
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+    private var aboutBoxWindowController: NSWindowController?
+
+    func showAboutPanel() {
+        if aboutBoxWindowController == nil {
+            let styleMask: NSWindow.StyleMask = [.closable, .miniaturizable,/* .resizable,*/ .titled]
+            let window = NSWindow()
+            window.styleMask = styleMask
+            window.title = "About AV Speech in Noise"
+            window.contentView = NSHostingView(rootView: AboutView())
+            aboutBoxWindowController = NSWindowController(window: window)
+        }
+
+        aboutBoxWindowController?.showWindow(aboutBoxWindowController?.window)
+    }
+}
+
 @main
 struct SwiftCPPApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     let testSettingsPathControl = NSPathControl()
     let sessionUI: SwiftSessionUI
     let testSetupUI: SwiftTestSetupUI
@@ -16,6 +50,15 @@ struct SwiftCPPApp: App {
         WindowGroup {
             SwiftSessionView(ui: sessionUI, showingTestSetup: testSetupUI.showing) {
                 SwiftTestSetupView(ui: testSetupUI, testSettingsPathControl:testSettingsPathControl)
+            }
+        }
+        .commands {
+            CommandGroup(replacing: CommandGroupPlacement.appInfo) {
+                Button(action: {
+                    appDelegate.showAboutPanel()
+                }) {
+                    Text("About AV Speech in Noise")
+                }
             }
         }
         #if os(macOS)
