@@ -3,16 +3,8 @@ import SwiftUI
 // https://stackoverflow.com/a/66200850
 struct AboutView: View {
     var body: some View {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Text("Hello, World!")
-                Spacer()
-            }
-            Spacer()
-        }
-        .frame(minWidth: 300, minHeight: 300)
+        Image("tobii-pro-logo.jpg")
+        Text("This application is powered by Tobii Pro")
     }
 }
 
