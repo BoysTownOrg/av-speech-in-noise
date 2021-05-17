@@ -368,10 +368,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
         allTargetsNTimes, recognitionTestModel, outputFile};
     const auto viewController{nsTabViewControllerWithoutTabControl()};
-    const auto window{
-        [NSWindow windowWithContentViewController:viewController]};
-    window.title = @"AV Speech in Noise";
-    [window makeKeyAndOrderFront:nil];
     const auto app{[NSApplication sharedApplication]};
     app.mainMenu = [[NSMenu alloc] init];
     auto appMenu{[[NSMenuItem alloc] init]};
@@ -414,43 +410,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto applicationDelegate{[[ApplicationDelegate alloc] init]};
     applicationDelegate->audioDeviceMenu = audioDeviceMenu;
     [app setDelegate:applicationDelegate];
-    static AppKitSessionUI sessionUI{
-        app, preferencesViewController, audioDeviceMenu};
-    const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
-    addChild(viewController, testSetupViewController);
-    testSetupViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint activateConstraints:@[
-        [testSetupViewController.view.topAnchor
-            constraintEqualToAnchor:viewController.view.topAnchor
-                           constant:8],
-        [testSetupViewController.view.bottomAnchor
-            constraintEqualToAnchor:viewController.view.bottomAnchor
-                           constant:-8],
-        [testSetupViewController.view.leadingAnchor
-            constraintEqualToAnchor:viewController.view.leadingAnchor
-                           constant:8],
-        [testSetupViewController.view.trailingAnchor
-            constraintEqualToAnchor:viewController.view.trailingAnchor
-                           constant:-8]
-    ]];
-    static auto testSetupUI{testSetupUIFactory.make(testSetupViewController)};
-    const auto testViewController{nsTabViewControllerWithoutTabControl()};
-    addChild(viewController, testViewController);
-    const auto chooseKeywordsUIController{
-        nsTabViewControllerWithoutTabControl()};
-    const auto freeResponseUIController{nsTabViewControllerWithoutTabControl()};
-    const auto correctKeywordsUIController{
-        nsTabViewControllerWithoutTabControl()};
-    const auto passFailUIController{nsTabViewControllerWithoutTabControl()};
-    const auto syllablesUIController{nsTabViewControllerWithoutTabControl()};
-    addChild(testViewController, chooseKeywordsUIController);
-    addChild(testViewController, freeResponseUIController);
-    addChild(testViewController, correctKeywordsUIController);
-    addChild(testViewController, passFailUIController);
-    addChild(testViewController, syllablesUIController);
-    static AppKitTestUI testUI{testViewController};
-    [window center];
-    [window setDelegate:[[WindowDelegate alloc] init]];
+    static auto testSetupUI{testSetupUIFactory.make(nil)};
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenOrigin{subjectScreenFrame.origin};
     const auto subjectScreenSize{subjectScreenFrame.size};
@@ -467,71 +427,36 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
     static ConsonantTaskPresenterImpl consonantPresenter{consonantView};
-    static FreeResponseUIAppKit freeResponseUI{freeResponseUIController};
     static FreeResponsePresenter freeResponsePresenter{
-        testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
-        freeResponseUIMaybe != nullptr
-            ? *freeResponseUIMaybe
-            : static_cast<FreeResponseView &>(freeResponseUI)};
-    static ChooseKeywordsUI chooseKeywordsUI{chooseKeywordsUIController};
+        *testUIMaybe, *freeResponseUIMaybe};
     static ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model,
-        testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
-        chooseKeywordsUIMaybe != nullptr
-            ? *chooseKeywordsUIMaybe
-            : static_cast<ChooseKeywordsView &>(chooseKeywordsUI),
+        *testUIMaybe, *chooseKeywordsUIMaybe,
         sentencesWithThreeKeywords(
             read_file(resourceUrl("mlst-c", "txt").path))};
-    static SyllablesUI syllablesUI{syllablesUIController};
-    static SyllablesPresenterImpl syllablesPresenter{syllablesUIMaybe != nullptr
-            ? *syllablesUIMaybe
-            : static_cast<SyllablesView &>(syllablesUI),
-        testUIMaybe != nullptr ? *testUIMaybe
-                               : static_cast<TestView &>(testUI)};
-    static CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
+    static SyllablesPresenterImpl syllablesPresenter{
+        *syllablesUIMaybe, *testUIMaybe};
     static CorrectKeywordsPresenter correctKeywordsPresenter{
-        testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
-        correctKeywordsUIMaybe != nullptr
-            ? *correctKeywordsUIMaybe
-            : static_cast<CorrectKeywordsView &>(correctKeywordsUI)};
-    static PassFailUI passFailUI{passFailUIController};
-    static PassFailPresenter passFailPresenter{
-        testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
-        passFailUIMaybe != nullptr ? *passFailUIMaybe
-                                   : static_cast<PassFailView &>(passFailUI)};
+        *testUIMaybe, *correctKeywordsUIMaybe};
+    static PassFailPresenter passFailPresenter{*testUIMaybe, *passFailUIMaybe};
     static CoordinateResponseMeasurePresenter
         coordinateResponseMeasurePresenter{coordinateResponseMeasureView};
-    static TestSetupPresenterImpl testSetupPresenter{*(testSetupUI.get()),
-        sessionUIMaybe != nullptr ? *sessionUIMaybe
-                                  : static_cast<SessionView &>(sessionUI)};
+    static TestSetupPresenterImpl testSetupPresenter{
+        *(testSetupUI.get()), *sessionUIMaybe};
     static UninitializedTaskPresenterImpl taskPresenter;
-    static TestPresenterImpl testPresenter{model,
-        testUIMaybe != nullptr ? *testUIMaybe : static_cast<TestView &>(testUI),
-        &taskPresenter};
-    static SessionControllerImpl sessionController{model,
-        sessionUIMaybe != nullptr ? *sessionUIMaybe
-                                  : static_cast<SessionView &>(sessionUI),
-        testSetupPresenter, testPresenter};
+    static TestPresenterImpl testPresenter{model, *testUIMaybe, &taskPresenter};
+    static SessionControllerImpl sessionController{
+        model, *sessionUIMaybe, testSetupPresenter, testPresenter};
     std::ifstream defaultAudioDeviceFile{defaultAudioDeviceFilePath()};
     if (defaultAudioDeviceFile) {
         std::string defaultAudioDevice;
         std::getline(defaultAudioDeviceFile, defaultAudioDevice);
         [audioDeviceMenu selectItemWithTitle:nsString(defaultAudioDevice)];
     }
-    static TestControllerImpl testController{sessionController, model,
-        sessionUIMaybe != nullptr ? *sessionUIMaybe
-                                  : static_cast<SessionControl &>(sessionUI),
-        testUIMaybe != nullptr ? *testUIMaybe
-                               : static_cast<TestControl &>(testUI),
-        testPresenter};
-    static ChooseKeywordsController chooseKeywordsController{testController,
-        model,
-        chooseKeywordsUIMaybe != nullptr
-            ? *chooseKeywordsUIMaybe
-            : static_cast<ChooseKeywordsControl &>(chooseKeywordsUI),
-        chooseKeywordsPresenter};
-    static SyllablesController syllablesController{syllablesUIMaybe != nullptr
-            ? *syllablesUIMaybe
-            : static_cast<SyllablesControl &>(syllablesUI),
+    static TestControllerImpl testController{
+        sessionController, model, *sessionUIMaybe, *testUIMaybe, testPresenter};
+    static ChooseKeywordsController chooseKeywordsController{
+        testController, model, *chooseKeywordsUIMaybe, chooseKeywordsPresenter};
+    static SyllablesController syllablesController{*syllablesUIMaybe,
         testController, model,
         {{"B", Syllable::bi}, {"D", Syllable::di}, {"G", Syllable::dji},
             {"F", Syllable::fi}, {"Ghee", Syllable::gi}, {"H", Syllable::hi},
@@ -540,21 +465,12 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {"R", Syllable::ri}, {"Sh", Syllable::shi}, {"S", Syllable::si},
             {"Th", Syllable::thi}, {"T", Syllable::ti}, {"Ch", Syllable::tsi},
             {"V", Syllable::vi}, {"W", Syllable::wi}, {"Z", Syllable::zi}}};
-    static CorrectKeywordsController correctKeywordsController{testController,
-        model,
-        sessionUIMaybe != nullptr ? *sessionUIMaybe
-                                  : static_cast<SessionView &>(sessionUI),
-        correctKeywordsUIMaybe != nullptr
-            ? *correctKeywordsUIMaybe
-            : static_cast<CorrectKeywordsControl &>(correctKeywordsUI)};
-    static FreeResponseController freeResponseController{testController, model,
-        freeResponseUIMaybe != nullptr
-            ? *freeResponseUIMaybe
-            : static_cast<FreeResponseControl &>(freeResponseUI)};
-    static PassFailController passFailController{testController, model,
-        passFailUIMaybe != nullptr
-            ? *passFailUIMaybe
-            : static_cast<PassFailControl &>(passFailUI)};
+    static CorrectKeywordsController correctKeywordsController{
+        testController, model, *sessionUIMaybe, *correctKeywordsUIMaybe};
+    static FreeResponseController freeResponseController{
+        testController, model, *freeResponseUIMaybe};
+    static PassFailController passFailController{
+        testController, model, *passFailUIMaybe};
     static ConsonantTaskController consonantTaskController{
         testController, model, consonantView, consonantPresenter};
     static CoordinateResponseMeasureController
@@ -597,10 +513,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {Method::adaptivePassFail, passFailPresenter},
             {Method::adaptivePassFailWithEyeTracking, passFailPresenter}}};
     static TestSetupController testSetupController{*(testSetupUI.get()),
-        sessionController,
-        sessionUIMaybe != nullptr ? *sessionUIMaybe
-                                  : static_cast<SessionControl &>(sessionUI),
-        testSetupPresenter, model, testSettingsInterpreter, textFileReader};
+        sessionController, *sessionUIMaybe, testSetupPresenter, model,
+        testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);
 }
 }
