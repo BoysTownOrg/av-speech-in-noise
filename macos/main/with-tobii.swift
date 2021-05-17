@@ -18,5 +18,10 @@ struct SwiftCPPApp: App {
                 SwiftTestSetupView(ui: testSetupUI, testSettingsPathControl:testSettingsPathControl)
             }
         }
+        #if os(macOS)
+        Settings {
+            SettingsView(ui: sessionUI)
+        }
+        #endif
     }
 }

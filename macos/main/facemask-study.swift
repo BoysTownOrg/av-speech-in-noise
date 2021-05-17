@@ -16,5 +16,10 @@ struct SwiftCPPApp: App {
                 SwiftFacemaskStudyTestSetupView(ui: testSetupUI)
             }
         }
+        #if os(macOS)
+        Settings {
+            SettingsView(ui: sessionUI)
+        }
+        #endif
     }
 }

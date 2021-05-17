@@ -87,11 +87,40 @@ class ObservableString : ObservableObject {
     @Published var string = ""
 }
 
+class ObservableAudioDevice : ObservableObject {
+    @AppStorage("audioDevice") var string = "" {
+        willSet {
+            // Call objectWillChange manually since @AppStorage is not published
+            objectWillChange.send()
+        }
+    }
+}
+
+struct SettingsView: View {
+    @ObservedObject var audioDevice: ObservableAudioDevice
+    @ObservedObject var audioDevices: ObservableStringCollection
+    
+    init(ui: SwiftSessionUI) {
+        audioDevice = ui.audioDevice_
+        audioDevices = ui.audioDevices
+    }
+
+    var body: some View {
+        Form {
+            Picker("Audio Device", selection: $audioDevice.string) {
+                ForEach(audioDevices.items) {
+                    Text($0.string)
+                }
+            }
+        }
+        .padding(20)
+        .frame(width: 350, height: 100)
+    }
+}
+
 struct SwiftSessionView<Content: View> : View {
-    @ObservedObject var audioDevice: ObservableString
     @ObservedObject var showErrorMessage: ObservableBool
     @ObservedObject var errorMessage: ObservableString
-    @ObservedObject var audioDevices: ObservableStringCollection
     @ObservedObject var showingTestSetup: ObservableBool
     let testSetupView: Content
     let testView: SwiftTestView
@@ -102,8 +131,6 @@ struct SwiftSessionView<Content: View> : View {
     let passFailView: SwiftPassFailView
     
     init(ui: SwiftSessionUI, showingTestSetup: ObservableBool, @ViewBuilder testSetupView: @escaping () -> Content) {
-        audioDevices = ui.audioDevices
-        audioDevice = ui.audioDevice_
         errorMessage = ui.errorMessage
         showErrorMessage = ui.showErrorMessage
         testView = SwiftTestView(ui: ui.testUI)
@@ -117,11 +144,7 @@ struct SwiftSessionView<Content: View> : View {
     }
     
     var body: some View {
-        Picker("Audio Device", selection: $audioDevice.string) {
-            ForEach(audioDevices.items) {
-                Text($0.string)
-            }
-        }
+        EmptyView()
         .alert(isPresented: $showErrorMessage.value) {
             Alert(
                 title: Text("Error"),
@@ -143,10 +166,10 @@ struct SwiftSessionView<Content: View> : View {
 }
 
 class SwiftSessionUI : NSObject, SessionUI {
+    let audioDevice_ = ObservableAudioDevice()
     let showErrorMessage = ObservableBool()
     let errorMessage = ObservableString()
     let audioDevices = ObservableStringCollection()
-    let audioDevice_ = ObservableString()
     let testUI = SwiftTestUI()
     let freeResponseUI = SwiftFreeResponseUI()
     let syllablesUI = SwiftSyllablesUI()
