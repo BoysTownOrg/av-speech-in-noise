@@ -840,26 +840,28 @@ struct SwiftFacemaskStudyTestSetupView : View {
     }
     
     var body: some View {
-        HStack() {
-            Image("btnrh.png")
-            Text("Facemask Study")
-        }
-        TextField("Subject ID", text: $subjectID_.string)
-        Picker("Test Settings", selection: $testSettingsShortName.string) {
-            ForEach(testSettingsShortNames.items) {
-                Text($0.string)
+        VStack() {
+            HStack() {
+                Image("btnrh")
+                Text("Facemask Study").font(.largeTitle)
             }
-        }.pickerStyle(RadioGroupPickerStyle())
-        Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
-        Button("START", action: {
-            observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
-        })
-        Button("play left speaker", action: {
-            observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
-        })
-        Button("play right speaker", action: {
-            observableObserver.observer?.notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked()
-        })
+            TextField("Subject ID", text: $subjectID_.string).font(.subheadline)
+            Picker("Test Settings", selection: $testSettingsShortName.string) {
+                ForEach(testSettingsShortNames.items) {
+                    Text($0.string)
+                }
+            }.pickerStyle(RadioGroupPickerStyle())
+            Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
+            Button("START", action: {
+                observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
+            }).background(Color(.green)).font(.callout)
+            Button("play left speaker", action: {
+                observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
+            })
+            Button("play right speaker", action: {
+                observableObserver.observer?.notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked()
+            })
+        }.background(Color(.blue))
     }
 }
 
