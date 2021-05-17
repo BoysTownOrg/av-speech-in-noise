@@ -33,9 +33,9 @@ endfunction()
 option(AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING "Enables tobii eye tracking"
        OFF)
 if(${AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING})
-  set(MAIN_IMPL_FILE main/with-tobii.mm)
+  set(MAIN_IMPL_FILE "main/with-tobii.mm;main/with-tobii.swift")
 else()
-  set(MAIN_IMPL_FILE main/default.mm)
+  set(MAIN_IMPL_FILE "main/default.mm;main/default.swift")
 endif()
 
 set(AV_SPEECH_IN_NOISE_MACOS_RESOURCES
@@ -58,7 +58,6 @@ add_executable(
   utility.mm
   objective-c-adapters.mm
   SwiftUI.swift
-  main/default.swift
   ${MAIN_IMPL_FILE}
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
 add_macos_bundle(av-speech-in-noise-bundle org.boystown.av-speech-in-noise

@@ -35,8 +35,9 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static EyeTrackerStub eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     const auto aboutViewController{nsTabViewControllerWithoutTabControl()};
-    MetaConditionOutputFileNameFactory outputFileNameFactory;
-    CongratulatesUserWhenTestCompletes congratulatesUserWhenTestCompletes;
+    static MetaConditionOutputFileNameFactory outputFileNameFactory;
+    static CongratulatesUserWhenTestCompletes
+        congratulatesUserWhenTestCompletes;
     static SessionUIImpl sessionUIAdapted{sessionUI};
     static TestUIImpl testUIAdapted{testUI};
     static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};

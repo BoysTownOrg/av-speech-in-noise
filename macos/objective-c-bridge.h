@@ -156,6 +156,15 @@
      withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
     withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI
            withPassFailUI:(NSObject<PassFailUI> *)passFailUI;
+
++ (void)withTobiiPro:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
+            withSessionUI:(NSObject<SessionUI> *)sessionUI
+               withTestUI:(NSObject<TestUI> *)testUI
+       withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
+          withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
+     withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
+    withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI
+           withPassFailUI:(NSObject<PassFailUI> *)passFailUI;
 @end
 
 @interface AvSpeechInNoiseUtility : NSObject

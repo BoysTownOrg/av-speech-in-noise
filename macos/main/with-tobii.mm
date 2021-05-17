@@ -1,6 +1,8 @@
 #include "../run.h"
 #include "../AppKitView.h"
 #include "../AppKit-utility.h"
+#include "../objective-c-bridge.h"
+#include "../objective-c-adapters.h"
 #include <exception>
 #include <tobii_research.h>
 #include <tobii_research_streams.h>
@@ -139,42 +141,13 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     return currentSystemTime;
 }
 
-void main() {
-    TobiiEyeTracker eyeTracker;
-    AppKitTestSetupUIFactoryImpl testSetupViewFactory;
-    DefaultOutputFileNameFactory outputFileNameFactory;
-    const auto aboutViewController{
-        [[ResizesToContentsViewController alloc] init]};
-    const auto stack {
-        [NSStackView stackViewWithViews:@[
-            [NSImageView
-                imageViewWithImage:[NSImage imageNamed:@"tobii-pro-logo.jpg"]],
-            [NSTextField
-                labelWithString:@"This application is powered by Tobii Pro"]
-        ]]
-    };
-    stack.orientation = NSUserInterfaceLayoutOrientationVertical;
-    addAutolayoutEnabledSubview(aboutViewController.view, stack);
-    [NSLayoutConstraint activateConstraints:@[
-        [stack.topAnchor
-            constraintEqualToAnchor:aboutViewController.view.topAnchor
-                           constant:8],
-        [stack.bottomAnchor
-            constraintEqualToAnchor:aboutViewController.view.bottomAnchor
-                           constant:-8],
-        [stack.leadingAnchor
-            constraintEqualToAnchor:aboutViewController.view.leadingAnchor
-                           constant:8],
-        [stack.trailingAnchor
-            constraintEqualToAnchor:aboutViewController.view.trailingAnchor
-                           constant:-8]
-    ]];
-    initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
-        outputFileNameFactory, aboutViewController);
-}
-}
-
-int mainz() {
+void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
+    NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI,
+    NSObject<FreeResponseUI> *freeResponseUI,
+    NSObject<SyllablesUI> *syllablesUI,
+    NSObject<ChooseKeywordsUI> *chooseKeywordsUI,
+    NSObject<CorrectKeywordsUI> *correctKeywordsUI,
+    NSObject<PassFailUI> *passFailUI) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenOrigin{subjectScreenFrame.origin};
@@ -221,6 +194,67 @@ int mainz() {
         [terminatingAlert setInformativeText:@"User does not accept eye "
                                              @"tracking terms. Terminating."];
         [terminatingAlert runModal];
-    } else
-        av_speech_in_noise::main();
+    } else {
+
+        static TobiiEyeTracker eyeTracker;
+        static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
+        static DefaultOutputFileNameFactory outputFileNameFactory;
+        static SessionUIImpl sessionUIAdapted{sessionUI};
+        static TestUIImpl testUIAdapted{testUI};
+        static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};
+        static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
+        static ChooseKeywordsUIImpl chooseKeywordsUIAdapted{chooseKeywordsUI};
+        static CorrectKeywordsUIImpl correctKeywordsUIAdapted{
+            correctKeywordsUI};
+        static PassFailUIImpl passFailUIAdapted{passFailUI};
+        const auto aboutViewController{
+            [[ResizesToContentsViewController alloc] init]};
+        const auto stack {
+            [NSStackView stackViewWithViews:@[
+                [NSImageView
+                    imageViewWithImage:[NSImage
+                                           imageNamed:@"tobii-pro-logo.jpg"]],
+                [NSTextField labelWithString:
+                                 @"This application is powered by Tobii Pro"]
+            ]]
+        };
+        stack.orientation = NSUserInterfaceLayoutOrientationVertical;
+        addAutolayoutEnabledSubview(aboutViewController.view, stack);
+        [NSLayoutConstraint activateConstraints:@[
+            [stack.topAnchor
+                constraintEqualToAnchor:aboutViewController.view.topAnchor
+                               constant:8],
+            [stack.bottomAnchor
+                constraintEqualToAnchor:aboutViewController.view.bottomAnchor
+                               constant:-8],
+            [stack.leadingAnchor
+                constraintEqualToAnchor:aboutViewController.view.leadingAnchor
+                               constant:8],
+            [stack.trailingAnchor
+                constraintEqualToAnchor:aboutViewController.view.trailingAnchor
+                               constant:-8]
+        ]];
+        initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
+            outputFileNameFactory, aboutViewController, nullptr,
+            "Documents/AvSpeechInNoise Data", &sessionUIAdapted, &testUIAdapted,
+            &freeResponseUIAdapted, &syllablesUIAdapted,
+            &chooseKeywordsUIAdapted, &correctKeywordsUIAdapted,
+            &passFailUIAdapted);
+    }
 }
+}
+
+@implementation AvSpeechInNoiseMain
++ (void)withTobiiPro:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
+            withSessionUI:(NSObject<SessionUI> *)sessionUI
+               withTestUI:(NSObject<TestUI> *)testUI
+       withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
+          withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
+     withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
+    withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI
+           withPassFailUI:(NSObject<PassFailUI> *)passFailUI {
+    av_speech_in_noise::main(testSetupUIFactory, sessionUI, testUI,
+        freeResponseUI, syllablesUI, chooseKeywordsUI, correctKeywordsUI,
+        passFailUI);
+}
+@end
