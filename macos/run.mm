@@ -272,8 +272,7 @@ static void addChild(NSTabViewController *parent, NSTabViewController *child) {
 
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     AppKitTestSetupUIFactory &testSetupUIFactory,
-    OutputFileNameFactory &outputFileNameFactory,
-    NSViewController *aboutViewController,
+    OutputFileNameFactory &outputFileNameFactory, NSViewController *,
     SessionController::Observer *sessionControllerObserver,
     std::filesystem::path relativeOutputDirectory, SessionUI *sessionUIMaybe,
     TestUI *testUIMaybe, FreeResponseUI *freeResponseUIMaybe,
@@ -369,41 +368,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         allTargetsNTimes, recognitionTestModel, outputFile};
     const auto viewController{nsTabViewControllerWithoutTabControl()};
     const auto app{[NSApplication sharedApplication]};
-    app.mainMenu = [[NSMenu alloc] init];
-    auto appMenu{[[NSMenuItem alloc] init]};
-    auto appSubMenu{[[NSMenu alloc] init]};
-    auto aboutMenuItem {
-        [appSubMenu addItemWithTitle:@"About AV Speech in Noise"
-                              action:@selector(notifyThatAboutHasBeenClicked)
-                       keyEquivalent:@""]
-    };
-    [appSubMenu addItem:[NSMenuItem separatorItem]];
-    auto preferencesMenuItem {
-        [appSubMenu
-            addItemWithTitle:@"Preferences..."
-                      action:@selector(notifyThatPreferencesHasBeenClicked)
-               keyEquivalent:@","]
-    };
-    auto menuActions{[[MenuActions alloc] init]};
-    const auto aboutWindow{
-        [NSWindow windowWithContentViewController:aboutViewController]};
-    aboutWindow.styleMask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
-    aboutWindow.title = @"About AV Speech in Noise";
-    const auto preferencesViewController{
-        [[ResizesToContentsViewController alloc] init]};
-    const auto preferencesWindow{
-        [NSWindow windowWithContentViewController:preferencesViewController]};
-    preferencesWindow.styleMask =
-        NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
-    menuActions->aboutWindow = aboutWindow;
-    menuActions->preferencesWindow = preferencesWindow;
-    aboutMenuItem.target = menuActions;
-    preferencesMenuItem.target = menuActions;
-    [appSubMenu addItemWithTitle:@"Quit"
-                          action:@selector(stop:)
-                   keyEquivalent:@"q"];
-    [appMenu setSubmenu:appSubMenu];
-    [app.mainMenu addItem:appMenu];
     const auto audioDeviceMenu{
         [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                    pullsDown:NO]};
