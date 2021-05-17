@@ -3,7 +3,7 @@ import SwiftUI
 // https://stackoverflow.com/a/66200850
 struct AboutView: View {
     var body: some View {
-        Image("tobii-pro-logo.jpg")
+        Image("tobii-pro-logo")
         Text("This application is powered by Tobii Pro")
     }
 }

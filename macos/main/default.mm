@@ -1,7 +1,6 @@
 #include "../objective-c-adapters.h"
 #include "../objective-c-bridge.h"
 #include "../EyeTrackerStub.hpp"
-#include "../AppKit-utility.h"
 #include "../run.h"
 
 namespace av_speech_in_noise {
@@ -15,7 +14,6 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static EyeTrackerStub eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
-    const auto aboutViewController{nsTabViewControllerWithoutTabControl()};
     static SessionUIImpl sessionUIAdapted{sessionUI};
     static TestUIImpl testUIAdapted{testUI};
     static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};

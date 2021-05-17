@@ -289,11 +289,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
         allTargetsNTimes, recognitionTestModel, outputFile};
-    const auto viewController{nsTabViewControllerWithoutTabControl()};
-    const auto app{[NSApplication sharedApplication]};
-    const auto audioDeviceMenu{
-        [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
-                                   pullsDown:NO]};
     static auto testSetupUI{testSetupUIFactory.make(nil)};
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenOrigin{subjectScreenFrame.origin};
