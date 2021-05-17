@@ -854,14 +854,14 @@ struct SwiftFacemaskStudyTestSetupView : View {
             Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
             Button("START", action: {
                 observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
-            }).background(Color(.green)).font(.callout)
+            }).background(Color(Color.RGBColorSpace.sRGB, red: 114/255, green: 172/255, blue: 77/255, opacity: 1))
             Button("play left speaker", action: {
                 observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
             })
             Button("play right speaker", action: {
                 observableObserver.observer?.notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked()
             })
-        }.background(Color(.blue))
+        }.background(Color(Color.RGBColorSpace.sRGB, red: 43/255, green: 97/255, blue: 198/255, opacity: 1))
     }
 }
 
