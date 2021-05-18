@@ -363,40 +363,7 @@ class TobiiEyeTracker : public EyeTracker {
         auto results()
             -> std::vector<eye_tracker_calibration::Result> override {
             ComputeAndApply computeAndApply{eyetracker};
-            return true
-                ? std::vector<
-                      eye_tracker_calibration::Result>{{{{0.51F, 0.502F},
-                                                            {0.49F, 0.495F},
-                                                            {0.48F, 0.503F},
-                                                            {0.5, 0.49F},
-                                                            {0.52F, 0.51F}},
-                                                           {{0.51F, 0.503F},
-                                                               {0.49F, 0.499F},
-                                                               {0.48F, 0.513F},
-                                                               {0.5, 0.493F},
-                                                               {0.52F, 0.502F}},
-                                                           {0.5, 0.5}},
-                      {{{0.08F, 0.102F}, {0.09F, 0.095F}, {0.1F, 0.103F},
-                           {0.11F, 0.09F}, {0.12F, 0.11F}},
-                          {{0.08F, 0.102F}, {0.09F, 0.095F}, {0.1F, 0.103F},
-                              {0.11F, 0.09F}, {0.12F, 0.11F}},
-                          {0.1F, 0.1F}},
-                      {{{0.08F, 0.902F}, {0.09F, 0.895F}, {0.1F, 0.903F},
-                           {0.11F, 0.89F}, {0.12F, 0.91F}},
-                          {{0.08F, 0.902F}, {0.09F, 0.895F}, {0.1F, 0.903F},
-                              {0.11F, 0.89F}, {0.12F, 0.91F}},
-                          {0.1F, 0.9F}},
-                      {{{0.88F, 0.102F}, {0.89F, 0.095F}, {0.9F, 0.103F},
-                           {0.91F, 0.09F}, {0.92F, 0.11F}},
-                          {{0.88F, 0.102F}, {0.89F, 0.095F}, {0.9F, 0.103F},
-                              {0.91F, 0.09F}, {0.92F, 0.11F}},
-                          {0.9F, 0.1F}},
-                      {{{0.88F, 0.902F}, {0.89F, 0.895F}, {0.9F, 0.903F},
-                           {0.91F, 0.89F}, {0.92F, 0.91F}},
-                          {{0.88F, 0.902F}, {0.89F, 0.895F}, {0.9F, 0.903F},
-                              {0.91F, 0.89F}, {0.92F, 0.91F}},
-                          {0.9F, 0.9F}}}
-                : computeAndApply.results();
+            return computeAndApply.results();
         }
 
         class ComputeAndApply;
@@ -713,7 +680,6 @@ void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
                                              @"tracking terms. Terminating."];
         [terminatingAlert runModal];
     } else {
-
         static TobiiEyeTracker eyeTracker;
         static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
         static DefaultOutputFileNameFactory outputFileNameFactory;
@@ -725,7 +691,6 @@ void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
         static CorrectKeywordsUIImpl correctKeywordsUIAdapted{
             correctKeywordsUI};
         static PassFailUIImpl passFailUIAdapted{passFailUI};
-
         const auto calibrationViewController{
             av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
         const auto subjectScreen{[[NSScreen screens] lastObject]};
