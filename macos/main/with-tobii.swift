@@ -1,3 +1,4 @@
+import Cocoa
 import SwiftUI
 
 // https://stackoverflow.com/a/66200850
@@ -37,7 +38,7 @@ class SwiftEyeTrackerRunMenu : NSObject, EyeTrackerRunMenu {
     }
 }
 
-@main
+/*
 struct SwiftCPPApp: App {
     let aboutTobiiPro = AboutTobiiPro()
     @ObservedObject var eyeTrackerRunMenuObservable: EyeTrackerMenuObserverObservable
@@ -76,5 +77,63 @@ struct SwiftCPPApp: App {
             SettingsView(ui: sessionUI)
         }
         #endif
+    }
+}
+*/
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+
+    var window: NSWindow!
+    let aboutTobiiPro = AboutTobiiPro()
+    @ObservedObject var eyeTrackerRunMenuObservable: EyeTrackerMenuObserverObservable
+    let testSettingsPathControl = NSPathControl()
+    let sessionUI: SwiftSessionUI
+    let testSetupUI: SwiftTestSetupUI
+    let eyeTrackerRunMenu = SwiftEyeTrackerRunMenu()
+    
+    override init() {
+        testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
+        sessionUI = SwiftSessionUI()
+        eyeTrackerRunMenuObservable = eyeTrackerRunMenu.observableObserver
+        AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu)
+    }
+
+
+    func applicationDidFinishLaunching(_ aNotification: Notification) {
+        // Create the SwiftUI view that provides the window contents.
+        let contentView = SwiftSessionView(ui: sessionUI, showingTestSetup: testSetupUI.showing) {
+            SettingsView(ui: self.sessionUI)
+            SwiftTestSetupView(ui: self.testSetupUI, testSettingsPathControl:self.testSettingsPathControl)
+            Button("Eye Tracker Calibration") {
+                self.eyeTrackerRunMenuObservable.observer?.notifyThatRunCalibrationHasBeenClicked()
+            }
+            Button("About Tobii Pro") {
+                self.aboutTobiiPro.showAboutPanel()
+            }
+        }
+
+        // Create the window and set the content view.
+        window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
+            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+            backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        window.center()
+        // window.setFrameAutosaveName("Main Window")
+        window.contentView = NSHostingView(rootView: contentView)
+        window.makeKeyAndOrderFront(nil)
+    }
+
+    func applicationWillTerminate(_ aNotification: Notification) {
+        // Insert code here to tear down your application
+    }
+}
+
+@main
+class SwiftMain {
+    static func main() {
+        let delegate = AppDelegate()
+        NSApplication.shared.delegate = delegate
+        _ = NSApplicationMain(CommandLine.argc, CommandLine.unsafeArgv)
     }
 }

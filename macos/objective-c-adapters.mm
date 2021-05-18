@@ -371,6 +371,8 @@ auto SessionUIImpl::audioDevice() -> std::string {
 void SessionUIImpl::populateAudioDeviceMenu(std::vector<std::string> v) {
     id nsstrings = [NSMutableArray new];
     for_each(v.begin(), v.end(), [&nsstrings](const std::string &str) {
+        if (str.c_str() == nullptr)
+            return;
         id nsstr = [NSString stringWithUTF8String:str.c_str()];
         [nsstrings addObject:nsstr];
     });
