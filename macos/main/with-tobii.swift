@@ -8,7 +8,7 @@ struct AboutView: View {
     }
 }
 
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AboutTobiiPro: NSObject {
     private var aboutBoxWindowController: NSWindowController?
 
     func showAboutPanel() {
@@ -16,7 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let styleMask: NSWindow.StyleMask = [.closable, .miniaturizable,/* .resizable,*/ .titled]
             let window = NSWindow()
             window.styleMask = styleMask
-            window.title = "About AV Speech in Noise"
+            window.title = "About Tobii Pro"
             window.contentView = NSHostingView(rootView: AboutView())
             aboutBoxWindowController = NSWindowController(window: window)
         }
@@ -39,7 +39,7 @@ class SwiftEyeTrackerRunMenu : NSObject, EyeTrackerRunMenu {
 
 @main
 struct SwiftCPPApp: App {
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    let aboutTobiiPro = AboutTobiiPro()
     @ObservedObject var eyeTrackerRunMenuObservable: EyeTrackerMenuObserverObservable
     let testSettingsPathControl = NSPathControl()
     let sessionUI: SwiftSessionUI
@@ -60,16 +60,14 @@ struct SwiftCPPApp: App {
             }
         }
         .commands {
-            CommandGroup(replacing: CommandGroupPlacement.appInfo) {
-                Button(action: {
-                    appDelegate.showAboutPanel()
-                }) {
-                    Text("About AV Speech in Noise")
-                }
-            }
             CommandMenu("Run") {
                 Button("Eye Tracker Calibration") {
                     eyeTrackerRunMenuObservable.observer?.notifyThatRunCalibrationHasBeenClicked()
+                }
+            }
+            CommandMenu("Legal") {
+                Button("About Tobii Pro") {
+                    aboutTobiiPro.showAboutPanel()
                 }
             }
         }
