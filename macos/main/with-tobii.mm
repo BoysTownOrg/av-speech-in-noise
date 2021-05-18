@@ -713,6 +713,7 @@ static void main() {
         NSWindowStyleMaskResizable | NSWindowStyleMaskTitled;
     const auto eyeTrackerActions{
         [[AvSpeechInNoiseEyeTrackerCalibrationAppKitActions alloc] init]};
+    animatingWindow.level = NSScreenSaverWindowLevel;
     eyeTrackerActions->subjectWindow = animatingWindow;
     eyeTrackerActions->testerWindow = calibrationResultsWindow;
     eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
