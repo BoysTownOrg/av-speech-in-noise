@@ -663,31 +663,6 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
 }
 
 namespace av_speech_in_noise {
-namespace eye_tracker_calibration {
-namespace {
-class RunMenuInitializer : public AppKitRunMenuInitializer {
-  public:
-    explicit RunMenuInitializer(
-        AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *menuActions)
-        : menuActions{menuActions} {}
-
-    void initialize(NSMenu *menu) override {
-        menu.autoenablesItems = NO;
-        const auto eyeTrackerCalibrationMenuItem {
-            [menu addItemWithTitle:@"Eye Tracker Calibration"
-                            action:@selector
-                            (notifyThatRunEyeTrackerCalibrationHasBeenClicked:)
-                     keyEquivalent:@""]
-        };
-        eyeTrackerCalibrationMenuItem.target = menuActions;
-    }
-
-  private:
-    AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *menuActions;
-};
-}
-}
-
 void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI,
     NSObject<FreeResponseUI> *freeResponseUI,
@@ -757,6 +732,8 @@ void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
             av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
         const auto subjectScreen{[[NSScreen screens] lastObject]};
         const auto subjectScreenFrame{subjectScreen.frame};
+        const auto testerScreen{[[NSScreen screens] firstObject]};
+        const auto testerScreenFrame{testerScreen.frame};
         calibrationViewController.view.frame = subjectScreenFrame;
         const auto animatingWindow{[NSWindow
             windowWithContentViewController:calibrationViewController]};
@@ -764,10 +741,12 @@ void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
         [animatingWindow setFrame:subjectScreenFrame display:YES];
         const auto calibrationResultsViewController{
             av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+        calibrationResultsViewController.view.frame = testerScreenFrame;
         const auto calibrationResultsWindow{[NSWindow
             windowWithContentViewController:calibrationResultsViewController]};
         calibrationResultsWindow.styleMask =
             NSWindowStyleMaskResizable | NSWindowStyleMaskTitled;
+        [calibrationResultsWindow setFrame:testerScreenFrame display:YES];
         const auto eyeTrackerActions{
             [[AvSpeechInNoiseEyeTrackerCalibrationAppKitActions alloc] init]};
         animatingWindow.level = NSScreenSaverWindowLevel;
@@ -793,8 +772,6 @@ void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
         static eye_tracker_calibration::Controller
             eyeTrackerCalibrationController{
                 eyeTrackerCalibrationView, eyeTrackerCalibrationInteractor};
-        static eye_tracker_calibration::RunMenuInitializer runMenuInitializer{
-            eyeTrackerActions};
         initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
             testSetupViewFactory, sessionUIAdapted, testUIAdapted,
             freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
