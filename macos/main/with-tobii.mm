@@ -136,19 +136,10 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
     NSMenuItem *menuItem;
 }
 
-- (void)notifyThatRunEyeTrackerCalibrationHasBeenClicked:(id)sender {
-    menuItem = sender;
-    menuItem.enabled = NO;
-    [testerWindow makeKeyAndOrderFront:nil];
-    [subjectWindow makeKeyAndOrderFront:nil];
-    observer->notifyThatMenuHasBeenSelected();
-}
-
 - (void)notifyThatSubmitButtonHasBeenClicked {
     observer->notifyThatSubmitButtonHasBeenClicked();
     [testerWindow orderOut:nil];
     [subjectWindow orderOut:nil];
-    menuItem.enabled = YES;
 }
 @end
 
@@ -263,12 +254,19 @@ class AppKitUI : public View, public Control {
             0.5, delegate);
     }
 
-    void drawRed(Line line) override { view->redLines.push_back(line); }
+    void drawRed(Line line) override {
+        view->redLines.push_back(line);
+        view.needsDisplay = YES;
+    }
 
-    void drawGreen(Line line) override { view->greenLines.push_back(line); }
+    void drawGreen(Line line) override {
+        view->greenLines.push_back(line);
+        view.needsDisplay = YES;
+    }
 
     void drawWhiteCircleWithCenter(WindowPoint point) override {
         view->whiteCircleCenters.push_back(point);
+        view.needsDisplay = YES;
     }
 
     auto whiteCircleCenters() -> std::vector<WindowPoint> override {
