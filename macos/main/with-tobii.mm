@@ -5,6 +5,9 @@
 #include <presentation/EyeTrackerCalibration.hpp>
 #include <recognition-test/EyeTrackerCalibration.hpp>
 #import <AppKit/AppKit.h>
+#include "../objective-c-bridge.h"
+#include "../objective-c-adapters.h"
+#include <exception>
 #include <tobii_research.h>
 #include <tobii_research_eyetracker.h>
 #include <tobii_research_streams.h>
@@ -665,77 +668,13 @@ class RunMenuInitializer : public AppKitRunMenuInitializer {
 }
 }
 
-static void main() {
-    TobiiEyeTracker eyeTracker;
-    AppKitTestSetupUIFactoryImpl testSetupViewFactory;
-    DefaultOutputFileNameFactory outputFileNameFactory;
-    const auto aboutViewController{
-        [[ResizesToContentsViewController alloc] init]};
-    const auto stack {
-        [NSStackView stackViewWithViews:@[
-            [NSImageView
-                imageViewWithImage:[NSImage imageNamed:@"tobii-pro-logo.jpg"]],
-            [NSTextField
-                labelWithString:@"This application is powered by Tobii Pro"]
-        ]]
-    };
-    stack.orientation = NSUserInterfaceLayoutOrientationVertical;
-    addAutolayoutEnabledSubview(aboutViewController.view, stack);
-    [NSLayoutConstraint activateConstraints:@[
-        [stack.topAnchor
-            constraintEqualToAnchor:aboutViewController.view.topAnchor
-                           constant:8],
-        [stack.bottomAnchor
-            constraintEqualToAnchor:aboutViewController.view.bottomAnchor
-                           constant:-8],
-        [stack.leadingAnchor
-            constraintEqualToAnchor:aboutViewController.view.leadingAnchor
-                           constant:8],
-        [stack.trailingAnchor
-            constraintEqualToAnchor:aboutViewController.view.trailingAnchor
-                           constant:-8]
-    ]];
-
-    const auto calibrationViewController{
-        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
-    const auto subjectScreen{[[NSScreen screens] lastObject]};
-    const auto subjectScreenFrame{subjectScreen.frame};
-    calibrationViewController.view.frame = subjectScreenFrame;
-    const auto animatingWindow{
-        [NSWindow windowWithContentViewController:calibrationViewController]};
-    [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
-    [animatingWindow setFrame:subjectScreenFrame display:YES];
-    const auto calibrationResultsViewController{
-        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
-    const auto calibrationResultsWindow{[NSWindow
-        windowWithContentViewController:calibrationResultsViewController]};
-    calibrationResultsWindow.styleMask =
-        NSWindowStyleMaskResizable | NSWindowStyleMaskTitled;
-    const auto eyeTrackerActions{
-        [[AvSpeechInNoiseEyeTrackerCalibrationAppKitActions alloc] init]};
-    animatingWindow.level = NSScreenSaverWindowLevel;
-    eyeTrackerActions->subjectWindow = animatingWindow;
-    eyeTrackerActions->testerWindow = calibrationResultsWindow;
-    eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
-        animatingWindow, calibrationResultsViewController, eyeTrackerActions};
-    eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
-        eyeTrackerCalibrationView};
-    auto calibrator{eyeTracker.calibration()};
-    eye_tracker_calibration::Interactor eyeTrackerCalibrationInteractor{
-        eyeTrackerCalibrationPresenter, calibrator,
-        {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
-    eye_tracker_calibration::Controller eyeTrackerCalibrationController{
-        eyeTrackerCalibrationView, eyeTrackerCalibrationInteractor};
-    eye_tracker_calibration::RunMenuInitializer runMenuInitializer{
-        eyeTrackerActions};
-
-    initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
-        outputFileNameFactory, aboutViewController, nullptr,
-        "Documents/AvSpeechInNoise Data", &runMenuInitializer);
-}
-}
-
-int main() {
+void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
+    NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI,
+    NSObject<FreeResponseUI> *freeResponseUI,
+    NSObject<SyllablesUI> *syllablesUI,
+    NSObject<ChooseKeywordsUI> *chooseKeywordsUI,
+    NSObject<CorrectKeywordsUI> *correctKeywordsUI,
+    NSObject<PassFailUI> *passFailUI) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenOrigin{subjectScreenFrame.origin};
@@ -753,17 +692,18 @@ int main() {
                       defer:YES]};
     const auto alert{[[NSAlert alloc] init]};
     [alert setMessageText:@""];
-    [alert
-        setInformativeText:
-            @"This software will store your eye tracking data.\n\nWe do so "
-            @"only for the purpose of the current study (17-13-XP). We never "
-            @"sell, distribute, or make profit on the collected data. Only "
-            @"staff and research personnel on the existing IRB will have "
-            @"access to the data. Any data used for publication or "
-            @"collaborative and/or learning purposes will be "
-            @"deidentified.\n\nThere is no direct benefit to you for doing "
-            @"this study. What we learn from this study may help doctors treat "
-            @"children who have a hard time hearing when it is noisy."];
+    [alert setInformativeText:
+               @"This software will store your eye tracking data.\n\nWe do so "
+               @"only for the purpose of the current study (17-13-XP). We "
+               @"never "
+               @"sell, distribute, or make profit on the collected data. Only "
+               @"staff and research personnel on the existing IRB will have "
+               @"access to the data. Any data used for publication or "
+               @"collaborative and/or learning purposes will be "
+               @"deidentified.\n\nThere is no direct benefit to you for doing "
+               @"this study. What we learn from this study may help doctors "
+               @"treat "
+               @"children who have a hard time hearing when it is noisy."];
     [alert addButtonWithTitle:@"No, I do not accept"];
     [alert addButtonWithTitle:@"Yes, I accept"];
     [alertWindow makeKeyAndOrderFront:nil];
@@ -778,6 +718,75 @@ int main() {
         [terminatingAlert setInformativeText:@"User does not accept eye "
                                              @"tracking terms. Terminating."];
         [terminatingAlert runModal];
-    } else
-        av_speech_in_noise::main();
+    } else {
+
+        static TobiiEyeTracker eyeTracker;
+        static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
+        static DefaultOutputFileNameFactory outputFileNameFactory;
+        static SessionUIImpl sessionUIAdapted{sessionUI};
+        static TestUIImpl testUIAdapted{testUI};
+        static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};
+        static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
+        static ChooseKeywordsUIImpl chooseKeywordsUIAdapted{chooseKeywordsUI};
+        static CorrectKeywordsUIImpl correctKeywordsUIAdapted{
+            correctKeywordsUI};
+        static PassFailUIImpl passFailUIAdapted{passFailUI};
+
+        const auto calibrationViewController{
+            av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+        const auto subjectScreen{[[NSScreen screens] lastObject]};
+        const auto subjectScreenFrame{subjectScreen.frame};
+        calibrationViewController.view.frame = subjectScreenFrame;
+        const auto animatingWindow{[NSWindow
+            windowWithContentViewController:calibrationViewController]};
+        [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
+        [animatingWindow setFrame:subjectScreenFrame display:YES];
+        const auto calibrationResultsViewController{
+            av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+        const auto calibrationResultsWindow{[NSWindow
+            windowWithContentViewController:calibrationResultsViewController]};
+        calibrationResultsWindow.styleMask =
+            NSWindowStyleMaskResizable | NSWindowStyleMaskTitled;
+        const auto eyeTrackerActions{
+            [[AvSpeechInNoiseEyeTrackerCalibrationAppKitActions alloc] init]};
+        animatingWindow.level = NSScreenSaverWindowLevel;
+        eyeTrackerActions->subjectWindow = animatingWindow;
+        eyeTrackerActions->testerWindow = calibrationResultsWindow;
+        static eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
+            animatingWindow, calibrationResultsViewController,
+            eyeTrackerActions};
+        static eye_tracker_calibration::Presenter
+            eyeTrackerCalibrationPresenter{eyeTrackerCalibrationView};
+        static auto calibrator{eyeTracker.calibration()};
+        static eye_tracker_calibration::Interactor
+            eyeTrackerCalibrationInteractor{eyeTrackerCalibrationPresenter,
+                calibrator,
+                {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F},
+                    {0.9F, 0.9F}}};
+        static eye_tracker_calibration::Controller
+            eyeTrackerCalibrationController{
+                eyeTrackerCalibrationView, eyeTrackerCalibrationInteractor};
+        static eye_tracker_calibration::RunMenuInitializer runMenuInitializer{
+            eyeTrackerActions};
+        initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
+            testSetupViewFactory, sessionUIAdapted, testUIAdapted,
+            freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
+            correctKeywordsUIAdapted, passFailUIAdapted);
+    }
 }
+}
+
+@implementation AvSpeechInNoiseMain
++ (void)withTobiiPro:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
+            withSessionUI:(NSObject<SessionUI> *)sessionUI
+               withTestUI:(NSObject<TestUI> *)testUI
+       withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
+          withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
+     withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
+    withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI
+           withPassFailUI:(NSObject<PassFailUI> *)passFailUI {
+    av_speech_in_noise::main(testSetupUIFactory, sessionUI, testUI,
+        freeResponseUI, syllablesUI, chooseKeywordsUI, correctKeywordsUI,
+        passFailUI);
+}
+@end
