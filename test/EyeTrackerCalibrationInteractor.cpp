@@ -82,6 +82,7 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(acquiresCalibratorOnCalibrate) {
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(releasesCalibratorOnFinish) {
+    interactor.start();
     interactor.finish();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(calibrator.released());
 }
@@ -92,21 +93,34 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsFirstPointOnCalibrate) {
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(calibratesPointWhenPointReady) {
+    interactor.start();
     presenter.notifyThatPointIsReady();
     assertEqual(Point{0.1F, 0.2F}, calibrator.calibratedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     presentsNextPointAfterCalibratingPrevious) {
+    interactor.start();
     presenter.notifyThatPointIsReady();
     assertEqual(Point{0.3F, 0.4F}, presenter.presentedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(doesNotPresentAnymorePoints) {
+    interactor.start();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
     assertEqual(Point{0.5F, 0.6F}, presenter.presentedPoint());
+}
+
+EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(restarts) {
+    interactor.start();
+    presenter.notifyThatPointIsReady();
+    presenter.notifyThatPointIsReady();
+    presenter.notifyThatPointIsReady();
+    interactor.finish();
+    interactor.start();
+    assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
@@ -118,6 +132,7 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
             {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
         {{{0.888F, 0.999F}, {0.01F, 0.02F}}, {{0.03F, 0.04F}, {0.05F, 0.06F}},
             {0.5F, 0.6F}}});
+    interactor.start();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
@@ -133,6 +148,7 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsPointForRedo) {
+    interactor.start();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
@@ -142,6 +158,7 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsPointForRedo) {
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     findsPointClosestToThatRequestedWhenRedoing) {
+    interactor.start();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
@@ -151,6 +168,7 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     removesDataCollectedForPointBeingRedone) {
+    interactor.start();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
@@ -160,6 +178,7 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     doesNotAcceptAdditionalRedosWhileOneInProgress) {
+    interactor.start();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();
     presenter.notifyThatPointIsReady();

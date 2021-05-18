@@ -57,6 +57,7 @@ class Interactor : public IPresenter::Observer, public IInteractor {
     void redo(Point) override;
 
   private:
+    std::vector<Point> calibrationPoints;
     std::vector<Point> pointsToCalibrate;
     std::vector<Point> pointsCalibrated;
     IPresenter &presenter;
