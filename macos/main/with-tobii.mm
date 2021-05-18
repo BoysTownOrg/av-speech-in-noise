@@ -24,6 +24,23 @@
 #include <cstddef>
 #include <functional>
 
+@interface EyeTrackerMenuObserverImpl : NSObject <EyeTrackerMenuObserver>
+@end
+
+@implementation EyeTrackerMenuObserverImpl {
+  @public
+    av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
+    NSWindow *calibrationWindow;
+    NSWindow *calibrationResultsWindow;
+}
+
+- (void)notifyThatRunCalibrationHasBeenClicked {
+    [calibrationWindow makeKeyAndOrderFront:nil];
+    [calibrationResultsWindow makeKeyAndOrderFront:nil];
+    observer->notifyThatMenuHasBeenSelected();
+}
+@end
+
 @interface CircleView : NSView
 @end
 
@@ -169,14 +186,15 @@ class AppKitUI : public View, public Control {
 
     explicit AppKitUI(NSWindow *animatingWindow,
         NSViewController *resultsViewController,
-        AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *actions)
+        AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *actions,
+        EyeTrackerMenuObserverImpl *menuObserver)
         : circleView{[[CircleView alloc]
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
                                 normalDotDiameterPoints)]},
           view{[[AvSpeechInNoiseEyeTrackerCalibrationView alloc] init]},
           delegate{[[AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate
               alloc] init]},
-          actions{actions} {
+          actions{actions}, menuObserver{menuObserver} {
         [animatingWindow.contentViewController.view addSubview:circleView];
         const auto submitButton {
             nsButton("confirm", actions,
@@ -209,6 +227,7 @@ class AppKitUI : public View, public Control {
     void attach(Control::Observer *a) override {
         view->observer = a;
         actions->observer = a;
+        menuObserver->observer = a;
     }
 
     void moveDotTo(WindowPoint point) override {
@@ -271,6 +290,7 @@ class AppKitUI : public View, public Control {
     AvSpeechInNoiseEyeTrackerCalibrationView *view;
     AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate *delegate;
     AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *actions;
+    EyeTrackerMenuObserverImpl *menuObserver;
 };
 }
 }
@@ -674,7 +694,8 @@ void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<SyllablesUI> *syllablesUI,
     NSObject<ChooseKeywordsUI> *chooseKeywordsUI,
     NSObject<CorrectKeywordsUI> *correctKeywordsUI,
-    NSObject<PassFailUI> *passFailUI) {
+    NSObject<PassFailUI> *passFailUI,
+    NSObject<EyeTrackerRunMenu> *eyeTrackerMenu) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenOrigin{subjectScreenFrame.origin};
@@ -752,9 +773,15 @@ void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
         animatingWindow.level = NSScreenSaverWindowLevel;
         eyeTrackerActions->subjectWindow = animatingWindow;
         eyeTrackerActions->testerWindow = calibrationResultsWindow;
+        const auto eyeTrackerMenuObserver{
+            [[EyeTrackerMenuObserverImpl alloc] init]};
+        eyeTrackerMenuObserver->calibrationResultsWindow =
+            calibrationResultsWindow;
+        eyeTrackerMenuObserver->calibrationWindow = animatingWindow;
+        [eyeTrackerMenu attach:eyeTrackerMenuObserver];
         static eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
             animatingWindow, calibrationResultsViewController,
-            eyeTrackerActions};
+            eyeTrackerActions, eyeTrackerMenuObserver};
         static eye_tracker_calibration::Presenter
             eyeTrackerCalibrationPresenter{eyeTrackerCalibrationView};
         static auto calibrator{eyeTracker.calibration()};
@@ -784,9 +811,10 @@ void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
           withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
      withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
     withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI
-           withPassFailUI:(NSObject<PassFailUI> *)passFailUI {
+           withPassFailUI:(NSObject<PassFailUI> *)passFailUI
+       withEyeTrackerMenu:(NSObject<EyeTrackerRunMenu> *)eyeTrackerMenu {
     av_speech_in_noise::main(testSetupUIFactory, sessionUI, testUI,
         freeResponseUI, syllablesUI, chooseKeywordsUI, correctKeywordsUI,
-        passFailUI);
+        passFailUI, eyeTrackerMenu);
 }
 @end

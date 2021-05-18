@@ -25,17 +25,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
+class EyeTrackerMenuObserverObservable : ObservableObject {
+    @Published var observer : EyeTrackerMenuObserver? = nil
+}
+
+class SwiftEyeTrackerRunMenu : NSObject, EyeTrackerRunMenu {
+    let observableObserver = EyeTrackerMenuObserverObservable()
+    
+    func attach(_ observer: EyeTrackerMenuObserver!) {
+        observableObserver.observer = observer
+    }
+}
+
 @main
 struct SwiftCPPApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @ObservedObject var eyeTrackerRunMenuObservable: EyeTrackerMenuObserverObservable
     let testSettingsPathControl = NSPathControl()
     let sessionUI: SwiftSessionUI
     let testSetupUI: SwiftTestSetupUI
+    let eyeTrackerRunMenu = SwiftEyeTrackerRunMenu()
     
     init() {
         testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
         sessionUI = SwiftSessionUI()
-        AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI)
+        eyeTrackerRunMenuObservable = eyeTrackerRunMenu.observableObserver
+        AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu)
     }
     
     var body: some Scene {
@@ -50,6 +65,11 @@ struct SwiftCPPApp: App {
                     appDelegate.showAboutPanel()
                 }) {
                     Text("About AV Speech in Noise")
+                }
+            }
+            CommandMenu("Run") {
+                Button("Eye Tracker Calibration") {
+                    eyeTrackerRunMenuObservable.observer?.notifyThatRunCalibrationHasBeenClicked()
                 }
             }
         }

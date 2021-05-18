@@ -138,6 +138,14 @@
 - (id<TestSetupUI>)make:(NSViewController *)viewController;
 @end
 
+@protocol EyeTrackerMenuObserver
+- (void)notifyThatRunCalibrationHasBeenClicked;
+@end
+
+@protocol EyeTrackerRunMenu
+- (void)attach:(id<EyeTrackerMenuObserver>)observer;
+@end
+
 @interface AvSpeechInNoiseMain : NSObject
 + (void)default:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
             withSessionUI:(NSObject<SessionUI> *)sessionUI
@@ -164,7 +172,8 @@
           withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
      withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
     withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI
-           withPassFailUI:(NSObject<PassFailUI> *)passFailUI;
+           withPassFailUI:(NSObject<PassFailUI> *)passFailUI
+       withEyeTrackerMenu:(NSObject<EyeTrackerRunMenu> *)eyeTrackerMenu;
 @end
 
 @interface AvSpeechInNoiseUtility : NSObject
