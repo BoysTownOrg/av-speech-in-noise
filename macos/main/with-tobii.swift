@@ -50,11 +50,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
         sessionUI = SwiftSessionUI()
         eyeTrackerRunMenuObservable = eyeTrackerRunMenu.observableObserver
-        AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu)
     }
 
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu)
+        
         let userDefaults = UserDefaults()
         sessionUI.audioDevice_.string = userDefaults.string(forKey: "AudioDevice") ?? ""
         
@@ -74,8 +75,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered, defer: false)
         window.isReleasedWhenClosed = false
-        window.center()
-        window.setFrameAutosaveName("Main Window")
+        if let screen = NSScreen.screens.first {
+            window.setFrameOrigin(NSMakePoint((screen.frame.width - 480)/2, (screen.frame.height - 300)/2))
+        }
         window.contentView = NSHostingView(rootView: contentView)
         window.makeKeyAndOrderFront(nil)
     }
@@ -86,11 +88,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
+class AppMenu: NSMenu {
+    private lazy var applicationName = ProcessInfo.processInfo.processName
+    
+    override init(title: String) {
+        super.init(title: title)
+        
+        let menuItemOne = NSMenuItem()
+        menuItemOne.submenu = NSMenu(title: "menuItemOne")
+        menuItemOne.submenu?.items = [NSMenuItem(title: "Quit \(applicationName)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")]
+        items = [menuItemOne]
+    }
+    
+    required init(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+}
+
 @main
 class SwiftMain {
     static func main() {
         let delegate = AppDelegate()
+        let menu = AppMenu()
         NSApplication.shared.delegate = delegate
+        NSApplication.shared.mainMenu = menu
         _ = NSApplicationMain(CommandLine.argc, CommandLine.unsafeArgv)
     }
 }
