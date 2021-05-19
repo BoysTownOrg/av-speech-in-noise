@@ -101,6 +101,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Create the SwiftUI view that provides the window contents.
+        let userDefaults = UserDefaults()
+        sessionUI.audioDevice_.string = userDefaults.string(forKey: "AudioDevice") ?? ""
+        
         let contentView = SwiftSessionView(ui: sessionUI, showingTestSetup: testSetupUI.showing) {
             SettingsView(ui: self.sessionUI)
             SwiftTestSetupView(ui: self.testSetupUI, testSettingsPathControl:self.testSettingsPathControl)
@@ -125,7 +128,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
-        // Insert code here to tear down your application
+        let userDefaults = UserDefaults()
+        userDefaults.set(sessionUI.audioDevice_.string, forKey: "AudioDevice")
     }
 }
 
