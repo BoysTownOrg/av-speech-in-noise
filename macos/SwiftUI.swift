@@ -88,7 +88,7 @@ class ObservableString : ObservableObject {
 }
 
 class ObservableAudioDevice : ObservableObject {
-    @AppStorage("audioDevice") var string = "" {
+    var string = "" {
         willSet {
             // Call objectWillChange manually since @AppStorage is not published
             objectWillChange.send()
@@ -261,7 +261,7 @@ struct SwiftTestSetupView: View {
             observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
         }) {
             Text("Confirm")
-        }.keyboardShortcut(.defaultAction)
+        }
     }
 }
 
@@ -340,7 +340,7 @@ struct SwiftTestView : View {
             observableObserver.observer?.playTrial()
         }) {
             Text("Play Trial")
-        }.keyboardShortcut(.defaultAction)
+        }
         .disabled(!nextTrialButtonEnabled.value)
     }
 }
@@ -515,7 +515,7 @@ struct SwiftFreeResponseView : View {
                 observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
             }) {
                 Text("Submit")
-            }.keyboardShortcut(.defaultAction)
+            }
         }
     }
 }
@@ -613,7 +613,7 @@ struct SwiftChooseKeywordsView : View {
                 })
                 Button("Submit", action: {
                     observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
-                }).keyboardShortcut(.defaultAction)
+                })
             }
         }
     }
@@ -736,7 +736,7 @@ struct SwiftCorrectKeywordsView : View {
                 TextField("# keywords correct", text: $correctKeywords_.string)
                 Button("Submit", action: {
                     observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
-                }).keyboardShortcut(.defaultAction)
+                })
             }
         }
     }

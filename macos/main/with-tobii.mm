@@ -12,7 +12,7 @@
 #include <tobii_research_eyetracker.h>
 #include <tobii_research_streams.h>
 #include <tobii_research_calibration.h>
-#include <screen_based_calibration_validation.h>
+//#include <screen_based_calibration_validation.h>
 #include <gsl/gsl>
 #include <exception>
 #include <iterator>
@@ -317,9 +317,9 @@ class TobiiEyeTracker : public EyeTracker {
         return Calibration{eyeTracker(eyeTrackers)};
     }
 
-    auto calibrationValidation() -> CalibrationValidation {
-        return CalibrationValidation{eyeTracker(eyeTrackers)};
-    }
+    // auto calibrationValidation() -> CalibrationValidation {
+    //     return CalibrationValidation{eyeTracker(eyeTrackers)};
+    // }
 
     class Address {
       public:
@@ -438,80 +438,81 @@ class TobiiEyeTracker : public EyeTracker {
         TobiiResearchEyeTracker *eyetracker{};
     };
 
-    class CalibrationValidation {
-      public:
-        explicit CalibrationValidation(TobiiResearchEyeTracker *eyetracker) {
-            Address address{eyetracker};
-            if (tobii_research_screen_based_calibration_validation_init_default(
-                    address.get(), &validator) ==
-                CALIBRATION_VALIDATION_STATUS_INVALID_EYETRACKER)
-                validator = nullptr;
-        }
+    // class CalibrationValidation {
+    //   public:
+    //     explicit CalibrationValidation(TobiiResearchEyeTracker *eyetracker) {
+    //         Address address{eyetracker};
+    //         if
+    //         (tobii_research_screen_based_calibration_validation_init_default(
+    //                 address.get(), &validator) ==
+    //             CALIBRATION_VALIDATION_STATUS_INVALID_EYETRACKER)
+    //             validator = nullptr;
+    //     }
 
-        class Enter;
+    //     class Enter;
 
-        auto enter() -> Enter { return Enter{validator}; }
+    //     auto enter() -> Enter { return Enter{validator}; }
 
-        ~CalibrationValidation() {
-            if (validator != nullptr)
-                tobii_research_screen_based_calibration_validation_destroy(
-                    validator);
-        }
+    //     ~CalibrationValidation() {
+    //         if (validator != nullptr)
+    //             tobii_research_screen_based_calibration_validation_destroy(
+    //                 validator);
+    //     }
 
-        class Enter {
-          public:
-            explicit Enter(CalibrationValidator *validator)
-                : validator{validator} {
-                if (validator != nullptr)
-                    tobii_research_screen_based_calibration_validation_enter_validation_mode(
-                        validator);
-            }
+    //     class Enter {
+    //       public:
+    //         explicit Enter(CalibrationValidator *validator)
+    //             : validator{validator} {
+    //             if (validator != nullptr)
+    //                 tobii_research_screen_based_calibration_validation_enter_validation_mode(
+    //                     validator);
+    //         }
 
-            void collect(float x, float y) {
-                TobiiResearchNormalizedPoint2D point{x, y};
-                if (validator != nullptr)
-                    tobii_research_screen_based_calibration_validation_start_collecting_data(
-                        validator, &point);
-                while ((validator != nullptr) &&
-                    (tobii_research_screen_based_calibration_validation_is_collecting_data(
-                         validator) != 0))
-                    std::this_thread::sleep_for(std::chrono::milliseconds{100});
-            }
+    //         void collect(float x, float y) {
+    //             TobiiResearchNormalizedPoint2D point{x, y};
+    //             if (validator != nullptr)
+    //                 tobii_research_screen_based_calibration_validation_start_collecting_data(
+    //                     validator, &point);
+    //             while ((validator != nullptr) &&
+    //                 (tobii_research_screen_based_calibration_validation_is_collecting_data(
+    //                      validator) != 0))
+    //                 std::this_thread::sleep_for(std::chrono::milliseconds{100});
+    //         }
 
-            class Result;
+    //         class Result;
 
-            auto result() -> Result { return Result{validator}; }
+    //         auto result() -> Result { return Result{validator}; }
 
-            ~Enter() {
-                if (validator != nullptr)
-                    tobii_research_screen_based_calibration_validation_leave_validation_mode(
-                        validator);
-            }
+    //         ~Enter() {
+    //             if (validator != nullptr)
+    //                 tobii_research_screen_based_calibration_validation_leave_validation_mode(
+    //                     validator);
+    //         }
 
-            class Result {
-              public:
-                explicit Result(CalibrationValidator *validator) {
-                    if (validator != nullptr)
-                        tobii_research_screen_based_calibration_validation_compute(
-                            validator, &result);
-                }
+    //         class Result {
+    //           public:
+    //             explicit Result(CalibrationValidator *validator) {
+    //                 if (validator != nullptr)
+    //                     tobii_research_screen_based_calibration_validation_compute(
+    //                         validator, &result);
+    //             }
 
-                ~Result() {
-                    tobii_research_screen_based_calibration_validation_destroy_result(
-                        result);
-                }
+    //             ~Result() {
+    //                 tobii_research_screen_based_calibration_validation_destroy_result(
+    //                     result);
+    //             }
 
-              private:
-                CalibrationValidationResult *result{};
-            };
+    //           private:
+    //             CalibrationValidationResult *result{};
+    //         };
 
-          private:
-            CalibrationValidator *validator{};
-        };
+    //       private:
+    //         CalibrationValidator *validator{};
+    //     };
 
-      private:
-        CalibrationValidator *validator{};
-    };
+    //   private:
+    //     CalibrationValidator *validator{};
+    // };
 
   private:
     static void gaze_data_callback(

@@ -11,13 +11,15 @@ function(add_macos_bundle target identifier output_name)
     "-framework AppKit -framework AVFoundation -framework CoreMedia -framework MediaToolbox -framework AudioToolbox -framework CoreAudio"
   )
   if(${AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING})
-    target_link_libraries(${target} PkgConfig::TOBIIRESEARCH tobii-research-addons)
+    target_link_libraries(${target} PkgConfig::TOBIIRESEARCH)
   endif()
   set_target_properties(
     ${target}
-    PROPERTIES MACOSX_BUNDLE_BUNDLE_VERSION ${AV_SPEECH_IN_NOISE_VERSION}
+    PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/MacOSXBundleInfo.plist.in
+               MACOSX_BUNDLE_BUNDLE_VERSION ${AV_SPEECH_IN_NOISE_VERSION}
                MACOSX_BUNDLE_SHORT_VERSION_STRING ${AV_SPEECH_IN_NOISE_VERSION}
                MACOSX_BUNDLE_GUI_IDENTIFIER ${identifier}
+               XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER ${identifier}
                RESOURCE "${AV_SPEECH_IN_NOISE_MACOS_RESOURCES}"
                CXX_EXTENSIONS OFF
                OUTPUT_NAME ${output_name}
