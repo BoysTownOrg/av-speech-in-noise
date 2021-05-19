@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: generate build system
-        run: cmake -S . -B build -GXcode -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 -DAV_SPEECH_IN_NOISE_ENABLE_TESTS=1
+        run: cmake -S . -B build -GXcode -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 -DAV_SPEECH_IN_NOISE_ENABLE_TESTS=1 -DCMAKE_Swift_LANGUAGE_VERSION=5
       - name: build tests -- Release
         run: cmake --build build --target av-speech-in-noise-tests --config Release
       - name: test library -- Release
