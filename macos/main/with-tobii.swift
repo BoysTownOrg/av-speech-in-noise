@@ -58,11 +58,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let subjectScreenOrigin = subjectScreen?.frame.origin ?? NSPoint()
         let subjectScreenSize = subjectScreen?.frame.size ?? NSSize()
         let alertWindow = NSWindow.init(contentRect: NSRect(
-                                            x: subjectScreenOrigin.x + subjectScreenSize.width / 4,
-                                            y: subjectScreenOrigin.y +
-                                                subjectScreenSize.height / 12,
-                                            width: subjectScreenSize.width / 2,
-                                            height: subjectScreenSize.height / 2), styleMask: .borderless, backing: .buffered, defer: false)
+                                            x: subjectScreenOrigin.x,
+                                            y: subjectScreenOrigin.y,
+                                            width: subjectScreenSize.width,
+                                            height: subjectScreenSize.height), styleMask: .borderless, backing: .buffered, defer: false)
         let alert = NSAlert()
         alert.messageText = ""
         alert.informativeText = "This software will store your eye tracking data.\n\nWe do so only for the purpose of the current study (17-13-XP). We never sell, distribute, or make profit on the collected data. Only staff and research personnel on the existing IRB will have access to the data. Any data used for publication or collaborative and/or learning purposes will be deidentified.\n\nThere is no direct benefit to you for doing this study. What we learn from this study may help doctors treat children who have a hard time hearing when it is noisy."
