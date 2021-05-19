@@ -637,110 +637,60 @@ void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<CorrectKeywordsUI> *correctKeywordsUI,
     NSObject<PassFailUI> *passFailUI,
     NSObject<EyeTrackerRunMenu> *eyeTrackerMenu) {
+    static TobiiEyeTracker eyeTracker;
+    static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
+    static DefaultOutputFileNameFactory outputFileNameFactory;
+    static SessionUIImpl sessionUIAdapted{sessionUI};
+    static TestUIImpl testUIAdapted{testUI};
+    static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};
+    static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
+    static ChooseKeywordsUIImpl chooseKeywordsUIAdapted{chooseKeywordsUI};
+    static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
+    static PassFailUIImpl passFailUIAdapted{passFailUI};
+    const auto calibrationViewController{
+        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     const auto subjectScreenFrame{subjectScreen.frame};
-    const auto subjectScreenOrigin{subjectScreenFrame.origin};
-    const auto subjectScreenSize{subjectScreenFrame.size};
-    const auto subjectScreenWidth{subjectScreenSize.width};
-    const auto alertWindow{[[NSWindow alloc]
-        initWithContentRect:NSMakeRect(
-                                subjectScreenOrigin.x + subjectScreenWidth / 4,
-                                subjectScreenOrigin.y +
-                                    subjectScreenSize.height / 12,
-                                subjectScreenWidth / 2,
-                                subjectScreenSize.height / 2)
-                  styleMask:NSWindowStyleMaskBorderless
-                    backing:NSBackingStoreBuffered
-                      defer:YES]};
-    const auto alert{[[NSAlert alloc] init]};
-    [alert setMessageText:@""];
-    [alert setInformativeText:
-               @"This software will store your eye tracking data.\n\nWe do so "
-               @"only for the purpose of the current study (17-13-XP). We "
-               @"never "
-               @"sell, distribute, or make profit on the collected data. Only "
-               @"staff and research personnel on the existing IRB will have "
-               @"access to the data. Any data used for publication or "
-               @"collaborative and/or learning purposes will be "
-               @"deidentified.\n\nThere is no direct benefit to you for doing "
-               @"this study. What we learn from this study may help doctors "
-               @"treat "
-               @"children who have a hard time hearing when it is noisy."];
-    [alert addButtonWithTitle:@"No, I do not accept"];
-    [alert addButtonWithTitle:@"Yes, I accept"];
-    [alertWindow makeKeyAndOrderFront:nil];
-    [alert beginSheetModalForWindow:alertWindow
-                  completionHandler:^(NSModalResponse returnCode) {
-                    [alertWindow orderOut:nil];
-                    [NSApp stopModalWithCode:returnCode];
-                  }];
-    if ([NSApp runModalForWindow:alertWindow] == NSAlertFirstButtonReturn) {
-        const auto terminatingAlert{[[NSAlert alloc] init]};
-        [terminatingAlert setMessageText:@""];
-        [terminatingAlert setInformativeText:@"User does not accept eye "
-                                             @"tracking terms. Terminating."];
-        [terminatingAlert runModal];
-    } else {
-        static TobiiEyeTracker eyeTracker;
-        static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
-        static DefaultOutputFileNameFactory outputFileNameFactory;
-        static SessionUIImpl sessionUIAdapted{sessionUI};
-        static TestUIImpl testUIAdapted{testUI};
-        static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};
-        static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
-        static ChooseKeywordsUIImpl chooseKeywordsUIAdapted{chooseKeywordsUI};
-        static CorrectKeywordsUIImpl correctKeywordsUIAdapted{
-            correctKeywordsUI};
-        static PassFailUIImpl passFailUIAdapted{passFailUI};
-        const auto calibrationViewController{
-            av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
-        const auto subjectScreen{[[NSScreen screens] lastObject]};
-        const auto subjectScreenFrame{subjectScreen.frame};
-        const auto testerScreen{[[NSScreen screens] firstObject]};
-        const auto testerScreenFrame{testerScreen.frame};
-        calibrationViewController.view.frame = subjectScreenFrame;
-        const auto animatingWindow{[NSWindow
-            windowWithContentViewController:calibrationViewController]};
-        [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
-        [animatingWindow setFrame:subjectScreenFrame display:YES];
-        const auto calibrationResultsViewController{
-            av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
-        calibrationResultsViewController.view.frame = testerScreenFrame;
-        const auto calibrationResultsWindow{[NSWindow
-            windowWithContentViewController:calibrationResultsViewController]};
-        calibrationResultsWindow.styleMask =
-            NSWindowStyleMaskResizable | NSWindowStyleMaskTitled;
-        [calibrationResultsWindow setFrame:testerScreenFrame display:YES];
-        const auto eyeTrackerActions{
-            [[AvSpeechInNoiseEyeTrackerCalibrationAppKitActions alloc] init]};
-        animatingWindow.level = NSScreenSaverWindowLevel;
-        eyeTrackerActions->subjectWindow = animatingWindow;
-        eyeTrackerActions->testerWindow = calibrationResultsWindow;
-        const auto eyeTrackerMenuObserver{
-            [[EyeTrackerMenuObserverImpl alloc] init]};
-        eyeTrackerMenuObserver->calibrationResultsWindow =
-            calibrationResultsWindow;
-        eyeTrackerMenuObserver->calibrationWindow = animatingWindow;
-        [eyeTrackerMenu attach:eyeTrackerMenuObserver];
-        static eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
-            animatingWindow, calibrationResultsViewController,
-            eyeTrackerActions, eyeTrackerMenuObserver};
-        static eye_tracker_calibration::Presenter
-            eyeTrackerCalibrationPresenter{eyeTrackerCalibrationView};
-        static auto calibrator{eyeTracker.calibration()};
-        static eye_tracker_calibration::Interactor
-            eyeTrackerCalibrationInteractor{eyeTrackerCalibrationPresenter,
-                calibrator,
-                {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F},
-                    {0.9F, 0.9F}}};
-        static eye_tracker_calibration::Controller
-            eyeTrackerCalibrationController{
-                eyeTrackerCalibrationView, eyeTrackerCalibrationInteractor};
-        initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
-            testSetupViewFactory, sessionUIAdapted, testUIAdapted,
-            freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
-            correctKeywordsUIAdapted, passFailUIAdapted);
-    }
+    const auto testerScreen{[[NSScreen screens] firstObject]};
+    const auto testerScreenFrame{testerScreen.frame};
+    calibrationViewController.view.frame = subjectScreenFrame;
+    const auto animatingWindow{
+        [NSWindow windowWithContentViewController:calibrationViewController]};
+    [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
+    [animatingWindow setFrame:subjectScreenFrame display:YES];
+    const auto calibrationResultsViewController{
+        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+    calibrationResultsViewController.view.frame = testerScreenFrame;
+    const auto calibrationResultsWindow{[NSWindow
+        windowWithContentViewController:calibrationResultsViewController]};
+    calibrationResultsWindow.styleMask =
+        NSWindowStyleMaskResizable | NSWindowStyleMaskTitled;
+    [calibrationResultsWindow setFrame:testerScreenFrame display:YES];
+    const auto eyeTrackerActions{
+        [[AvSpeechInNoiseEyeTrackerCalibrationAppKitActions alloc] init]};
+    animatingWindow.level = NSScreenSaverWindowLevel;
+    eyeTrackerActions->subjectWindow = animatingWindow;
+    eyeTrackerActions->testerWindow = calibrationResultsWindow;
+    const auto eyeTrackerMenuObserver{
+        [[EyeTrackerMenuObserverImpl alloc] init]};
+    eyeTrackerMenuObserver->calibrationResultsWindow = calibrationResultsWindow;
+    eyeTrackerMenuObserver->calibrationWindow = animatingWindow;
+    [eyeTrackerMenu attach:eyeTrackerMenuObserver];
+    static eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
+        animatingWindow, calibrationResultsViewController, eyeTrackerActions,
+        eyeTrackerMenuObserver};
+    static eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
+        eyeTrackerCalibrationView};
+    static auto calibrator{eyeTracker.calibration()};
+    static eye_tracker_calibration::Interactor eyeTrackerCalibrationInteractor{
+        eyeTrackerCalibrationPresenter, calibrator,
+        {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
+    static eye_tracker_calibration::Controller eyeTrackerCalibrationController{
+        eyeTrackerCalibrationView, eyeTrackerCalibrationInteractor};
+    initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
+        testSetupViewFactory, sessionUIAdapted, testUIAdapted,
+        freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
+        correctKeywordsUIAdapted, passFailUIAdapted);
 }
 }
 

@@ -54,6 +54,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        let subjectScreen = NSScreen.screens.last
+        let subjectScreenOrigin = subjectScreen?.frame.origin ?? NSPoint()
+        let subjectScreenSize = subjectScreen?.frame.size ?? NSSize()
+        let alertWindow = NSWindow.init(contentRect: NSRect(
+                                            x: subjectScreenOrigin.x + subjectScreenSize.width / 4,
+                                            y: subjectScreenOrigin.y +
+                                                subjectScreenSize.height / 12,
+                                            width: subjectScreenSize.width / 2,
+                                            height: subjectScreenSize.height / 2), styleMask: .borderless, backing: .buffered, defer: false)
+        let alert = NSAlert()
+        alert.messageText = ""
+        alert.informativeText = "This software will store your eye tracking data.\n\nWe do so only for the purpose of the current study (17-13-XP). We never sell, distribute, or make profit on the collected data. Only staff and research personnel on the existing IRB will have access to the data. Any data used for publication or collaborative and/or learning purposes will be deidentified.\n\nThere is no direct benefit to you for doing this study. What we learn from this study may help doctors treat children who have a hard time hearing when it is noisy."
+        alert.addButton(withTitle: "No, I do not accept")
+        alert.addButton(withTitle: "Yes, I accept")
+        alertWindow.makeKeyAndOrderFront(nil)
+        alert.beginSheetModal(for: alertWindow, completionHandler: {(response: NSApplication.ModalResponse) in
+            alertWindow.orderOut(nil)
+            NSApp.stopModal(withCode: response)
+        })
+        if (NSApp.runModal(for: alertWindow) == NSApplication.ModalResponse.alertFirstButtonReturn) {
+            let terminatingAlert = NSAlert()
+            terminatingAlert.messageText = ""
+            terminatingAlert.informativeText = "User does not accept eye tracking terms. Terminating."
+            terminatingAlert.runModal()
+            NSApp.terminate(nil)
+        }
         AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu)
         
         let userDefaults = UserDefaults()
