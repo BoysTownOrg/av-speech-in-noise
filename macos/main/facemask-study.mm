@@ -34,7 +34,6 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<PassFailUI> *passFailUI) {
     static EyeTrackerStub eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
-    const auto aboutViewController{nsTabViewControllerWithoutTabControl()};
     static MetaConditionOutputFileNameFactory outputFileNameFactory;
     static CongratulatesUserWhenTestCompletes
         congratulatesUserWhenTestCompletes;

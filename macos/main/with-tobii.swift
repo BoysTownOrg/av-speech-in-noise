@@ -1,4 +1,3 @@
-import Cocoa
 import SwiftUI
 
 // https://stackoverflow.com/a/66200850
@@ -38,51 +37,7 @@ class SwiftEyeTrackerRunMenu : NSObject, EyeTrackerRunMenu {
     }
 }
 
-/*
-struct SwiftCPPApp: App {
-    let aboutTobiiPro = AboutTobiiPro()
-    @ObservedObject var eyeTrackerRunMenuObservable: EyeTrackerMenuObserverObservable
-    let testSettingsPathControl = NSPathControl()
-    let sessionUI: SwiftSessionUI
-    let testSetupUI: SwiftTestSetupUI
-    let eyeTrackerRunMenu = SwiftEyeTrackerRunMenu()
-    
-    init() {
-        testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
-        sessionUI = SwiftSessionUI()
-        eyeTrackerRunMenuObservable = eyeTrackerRunMenu.observableObserver
-        AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu)
-    }
-    
-    var body: some Scene {
-        WindowGroup {
-            SwiftSessionView(ui: sessionUI, showingTestSetup: testSetupUI.showing) {
-                SwiftTestSetupView(ui: testSetupUI, testSettingsPathControl:testSettingsPathControl)
-            }
-        }
-        .commands {
-            CommandMenu("Run") {
-                Button("Eye Tracker Calibration") {
-                    eyeTrackerRunMenuObservable.observer?.notifyThatRunCalibrationHasBeenClicked()
-                }
-            }
-            CommandMenu("Legal") {
-                Button("About Tobii Pro") {
-                    aboutTobiiPro.showAboutPanel()
-                }
-            }
-        }
-        #if os(macOS)
-        Settings {
-            SettingsView(ui: sessionUI)
-        }
-        #endif
-    }
-}
-*/
-
 class AppDelegate: NSObject, NSApplicationDelegate {
-
     var window: NSWindow!
     let aboutTobiiPro = AboutTobiiPro()
     @ObservedObject var eyeTrackerRunMenuObservable: EyeTrackerMenuObserverObservable
@@ -100,7 +55,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        // Create the SwiftUI view that provides the window contents.
         let userDefaults = UserDefaults()
         sessionUI.audioDevice_.string = userDefaults.string(forKey: "AudioDevice") ?? ""
         
@@ -115,14 +69,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
-        // Create the window and set the content view.
         window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered, defer: false)
         window.isReleasedWhenClosed = false
         window.center()
-        // window.setFrameAutosaveName("Main Window")
+        window.setFrameAutosaveName("Main Window")
         window.contentView = NSHostingView(rootView: contentView)
         window.makeKeyAndOrderFront(nil)
     }

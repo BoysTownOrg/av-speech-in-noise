@@ -87,17 +87,8 @@ class ObservableString : ObservableObject {
     @Published var string = ""
 }
 
-class ObservableAudioDevice : ObservableObject {
-    var string = "" {
-        willSet {
-            // Call objectWillChange manually since @AppStorage is not published
-            objectWillChange.send()
-        }
-    }
-}
-
 struct SettingsView: View {
-    @ObservedObject var audioDevice: ObservableAudioDevice
+    @ObservedObject var audioDevice: ObservableString
     @ObservedObject var audioDevices: ObservableStringCollection
     
     init(ui: SwiftSessionUI) {
@@ -166,7 +157,7 @@ struct SwiftSessionView<Content: View> : View {
 }
 
 class SwiftSessionUI : NSObject, SessionUI {
-    let audioDevice_ = ObservableAudioDevice()
+    let audioDevice_ = ObservableString()
     let showErrorMessage = ObservableBool()
     let errorMessage = ObservableString()
     let audioDevices = ObservableStringCollection()
