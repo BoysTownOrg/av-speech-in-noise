@@ -6,7 +6,8 @@ add_library(
   src/OutputFilePath.cpp
   src/Model.cpp
   src/RecognitionTestModel.cpp
-  src/ResponseEvaluator.cpp)
+  src/ResponseEvaluator.cpp
+  src/EyeTrackerCalibration.cpp)
 target_include_directories(
   recognition-test
   PUBLIC include

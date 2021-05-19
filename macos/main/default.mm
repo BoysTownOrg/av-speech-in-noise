@@ -1,30 +1,9 @@
-#include "../run.h"
 #include "../objective-c-adapters.h"
 #include "../objective-c-bridge.h"
 #include "../EyeTrackerStub.hpp"
-#include "../AppKit-utility.h"
-#import <AppKit/AppKit.h>
+#include "../run.h"
 
 namespace av_speech_in_noise {
-class MetaConditionOutputFileNameFactory : public OutputFileNameFactory {
-  public:
-    auto make(TimeStamp &timeStamp)
-        -> std::unique_ptr<OutputFileName> override {
-        return std::make_unique<MetaConditionOutputFileName>(timeStamp);
-    }
-};
-
-class CongratulatesUserWhenTestCompletes : public SessionController::Observer {
-  public:
-    void notifyThatTestIsComplete() override {
-        const auto alert{[[NSAlert alloc] init]};
-        [alert setMessageText:@""];
-        [alert setInformativeText:@"Condition complete, great work!"];
-        [alert addButtonWithTitle:@"Continue"];
-        [alert runModal];
-    }
-};
-
 static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI,
     NSObject<FreeResponseUI> *freeResponseUI,
@@ -34,9 +13,7 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<PassFailUI> *passFailUI) {
     static EyeTrackerStub eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
-    static MetaConditionOutputFileNameFactory outputFileNameFactory;
-    static CongratulatesUserWhenTestCompletes
-        congratulatesUserWhenTestCompletes;
+    static DefaultOutputFileNameFactory outputFileNameFactory;
     static SessionUIImpl sessionUIAdapted{sessionUI};
     static TestUIImpl testUIAdapted{testUI};
     static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};
@@ -47,13 +24,12 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
         testSetupViewFactory, sessionUIAdapted, testUIAdapted,
         freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
-        correctKeywordsUIAdapted, passFailUIAdapted,
-        &congratulatesUserWhenTestCompletes, "Desktop/check your data here");
+        correctKeywordsUIAdapted, passFailUIAdapted);
 }
 }
 
 @implementation AvSpeechInNoiseMain
-+ (void)facemaskStudy:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
++ (void)default:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
             withSessionUI:(NSObject<SessionUI> *)sessionUI
                withTestUI:(NSObject<TestUI> *)testUI
        withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI

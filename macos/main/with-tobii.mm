@@ -1,14 +1,305 @@
 #include "../run.h"
 #include "../AppKitView.h"
 #include "../AppKit-utility.h"
+#include <av-speech-in-noise/Interface.hpp>
+#include <presentation/EyeTrackerCalibration.hpp>
+#include <recognition-test/EyeTrackerCalibration.hpp>
+#import <AppKit/AppKit.h>
+#include "../objective-c-bridge.h"
+#include "../objective-c-adapters.h"
 #include <exception>
 #include <tobii_research.h>
+#include <tobii_research_eyetracker.h>
 #include <tobii_research_streams.h>
+#include <tobii_research_calibration.h>
+//#include <screen_based_calibration_validation.h>
 #include <gsl/gsl>
+#include <exception>
+#include <iterator>
+#include <chrono>
+#include <utility>
 #include <vector>
-#import <AppKit/AppKit.h>
+#include <thread>
+#include <algorithm>
+#include <cstddef>
+#include <functional>
+
+@interface EyeTrackerMenuObserverImpl : NSObject <EyeTrackerMenuObserver>
+@end
+
+@implementation EyeTrackerMenuObserverImpl {
+  @public
+    av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
+    NSWindow *calibrationWindow;
+    NSWindow *calibrationResultsWindow;
+}
+
+- (void)notifyThatRunCalibrationHasBeenClicked {
+    [calibrationWindow makeKeyAndOrderFront:nil];
+    [calibrationResultsWindow makeKeyAndOrderFront:nil];
+    observer->notifyThatMenuHasBeenSelected();
+}
+@end
+
+@interface CircleView : NSView
+@end
+
+@implementation CircleView
+- (void)drawRect:(NSRect)rect {
+    NSBezierPath *thePath = [NSBezierPath bezierPath];
+    [thePath appendBezierPathWithOvalInRect:rect];
+    [[NSColor whiteColor] set];
+    [thePath fill];
+}
+@end
+
+@interface AvSpeechInNoiseEyeTrackerCalibrationView : NSView
+@end
+
+namespace av_speech_in_noise::eye_tracker_calibration {
+static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
+    NSBezierPath *path = [NSBezierPath bezierPath];
+    for (const auto &line : lines) {
+        [path
+            moveToPoint:NSMakePoint(line.a.x * rect.size.width + rect.origin.x,
+                            line.a.y * rect.size.height + rect.origin.y)];
+        [path
+            lineToPoint:NSMakePoint(line.b.x * rect.size.width + rect.origin.x,
+                            line.b.y * rect.size.height + rect.origin.y)];
+    }
+    [path closePath];
+    [color set];
+    [path stroke];
+}
+}
+
+@implementation AvSpeechInNoiseEyeTrackerCalibrationView {
+  @public
+    std::vector<av_speech_in_noise::eye_tracker_calibration::Line> redLines;
+    std::vector<av_speech_in_noise::eye_tracker_calibration::Line> greenLines;
+    std::vector<av_speech_in_noise::eye_tracker_calibration::WindowPoint>
+        whiteCircleCenters;
+    av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
+}
+- (void)drawRect:(NSRect)rect {
+    NSBezierPath *circlePath = [NSBezierPath bezierPath];
+    for (const auto &center : whiteCircleCenters) {
+        [circlePath
+            appendBezierPathWithOvalInRect:NSMakeRect(
+                                               center.x * rect.size.width -
+                                                   25. / 2,
+                                               center.y * rect.size.height -
+                                                   25. / 2,
+                                               25, 25)];
+    }
+    [[NSColor whiteColor] set];
+    [circlePath fill];
+    draw(rect, greenLines, [NSColor greenColor]);
+    draw(rect, redLines, [NSColor redColor]);
+}
+
+- (BOOL)acceptsFirstResponder {
+    return YES;
+}
+
+- (void)mouseUp:(NSEvent *)event {
+    const auto mousePoint{[self convertPoint:[event locationInWindow]
+                                    fromView:nil]};
+    observer->notifyThatWindowHasBeenTouched(
+        {mousePoint.x / self.frame.size.width,
+            mousePoint.y / self.frame.size.height});
+    //[super mouseUp:theEvent];
+}
+@end
+
+@interface AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate
+    : NSObject <NSAnimationDelegate>
+@end
+
+@implementation AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate {
+  @public
+    av_speech_in_noise::eye_tracker_calibration::View::Observer *observer;
+}
+- (void)animationDidEnd:(NSAnimation *)animation {
+    observer->notifyThatAnimationHasFinished();
+}
+@end
+
+@interface AvSpeechInNoiseEyeTrackerCalibrationAppKitActions : NSObject
+@end
+
+@implementation AvSpeechInNoiseEyeTrackerCalibrationAppKitActions {
+  @public
+    av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
+    NSWindow *subjectWindow;
+    NSWindow *testerWindow;
+    NSMenuItem *menuItem;
+}
+
+- (void)notifyThatSubmitButtonHasBeenClicked {
+    observer->notifyThatSubmitButtonHasBeenClicked();
+    [testerWindow orderOut:nil];
+    [subjectWindow orderOut:nil];
+}
+@end
 
 namespace av_speech_in_noise {
+namespace eye_tracker_calibration {
+static void animate(NSView *view, NSRect endFrame, double durationSeconds,
+    id<NSAnimationDelegate> delegate) {
+    const auto mutableDictionary {
+        [NSMutableDictionary
+            dictionaryWithSharedKeySet:[NSDictionary sharedKeySetForKeys:@[
+                NSViewAnimationTargetKey, NSViewAnimationStartFrameKey,
+                NSViewAnimationEndFrameKey
+            ]]]
+    };
+    [mutableDictionary setObject:view forKey:NSViewAnimationTargetKey];
+    [mutableDictionary setObject:[NSValue valueWithRect:view.frame]
+                          forKey:NSViewAnimationStartFrameKey];
+    [mutableDictionary setObject:[NSValue valueWithRect:endFrame]
+                          forKey:NSViewAnimationEndFrameKey];
+    const auto viewAnimation{[[NSViewAnimation alloc]
+        initWithViewAnimations:[NSArray
+                                   arrayWithObjects:mutableDictionary, nil]]};
+    [viewAnimation setDelegate:delegate];
+    [viewAnimation setAnimationCurve:NSAnimationEaseInOut];
+    viewAnimation.animationBlockingMode = NSAnimationNonblocking;
+    [viewAnimation setDuration:durationSeconds];
+    [viewAnimation startAnimation];
+}
+
+namespace {
+class AppKitUI : public View, public Control {
+  public:
+    static constexpr auto normalDotDiameterPoints{100};
+    static constexpr auto shrunkenDotDiameterPoints{25};
+
+    explicit AppKitUI(NSWindow *animatingWindow,
+        NSViewController *resultsViewController,
+        AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *actions,
+        EyeTrackerMenuObserverImpl *menuObserver)
+        : circleView{[[CircleView alloc]
+              initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
+                                normalDotDiameterPoints)]},
+          view{[[AvSpeechInNoiseEyeTrackerCalibrationView alloc] init]},
+          delegate{[[AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate
+              alloc] init]},
+          actions{actions}, menuObserver{menuObserver} {
+        [animatingWindow.contentViewController.view addSubview:circleView];
+        const auto submitButton {
+            nsButton("confirm", actions,
+                @selector(notifyThatSubmitButtonHasBeenClicked))
+        };
+        addAutolayoutEnabledSubview(resultsViewController.view, view);
+        addAutolayoutEnabledSubview(resultsViewController.view, submitButton);
+        [NSLayoutConstraint activateConstraints:@[
+            [view.leadingAnchor
+                constraintEqualToAnchor:resultsViewController.view
+                                            .leadingAnchor],
+            [view.trailingAnchor
+                constraintEqualToAnchor:resultsViewController.view
+                                            .trailingAnchor],
+            [view.topAnchor
+                constraintEqualToAnchor:resultsViewController.view.topAnchor],
+            [view.bottomAnchor constraintEqualToAnchor:submitButton.topAnchor],
+            [submitButton.trailingAnchor
+                constraintEqualToAnchor:resultsViewController.view
+                                            .trailingAnchor
+                               constant:-8],
+            [submitButton.bottomAnchor
+                constraintEqualToAnchor:resultsViewController.view.bottomAnchor
+                               constant:-8]
+        ]];
+    }
+
+    void attach(View::Observer *a) override { delegate->observer = a; }
+
+    void attach(Control::Observer *a) override {
+        view->observer = a;
+        actions->observer = a;
+        menuObserver->observer = a;
+    }
+
+    void moveDotTo(WindowPoint point) override {
+        animate(circleView,
+            NSMakeRect(point.x * circleView.superview.frame.size.width -
+                    circleView.frame.size.width / 2,
+                point.y * circleView.superview.frame.size.height -
+                    circleView.frame.size.height / 2,
+                circleView.frame.size.width, circleView.frame.size.height),
+            1.5, delegate);
+    }
+
+    void shrinkDot() override {
+        animate(circleView,
+            NSMakeRect(circleView.frame.origin.x +
+                    (circleView.frame.size.width - shrunkenDotDiameterPoints) /
+                        2,
+                circleView.frame.origin.y +
+                    (circleView.frame.size.height - shrunkenDotDiameterPoints) /
+                        2,
+                shrunkenDotDiameterPoints, shrunkenDotDiameterPoints),
+            0.5, delegate);
+    }
+
+    void growDot() override {
+        animate(circleView,
+            NSMakeRect(circleView.frame.origin.x +
+                    (circleView.frame.size.width - normalDotDiameterPoints) / 2,
+                circleView.frame.origin.y +
+                    (circleView.frame.size.height - normalDotDiameterPoints) /
+                        2,
+                normalDotDiameterPoints, normalDotDiameterPoints),
+            0.5, delegate);
+    }
+
+    void drawRed(Line line) override {
+        view->redLines.push_back(line);
+        view.needsDisplay = YES;
+    }
+
+    void drawGreen(Line line) override {
+        view->greenLines.push_back(line);
+        view.needsDisplay = YES;
+    }
+
+    void drawWhiteCircleWithCenter(WindowPoint point) override {
+        view->whiteCircleCenters.push_back(point);
+        view.needsDisplay = YES;
+    }
+
+    auto whiteCircleCenters() -> std::vector<WindowPoint> override {
+        return view->whiteCircleCenters;
+    }
+
+    auto whiteCircleDiameter() -> double override {
+        return 25 / view.frame.size.width;
+    }
+
+    void clear() override {
+        view->redLines.clear();
+        view->greenLines.clear();
+        view->whiteCircleCenters.clear();
+    }
+
+  private:
+    CircleView *circleView;
+    AvSpeechInNoiseEyeTrackerCalibrationView *view;
+    AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate *delegate;
+    AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *actions;
+    EyeTrackerMenuObserverImpl *menuObserver;
+};
+}
+}
+
+static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
+    -> TobiiResearchEyeTracker * {
+    return eyeTrackers == nullptr || eyeTrackers->count == 0U
+        ? nullptr
+        : eyeTrackers->eyetrackers[0];
+}
+
 class TobiiEyeTracker : public EyeTracker {
   public:
     TobiiEyeTracker();
@@ -19,6 +310,210 @@ class TobiiEyeTracker : public EyeTracker {
     auto gazeSamples() -> BinocularGazeSamples override;
     auto currentSystemTime() -> EyeTrackerSystemTime override;
 
+    class Calibration;
+    class CalibrationValidation;
+
+    auto calibration() -> Calibration {
+        return Calibration{eyeTracker(eyeTrackers)};
+    }
+
+    // auto calibrationValidation() -> CalibrationValidation {
+    //     return CalibrationValidation{eyeTracker(eyeTrackers)};
+    // }
+
+    class Address {
+      public:
+        explicit Address(TobiiResearchEyeTracker *eyetracker) {
+            tobii_research_get_address(eyetracker, &address);
+        }
+
+        auto get() -> const char * { return address; }
+
+        ~Address() { tobii_research_free_string(address); }
+
+      private:
+        char *address{};
+    };
+
+    class Calibration : public eye_tracker_calibration::EyeTrackerCalibrator {
+      public:
+        explicit Calibration(TobiiResearchEyeTracker *eyetracker)
+            : eyetracker{eyetracker} {}
+
+        void acquire() override {
+            tobii_research_screen_based_calibration_enter_calibration_mode(
+                eyetracker);
+        }
+
+        void release() override {
+            tobii_research_screen_based_calibration_leave_calibration_mode(
+                eyetracker);
+        }
+
+        void discard(eye_tracker_calibration::Point p) override {
+            tobii_research_screen_based_calibration_discard_data(
+                eyetracker, p.x, p.y);
+        }
+
+        void collect(eye_tracker_calibration::Point p) override {
+            tobii_research_screen_based_calibration_collect_data(
+                eyetracker, p.x, p.y);
+        }
+
+        auto results()
+            -> std::vector<eye_tracker_calibration::Result> override {
+            ComputeAndApply computeAndApply{eyetracker};
+            return computeAndApply.results();
+        }
+
+        class ComputeAndApply;
+
+        auto computeAndApply() -> ComputeAndApply {
+            return ComputeAndApply{eyetracker};
+        }
+
+        class ComputeAndApply {
+          public:
+            explicit ComputeAndApply(TobiiResearchEyeTracker *eyetracker) {
+                tobii_research_screen_based_calibration_compute_and_apply(
+                    eyetracker, &result);
+            }
+
+            auto success() -> bool {
+                return result != nullptr &&
+                    result->status == TOBII_RESEARCH_CALIBRATION_SUCCESS;
+            }
+
+            auto results() -> std::vector<eye_tracker_calibration::Result> {
+                if (result == nullptr)
+                    return {};
+                std::vector<eye_tracker_calibration::Result> results{
+                    result->calibration_point_count};
+                const gsl::span<TobiiResearchCalibrationPoint>
+                    calibrationPoints{result->calibration_points,
+                        result->calibration_point_count};
+                std::transform(calibrationPoints.begin(),
+                    calibrationPoints.end(), std::back_inserter(results),
+                    [](const TobiiResearchCalibrationPoint &p) {
+                        eye_tracker_calibration::Result transformedResult;
+                        const gsl::span<TobiiResearchCalibrationSample>
+                            calibrationSamples{p.calibration_samples,
+                                p.calibration_sample_count};
+                        std::transform(calibrationSamples.begin(),
+                            calibrationSamples.end(),
+                            std::back_inserter(
+                                transformedResult.leftEyeMappedPoints),
+                            [](const TobiiResearchCalibrationSample &sample) {
+                                return eye_tracker_calibration::Point{
+                                    sample.left_eye.position_on_display_area.x,
+                                    sample.left_eye.position_on_display_area.y};
+                            });
+                        std::transform(calibrationSamples.begin(),
+                            calibrationSamples.end(),
+                            std::back_inserter(
+                                transformedResult.rightEyeMappedPoints),
+                            [](const TobiiResearchCalibrationSample &sample) {
+                                return eye_tracker_calibration::Point{
+                                    sample.right_eye.position_on_display_area.x,
+                                    sample.right_eye.position_on_display_area
+                                        .y};
+                            });
+                        transformedResult.point = {p.position_on_display_area.x,
+                            p.position_on_display_area.y};
+                        return transformedResult;
+                    });
+
+                return results;
+            }
+
+            ~ComputeAndApply() {
+                tobii_research_free_screen_based_calibration_result(result);
+            }
+
+          private:
+            TobiiResearchCalibrationResult *result{};
+        };
+
+      private:
+        TobiiResearchEyeTracker *eyetracker{};
+    };
+
+    // class CalibrationValidation {
+    //   public:
+    //     explicit CalibrationValidation(TobiiResearchEyeTracker *eyetracker) {
+    //         Address address{eyetracker};
+    //         if
+    //         (tobii_research_screen_based_calibration_validation_init_default(
+    //                 address.get(), &validator) ==
+    //             CALIBRATION_VALIDATION_STATUS_INVALID_EYETRACKER)
+    //             validator = nullptr;
+    //     }
+
+    //     class Enter;
+
+    //     auto enter() -> Enter { return Enter{validator}; }
+
+    //     ~CalibrationValidation() {
+    //         if (validator != nullptr)
+    //             tobii_research_screen_based_calibration_validation_destroy(
+    //                 validator);
+    //     }
+
+    //     class Enter {
+    //       public:
+    //         explicit Enter(CalibrationValidator *validator)
+    //             : validator{validator} {
+    //             if (validator != nullptr)
+    //                 tobii_research_screen_based_calibration_validation_enter_validation_mode(
+    //                     validator);
+    //         }
+
+    //         void collect(float x, float y) {
+    //             TobiiResearchNormalizedPoint2D point{x, y};
+    //             if (validator != nullptr)
+    //                 tobii_research_screen_based_calibration_validation_start_collecting_data(
+    //                     validator, &point);
+    //             while ((validator != nullptr) &&
+    //                 (tobii_research_screen_based_calibration_validation_is_collecting_data(
+    //                      validator) != 0))
+    //                 std::this_thread::sleep_for(std::chrono::milliseconds{100});
+    //         }
+
+    //         class Result;
+
+    //         auto result() -> Result { return Result{validator}; }
+
+    //         ~Enter() {
+    //             if (validator != nullptr)
+    //                 tobii_research_screen_based_calibration_validation_leave_validation_mode(
+    //                     validator);
+    //         }
+
+    //         class Result {
+    //           public:
+    //             explicit Result(CalibrationValidator *validator) {
+    //                 if (validator != nullptr)
+    //                     tobii_research_screen_based_calibration_validation_compute(
+    //                         validator, &result);
+    //             }
+
+    //             ~Result() {
+    //                 tobii_research_screen_based_calibration_validation_destroy_result(
+    //                     result);
+    //             }
+
+    //           private:
+    //             CalibrationValidationResult *result{};
+    //         };
+
+    //       private:
+    //         CalibrationValidator *validator{};
+    //     };
+
+    //   private:
+    //     CalibrationValidator *validator{};
+    // };
+
   private:
     static void gaze_data_callback(
         TobiiResearchGazeData *gaze_data, void *self);
@@ -28,13 +523,6 @@ class TobiiEyeTracker : public EyeTracker {
     TobiiResearchEyeTrackers *eyeTrackers{};
     std::size_t head{};
 };
-
-static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
-    -> TobiiResearchEyeTracker * {
-    return eyeTrackers == nullptr || eyeTrackers->count == 0U
-        ? nullptr
-        : eyeTrackers->eyetrackers[0];
-}
 
 TobiiEyeTracker::TobiiEyeTracker() {
     tobii_research_find_all_eyetrackers(&eyeTrackers);
@@ -138,52 +626,22 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     currentSystemTime.microseconds = microseconds;
     return currentSystemTime;
 }
-
-void main() {
-    TobiiEyeTracker eyeTracker;
-    AppKitTestSetupUIFactoryImpl testSetupViewFactory;
-    DefaultOutputFileNameFactory outputFileNameFactory;
-    const auto aboutViewController{
-        [[ResizesToContentsViewController alloc] init]};
-    const auto stack {
-        [NSStackView stackViewWithViews:@[
-            [NSImageView
-                imageViewWithImage:[NSImage imageNamed:@"tobii-pro-logo.jpg"]],
-            [NSTextField
-                labelWithString:@"This application is powered by Tobii Pro"]
-        ]]
-    };
-    stack.orientation = NSUserInterfaceLayoutOrientationVertical;
-    addAutolayoutEnabledSubview(aboutViewController.view, stack);
-    [NSLayoutConstraint activateConstraints:@[
-        [stack.topAnchor
-            constraintEqualToAnchor:aboutViewController.view.topAnchor
-                           constant:8],
-        [stack.bottomAnchor
-            constraintEqualToAnchor:aboutViewController.view.bottomAnchor
-                           constant:-8],
-        [stack.leadingAnchor
-            constraintEqualToAnchor:aboutViewController.view.leadingAnchor
-                           constant:8],
-        [stack.trailingAnchor
-            constraintEqualToAnchor:aboutViewController.view.trailingAnchor
-                           constant:-8]
-    ]];
-    initializeAppAndRunEventLoop(eyeTracker, testSetupViewFactory,
-        outputFileNameFactory, aboutViewController);
-}
 }
 
-int main() {
+namespace av_speech_in_noise {
+void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
+    NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI,
+    NSObject<FreeResponseUI> *freeResponseUI,
+    NSObject<SyllablesUI> *syllablesUI,
+    NSObject<ChooseKeywordsUI> *chooseKeywordsUI,
+    NSObject<CorrectKeywordsUI> *correctKeywordsUI,
+    NSObject<PassFailUI> *passFailUI,
+    NSObject<EyeTrackerRunMenu> *eyeTrackerMenu) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenOrigin{subjectScreenFrame.origin};
     const auto subjectScreenSize{subjectScreenFrame.size};
-    const auto subjectViewHeight{subjectScreenSize.height / 4};
     const auto subjectScreenWidth{subjectScreenSize.width};
-    const auto subjectViewWidth{subjectScreenWidth / 3};
-    auto subjectViewLeadingEdge =
-        subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
     const auto alertWindow{[[NSWindow alloc]
         initWithContentRect:NSMakeRect(
                                 subjectScreenOrigin.x + subjectScreenWidth / 4,
@@ -196,17 +654,18 @@ int main() {
                       defer:YES]};
     const auto alert{[[NSAlert alloc] init]};
     [alert setMessageText:@""];
-    [alert
-        setInformativeText:
-            @"This software will store your eye tracking data.\n\nWe do so "
-            @"only for the purpose of the current study (17-13-XP). We never "
-            @"sell, distribute, or make profit on the collected data. Only "
-            @"staff and research personnel on the existing IRB will have "
-            @"access to the data. Any data used for publication or "
-            @"collaborative and/or learning purposes will be "
-            @"deidentified.\n\nThere is no direct benefit to you for doing "
-            @"this study. What we learn from this study may help doctors treat "
-            @"children who have a hard time hearing when it is noisy."];
+    [alert setInformativeText:
+               @"This software will store your eye tracking data.\n\nWe do so "
+               @"only for the purpose of the current study (17-13-XP). We "
+               @"never "
+               @"sell, distribute, or make profit on the collected data. Only "
+               @"staff and research personnel on the existing IRB will have "
+               @"access to the data. Any data used for publication or "
+               @"collaborative and/or learning purposes will be "
+               @"deidentified.\n\nThere is no direct benefit to you for doing "
+               @"this study. What we learn from this study may help doctors "
+               @"treat "
+               @"children who have a hard time hearing when it is noisy."];
     [alert addButtonWithTitle:@"No, I do not accept"];
     [alert addButtonWithTitle:@"Yes, I accept"];
     [alertWindow makeKeyAndOrderFront:nil];
@@ -221,6 +680,82 @@ int main() {
         [terminatingAlert setInformativeText:@"User does not accept eye "
                                              @"tracking terms. Terminating."];
         [terminatingAlert runModal];
-    } else
-        av_speech_in_noise::main();
+    } else {
+        static TobiiEyeTracker eyeTracker;
+        static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
+        static DefaultOutputFileNameFactory outputFileNameFactory;
+        static SessionUIImpl sessionUIAdapted{sessionUI};
+        static TestUIImpl testUIAdapted{testUI};
+        static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};
+        static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
+        static ChooseKeywordsUIImpl chooseKeywordsUIAdapted{chooseKeywordsUI};
+        static CorrectKeywordsUIImpl correctKeywordsUIAdapted{
+            correctKeywordsUI};
+        static PassFailUIImpl passFailUIAdapted{passFailUI};
+        const auto calibrationViewController{
+            av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+        const auto subjectScreen{[[NSScreen screens] lastObject]};
+        const auto subjectScreenFrame{subjectScreen.frame};
+        const auto testerScreen{[[NSScreen screens] firstObject]};
+        const auto testerScreenFrame{testerScreen.frame};
+        calibrationViewController.view.frame = subjectScreenFrame;
+        const auto animatingWindow{[NSWindow
+            windowWithContentViewController:calibrationViewController]};
+        [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
+        [animatingWindow setFrame:subjectScreenFrame display:YES];
+        const auto calibrationResultsViewController{
+            av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+        calibrationResultsViewController.view.frame = testerScreenFrame;
+        const auto calibrationResultsWindow{[NSWindow
+            windowWithContentViewController:calibrationResultsViewController]};
+        calibrationResultsWindow.styleMask =
+            NSWindowStyleMaskResizable | NSWindowStyleMaskTitled;
+        [calibrationResultsWindow setFrame:testerScreenFrame display:YES];
+        const auto eyeTrackerActions{
+            [[AvSpeechInNoiseEyeTrackerCalibrationAppKitActions alloc] init]};
+        animatingWindow.level = NSScreenSaverWindowLevel;
+        eyeTrackerActions->subjectWindow = animatingWindow;
+        eyeTrackerActions->testerWindow = calibrationResultsWindow;
+        const auto eyeTrackerMenuObserver{
+            [[EyeTrackerMenuObserverImpl alloc] init]};
+        eyeTrackerMenuObserver->calibrationResultsWindow =
+            calibrationResultsWindow;
+        eyeTrackerMenuObserver->calibrationWindow = animatingWindow;
+        [eyeTrackerMenu attach:eyeTrackerMenuObserver];
+        static eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
+            animatingWindow, calibrationResultsViewController,
+            eyeTrackerActions, eyeTrackerMenuObserver};
+        static eye_tracker_calibration::Presenter
+            eyeTrackerCalibrationPresenter{eyeTrackerCalibrationView};
+        static auto calibrator{eyeTracker.calibration()};
+        static eye_tracker_calibration::Interactor
+            eyeTrackerCalibrationInteractor{eyeTrackerCalibrationPresenter,
+                calibrator,
+                {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F},
+                    {0.9F, 0.9F}}};
+        static eye_tracker_calibration::Controller
+            eyeTrackerCalibrationController{
+                eyeTrackerCalibrationView, eyeTrackerCalibrationInteractor};
+        initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
+            testSetupViewFactory, sessionUIAdapted, testUIAdapted,
+            freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
+            correctKeywordsUIAdapted, passFailUIAdapted);
+    }
 }
+}
+
+@implementation AvSpeechInNoiseMain
++ (void)withTobiiPro:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
+            withSessionUI:(NSObject<SessionUI> *)sessionUI
+               withTestUI:(NSObject<TestUI> *)testUI
+       withFreeResponseUI:(NSObject<FreeResponseUI> *)freeResponseUI
+          withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
+     withChooseKeywordsUI:(NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
+    withCorrectKeywordsUI:(NSObject<CorrectKeywordsUI> *)correctKeywordsUI
+           withPassFailUI:(NSObject<PassFailUI> *)passFailUI
+       withEyeTrackerMenu:(NSObject<EyeTrackerRunMenu> *)eyeTrackerMenu {
+    av_speech_in_noise::main(testSetupUIFactory, sessionUI, testUI,
+        freeResponseUI, syllablesUI, chooseKeywordsUI, correctKeywordsUI,
+        passFailUI, eyeTrackerMenu);
+}
+@end

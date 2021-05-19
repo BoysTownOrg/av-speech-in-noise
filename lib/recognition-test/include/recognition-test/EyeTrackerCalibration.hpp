@@ -1,0 +1,68 @@
+#ifndef AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_EYE_TRACKER_CALIBRATION_HPP_
+#define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_EYE_TRACKER_CALIBRATION_HPP_
+
+#include <av-speech-in-noise/Interface.hpp>
+#include <utility>
+#include <vector>
+
+namespace av_speech_in_noise::eye_tracker_calibration {
+struct Point {
+    float x;
+    float y;
+};
+
+struct Result {
+    std::vector<Point> leftEyeMappedPoints;
+    std::vector<Point> rightEyeMappedPoints;
+    Point point{};
+};
+
+class IInteractor {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(IInteractor);
+    virtual void redo(Point) = 0;
+    virtual void finish() = 0;
+    virtual void start() = 0;
+};
+
+class IPresenter {
+  public:
+    class Observer {
+      public:
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
+        virtual void notifyThatPointIsReady() = 0;
+    };
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(IPresenter);
+    virtual void attach(Observer *) = 0;
+    virtual void present(Point) = 0;
+    virtual void present(const std::vector<Result> &) = 0;
+};
+
+class EyeTrackerCalibrator {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(EyeTrackerCalibrator);
+    virtual void acquire() = 0;
+    virtual void release() = 0;
+    virtual void collect(Point) = 0;
+    virtual void discard(Point) = 0;
+    virtual auto results() -> std::vector<Result> = 0;
+};
+
+class Interactor : public IPresenter::Observer, public IInteractor {
+  public:
+    Interactor(IPresenter &, EyeTrackerCalibrator &, std::vector<Point>);
+    void notifyThatPointIsReady() override;
+    void start() override;
+    void finish() override;
+    void redo(Point) override;
+
+  private:
+    std::vector<Point> calibrationPoints;
+    std::vector<Point> pointsToCalibrate;
+    std::vector<Point> pointsCalibrated;
+    IPresenter &presenter;
+    EyeTrackerCalibrator &calibrator;
+};
+}
+
+#endif

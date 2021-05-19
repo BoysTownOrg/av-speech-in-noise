@@ -6,6 +6,7 @@
 #include "AppKit-utility.h"
 #include <presentation/SessionController.hpp>
 #include <presentation/TestSettingsInterpreter.hpp>
+#include <presentation/TestImpl.hpp>
 #include <recognition-test/Model.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/AdaptiveMethod.hpp>
@@ -25,84 +26,6 @@
 #include <string_view>
 #include <functional>
 #include <filesystem>
-
-// https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/ManagingFIlesandDirectories/ManagingFIlesandDirectories.html#//apple_ref/doc/uid/TP40010672-CH6-SW2
-// Listing 6-1
-static auto applicationDataDirectory() -> NSURL * {
-    NSString *bundleID = [[NSBundle mainBundle] bundleIdentifier];
-    NSFileManager *fm = [NSFileManager defaultManager];
-    NSURL *dirPath = nil;
-    // Find the application support directory in the home directory.
-    auto appSupportDir = [fm URLsForDirectory:NSApplicationSupportDirectory
-                                    inDomains:NSUserDomainMask];
-    if ([appSupportDir count] > 0) {
-        // Append the bundle ID to the URL for the
-        // Application Support directory
-        dirPath = [[appSupportDir objectAtIndex:0]
-            URLByAppendingPathComponent:bundleID];
-        // If the directory does not exist, this method creates it.
-        // This method is only available in macOS 10.7 and iOS 5.0 or later.
-        NSError *theError = nil;
-        if ([fm createDirectoryAtURL:dirPath
-                withIntermediateDirectories:YES
-                                 attributes:nil
-                                      error:&theError] == 0) {
-            NSAlert *theAlert = [NSAlert alertWithError:theError];
-            [theAlert runModal];
-            return nil;
-        }
-    }
-    return dirPath;
-}
-
-static auto defaultAudioDeviceFilePath() -> std::filesystem::path {
-    return [applicationDataDirectory()
-        URLByAppendingPathComponent:@"default-audio-device.txt"]
-        .fileSystemRepresentation;
-}
-
-@interface ApplicationDelegate : NSObject <NSApplicationDelegate>
-@end
-
-@implementation ApplicationDelegate {
-  @public
-    NSPopUpButton *audioDeviceMenu;
-}
-- (void)applicationWillTerminate:(NSNotification *)notification {
-    if (audioDeviceMenu.titleOfSelectedItem != nil) {
-        std::ofstream defaultAudioDeviceFile{defaultAudioDeviceFilePath()};
-        defaultAudioDeviceFile
-            << audioDeviceMenu.titleOfSelectedItem.UTF8String;
-    }
-}
-@end
-
-@interface WindowDelegate : NSObject <NSWindowDelegate>
-@end
-
-@implementation WindowDelegate
-- (void)windowWillClose:(NSNotification *)__unused notification {
-    [NSApp terminate:self];
-}
-@end
-
-@interface MenuActions : NSObject
-@end
-
-@implementation MenuActions {
-  @public
-    NSWindow *preferencesWindow;
-    NSWindow *aboutWindow;
-}
-
-- (void)notifyThatPreferencesHasBeenClicked {
-    [preferencesWindow makeKeyAndOrderFront:nil];
-}
-
-- (void)notifyThatAboutHasBeenClicked {
-    [aboutWindow makeKeyAndOrderFront:nil];
-}
-@end
 
 @interface CallbackScheduler : NSObject
 @end
@@ -271,181 +194,103 @@ static void addChild(NSTabViewController *parent, NSTabViewController *child) {
 }
 
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
-    AppKitTestSetupUIFactory &testSetupUIFactory,
     OutputFileNameFactory &outputFileNameFactory,
-    NSViewController *aboutViewController,
+    AppKitTestSetupUIFactory &testSetupUIFactory, SessionUI &sessionUIMaybe,
+    TestUI &testUIMaybe, FreeResponseUI &freeResponseUIMaybe,
+    SyllablesUI &syllablesUIMaybe, ChooseKeywordsUI &chooseKeywordsUIMaybe,
+    CorrectKeywordsUI &correctKeywordsUIMaybe, PassFailUI &passFailUIMaybe,
     SessionController::Observer *sessionControllerObserver,
-    std::filesystem::path relativeOutputDirectory) {
+    std::filesystem::path relativeOutputDirectory,
+    AppKitRunMenuInitializer *appKitRunMenuInitializer) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
-    AvFoundationVideoPlayer videoPlayer{subjectScreen};
-    AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
-    AudioReaderSimplified audioReader{bufferedReaderFactory};
-    TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
-    AvFoundationAudioPlayer audioPlayer;
-    TimerImpl timer;
-    MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader, &timer};
+    static AvFoundationVideoPlayer videoPlayer{subjectScreen};
+    static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
+    static AudioReaderSimplified audioReader{bufferedReaderFactory};
+    static TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
+    static AvFoundationAudioPlayer audioPlayer;
+    static TimerImpl timer;
+    static MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader, &timer};
     maskerPlayer.setRampFor(Duration{0.02});
-    FileWriter fileWriter;
-    TimeStampImpl timeStamp;
-    UnixFileSystemPath systemPath;
-    const auto outputFileName{outputFileNameFactory.make(timeStamp)};
-    OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
+    static FileWriter fileWriter;
+    static TimeStampImpl timeStamp;
+    static UnixFileSystemPath systemPath;
+    static auto outputFileName{outputFileNameFactory.make(timeStamp)};
+    static OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
     outputFilePath.setRelativeOutputDirectory(
         std::move(relativeOutputDirectory));
-    OutputFileImpl outputFile{fileWriter, outputFilePath};
-    adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
-    ResponseEvaluatorImpl responseEvaluator;
-    TextFileReaderImpl textFileReader;
-    MersenneTwisterRandomizer randomizer;
-    AdaptiveMethodImpl adaptiveMethod{
+    static OutputFileImpl outputFile{fileWriter, outputFilePath};
+    static adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
+    static ResponseEvaluatorImpl responseEvaluator;
+    static TextFileReaderImpl textFileReader;
+    static MersenneTwisterRandomizer randomizer;
+    static AdaptiveMethodImpl adaptiveMethod{
         snrTrackFactory, responseEvaluator, randomizer};
-    MacOsDirectoryReader directoryReader;
-    FileExtensionFilter targetFileExtensionFilter{
+    static MacOsDirectoryReader directoryReader;
+    static FileExtensionFilter targetFileExtensionFilter{
         {".mov", ".avi", ".wav", ".mp4"}};
-    FileFilterDecorator onlyIncludesTargetFileExtensions{
+    static FileFilterDecorator onlyIncludesTargetFileExtensions{
         &directoryReader, &targetFileExtensionFilter};
-    RandomizedTargetPlaylistWithReplacement targetsWithReplacement{
+    static RandomizedTargetPlaylistWithReplacement targetsWithReplacement{
         &onlyIncludesTargetFileExtensions, &randomizer};
-    FileIdentifierExcluderFilter
+    static FileIdentifierExcluderFilter
         excludesTargetsThatHave100_200_300Or400InTheirName{
             {"100", "200", "300", "400"}};
-    FileIdentifierFilter targetsThatHave100InTheirName{"100"};
-    FileIdentifierFilter targetsThatHave200InTheirName{"200"};
-    FileIdentifierFilter targetsThatHave300InTheirName{"300"};
-    FileIdentifierFilter targetsThatHave400InTheirName{"400"};
-    FileFilterDecorator allButSilentIntervalTargets{
+    static FileIdentifierFilter targetsThatHave100InTheirName{"100"};
+    static FileIdentifierFilter targetsThatHave200InTheirName{"200"};
+    static FileIdentifierFilter targetsThatHave300InTheirName{"300"};
+    static FileIdentifierFilter targetsThatHave400InTheirName{"400"};
+    static FileFilterDecorator allButSilentIntervalTargets{
         &onlyIncludesTargetFileExtensions,
         &excludesTargetsThatHave100_200_300Or400InTheirName};
-    FileFilterDecorator oneHundred_ms_SilentIntervalTargets{
+    static FileFilterDecorator oneHundred_ms_SilentIntervalTargets{
         &onlyIncludesTargetFileExtensions, &targetsThatHave100InTheirName};
-    FileFilterDecorator twoHundred_ms_SilentIntervalTargets{
+    static FileFilterDecorator twoHundred_ms_SilentIntervalTargets{
         &onlyIncludesTargetFileExtensions, &targetsThatHave200InTheirName};
-    FileFilterDecorator threeHundred_ms_SilentIntervalTargets{
+    static FileFilterDecorator threeHundred_ms_SilentIntervalTargets{
         &onlyIncludesTargetFileExtensions, &targetsThatHave300InTheirName};
-    FileFilterDecorator fourHundred_ms_SilentIntervalTargets{
+    static FileFilterDecorator fourHundred_ms_SilentIntervalTargets{
         &onlyIncludesTargetFileExtensions, &targetsThatHave400InTheirName};
-    RandomSubsetFiles passesThirtyRandomFiles{&randomizer, 30};
-    FileFilterDecorator thirtyRandomAllButSilentIntervalTargets{
+    static RandomSubsetFiles passesThirtyRandomFiles{&randomizer, 30};
+    static FileFilterDecorator thirtyRandomAllButSilentIntervalTargets{
         &allButSilentIntervalTargets, &passesThirtyRandomFiles};
-    FileFilterDecorator thirtyRandomOneHundred_ms_SilentIntervalTargets{
+    static FileFilterDecorator thirtyRandomOneHundred_ms_SilentIntervalTargets{
         &oneHundred_ms_SilentIntervalTargets, &passesThirtyRandomFiles};
-    FileFilterDecorator thirtyRandomTwoHundred_ms_SilentIntervalTargets{
+    static FileFilterDecorator thirtyRandomTwoHundred_ms_SilentIntervalTargets{
         &twoHundred_ms_SilentIntervalTargets, &passesThirtyRandomFiles};
-    FileFilterDecorator thirtyRandomThreeHundred_ms_SilentIntervalTargets{
-        &threeHundred_ms_SilentIntervalTargets, &passesThirtyRandomFiles};
-    FileFilterDecorator thirtyRandomFourHundred_ms_SilentIntervalTargets{
+    static FileFilterDecorator
+        thirtyRandomThreeHundred_ms_SilentIntervalTargets{
+            &threeHundred_ms_SilentIntervalTargets, &passesThirtyRandomFiles};
+    static FileFilterDecorator thirtyRandomFourHundred_ms_SilentIntervalTargets{
         &fourHundred_ms_SilentIntervalTargets, &passesThirtyRandomFiles};
-    DirectoryReaderComposite silentIntervalTargetsDirectoryReader{
+    static DirectoryReaderComposite silentIntervalTargetsDirectoryReader{
         {&thirtyRandomAllButSilentIntervalTargets,
             &thirtyRandomOneHundred_ms_SilentIntervalTargets,
             &thirtyRandomTwoHundred_ms_SilentIntervalTargets,
             &thirtyRandomThreeHundred_ms_SilentIntervalTargets,
             &thirtyRandomFourHundred_ms_SilentIntervalTargets}};
-    RandomizedTargetPlaylistWithoutReplacement silentIntervalTargets{
+    static RandomizedTargetPlaylistWithoutReplacement silentIntervalTargets{
         &silentIntervalTargetsDirectoryReader, &randomizer};
-    RandomizedTargetPlaylistWithoutReplacement everyTargetOnce{
+    static RandomizedTargetPlaylistWithoutReplacement everyTargetOnce{
         &onlyIncludesTargetFileExtensions, &randomizer};
-    EachTargetPlayedOnceThenShuffleAndRepeat allTargetsNTimes{
+    static EachTargetPlayedOnceThenShuffleAndRepeat allTargetsNTimes{
         &onlyIncludesTargetFileExtensions, &randomizer};
-    FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
-    RecognitionTestModelImpl recognitionTestModel{targetPlayer, maskerPlayer,
-        responseEvaluator, outputFile, randomizer, eyeTracker};
-    RandomizedTargetPlaylistWithReplacement::Factory
+    static FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
+    static RecognitionTestModelImpl recognitionTestModel{targetPlayer,
+        maskerPlayer, responseEvaluator, outputFile, randomizer, eyeTracker};
+    static RandomizedTargetPlaylistWithReplacement::Factory
         targetsWithReplacementFactory{
             &onlyIncludesTargetFileExtensions, &randomizer};
-    SubdirectoryTargetPlaylistReader targetsWithReplacementReader{
+    static SubdirectoryTargetPlaylistReader targetsWithReplacementReader{
         &targetsWithReplacementFactory, &directoryReader};
-    CyclicRandomizedTargetPlaylist::Factory cyclicTargetsFactory{
+    static CyclicRandomizedTargetPlaylist::Factory cyclicTargetsFactory{
         &onlyIncludesTargetFileExtensions, &randomizer};
-    SubdirectoryTargetPlaylistReader cyclicTargetsReader{
+    static SubdirectoryTargetPlaylistReader cyclicTargetsReader{
         &cyclicTargetsFactory, &directoryReader};
-    ModelImpl model{adaptiveMethod, fixedLevelMethod,
+    static ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
         allTargetsNTimes, recognitionTestModel, outputFile};
-    const auto viewController{nsTabViewControllerWithoutTabControl()};
-    const auto window{
-        [NSWindow windowWithContentViewController:viewController]};
-    window.title = @"AV Speech in Noise";
-    [window makeKeyAndOrderFront:nil];
-    const auto app{[NSApplication sharedApplication]};
-    app.mainMenu = [[NSMenu alloc] init];
-    auto appMenu{[[NSMenuItem alloc] init]};
-    auto appSubMenu{[[NSMenu alloc] init]};
-    auto aboutMenuItem {
-        [appSubMenu addItemWithTitle:@"About AV Speech in Noise"
-                              action:@selector(notifyThatAboutHasBeenClicked)
-                       keyEquivalent:@""]
-    };
-    [appSubMenu addItem:[NSMenuItem separatorItem]];
-    auto preferencesMenuItem {
-        [appSubMenu
-            addItemWithTitle:@"Preferences..."
-                      action:@selector(notifyThatPreferencesHasBeenClicked)
-               keyEquivalent:@","]
-    };
-    auto menuActions{[[MenuActions alloc] init]};
-    const auto aboutWindow{
-        [NSWindow windowWithContentViewController:aboutViewController]};
-    aboutWindow.styleMask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
-    aboutWindow.title = @"About AV Speech in Noise";
-    const auto preferencesViewController{
-        [[ResizesToContentsViewController alloc] init]};
-    const auto preferencesWindow{
-        [NSWindow windowWithContentViewController:preferencesViewController]};
-    preferencesWindow.styleMask =
-        NSWindowStyleMaskClosable | NSWindowStyleMaskTitled;
-    menuActions->aboutWindow = aboutWindow;
-    menuActions->preferencesWindow = preferencesWindow;
-    aboutMenuItem.target = menuActions;
-    preferencesMenuItem.target = menuActions;
-    [appSubMenu addItemWithTitle:@"Quit"
-                          action:@selector(stop:)
-                   keyEquivalent:@"q"];
-    [appMenu setSubmenu:appSubMenu];
-    [app.mainMenu addItem:appMenu];
-    const auto audioDeviceMenu{
-        [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
-                                   pullsDown:NO]};
-    const auto applicationDelegate{[[ApplicationDelegate alloc] init]};
-    applicationDelegate->audioDeviceMenu = audioDeviceMenu;
-    [app setDelegate:applicationDelegate];
-    AppKitSessionUI sessionUI{app, preferencesViewController, audioDeviceMenu};
-    const auto testSetupViewController{nsTabViewControllerWithoutTabControl()};
-    addChild(viewController, testSetupViewController);
-    testSetupViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint activateConstraints:@[
-        [testSetupViewController.view.topAnchor
-            constraintEqualToAnchor:viewController.view.topAnchor
-                           constant:8],
-        [testSetupViewController.view.bottomAnchor
-            constraintEqualToAnchor:viewController.view.bottomAnchor
-                           constant:-8],
-        [testSetupViewController.view.leadingAnchor
-            constraintEqualToAnchor:viewController.view.leadingAnchor
-                           constant:8],
-        [testSetupViewController.view.trailingAnchor
-            constraintEqualToAnchor:viewController.view.trailingAnchor
-                           constant:-8]
-    ]];
-    const auto testSetupUI{testSetupUIFactory.make(testSetupViewController)};
-    const auto testViewController{nsTabViewControllerWithoutTabControl()};
-    addChild(viewController, testViewController);
-    const auto chooseKeywordsUIController{
-        nsTabViewControllerWithoutTabControl()};
-    const auto freeResponseUIController{nsTabViewControllerWithoutTabControl()};
-    const auto correctKeywordsUIController{
-        nsTabViewControllerWithoutTabControl()};
-    const auto passFailUIController{nsTabViewControllerWithoutTabControl()};
-    const auto syllablesUIController{nsTabViewControllerWithoutTabControl()};
-    addChild(testViewController, chooseKeywordsUIController);
-    addChild(testViewController, freeResponseUIController);
-    addChild(testViewController, correctKeywordsUIController);
-    addChild(testViewController, passFailUIController);
-    addChild(testViewController, syllablesUIController);
-    AppKitTestUI testUI{testViewController};
-    [window center];
-    [window setDelegate:[[WindowDelegate alloc] init]];
+    static auto testSetupUI{testSetupUIFactory.make(nil)};
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto subjectScreenOrigin{subjectScreenFrame.origin};
     const auto subjectScreenSize{subjectScreenFrame.size};
@@ -454,46 +299,39 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto subjectViewWidth{subjectScreenWidth / 3};
     auto subjectViewLeadingEdge =
         subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
-    AppKitConsonantUI consonantView{
+    static AppKitConsonantUI consonantView{
         NSMakeRect(subjectScreenOrigin.x + subjectScreenWidth / 4,
             subjectScreenOrigin.y + subjectScreenSize.height / 12,
             subjectScreenWidth / 2, subjectScreenSize.height / 2)};
-    AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
+    static AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
-    ConsonantTaskPresenterImpl consonantPresenter{consonantView};
-    FreeResponseUI freeResponseUI{freeResponseUIController};
-    FreeResponsePresenter freeResponsePresenter{testUI, freeResponseUI};
-    ChooseKeywordsUI chooseKeywordsUI{chooseKeywordsUIController};
-    ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model, testUI,
-        chooseKeywordsUI,
+    static ConsonantTaskPresenterImpl consonantPresenter{consonantView};
+    static FreeResponsePresenter freeResponsePresenter{
+        testUIMaybe, freeResponseUIMaybe};
+    static ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model,
+        testUIMaybe, chooseKeywordsUIMaybe,
         sentencesWithThreeKeywords(
             read_file(resourceUrl("mlst-c", "txt").path))};
-    SyllablesUI syllablesUI{syllablesUIController};
-    SyllablesPresenterImpl syllablesPresenter{syllablesUI, testUI};
-    CorrectKeywordsUI correctKeywordsUI{correctKeywordsUIController};
-    CorrectKeywordsPresenter correctKeywordsPresenter{
-        testUI, correctKeywordsUI};
-    PassFailUI passFailUI{passFailUIController};
-    PassFailPresenter passFailPresenter{testUI, passFailUI};
-    CoordinateResponseMeasurePresenter coordinateResponseMeasurePresenter{
-        coordinateResponseMeasureView};
-    TestSetupPresenterImpl testSetupPresenter{*(testSetupUI.get()), sessionUI};
-    UninitializedTaskPresenterImpl taskPresenter;
-    TestPresenterImpl testPresenter{model, testUI, &taskPresenter};
-    SessionControllerImpl sessionController{
-        model, sessionUI, testSetupPresenter, testPresenter};
-    std::ifstream defaultAudioDeviceFile{defaultAudioDeviceFilePath()};
-    if (defaultAudioDeviceFile) {
-        std::string defaultAudioDevice;
-        std::getline(defaultAudioDeviceFile, defaultAudioDevice);
-        [audioDeviceMenu selectItemWithTitle:nsString(defaultAudioDevice)];
-    }
-    TestControllerImpl testController{
-        sessionController, model, sessionUI, testUI, testPresenter};
-    ChooseKeywordsController chooseKeywordsController{
-        testController, model, chooseKeywordsUI, chooseKeywordsPresenter};
-    SyllablesController syllablesController{syllablesUI, testController, model,
+    static SyllablesPresenterImpl syllablesPresenter{
+        syllablesUIMaybe, testUIMaybe};
+    static CorrectKeywordsPresenter correctKeywordsPresenter{
+        testUIMaybe, correctKeywordsUIMaybe};
+    static PassFailPresenter passFailPresenter{testUIMaybe, passFailUIMaybe};
+    static CoordinateResponseMeasurePresenter
+        coordinateResponseMeasurePresenter{coordinateResponseMeasureView};
+    static TestSetupPresenterImpl testSetupPresenter{
+        *(testSetupUI.get()), sessionUIMaybe};
+    static UninitializedTaskPresenterImpl taskPresenter;
+    static TestPresenterImpl testPresenter{model, testUIMaybe, &taskPresenter};
+    static SessionControllerImpl sessionController{
+        model, sessionUIMaybe, testSetupPresenter, testPresenter};
+    static TestControllerImpl testController{
+        sessionController, model, sessionUIMaybe, testUIMaybe, testPresenter};
+    static ChooseKeywordsController chooseKeywordsController{
+        testController, model, chooseKeywordsUIMaybe, chooseKeywordsPresenter};
+    static SyllablesController syllablesController{syllablesUIMaybe,
+        testController, model,
         {{"B", Syllable::bi}, {"D", Syllable::di}, {"G", Syllable::dji},
             {"F", Syllable::fi}, {"Ghee", Syllable::gi}, {"H", Syllable::hi},
             {"Yee", Syllable::ji}, {"K", Syllable::ki}, {"L", Syllable::li},
@@ -501,18 +339,20 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {"R", Syllable::ri}, {"Sh", Syllable::shi}, {"S", Syllable::si},
             {"Th", Syllable::thi}, {"T", Syllable::ti}, {"Ch", Syllable::tsi},
             {"V", Syllable::vi}, {"W", Syllable::wi}, {"Z", Syllable::zi}}};
-    CorrectKeywordsController correctKeywordsController{
-        testController, model, sessionUI, correctKeywordsUI};
-    FreeResponseController freeResponseController{
-        testController, model, freeResponseUI};
-    PassFailController passFailController{testController, model, passFailUI};
-    ConsonantTaskController consonantTaskController{
+    static CorrectKeywordsController correctKeywordsController{
+        testController, model, sessionUIMaybe, correctKeywordsUIMaybe};
+    static FreeResponseController freeResponseController{
+        testController, model, freeResponseUIMaybe};
+    static PassFailController passFailController{
+        testController, model, passFailUIMaybe};
+    static ConsonantTaskController consonantTaskController{
         testController, model, consonantView, consonantPresenter};
-    CoordinateResponseMeasureController coordinateResponseMeasureController{
-        testController, model, coordinateResponseMeasureView};
+    static CoordinateResponseMeasureController
+        coordinateResponseMeasureController{
+            testController, model, coordinateResponseMeasureView};
     coordinateResponseMeasureController.attach(
         &coordinateResponseMeasurePresenter);
-    TestSettingsInterpreterImpl testSettingsInterpreter{
+    static TestSettingsInterpreterImpl testSettingsInterpreter{
         {{Method::adaptiveCoordinateResponseMeasure,
              coordinateResponseMeasurePresenter},
             {Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
@@ -546,10 +386,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {Method::fixedLevelConsonants, consonantPresenter},
             {Method::adaptivePassFail, passFailPresenter},
             {Method::adaptivePassFailWithEyeTracking, passFailPresenter}}};
-    TestSetupController testSetupController{*(testSetupUI.get()),
-        sessionController, sessionUI, testSetupPresenter, model,
+    static TestSetupController testSetupController{*(testSetupUI.get()),
+        sessionController, sessionUIMaybe, testSetupPresenter, model,
         testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);
-    [app run];
 }
 }
