@@ -106,8 +106,7 @@ struct SettingsView: View {
                 }
             }
         }
-        .padding(20)
-        .frame(width: 350, height: 100)
+        .padding()
     }
 }
 
@@ -241,12 +240,12 @@ struct SwiftTestSetupView: View {
                 text: $startingSnr.string
             )
             .disableAutocorrection(true)
+            Button(action: {
+                observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
+            }) {
+                Text("Confirm")
+            }
         }.padding()
-        Button(action: {
-            observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
-        }) {
-            Text("Confirm")
-        }
     }
 }
 
