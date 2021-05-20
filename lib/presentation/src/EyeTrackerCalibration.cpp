@@ -10,7 +10,7 @@ static void moveDotTo(View &view, Point p, Presenter::DotState &dotState) {
 
 void Presenter::start() { view.show(); }
 
-void Presenter::stop() {}
+void Presenter::stop() { view.hide(); }
 
 void Presenter::present(Point x) {
     pointPresenting = x;

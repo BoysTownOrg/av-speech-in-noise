@@ -83,7 +83,11 @@ class ViewStub : public View {
 
     [[nodiscard]] auto shown() const -> bool { return shown_; }
 
-    void show() { shown_ = true; }
+    void show() override { shown_ = true; }
+
+    [[nodiscard]] auto hidden() const -> bool { return hidden_; }
+
+    void hide() { hidden_ = true; }
 
   private:
     std::vector<Line> redLinesDrawn_;
@@ -95,6 +99,7 @@ class ViewStub : public View {
     bool dotShrinked_{};
     bool dotGrew_{};
     bool cleared_{};
+    bool hidden_{};
 };
 }
 
@@ -120,6 +125,13 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(startShowsView) {
     Presenter presenter{view};
     presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
+}
+
+EYE_TRACKER_CALIBRATION_PRESENTER_TEST(stopHidesView) {
+    ViewStub view;
+    Presenter presenter{view};
+    presenter.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterDoneMoving) {

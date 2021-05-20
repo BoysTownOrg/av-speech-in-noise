@@ -34,6 +34,7 @@ class View {
     virtual void drawWhiteCircleWithCenter(WindowPoint) = 0;
     virtual void clear() = 0;
     virtual void show() = 0;
+    virtual void hide() = 0;
 };
 
 class Presenter : public View::Observer, public IPresenter {
