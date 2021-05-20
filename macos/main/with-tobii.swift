@@ -25,30 +25,25 @@ class AboutTobiiPro: NSObject {
     }
 }
 
-class EyeTrackerMenuObserverObservable : ObservableObject {
-    @Published var observer : EyeTrackerMenuObserver? = nil
-}
-
 class SwiftEyeTrackerRunMenu : NSObject, EyeTrackerRunMenu {
-    let observableObserver = EyeTrackerMenuObserverObservable()
+    var observer: EyeTrackerMenuObserver? = nil
     
     func attach(_ observer: EyeTrackerMenuObserver!) {
-        observableObserver.observer = observer
+        self.observer = observer
     }
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
-    @ObservedObject var eyeTrackerRunMenuObservable: EyeTrackerMenuObserverObservable
     let testSettingsPathControl = NSPathControl()
     let sessionUI: SwiftSessionUI
     let testSetupUI: SwiftTestSetupUI
-    let eyeTrackerRunMenu = SwiftEyeTrackerRunMenu()
+    let eyeTrackerRunMenu: SwiftEyeTrackerRunMenu
     
-    override init() {
+    init(eyeTrackerRunMenu: SwiftEyeTrackerRunMenu) {
         testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
         sessionUI = SwiftSessionUI()
-        eyeTrackerRunMenuObservable = eyeTrackerRunMenu.observableObserver
+        self.eyeTrackerRunMenu = eyeTrackerRunMenu
     }
 
 
@@ -86,9 +81,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let contentView = SwiftSessionView(ui: sessionUI, showingTestSetup: testSetupUI.showing) {
             SettingsView(ui: self.sessionUI)
             SwiftTestSetupView(ui: self.testSetupUI, testSettingsPathControl:self.testSettingsPathControl)
-            Button("Eye Tracker Calibration") {
-                self.eyeTrackerRunMenuObservable.observer?.notifyThatRunCalibrationHasBeenClicked()
-            }
         }
 
         window = NSWindow(
@@ -109,39 +101,47 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-class AppMenu: NSMenu {
-    private lazy var applicationName = ProcessInfo.processInfo.processName
+class AppMenuReceiver : NSObject {
     let aboutTobiiPro = AboutTobiiPro()
-    
-    override init(title: String) {
-        super.init(title: title)
-        
-        let menuItemOne = NSMenuItem()
-        menuItemOne.submenu = NSMenu(title: "menuItemOne")
-        menuItemOne.submenu?.items = [NSMenuItem(title: "Quit \(applicationName)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")]
-        let legalMenu = NSMenuItem()
-        legalMenu.submenu = NSMenu(title: "Legal")
-        let aboutTobiiProMenuItem = NSMenuItem(title: "About Tobii Pro", action: #selector(notifyThatAboutTobiiProHasBeenClicked), keyEquivalent: "")
-        aboutTobiiProMenuItem.target = self
-        legalMenu.submenu?.items = [aboutTobiiProMenuItem]
-        items = [menuItemOne, legalMenu]
+    let eyeTrackerRunMenu: SwiftEyeTrackerRunMenu
+
+    init(eyeTrackerRunMenu: SwiftEyeTrackerRunMenu) {
+        self.eyeTrackerRunMenu = eyeTrackerRunMenu
     }
 
     @objc
     func notifyThatAboutTobiiProHasBeenClicked() {
         aboutTobiiPro.showAboutPanel()
     }
-    
-    required init(coder: NSCoder) {
-        super.init(coder: coder)
+
+    @objc
+    func notifyThatRunEyeTrackerCalibrationHasBeenClicked() {
+        eyeTrackerRunMenu.observer?.notifyThatRunCalibrationHasBeenClicked()
     }
 }
 
 @main
 class SwiftMain {
     static func main() {
-        let delegate = AppDelegate()
-        let menu = AppMenu()
+        let eyeTrackerRunMenu = SwiftEyeTrackerRunMenu()
+        let appMenuReceiver = AppMenuReceiver(eyeTrackerRunMenu: eyeTrackerRunMenu)
+        let applicationName = ProcessInfo.processInfo.processName
+        let menu = NSMenu()
+        let menuItemOne = NSMenuItem()
+        menuItemOne.submenu = NSMenu(title: "menuItemOne")
+        menuItemOne.submenu?.items = [NSMenuItem(title: "Quit \(applicationName)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")]
+        let legalMenu = NSMenuItem()
+        legalMenu.submenu = NSMenu(title: "Legal")
+        let aboutTobiiProMenuItem = NSMenuItem(title: "About Tobii Pro", action: #selector(AppMenuReceiver.notifyThatAboutTobiiProHasBeenClicked), keyEquivalent: "")
+        aboutTobiiProMenuItem.target = appMenuReceiver
+        legalMenu.submenu?.items = [aboutTobiiProMenuItem]
+        let runMenu = NSMenuItem()
+        runMenu.submenu = NSMenu(title: "Run")
+        let runEyeTrackerCalibration = NSMenuItem(title: "Eye Tracker Calibration", action: #selector(AppMenuReceiver.notifyThatRunEyeTrackerCalibrationHasBeenClicked), keyEquivalent: "")
+        runEyeTrackerCalibration.target = appMenuReceiver
+        runMenu.submenu?.items = [runEyeTrackerCalibration]
+        menu.items = [menuItemOne, runMenu, legalMenu]
+        let delegate = AppDelegate(eyeTrackerRunMenu: eyeTrackerRunMenu)
         NSApplication.shared.delegate = delegate
         NSApplication.shared.mainMenu = menu
         _ = NSApplicationMain(CommandLine.argc, CommandLine.unsafeArgv)
