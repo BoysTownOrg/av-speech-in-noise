@@ -40,4 +40,26 @@ void Presenter::present(const std::vector<Result> &results) {
             view.drawGreen(Line{windowPoint(result.point), windowPoint(point)});
     }
 }
+
+Controller::Controller(Control &control, IInteractor &interactor)
+    : interactor{interactor}, control{control} {
+    control.attach(this);
+}
+
+void Controller::notifyThatWindowHasBeenTouched(WindowPoint point) {
+    const auto whiteCircleCenters{control.whiteCircleCenters()};
+    const auto whiteCircleDiameter{control.whiteCircleDiameter()};
+    auto found{find_if(whiteCircleCenters.begin(), whiteCircleCenters.end(),
+        [whiteCircleDiameter, point](WindowPoint candidate) {
+            return std::hypot(point.x - candidate.x, point.y - candidate.y) <=
+                whiteCircleDiameter / 2;
+        })};
+    if (found != whiteCircleCenters.end())
+        interactor.redo(Point{
+            static_cast<float>(found->x), 1 - static_cast<float>(found->y)});
+}
+
+void Controller::notifyThatSubmitButtonHasBeenClicked() { interactor.finish(); }
+
+void Controller::notifyThatMenuHasBeenSelected() { interactor.start(); }
 }

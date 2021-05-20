@@ -69,29 +69,10 @@ class Control {
 
 class Controller : public Control::Observer {
   public:
-    explicit Controller(Control &control, IInteractor &interactor)
-        : interactor{interactor}, control{control} {
-        control.attach(this);
-    }
-
-    void notifyThatWindowHasBeenTouched(WindowPoint point) override {
-        const auto whiteCircleCenters{control.whiteCircleCenters()};
-        const auto whiteCircleDiameter{control.whiteCircleDiameter()};
-        auto found{find_if(whiteCircleCenters.begin(), whiteCircleCenters.end(),
-            [whiteCircleDiameter, point](WindowPoint candidate) {
-                return std::hypot(point.x - candidate.x,
-                           point.y - candidate.y) <= whiteCircleDiameter / 2;
-            })};
-        if (found != whiteCircleCenters.end())
-            interactor.redo(Point{static_cast<float>(found->x),
-                1 - static_cast<float>(found->y)});
-    }
-
-    void notifyThatSubmitButtonHasBeenClicked() override {
-        interactor.finish();
-    }
-
-    void notifyThatMenuHasBeenSelected() override { interactor.start(); }
+    Controller(Control &, IInteractor &);
+    void notifyThatWindowHasBeenTouched(WindowPoint) override;
+    void notifyThatSubmitButtonHasBeenClicked() override;
+    void notifyThatMenuHasBeenSelected() override;
 
   private:
     IInteractor &interactor;
