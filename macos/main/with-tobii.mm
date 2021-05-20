@@ -28,13 +28,9 @@
 @implementation AvSpeechInNoiseEyeTrackerMenuObserverImpl {
   @public
     av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
-    NSWindow *calibrationWindow;
-    NSWindow *calibrationResultsWindow;
 }
 
 - (void)notifyThatRunCalibrationHasBeenClicked {
-    [calibrationWindow makeKeyAndOrderFront:nil];
-    [calibrationResultsWindow makeKeyAndOrderFront:nil];
     observer->notifyThatMenuHasBeenSelected();
 }
 @end
@@ -129,15 +125,10 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
 @implementation AvSpeechInNoiseEyeTrackerCalibrationAppKitActions {
   @public
     av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
-    NSWindow *subjectWindow;
-    NSWindow *testerWindow;
-    NSMenuItem *menuItem;
 }
 
 - (void)notifyThatSubmitButtonHasBeenClicked {
     observer->notifyThatSubmitButtonHasBeenClicked();
-    [testerWindow orderOut:nil];
-    [subjectWindow orderOut:nil];
 }
 @end
 
@@ -173,8 +164,7 @@ class AppKitUI : public View, public Control {
     static constexpr auto normalDotDiameterPoints{100};
     static constexpr auto shrunkenDotDiameterPoints{25};
 
-    explicit AppKitUI(NSWindow *animatingWindow,
-        NSViewController *resultsViewController,
+    explicit AppKitUI(NSWindow *subjectWindow, NSWindow *testerWindow,
         AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *actions,
         AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver)
         : circleView{[[AvSpeechInNoiseAppKitCircleView alloc]
@@ -183,30 +173,35 @@ class AppKitUI : public View, public Control {
           view{[[AvSpeechInNoiseEyeTrackerCalibrationView alloc] init]},
           delegate{[[AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate
               alloc] init]},
-          actions{actions}, menuObserver{menuObserver} {
-        [animatingWindow.contentViewController.view addSubview:circleView];
+          actions{actions}, menuObserver{menuObserver},
+          testerWindow{testerWindow}, subjectWindow{subjectWindow} {
+        [subjectWindow.contentViewController.view addSubview:circleView];
         const auto submitButton {
             nsButton("confirm", actions,
                 @selector(notifyThatSubmitButtonHasBeenClicked))
         };
-        addAutolayoutEnabledSubview(resultsViewController.view, view);
-        addAutolayoutEnabledSubview(resultsViewController.view, submitButton);
+        addAutolayoutEnabledSubview(
+            testerWindow.contentViewController.view, view);
+        addAutolayoutEnabledSubview(
+            testerWindow.contentViewController.view, submitButton);
         [NSLayoutConstraint activateConstraints:@[
             [view.leadingAnchor
-                constraintEqualToAnchor:resultsViewController.view
+                constraintEqualToAnchor:testerWindow.contentViewController.view
                                             .leadingAnchor],
             [view.trailingAnchor
-                constraintEqualToAnchor:resultsViewController.view
+                constraintEqualToAnchor:testerWindow.contentViewController.view
                                             .trailingAnchor],
             [view.topAnchor
-                constraintEqualToAnchor:resultsViewController.view.topAnchor],
+                constraintEqualToAnchor:testerWindow.contentViewController.view
+                                            .topAnchor],
             [view.bottomAnchor constraintEqualToAnchor:submitButton.topAnchor],
             [submitButton.trailingAnchor
-                constraintEqualToAnchor:resultsViewController.view
+                constraintEqualToAnchor:testerWindow.contentViewController.view
                                             .trailingAnchor
                                constant:-8],
             [submitButton.bottomAnchor
-                constraintEqualToAnchor:resultsViewController.view.bottomAnchor
+                constraintEqualToAnchor:testerWindow.contentViewController.view
+                                            .bottomAnchor
                                constant:-8]
         ]];
     }
@@ -281,12 +276,24 @@ class AppKitUI : public View, public Control {
         view->whiteCircleCenters.clear();
     }
 
+    void show() override {
+        [testerWindow makeKeyAndOrderFront:nil];
+        [subjectWindow makeKeyAndOrderFront:nil];
+    }
+
+    void hide() override {
+        [testerWindow orderOut:nil];
+        [subjectWindow orderOut:nil];
+    }
+
   private:
     AvSpeechInNoiseAppKitCircleView *circleView;
     AvSpeechInNoiseEyeTrackerCalibrationView *view;
     AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate *delegate;
     AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *actions;
     AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver;
+    NSWindow *testerWindow;
+    NSWindow *subjectWindow;
 };
 }
 }
@@ -587,15 +594,11 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     const auto eyeTrackerActions{
         [[AvSpeechInNoiseEyeTrackerCalibrationAppKitActions alloc] init]};
     animatingWindow.level = NSScreenSaverWindowLevel;
-    eyeTrackerActions->subjectWindow = animatingWindow;
-    eyeTrackerActions->testerWindow = calibrationResultsWindow;
     const auto eyeTrackerMenuObserver{
         [[AvSpeechInNoiseEyeTrackerMenuObserverImpl alloc] init]};
-    eyeTrackerMenuObserver->calibrationResultsWindow = calibrationResultsWindow;
-    eyeTrackerMenuObserver->calibrationWindow = animatingWindow;
     [eyeTrackerMenu attach:eyeTrackerMenuObserver];
     static eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
-        animatingWindow, calibrationResultsViewController, eyeTrackerActions,
+        animatingWindow, calibrationResultsWindow, eyeTrackerActions,
         eyeTrackerMenuObserver};
     static eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
         eyeTrackerCalibrationView};
