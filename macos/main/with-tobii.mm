@@ -120,8 +120,7 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
 }
 @end
 
-namespace av_speech_in_noise {
-namespace eye_tracker_calibration {
+namespace av_speech_in_noise::eye_tracker_calibration {
 static void animate(NSView *view, NSRect endFrame, double durationSeconds,
     id<NSAnimationDelegate> delegate) {
     const auto mutableDictionary {
@@ -287,7 +286,6 @@ class AppKitUI : public View, public Control {
 };
 }
 }
-}
 
 namespace av_speech_in_noise {
 static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
@@ -324,10 +322,10 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     calibrationResultsViewController.view.frame = testerScreenFrame;
     const auto calibrationResultsWindow{[NSWindow
         windowWithContentViewController:calibrationResultsViewController]};
-    calibrationResultsWindow.styleMask =
-        NSWindowStyleMaskResizable | NSWindowStyleMaskTitled;
+    calibrationResultsWindow.styleMask = NSWindowStyleMaskBorderless;
     [calibrationResultsWindow setFrame:testerScreenFrame display:YES];
     animatingWindow.level = NSScreenSaverWindowLevel;
+    calibrationResultsWindow.level = NSScreenSaverWindowLevel;
     static eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
         animatingWindow, calibrationResultsWindow, eyeTrackerMenu};
     static eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
