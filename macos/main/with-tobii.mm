@@ -316,10 +316,6 @@ class TobiiEyeTracker : public EyeTracker {
         return Calibration{eyeTracker(eyeTrackers)};
     }
 
-    // auto calibrationValidation() -> CalibrationValidation {
-    //     return CalibrationValidation{eyeTracker(eyeTrackers)};
-    // }
-
     class Address {
       public:
         explicit Address(TobiiResearchEyeTracker *eyetracker) {
