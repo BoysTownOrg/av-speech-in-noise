@@ -8,6 +8,10 @@ static void moveDotTo(View &view, Point p, Presenter::DotState &dotState) {
     dotState = Presenter::DotState::moving;
 }
 
+void Presenter::start() { view.show(); }
+
+void Presenter::stop() {}
+
 void Presenter::present(Point x) {
     pointPresenting = x;
     if (dotState == DotState::shrunk) {

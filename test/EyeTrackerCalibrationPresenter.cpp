@@ -77,9 +77,13 @@ class ViewStub : public View {
         whiteCircleCenters_.push_back(x);
     }
 
-    void clear() { cleared_ = true; }
+    void clear() override { cleared_ = true; }
 
     [[nodiscard]] auto cleared() const -> bool { return cleared_; }
+
+    [[nodiscard]] auto shown() const -> bool { return shown_; }
+
+    void show() { shown_ = true; }
 
   private:
     std::vector<Line> redLinesDrawn_;
@@ -87,6 +91,7 @@ class ViewStub : public View {
     std::vector<WindowPoint> whiteCircleCenters_;
     Observer *observer{};
     WindowPoint pointDotMovedTo_{};
+    bool shown_{};
     bool dotShrinked_{};
     bool dotGrew_{};
     bool cleared_{};
@@ -108,6 +113,13 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotToPoint) {
     Presenter presenter{view};
     present(presenter, {0.1F, 0.2F});
     assertEqual(WindowPoint{0.1F, 0.8F}, view.pointDotMovedTo());
+}
+
+EYE_TRACKER_CALIBRATION_PRESENTER_TEST(startShowsView) {
+    ViewStub view;
+    Presenter presenter{view};
+    presenter.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterDoneMoving) {

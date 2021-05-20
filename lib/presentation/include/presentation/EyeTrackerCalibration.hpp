@@ -33,6 +33,7 @@ class View {
     virtual void drawGreen(Line) = 0;
     virtual void drawWhiteCircleWithCenter(WindowPoint) = 0;
     virtual void clear() = 0;
+    virtual void show() = 0;
 };
 
 class Presenter : public View::Observer, public IPresenter {
@@ -44,8 +45,8 @@ class Presenter : public View::Observer, public IPresenter {
     void present(Point x) override;
     void present(const std::vector<Result> &) override;
     void notifyThatAnimationHasFinished() override;
-    void stop() override {}
-    void start() override {}
+    void stop() override;
+    void start() override;
 
   private:
     Point pointPresenting{};
