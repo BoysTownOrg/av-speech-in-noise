@@ -202,4 +202,17 @@ auto TobiiEyeTracker::Calibration::ComputeAndApply::results()
 TobiiEyeTracker::Calibration::ComputeAndApply::~ComputeAndApply() {
     tobii_research_free_screen_based_calibration_result(result);
 }
+
+TobiiEyeTracker::CalibrationData::CalibrationData(
+    TobiiResearchEyeTracker *eyeTracker) {
+    tobii_research_retrieve_calibration_data(eyeTracker, &data);
+}
+
+void TobiiEyeTracker::CalibrationData::write(std::ostream &stream) {
+    stream.write(reinterpret_cast<const char *>(data->data), data->size);
+}
+
+TobiiEyeTracker::CalibrationData::~CalibrationData() {
+    tobii_research_free_calibration_data(data);
+}
 }

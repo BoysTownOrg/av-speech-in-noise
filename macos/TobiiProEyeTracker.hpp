@@ -5,9 +5,12 @@
 #include <recognition-test/EyeTrackerCalibration.hpp>
 #include <tobii_research.h>
 #include <tobii_research_calibration.h>
+#include <tobii_research_eyetracker.h>
 #include <tobii_research_streams.h>
+#include <gsl/gsl>
 #include <vector>
 #include <cstddef>
+#include <ostream>
 
 namespace av_speech_in_noise {
 class TobiiEyeTracker : public EyeTracker {
@@ -33,6 +36,15 @@ class TobiiEyeTracker : public EyeTracker {
 
       private:
         char *address{};
+    };
+
+    class CalibrationData {
+        explicit CalibrationData(TobiiResearchEyeTracker *);
+        void write(std::ostream &);
+        ~CalibrationData();
+
+      private:
+        TobiiResearchCalibrationData *data{};
     };
 
     class Calibration : public eye_tracker_calibration::EyeTrackerCalibrator {
