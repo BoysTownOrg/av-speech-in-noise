@@ -1,12 +1,12 @@
 #include "../run.h"
 #include "../AppKitView.h"
 #include "../AppKit-utility.h"
+#include "../objective-c-bridge.h"
+#include "../objective-c-adapters.h"
 #include <av-speech-in-noise/Interface.hpp>
 #include <presentation/EyeTrackerCalibration.hpp>
 #include <recognition-test/EyeTrackerCalibration.hpp>
 #import <AppKit/AppKit.h>
-#include "../objective-c-bridge.h"
-#include "../objective-c-adapters.h"
 #include <exception>
 #include <tobii_research.h>
 #include <tobii_research_eyetracker.h>
@@ -15,18 +15,17 @@
 #include <gsl/gsl>
 #include <exception>
 #include <iterator>
-#include <chrono>
 #include <utility>
 #include <vector>
-#include <thread>
 #include <algorithm>
 #include <cstddef>
 #include <functional>
 
-@interface EyeTrackerMenuObserverImpl : NSObject <EyeTrackerMenuObserver>
+@interface AvSpeechInNoiseEyeTrackerMenuObserverImpl
+    : NSObject <EyeTrackerMenuObserver>
 @end
 
-@implementation EyeTrackerMenuObserverImpl {
+@implementation AvSpeechInNoiseEyeTrackerMenuObserverImpl {
   @public
     av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
     NSWindow *calibrationWindow;
@@ -40,19 +39,16 @@
 }
 @end
 
-@interface CircleView : NSView
+@interface AvSpeechInNoiseAppKitCircleView : NSView
 @end
 
-@implementation CircleView
+@implementation AvSpeechInNoiseAppKitCircleView
 - (void)drawRect:(NSRect)rect {
     NSBezierPath *thePath = [NSBezierPath bezierPath];
     [thePath appendBezierPathWithOvalInRect:rect];
     [[NSColor whiteColor] set];
     [thePath fill];
 }
-@end
-
-@interface AvSpeechInNoiseEyeTrackerCalibrationView : NSView
 @end
 
 namespace av_speech_in_noise::eye_tracker_calibration {
@@ -71,6 +67,9 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
     [path stroke];
 }
 }
+
+@interface AvSpeechInNoiseEyeTrackerCalibrationView : NSView
+@end
 
 @implementation AvSpeechInNoiseEyeTrackerCalibrationView {
   @public
@@ -107,18 +106,18 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
     observer->notifyThatWindowHasBeenTouched(
         {mousePoint.x / self.frame.size.width,
             mousePoint.y / self.frame.size.height});
-    //[super mouseUp:theEvent];
 }
 @end
 
-@interface AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate
+@interface AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate
     : NSObject <NSAnimationDelegate>
 @end
 
-@implementation AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate {
+@implementation AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate {
   @public
     av_speech_in_noise::eye_tracker_calibration::View::Observer *observer;
 }
+
 - (void)animationDidEnd:(NSAnimation *)animation {
     observer->notifyThatAnimationHasFinished();
 }
@@ -177,12 +176,12 @@ class AppKitUI : public View, public Control {
     explicit AppKitUI(NSWindow *animatingWindow,
         NSViewController *resultsViewController,
         AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *actions,
-        EyeTrackerMenuObserverImpl *menuObserver)
-        : circleView{[[CircleView alloc]
+        AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver)
+        : circleView{[[AvSpeechInNoiseAppKitCircleView alloc]
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
                                 normalDotDiameterPoints)]},
           view{[[AvSpeechInNoiseEyeTrackerCalibrationView alloc] init]},
-          delegate{[[AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate
+          delegate{[[AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate
               alloc] init]},
           actions{actions}, menuObserver{menuObserver} {
         [animatingWindow.contentViewController.view addSubview:circleView];
@@ -283,11 +282,11 @@ class AppKitUI : public View, public Control {
     }
 
   private:
-    CircleView *circleView;
+    AvSpeechInNoiseAppKitCircleView *circleView;
     AvSpeechInNoiseEyeTrackerCalibrationView *view;
-    AvSpeechInNoiseEyeTrackerCalibrationAnimationDelegate *delegate;
+    AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate *delegate;
     AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *actions;
-    EyeTrackerMenuObserverImpl *menuObserver;
+    AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver;
 };
 }
 }
@@ -548,7 +547,7 @@ auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
 }
 
 namespace av_speech_in_noise {
-void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
+static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI,
     NSObject<FreeResponseUI> *freeResponseUI,
     NSObject<SyllablesUI> *syllablesUI,
@@ -591,7 +590,7 @@ void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     eyeTrackerActions->subjectWindow = animatingWindow;
     eyeTrackerActions->testerWindow = calibrationResultsWindow;
     const auto eyeTrackerMenuObserver{
-        [[EyeTrackerMenuObserverImpl alloc] init]};
+        [[AvSpeechInNoiseEyeTrackerMenuObserverImpl alloc] init]};
     eyeTrackerMenuObserver->calibrationResultsWindow = calibrationResultsWindow;
     eyeTrackerMenuObserver->calibrationWindow = animatingWindow;
     [eyeTrackerMenu attach:eyeTrackerMenuObserver];
