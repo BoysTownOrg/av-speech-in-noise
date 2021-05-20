@@ -33,6 +33,10 @@
 - (void)notifyThatRunCalibrationHasBeenClicked {
     observer->notifyThatMenuHasBeenSelected();
 }
+
+- (void)notifyThatSubmitButtonHasBeenClicked {
+    observer->notifyThatSubmitButtonHasBeenClicked();
+}
 @end
 
 @interface AvSpeechInNoiseAppKitCircleView : NSView
@@ -119,19 +123,6 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
 }
 @end
 
-@interface AvSpeechInNoiseEyeTrackerCalibrationAppKitActions : NSObject
-@end
-
-@implementation AvSpeechInNoiseEyeTrackerCalibrationAppKitActions {
-  @public
-    av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
-}
-
-- (void)notifyThatSubmitButtonHasBeenClicked {
-    observer->notifyThatSubmitButtonHasBeenClicked();
-}
-@end
-
 namespace av_speech_in_noise {
 namespace eye_tracker_calibration {
 static void animate(NSView *view, NSRect endFrame, double durationSeconds,
@@ -165,19 +156,21 @@ class AppKitUI : public View, public Control {
     static constexpr auto shrunkenDotDiameterPoints{25};
 
     explicit AppKitUI(NSWindow *subjectWindow, NSWindow *testerWindow,
-        AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *actions,
-        AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver)
+        NSObject<EyeTrackerRunMenu> *eyeTrackerMenu)
         : circleView{[[AvSpeechInNoiseAppKitCircleView alloc]
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
                                 normalDotDiameterPoints)]},
           view{[[AvSpeechInNoiseEyeTrackerCalibrationView alloc] init]},
-          delegate{[[AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate
-              alloc] init]},
-          actions{actions}, menuObserver{menuObserver},
+          animationDelegate{
+              [[AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate
+                  alloc] init]},
+          controlObserverProxy{
+              [[AvSpeechInNoiseEyeTrackerMenuObserverImpl alloc] init]},
           testerWindow{testerWindow}, subjectWindow{subjectWindow} {
+        [eyeTrackerMenu attach:controlObserverProxy];
         [subjectWindow.contentViewController.view addSubview:circleView];
         const auto submitButton {
-            nsButton("confirm", actions,
+            nsButton("confirm", controlObserverProxy,
                 @selector(notifyThatSubmitButtonHasBeenClicked))
         };
         addAutolayoutEnabledSubview(
@@ -206,12 +199,11 @@ class AppKitUI : public View, public Control {
         ]];
     }
 
-    void attach(View::Observer *a) override { delegate->observer = a; }
+    void attach(View::Observer *a) override { animationDelegate->observer = a; }
 
     void attach(Control::Observer *a) override {
         view->observer = a;
-        actions->observer = a;
-        menuObserver->observer = a;
+        controlObserverProxy->observer = a;
     }
 
     void moveDotTo(WindowPoint point) override {
@@ -221,7 +213,7 @@ class AppKitUI : public View, public Control {
                 point.y * circleView.superview.frame.size.height -
                     circleView.frame.size.height / 2,
                 circleView.frame.size.width, circleView.frame.size.height),
-            1.5, delegate);
+            1.5, animationDelegate);
     }
 
     void shrinkDot() override {
@@ -233,7 +225,7 @@ class AppKitUI : public View, public Control {
                     (circleView.frame.size.height - shrunkenDotDiameterPoints) /
                         2,
                 shrunkenDotDiameterPoints, shrunkenDotDiameterPoints),
-            0.5, delegate);
+            0.5, animationDelegate);
     }
 
     void growDot() override {
@@ -244,7 +236,7 @@ class AppKitUI : public View, public Control {
                     (circleView.frame.size.height - normalDotDiameterPoints) /
                         2,
                 normalDotDiameterPoints, normalDotDiameterPoints),
-            0.5, delegate);
+            0.5, animationDelegate);
     }
 
     void drawRed(Line line) override {
@@ -289,9 +281,9 @@ class AppKitUI : public View, public Control {
   private:
     AvSpeechInNoiseAppKitCircleView *circleView;
     AvSpeechInNoiseEyeTrackerCalibrationView *view;
-    AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate *delegate;
-    AvSpeechInNoiseEyeTrackerCalibrationAppKitActions *actions;
-    AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver;
+    AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate
+        *animationDelegate;
+    AvSpeechInNoiseEyeTrackerMenuObserverImpl *controlObserverProxy;
     NSWindow *testerWindow;
     NSWindow *subjectWindow;
 };
@@ -591,15 +583,9 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     calibrationResultsWindow.styleMask =
         NSWindowStyleMaskResizable | NSWindowStyleMaskTitled;
     [calibrationResultsWindow setFrame:testerScreenFrame display:YES];
-    const auto eyeTrackerActions{
-        [[AvSpeechInNoiseEyeTrackerCalibrationAppKitActions alloc] init]};
     animatingWindow.level = NSScreenSaverWindowLevel;
-    const auto eyeTrackerMenuObserver{
-        [[AvSpeechInNoiseEyeTrackerMenuObserverImpl alloc] init]};
-    [eyeTrackerMenu attach:eyeTrackerMenuObserver];
     static eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
-        animatingWindow, calibrationResultsWindow, eyeTrackerActions,
-        eyeTrackerMenuObserver};
+        animatingWindow, calibrationResultsWindow, eyeTrackerMenu};
     static eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
         eyeTrackerCalibrationView};
     static auto calibrator{eyeTracker.calibration()};
