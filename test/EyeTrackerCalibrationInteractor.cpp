@@ -31,7 +31,7 @@ class IPresenterStub : public IPresenter {
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
     void stop() override { stopped_ = true; }
     [[nodiscard]] auto started() const -> bool { return started_; }
-    void start() { started_ = true; }
+    void start() override { started_ = true; }
 
   private:
     Point presentedPoint_{};
@@ -78,10 +78,16 @@ class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
     Interactor interactor{
         presenter, calibrator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
 };
+}
+
+static void notifyThatPointIsReady(IPresenterStub &presenter) {
+    presenter.notifyThatPointIsReady();
+}
 
 #define EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(a)                             \
     TEST_F(EyeTrackerCalibrationInteractorTests, a)
 
+namespace {
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(acquiresCalibratorOnCalibrate) {
     interactor.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(calibrator.acquired());
@@ -90,20 +96,20 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(acquiresCalibratorOnCalibrate) {
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     doesNotReleaseCalibratorUntilAllPointsAreCalibrated) {
     interactor.start();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
     interactor.finish();
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(calibrator.released());
-    presenter.notifyThatPointIsReady();
+    notifyThatPointIsReady(presenter);
     interactor.finish();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(calibrator.released());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(stopsPresenterOnFinish) {
     interactor.start();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
     interactor.finish();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.stopped());
 }
@@ -120,30 +126,30 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsFirstPointOnCalibrate) {
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(calibratesPointWhenPointReady) {
     interactor.start();
-    presenter.notifyThatPointIsReady();
+    notifyThatPointIsReady(presenter);
     assertEqual(Point{0.1F, 0.2F}, calibrator.calibratedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     presentsNextPointAfterCalibratingPrevious) {
     interactor.start();
-    presenter.notifyThatPointIsReady();
+    notifyThatPointIsReady(presenter);
     assertEqual(Point{0.3F, 0.4F}, presenter.presentedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(doesNotPresentAnymorePoints) {
     interactor.start();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
     assertEqual(Point{0.5F, 0.6F}, presenter.presentedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(restarts) {
     interactor.start();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
     interactor.finish();
     interactor.start();
     assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
@@ -159,9 +165,9 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
         {{{0.888F, 0.999F}, {0.01F, 0.02F}}, {{0.03F, 0.04F}, {0.05F, 0.06F}},
             {0.5F, 0.6F}}});
     interactor.start();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
     ::assertEqual<Result>(
         {{{{0.11F, 0.22F}, {0.33F, 0.44F}}, {{0.55F, 0.66F}, {0.77F, 0.88F}},
              {0.1F, 0.2F}},
@@ -175,9 +181,9 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsPointForRedo) {
     interactor.start();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
     interactor.redo(Point{0.1F, 0.2F});
     assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
 }
@@ -185,9 +191,9 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsPointForRedo) {
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     findsPointClosestToThatRequestedWhenRedoing) {
     interactor.start();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
     interactor.redo(Point{0.31F, 0.42F});
     assertEqual(Point{0.3F, 0.4F}, presenter.presentedPoint());
 }
@@ -195,9 +201,9 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     removesDataCollectedForPointBeingRedone) {
     interactor.start();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
     interactor.redo(Point{0.31F, 0.42F});
     assertEqual(Point{0.3F, 0.4F}, calibrator.discardedPoint());
 }
@@ -205,9 +211,9 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     doesNotAcceptAdditionalRedosWhileOneInProgress) {
     interactor.start();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
-    presenter.notifyThatPointIsReady();
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
     interactor.redo(Point{0.31F, 0.42F});
     interactor.redo(Point{0.51F, 0.62F});
     assertEqual(Point{0.3F, 0.4F}, calibrator.discardedPoint());
