@@ -39,7 +39,6 @@ class SwiftEyeTrackerRunMenu : NSObject, EyeTrackerRunMenu {
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
-    let aboutTobiiPro = AboutTobiiPro()
     @ObservedObject var eyeTrackerRunMenuObservable: EyeTrackerMenuObserverObservable
     let testSettingsPathControl = NSPathControl()
     let sessionUI: SwiftSessionUI
@@ -90,9 +89,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             Button("Eye Tracker Calibration") {
                 self.eyeTrackerRunMenuObservable.observer?.notifyThatRunCalibrationHasBeenClicked()
             }
-            Button("About Tobii Pro") {
-                self.aboutTobiiPro.showAboutPanel()
-            }
         }
 
         window = NSWindow(
@@ -115,6 +111,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 class AppMenu: NSMenu {
     private lazy var applicationName = ProcessInfo.processInfo.processName
+    let aboutTobiiPro = AboutTobiiPro()
     
     override init(title: String) {
         super.init(title: title)
@@ -122,7 +119,17 @@ class AppMenu: NSMenu {
         let menuItemOne = NSMenuItem()
         menuItemOne.submenu = NSMenu(title: "menuItemOne")
         menuItemOne.submenu?.items = [NSMenuItem(title: "Quit \(applicationName)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")]
-        items = [menuItemOne]
+        let legalMenu = NSMenuItem()
+        legalMenu.submenu = NSMenu(title: "Legal")
+        let aboutTobiiProMenuItem = NSMenuItem(title: "About Tobii Pro", action: #selector(notifyThatAboutTobiiProHasBeenClicked), keyEquivalent: "")
+        aboutTobiiProMenuItem.target = self
+        legalMenu.submenu?.items = [aboutTobiiProMenuItem]
+        items = [menuItemOne, legalMenu]
+    }
+
+    @objc
+    func notifyThatAboutTobiiProHasBeenClicked() {
+        aboutTobiiPro.showAboutPanel()
     }
     
     required init(coder: NSCoder) {
