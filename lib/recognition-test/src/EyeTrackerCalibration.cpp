@@ -40,8 +40,10 @@ void Interactor::start() {
 }
 
 void Interactor::finish() {
-    if (pointsToCalibrate.empty())
+    if (pointsToCalibrate.empty()) {
         calibrator.release();
+        presenter.stop();
+    }
 }
 
 void Interactor::redo(Point p) {

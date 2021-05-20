@@ -36,6 +36,7 @@ class IPresenter {
     virtual void attach(Observer *) = 0;
     virtual void present(Point) = 0;
     virtual void present(const std::vector<Result> &) = 0;
+    virtual void stop() = 0;
 };
 
 class EyeTrackerCalibrator {

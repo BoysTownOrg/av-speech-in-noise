@@ -28,11 +28,14 @@ class IPresenterStub : public IPresenter {
     void notifyThatPointIsReady() { observer->notifyThatPointIsReady(); }
     auto presentedPoint() -> Point { return presentedPoint_; }
     auto results() -> std::vector<Result> { return results_; }
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+    void stop() { stopped_ = true; }
 
   private:
     Point presentedPoint_{};
     std::vector<Result> results_{};
     Observer *observer{};
+    bool stopped_{};
 };
 
 class EyeTrackerCalibratorStub : public EyeTrackerCalibrator {
@@ -91,6 +94,15 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     presenter.notifyThatPointIsReady();
     interactor.finish();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(calibrator.released());
+}
+
+EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(stopsPresenterOnFinish) {
+    interactor.start();
+    presenter.notifyThatPointIsReady();
+    presenter.notifyThatPointIsReady();
+    presenter.notifyThatPointIsReady();
+    interactor.finish();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.stopped());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsFirstPointOnCalibrate) {
