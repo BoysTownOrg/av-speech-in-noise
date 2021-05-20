@@ -4,19 +4,11 @@
 #include "../objective-c-bridge.h"
 #include "../objective-c-adapters.h"
 #include "../TobiiProEyeTracker.hpp"
-#include <av-speech-in-noise/Interface.hpp>
 #include <presentation/EyeTrackerCalibration.hpp>
 #include <recognition-test/EyeTrackerCalibration.hpp>
 #import <AppKit/AppKit.h>
-#include <exception>
-#include <gsl/gsl>
-#include <exception>
-#include <iterator>
-#include <utility>
 #include <vector>
 #include <algorithm>
-#include <cstddef>
-#include <functional>
 
 @interface AvSpeechInNoiseEyeTrackerMenuObserverImpl
     : NSObject <EyeTrackerMenuObserver>
@@ -51,14 +43,14 @@
 namespace av_speech_in_noise::eye_tracker_calibration {
 static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
     NSBezierPath *path = [NSBezierPath bezierPath];
-    for (const auto &line : lines) {
+    for_each(lines.begin(), lines.end(), [=](const Line &line) {
         [path
             moveToPoint:NSMakePoint(line.a.x * rect.size.width + rect.origin.x,
                             line.a.y * rect.size.height + rect.origin.y)];
         [path
             lineToPoint:NSMakePoint(line.b.x * rect.size.width + rect.origin.x,
                             line.b.y * rect.size.height + rect.origin.y)];
-    }
+    });
     [path closePath];
     [color set];
     [path stroke];
@@ -76,17 +68,20 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
         whiteCircleCenters;
     av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
 }
+
 - (void)drawRect:(NSRect)rect {
     NSBezierPath *circlePath = [NSBezierPath bezierPath];
-    for (const auto &center : whiteCircleCenters) {
-        [circlePath
-            appendBezierPathWithOvalInRect:NSMakeRect(
-                                               center.x * rect.size.width -
-                                                   25. / 2,
-                                               center.y * rect.size.height -
-                                                   25. / 2,
-                                               25, 25)];
-    }
+    for_each(whiteCircleCenters.begin(), whiteCircleCenters.end(),
+        [=](const av_speech_in_noise::eye_tracker_calibration::WindowPoint
+                &center) {
+            [circlePath
+                appendBezierPathWithOvalInRect:NSMakeRect(
+                                                   center.x * rect.size.width -
+                                                       25. / 2,
+                                                   center.y * rect.size.height -
+                                                       25. / 2,
+                                                   25, 25)];
+        });
     [[NSColor whiteColor] set];
     [circlePath fill];
     draw(rect, greenLines, [NSColor greenColor]);
@@ -307,7 +302,7 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
     static PassFailUIImpl passFailUIAdapted{passFailUI};
     const auto calibrationViewController{
-        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+        nsTabViewControllerWithoutTabControl()};
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     const auto subjectScreenFrame{subjectScreen.frame};
     const auto testerScreen{[[NSScreen screens] firstObject]};
@@ -318,7 +313,7 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
     [animatingWindow setFrame:subjectScreenFrame display:YES];
     const auto calibrationResultsViewController{
-        av_speech_in_noise::nsTabViewControllerWithoutTabControl()};
+        nsTabViewControllerWithoutTabControl()};
     calibrationResultsViewController.view.frame = testerScreenFrame;
     const auto calibrationResultsWindow{[NSWindow
         windowWithContentViewController:calibrationResultsViewController]};

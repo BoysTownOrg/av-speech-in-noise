@@ -1,5 +1,6 @@
 
 #include "TobiiProEyeTracker.hpp"
+#include <gsl/gsl>
 
 namespace av_speech_in_noise {
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)

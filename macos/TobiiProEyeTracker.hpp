@@ -7,6 +7,7 @@
 #include <tobii_research_calibration.h>
 #include <tobii_research_streams.h>
 #include <vector>
+#include <cstddef>
 
 namespace av_speech_in_noise {
 class TobiiEyeTracker : public EyeTracker {
