@@ -81,8 +81,14 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(acquiresCalibratorOnCalibrate) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(calibrator.acquired());
 }
 
-EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(releasesCalibratorOnFinish) {
+EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
+    doesNotReleaseCalibratorUntilAllPointsAreCalibrated) {
     interactor.start();
+    presenter.notifyThatPointIsReady();
+    presenter.notifyThatPointIsReady();
+    interactor.finish();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(calibrator.released());
+    presenter.notifyThatPointIsReady();
     interactor.finish();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(calibrator.released());
 }

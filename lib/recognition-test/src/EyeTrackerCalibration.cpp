@@ -39,7 +39,10 @@ void Interactor::start() {
     present(presenter, pointsToCalibrate);
 }
 
-void Interactor::finish() { calibrator.release(); }
+void Interactor::finish() {
+    if (pointsToCalibrate.empty())
+        calibrator.release();
+}
 
 void Interactor::redo(Point p) {
     if (pointsCalibrated.empty() || !pointsToCalibrate.empty())
