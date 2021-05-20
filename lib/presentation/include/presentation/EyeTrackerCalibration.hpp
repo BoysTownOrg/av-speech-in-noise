@@ -45,6 +45,7 @@ class Presenter : public View::Observer, public IPresenter {
     void present(const std::vector<Result> &) override;
     void notifyThatAnimationHasFinished() override;
     void stop() override {}
+    void start() override {}
 
   private:
     Point pointPresenting{};

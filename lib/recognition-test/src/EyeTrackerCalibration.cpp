@@ -36,6 +36,7 @@ void Interactor::notifyThatPointIsReady() {
 void Interactor::start() {
     calibrator.acquire();
     pointsToCalibrate = calibrationPoints;
+    presenter.start();
     present(presenter, pointsToCalibrate);
 }
 
