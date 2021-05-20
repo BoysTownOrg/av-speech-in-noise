@@ -87,7 +87,7 @@ class ViewStub : public View {
 
     [[nodiscard]] auto hidden() const -> bool { return hidden_; }
 
-    void hide() { hidden_ = true; }
+    void hide() override { hidden_ = true; }
 
   private:
     std::vector<Line> redLinesDrawn_;
