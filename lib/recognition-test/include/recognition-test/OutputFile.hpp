@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_OUTPUTFILE_HPP_
 
 #include "IOutputFile.hpp"
+#include <av-speech-in-noise/Interface.hpp>
 #include <string>
 
 namespace av_speech_in_noise {
@@ -142,7 +143,7 @@ constexpr auto name(coordinate_response_measure::Color c) -> const char * {
 
 class Writer {
   public:
-    virtual ~Writer() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Writer);
     virtual void write(const std::string &) = 0;
     virtual void open(const std::string &) = 0;
     virtual auto failed() -> bool = 0;
@@ -152,7 +153,7 @@ class Writer {
 
 class OutputFilePath {
   public:
-    virtual ~OutputFilePath() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(OutputFilePath);
     virtual auto generateFileName(const TestIdentity &) -> std::string = 0;
     virtual auto outputDirectory() -> std::string = 0;
 };
