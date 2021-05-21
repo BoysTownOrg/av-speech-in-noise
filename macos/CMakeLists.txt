@@ -1,5 +1,16 @@
 function(add_macos_bundle target identifier output_name)
-  add_executable(${target} MACOSX_BUNDLE ${ARGN})
+  add_executable(
+    ${target} MACOSX_BUNDLE
+    AvFoundationPlayers.mm
+    AppKitView.mm
+    AppKit-utility.mm
+    Foundation-utility.mm
+    run.mm
+    utility.mm
+    objective-c-adapters.mm
+    SwiftUI.swift
+    ${ARGN}
+    ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
   target_compile_features(${target} PRIVATE cxx_std_17)
   target_link_libraries(
     ${target}
@@ -10,15 +21,13 @@ function(add_macos_bundle target identifier output_name)
     GSL
     "-framework AppKit -framework AVFoundation -framework CoreMedia -framework MediaToolbox -framework AudioToolbox -framework CoreAudio"
   )
-  if(${AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING})
-    target_link_libraries(${target} PkgConfig::TOBIIRESEARCH)
-  endif()
   set_target_properties(
     ${target}
     PROPERTIES MACOSX_BUNDLE_INFO_PLIST
                ${CMAKE_SOURCE_DIR}/MacOSXBundleInfo.plist.in
-               MACOSX_BUNDLE_BUNDLE_VERSION ${AV_SPEECH_IN_NOISE_VERSION}
-               MACOSX_BUNDLE_SHORT_VERSION_STRING ${AV_SPEECH_IN_NOISE_VERSION}
+               MACOSX_BUNDLE_BUNDLE_VERSION "${AV_SPEECH_IN_NOISE_VERSION}"
+               MACOSX_BUNDLE_SHORT_VERSION_STRING
+               "${AV_SPEECH_IN_NOISE_VERSION}"
                MACOSX_BUNDLE_GUI_IDENTIFIER ${identifier}
                XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER ${identifier}
                RESOURCE "${AV_SPEECH_IN_NOISE_MACOS_RESOURCES}"
@@ -28,21 +37,23 @@ function(add_macos_bundle target identifier output_name)
                "${AV_SPEECH_IN_NOISE_MACOS_CODE_SIGN_IDENTITY}"
                XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS
                "${AV_SPEECH_IN_NOISE_MACOS_OTHER_CODE_SIGN_FLAGS}"
-               XCODE_ATTRIBUTE_CODE_SIGN_INJECT_BASE_ENTITLEMENTS NO)
+               XCODE_ATTRIBUTE_CODE_SIGN_INJECT_BASE_ENTITLEMENTS NO
+               XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER
+               ${CMAKE_CURRENT_SOURCE_DIR}/objective-c-bridge.h)
 endfunction()
 
 option(AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING "Enables tobii eye tracking"
        OFF)
-
 if(${AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING})
-  set(IMPLEMENTATION_FILES
-      "main/with-tobii.mm;main/with-tobii.swift;TobiiProEyeTracker.cpp")
   include(FindPkgConfig)
   pkg_check_modules(TOBIIRESEARCH IMPORTED_TARGET tobii_research)
-else()
-  set(IMPLEMENTATION_FILES "main/default.mm;main/default.swift")
+  add_macos_bundle(
+    av-speech-in-noise-with-tobii-macos-bundle
+    org.boystown.av-speech-in-noise-with-tobii "AV Speech in Noise"
+    main/with-tobii.mm main/with-tobii.swift TobiiProEyeTracker.cpp)
+  target_link_libraries(av-speech-in-noise-with-tobii-macos-bundle
+                        PkgConfig::TOBIIRESEARCH)
 endif()
-
 set(AV_SPEECH_IN_NOISE_MACOS_RESOURCES
     ""
     CACHE STRING "Resources for AV Speech in Noise")
@@ -52,44 +63,13 @@ set(AV_SPEECH_IN_NOISE_MACOS_CODE_SIGN_IDENTITY
 set(AV_SPEECH_IN_NOISE_MACOS_OTHER_CODE_SIGN_FLAGS
     ""
     CACHE STRING "Xcode Other Code Signing Flags")
-
 add_macos_bundle(
-  av-speech-in-noise-macos-bundle
-  org.boystown.av-speech-in-noise
-  "AV Speech in Noise"
-  AvFoundationPlayers.mm
-  AppKitView.mm
-  AppKit-utility.mm
-  Foundation-utility.mm
-  run.mm
-  utility.mm
-  objective-c-adapters.mm
-  SwiftUI.swift
-  ${IMPLEMENTATION_FILES}
-  ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
-set_target_properties(
-  av-speech-in-noise-macos-bundle
-  PROPERTIES XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER
-             ${CMAKE_CURRENT_SOURCE_DIR}/objective-c-bridge.h)
+  av-speech-in-noise-macos-bundle org.boystown.av-speech-in-noise
+  "AV Speech in Noise" main/default.mm main/default.swift)
 add_macos_bundle(
   av-speech-in-noise-facemask-study-macos-bundle
-  org.boystown.av-speech-in-noise-facemask-study
-  "Facemask Study"
-  AvFoundationPlayers.mm
-  AppKitView.mm
-  AppKit-utility.mm
-  Foundation-utility.mm
-  utility.mm
-  run.mm
-  SwiftUI.swift
-  objective-c-adapters.mm
-  main/facemask-study.swift
-  main/facemask-study.mm
-  ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
-set_target_properties(
-  av-speech-in-noise-facemask-study-macos-bundle
-  PROPERTIES XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER
-             ${CMAKE_CURRENT_SOURCE_DIR}/objective-c-bridge.h)
+  org.boystown.av-speech-in-noise-facemask-study "Facemask Study"
+  main/facemask-study.swift main/facemask-study.mm)
 set_source_files_properties(
   AvFoundationPlayers.mm
   AppKitView.mm
