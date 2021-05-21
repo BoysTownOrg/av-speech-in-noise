@@ -2,7 +2,7 @@
 #define TESTS_MASKERPLAYERSTUB_HPP_
 
 #include "LogString.hpp"
-#include <recognition-test/RecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <utility>
 
 namespace av_speech_in_noise {

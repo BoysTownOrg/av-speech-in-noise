@@ -1,5 +1,5 @@
 #include "assert-utility.hpp"
-#include <recognition-test/ResponseEvaluator.hpp>
+#include <av-speech-in-noise/core/ResponseEvaluator.hpp>
 #include <gtest/gtest.h>
 #include <string_view>
 

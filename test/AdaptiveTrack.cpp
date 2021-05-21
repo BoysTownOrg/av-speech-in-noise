@@ -1,5 +1,5 @@
 #include "assert-utility.hpp"
-#include <adaptive-track/AdaptiveTrack.hpp>
+#include <av-speech-in-noise/core/AdaptiveTrack.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 

@@ -2,15 +2,15 @@
 #define AV_SPEECH_IN_NOISE_MACOS_RUN_H_
 
 #include "AppKitTestSetupUIFactory.h"
-#include "presentation/Consonant.hpp"
-#include "presentation/CorrectKeywords.hpp"
-#include "presentation/PassFail.hpp"
-#include "presentation/Syllables.hpp"
-#include <presentation/SessionController.hpp>
-#include <presentation/FreeResponse.hpp>
-#include <presentation/ChooseKeywords.hpp>
-#include <recognition-test/RecognitionTestModel.hpp>
-#include <recognition-test/OutputFilePath.hpp>
+#include <av-speech-in-noise/ui/Consonant.hpp>
+#include <av-speech-in-noise/ui/CorrectKeywords.hpp>
+#include <av-speech-in-noise/ui/PassFail.hpp>
+#include <av-speech-in-noise/ui/Syllables.hpp>
+#include <av-speech-in-noise/ui/SessionController.hpp>
+#include <av-speech-in-noise/ui/FreeResponse.hpp>
+#include <av-speech-in-noise/ui/ChooseKeywords.hpp>
+#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/OutputFilePath.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <memory>
 #include <filesystem>

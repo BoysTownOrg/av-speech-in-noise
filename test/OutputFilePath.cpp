@@ -1,7 +1,7 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
 #include <gtest/gtest.h>
-#include <recognition-test/OutputFilePath.hpp>
+#include <av-speech-in-noise/core/OutputFilePath.hpp>
 
 namespace av_speech_in_noise {
 namespace {

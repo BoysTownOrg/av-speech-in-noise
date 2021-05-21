@@ -1,8 +1,8 @@
 #ifndef MACOS_MAIN_COCOAVIEW_H_
 #define MACOS_MAIN_COCOAVIEW_H_
 
-#include <presentation/Consonant.hpp>
-#include <presentation/CoordinateResponseMeasure.hpp>
+#include <av-speech-in-noise/ui/Consonant.hpp>
+#include <av-speech-in-noise/ui/CoordinateResponseMeasure.hpp>
 #import <AppKit/AppKit.h>
 #include <unordered_map>
 

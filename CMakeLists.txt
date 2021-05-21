@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
-project(
-  AvSpeechInNoise
-  LANGUAGES CXX OBJCXX Swift)
+project(av-speech-in-noise LANGUAGES CXX OBJCXX Swift)
 
 include(FetchContent)
 

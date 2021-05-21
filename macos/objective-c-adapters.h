@@ -100,7 +100,6 @@ class TestUIImpl : public TestUI {
 class SessionUIImpl : public SessionUI {
   public:
     explicit SessionUIImpl(NSObject<SessionUI> *);
-    void eventLoop() override;
     void showErrorMessage(std::string_view s) override;
     auto audioDevice() -> std::string override;
     void populateAudioDeviceMenu(std::vector<std::string> v) override;

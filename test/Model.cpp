@@ -3,7 +3,7 @@
 #include "TargetPlaylistStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "assert-utility.hpp"
-#include <recognition-test/Model.hpp>
+#include <av-speech-in-noise/core/Model.hpp>
 #include <gtest/gtest.h>
 #include <sstream>
 

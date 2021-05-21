@@ -6,7 +6,7 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
-#include <recognition-test/RecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 

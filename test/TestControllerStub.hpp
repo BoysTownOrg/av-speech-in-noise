@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_TESTS_TESTCONTROLLERSTUB_HPP_
 #define AV_SPEECH_IN_NOISE_TESTS_TESTCONTROLLERSTUB_HPP_
 
-#include <presentation/Test.hpp>
+#include <av-speech-in-noise/ui/Test.hpp>
 
 namespace av_speech_in_noise {
 class TestControllerStub : public TestController {

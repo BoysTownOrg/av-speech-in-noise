@@ -358,8 +358,6 @@ void TestUIImpl::showSheet(std::string_view s) {
 SessionUIImpl::SessionUIImpl(NSObject<SessionUI> *sessionUI)
     : sessionUI{sessionUI} {}
 
-void SessionUIImpl::eventLoop() { [sessionUI eventLoop]; }
-
 void SessionUIImpl::showErrorMessage(std::string_view s) {
     [sessionUI showErrorMessage:nsString(std::string{s})];
 }

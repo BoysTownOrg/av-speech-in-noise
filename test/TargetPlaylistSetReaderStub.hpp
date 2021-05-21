@@ -1,7 +1,7 @@
 #ifndef TESTS_TARGETLISTSETREADERSTUB_HPP_
 #define TESTS_TARGETLISTSETREADERSTUB_HPP_
 
-#include <recognition-test/AdaptiveMethod.hpp>
+#include <av-speech-in-noise/core/AdaptiveMethod.hpp>
 #include <utility>
 
 namespace av_speech_in_noise {
@@ -10,7 +10,9 @@ class TargetPlaylistSetReaderStub : public TargetPlaylistReader {
     std::string directory_{};
 
   public:
-    void setTargetPlaylists(lists_type lists) { targetLists_ = std::move(lists); }
+    void setTargetPlaylists(lists_type lists) {
+        targetLists_ = std::move(lists);
+    }
 
     auto read(const LocalUrl &d) -> lists_type override {
         directory_ = d.path;

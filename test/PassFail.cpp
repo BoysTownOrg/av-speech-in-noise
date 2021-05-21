@@ -2,7 +2,7 @@
 #include "ModelStub.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
-#include <presentation/PassFail.hpp>
+#include <av-speech-in-noise/ui/PassFail.hpp>
 #include <gtest/gtest.h>
 #include <utility>
 

@@ -105,7 +105,6 @@
 @end
 
 @protocol SessionUI
-- (void)eventLoop;
 - (void)showErrorMessage:(NSString *)something;
 - (NSString *)audioDevice;
 - (void)populateAudioDeviceMenu:(NSArray<NSString *> *)devices;
