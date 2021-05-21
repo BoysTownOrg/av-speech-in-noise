@@ -2,7 +2,7 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_IRECOGNITIONTESTMODELHPP_
 
 #include "TestMethod.hpp"
-#include <av-speech-in-noise/Model.hpp>
+#include "IModel.hpp"
 #include <string>
 
 namespace av_speech_in_noise {

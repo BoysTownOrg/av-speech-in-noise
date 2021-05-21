@@ -1,7 +1,7 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
-#include <av-speech-in-noise/name.hpp>
+#include <av-speech-in-noise/Model.hpp>
 #include <gtest/gtest.h>
 #include <functional>
 

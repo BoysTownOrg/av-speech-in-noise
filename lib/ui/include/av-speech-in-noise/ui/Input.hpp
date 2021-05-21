@@ -3,6 +3,7 @@
 
 #include <string>
 #include <sstream>
+#include <stdexcept>
 
 namespace av_speech_in_noise {
 class BadInput : public std::runtime_error {

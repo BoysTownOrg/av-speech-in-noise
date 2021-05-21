@@ -1,7 +1,7 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
 #include <av-speech-in-noise/core/OutputFile.hpp>
-#include <av-speech-in-noise/name.hpp>
+#include <av-speech-in-noise/Model.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 #include <vector>

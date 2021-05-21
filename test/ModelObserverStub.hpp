@@ -1,7 +1,7 @@
 #ifndef TESTS_MODELEVENTLISTENERSTUB_HPP_
 #define TESTS_MODELEVENTLISTENERSTUB_HPP_
 
-#include <av-speech-in-noise/Model.hpp>
+#include <av-speech-in-noise/core/IModel.hpp>
 
 namespace av_speech_in_noise {
 class ModelObserverStub : public Model::Observer {

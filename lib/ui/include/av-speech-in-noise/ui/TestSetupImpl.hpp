@@ -4,6 +4,7 @@
 #include "TestSetup.hpp"
 #include "Session.hpp"
 #include "Input.hpp"
+#include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <string>

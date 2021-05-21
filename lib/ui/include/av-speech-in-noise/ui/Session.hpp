@@ -24,7 +24,6 @@ class SessionController {
 class SessionView {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SessionView);
-    virtual void eventLoop() = 0;
     virtual void populateAudioDeviceMenu(std::vector<std::string>) = 0;
     virtual void showErrorMessage(std::string_view) = 0;
 };

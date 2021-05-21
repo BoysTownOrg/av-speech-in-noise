@@ -4,6 +4,7 @@
 #include "Test.hpp"
 #include "Session.hpp"
 #include "Task.hpp"
+#include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {

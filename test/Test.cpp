@@ -3,7 +3,7 @@
 #include "TestViewStub.hpp"
 #include "SessionViewStub.hpp"
 #include <av-speech-in-noise/ui/TestImpl.hpp>
-#include <av-speech-in-noise/name.hpp>
+#include <av-speech-in-noise/Model.hpp>
 #include <gtest/gtest.h>
 #include <algorithm>
 #include <utility>

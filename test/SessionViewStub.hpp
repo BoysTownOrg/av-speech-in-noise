@@ -11,8 +11,6 @@ class SessionViewStub : public SessionView {
 
     auto errorMessage() -> std::string { return errorMessage_; }
 
-    void eventLoop() override { eventLoopCalled_ = true; }
-
     void populateAudioDeviceMenu(std::vector<std::string> v) override {
         audioDevices_ = std::move(v);
     }
@@ -22,7 +20,6 @@ class SessionViewStub : public SessionView {
   private:
     std::vector<std::string> audioDevices_;
     std::string errorMessage_;
-    bool eventLoopCalled_{};
 };
 
 class SessionControlStub : public SessionControl {

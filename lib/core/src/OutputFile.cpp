@@ -1,5 +1,5 @@
 #include "OutputFile.hpp"
-#include <av-speech-in-noise/name.hpp>
+#include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <sstream>
 #include <ostream>

@@ -7,7 +7,7 @@
 #include "IAdaptiveMethod.hpp"
 #include "IFixedLevelMethod.hpp"
 #include "IRecognitionTestModel.hpp"
-#include <av-speech-in-noise/Model.hpp>
+#include "IModel.hpp"
 
 namespace av_speech_in_noise {
 class ModelImpl : public Model {
