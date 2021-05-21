@@ -1,8 +1,10 @@
 #ifndef AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_IOUTPUTFILE_HPP_
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_IOUTPUTFILE_HPP_
 
+#include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <exception>
+#include <ostream>
 
 namespace av_speech_in_noise {
 struct Target {
@@ -53,6 +55,12 @@ struct SyllableTrial : open_set::Trial, Evaluative, Flaggable {
 
 struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
+class Writable {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Writable);
+    virtual void write(std::ostream &) = 0;
+};
+
 class OutputFile {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(OutputFile);
@@ -73,6 +81,7 @@ class OutputFile {
     virtual void write(const EyeTrackerTargetPlayerSynchronization &) = 0;
     virtual void write(const ThreeKeywordsTrial &) {}
     virtual void write(const SyllableTrial &) {}
+    virtual void write(Writable &) = 0;
     virtual void close() = 0;
     virtual void save() = 0;
 };

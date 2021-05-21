@@ -419,6 +419,8 @@ class EyeTrackerStub : public EyeTracker {
         currentSystemTime_ = t;
     }
 
+    void write(std::ostream &) override {}
+
   private:
     BinocularGazeSamples gazeSamples_;
     std::stringstream log_{};
@@ -568,7 +570,7 @@ void setEyeGazes(EyeTrackerStub &eyeTracker, BinocularGazeSamples g) {
 void runIgnoringFailure(UseCase &useCase, RecognitionTestModelImpl &model) {
     try {
         run(useCase, model);
-    } catch (const ModelImpl::RequestFailure &) {
+    } catch (const Model::RequestFailure &) {
     }
 }
 
@@ -659,7 +661,8 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"close openNewFile write "}, string(log(outputFile)));
+            std::string{"close openNewFile writeTest "},
+            string(log(outputFile)));
     }
 
     template <typename T>
@@ -712,10 +715,8 @@ class RecognitionTestModelTests : public ::testing::Test {
         UseCase &useCase, const std::string &what) {
         try {
             run(useCase, model);
-            FAIL() << "Expected recognition_test::"
-                      "ModelImpl::"
-                      "RequestFailure";
-        } catch (const ModelImpl::RequestFailure &e) {
+            FAIL() << "Expected Model::RequestFailure";
+        } catch (const Model::RequestFailure &e) {
             AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, e.what());
         }
     }
@@ -884,6 +885,14 @@ RECOGNITION_TEST_MODEL_TEST(
         initializingTestWithDelayedMasker);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithEyeTrackingClosesOutputFile_Opens_WritesTestAndWritesEyeTrackerCalibrationDataInOrder) {
+    run(initializingTestWithEyeTracking, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"close openNewFile writeTest writeWritable "},
+        string(log(outputFile)));
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
     run(initializingTest, model);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetPlayer.usingAllChannels());
@@ -897,12 +906,6 @@ RECOGNITION_TEST_MODEL_TEST(playingCalibrationUsesAllTargetPlayerChannels) {
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllMaskerPlayerChannels) {
     run(initializingTest, model);
     assertUsingAllChannels(maskerPlayer);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingClosesOutputFile_OpensAndWritesTestInOrder) {
-    assertClosesOutputFileOpensAndWritesTestInOrder(
-        initializingTestWithEyeTracking);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

@@ -177,6 +177,7 @@ class OutputFileImpl : public OutputFile {
     void write(TargetStartTime) override;
     void write(const EyeTrackerTargetPlayerSynchronization &) override;
     void write(const SyllableTrial &) override;
+    void write(Writable &) override {}
 
     enum class Trial : int;
 

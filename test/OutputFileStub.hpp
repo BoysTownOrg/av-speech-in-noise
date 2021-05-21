@@ -2,8 +2,7 @@
 #define TESTS_OUTPUTFILESTUB_HPP_
 
 #include "LogString.hpp"
-#include <av-speech-in-noise/Model.hpp>
-#include <recognition-test/Model.hpp>
+#include <recognition-test/IOutputFile.hpp>
 #include <string>
 
 namespace av_speech_in_noise {
@@ -52,12 +51,12 @@ class OutputFileStub : public OutputFile {
     void close() override { addToLog("close "); }
 
     void write(const AdaptiveTest &test) override {
-        addToLog("write ");
+        addToLog("writeTest ");
         adaptiveTest_ = &test;
     }
 
     void write(const FixedLevelTest &p) override {
-        addToLog("write ");
+        addToLog("writeTest ");
         fixedLevelTest_ = &p;
     }
 
@@ -100,6 +99,8 @@ class OutputFileStub : public OutputFile {
     void write(const AdaptiveTestResults &result) override {
         adaptiveTestResult_ = result;
     }
+
+    void write(Writable &writable) { addToLog("writeWritable "); }
 
     auto writtenFixedLevelTrial() const -> auto & { return fixedLevelTrial_; }
 
