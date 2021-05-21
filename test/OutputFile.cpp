@@ -31,7 +31,7 @@ class WriterStub : public Writer {
 
     auto writable() -> const Writable * { return writable_; }
 
-    void write(Writable &w) { writable_ = &w; }
+    void write(Writable &w) override { writable_ = &w; }
 
   private:
     std::stringstream written_;
