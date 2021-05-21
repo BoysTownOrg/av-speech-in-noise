@@ -2,7 +2,7 @@
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
 #include "ModelStub.hpp"
-#include <presentation/Syllables.hpp>
+#include <av-speech-in-noise/ui/Syllables.hpp>
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise {

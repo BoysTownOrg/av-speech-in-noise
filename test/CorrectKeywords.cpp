@@ -3,7 +3,7 @@
 #include "SessionViewStub.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
-#include <presentation/CorrectKeywords.hpp>
+#include <av-speech-in-noise/ui/CorrectKeywords.hpp>
 #include <gtest/gtest.h>
 #include <utility>
 

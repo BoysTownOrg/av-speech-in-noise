@@ -2,7 +2,7 @@
 #include "ModelStub.hpp"
 #include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
-#include <presentation/CoordinateResponseMeasure.hpp>
+#include <av-speech-in-noise/ui/CoordinateResponseMeasure.hpp>
 #include <gtest/gtest.h>
 #include <utility>
 

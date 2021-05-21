@@ -2,7 +2,7 @@
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
 #include "ModelStub.hpp"
-#include <presentation/ChooseKeywords.hpp>
+#include <av-speech-in-noise/ui/ChooseKeywords.hpp>
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise {

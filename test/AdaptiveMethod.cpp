@@ -5,7 +5,7 @@
 #include "TargetPlaylistStub.hpp"
 #include "TrackStub.hpp"
 #include "assert-utility.hpp"
-#include <recognition-test/AdaptiveMethod.hpp>
+#include <av-speech-in-noise/core/AdaptiveMethod.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 #include <algorithm>

@@ -1,7 +1,7 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "SessionViewStub.hpp"
-#include <presentation/SessionController.hpp>
+#include <av-speech-in-noise/ui/SessionController.hpp>
 #include <gtest/gtest.h>
 #include <utility>
 

@@ -1,7 +1,7 @@
 #include "DirectoryReaderStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "assert-utility.hpp"
-#include <target-playlists/SubdirectoryTargetPlaylistReader.hpp>
+#include <av-speech-in-noise/playlist/SubdirectoryTargetPlaylistReader.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 

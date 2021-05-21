@@ -1,7 +1,7 @@
 #include "assert-utility.hpp"
 #include "AudioReaderStub.hpp"
-#include <stimulus-players/AudioReader.hpp>
-#include <stimulus-players/MaskerPlayerImpl.hpp>
+#include <av-speech-in-noise/player/AudioReader.hpp>
+#include <av-speech-in-noise/player/MaskerPlayerImpl.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 #include <cmath>

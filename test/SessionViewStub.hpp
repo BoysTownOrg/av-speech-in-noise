@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_TEST_SESSIONVIEWSTUB_HPP_
 #define AV_SPEECH_IN_NOISE_TEST_SESSIONVIEWSTUB_HPP_
 
-#include <presentation/Session.hpp>
+#include <av-speech-in-noise/ui/Session.hpp>
 #include <utility>
 
 namespace av_speech_in_noise {

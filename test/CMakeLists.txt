@@ -1,5 +1,5 @@
 add_executable(
-  av-speech-in-noise-tests
+  av-speech-in-noise-test-exe
   AdaptiveMethod.cpp
   AdaptiveTrack.cpp
   AudioReaderSimplified.cpp
@@ -28,17 +28,16 @@ add_executable(
   EyeTrackerCalibrationPresenter.cpp
   EyeTrackerCalibrationInteractor.cpp
   EyeTrackerCalibrationController.cpp)
-target_compile_features(av-speech-in-noise-tests PRIVATE cxx_std_17)
-set_target_properties(av-speech-in-noise-tests PROPERTIES CXX_EXTENSIONS OFF)
-target_compile_options(av-speech-in-noise-tests
+target_compile_features(av-speech-in-noise-test-exe PRIVATE cxx_std_17)
+set_target_properties(av-speech-in-noise-test-exe PROPERTIES CXX_EXTENSIONS OFF)
+target_compile_options(av-speech-in-noise-test-exe
                        PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})
 target_link_libraries(
-  av-speech-in-noise-tests
-  recognition-test
-  adaptive-track
-  presentation
-  stimulus-players
-  target-playlists
+  av-speech-in-noise-test-exe
+  av-speech-in-noise-core-lib
+  av-speech-in-noise-ui-lib
+  av-speech-in-noise-player-lib
+  av-speech-in-noise-playlist-lib
   gtest_main
   GSL)
-add_test(NAME av-speech-in-noise-tests COMMAND av-speech-in-noise-tests)
+add_test(NAME av-speech-in-noise-test-exe COMMAND av-speech-in-noise-test-exe)

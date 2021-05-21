@@ -1,7 +1,6 @@
 #include "AudioReaderStub.hpp"
 #include "assert-utility.hpp"
-#include "recognition-test/RecognitionTestModel.hpp"
-#include <stimulus-players/TargetPlayerImpl.hpp>
+#include <av-speech-in-noise/player/TargetPlayerImpl.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 

@@ -1,6 +1,6 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
-#include <recognition-test/OutputFile.hpp>
+#include <av-speech-in-noise/core/OutputFile.hpp>
 #include <av-speech-in-noise/name.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>

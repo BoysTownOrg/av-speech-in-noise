@@ -1,7 +1,7 @@
 #ifndef TESTS_AUDIOREADERSTUB_HPP_
 #define TESTS_AUDIOREADERSTUB_HPP_
 
-#include <stimulus-players/AudioReader.hpp>
+#include <av-speech-in-noise/player/AudioReader.hpp>
 #include <utility>
 
 namespace av_speech_in_noise {

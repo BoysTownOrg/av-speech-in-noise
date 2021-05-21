@@ -2,7 +2,7 @@
 #include "ModelStub.hpp"
 #include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
-#include <presentation/Consonant.hpp>
+#include <av-speech-in-noise/ui/Consonant.hpp>
 #include <gtest/gtest.h>
 #include <utility>
 

@@ -1,5 +1,5 @@
 #include "assert-utility.hpp"
-#include <stimulus-players/AudioReaderSimplified.hpp>
+#include <av-speech-in-noise/player/AudioReaderSimplified.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 #include <vector>

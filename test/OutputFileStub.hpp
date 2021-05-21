@@ -2,7 +2,7 @@
 #define TESTS_OUTPUTFILESTUB_HPP_
 
 #include "LogString.hpp"
-#include <recognition-test/IOutputFile.hpp>
+#include <av-speech-in-noise/core/IOutputFile.hpp>
 #include <string>
 
 namespace av_speech_in_noise {

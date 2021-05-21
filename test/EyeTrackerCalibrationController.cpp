@@ -1,5 +1,5 @@
 #include "assert-utility.hpp"
-#include <presentation/EyeTrackerCalibration.hpp>
+#include <av-speech-in-noise/ui/EyeTrackerCalibration.hpp>
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::eye_tracker_calibration {

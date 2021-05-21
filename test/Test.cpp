@@ -2,7 +2,7 @@
 #include "ModelStub.hpp"
 #include "TestViewStub.hpp"
 #include "SessionViewStub.hpp"
-#include <presentation/TestImpl.hpp>
+#include <av-speech-in-noise/ui/TestImpl.hpp>
 #include <av-speech-in-noise/name.hpp>
 #include <gtest/gtest.h>
 #include <algorithm>

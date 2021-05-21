@@ -3,7 +3,7 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "assert-utility.hpp"
-#include <recognition-test/FixedLevelMethod.hpp>
+#include <av-speech-in-noise/core/FixedLevelMethod.hpp>
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise {
