@@ -157,8 +157,6 @@ class SwiftSessionUI: NSObject, SessionUI {
     let correctKeywordsUI = SwiftCorrectKeywordsUI()
     let passFailUI = SwiftPassFailUI()
 
-    func eventLoop() {}
-
     func showErrorMessage(_ something: String!) {
         showErrorMessage.value = true
         errorMessage.string = something

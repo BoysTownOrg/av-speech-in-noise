@@ -1,4 +1,5 @@
 function(add_macos_bundle target identifier output_name)
+  add_executable(${target} MACOSX_BUNDLE ${ARGN})
   target_compile_features(${target} PRIVATE cxx_std_17)
   target_link_libraries(
     ${target}
@@ -52,8 +53,10 @@ set(AV_SPEECH_IN_NOISE_MACOS_OTHER_CODE_SIGN_FLAGS
     ""
     CACHE STRING "Xcode Other Code Signing Flags")
 
-add_executable(
-  av-speech-in-noise-bundle MACOSX_BUNDLE
+add_macos_bundle(
+  av-speech-in-noise-macos-bundle
+  org.boystown.av-speech-in-noise
+  "AV Speech in Noise"
   AvFoundationPlayers.mm
   AppKitView.mm
   AppKit-utility.mm
@@ -64,14 +67,14 @@ add_executable(
   SwiftUI.swift
   ${IMPLEMENTATION_FILES}
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
-add_macos_bundle(av-speech-in-noise-bundle org.boystown.av-speech-in-noise
-                 "AV Speech in Noise")
 set_target_properties(
-  av-speech-in-noise-bundle
+  av-speech-in-noise-macos-bundle
   PROPERTIES XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER
              ${CMAKE_CURRENT_SOURCE_DIR}/objective-c-bridge.h)
-add_executable(
-  av-speech-in-noise-facemask-study MACOSX_BUNDLE
+add_macos_bundle(
+  av-speech-in-noise-facemask-study-macos-bundle
+  org.boystown.av-speech-in-noise-facemask-study
+  "Facemask Study"
   AvFoundationPlayers.mm
   AppKitView.mm
   AppKit-utility.mm
@@ -83,11 +86,8 @@ add_executable(
   main/facemask-study.swift
   main/facemask-study.mm
   ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
-add_macos_bundle(
-  av-speech-in-noise-facemask-study
-  org.boystown.av-speech-in-noise-facemask-study "Facemask Study")
 set_target_properties(
-  av-speech-in-noise-facemask-study
+  av-speech-in-noise-facemask-study-macos-bundle
   PROPERTIES XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER
              ${CMAKE_CURRENT_SOURCE_DIR}/objective-c-bridge.h)
 set_source_files_properties(
