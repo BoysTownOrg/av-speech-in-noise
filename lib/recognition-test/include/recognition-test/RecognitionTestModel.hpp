@@ -6,11 +6,11 @@
 #include "ITargetPlayer.hpp"
 #include "IMaskerPlayer.hpp"
 #include "IRecognitionTestModel.hpp"
+#include "IOutputFile.hpp"
 
 namespace av_speech_in_noise {
-class EyeTracker {
+class EyeTracker : public Writable {
   public:
-    virtual ~EyeTracker() = default;
     virtual void allocateRecordingTimeSeconds(double) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;

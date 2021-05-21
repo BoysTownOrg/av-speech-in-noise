@@ -29,11 +29,21 @@ class WriterStub : public Writer {
 
     auto written() const -> const std::stringstream & { return written_; }
 
+    auto writable() -> const Writable * { return writable_; }
+
+    void write(Writable &w) override { writable_ = &w; }
+
   private:
     std::stringstream written_;
     std::string filePath_;
+    const Writable *writable_{};
     bool closed_{};
     bool saved_{};
+};
+
+class WritableStub : public Writable {
+  public:
+    void write(std::ostream &) override {}
 };
 
 class OutputFilePathStub : public OutputFilePath {
@@ -1026,6 +1036,13 @@ OUTPUT_FILE_TEST(openPassesTestInformation) {
         &std::as_const(testIdentity), path.testIdentity());
 }
 
+OUTPUT_FILE_TEST(writeWritablePassWritable) {
+    WritableStub writable;
+    file.write(writable);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(writable), writer.writable());
+}
+
 class FailingWriter : public Writer {
     bool failed_{};
 
@@ -1036,6 +1053,7 @@ class FailingWriter : public Writer {
 
     void close() override {}
     void write(const std::string &) override {}
+    void write(Writable &) override {}
     void save() override {}
 };
 

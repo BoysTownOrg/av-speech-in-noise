@@ -644,4 +644,6 @@ void OutputFileImpl::write(const AdaptiveTestResults &results) {
         stream << result;
     write(string(stream));
 }
+
+void OutputFileImpl::write(Writable &w) { writer.write(w); }
 }

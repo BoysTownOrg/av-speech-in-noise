@@ -10,6 +10,7 @@ class EyeTrackerStub : public EyeTracker {
     void stop() override {}
     auto gazeSamples() -> BinocularGazeSamples override { return {}; }
     auto currentSystemTime() -> EyeTrackerSystemTime override { return {}; }
+    void write(std::ostream &) override {}
 };
 }
 

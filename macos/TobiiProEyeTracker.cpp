@@ -209,10 +209,16 @@ TobiiEyeTracker::CalibrationData::CalibrationData(
 }
 
 void TobiiEyeTracker::CalibrationData::write(std::ostream &stream) {
-    stream.write(reinterpret_cast<const char *>(data->data), data->size);
+    if (data != nullptr)
+        stream.write(reinterpret_cast<const char *>(data->data), data->size);
 }
 
 TobiiEyeTracker::CalibrationData::~CalibrationData() {
     tobii_research_free_calibration_data(data);
+}
+
+void TobiiEyeTracker::write(std::ostream &stream) {
+    CalibrationData data{eyeTracker(eyeTrackers)};
+    data.write(stream);
 }
 }

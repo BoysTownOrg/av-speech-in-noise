@@ -22,6 +22,7 @@ class TobiiEyeTracker : public EyeTracker {
     void stop() override;
     auto gazeSamples() -> BinocularGazeSamples override;
     auto currentSystemTime() -> EyeTrackerSystemTime override;
+    void write(std::ostream &) override;
 
     class Calibration;
     class CalibrationValidation;
@@ -39,6 +40,7 @@ class TobiiEyeTracker : public EyeTracker {
     };
 
     class CalibrationData {
+      public:
         explicit CalibrationData(TobiiResearchEyeTracker *);
         void write(std::ostream &);
         ~CalibrationData();
