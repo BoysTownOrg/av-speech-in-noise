@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_MACOS_APPKITTESTSETUPVIEWFACTORY_H_
 #define AV_SPEECH_IN_NOISE_MACOS_APPKITTESTSETUPVIEWFACTORY_H_
 
-#include <presentation/TestSetup.hpp>
+#include <av-speech-in-noise/ui/TestSetup.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #import <AppKit/AppKit.h>
 #include <memory>

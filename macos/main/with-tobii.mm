@@ -4,8 +4,8 @@
 #include "../objective-c-bridge.h"
 #include "../objective-c-adapters.h"
 #include "../TobiiProEyeTracker.hpp"
-#include <presentation/EyeTrackerCalibration.hpp>
-#include <recognition-test/EyeTrackerCalibration.hpp>
+#include <av-speech-in-noise/ui/EyeTrackerCalibration.hpp>
+#include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
 #import <AppKit/AppKit.h>
 #include <vector>
 #include <algorithm>

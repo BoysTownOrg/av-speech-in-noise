@@ -1,8 +1,8 @@
 #ifndef AV_SPEECH_IN_NOISE_MACOS_TOBIIPROEYETRACKER_HPP_
 #define AV_SPEECH_IN_NOISE_MACOS_TOBIIPROEYETRACKER_HPP_
 
-#include <recognition-test/RecognitionTestModel.hpp>
-#include <recognition-test/EyeTrackerCalibration.hpp>
+#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
 #include <tobii_research.h>
 #include <tobii_research_calibration.h>
 #include <tobii_research_eyetracker.h>

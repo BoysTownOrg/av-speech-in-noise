@@ -2,11 +2,10 @@ function(add_macos_bundle target identifier output_name)
   target_compile_features(${target} PRIVATE cxx_std_17)
   target_link_libraries(
     ${target}
-    recognition-test
-    stimulus-players
-    presentation
-    target-playlists
-    adaptive-track
+    av-speech-in-noise-core-lib
+    av-speech-in-noise-player-lib
+    av-speech-in-noise-ui-lib
+    av-speech-in-noise-playlist-lib
     GSL
     "-framework AppKit -framework AVFoundation -framework CoreMedia -framework MediaToolbox -framework AudioToolbox -framework CoreAudio"
   )
