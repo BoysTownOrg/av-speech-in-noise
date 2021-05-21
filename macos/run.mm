@@ -130,6 +130,8 @@ class FileWriter : public Writer {
     void close() override { file.close(); }
 
     void save() override { file.flush(); }
+
+    void write(Writable &writable) override { writable.write(file); }
 };
 
 class UnixFileSystemPath : public FileSystemPath {
