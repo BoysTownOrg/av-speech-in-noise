@@ -55,17 +55,33 @@ class Validator {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Validator);
     virtual void acquire() = 0;
+    virtual void release() = 0;
 };
 
-class Interactor {
+class Interactor : IPresenter::Observer {
   public:
-    explicit Interactor(Validator &validator, std::vector<Point>)
-        : validator{validator} {}
+    explicit Interactor(
+        IPresenter &presenter, Validator &validator, std::vector<Point> points)
+        : validator{validator}, points{points}, pointsToValidate{
+                                                    std::move(points)} {
+        presenter.attach(this);
+    }
 
     void start() { validator.acquire(); }
 
+    void finish() {
+        if (pointsToValidate.empty())
+            validator.release();
+    }
+
+    void notifyThatPointIsReady() override {
+        pointsToValidate.erase(pointsToValidate.begin());
+    }
+
   private:
     Validator &validator;
+    std::vector<Point> points;
+    std::vector<Point> pointsToValidate;
 };
 }
 

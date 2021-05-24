@@ -75,10 +75,15 @@ class EyeTrackerCalibrationValidatorStub : public validation::Validator {
   public:
     [[nodiscard]] auto acquired() const -> bool { return acquired_; }
 
-    void acquire() { acquired_ = true; }
+    void acquire() override { acquired_ = true; }
+
+    [[nodiscard]] auto released() const -> bool { return released_; }
+
+    void release() { released_ = true; }
 
   private:
     bool acquired_{};
+    bool released_{};
 };
 
 class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
@@ -91,9 +96,10 @@ class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
 
 class EyeTrackerCalibrationValidationInteractorTests : public ::testing::Test {
   protected:
+    IPresenterStub presenter;
     EyeTrackerCalibrationValidatorStub validator;
     validation::Interactor interactor{
-        validator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
+        presenter, validator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
 };
 }
 
@@ -242,6 +248,18 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
 EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(acquiresValidatorOnStart) {
     interactor.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(validator.acquired());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(
+    doesNotReleaseValidatorUntilAllPointsAreValidated) {
+    interactor.start();
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    interactor.finish();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(validator.released());
+    notifyThatPointIsReady(presenter);
+    interactor.finish();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(validator.released());
 }
 }
 }
