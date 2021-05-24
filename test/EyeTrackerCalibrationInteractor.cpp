@@ -86,7 +86,7 @@ class EyeTrackerCalibrationValidatorStub : public validation::Validator {
     void collect(Point p) override { validatedPoint_ = p; }
 
   private:
-    Point validatedPoint_;
+    Point validatedPoint_{};
     bool acquired_{};
     bool released_{};
 };

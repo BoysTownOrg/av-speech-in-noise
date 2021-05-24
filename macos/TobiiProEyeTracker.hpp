@@ -43,13 +43,13 @@ class TobiiProCalibrator : public Calibrator {
     TobiiResearchEyeTracker *eyetracker{};
 };
 
-class TobiiProValidator {
+class TobiiProValidator : validation::Validator {
   public:
     explicit TobiiProValidator(TobiiResearchEyeTracker *eyetracker);
-    void acquire();
-    void collect(Point);
-    void release();
-    ~TobiiProValidator();
+    void acquire() override;
+    void collect(Point) override;
+    void release() override;
+    ~TobiiProValidator() override;
 
     class Result;
 
