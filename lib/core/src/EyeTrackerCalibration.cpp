@@ -18,8 +18,8 @@ static void present(IPresenter &presenter, const std::vector<Point> &points) {
     presenter.present(points.front());
 }
 
-Interactor::Interactor(IPresenter &presenter, EyeTrackerCalibrator &calibrator,
-    std::vector<Point> points)
+Interactor::Interactor(
+    IPresenter &presenter, Calibrator &calibrator, std::vector<Point> points)
     : calibrationPoints{std::move(points)}, presenter{presenter},
       calibrator{calibrator} {
     presenter.attach(this);

@@ -54,10 +54,10 @@ class CorrectKeywordsUI : public CorrectKeywordsView,
 
 class PassFailUI : public PassFailView, public PassFailControl {};
 
-void initializeAppAndRunEventLoop(EyeTracker &, OutputFileNameFactory &,
-    AppKitTestSetupUIFactory &, SessionUI &, TestUI &, FreeResponseUI &,
-    SyllablesUI &, ChooseKeywordsUI &, CorrectKeywordsUI &, PassFailUI &,
-    SessionController::Observer * = nullptr,
+void initializeAppAndRunEventLoop(eye_tracking::Tracker &,
+    OutputFileNameFactory &, AppKitTestSetupUIFactory &, SessionUI &, TestUI &,
+    FreeResponseUI &, SyllablesUI &, ChooseKeywordsUI &, CorrectKeywordsUI &,
+    PassFailUI &, SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =
         "Documents/AvSpeechInNoise Data",
     AppKitRunMenuInitializer * = nullptr);

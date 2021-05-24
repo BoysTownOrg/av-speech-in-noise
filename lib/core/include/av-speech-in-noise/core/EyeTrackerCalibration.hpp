@@ -40,9 +40,9 @@ class IPresenter {
     virtual void start() = 0;
 };
 
-class EyeTrackerCalibrator {
+class Calibrator {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(EyeTrackerCalibrator);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Calibrator);
     virtual void acquire() = 0;
     virtual void release() = 0;
     virtual void collect(Point) = 0;
@@ -52,7 +52,7 @@ class EyeTrackerCalibrator {
 
 class Interactor : public IPresenter::Observer, public IInteractor {
   public:
-    Interactor(IPresenter &, EyeTrackerCalibrator &, std::vector<Point>);
+    Interactor(IPresenter &, Calibrator &, std::vector<Point>);
     void notifyThatPointIsReady() override;
     void start() override;
     void finish() override;
@@ -63,7 +63,7 @@ class Interactor : public IPresenter::Observer, public IInteractor {
     std::vector<Point> pointsToCalibrate;
     std::vector<Point> pointsCalibrated;
     IPresenter &presenter;
-    EyeTrackerCalibrator &calibrator;
+    Calibrator &calibrator;
 };
 }
 

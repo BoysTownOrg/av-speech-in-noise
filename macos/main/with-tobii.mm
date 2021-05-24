@@ -16,7 +16,7 @@
 
 @implementation AvSpeechInNoiseEyeTrackerMenuObserverImpl {
   @public
-    av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
+    av_speech_in_noise::eye_tracking::calibration::Control::Observer *observer;
 }
 
 - (void)notifyThatRunCalibrationHasBeenClicked {
@@ -40,7 +40,7 @@
 }
 @end
 
-namespace av_speech_in_noise::eye_tracker_calibration {
+namespace av_speech_in_noise::eye_tracking::calibration {
 static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
     NSBezierPath *path = [NSBezierPath bezierPath];
     for_each(lines.begin(), lines.end(), [=](const Line &line) {
@@ -62,17 +62,17 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
 
 @implementation AvSpeechInNoiseEyeTrackerCalibrationView {
   @public
-    std::vector<av_speech_in_noise::eye_tracker_calibration::Line> redLines;
-    std::vector<av_speech_in_noise::eye_tracker_calibration::Line> greenLines;
-    std::vector<av_speech_in_noise::eye_tracker_calibration::WindowPoint>
+    std::vector<av_speech_in_noise::eye_tracking::calibration::Line> redLines;
+    std::vector<av_speech_in_noise::eye_tracking::calibration::Line> greenLines;
+    std::vector<av_speech_in_noise::eye_tracking::calibration::WindowPoint>
         whiteCircleCenters;
-    av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
+    av_speech_in_noise::eye_tracking::calibration::Control::Observer *observer;
 }
 
 - (void)drawRect:(NSRect)rect {
     NSBezierPath *circlePath = [NSBezierPath bezierPath];
     for_each(whiteCircleCenters.begin(), whiteCircleCenters.end(),
-        [=](const av_speech_in_noise::eye_tracker_calibration::WindowPoint
+        [=](const av_speech_in_noise::eye_tracking::calibration::WindowPoint
                 &center) {
             [circlePath
                 appendBezierPathWithOvalInRect:NSMakeRect(
@@ -107,7 +107,7 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
 
 @implementation AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate {
   @public
-    av_speech_in_noise::eye_tracker_calibration::View::Observer *observer;
+    av_speech_in_noise::eye_tracking::calibration::View::Observer *observer;
 }
 
 - (void)animationDidEnd:(NSAnimation *)animation {
@@ -115,7 +115,7 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
 }
 @end
 
-namespace av_speech_in_noise::eye_tracker_calibration {
+namespace av_speech_in_noise::eye_tracking::calibration {
 static void animate(NSView *view, NSRect endFrame, double durationSeconds,
     id<NSAnimationDelegate> delegate) {
     const auto mutableDictionary {
@@ -291,7 +291,7 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<CorrectKeywordsUI> *correctKeywordsUI,
     NSObject<PassFailUI> *passFailUI,
     NSObject<EyeTrackerRunMenu> *eyeTrackerMenu) {
-    static TobiiProEyeTracker eyeTracker;
+    static eye_tracking::TobiiProTracker eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
     static SessionUIImpl sessionUIAdapted{sessionUI};
@@ -321,16 +321,19 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     [calibrationResultsWindow setFrame:testerScreenFrame display:YES];
     animatingWindow.level = NSScreenSaverWindowLevel;
     calibrationResultsWindow.level = NSScreenSaverWindowLevel;
-    static eye_tracker_calibration::AppKitUI eyeTrackerCalibrationView{
+    static eye_tracking::calibration::AppKitUI eyeTrackerCalibrationView{
         animatingWindow, calibrationResultsWindow, eyeTrackerMenu};
-    static eye_tracker_calibration::Presenter eyeTrackerCalibrationPresenter{
+    static eye_tracking::calibration::Presenter eyeTrackerCalibrationPresenter{
         eyeTrackerCalibrationView};
-    static auto calibrator{eyeTracker.calibration()};
-    static eye_tracker_calibration::Interactor eyeTrackerCalibrationInteractor{
-        eyeTrackerCalibrationPresenter, calibrator,
-        {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
-    static eye_tracker_calibration::Controller eyeTrackerCalibrationController{
-        eyeTrackerCalibrationView, eyeTrackerCalibrationInteractor};
+    static auto calibrator{eyeTracker.calibrator()};
+    static eye_tracking::calibration::Interactor
+        eyeTrackerCalibrationInteractor{eyeTrackerCalibrationPresenter,
+            calibrator,
+            {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F},
+                {0.9F, 0.9F}}};
+    static eye_tracking::calibration::Controller
+        eyeTrackerCalibrationController{
+            eyeTrackerCalibrationView, eyeTrackerCalibrationInteractor};
     initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
         testSetupViewFactory, sessionUIAdapted, testUIAdapted,
         freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,

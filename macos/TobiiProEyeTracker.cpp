@@ -11,19 +11,19 @@ static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
         : eyeTrackers->eyetrackers[0];
 }
 
-auto TobiiProEyeTracker::calibration() -> Calibration {
-    return Calibration{eyeTracker(eyeTrackers)};
+auto TobiiProTracker::calibrator() -> calibration::TobiiProCalibrator {
+    return calibration::TobiiProCalibrator{eyeTracker(eyeTrackers)};
 }
 
-TobiiProEyeTracker::TobiiProEyeTracker() {
+TobiiProTracker::TobiiProTracker() {
     tobii_research_find_all_eyetrackers(&eyeTrackers);
 }
 
-TobiiProEyeTracker::~TobiiProEyeTracker() {
+TobiiProTracker::~TobiiProTracker() {
     tobii_research_free_eyetrackers(eyeTrackers);
 }
 
-void TobiiProEyeTracker::allocateRecordingTimeSeconds(double seconds) {
+void TobiiProTracker::allocateRecordingTimeSeconds(double seconds) {
     float gaze_output_frequency_Hz{};
     tobii_research_get_gaze_output_frequency(
         eyeTracker(eyeTrackers), &gaze_output_frequency_Hz);
@@ -31,22 +31,22 @@ void TobiiProEyeTracker::allocateRecordingTimeSeconds(double seconds) {
     head = 0;
 }
 
-void TobiiProEyeTracker::start() {
+void TobiiProTracker::start() {
     tobii_research_subscribe_to_gaze_data(
         eyeTracker(eyeTrackers), gaze_data_callback, this);
 }
 
-void TobiiProEyeTracker::stop() {
+void TobiiProTracker::stop() {
     tobii_research_unsubscribe_from_gaze_data(
         eyeTracker(eyeTrackers), gaze_data_callback);
 }
 
-void TobiiProEyeTracker::gaze_data_callback(
+void TobiiProTracker::gaze_data_callback(
     TobiiResearchGazeData *gaze_data, void *self) {
-    static_cast<TobiiProEyeTracker *>(self)->gazeDataReceived(gaze_data);
+    static_cast<TobiiProTracker *>(self)->gazeDataReceived(gaze_data);
 }
 
-void TobiiProEyeTracker::gazeDataReceived(TobiiResearchGazeData *gaze_data) {
+void TobiiProTracker::gazeDataReceived(TobiiResearchGazeData *gaze_data) {
     if (head < gazeData.size())
         gazeData.at(head++) = *gaze_data;
 }
@@ -97,7 +97,7 @@ static auto size(const std::vector<BinocularGazeSample> &v) -> gsl::index {
     return v.size();
 }
 
-auto TobiiProEyeTracker::gazeSamples() -> BinocularGazeSamples {
+auto TobiiProTracker::gazeSamples() -> BinocularGazeSamples {
     BinocularGazeSamples gazeSamples_(head > 0 ? head - 1 : 0);
     for (gsl::index i{0}; i < size(gazeSamples_); ++i) {
         at(gazeSamples_, i).systemTime.microseconds =
@@ -110,7 +110,7 @@ auto TobiiProEyeTracker::gazeSamples() -> BinocularGazeSamples {
     return gazeSamples_;
 }
 
-auto TobiiProEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
+auto TobiiProTracker::currentSystemTime() -> EyeTrackerSystemTime {
     EyeTrackerSystemTime currentSystemTime{};
     int64_t microseconds = 0;
     tobii_research_get_system_time_stamp(&microseconds);
@@ -118,81 +118,74 @@ auto TobiiProEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     return currentSystemTime;
 }
 
-TobiiProEyeTracker::Address::Address(TobiiResearchEyeTracker *eyetracker) {
+TobiiProTracker::Address::Address(TobiiResearchEyeTracker *eyetracker) {
     tobii_research_get_address(eyetracker, &address);
 }
 
-TobiiProEyeTracker::Address::~Address() { tobii_research_free_string(address); }
+TobiiProTracker::Address::~Address() { tobii_research_free_string(address); }
 
-TobiiProEyeTracker::Calibration::Calibration(
-    TobiiResearchEyeTracker *eyetracker)
+namespace calibration {
+TobiiProCalibrator::TobiiProCalibrator(TobiiResearchEyeTracker *eyetracker)
     : eyetracker{eyetracker} {}
 
-void TobiiProEyeTracker::Calibration::acquire() {
+void TobiiProCalibrator::acquire() {
     tobii_research_screen_based_calibration_enter_calibration_mode(eyetracker);
 }
 
-void TobiiProEyeTracker::Calibration::release() {
+void TobiiProCalibrator::release() {
     tobii_research_screen_based_calibration_leave_calibration_mode(eyetracker);
 }
 
-void TobiiProEyeTracker::Calibration::discard(
-    eye_tracker_calibration::Point p) {
+void TobiiProCalibrator::discard(Point p) {
     tobii_research_screen_based_calibration_discard_data(eyetracker, p.x, p.y);
 }
 
-void TobiiProEyeTracker::Calibration::collect(
-    eye_tracker_calibration::Point p) {
+void TobiiProCalibrator::collect(Point p) {
     tobii_research_screen_based_calibration_collect_data(eyetracker, p.x, p.y);
 }
 
-auto TobiiProEyeTracker::Calibration::results()
-    -> std::vector<eye_tracker_calibration::Result> {
+auto TobiiProCalibrator::results() -> std::vector<Result> {
     ComputeAndApply computeAndApply{eyetracker};
     return computeAndApply.results();
 }
 
-auto TobiiProEyeTracker::Calibration::computeAndApply() -> ComputeAndApply {
+auto TobiiProCalibrator::computeAndApply() -> ComputeAndApply {
     return ComputeAndApply{eyetracker};
 }
 
-TobiiProEyeTracker::Calibration::ComputeAndApply::ComputeAndApply(
+TobiiProCalibrator::ComputeAndApply::ComputeAndApply(
     TobiiResearchEyeTracker *eyetracker) {
     tobii_research_screen_based_calibration_compute_and_apply(
         eyetracker, &result);
 }
 
-auto TobiiProEyeTracker::Calibration::ComputeAndApply::success() -> bool {
+auto TobiiProCalibrator::ComputeAndApply::success() -> bool {
     return result != nullptr &&
         result->status == TOBII_RESEARCH_CALIBRATION_SUCCESS;
 }
 
-auto TobiiProEyeTracker::Calibration::ComputeAndApply::results()
-    -> std::vector<eye_tracker_calibration::Result> {
+auto TobiiProCalibrator::ComputeAndApply::results() -> std::vector<Result> {
     if (result == nullptr)
         return {};
-    std::vector<eye_tracker_calibration::Result> results{
-        result->calibration_point_count};
+    std::vector<Result> results{result->calibration_point_count};
     const gsl::span<TobiiResearchCalibrationPoint> calibrationPoints{
         result->calibration_points, result->calibration_point_count};
     std::transform(calibrationPoints.begin(), calibrationPoints.end(),
         std::back_inserter(results),
         [](const TobiiResearchCalibrationPoint &p) {
-            eye_tracker_calibration::Result transformedResult;
+            Result transformedResult;
             const gsl::span<TobiiResearchCalibrationSample> calibrationSamples{
                 p.calibration_samples, p.calibration_sample_count};
             std::transform(calibrationSamples.begin(), calibrationSamples.end(),
                 std::back_inserter(transformedResult.leftEyeMappedPoints),
                 [](const TobiiResearchCalibrationSample &sample) {
-                    return eye_tracker_calibration::Point{
-                        sample.left_eye.position_on_display_area.x,
+                    return Point{sample.left_eye.position_on_display_area.x,
                         sample.left_eye.position_on_display_area.y};
                 });
             std::transform(calibrationSamples.begin(), calibrationSamples.end(),
                 std::back_inserter(transformedResult.rightEyeMappedPoints),
                 [](const TobiiResearchCalibrationSample &sample) {
-                    return eye_tracker_calibration::Point{
-                        sample.right_eye.position_on_display_area.x,
+                    return Point{sample.right_eye.position_on_display_area.x,
                         sample.right_eye.position_on_display_area.y};
                 });
             transformedResult.point = {
@@ -203,51 +196,30 @@ auto TobiiProEyeTracker::Calibration::ComputeAndApply::results()
     return results;
 }
 
-TobiiProEyeTracker::Calibration::ComputeAndApply::~ComputeAndApply() {
+TobiiProCalibrator::ComputeAndApply::~ComputeAndApply() {
     tobii_research_free_screen_based_calibration_result(result);
 }
 
-TobiiProEyeTracker::CalibrationData::CalibrationData(
-    TobiiResearchEyeTracker *eyeTracker) {
-    tobii_research_retrieve_calibration_data(eyeTracker, &data);
-}
-
-void TobiiProEyeTracker::CalibrationData::write(std::ostream &stream) {
-    if (data != nullptr)
-        stream.write(reinterpret_cast<const char *>(data->data), data->size);
-}
-
-TobiiProEyeTracker::CalibrationData::~CalibrationData() {
-    tobii_research_free_calibration_data(data);
-}
-
-void TobiiProEyeTracker::write(std::ostream &stream) {
-    CalibrationData data{eyeTracker(eyeTrackers)};
-    data.write(stream);
-}
-
-TobiiProEyeTracker::CalibrationValidation::CalibrationValidation(
-    TobiiResearchEyeTracker *eyetracker) {
-    Address address{eyetracker};
+TobiiProValidator::TobiiProValidator(TobiiResearchEyeTracker *eyetracker) {
+    TobiiProTracker::Address address{eyetracker};
     if (tobii_research_screen_based_calibration_validation_init_default(
             address.get(), &validator) ==
         CALIBRATION_VALIDATION_STATUS_INVALID_EYETRACKER)
         validator = nullptr;
 }
 
-TobiiProEyeTracker::CalibrationValidation::~CalibrationValidation() {
+TobiiProValidator::~TobiiProValidator() {
     if (validator != nullptr)
         tobii_research_screen_based_calibration_validation_destroy(validator);
 }
 
-void TobiiProEyeTracker::CalibrationValidation::acquire() {
+void TobiiProValidator::acquire() {
     if (validator != nullptr)
         tobii_research_screen_based_calibration_validation_enter_validation_mode(
             validator);
 }
 
-void TobiiProEyeTracker::CalibrationValidation::collect(
-    eye_tracker_calibration::Point p) {
+void TobiiProValidator::collect(calibration::Point p) {
     TobiiResearchNormalizedPoint2D point{p.x, p.y};
     if (validator != nullptr)
         tobii_research_screen_based_calibration_validation_start_collecting_data(
@@ -258,24 +230,41 @@ void TobiiProEyeTracker::CalibrationValidation::collect(
         std::this_thread::sleep_for(std::chrono::milliseconds{100});
 }
 
-auto TobiiProEyeTracker::CalibrationValidation::result() -> Result {
-    return Result{validator};
-}
+auto TobiiProValidator::result() -> Result { return Result{validator}; }
 
-void TobiiProEyeTracker::CalibrationValidation::release() {
+void TobiiProValidator::release() {
     if (validator != nullptr)
         tobii_research_screen_based_calibration_validation_leave_validation_mode(
             validator);
 }
 
-TobiiProEyeTracker::CalibrationValidation::Result::Result(
-    CalibrationValidator *validator) {
+TobiiProValidator::Result::Result(CalibrationValidator *validator) {
     if (validator != nullptr)
         tobii_research_screen_based_calibration_validation_compute(
             validator, &result);
 }
 
-TobiiProEyeTracker::CalibrationValidation::Result::~Result() {
+TobiiProValidator::Result::~Result() {
     tobii_research_screen_based_calibration_validation_destroy_result(result);
+}
+}
+
+TobiiProTracker::CalibrationData::CalibrationData(
+    TobiiResearchEyeTracker *eyeTracker) {
+    tobii_research_retrieve_calibration_data(eyeTracker, &data);
+}
+
+void TobiiProTracker::CalibrationData::write(std::ostream &stream) {
+    if (data != nullptr)
+        stream.write(reinterpret_cast<const char *>(data->data), data->size);
+}
+
+TobiiProTracker::CalibrationData::~CalibrationData() {
+    tobii_research_free_calibration_data(data);
+}
+
+void TobiiProTracker::write(std::ostream &stream) {
+    CalibrationData data{eyeTracker(eyeTrackers)};
+    data.write(stream);
 }
 }

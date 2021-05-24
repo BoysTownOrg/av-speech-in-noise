@@ -41,7 +41,7 @@ class IPresenterStub : public IPresenter {
     bool started_{};
 };
 
-class EyeTrackerCalibratorStub : public EyeTrackerCalibrator {
+class EyeTrackerCalibratorStub : public Calibrator {
   public:
     void collect(Point x) override { calibratedPoint_ = x; }
 
