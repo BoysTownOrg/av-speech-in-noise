@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace av_speech_in_noise::eye_tracker_calibration {
+namespace av_speech_in_noise::eye_tracking::calibration {
 static auto transferOne(std::vector<Point> &a, std::vector<Point> &b) -> Point {
     const auto p{a.front()};
     a.erase(a.begin());

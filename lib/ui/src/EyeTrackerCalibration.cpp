@@ -1,6 +1,6 @@
 #include "EyeTrackerCalibration.hpp"
 
-namespace av_speech_in_noise::eye_tracker_calibration {
+namespace av_speech_in_noise::eye_tracking::calibration {
 static auto windowPoint(Point p) -> WindowPoint { return {p.x, 1 - p.y}; }
 
 static void moveDotTo(View &view, Point p, Presenter::DotState &dotState) {
