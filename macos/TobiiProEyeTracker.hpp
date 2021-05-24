@@ -81,29 +81,22 @@ class TobiiEyeTracker : public EyeTracker {
     class CalibrationValidation {
       public:
         explicit CalibrationValidation(TobiiResearchEyeTracker *eyetracker);
-        class Enter;
-        auto enter() -> Enter;
+        void acquire();
+        void collect(eye_tracker_calibration::Point);
+        void release();
         ~CalibrationValidation();
 
-        class Enter {
+        class Result;
+
+        auto result() -> Result;
+
+        class Result {
           public:
-            explicit Enter(CalibrationValidator *validator);
-            void collect(float x, float y);
-            class Result;
-            auto result() -> Result;
-            ~Enter();
-
-            class Result {
-              public:
-                explicit Result(CalibrationValidator *validator);
-                ~Result();
-
-              private:
-                CalibrationValidationResult *result{};
-            };
+            explicit Result(CalibrationValidator *validator);
+            ~Result();
 
           private:
-            CalibrationValidator *validator{};
+            CalibrationValidationResult *result{};
         };
 
       private:

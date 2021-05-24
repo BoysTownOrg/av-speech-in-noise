@@ -231,25 +231,21 @@ TobiiEyeTracker::CalibrationValidation::CalibrationValidation(
         CALIBRATION_VALIDATION_STATUS_INVALID_EYETRACKER)
         validator = nullptr;
 }
-auto TobiiEyeTracker::CalibrationValidation::enter() -> Enter {
-    return Enter{validator};
-}
 
 TobiiEyeTracker::CalibrationValidation::~CalibrationValidation() {
     if (validator != nullptr)
         tobii_research_screen_based_calibration_validation_destroy(validator);
 }
 
-TobiiEyeTracker::CalibrationValidation::Enter::Enter(
-    CalibrationValidator *validator)
-    : validator{validator} {
+void TobiiEyeTracker::CalibrationValidation::acquire() {
     if (validator != nullptr)
         tobii_research_screen_based_calibration_validation_enter_validation_mode(
             validator);
 }
 
-void TobiiEyeTracker::CalibrationValidation::Enter::collect(float x, float y) {
-    TobiiResearchNormalizedPoint2D point{x, y};
+void TobiiEyeTracker::CalibrationValidation::collect(
+    eye_tracker_calibration::Point p) {
+    TobiiResearchNormalizedPoint2D point{p.x, p.y};
     if (validator != nullptr)
         tobii_research_screen_based_calibration_validation_start_collecting_data(
             validator, &point);
@@ -259,24 +255,24 @@ void TobiiEyeTracker::CalibrationValidation::Enter::collect(float x, float y) {
         std::this_thread::sleep_for(std::chrono::milliseconds{100});
 }
 
-auto TobiiEyeTracker::CalibrationValidation::Enter::result() -> Result {
+auto TobiiEyeTracker::CalibrationValidation::result() -> Result {
     return Result{validator};
 }
 
-TobiiEyeTracker::CalibrationValidation::Enter::~Enter() {
+void TobiiEyeTracker::CalibrationValidation::release() {
     if (validator != nullptr)
         tobii_research_screen_based_calibration_validation_leave_validation_mode(
             validator);
 }
 
-TobiiEyeTracker::CalibrationValidation::Enter::Result::Result(
+TobiiEyeTracker::CalibrationValidation::Result::Result(
     CalibrationValidator *validator) {
     if (validator != nullptr)
         tobii_research_screen_based_calibration_validation_compute(
             validator, &result);
 }
 
-TobiiEyeTracker::CalibrationValidation::Enter::Result::~Result() {
+TobiiEyeTracker::CalibrationValidation::Result::~Result() {
     tobii_research_screen_based_calibration_validation_destroy_result(result);
 }
 }
