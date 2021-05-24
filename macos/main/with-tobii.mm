@@ -291,7 +291,7 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<CorrectKeywordsUI> *correctKeywordsUI,
     NSObject<PassFailUI> *passFailUI,
     NSObject<EyeTrackerRunMenu> *eyeTrackerMenu) {
-    static TobiiEyeTracker eyeTracker;
+    static TobiiProEyeTracker eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
     static SessionUIImpl sessionUIAdapted{sessionUI};

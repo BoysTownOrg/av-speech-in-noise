@@ -273,7 +273,8 @@ static void saveOutputFileAndPrepareNextTrialAfter(
 
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
-    OutputFile &outputFile, Randomizer &randomizer, EyeTracker &eyeTracker)
+    OutputFile &outputFile, Randomizer &randomizer,
+    eye_tracking::Tracker &eyeTracker)
     : maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
       evaluator{evaluator}, outputFile{outputFile}, randomizer{randomizer},
       eyeTracker{eyeTracker}, testMethod{&nullTestMethod} {

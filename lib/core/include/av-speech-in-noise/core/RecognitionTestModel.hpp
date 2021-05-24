@@ -9,7 +9,8 @@
 #include "IOutputFile.hpp"
 
 namespace av_speech_in_noise {
-class EyeTracker : public Writable {
+namespace eye_tracking {
+class Tracker : public Writable {
   public:
     virtual void allocateRecordingTimeSeconds(double) = 0;
     virtual void start() = 0;
@@ -17,13 +18,15 @@ class EyeTracker : public Writable {
     virtual auto gazeSamples() -> BinocularGazeSamples = 0;
     virtual auto currentSystemTime() -> EyeTrackerSystemTime = 0;
 };
+}
 
 class RecognitionTestModelImpl : public TargetPlayer::Observer,
                                  public MaskerPlayer::Observer,
                                  public RecognitionTestModel {
   public:
     RecognitionTestModelImpl(TargetPlayer &, MaskerPlayer &,
-        ResponseEvaluator &, OutputFile &, Randomizer &, EyeTracker &);
+        ResponseEvaluator &, OutputFile &, Randomizer &,
+        eye_tracking::Tracker &);
     void attach(Model::Observer *) override;
     void initialize(TestMethod *, const Test &) override;
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
@@ -63,7 +66,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     ResponseEvaluator &evaluator;
     OutputFile &outputFile;
     Randomizer &randomizer;
-    EyeTracker &eyeTracker;
+    eye_tracking::Tracker &eyeTracker;
     EyeTrackerTargetPlayerSynchronization
         lastEyeTrackerTargetPlayerSynchronization{};
     TargetStartTime lastTargetStartTime{};

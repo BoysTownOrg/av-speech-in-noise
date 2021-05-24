@@ -13,11 +13,11 @@
 #include <cstddef>
 #include <ostream>
 
-namespace av_speech_in_noise {
-class TobiiEyeTracker : public EyeTracker {
+namespace av_speech_in_noise::eye_tracking {
+class TobiiProEyeTracker : public Tracker {
   public:
-    TobiiEyeTracker();
-    ~TobiiEyeTracker() override;
+    TobiiProEyeTracker();
+    ~TobiiProEyeTracker() override;
     void allocateRecordingTimeSeconds(double s) override;
     void start() override;
     void stop() override;
