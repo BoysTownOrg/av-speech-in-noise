@@ -67,7 +67,10 @@ class Interactor : IPresenter::Observer {
         presenter.attach(this);
     }
 
-    void start() { validator.acquire(); }
+    void start() {
+        validator.acquire();
+        presenter.start();
+    }
 
     void finish() {
         if (pointsToValidate.empty()) {

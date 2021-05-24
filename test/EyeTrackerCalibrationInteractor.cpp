@@ -270,5 +270,10 @@ EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(stopsPresenterOnFinish) {
     interactor.finish();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.stopped());
 }
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(startsPresenter) {
+    interactor.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.started());
+}
 }
 }
