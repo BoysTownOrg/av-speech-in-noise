@@ -81,7 +81,12 @@ class EyeTrackerCalibrationValidatorStub : public validation::Validator {
 
     void release() override { released_ = true; }
 
+    auto validatedPoint() -> Point { return validatedPoint_; }
+
+    void collect(Point p) { validatedPoint_ = p; }
+
   private:
+    Point validatedPoint_;
     bool acquired_{};
     bool released_{};
 };
@@ -279,6 +284,12 @@ EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(startsPresenter) {
 EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(presentsFirstPointOnStart) {
     interactor.start();
     assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(validatesPointWhenReady) {
+    interactor.start();
+    notifyThatPointIsReady(presenter);
+    assertEqual(Point{0.1F, 0.2F}, validator.validatedPoint());
 }
 }
 }

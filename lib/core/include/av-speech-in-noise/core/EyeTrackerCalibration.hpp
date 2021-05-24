@@ -56,6 +56,7 @@ class Validator {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Validator);
     virtual void acquire() = 0;
     virtual void release() = 0;
+    virtual void collect(Point) = 0;
 };
 
 class Interactor : IPresenter::Observer {
@@ -81,6 +82,7 @@ class Interactor : IPresenter::Observer {
     }
 
     void notifyThatPointIsReady() override {
+        validator.collect(pointsToValidate.front());
         pointsToValidate.erase(pointsToValidate.begin());
     }
 
