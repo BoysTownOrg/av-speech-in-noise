@@ -70,6 +70,7 @@ class Interactor : IPresenter::Observer {
     void start() {
         validator.acquire();
         presenter.start();
+        presenter.present(pointsToValidate.front());
     }
 
     void finish() {

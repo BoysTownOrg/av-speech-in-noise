@@ -79,7 +79,7 @@ class EyeTrackerCalibrationValidatorStub : public validation::Validator {
 
     [[nodiscard]] auto released() const -> bool { return released_; }
 
-    void release() { released_ = true; }
+    void release() override { released_ = true; }
 
   private:
     bool acquired_{};
@@ -274,6 +274,11 @@ EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(stopsPresenterOnFinish) {
 EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(startsPresenter) {
     interactor.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.started());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(presentsFirstPointOnStart) {
+    interactor.start();
+    assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
 }
 }
 }
