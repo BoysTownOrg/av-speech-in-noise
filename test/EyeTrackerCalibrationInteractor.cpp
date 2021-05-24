@@ -307,5 +307,15 @@ EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(
     notifyThatPointIsReady(presenter);
     assertEqual(Point{0.5F, 0.6F}, presenter.presentedPoint());
 }
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(restarts) {
+    interactor.start();
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    interactor.finish();
+    interactor.start();
+    assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
+}
 }
 }

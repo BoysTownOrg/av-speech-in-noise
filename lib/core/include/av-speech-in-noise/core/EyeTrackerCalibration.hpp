@@ -63,14 +63,15 @@ class Interactor : IPresenter::Observer {
   public:
     explicit Interactor(
         IPresenter &presenter, Validator &validator, std::vector<Point> points)
-        : presenter{presenter}, validator{validator}, points{points},
-          pointsToValidate{std::move(points)} {
+        : presenter{presenter}, validator{validator}, points{
+                                                          std::move(points)} {
         presenter.attach(this);
     }
 
     void start() {
         validator.acquire();
         presenter.start();
+        pointsToValidate = points;
         presenter.present(pointsToValidate.front());
     }
 
