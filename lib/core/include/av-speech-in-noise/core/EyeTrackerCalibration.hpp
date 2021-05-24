@@ -84,7 +84,8 @@ class Interactor : IPresenter::Observer {
     void notifyThatPointIsReady() override {
         validator.collect(pointsToValidate.front());
         pointsToValidate.erase(pointsToValidate.begin());
-        presenter.present(pointsToValidate.front());
+        if (!pointsToValidate.empty())
+            presenter.present(pointsToValidate.front());
     }
 
   private:
