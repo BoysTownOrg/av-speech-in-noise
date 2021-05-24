@@ -3,6 +3,7 @@
 
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
+#include <screen_based_calibration_validation.h>
 #include <tobii_research.h>
 #include <tobii_research_calibration.h>
 #include <tobii_research_eyetracker.h>
@@ -75,6 +76,38 @@ class TobiiEyeTracker : public EyeTracker {
 
       private:
         TobiiResearchEyeTracker *eyetracker{};
+    };
+
+    class CalibrationValidation {
+      public:
+        explicit CalibrationValidation(TobiiResearchEyeTracker *eyetracker);
+        class Enter;
+        auto enter() -> Enter;
+        ~CalibrationValidation();
+
+        class Enter {
+          public:
+            explicit Enter(CalibrationValidator *validator);
+            void collect(float x, float y);
+            class Result;
+            auto result() -> Result;
+            ~Enter();
+
+            class Result {
+              public:
+                explicit Result(CalibrationValidator *validator);
+                ~Result();
+
+              private:
+                CalibrationValidationResult *result{};
+            };
+
+          private:
+            CalibrationValidator *validator{};
+        };
+
+      private:
+        CalibrationValidator *validator{};
     };
 
   private:

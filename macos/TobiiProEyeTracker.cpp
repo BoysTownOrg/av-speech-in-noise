@@ -1,6 +1,7 @@
 
 #include "TobiiProEyeTracker.hpp"
 #include <gsl/gsl>
+#include <thread>
 
 namespace av_speech_in_noise {
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
@@ -220,5 +221,62 @@ TobiiEyeTracker::CalibrationData::~CalibrationData() {
 void TobiiEyeTracker::write(std::ostream &stream) {
     CalibrationData data{eyeTracker(eyeTrackers)};
     data.write(stream);
+}
+
+TobiiEyeTracker::CalibrationValidation::CalibrationValidation(
+    TobiiResearchEyeTracker *eyetracker) {
+    Address address{eyetracker};
+    if (tobii_research_screen_based_calibration_validation_init_default(
+            address.get(), &validator) ==
+        CALIBRATION_VALIDATION_STATUS_INVALID_EYETRACKER)
+        validator = nullptr;
+}
+auto TobiiEyeTracker::CalibrationValidation::enter() -> Enter {
+    return Enter{validator};
+}
+
+TobiiEyeTracker::CalibrationValidation::~CalibrationValidation() {
+    if (validator != nullptr)
+        tobii_research_screen_based_calibration_validation_destroy(validator);
+}
+
+TobiiEyeTracker::CalibrationValidation::Enter::Enter(
+    CalibrationValidator *validator)
+    : validator{validator} {
+    if (validator != nullptr)
+        tobii_research_screen_based_calibration_validation_enter_validation_mode(
+            validator);
+}
+
+void TobiiEyeTracker::CalibrationValidation::Enter::collect(float x, float y) {
+    TobiiResearchNormalizedPoint2D point{x, y};
+    if (validator != nullptr)
+        tobii_research_screen_based_calibration_validation_start_collecting_data(
+            validator, &point);
+    while ((validator != nullptr) &&
+        (tobii_research_screen_based_calibration_validation_is_collecting_data(
+             validator) != 0))
+        std::this_thread::sleep_for(std::chrono::milliseconds{100});
+}
+
+auto TobiiEyeTracker::CalibrationValidation::Enter::result() -> Result {
+    return Result{validator};
+}
+
+TobiiEyeTracker::CalibrationValidation::Enter::~Enter() {
+    if (validator != nullptr)
+        tobii_research_screen_based_calibration_validation_leave_validation_mode(
+            validator);
+}
+
+TobiiEyeTracker::CalibrationValidation::Enter::Result::Result(
+    CalibrationValidator *validator) {
+    if (validator != nullptr)
+        tobii_research_screen_based_calibration_validation_compute(
+            validator, &result);
+}
+
+TobiiEyeTracker::CalibrationValidation::Enter::Result::~Result() {
+    tobii_research_screen_based_calibration_validation_destroy_result(result);
 }
 }
