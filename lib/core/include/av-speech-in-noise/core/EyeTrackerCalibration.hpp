@@ -62,16 +62,18 @@ class Interactor : IPresenter::Observer {
   public:
     explicit Interactor(
         IPresenter &presenter, Validator &validator, std::vector<Point> points)
-        : validator{validator}, points{points}, pointsToValidate{
-                                                    std::move(points)} {
+        : presenter{presenter}, validator{validator}, points{points},
+          pointsToValidate{std::move(points)} {
         presenter.attach(this);
     }
 
     void start() { validator.acquire(); }
 
     void finish() {
-        if (pointsToValidate.empty())
+        if (pointsToValidate.empty()) {
             validator.release();
+            presenter.stop();
+        }
     }
 
     void notifyThatPointIsReady() override {
@@ -79,6 +81,7 @@ class Interactor : IPresenter::Observer {
     }
 
   private:
+    IPresenter &presenter;
     Validator &validator;
     std::vector<Point> points;
     std::vector<Point> pointsToValidate;

@@ -261,5 +261,14 @@ EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(
     interactor.finish();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(validator.released());
 }
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(stopsPresenterOnFinish) {
+    interactor.start();
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    interactor.finish();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.stopped());
+}
 }
 }
