@@ -71,12 +71,29 @@ class EyeTrackerCalibratorStub : public Calibrator {
     bool released_{};
 };
 
+class EyeTrackerCalibrationValidatorStub : public validation::Validator {
+  public:
+    [[nodiscard]] auto acquired() const -> bool { return acquired_; }
+
+    void acquire() { acquired_ = true; }
+
+  private:
+    bool acquired_{};
+};
+
 class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
   protected:
     IPresenterStub presenter;
     EyeTrackerCalibratorStub calibrator;
     Interactor interactor{
         presenter, calibrator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
+};
+
+class EyeTrackerCalibrationValidationInteractorTests : public ::testing::Test {
+  protected:
+    EyeTrackerCalibrationValidatorStub validator;
+    validation::Interactor interactor{
+        validator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
 };
 }
 
@@ -86,6 +103,9 @@ static void notifyThatPointIsReady(IPresenterStub &presenter) {
 
 #define EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(a)                             \
     TEST_F(EyeTrackerCalibrationInteractorTests, a)
+
+#define EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(a)                  \
+    TEST_F(EyeTrackerCalibrationValidationInteractorTests, a)
 
 namespace {
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(acquiresCalibratorOnCalibrate) {
@@ -217,6 +237,11 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     interactor.redo(Point{0.31F, 0.42F});
     interactor.redo(Point{0.51F, 0.62F});
     assertEqual(Point{0.3F, 0.4F}, calibrator.discardedPoint());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(acquiresValidatorOnStart) {
+    interactor.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(validator.acquired());
 }
 }
 }

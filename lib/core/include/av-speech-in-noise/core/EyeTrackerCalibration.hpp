@@ -50,6 +50,25 @@ class Calibrator {
     virtual auto results() -> std::vector<Result> = 0;
 };
 
+namespace validation {
+class Validator {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Validator);
+    virtual void acquire() = 0;
+};
+
+class Interactor {
+  public:
+    explicit Interactor(Validator &validator, std::vector<Point>)
+        : validator{validator} {}
+
+    void start() { validator.acquire(); }
+
+  private:
+    Validator &validator;
+};
+}
+
 class Interactor : public IPresenter::Observer, public IInteractor {
   public:
     Interactor(IPresenter &, Calibrator &, std::vector<Point>);
