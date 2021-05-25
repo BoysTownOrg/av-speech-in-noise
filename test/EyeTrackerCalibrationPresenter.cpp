@@ -123,19 +123,19 @@ class TesterViewStub : public TesterView {
         return rightEyePrecisionDegrees_;
     }
 
-    void setLeftEyeAccuracyDegrees(const std::string &s) {
+    void setLeftEyeAccuracyDegrees(const std::string &s) override {
         leftEyeAccuracyDegrees_ = s;
     }
 
-    void setLeftEyePrecisionDegrees(const std::string &s) {
+    void setLeftEyePrecisionDegrees(const std::string &s) override {
         leftEyePrecisionDegrees_ = s;
     }
 
-    void setRightEyeAccuracyDegrees(const std::string &s) {
+    void setRightEyeAccuracyDegrees(const std::string &s) override {
         rightEyeAccuracyDegrees_ = s;
     }
 
-    void setRightEyePrecisionDegrees(const std::string &s) {
+    void setRightEyePrecisionDegrees(const std::string &s) override {
         rightEyePrecisionDegrees_ = s;
     }
 

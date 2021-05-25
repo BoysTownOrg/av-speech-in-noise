@@ -29,20 +29,36 @@ namespace validation {
 struct Result;
 }
 
-class IPresenter {
+class SubjectPresenter {
   public:
     class Observer {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatPointIsReady() = 0;
     };
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(IPresenter);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SubjectPresenter);
     virtual void attach(Observer *) = 0;
     virtual void present(Point) = 0;
+    virtual void start() = 0;
+    virtual void stop() = 0;
+};
+
+class TesterPresenter {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TesterPresenter);
     virtual void present(const std::vector<Result> &) = 0;
     virtual void present(const validation::Result &) = 0;
-    virtual void stop() = 0;
     virtual void start() = 0;
+    virtual void stop() = 0;
+};
+
+class IPresenter : public virtual SubjectPresenter,
+                   public virtual TesterPresenter {
+  public:
+    using SubjectPresenter::present;
+    using TesterPresenter::present;
+    virtual void start() = 0;
+    virtual void stop() = 0;
 };
 
 class Calibrator {
