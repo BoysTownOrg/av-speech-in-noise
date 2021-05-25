@@ -116,30 +116,12 @@ class TesterView {
     virtual void hide() = 0;
 };
 
-static auto format(float x) -> std::string {
-    std::stringstream stream;
-    stream << x;
-    return stream.str();
-}
-
 class TesterPresenterImpl : public TesterPresenter {
   public:
-    explicit TesterPresenterImpl(TesterView &view) : view{view} {}
-
-    void present(const Result &result) override {
-        view.setLeftEyeAccuracyDegrees(
-            format(result.left.errorOfMeanGaze.degrees));
-        view.setLeftEyePrecisionDegrees(
-            format(result.left.standardDeviationFromTheMeanGaze.degrees));
-        view.setRightEyeAccuracyDegrees(
-            format(result.right.errorOfMeanGaze.degrees));
-        view.setRightEyePrecisionDegrees(
-            format(result.right.standardDeviationFromTheMeanGaze.degrees));
-    }
-
-    void start() override { view.show(); }
-
-    void stop() override { view.hide(); }
+    explicit TesterPresenterImpl(TesterView &);
+    void present(const Result &) override;
+    void start() override;
+    void stop() override;
 
   private:
     TesterView &view;

@@ -50,6 +50,29 @@ void TesterPresenterImpl::present(const std::vector<Result> &results) {
     }
 }
 
+static auto format(float x) -> std::string {
+    std::stringstream stream;
+    stream << x;
+    return stream.str();
+}
+
+void validation::TesterPresenterImpl::present(const Result &result) {
+    view.setLeftEyeAccuracyDegrees(format(result.left.errorOfMeanGaze.degrees));
+    view.setLeftEyePrecisionDegrees(
+        format(result.left.standardDeviationFromTheMeanGaze.degrees));
+    view.setRightEyeAccuracyDegrees(
+        format(result.right.errorOfMeanGaze.degrees));
+    view.setRightEyePrecisionDegrees(
+        format(result.right.standardDeviationFromTheMeanGaze.degrees));
+}
+
+void validation::TesterPresenterImpl::start() { view.show(); }
+
+void validation::TesterPresenterImpl::stop() { view.hide(); }
+
+validation::TesterPresenterImpl::TesterPresenterImpl(TesterView &view)
+    : view{view} {}
+
 Controller::Controller(Control &control, IInteractor &interactor)
     : interactor{interactor}, control{control} {
     control.attach(this);
