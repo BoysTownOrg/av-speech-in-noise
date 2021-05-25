@@ -7,36 +7,41 @@ static auto distance(Point a, Point b) -> float {
     return std::hypot(a.x - b.x, a.y - b.y);
 }
 
-static void present(IPresenter &presenter, const std::vector<Point> &points) {
+static void present(
+    SubjectPresenter &presenter, const std::vector<Point> &points) {
     presenter.present(points.front());
 }
 
-Interactor::Interactor(
-    IPresenter &presenter, Calibrator &calibrator, std::vector<Point> points)
-    : points{std::move(points)}, presenter{presenter}, calibrator{calibrator} {
-    presenter.attach(this);
+Interactor::Interactor(SubjectPresenter &subjectPresenter,
+    TesterPresenter &testerPresenter, Calibrator &calibrator,
+    std::vector<Point> points)
+    : points{std::move(points)}, subjectPresenter{subjectPresenter},
+      testerPresenter{testerPresenter}, calibrator{calibrator} {
+    subjectPresenter.attach(this);
 }
 
 void Interactor::notifyThatPointIsReady() {
     calibrator.collect(pointsToCalibrate.front());
     pointsToCalibrate.erase(pointsToCalibrate.begin());
     if (pointsToCalibrate.empty())
-        presenter.present(calibrator.results());
+        testerPresenter.present(calibrator.results());
     else
-        present(presenter, pointsToCalibrate);
+        present(subjectPresenter, pointsToCalibrate);
 }
 
 void Interactor::start() {
     calibrator.acquire();
     pointsToCalibrate = points;
-    presenter.start();
-    present(presenter, pointsToCalibrate);
+    subjectPresenter.start();
+    testerPresenter.start();
+    present(subjectPresenter, pointsToCalibrate);
 }
 
 void Interactor::finish() {
     if (pointsToCalibrate.empty()) {
         calibrator.release();
-        presenter.stop();
+        subjectPresenter.stop();
+        testerPresenter.stop();
     }
 }
 
@@ -47,7 +52,7 @@ void Interactor::redo(Point p) {
         [p](Point a, Point b) { return distance(p, a) < distance(p, b); })};
     calibrator.discard(*closestPoint);
     pointsToCalibrate.push_back(*closestPoint);
-    present(presenter, pointsToCalibrate);
+    present(subjectPresenter, pointsToCalibrate);
 }
 
 namespace validation {

@@ -110,9 +110,10 @@ class Interactor : IPresenter::Observer {
 };
 }
 
-class Interactor : public IPresenter::Observer, public IInteractor {
+class Interactor : public SubjectPresenter::Observer, public IInteractor {
   public:
-    Interactor(IPresenter &, Calibrator &, std::vector<Point>);
+    Interactor(SubjectPresenter &, TesterPresenter &, Calibrator &,
+        std::vector<Point>);
     void notifyThatPointIsReady() override;
     void start() override;
     void finish() override;
@@ -121,7 +122,8 @@ class Interactor : public IPresenter::Observer, public IInteractor {
   private:
     std::vector<Point> points;
     std::vector<Point> pointsToCalibrate;
-    IPresenter &presenter;
+    SubjectPresenter &subjectPresenter;
+    TesterPresenter &testerPresenter;
     Calibrator &calibrator;
 };
 }
