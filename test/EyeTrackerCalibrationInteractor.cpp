@@ -47,7 +47,7 @@ class IPresenterStub : public IPresenter {
     void present(const validation::Result &b) { validationResult_ = b; }
 
   private:
-    validation::Result validationResult_;
+    validation::Result validationResult_{};
     Point presentedPoint_{};
     std::vector<Result> results_{};
     Observer *observer{};
@@ -361,13 +361,12 @@ EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(restarts) {
 
 EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(
     presentsResultsAfterFinalPointCalibrated) {
-    validator.set(validation::Result{{{1}, {2}}, {{3}, {4}}});
+    validator.set(Result{{{1}, {2}}, {{3}, {4}}});
     interactor.start();
     notifyThatPointIsReady(presenter);
     notifyThatPointIsReady(presenter);
     notifyThatPointIsReady(presenter);
-    assertEqual(validation::Result{{{1}, {2}}, {{3}, {4}}},
-        presenter.validationResult());
+    assertEqual(Result{{{1}, {2}}, {{3}, {4}}}, presenter.validationResult());
 }
 }
 }

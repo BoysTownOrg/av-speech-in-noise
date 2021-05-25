@@ -58,4 +58,35 @@ void Interactor::redo(Point p) {
     pointsCalibrated.erase(closestPoint);
     present(presenter, pointsToCalibrate);
 }
+
+namespace validation {
+Interactor::Interactor(
+    IPresenter &presenter, Validator &validator, std::vector<Point> points)
+    : presenter{presenter}, validator{validator}, points{std::move(points)} {
+    presenter.attach(this);
+}
+
+void Interactor::start() {
+    validator.acquire();
+    presenter.start();
+    pointsToValidate = points;
+    presenter.present(pointsToValidate.front());
+}
+
+void Interactor::finish() {
+    if (pointsToValidate.empty()) {
+        validator.release();
+        presenter.stop();
+    }
+}
+
+void Interactor::notifyThatPointIsReady() {
+    validator.collect(pointsToValidate.front());
+    pointsToValidate.erase(pointsToValidate.begin());
+    if (pointsToValidate.empty())
+        presenter.present(validator.result());
+    else
+        presenter.present(pointsToValidate.front());
+}
+}
 }
