@@ -26,7 +26,8 @@ Interactor::Interactor(
 }
 
 void Interactor::notifyThatPointIsReady() {
-    calibrator.collect(transferOne(pointsToCalibrate, pointsCalibrated));
+    calibrator.collect(pointsToCalibrate.front());
+    pointsToCalibrate.erase(pointsToCalibrate.begin());
     if (pointsToCalibrate.empty())
         presenter.present(calibrator.results());
     else
@@ -48,14 +49,13 @@ void Interactor::finish() {
 }
 
 void Interactor::redo(Point p) {
-    if (pointsCalibrated.empty() || !pointsToCalibrate.empty())
+    if (!pointsToCalibrate.empty())
         return;
     const auto closestPoint{
-        min_element(pointsCalibrated.begin(), pointsCalibrated.end(),
+        min_element(calibrationPoints.begin(), calibrationPoints.end(),
             [p](Point a, Point b) { return distance(p, a) < distance(p, b); })};
     calibrator.discard(*closestPoint);
     pointsToCalibrate.push_back(*closestPoint);
-    pointsCalibrated.erase(closestPoint);
     present(presenter, pointsToCalibrate);
 }
 
@@ -70,7 +70,7 @@ void Interactor::start() {
     validator.acquire();
     presenter.start();
     pointsToValidate = points;
-    presenter.present(pointsToValidate.front());
+    present(presenter, pointsToValidate);
 }
 
 void Interactor::finish() {
@@ -86,7 +86,7 @@ void Interactor::notifyThatPointIsReady() {
     if (pointsToValidate.empty())
         presenter.present(validator.result());
     else
-        presenter.present(pointsToValidate.front());
+        present(presenter, pointsToValidate);
 }
 }
 }
