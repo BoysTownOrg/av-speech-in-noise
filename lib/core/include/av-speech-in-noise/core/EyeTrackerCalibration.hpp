@@ -47,16 +47,6 @@ class TesterPresenter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TesterPresenter);
     virtual void present(const std::vector<Result> &) = 0;
-    virtual void present(const validation::Result &) = 0;
-    virtual void start() = 0;
-    virtual void stop() = 0;
-};
-
-class IPresenter : public virtual SubjectPresenter,
-                   public virtual TesterPresenter {
-  public:
-    using SubjectPresenter::present;
-    using TesterPresenter::present;
     virtual void start() = 0;
     virtual void stop() = 0;
 };
@@ -95,9 +85,18 @@ class Validator {
     virtual auto result() -> Result = 0;
 };
 
-class Interactor : IPresenter::Observer {
+class TesterPresenter {
   public:
-    explicit Interactor(IPresenter &, Validator &, std::vector<Point>);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TesterPresenter);
+    virtual void present(const validation::Result &) = 0;
+    virtual void start() = 0;
+    virtual void stop() = 0;
+};
+
+class Interactor : SubjectPresenter::Observer {
+  public:
+    explicit Interactor(
+        SubjectPresenter &, TesterPresenter &, Validator &, std::vector<Point>);
     void start();
     void finish();
     void notifyThatPointIsReady() override;
@@ -105,7 +104,8 @@ class Interactor : IPresenter::Observer {
   private:
     std::vector<Point> points;
     std::vector<Point> pointsToValidate;
-    IPresenter &presenter;
+    SubjectPresenter &subjectPresenter;
+    TesterPresenter &testerPresenter;
     Validator &validator;
 };
 }

@@ -56,23 +56,27 @@ void Interactor::redo(Point p) {
 }
 
 namespace validation {
-Interactor::Interactor(
-    IPresenter &presenter, Validator &validator, std::vector<Point> points)
-    : points{std::move(points)}, presenter{presenter}, validator{validator} {
-    presenter.attach(this);
+Interactor::Interactor(SubjectPresenter &subjectPresenter,
+    TesterPresenter &testerPresenter, Validator &validator,
+    std::vector<Point> points)
+    : points{std::move(points)}, subjectPresenter{subjectPresenter},
+      testerPresenter{testerPresenter}, validator{validator} {
+    subjectPresenter.attach(this);
 }
 
 void Interactor::start() {
     validator.acquire();
-    presenter.start();
+    subjectPresenter.start();
+    testerPresenter.start();
     pointsToValidate = points;
-    present(presenter, pointsToValidate);
+    present(subjectPresenter, pointsToValidate);
 }
 
 void Interactor::finish() {
     if (pointsToValidate.empty()) {
         validator.release();
-        presenter.stop();
+        subjectPresenter.stop();
+        testerPresenter.stop();
     }
 }
 
@@ -80,9 +84,9 @@ void Interactor::notifyThatPointIsReady() {
     validator.collect(pointsToValidate.front());
     pointsToValidate.erase(pointsToValidate.begin());
     if (pointsToValidate.empty())
-        presenter.present(validator.result());
+        testerPresenter.present(validator.result());
     else
-        present(presenter, pointsToValidate);
+        present(subjectPresenter, pointsToValidate);
 }
 }
 }

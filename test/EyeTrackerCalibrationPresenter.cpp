@@ -18,7 +18,7 @@ static void assertEqual(Line expected, Line actual) {
 }
 
 namespace {
-class PresenterObserverStub : public IPresenter::Observer {
+class PresenterObserverStub : public SubjectPresenter::Observer {
   public:
     [[nodiscard]] auto notifiedThatPointIsReady() const -> bool {
         return notifiedThatPointIsReady_;
@@ -270,7 +270,7 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(resultsFirstClearsView) {
 
 EYE_TRACKER_CALIBRATION_VALIDATION_PRESENTER_TEST(validationResult) {
     validation::TesterViewStub view;
-    validation::TesterPresenter presenter{view};
+    validation::TesterPresenterImpl presenter{view};
     presenter.present(validation::Result{{{1}, {2}}, {{3}, {4}}});
     ::assertEqual("1", view.leftEyeAccuracyDegrees());
     ::assertEqual("2", view.leftEyePrecisionDegrees());

@@ -39,15 +39,15 @@ class View {
     virtual void hide() = 0;
 };
 
-class Presenter : public View::Observer, public IPresenter {
+class Presenter : public View::Observer,
+                  public SubjectPresenter,
+                  public TesterPresenter {
   public:
     enum class DotState { idle, moving, shrinking, shrunk, growing };
-
     explicit Presenter(View &view) : view{view} { view.attach(this); }
-    void attach(IPresenter::Observer *a) override { observer = a; }
+    void attach(SubjectPresenter::Observer *a) override { observer = a; }
     void present(Point x) override;
     void present(const std::vector<Result> &) override;
-    void present(const validation::Result &) override {}
     void notifyThatAnimationHasFinished() override;
     void stop() override;
     void start() override;
@@ -55,7 +55,7 @@ class Presenter : public View::Observer, public IPresenter {
   private:
     Point pointPresenting{};
     View &view;
-    IPresenter::Observer *observer{};
+    SubjectPresenter::Observer *observer{};
     DotState dotState{DotState::idle};
 };
 
@@ -102,11 +102,11 @@ static auto format(float x) -> std::string {
     return stream.str();
 }
 
-class TesterPresenter {
+class TesterPresenterImpl : public TesterPresenter {
   public:
-    explicit TesterPresenter(TesterView &view) : view{view} {}
+    explicit TesterPresenterImpl(TesterView &view) : view{view} {}
 
-    void present(const Result &result) {
+    void present(const Result &result) override {
         view.setLeftEyeAccuracyDegrees(
             format(result.left.errorOfMeanGaze.degrees));
         view.setLeftEyePrecisionDegrees(
@@ -116,6 +116,8 @@ class TesterPresenter {
         view.setRightEyePrecisionDegrees(
             format(result.right.standardDeviationFromTheMeanGaze.degrees));
     }
+    void start() override {}
+    void stop() override {}
 
   private:
     TesterView &view;
