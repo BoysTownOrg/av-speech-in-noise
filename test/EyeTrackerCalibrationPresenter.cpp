@@ -159,11 +159,11 @@ class TesterViewStub : public TesterView {
 
     [[nodiscard]] auto shown() const -> bool { return shown_; }
 
-    void show() { shown_ = true; }
+    void show() override { shown_ = true; }
 
     [[nodiscard]] auto hidden() const -> bool { return hidden_; }
 
-    void hide() { hidden_ = true; }
+    void hide() override { hidden_ = true; }
 
   private:
     std::string leftEyeAccuracyDegrees_;
@@ -181,14 +181,13 @@ static void notifyObserverThatAnimationHasFinished(SubjectViewStub &view) {
 }
 
 namespace {
-class EyeTrackerCalibrationPresenterTests : public ::testing::Test {
+class EyeTrackerCalibrationSubjectPresenterTests : public ::testing::Test {
   protected:
     SubjectViewStub view;
     SubjectPresenterImpl presenter{view};
 };
 
-class EyeTrackerCalibrationValidationTesterPresenterTests
-    : public ::testing::Test {
+class EyeTrackerCalibrationTesterPresenterTests : public ::testing::Test {
   protected:
     TesterViewStub view;
     TesterPresenterImpl presenter{view};
@@ -200,26 +199,26 @@ class EyeTrackerCalibrationValidationPresenterTests : public ::testing::Test {
     validation::TesterPresenterImpl presenter{view};
 };
 
-#define EYE_TRACKER_CALIBRATION_PRESENTER_TEST(a)                              \
-    TEST_F(EyeTrackerCalibrationPresenterTests, a)
+#define EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(a)                      \
+    TEST_F(EyeTrackerCalibrationSubjectPresenterTests, a)
+
+#define EYE_TRACKER_CALIBRATION_TESTER_PRESENTER_TEST(a)                       \
+    TEST_F(EyeTrackerCalibrationTesterPresenterTests, a)
 
 #define EYE_TRACKER_CALIBRATION_VALIDATION_PRESENTER_TEST(a)                   \
     TEST_F(EyeTrackerCalibrationValidationPresenterTests, a)
 
-#define EYE_TRACKER_CALIBRATION_TESTER_PRESENTER_TEST(a)                       \
-    TEST_F(EyeTrackerCalibrationValidationTesterPresenterTests, a)
-
-EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotToPoint) {
+EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(movesDotToPoint) {
     present(presenter, {0.1F, 0.2F});
     assertEqual(WindowPoint{0.1F, 0.8F}, view.pointDotMovedTo());
 }
 
-EYE_TRACKER_CALIBRATION_PRESENTER_TEST(startShowsView) {
+EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(startShowsView) {
     presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
 }
 
-EYE_TRACKER_CALIBRATION_PRESENTER_TEST(stopHidesView) {
+EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(stopHidesView) {
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
@@ -234,13 +233,13 @@ EYE_TRACKER_CALIBRATION_TESTER_PRESENTER_TEST(stopHidesView) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
+EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
     present(presenter);
     notifyObserverThatAnimationHasFinished(view);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotShrinked());
 }
 
-EYE_TRACKER_CALIBRATION_PRESENTER_TEST(
+EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(
     notifiesObserverThatPointIsReadyAfterDotShrinks) {
     PresenterObserverStub observer;
     presenter.attach(&observer);
@@ -251,7 +250,7 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatPointIsReady());
 }
 
-EYE_TRACKER_CALIBRATION_PRESENTER_TEST(growsDotIfShrunk) {
+EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(growsDotIfShrunk) {
     PresenterObserverStub observer;
     presenter.attach(&observer);
     present(presenter);
@@ -262,7 +261,7 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(growsDotIfShrunk) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotGrew());
 }
 
-EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotAfterItGrows) {
+EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(movesDotAfterItGrows) {
     present(presenter);
     notifyObserverThatAnimationHasFinished(view);
     notifyObserverThatAnimationHasFinished(view);
