@@ -25,6 +25,10 @@ class IInteractor {
     virtual void start() = 0;
 };
 
+namespace validation {
+struct BinocularResult;
+}
+
 class IPresenter {
   public:
     class Observer {
@@ -36,6 +40,7 @@ class IPresenter {
     virtual void attach(Observer *) = 0;
     virtual void present(Point) = 0;
     virtual void present(const std::vector<Result> &) = 0;
+    virtual void present(const validation::BinocularResult &) = 0;
     virtual void stop() = 0;
     virtual void start() = 0;
 };
@@ -51,12 +56,27 @@ class Calibrator {
 };
 
 namespace validation {
+struct Angle {
+    float degrees;
+};
+
+struct MonocularResult {
+    Angle errorOfMeanGaze;
+    Angle standardDeviationFromTheMeanGaze;
+};
+
+struct BinocularResult {
+    MonocularResult left;
+    MonocularResult right;
+};
+
 class Validator {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Validator);
     virtual void acquire() = 0;
     virtual void release() = 0;
     virtual void collect(Point) = 0;
+    virtual auto binocularResult() -> BinocularResult = 0;
 };
 
 class Interactor : IPresenter::Observer {
@@ -85,7 +105,9 @@ class Interactor : IPresenter::Observer {
     void notifyThatPointIsReady() override {
         validator.collect(pointsToValidate.front());
         pointsToValidate.erase(pointsToValidate.begin());
-        if (!pointsToValidate.empty())
+        if (pointsToValidate.empty())
+            presenter.present(validator.binocularResult());
+        else
             presenter.present(pointsToValidate.front());
     }
 

@@ -200,6 +200,7 @@ TobiiProCalibrator::ComputeAndApply::~ComputeAndApply() {
     tobii_research_free_screen_based_calibration_result(result);
 }
 
+namespace validation {
 TobiiProValidator::TobiiProValidator(TobiiResearchEyeTracker *eyetracker) {
     TobiiProTracker::Address address{eyetracker};
     if (tobii_research_screen_based_calibration_validation_init_default(
@@ -246,6 +247,18 @@ TobiiProValidator::Result::Result(CalibrationValidator *validator) {
 
 TobiiProValidator::Result::~Result() {
     tobii_research_screen_based_calibration_validation_destroy_result(result);
+}
+
+auto TobiiProValidator::Result::binocular() -> BinocularResult {
+    BinocularResult r{};
+    r.left.errorOfMeanGaze.degrees = result->average_accuracy_left;
+    r.left.standardDeviationFromTheMeanGaze.degrees =
+        result->average_precision_left;
+    r.right.errorOfMeanGaze.degrees = result->average_accuracy_right;
+    r.right.standardDeviationFromTheMeanGaze.degrees =
+        result->average_precision_right;
+    return r;
+}
 }
 }
 

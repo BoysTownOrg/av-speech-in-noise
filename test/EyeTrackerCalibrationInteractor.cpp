@@ -23,17 +23,35 @@ namespace {
 class IPresenterStub : public IPresenter {
   public:
     void attach(Observer *a) override { observer = a; }
+
     void present(Point x) override { presentedPoint_ = x; }
+
     void present(const std::vector<Result> &r) override { results_ = r; }
+
     void notifyThatPointIsReady() { observer->notifyThatPointIsReady(); }
+
     auto presentedPoint() -> Point { return presentedPoint_; }
+
     auto results() -> std::vector<Result> { return results_; }
+
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+
     void stop() override { stopped_ = true; }
+
     [[nodiscard]] auto started() const -> bool { return started_; }
+
     void start() override { started_ = true; }
 
+    auto validationResult() -> validation::BinocularResult {
+        return validationResult_;
+    }
+
+    void present(const validation::BinocularResult &b) {
+        validationResult_ = b;
+    }
+
   private:
+    validation::BinocularResult validationResult_;
     Point presentedPoint_{};
     std::vector<Result> results_{};
     Observer *observer{};
@@ -71,6 +89,34 @@ class EyeTrackerCalibratorStub : public Calibrator {
     bool released_{};
 };
 
+class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
+  protected:
+    IPresenterStub presenter;
+    EyeTrackerCalibratorStub calibrator;
+    Interactor interactor{
+        presenter, calibrator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
+};
+}
+
+namespace validation {
+static void assertEqual(const Angle &expected, const Angle &actual) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.degrees, actual.degrees);
+}
+
+static void assertEqual(
+    const MonocularResult &expected, const MonocularResult &actual) {
+    assertEqual(expected.errorOfMeanGaze, actual.errorOfMeanGaze);
+    assertEqual(expected.standardDeviationFromTheMeanGaze,
+        actual.standardDeviationFromTheMeanGaze);
+}
+
+static void assertEqual(
+    const BinocularResult &expected, const BinocularResult &actual) {
+    assertEqual(expected.left, actual.left);
+    assertEqual(expected.right, actual.right);
+}
+
+namespace {
 class EyeTrackerCalibrationValidatorStub : public validation::Validator {
   public:
     [[nodiscard]] auto acquired() const -> bool { return acquired_; }
@@ -85,27 +131,27 @@ class EyeTrackerCalibrationValidatorStub : public validation::Validator {
 
     void collect(Point p) override { validatedPoint_ = p; }
 
+    void set(validation::BinocularResult r) { binocularResult_ = r; }
+
+    auto binocularResult() -> validation::BinocularResult {
+        return binocularResult_;
+    }
+
   private:
+    validation::BinocularResult binocularResult_{};
     Point validatedPoint_{};
     bool acquired_{};
     bool released_{};
-};
-
-class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
-  protected:
-    IPresenterStub presenter;
-    EyeTrackerCalibratorStub calibrator;
-    Interactor interactor{
-        presenter, calibrator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
 };
 
 class EyeTrackerCalibrationValidationInteractorTests : public ::testing::Test {
   protected:
     IPresenterStub presenter;
     EyeTrackerCalibrationValidatorStub validator;
-    validation::Interactor interactor{
+    Interactor interactor{
         presenter, validator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
 };
+}
 }
 
 static void notifyThatPointIsReady(IPresenterStub &presenter) {
@@ -188,7 +234,6 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(restarts) {
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     presentsResultsAfterFinalPointCalibrated) {
-    std::vector<Result> results;
     calibrator.set({{{{0.11F, 0.22F}, {0.33F, 0.44F}},
                         {{0.55F, 0.66F}, {0.77F, 0.88F}}, {0.1F, 0.2F}},
         {{{0.99F, 0.111F}, {0.222F, 0.333F}},
@@ -249,7 +294,10 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     interactor.redo(Point{0.51F, 0.62F});
     assertEqual(Point{0.3F, 0.4F}, calibrator.discardedPoint());
 }
+}
 
+namespace validation {
+namespace {
 EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(acquiresValidatorOnStart) {
     interactor.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(validator.acquired());
@@ -316,6 +364,18 @@ EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(restarts) {
     interactor.finish();
     interactor.start();
     assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(
+    presentsResultsAfterFinalPointCalibrated) {
+    validator.set(validation::BinocularResult{{{1}, {2}}, {{3}, {4}}});
+    interactor.start();
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(presenter);
+    assertEqual(validation::BinocularResult{{{1}, {2}}, {{3}, {4}}},
+        presenter.validationResult());
+}
 }
 }
 }

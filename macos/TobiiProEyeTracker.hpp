@@ -32,7 +32,7 @@ class TobiiProCalibrator : public Calibrator {
       public:
         explicit ComputeAndApply(TobiiResearchEyeTracker *);
         auto success() -> bool;
-        auto results() -> std::vector<calibration::Result>;
+        auto results() -> std::vector<Result>;
         ~ComputeAndApply();
 
       private:
@@ -43,7 +43,8 @@ class TobiiProCalibrator : public Calibrator {
     TobiiResearchEyeTracker *eyetracker{};
 };
 
-class TobiiProValidator : validation::Validator {
+namespace validation {
+class TobiiProValidator : Validator {
   public:
     explicit TobiiProValidator(TobiiResearchEyeTracker *eyetracker);
     void acquire() override;
@@ -58,6 +59,7 @@ class TobiiProValidator : validation::Validator {
     class Result {
       public:
         explicit Result(CalibrationValidator *validator);
+        auto binocular() -> BinocularResult;
         ~Result();
 
       private:
@@ -67,6 +69,7 @@ class TobiiProValidator : validation::Validator {
   private:
     CalibrationValidator *validator{};
 };
+}
 }
 
 class TobiiProTracker : public Tracker {

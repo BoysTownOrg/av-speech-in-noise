@@ -45,6 +45,7 @@ class Presenter : public View::Observer, public IPresenter {
     void attach(IPresenter::Observer *a) override { observer = a; }
     void present(Point x) override;
     void present(const std::vector<Result> &) override;
+    void present(const validation::BinocularResult &) override {}
     void notifyThatAnimationHasFinished() override;
     void stop() override;
     void start() override;
