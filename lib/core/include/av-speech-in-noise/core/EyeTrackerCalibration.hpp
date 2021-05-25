@@ -87,10 +87,10 @@ class Interactor : IPresenter::Observer {
     void notifyThatPointIsReady() override;
 
   private:
-    IPresenter &presenter;
-    Validator &validator;
     std::vector<Point> points;
     std::vector<Point> pointsToValidate;
+    IPresenter &presenter;
+    Validator &validator;
 };
 }
 
@@ -103,9 +103,8 @@ class Interactor : public IPresenter::Observer, public IInteractor {
     void redo(Point) override;
 
   private:
-    std::vector<Point> calibrationPoints;
+    std::vector<Point> points;
     std::vector<Point> pointsToCalibrate;
-    std::vector<Point> pointsCalibrated;
     IPresenter &presenter;
     Calibrator &calibrator;
 };
