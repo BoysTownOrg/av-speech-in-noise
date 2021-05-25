@@ -3,16 +3,21 @@
 namespace av_speech_in_noise::eye_tracking::calibration {
 static auto windowPoint(Point p) -> WindowPoint { return {p.x, 1 - p.y}; }
 
-static void moveDotTo(View &view, Point p, Presenter::DotState &dotState) {
+static void moveDotTo(
+    SubjectView &view, Point p, SubjectPresenterImpl::DotState &dotState) {
     view.moveDotTo(windowPoint(p));
-    dotState = Presenter::DotState::moving;
+    dotState = SubjectPresenterImpl::DotState::moving;
 }
 
-void Presenter::start() { view.show(); }
+void SubjectPresenterImpl::start() { view.show(); }
 
-void Presenter::stop() { view.hide(); }
+void SubjectPresenterImpl::stop() { view.hide(); }
 
-void Presenter::present(Point x) {
+void TesterPresenterImpl::start() { view.show(); }
+
+void TesterPresenterImpl::stop() { view.hide(); }
+
+void SubjectPresenterImpl::present(Point x) {
     pointPresenting = x;
     if (dotState == DotState::shrunk) {
         view.growDot();
@@ -21,7 +26,7 @@ void Presenter::present(Point x) {
         moveDotTo(view, pointPresenting, dotState);
 }
 
-void Presenter::notifyThatAnimationHasFinished() {
+void SubjectPresenterImpl::notifyThatAnimationHasFinished() {
     if (dotState == DotState::growing)
         moveDotTo(view, pointPresenting, dotState);
     else if (dotState == DotState::shrinking) {
@@ -34,7 +39,7 @@ void Presenter::notifyThatAnimationHasFinished() {
     }
 }
 
-void Presenter::present(const std::vector<Result> &results) {
+void TesterPresenterImpl::present(const std::vector<Result> &results) {
     view.clear();
     for (const auto &result : results) {
         view.drawWhiteCircleWithCenter(windowPoint(result.point));

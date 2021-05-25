@@ -19,18 +19,25 @@ struct Line {
     WindowPoint b;
 };
 
-class View {
+class SubjectView {
   public:
     class Observer {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatAnimationHasFinished() = 0;
     };
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(View);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SubjectView);
     virtual void attach(Observer *) = 0;
     virtual void moveDotTo(WindowPoint) = 0;
     virtual void shrinkDot() = 0;
     virtual void growDot() = 0;
+    virtual void show() = 0;
+    virtual void hide() = 0;
+};
+
+class TesterView {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TesterView);
     virtual void drawRed(Line) = 0;
     virtual void drawGreen(Line) = 0;
     virtual void drawWhiteCircleWithCenter(WindowPoint) = 0;
@@ -39,24 +46,35 @@ class View {
     virtual void hide() = 0;
 };
 
-class Presenter : public View::Observer,
-                  public SubjectPresenter,
-                  public TesterPresenter {
+class SubjectPresenterImpl : public SubjectView::Observer,
+                             public SubjectPresenter {
   public:
     enum class DotState { idle, moving, shrinking, shrunk, growing };
-    explicit Presenter(View &view) : view{view} { view.attach(this); }
+    explicit SubjectPresenterImpl(SubjectView &view) : view{view} {
+        view.attach(this);
+    }
     void attach(SubjectPresenter::Observer *a) override { observer = a; }
     void present(Point x) override;
-    void present(const std::vector<Result> &) override;
     void notifyThatAnimationHasFinished() override;
     void stop() override;
     void start() override;
 
   private:
     Point pointPresenting{};
-    View &view;
+    SubjectView &view;
     SubjectPresenter::Observer *observer{};
     DotState dotState{DotState::idle};
+};
+
+class TesterPresenterImpl : public TesterPresenter {
+  public:
+    explicit TesterPresenterImpl(TesterView &view) : view{view} {}
+    void present(const std::vector<Result> &) override;
+    void stop() override;
+    void start() override;
+
+  private:
+    TesterView &view;
 };
 
 class Control {
