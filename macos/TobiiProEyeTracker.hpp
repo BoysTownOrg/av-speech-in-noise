@@ -52,18 +52,18 @@ class TobiiProValidator : Validator {
     void release() override;
     ~TobiiProValidator() override;
 
-    class Result;
+    class ResultAdapter;
 
-    auto result() -> Result;
+    auto resultAdapter() -> ResultAdapter;
 
-    class Result {
+    class ResultAdapter {
       public:
-        explicit Result(CalibrationValidator *validator);
-        auto binocular() -> BinocularResult;
-        ~Result();
+        explicit ResultAdapter(CalibrationValidator *validator);
+        auto result() -> Result;
+        ~ResultAdapter();
 
       private:
-        CalibrationValidationResult *result{};
+        CalibrationValidationResult *result_{};
     };
 
   private:

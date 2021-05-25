@@ -42,16 +42,12 @@ class IPresenterStub : public IPresenter {
 
     void start() override { started_ = true; }
 
-    auto validationResult() -> validation::BinocularResult {
-        return validationResult_;
-    }
+    auto validationResult() -> validation::Result { return validationResult_; }
 
-    void present(const validation::BinocularResult &b) {
-        validationResult_ = b;
-    }
+    void present(const validation::Result &b) { validationResult_ = b; }
 
   private:
-    validation::BinocularResult validationResult_;
+    validation::Result validationResult_;
     Point presentedPoint_{};
     std::vector<Result> results_{};
     Observer *observer{};
@@ -110,8 +106,7 @@ static void assertEqual(
         actual.standardDeviationFromTheMeanGaze);
 }
 
-static void assertEqual(
-    const BinocularResult &expected, const BinocularResult &actual) {
+static void assertEqual(const Result &expected, const Result &actual) {
     assertEqual(expected.left, actual.left);
     assertEqual(expected.right, actual.right);
 }
@@ -131,14 +126,12 @@ class EyeTrackerCalibrationValidatorStub : public validation::Validator {
 
     void collect(Point p) override { validatedPoint_ = p; }
 
-    void set(validation::BinocularResult r) { binocularResult_ = r; }
+    void set(Result r) { result_ = r; }
 
-    auto binocularResult() -> validation::BinocularResult {
-        return binocularResult_;
-    }
+    auto result() -> Result override { return result_; }
 
   private:
-    validation::BinocularResult binocularResult_{};
+    validation::Result result_{};
     Point validatedPoint_{};
     bool acquired_{};
     bool released_{};
@@ -368,12 +361,12 @@ EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(restarts) {
 
 EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(
     presentsResultsAfterFinalPointCalibrated) {
-    validator.set(validation::BinocularResult{{{1}, {2}}, {{3}, {4}}});
+    validator.set(validation::Result{{{1}, {2}}, {{3}, {4}}});
     interactor.start();
     notifyThatPointIsReady(presenter);
     notifyThatPointIsReady(presenter);
     notifyThatPointIsReady(presenter);
-    assertEqual(validation::BinocularResult{{{1}, {2}}, {{3}, {4}}},
+    assertEqual(validation::Result{{{1}, {2}}, {{3}, {4}}},
         presenter.validationResult());
 }
 }

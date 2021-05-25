@@ -26,7 +26,7 @@ class IInteractor {
 };
 
 namespace validation {
-struct BinocularResult;
+struct Result;
 }
 
 class IPresenter {
@@ -40,7 +40,7 @@ class IPresenter {
     virtual void attach(Observer *) = 0;
     virtual void present(Point) = 0;
     virtual void present(const std::vector<Result> &) = 0;
-    virtual void present(const validation::BinocularResult &) = 0;
+    virtual void present(const validation::Result &) = 0;
     virtual void stop() = 0;
     virtual void start() = 0;
 };
@@ -65,7 +65,7 @@ struct MonocularResult {
     Angle standardDeviationFromTheMeanGaze;
 };
 
-struct BinocularResult {
+struct Result {
     MonocularResult left;
     MonocularResult right;
 };
@@ -76,7 +76,7 @@ class Validator {
     virtual void acquire() = 0;
     virtual void release() = 0;
     virtual void collect(Point) = 0;
-    virtual auto binocularResult() -> BinocularResult = 0;
+    virtual auto result() -> Result = 0;
 };
 
 class Interactor : IPresenter::Observer {
@@ -106,7 +106,7 @@ class Interactor : IPresenter::Observer {
         validator.collect(pointsToValidate.front());
         pointsToValidate.erase(pointsToValidate.begin());
         if (pointsToValidate.empty())
-            presenter.present(validator.binocularResult());
+            presenter.present(validator.result());
         else
             presenter.present(pointsToValidate.front());
     }

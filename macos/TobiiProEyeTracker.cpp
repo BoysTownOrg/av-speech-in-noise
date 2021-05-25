@@ -231,7 +231,9 @@ void TobiiProValidator::collect(calibration::Point p) {
         std::this_thread::sleep_for(std::chrono::milliseconds{100});
 }
 
-auto TobiiProValidator::result() -> Result { return Result{validator}; }
+auto TobiiProValidator::resultAdapter() -> ResultAdapter {
+    return ResultAdapter{validator};
+}
 
 void TobiiProValidator::release() {
     if (validator != nullptr)
@@ -239,25 +241,26 @@ void TobiiProValidator::release() {
             validator);
 }
 
-TobiiProValidator::Result::Result(CalibrationValidator *validator) {
+TobiiProValidator::ResultAdapter::ResultAdapter(
+    CalibrationValidator *validator) {
     if (validator != nullptr)
         tobii_research_screen_based_calibration_validation_compute(
-            validator, &result);
+            validator, &result_);
 }
 
-TobiiProValidator::Result::~Result() {
-    tobii_research_screen_based_calibration_validation_destroy_result(result);
+TobiiProValidator::ResultAdapter::~ResultAdapter() {
+    tobii_research_screen_based_calibration_validation_destroy_result(result_);
 }
 
-auto TobiiProValidator::Result::binocular() -> BinocularResult {
-    BinocularResult r{};
-    r.left.errorOfMeanGaze.degrees = result->average_accuracy_left;
-    r.left.standardDeviationFromTheMeanGaze.degrees =
-        result->average_precision_left;
-    r.right.errorOfMeanGaze.degrees = result->average_accuracy_right;
-    r.right.standardDeviationFromTheMeanGaze.degrees =
-        result->average_precision_right;
-    return r;
+auto TobiiProValidator::ResultAdapter::result() -> Result {
+    Result result{};
+    result.left.errorOfMeanGaze.degrees = result_->average_accuracy_left;
+    result.left.standardDeviationFromTheMeanGaze.degrees =
+        result_->average_precision_left;
+    result.right.errorOfMeanGaze.degrees = result_->average_accuracy_right;
+    result.right.standardDeviationFromTheMeanGaze.degrees =
+        result_->average_precision_right;
+    return result;
 }
 }
 }
