@@ -5,6 +5,8 @@
 #include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
 #include <algorithm>
 #include <cmath>
+#include <sstream>
+#include <string>
 
 namespace av_speech_in_noise::eye_tracking::calibration {
 struct WindowPoint {
@@ -83,6 +85,42 @@ class Controller : public Control::Observer {
     IInteractor &interactor;
     Control &control;
 };
+
+namespace validation {
+class TesterView {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TesterView);
+    virtual void setLeftEyeAccuracyDegrees(const std::string &s) = 0;
+    virtual void setLeftEyePrecisionDegrees(const std::string &s) = 0;
+    virtual void setRightEyeAccuracyDegrees(const std::string &s) = 0;
+    virtual void setRightEyePrecisionDegrees(const std::string &s) = 0;
+};
+
+static auto format(float x) -> std::string {
+    std::stringstream stream;
+    stream << x;
+    return stream.str();
+}
+
+class TesterPresenter {
+  public:
+    explicit TesterPresenter(TesterView &view) : view{view} {}
+
+    void present(const Result &result) {
+        view.setLeftEyeAccuracyDegrees(
+            format(result.left.errorOfMeanGaze.degrees));
+        view.setLeftEyePrecisionDegrees(
+            format(result.left.standardDeviationFromTheMeanGaze.degrees));
+        view.setRightEyeAccuracyDegrees(
+            format(result.right.errorOfMeanGaze.degrees));
+        view.setRightEyePrecisionDegrees(
+            format(result.right.standardDeviationFromTheMeanGaze.degrees));
+    }
+
+  private:
+    TesterView &view;
+};
+}
 }
 
 #endif

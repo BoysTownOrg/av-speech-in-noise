@@ -103,6 +103,51 @@ class ViewStub : public View {
 };
 }
 
+namespace validation {
+namespace {
+class TesterViewStub : public TesterView {
+  public:
+    auto leftEyeAccuracyDegrees() -> std::string {
+        return leftEyeAccuracyDegrees_;
+    }
+
+    auto leftEyePrecisionDegrees() -> std::string {
+        return leftEyePrecisionDegrees_;
+    }
+
+    auto rightEyeAccuracyDegrees() -> std::string {
+        return rightEyeAccuracyDegrees_;
+    }
+
+    auto rightEyePrecisionDegrees() -> std::string {
+        return rightEyePrecisionDegrees_;
+    }
+
+    void setLeftEyeAccuracyDegrees(const std::string &s) {
+        leftEyeAccuracyDegrees_ = s;
+    }
+
+    void setLeftEyePrecisionDegrees(const std::string &s) {
+        leftEyePrecisionDegrees_ = s;
+    }
+
+    void setRightEyeAccuracyDegrees(const std::string &s) {
+        rightEyeAccuracyDegrees_ = s;
+    }
+
+    void setRightEyePrecisionDegrees(const std::string &s) {
+        rightEyePrecisionDegrees_ = s;
+    }
+
+  private:
+    std::string leftEyeAccuracyDegrees_;
+    std::string leftEyePrecisionDegrees_;
+    std::string rightEyeAccuracyDegrees_;
+    std::string rightEyePrecisionDegrees_;
+};
+}
+}
+
 static void notifyObserverThatAnimationHasFinished(ViewStub &view) {
     view.notifyObserverThatAnimationHasFinished();
 }
@@ -110,8 +155,13 @@ static void notifyObserverThatAnimationHasFinished(ViewStub &view) {
 namespace {
 class EyeTrackerCalibrationPresenterTests : public ::testing::Test {};
 
+class EyeTrackerCalibrationValidationPresenterTests : public ::testing::Test {};
+
 #define EYE_TRACKER_CALIBRATION_PRESENTER_TEST(a)                              \
     TEST_F(EyeTrackerCalibrationPresenterTests, a)
+
+#define EYE_TRACKER_CALIBRATION_VALIDATION_PRESENTER_TEST(a)                   \
+    TEST_F(EyeTrackerCalibrationValidationPresenterTests, a)
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotToPoint) {
     ViewStub view;
@@ -216,6 +266,16 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(resultsFirstClearsView) {
     Presenter presenter{view};
     presenter.present(std::vector<Result>{});
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.cleared());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_PRESENTER_TEST(validationResult) {
+    validation::TesterViewStub view;
+    validation::TesterPresenter presenter{view};
+    presenter.present(validation::Result{{{1}, {2}}, {{3}, {4}}});
+    ::assertEqual("1", view.leftEyeAccuracyDegrees());
+    ::assertEqual("2", view.leftEyePrecisionDegrees());
+    ::assertEqual("3", view.rightEyeAccuracyDegrees());
+    ::assertEqual("4", view.rightEyePrecisionDegrees());
 }
 }
 }
