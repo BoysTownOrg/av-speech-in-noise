@@ -157,11 +157,21 @@ class TesterViewStub : public TesterView {
         rightEyePrecisionDegrees_ = s;
     }
 
+    [[nodiscard]] auto shown() const -> bool { return shown_; }
+
+    void show() { shown_ = true; }
+
+    [[nodiscard]] auto hidden() const -> bool { return hidden_; }
+
+    void hide() { hidden_ = true; }
+
   private:
     std::string leftEyeAccuracyDegrees_;
     std::string leftEyePrecisionDegrees_;
     std::string rightEyeAccuracyDegrees_;
     std::string rightEyePrecisionDegrees_;
+    bool shown_{};
+    bool hidden_{};
 };
 }
 }
@@ -184,7 +194,11 @@ class EyeTrackerCalibrationValidationTesterPresenterTests
     TesterPresenterImpl presenter{view};
 };
 
-class EyeTrackerCalibrationValidationPresenterTests : public ::testing::Test {};
+class EyeTrackerCalibrationValidationPresenterTests : public ::testing::Test {
+  protected:
+    validation::TesterViewStub view;
+    validation::TesterPresenterImpl presenter{view};
+};
 
 #define EYE_TRACKER_CALIBRATION_PRESENTER_TEST(a)                              \
     TEST_F(EyeTrackerCalibrationPresenterTests, a)
@@ -292,13 +306,21 @@ EYE_TRACKER_CALIBRATION_TESTER_PRESENTER_TEST(resultsFirstClearsView) {
 }
 
 EYE_TRACKER_CALIBRATION_VALIDATION_PRESENTER_TEST(validationResult) {
-    validation::TesterViewStub view;
-    validation::TesterPresenterImpl presenter{view};
     presenter.present(validation::Result{{{1}, {2}}, {{3}, {4}}});
     ::assertEqual("1", view.leftEyeAccuracyDegrees());
     ::assertEqual("2", view.leftEyePrecisionDegrees());
     ::assertEqual("3", view.rightEyeAccuracyDegrees());
     ::assertEqual("4", view.rightEyePrecisionDegrees());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_PRESENTER_TEST(startShowsView) {
+    presenter.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_PRESENTER_TEST(stopHidesView) {
+    presenter.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 }
 }

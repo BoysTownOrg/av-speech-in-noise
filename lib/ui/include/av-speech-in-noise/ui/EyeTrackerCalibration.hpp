@@ -112,6 +112,8 @@ class TesterView {
     virtual void setLeftEyePrecisionDegrees(const std::string &s) = 0;
     virtual void setRightEyeAccuracyDegrees(const std::string &s) = 0;
     virtual void setRightEyePrecisionDegrees(const std::string &s) = 0;
+    virtual void show() = 0;
+    virtual void hide() = 0;
 };
 
 static auto format(float x) -> std::string {
@@ -134,8 +136,10 @@ class TesterPresenterImpl : public TesterPresenter {
         view.setRightEyePrecisionDegrees(
             format(result.right.standardDeviationFromTheMeanGaze.degrees));
     }
-    void start() override {}
-    void stop() override {}
+
+    void start() override { view.show(); }
+
+    void stop() override { view.hide(); }
 
   private:
     TesterView &view;
