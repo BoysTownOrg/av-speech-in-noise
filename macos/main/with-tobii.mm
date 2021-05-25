@@ -107,7 +107,8 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
 
 @implementation AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate {
   @public
-    av_speech_in_noise::eye_tracking::calibration::View::Observer *observer;
+    av_speech_in_noise::eye_tracking::calibration::SubjectView::Observer
+        *observer;
 }
 
 - (void)animationDidEnd:(NSAnimation *)animation {
@@ -141,7 +142,7 @@ static void animate(NSView *view, NSRect endFrame, double durationSeconds,
 }
 
 namespace {
-class AppKitUI : public View, public Control {
+class AppKitUI : public SubjectView, public TesterView, public Control {
   public:
     static constexpr auto normalDotDiameterPoints{100};
     static constexpr auto shrunkenDotDiameterPoints{25};
@@ -191,7 +192,9 @@ class AppKitUI : public View, public Control {
         ]];
     }
 
-    void attach(View::Observer *a) override { animationDelegate->observer = a; }
+    void attach(SubjectView::Observer *a) override {
+        animationDelegate->observer = a;
+    }
 
     void attach(Control::Observer *a) override {
         subjectView->observer = a;
@@ -323,12 +326,14 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     calibrationResultsWindow.level = NSScreenSaverWindowLevel;
     static eye_tracking::calibration::AppKitUI eyeTrackerCalibrationView{
         animatingWindow, calibrationResultsWindow, eyeTrackerMenu};
-    static eye_tracking::calibration::Presenter eyeTrackerCalibrationPresenter{
-        eyeTrackerCalibrationView};
+    static eye_tracking::calibration::SubjectPresenterImpl
+        eyeTrackerCalibrationSubjectPresenter{eyeTrackerCalibrationView};
+    static eye_tracking::calibration::TesterPresenterImpl
+        eyeTrackerCalibrationTesterPresenter{eyeTrackerCalibrationView};
     static auto calibrator{eyeTracker.calibrator()};
     static eye_tracking::calibration::Interactor
-        eyeTrackerCalibrationInteractor{eyeTrackerCalibrationPresenter,
-            calibrator,
+        eyeTrackerCalibrationInteractor{eyeTrackerCalibrationSubjectPresenter,
+            eyeTrackerCalibrationTesterPresenter, calibrator,
             {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F},
                 {0.9F, 0.9F}}};
     static eye_tracking::calibration::Controller
