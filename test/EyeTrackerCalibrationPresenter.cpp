@@ -153,7 +153,11 @@ static void notifyObserverThatAnimationHasFinished(ViewStub &view) {
 }
 
 namespace {
-class EyeTrackerCalibrationPresenterTests : public ::testing::Test {};
+class EyeTrackerCalibrationPresenterTests : public ::testing::Test {
+  protected:
+    ViewStub view;
+    Presenter presenter{view};
+};
 
 class EyeTrackerCalibrationValidationPresenterTests : public ::testing::Test {};
 
@@ -164,29 +168,21 @@ class EyeTrackerCalibrationValidationPresenterTests : public ::testing::Test {};
     TEST_F(EyeTrackerCalibrationValidationPresenterTests, a)
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotToPoint) {
-    ViewStub view;
-    Presenter presenter{view};
     present(presenter, {0.1F, 0.2F});
     assertEqual(WindowPoint{0.1F, 0.8F}, view.pointDotMovedTo());
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(startShowsView) {
-    ViewStub view;
-    Presenter presenter{view};
     presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(stopHidesView) {
-    ViewStub view;
-    Presenter presenter{view};
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
-    ViewStub view;
-    Presenter presenter{view};
     present(presenter);
     notifyObserverThatAnimationHasFinished(view);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotShrinked());
@@ -194,8 +190,6 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(
     notifiesObserverThatPointIsReadyAfterDotShrinks) {
-    ViewStub view;
-    Presenter presenter{view};
     PresenterObserverStub observer;
     presenter.attach(&observer);
     present(presenter);
@@ -206,22 +200,17 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(growsDotIfShrunk) {
-    ViewStub view;
-    Presenter presenter{view};
     PresenterObserverStub observer;
     presenter.attach(&observer);
     present(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.dotGrew());
     notifyObserverThatAnimationHasFinished(view);
-    observer.callWhenNotifiedThatPointIsReady(
-        [&presenter]() { present(presenter); });
+    observer.callWhenNotifiedThatPointIsReady([&]() { present(presenter); });
     notifyObserverThatAnimationHasFinished(view);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotGrew());
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotAfterItGrows) {
-    ViewStub view;
-    Presenter presenter{view};
     present(presenter);
     notifyObserverThatAnimationHasFinished(view);
     notifyObserverThatAnimationHasFinished(view);
@@ -231,8 +220,6 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(movesDotAfterItGrows) {
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(results) {
-    ViewStub view;
-    Presenter presenter{view};
     presenter.present({{{{0.11F, 0.22F}, {0.33F, 0.44F}},
                            {{0.55F, 0.66F}, {0.77F, 0.88F}}, {0.1F, 0.2F}},
         {{{0.99F, 0.111F}, {0.222F, 0.333F}},
@@ -262,8 +249,6 @@ EYE_TRACKER_CALIBRATION_PRESENTER_TEST(results) {
 }
 
 EYE_TRACKER_CALIBRATION_PRESENTER_TEST(resultsFirstClearsView) {
-    ViewStub view;
-    Presenter presenter{view};
     presenter.present(std::vector<Result>{});
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.cleared());
 }
