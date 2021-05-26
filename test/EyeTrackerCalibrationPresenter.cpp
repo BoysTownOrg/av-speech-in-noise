@@ -1,8 +1,8 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
-#include <functional>
 #include <av-speech-in-noise/ui/EyeTrackerCalibration.hpp>
 #include <gtest/gtest.h>
+#include <functional>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
 static void assertEqual(WindowPoint expected, WindowPoint actual) {
@@ -18,7 +18,7 @@ static void assertEqual(Line expected, Line actual) {
 }
 
 namespace {
-class PresenterObserverStub : public SubjectPresenter::Observer {
+class ObserverStub : public SubjectPresenter::Observer {
   public:
     [[nodiscard]] auto notifiedThatPointIsReady() const -> bool {
         return notifiedThatPointIsReady_;
@@ -241,7 +241,7 @@ EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
 
 EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(
     notifiesObserverThatPointIsReadyAfterDotShrinks) {
-    PresenterObserverStub observer;
+    ObserverStub observer;
     presenter.attach(&observer);
     present(presenter);
     notifyObserverThatAnimationHasFinished(view);
@@ -251,7 +251,7 @@ EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(
 }
 
 EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(growsDotIfShrunk) {
-    PresenterObserverStub observer;
+    ObserverStub observer;
     presenter.attach(&observer);
     present(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.dotGrew());
