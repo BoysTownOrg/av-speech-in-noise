@@ -1,11 +1,11 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_EYETRACKERCALIBRATION_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_EYETRACKERCALIBRATION_HPP_
 
-#include <av-speech-in-noise/Interface.hpp>
+#include "View.hpp"
 #include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
+#include <av-speech-in-noise/Interface.hpp>
 #include <algorithm>
 #include <cmath>
-#include <sstream>
 #include <string>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
@@ -19,45 +19,37 @@ struct Line {
     WindowPoint b;
 };
 
-class SubjectView {
+class SubjectView : public View {
   public:
     class Observer {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatAnimationHasFinished() = 0;
     };
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SubjectView);
     virtual void attach(Observer *) = 0;
     virtual void moveDotTo(WindowPoint) = 0;
     virtual void shrinkDot() = 0;
     virtual void growDot() = 0;
-    virtual void show() = 0;
-    virtual void hide() = 0;
 };
 
-class TesterView {
+class TesterView : public View {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TesterView);
     virtual void drawRed(Line) = 0;
     virtual void drawGreen(Line) = 0;
     virtual void drawWhiteCircleWithCenter(WindowPoint) = 0;
     virtual void clear() = 0;
-    virtual void show() = 0;
-    virtual void hide() = 0;
 };
 
 class SubjectPresenterImpl : public SubjectView::Observer,
                              public SubjectPresenter {
   public:
     enum class DotState { idle, moving, shrinking, shrunk, growing };
-    explicit SubjectPresenterImpl(SubjectView &view) : view{view} {
-        view.attach(this);
-    }
-    void attach(SubjectPresenter::Observer *a) override { observer = a; }
-    void present(Point x) override;
-    void notifyThatAnimationHasFinished() override;
-    void stop() override;
+    explicit SubjectPresenterImpl(SubjectView &);
+    void attach(SubjectPresenter::Observer *a) override;
     void start() override;
+    void stop() override;
+    void notifyThatAnimationHasFinished() override;
+    void present(Point x) override;
 
   private:
     Point pointPresenting{};
@@ -68,10 +60,10 @@ class SubjectPresenterImpl : public SubjectView::Observer,
 
 class TesterPresenterImpl : public TesterPresenter {
   public:
-    explicit TesterPresenterImpl(TesterView &view) : view{view} {}
-    void present(const std::vector<Result> &) override;
-    void stop() override;
+    explicit TesterPresenterImpl(TesterView &);
     void start() override;
+    void stop() override;
+    void present(const std::vector<Result> &) override;
 
   private:
     TesterView &view;
@@ -105,23 +97,20 @@ class Controller : public Control::Observer {
 };
 
 namespace validation {
-class TesterView {
+class TesterView : public View {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TesterView);
-    virtual void setLeftEyeAccuracyDegrees(const std::string &s) = 0;
-    virtual void setLeftEyePrecisionDegrees(const std::string &s) = 0;
-    virtual void setRightEyeAccuracyDegrees(const std::string &s) = 0;
-    virtual void setRightEyePrecisionDegrees(const std::string &s) = 0;
-    virtual void show() = 0;
-    virtual void hide() = 0;
+    virtual void setLeftEyeAccuracyDegrees(const std::string &) = 0;
+    virtual void setLeftEyePrecisionDegrees(const std::string &) = 0;
+    virtual void setRightEyeAccuracyDegrees(const std::string &) = 0;
+    virtual void setRightEyePrecisionDegrees(const std::string &) = 0;
 };
 
 class TesterPresenterImpl : public TesterPresenter {
   public:
     explicit TesterPresenterImpl(TesterView &);
-    void present(const Result &) override;
     void start() override;
     void stop() override;
+    void present(const Result &) override;
 
   private:
     TesterView &view;
@@ -141,11 +130,8 @@ class Control {
 
 class Controller : public Control::Observer {
   public:
-    Controller(Control &c, Interactor &interactor) : interactor{interactor} {
-        c.attach(this);
-    }
-
-    void notifyThatMenuHasBeenSelected() override { interactor.start(); }
+    Controller(Control &, Interactor &);
+    void notifyThatMenuHasBeenSelected() override;
 
   private:
     Interactor &interactor;
