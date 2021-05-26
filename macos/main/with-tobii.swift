@@ -33,16 +33,77 @@ class SwiftEyeTrackerRunMenu: NSObject, EyeTrackerRunMenu {
     }
 }
 
+struct CalibrationValidationTesterSwiftView : View {
+    @ObservedObject var showing: ObservableBool
+    @ObservedObject var leftEyeAccuracyDegrees: ObservableString
+    @ObservedObject var rightEyeAccuracyDegrees: ObservableString
+    @ObservedObject var leftEyePrecisionDegrees: ObservableString
+    @ObservedObject var rightEyePrecisionDegrees: ObservableString
+    
+    var body: some View {
+        if showing.value {
+            HStack() {
+                List() {
+                    Section(header: Text("accuracy (degrees)")) {
+                        TextField("left", text: $leftEyeAccuracyDegrees.string).disabled(/*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
+                        TextField("right", text: $rightEyeAccuracyDegrees.string).disabled(/*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
+                    }
+                }
+                List() {
+                    Section(header: Text("precision (degrees)")) {
+                        TextField("left", text: $leftEyePrecisionDegrees.string).disabled(/*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
+                        TextField("right", text: $rightEyePrecisionDegrees.string).disabled(/*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
+                    }
+                }
+            }
+        }
+    }
+}
+
+class CalibrationValidationTesterView : NSObject, AvSpeechInNoiseCalibrationValidationTesterView {
+    let showing = ObservableBool()
+    let leftEyeAccuracyDegrees = ObservableString()
+    let rightEyeAccuracyDegrees = ObservableString()
+    let leftEyePrecisionDegrees = ObservableString()
+    let rightEyePrecisionDegrees = ObservableString()
+    
+    func setLeftEyeAccuracyDegrees(_ degrees: String!) {
+        leftEyeAccuracyDegrees.string = degrees
+    }
+    
+    func setLeftEyePrecisionDegrees(_ degrees: String!) {
+        leftEyePrecisionDegrees.string = degrees
+    }
+    
+    func setRightEyeAccuracyDegrees(_ degrees: String!) {
+        rightEyeAccuracyDegrees.string = degrees
+    }
+    
+    func setRightEyePrecisionDegrees(_ degrees: String!) {
+        rightEyePrecisionDegrees.string = degrees
+    }
+    
+    func show() {
+        showing.value = true
+    }
+    
+    func hide() {
+        showing.value = false
+    }
+}
+
 class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
     let testSettingsPathControl = NSPathControl()
     let sessionUI: SwiftSessionUI
     let testSetupUI: SwiftTestSetupUI
     let eyeTrackerRunMenu: SwiftEyeTrackerRunMenu
+    let calibrationValidationTesterView: CalibrationValidationTesterView
 
     init(eyeTrackerRunMenu: SwiftEyeTrackerRunMenu) {
         testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
         sessionUI = SwiftSessionUI()
+        calibrationValidationTesterView = CalibrationValidationTesterView()
         self.eyeTrackerRunMenu = eyeTrackerRunMenu
     }
 
@@ -73,7 +134,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             terminatingAlert.runModal()
             NSApp.terminate(nil)
         }
-        AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu)
+        AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu, with: calibrationValidationTesterView)
 
         let userDefaults = UserDefaults()
         sessionUI.audioDevice_.string = userDefaults.string(forKey: "AudioDevice") ?? ""
