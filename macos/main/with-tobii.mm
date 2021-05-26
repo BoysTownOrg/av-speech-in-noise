@@ -45,22 +45,6 @@
 }
 @end
 
-@interface AvSpeechInNoiseEyeTrackingCalibrationValidationMenuObserverImpl
-    : NSObject <AvSpeechInNoiseEyeTrackingCalibrationValidationMenuObserver>
-@end
-
-@implementation
-    AvSpeechInNoiseEyeTrackingCalibrationValidationMenuObserverImpl {
-  @public
-    av_speech_in_noise::eye_tracker_calibration::validation::Control::Observer
-        *observer;
-}
-
-- (void)notifyThatRunHasBeenClicked {
-    observer->notifyThatMenuHasBeenSelected();
-}
-@end
-
 @interface AvSpeechInNoiseAppKitCircleView : NSView
 @end
 
@@ -90,10 +74,10 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
 }
 }
 
-@interface AvSpeechInNoiseEyeTrackerCalibrationView : NSView
+@interface AvSpeechInNoiseEyeTrackerCalibrationTesterNSView : NSView
 @end
 
-@implementation AvSpeechInNoiseEyeTrackerCalibrationView {
+@implementation AvSpeechInNoiseEyeTrackerCalibrationTesterNSView {
   @public
     std::vector<av_speech_in_noise::eye_tracker_calibration::Line> redLines;
     std::vector<av_speech_in_noise::eye_tracker_calibration::Line> greenLines;
@@ -243,7 +227,7 @@ class AppKitTesterUI : public TesterView, public Control {
   public:
     explicit AppKitTesterUI(NSWindow *testerWindow,
         AvSpeechInNoiseEyeTrackerMenuObserverImpl *eyeTrackingMenuObserver)
-        : subjectView{[[AvSpeechInNoiseEyeTrackerCalibrationView alloc] init]},
+        : view{[[AvSpeechInNoiseEyeTrackerCalibrationTesterNSView alloc] init]},
           actions{[[AvSpeechInNoiseEyeTrackerCalibrationTesterViewActions
               alloc] init]},
           eyeTrackingMenuObserver{eyeTrackingMenuObserver}, testerWindow{
@@ -253,21 +237,20 @@ class AppKitTesterUI : public TesterView, public Control {
                 @selector(notifyThatSubmitButtonHasBeenClicked))
         };
         addAutolayoutEnabledSubview(
-            testerWindow.contentViewController.view, subjectView);
+            testerWindow.contentViewController.view, view);
         addAutolayoutEnabledSubview(
             testerWindow.contentViewController.view, submitButton);
         [NSLayoutConstraint activateConstraints:@[
-            [subjectView.leadingAnchor
+            [view.leadingAnchor
                 constraintEqualToAnchor:testerWindow.contentViewController.view
                                             .leadingAnchor],
-            [subjectView.trailingAnchor
+            [view.trailingAnchor
                 constraintEqualToAnchor:testerWindow.contentViewController.view
                                             .trailingAnchor],
-            [subjectView.topAnchor
+            [view.topAnchor
                 constraintEqualToAnchor:testerWindow.contentViewController.view
                                             .topAnchor],
-            [subjectView.bottomAnchor
-                constraintEqualToAnchor:submitButton.topAnchor],
+            [view.bottomAnchor constraintEqualToAnchor:submitButton.topAnchor],
             [submitButton.trailingAnchor
                 constraintEqualToAnchor:testerWindow.contentViewController.view
                                             .trailingAnchor
@@ -280,38 +263,38 @@ class AppKitTesterUI : public TesterView, public Control {
     }
 
     void attach(Observer *a) override {
-        subjectView->observer = a;
+        view->observer = a;
         eyeTrackingMenuObserver->calibrationObserver = a;
         actions->observer = a;
     }
 
     void drawRed(Line line) override {
-        subjectView->redLines.push_back(line);
-        subjectView.needsDisplay = YES;
+        view->redLines.push_back(line);
+        view.needsDisplay = YES;
     }
 
     void drawGreen(Line line) override {
-        subjectView->greenLines.push_back(line);
-        subjectView.needsDisplay = YES;
+        view->greenLines.push_back(line);
+        view.needsDisplay = YES;
     }
 
     void drawWhiteCircleWithCenter(WindowPoint point) override {
-        subjectView->whiteCircleCenters.push_back(point);
-        subjectView.needsDisplay = YES;
+        view->whiteCircleCenters.push_back(point);
+        view.needsDisplay = YES;
     }
 
     auto whiteCircleCenters() -> std::vector<WindowPoint> override {
-        return subjectView->whiteCircleCenters;
+        return view->whiteCircleCenters;
     }
 
     auto whiteCircleDiameter() -> double override {
-        return 25 / subjectView.frame.size.width;
+        return 25 / view.frame.size.width;
     }
 
     void clear() override {
-        subjectView->redLines.clear();
-        subjectView->greenLines.clear();
-        subjectView->whiteCircleCenters.clear();
+        view->redLines.clear();
+        view->greenLines.clear();
+        view->whiteCircleCenters.clear();
     }
 
     void show() override { [testerWindow makeKeyAndOrderFront:nil]; }
@@ -319,7 +302,7 @@ class AppKitTesterUI : public TesterView, public Control {
     void hide() override { [testerWindow orderOut:nil]; }
 
   private:
-    AvSpeechInNoiseEyeTrackerCalibrationView *subjectView;
+    AvSpeechInNoiseEyeTrackerCalibrationTesterNSView *view;
     AvSpeechInNoiseEyeTrackerCalibrationTesterViewActions *actions;
     AvSpeechInNoiseEyeTrackerMenuObserverImpl *eyeTrackingMenuObserver;
     NSWindow *testerWindow;
