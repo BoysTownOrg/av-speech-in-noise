@@ -40,6 +40,14 @@ struct CalibrationValidationTesterSwiftView : View {
     @ObservedObject var leftEyePrecisionDegrees: ObservableString
     @ObservedObject var rightEyePrecisionDegrees: ObservableString
     
+    init(view: CalibrationValidationTesterView) {
+        showing = view.showing
+        leftEyePrecisionDegrees = view.leftEyePrecisionDegrees
+        leftEyeAccuracyDegrees = view.leftEyeAccuracyDegrees
+        rightEyePrecisionDegrees = view.rightEyePrecisionDegrees
+        rightEyeAccuracyDegrees = view.rightEyeAccuracyDegrees
+    }
+    
     var body: some View {
         if showing.value {
             HStack() {
@@ -141,6 +149,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         let contentView = SwiftSessionView(ui: sessionUI, showingTestSetup: testSetupUI.showing) {
             SwiftTestSetupView(ui: self.testSetupUI, testSettingsPathControl: self.testSettingsPathControl)
+            CalibrationValidationTesterSwiftView(view: self.calibrationValidationTesterView)
         }
 
         window = NSWindow(
