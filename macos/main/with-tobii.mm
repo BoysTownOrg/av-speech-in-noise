@@ -18,14 +18,36 @@
 @implementation AvSpeechInNoiseEyeTrackerMenuObserverImpl {
   @public
     av_speech_in_noise::eye_tracking::calibration::Control::Observer *observer;
+    av_speech_in_noise::eye_tracking::calibration::validation::Control::Observer
+        *calibrationValidationObserver;
 }
 
 - (void)notifyThatRunCalibrationHasBeenClicked {
     observer->notifyThatMenuHasBeenSelected();
 }
 
+- (void)notifyThatRunCalibrationValidationHasBeenClicked {
+    calibrationValidationObserver->notifyThatMenuHasBeenSelected();
+}
+
 - (void)notifyThatSubmitButtonHasBeenClicked {
     observer->notifyThatSubmitButtonHasBeenClicked();
+}
+@end
+
+@interface AvSpeechInNoiseEyeTrackingCalibrationValidationMenuObserverImpl
+    : NSObject <AvSpeechInNoiseEyeTrackingCalibrationValidationMenuObserver>
+@end
+
+@implementation
+    AvSpeechInNoiseEyeTrackingCalibrationValidationMenuObserverImpl {
+  @public
+    av_speech_in_noise::eye_tracking::calibration::validation::Control::Observer
+        *observer;
+}
+
+- (void)notifyThatRunHasBeenClicked {
+    observer->notifyThatMenuHasBeenSelected();
 }
 @end
 
@@ -209,15 +231,13 @@ class AppKitSubjectView : public SubjectView {
 
 class AppKitTesterUI : public TesterView, public Control {
   public:
-    explicit AppKitTesterUI(
-        NSWindow *testerWindow, NSObject<EyeTrackerRunMenu> *eyeTrackerMenu)
+    explicit AppKitTesterUI(NSWindow *testerWindow,
+        AvSpeechInNoiseEyeTrackerMenuObserverImpl *eyeTrackingMenuObserver)
         : subjectView{[[AvSpeechInNoiseEyeTrackerCalibrationView alloc] init]},
-          controlObserverProxy{
-              [[AvSpeechInNoiseEyeTrackerMenuObserverImpl alloc] init]},
-          testerWindow{testerWindow} {
-        [eyeTrackerMenu attach:controlObserverProxy];
+          eyeTrackingMenuObserver{eyeTrackingMenuObserver}, testerWindow{
+                                                                testerWindow} {
         const auto submitButton {
-            nsButton("confirm", controlObserverProxy,
+            nsButton("confirm", eyeTrackingMenuObserver,
                 @selector(notifyThatSubmitButtonHasBeenClicked))
         };
         addAutolayoutEnabledSubview(
@@ -249,7 +269,7 @@ class AppKitTesterUI : public TesterView, public Control {
 
     void attach(Control::Observer *a) override {
         subjectView->observer = a;
-        controlObserverProxy->observer = a;
+        eyeTrackingMenuObserver->observer = a;
     }
 
     void drawRed(Line line) override {
@@ -287,7 +307,7 @@ class AppKitTesterUI : public TesterView, public Control {
 
   private:
     AvSpeechInNoiseEyeTrackerCalibrationView *subjectView;
-    AvSpeechInNoiseEyeTrackerMenuObserverImpl *controlObserverProxy;
+    AvSpeechInNoiseEyeTrackerMenuObserverImpl *eyeTrackingMenuObserver;
     NSWindow *testerWindow;
 };
 }
@@ -321,6 +341,19 @@ class AppKitTesterView : public TesterView {
 
   private:
     NSObject<AvSpeechInNoiseCalibrationValidationTesterView> *view;
+};
+
+class AppKitControl : public Control {
+  public:
+    explicit AppKitControl(AvSpeechInNoiseEyeTrackerMenuObserverImpl *observer)
+        : observer{observer} {}
+
+    void attach(Observer *a) override {
+        observer->calibrationValidationObserver = a;
+    }
+
+  private:
+    AvSpeechInNoiseEyeTrackerMenuObserverImpl *observer;
 };
 }
 }
@@ -366,13 +399,17 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     [calibrationResultsWindow setFrame:testerScreenFrame display:YES];
     animatingWindow.level = NSScreenSaverWindowLevel;
     calibrationResultsWindow.level = NSScreenSaverWindowLevel;
+    const auto eyeTrackingMenuObserver{
+        [[AvSpeechInNoiseEyeTrackerMenuObserverImpl alloc] init]};
+    [eyeTrackerMenu attach:eyeTrackingMenuObserver];
     static eye_tracking::calibration::validation::AppKitTesterView
         eyeTrackingCalibrationValidationTesterViewAdapted{
             calibrationValidationTesterView};
     static eye_tracking::calibration::AppKitSubjectView
         eyeTrackerCalibrationSubjectView{animatingWindow};
     static eye_tracking::calibration::AppKitTesterUI
-        eyeTrackerCalibrationTesterUI{calibrationResultsWindow, eyeTrackerMenu};
+        eyeTrackerCalibrationTesterUI{
+            calibrationResultsWindow, eyeTrackingMenuObserver};
     static eye_tracking::calibration::SubjectPresenterImpl
         eyeTrackerCalibrationSubjectPresenter{eyeTrackerCalibrationSubjectView};
     static eye_tracking::calibration::TesterPresenterImpl
@@ -398,6 +435,12 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static eye_tracking::calibration::Controller
         eyeTrackerCalibrationController{
             eyeTrackerCalibrationTesterUI, eyeTrackerCalibrationInteractor};
+    static eye_tracking::calibration::validation::AppKitControl
+        eyeTrackingCalibrationValidationControl{eyeTrackingMenuObserver};
+    static eye_tracking::calibration::validation::Controller
+        eyeTrackingCalibrationValidationController{
+            eyeTrackingCalibrationValidationControl,
+            eyeTrackingCalibrationValidationInteractor};
     initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
         testSetupViewFactory, sessionUIAdapted, testUIAdapted,
         freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,

@@ -139,6 +139,7 @@
 
 @protocol EyeTrackerMenuObserver
 - (void)notifyThatRunCalibrationHasBeenClicked;
+- (void)notifyThatRunCalibrationValidationHasBeenClicked;
 @end
 
 @protocol EyeTrackerRunMenu
@@ -152,6 +153,10 @@
 - (void)setRightEyePrecisionDegrees:(NSString *)degrees;
 - (void)show;
 - (void)hide;
+@end
+
+@protocol AvSpeechInNoiseEyeTrackingCalibrationValidationMenuObserver
+- (void)notifyThatRunHasBeenClicked;
 @end
 
 @interface AvSpeechInNoiseMain : NSObject
