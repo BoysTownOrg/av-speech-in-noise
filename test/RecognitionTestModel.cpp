@@ -372,7 +372,7 @@ class SubmittingIncorrectResponse : public TargetWritingUseCase {
     }
 };
 
-class EyeTrackerStub : public eye_tracking::Tracker {
+class EyeTrackerStub : public EyeTracker {
   public:
     auto recordingTimeAllocatedSeconds() const -> double {
         return recordingTimeAllocatedSeconds_;
