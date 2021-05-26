@@ -8,6 +8,37 @@ static void assertEqual(const Point &expected, const Point &actual) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.y, actual.y);
 }
 
+namespace validation {
+namespace {
+class ControlStub : public Control {
+  public:
+    void notifyThatMenuHasBeenSelected() {
+        observer->notifyThatMenuHasBeenSelected();
+    }
+
+    void attach(Observer *a) override { observer = a; }
+
+  private:
+    Observer *observer{};
+};
+
+class InteractorStub : public Interactor {
+  public:
+    void start() override { started_ = true; }
+
+    void finish() override { finished_ = true; }
+
+    [[nodiscard]] auto started() const -> bool { return started_; }
+
+    [[nodiscard]] auto finished() const -> bool { return finished_; }
+
+  private:
+    bool started_{};
+    bool finished_{};
+};
+}
+}
+
 namespace {
 class ControlStub : public Control {
   public:
@@ -53,8 +84,14 @@ class InteractorStub : public Interactor {
 
 class EyeTrackerCalibrationControllerTests : public ::testing::Test {};
 
+class EyeTrackingCalibrationValidationControllerTests : public ::testing::Test {
+};
+
 #define EYE_TRACKER_CALIBRATION_CONTROLLER_TEST(a)                             \
     TEST_F(EyeTrackerCalibrationControllerTests, a)
+
+#define EYE_TRACKING_CALIBRATION_VALIDATION_CONTROLLER_TEST(a)                 \
+    TEST_F(EyeTrackingCalibrationValidationControllerTests, a)
 
 EYE_TRACKER_CALIBRATION_CONTROLLER_TEST(respondsToWindowTouch) {
     ControlStub control;
@@ -64,6 +101,15 @@ EYE_TRACKER_CALIBRATION_CONTROLLER_TEST(respondsToWindowTouch) {
     control.setWhiteCircleDiameter(0.07);
     control.notifyObserverThatWindowHasBeenTouched({0.305, 0.406});
     assertEqual(Point{0.3, 1 - 0.4}, interactor.redoPoint());
+}
+
+EYE_TRACKING_CALIBRATION_VALIDATION_CONTROLLER_TEST(
+    startsInteractorWhenMenuSelected) {
+    validation::ControlStub control;
+    validation::InteractorStub interactor;
+    validation::Controller controller{control, interactor};
+    control.notifyThatMenuHasBeenSelected();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(interactor.started());
 }
 }
 }

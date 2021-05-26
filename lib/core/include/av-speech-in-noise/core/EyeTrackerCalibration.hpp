@@ -93,12 +93,19 @@ class TesterPresenter {
     virtual void stop() = 0;
 };
 
-class InteractorImpl : SubjectPresenter::Observer {
+class Interactor {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
+    virtual void start() = 0;
+    virtual void finish() = 0;
+};
+
+class InteractorImpl : public Interactor, public SubjectPresenter::Observer {
   public:
     explicit InteractorImpl(
         SubjectPresenter &, TesterPresenter &, Validator &, std::vector<Point>);
-    void start();
-    void finish();
+    void start() override;
+    void finish() override;
     void notifyThatPointIsReady() override;
 
   private:

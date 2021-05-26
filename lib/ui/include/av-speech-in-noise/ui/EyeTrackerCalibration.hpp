@@ -126,6 +126,30 @@ class TesterPresenterImpl : public TesterPresenter {
   private:
     TesterView &view;
 };
+
+class Control {
+  public:
+    class Observer {
+      public:
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
+        virtual void notifyThatMenuHasBeenSelected() = 0;
+    };
+
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
+    virtual void attach(Observer *) = 0;
+};
+
+class Controller : public Control::Observer {
+  public:
+    Controller(Control &c, Interactor &interactor) : interactor{interactor} {
+        c.attach(this);
+    }
+
+    void notifyThatMenuHasBeenSelected() override { interactor.start(); }
+
+  private:
+    Interactor &interactor;
+};
 }
 }
 
