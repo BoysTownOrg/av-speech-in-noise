@@ -17,17 +17,27 @@
 
 @implementation AvSpeechInNoiseEyeTrackerMenuObserverImpl {
   @public
-    av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
+    av_speech_in_noise::eye_tracker_calibration::Control::Observer
+        *calibrationObserver;
     av_speech_in_noise::eye_tracker_calibration::validation::Control::Observer
         *calibrationValidationObserver;
 }
 
 - (void)notifyThatRunCalibrationHasBeenClicked {
-    observer->notifyThatMenuHasBeenSelected();
+    calibrationObserver->notifyThatMenuHasBeenSelected();
 }
 
 - (void)notifyThatRunCalibrationValidationHasBeenClicked {
     calibrationValidationObserver->notifyThatMenuHasBeenSelected();
+}
+@end
+
+@interface AvSpeechInNoiseEyeTrackerCalibrationTesterViewActions : NSObject
+@end
+
+@implementation AvSpeechInNoiseEyeTrackerCalibrationTesterViewActions {
+  @public
+    av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
 }
 
 - (void)notifyThatSubmitButtonHasBeenClicked {
@@ -234,10 +244,12 @@ class AppKitTesterUI : public TesterView, public Control {
     explicit AppKitTesterUI(NSWindow *testerWindow,
         AvSpeechInNoiseEyeTrackerMenuObserverImpl *eyeTrackingMenuObserver)
         : subjectView{[[AvSpeechInNoiseEyeTrackerCalibrationView alloc] init]},
+          actions{[[AvSpeechInNoiseEyeTrackerCalibrationTesterViewActions
+              alloc] init]},
           eyeTrackingMenuObserver{eyeTrackingMenuObserver}, testerWindow{
                                                                 testerWindow} {
         const auto submitButton {
-            nsButton("confirm", eyeTrackingMenuObserver,
+            nsButton("confirm", actions,
                 @selector(notifyThatSubmitButtonHasBeenClicked))
         };
         addAutolayoutEnabledSubview(
@@ -267,9 +279,10 @@ class AppKitTesterUI : public TesterView, public Control {
         ]];
     }
 
-    void attach(Control::Observer *a) override {
+    void attach(Observer *a) override {
         subjectView->observer = a;
-        eyeTrackingMenuObserver->observer = a;
+        eyeTrackingMenuObserver->calibrationObserver = a;
+        actions->observer = a;
     }
 
     void drawRed(Line line) override {
@@ -307,6 +320,7 @@ class AppKitTesterUI : public TesterView, public Control {
 
   private:
     AvSpeechInNoiseEyeTrackerCalibrationView *subjectView;
+    AvSpeechInNoiseEyeTrackerCalibrationTesterViewActions *actions;
     AvSpeechInNoiseEyeTrackerMenuObserverImpl *eyeTrackingMenuObserver;
     NSWindow *testerWindow;
 };
