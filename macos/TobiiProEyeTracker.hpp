@@ -44,11 +44,12 @@ class TobiiProCalibrator : public Calibrator {
 };
 
 namespace validation {
-class TobiiProValidator : Validator {
+class TobiiProValidator : public Validator {
   public:
     explicit TobiiProValidator(TobiiResearchEyeTracker *eyetracker);
     void acquire() override;
     void collect(Point) override;
+    auto result() -> Result override;
     void release() override;
     ~TobiiProValidator() override;
 
@@ -83,9 +84,8 @@ class TobiiProTracker : public Tracker {
     auto currentSystemTime() -> EyeTrackerSystemTime override;
     void write(std::ostream &) override;
 
-    class CalibrationValidation;
-
     auto calibrator() -> calibration::TobiiProCalibrator;
+    auto calibrationValidator() -> calibration::validation::TobiiProValidator;
 
     class Address {
       public:

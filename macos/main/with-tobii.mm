@@ -334,7 +334,8 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<CorrectKeywordsUI> *correctKeywordsUI,
     NSObject<PassFailUI> *passFailUI,
     NSObject<EyeTrackerRunMenu> *eyeTrackerMenu,
-    NSObject<AvSpeechInNoiseCalibrationValidationTesterView> *) {
+    NSObject<AvSpeechInNoiseCalibrationValidationTesterView>
+        *calibrationValidationTesterView) {
     static eye_tracking::TobiiProTracker eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
@@ -365,6 +366,9 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     [calibrationResultsWindow setFrame:testerScreenFrame display:YES];
     animatingWindow.level = NSScreenSaverWindowLevel;
     calibrationResultsWindow.level = NSScreenSaverWindowLevel;
+    static eye_tracking::calibration::validation::AppKitTesterView
+        eyeTrackingCalibrationValidationTesterViewAdapted{
+            calibrationValidationTesterView};
     static eye_tracking::calibration::AppKitSubjectView
         eyeTrackerCalibrationSubjectView{animatingWindow};
     static eye_tracking::calibration::AppKitTesterUI
@@ -373,6 +377,18 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
         eyeTrackerCalibrationSubjectPresenter{eyeTrackerCalibrationSubjectView};
     static eye_tracking::calibration::TesterPresenterImpl
         eyeTrackerCalibrationTesterPresenter{eyeTrackerCalibrationTesterUI};
+    static eye_tracking::calibration::validation::TesterPresenterImpl
+        eyeTrackingCalibrationValidationTesterPresenter{
+            eyeTrackingCalibrationValidationTesterViewAdapted};
+    static auto eyeTrackingCalibrationValidationTobiiProValidator{
+        eyeTracker.calibrationValidator()};
+    static eye_tracking::calibration::validation::Interactor
+        eyeTrackingCalibrationValidationInteractor{
+            eyeTrackerCalibrationSubjectPresenter,
+            eyeTrackingCalibrationValidationTesterPresenter,
+            eyeTrackingCalibrationValidationTobiiProValidator,
+            {{0.5, 0.5}, {0.3F, 0.3F}, {0.3F, 0.7F}, {0.7F, 0.3F},
+                {0.7F, 0.7F}}};
     static auto calibrator{eyeTracker.calibrator()};
     static eye_tracking::calibration::Interactor
         eyeTrackerCalibrationInteractor{eyeTrackerCalibrationSubjectPresenter,

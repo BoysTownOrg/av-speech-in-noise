@@ -15,6 +15,11 @@ auto TobiiProTracker::calibrator() -> calibration::TobiiProCalibrator {
     return calibration::TobiiProCalibrator{eyeTracker(eyeTrackers)};
 }
 
+auto TobiiProTracker::calibrationValidator()
+    -> calibration::validation::TobiiProValidator {
+    return calibration::validation::TobiiProValidator{eyeTracker(eyeTrackers)};
+}
+
 TobiiProTracker::TobiiProTracker() {
     tobii_research_find_all_eyetrackers(&eyeTrackers);
 }
@@ -261,6 +266,11 @@ auto TobiiProValidator::ResultAdapter::result() -> Result {
     result.right.standardDeviationFromTheMeanGaze.degrees =
         result_->average_precision_right;
     return result;
+}
+
+auto TobiiProValidator::result() -> Result {
+    ResultAdapter adapter{validator};
+    return adapter.result();
 }
 }
 }
