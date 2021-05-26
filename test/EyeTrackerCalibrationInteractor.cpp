@@ -66,7 +66,7 @@ class TesterPresenterStub : public TesterPresenter {
     bool started_{};
 };
 
-class EyeTrackerCalibratorStub : public Calibrator {
+class CalibratorStub : public Calibrator {
   public:
     void collect(Point x) override { calibratedPoint_ = x; }
 
@@ -100,7 +100,7 @@ class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
   protected:
     SubjectPresenterStub subjectPresenter;
     TesterPresenterStub testerPresenter;
-    EyeTrackerCalibratorStub calibrator;
+    CalibratorStub calibrator;
     InteractorImpl interactor{subjectPresenter, testerPresenter, calibrator,
         {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
 };
@@ -124,7 +124,7 @@ static void assertEqual(const Result &expected, const Result &actual) {
 }
 
 namespace {
-class EyeTrackerCalibrationValidatorStub : public validation::Validator {
+class ValidatorStub : public Validator {
   public:
     [[nodiscard]] auto acquired() const -> bool { return acquired_; }
 
@@ -173,7 +173,7 @@ class EyeTrackerCalibrationValidationInteractorTests : public ::testing::Test {
   protected:
     SubjectPresenterStub subjectPresenter;
     TesterPresenterStub testerPresenter;
-    EyeTrackerCalibrationValidatorStub validator;
+    ValidatorStub validator;
     InteractorImpl interactor{subjectPresenter, testerPresenter, validator,
         {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
 };
