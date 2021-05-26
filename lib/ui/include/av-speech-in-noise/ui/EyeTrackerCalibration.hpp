@@ -4,8 +4,6 @@
 #include "View.hpp"
 #include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
 #include <av-speech-in-noise/Interface.hpp>
-#include <algorithm>
-#include <cmath>
 #include <string>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
