@@ -8,7 +8,7 @@
 #include <sstream>
 #include <string>
 
-namespace av_speech_in_noise::eye_tracking::calibration {
+namespace av_speech_in_noise::eye_tracker_calibration {
 struct WindowPoint {
     double x;
     double y;

@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace av_speech_in_noise::eye_tracking::calibration {
+namespace av_speech_in_noise::eye_tracker_calibration {
 static auto distance(Point a, Point b) -> float {
     return std::hypot(a.x - b.x, a.y - b.y);
 }

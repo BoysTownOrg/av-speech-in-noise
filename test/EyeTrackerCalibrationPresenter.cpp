@@ -4,7 +4,7 @@
 #include <av-speech-in-noise/ui/EyeTrackerCalibration.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise::eye_tracking::calibration {
+namespace av_speech_in_noise::eye_tracker_calibration {
 static void assertEqual(WindowPoint expected, WindowPoint actual) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.x, actual.x);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.y, actual.y);

@@ -3,7 +3,7 @@
 #include <utility>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise::eye_tracking::calibration {
+namespace av_speech_in_noise::eye_tracker_calibration {
 static void assertEqual(const Point &expected, const Point &actual) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.x, actual.x);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.y, actual.y);

@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-namespace av_speech_in_noise::eye_tracking::calibration {
+namespace av_speech_in_noise::eye_tracker_calibration {
 struct Point {
     float x;
     float y;
