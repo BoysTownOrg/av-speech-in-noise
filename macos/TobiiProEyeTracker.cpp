@@ -3,7 +3,7 @@
 #include <gsl/gsl>
 #include <thread>
 
-namespace av_speech_in_noise::eye_tracking {
+namespace av_speech_in_noise {
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
     -> TobiiResearchEyeTracker * {
     return eyeTrackers == nullptr || eyeTrackers->count == 0U
@@ -11,13 +11,15 @@ static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
         : eyeTrackers->eyetrackers[0];
 }
 
-auto TobiiProTracker::calibrator() -> calibration::TobiiProCalibrator {
-    return calibration::TobiiProCalibrator{eyeTracker(eyeTrackers)};
+auto TobiiProTracker::calibrator()
+    -> eye_tracker_calibration::TobiiProCalibrator {
+    return eye_tracker_calibration::TobiiProCalibrator{eyeTracker(eyeTrackers)};
 }
 
 auto TobiiProTracker::calibrationValidator()
-    -> calibration::validation::TobiiProValidator {
-    return calibration::validation::TobiiProValidator{eyeTracker(eyeTrackers)};
+    -> eye_tracker_calibration::validation::TobiiProValidator {
+    return eye_tracker_calibration::validation::TobiiProValidator{
+        eyeTracker(eyeTrackers)};
 }
 
 TobiiProTracker::TobiiProTracker() {
@@ -129,7 +131,7 @@ TobiiProTracker::Address::Address(TobiiResearchEyeTracker *eyetracker) {
 
 TobiiProTracker::Address::~Address() { tobii_research_free_string(address); }
 
-namespace calibration {
+namespace eye_tracker_calibration {
 TobiiProCalibrator::TobiiProCalibrator(TobiiResearchEyeTracker *eyetracker)
     : eyetracker{eyetracker} {}
 
@@ -225,7 +227,7 @@ void TobiiProValidator::acquire() {
             validator);
 }
 
-void TobiiProValidator::collect(calibration::Point p) {
+void TobiiProValidator::collect(Point p) {
     TobiiResearchNormalizedPoint2D point{p.x, p.y};
     if (validator != nullptr)
         tobii_research_screen_based_calibration_validation_start_collecting_data(

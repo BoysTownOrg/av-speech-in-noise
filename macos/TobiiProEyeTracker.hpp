@@ -13,8 +13,8 @@
 #include <cstddef>
 #include <ostream>
 
-namespace av_speech_in_noise::eye_tracking {
-namespace calibration {
+namespace av_speech_in_noise {
+namespace eye_tracker_calibration {
 class TobiiProCalibrator : public Calibrator {
   public:
     explicit TobiiProCalibrator(TobiiResearchEyeTracker *);
@@ -73,7 +73,7 @@ class TobiiProValidator : public Validator {
 }
 }
 
-class TobiiProTracker : public Tracker {
+class TobiiProTracker : public EyeTracker {
   public:
     TobiiProTracker();
     ~TobiiProTracker() override;
@@ -84,8 +84,9 @@ class TobiiProTracker : public Tracker {
     auto currentSystemTime() -> EyeTrackerSystemTime override;
     void write(std::ostream &) override;
 
-    auto calibrator() -> calibration::TobiiProCalibrator;
-    auto calibrationValidator() -> calibration::validation::TobiiProValidator;
+    auto calibrator() -> eye_tracker_calibration::TobiiProCalibrator;
+    auto calibrationValidator()
+        -> eye_tracker_calibration::validation::TobiiProValidator;
 
     class Address {
       public:

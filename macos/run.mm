@@ -195,7 +195,7 @@ static void addChild(NSTabViewController *parent, NSTabViewController *child) {
     [parent.view addSubview:child.view];
 }
 
-void initializeAppAndRunEventLoop(eye_tracking::Tracker &eyeTracker,
+void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     OutputFileNameFactory &outputFileNameFactory,
     AppKitTestSetupUIFactory &testSetupUIFactory, SessionUI &sessionUIMaybe,
     TestUI &testUIMaybe, FreeResponseUI &freeResponseUIMaybe,
