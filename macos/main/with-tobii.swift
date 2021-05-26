@@ -188,6 +188,11 @@ class AppMenuReceiver: NSObject {
     func notifyThatRunEyeTrackerCalibrationHasBeenClicked() {
         eyeTrackerRunMenu.observer?.notifyThatRunCalibrationHasBeenClicked()
     }
+    
+    @objc
+    func notifyThatRunEyeTrackerCalibrationValidationHasBeenClicked() {
+        eyeTrackerRunMenu.observer?.notifyThatRunCalibrationValidationHasBeenClicked()
+    }
 }
 
 @main
@@ -209,7 +214,9 @@ enum SwiftMain {
         runMenu.submenu = NSMenu(title: "Run")
         let runEyeTrackerCalibration = NSMenuItem(title: "Eye Tracker Calibration", action: #selector(AppMenuReceiver.notifyThatRunEyeTrackerCalibrationHasBeenClicked), keyEquivalent: "")
         runEyeTrackerCalibration.target = appMenuReceiver
-        runMenu.submenu?.items = [runEyeTrackerCalibration]
+        let runEyeTrackerCalibrationValidation = NSMenuItem(title: "Eye Tracker Calibration Validation", action: #selector(AppMenuReceiver.notifyThatRunEyeTrackerCalibrationValidationHasBeenClicked), keyEquivalent: "")
+        runEyeTrackerCalibrationValidation.target = appMenuReceiver
+        runMenu.submenu?.items = [runEyeTrackerCalibration, runEyeTrackerCalibrationValidation]
         menu.items = [menuItemOne, runMenu, legalMenu]
         let delegate = AppDelegate(eyeTrackerRunMenu: eyeTrackerRunMenu)
         NSApplication.shared.delegate = delegate

@@ -412,6 +412,9 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
             calibrationResultsWindow, eyeTrackingMenuObserver};
     static eye_tracking::calibration::SubjectPresenterImpl
         eyeTrackerCalibrationSubjectPresenter{eyeTrackerCalibrationSubjectView};
+    static eye_tracking::calibration::SubjectPresenterImpl
+        eyeTrackerCalibrationValidationSubjectPresenter{
+            eyeTrackerCalibrationSubjectView};
     static eye_tracking::calibration::TesterPresenterImpl
         eyeTrackerCalibrationTesterPresenter{eyeTrackerCalibrationTesterUI};
     static eye_tracking::calibration::validation::TesterPresenterImpl
@@ -421,7 +424,7 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
         eyeTracker.calibrationValidator()};
     static eye_tracking::calibration::validation::InteractorImpl
         eyeTrackingCalibrationValidationInteractor{
-            eyeTrackerCalibrationSubjectPresenter,
+            eyeTrackerCalibrationValidationSubjectPresenter,
             eyeTrackingCalibrationValidationTesterPresenter,
             eyeTrackingCalibrationValidationTobiiProValidator,
             {{0.5, 0.5}, {0.3F, 0.3F}, {0.3F, 0.7F}, {0.7F, 0.3F},
