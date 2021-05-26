@@ -20,14 +20,10 @@ struct Result {
 class Interactor {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
-    virtual void redo(Point) = 0;
-    virtual void finish() = 0;
     virtual void start() = 0;
+    virtual void finish() = 0;
+    virtual void redo(Point) = 0;
 };
-
-namespace validation {
-struct Result;
-}
 
 class SubjectPresenter {
   public:
@@ -38,17 +34,17 @@ class SubjectPresenter {
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SubjectPresenter);
     virtual void attach(Observer *) = 0;
-    virtual void present(Point) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
+    virtual void present(Point) = 0;
 };
 
 class TesterPresenter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TesterPresenter);
-    virtual void present(const std::vector<Result> &) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
+    virtual void present(const std::vector<Result> &) = 0;
 };
 
 class Calibrator {
@@ -88,7 +84,7 @@ class Validator {
 class TesterPresenter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TesterPresenter);
-    virtual void present(const validation::Result &) = 0;
+    virtual void present(const Result &) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
 };
@@ -121,9 +117,9 @@ class InteractorImpl : public SubjectPresenter::Observer, public Interactor {
   public:
     InteractorImpl(SubjectPresenter &, TesterPresenter &, Calibrator &,
         std::vector<Point>);
-    void notifyThatPointIsReady() override;
     void start() override;
     void finish() override;
+    void notifyThatPointIsReady() override;
     void redo(Point) override;
 
   private:
