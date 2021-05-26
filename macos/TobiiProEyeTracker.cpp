@@ -259,6 +259,8 @@ TobiiProValidator::ResultAdapter::~ResultAdapter() {
 
 auto TobiiProValidator::ResultAdapter::result() -> Result {
     Result result{};
+    if (result_ == nullptr)
+        return result;
     result.left.errorOfMeanGaze.degrees = result_->average_accuracy_left;
     result.left.standardDeviationFromTheMeanGaze.degrees =
         result_->average_precision_left;
