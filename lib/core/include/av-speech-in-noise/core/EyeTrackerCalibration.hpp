@@ -17,9 +17,9 @@ struct Result {
     Point point{};
 };
 
-class IInteractor {
+class Interactor {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(IInteractor);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
     virtual void redo(Point) = 0;
     virtual void finish() = 0;
     virtual void start() = 0;
@@ -93,9 +93,9 @@ class TesterPresenter {
     virtual void stop() = 0;
 };
 
-class Interactor : SubjectPresenter::Observer {
+class InteractorImpl : SubjectPresenter::Observer {
   public:
-    explicit Interactor(
+    explicit InteractorImpl(
         SubjectPresenter &, TesterPresenter &, Validator &, std::vector<Point>);
     void start();
     void finish();
@@ -110,9 +110,9 @@ class Interactor : SubjectPresenter::Observer {
 };
 }
 
-class Interactor : public SubjectPresenter::Observer, public IInteractor {
+class InteractorImpl : public SubjectPresenter::Observer, public Interactor {
   public:
-    Interactor(SubjectPresenter &, TesterPresenter &, Calibrator &,
+    InteractorImpl(SubjectPresenter &, TesterPresenter &, Calibrator &,
         std::vector<Point>);
     void notifyThatPointIsReady() override;
     void start() override;

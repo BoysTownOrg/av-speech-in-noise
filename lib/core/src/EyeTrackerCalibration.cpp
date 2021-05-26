@@ -12,7 +12,7 @@ static void present(
     presenter.present(points.front());
 }
 
-Interactor::Interactor(SubjectPresenter &subjectPresenter,
+InteractorImpl::InteractorImpl(SubjectPresenter &subjectPresenter,
     TesterPresenter &testerPresenter, Calibrator &calibrator,
     std::vector<Point> points)
     : points{std::move(points)}, subjectPresenter{subjectPresenter},
@@ -20,7 +20,7 @@ Interactor::Interactor(SubjectPresenter &subjectPresenter,
     subjectPresenter.attach(this);
 }
 
-void Interactor::notifyThatPointIsReady() {
+void InteractorImpl::notifyThatPointIsReady() {
     calibrator.collect(pointsToCalibrate.front());
     pointsToCalibrate.erase(pointsToCalibrate.begin());
     if (pointsToCalibrate.empty())
@@ -29,7 +29,7 @@ void Interactor::notifyThatPointIsReady() {
         present(subjectPresenter, pointsToCalibrate);
 }
 
-void Interactor::start() {
+void InteractorImpl::start() {
     calibrator.acquire();
     pointsToCalibrate = points;
     subjectPresenter.start();
@@ -37,7 +37,7 @@ void Interactor::start() {
     present(subjectPresenter, pointsToCalibrate);
 }
 
-void Interactor::finish() {
+void InteractorImpl::finish() {
     if (pointsToCalibrate.empty()) {
         calibrator.release();
         subjectPresenter.stop();
@@ -45,7 +45,7 @@ void Interactor::finish() {
     }
 }
 
-void Interactor::redo(Point p) {
+void InteractorImpl::redo(Point p) {
     if (!pointsToCalibrate.empty())
         return;
     const auto closestPoint{min_element(points.begin(), points.end(),
@@ -56,7 +56,7 @@ void Interactor::redo(Point p) {
 }
 
 namespace validation {
-Interactor::Interactor(SubjectPresenter &subjectPresenter,
+InteractorImpl::InteractorImpl(SubjectPresenter &subjectPresenter,
     TesterPresenter &testerPresenter, Validator &validator,
     std::vector<Point> points)
     : points{std::move(points)}, subjectPresenter{subjectPresenter},
@@ -64,7 +64,7 @@ Interactor::Interactor(SubjectPresenter &subjectPresenter,
     subjectPresenter.attach(this);
 }
 
-void Interactor::start() {
+void InteractorImpl::start() {
     validator.acquire();
     subjectPresenter.start();
     testerPresenter.start();
@@ -72,7 +72,7 @@ void Interactor::start() {
     present(subjectPresenter, pointsToValidate);
 }
 
-void Interactor::finish() {
+void InteractorImpl::finish() {
     if (pointsToValidate.empty()) {
         validator.release();
         subjectPresenter.stop();
@@ -80,7 +80,7 @@ void Interactor::finish() {
     }
 }
 
-void Interactor::notifyThatPointIsReady() {
+void InteractorImpl::notifyThatPointIsReady() {
     validator.collect(pointsToValidate.front());
     pointsToValidate.erase(pointsToValidate.begin());
     if (pointsToValidate.empty())

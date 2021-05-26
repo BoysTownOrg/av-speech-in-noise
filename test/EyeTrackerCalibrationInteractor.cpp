@@ -101,7 +101,7 @@ class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
     SubjectPresenterStub subjectPresenter;
     TesterPresenterStub testerPresenter;
     EyeTrackerCalibratorStub calibrator;
-    Interactor interactor{subjectPresenter, testerPresenter, calibrator,
+    InteractorImpl interactor{subjectPresenter, testerPresenter, calibrator,
         {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
 };
 }
@@ -174,7 +174,7 @@ class EyeTrackerCalibrationValidationInteractorTests : public ::testing::Test {
     SubjectPresenterStub subjectPresenter;
     TesterPresenterStub testerPresenter;
     EyeTrackerCalibrationValidatorStub validator;
-    Interactor interactor{subjectPresenter, testerPresenter, validator,
+    InteractorImpl interactor{subjectPresenter, testerPresenter, validator,
         {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
 };
 }

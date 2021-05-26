@@ -73,7 +73,7 @@ void validation::TesterPresenterImpl::stop() { view.hide(); }
 validation::TesterPresenterImpl::TesterPresenterImpl(TesterView &view)
     : view{view} {}
 
-Controller::Controller(Control &control, IInteractor &interactor)
+Controller::Controller(Control &control, Interactor &interactor)
     : interactor{interactor}, control{control} {
     control.attach(this);
 }

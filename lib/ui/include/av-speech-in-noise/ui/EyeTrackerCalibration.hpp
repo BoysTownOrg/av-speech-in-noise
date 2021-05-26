@@ -94,13 +94,13 @@ class Control {
 
 class Controller : public Control::Observer {
   public:
-    Controller(Control &, IInteractor &);
+    Controller(Control &, Interactor &);
     void notifyThatWindowHasBeenTouched(WindowPoint) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
     void notifyThatMenuHasBeenSelected() override;
 
   private:
-    IInteractor &interactor;
+    Interactor &interactor;
     Control &control;
 };
 

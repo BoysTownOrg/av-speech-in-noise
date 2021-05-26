@@ -37,7 +37,7 @@ class ControlStub : public Control {
     double whiteCircleDiameter_{};
 };
 
-class InteractorStub : public IInteractor {
+class InteractorStub : public Interactor {
   public:
     auto redoPoint() -> Point { return redoPoint_; }
 
