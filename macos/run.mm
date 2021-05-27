@@ -173,6 +173,17 @@ class TimeStampImpl : public TimeStamp {
     }
 };
 
+class LocalTimeClock : public Clock {
+  public:
+    auto time() -> std::string override {
+        const auto now{std::chrono::system_clock::to_time_t(
+            std::chrono::system_clock::now())};
+        std::stringstream stream;
+        stream << std::put_time(std::localtime(&now), "%F %T");
+        return stream.str();
+    }
+};
+
 class TextFileReaderImpl : public TextFileReader {
   public:
     auto read(const LocalUrl &s) -> std::string override {
@@ -277,8 +288,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static EachTargetPlayedOnceThenShuffleAndRepeat allTargetsNTimes{
         &onlyIncludesTargetFileExtensions, &randomizer};
     static FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
+    static LocalTimeClock localTimeClock;
     static RecognitionTestModelImpl recognitionTestModel{targetPlayer,
-        maskerPlayer, responseEvaluator, outputFile, randomizer, eyeTracker};
+        maskerPlayer, responseEvaluator, outputFile, randomizer, eyeTracker,
+        localTimeClock};
     static RandomizedTargetPlaylistWithReplacement::Factory
         targetsWithReplacementFactory{
             &onlyIncludesTargetFileExtensions, &randomizer};

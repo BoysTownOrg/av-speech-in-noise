@@ -5,6 +5,7 @@
 #include <av-speech-in-noise/Model.hpp>
 #include <exception>
 #include <ostream>
+#include <string>
 
 namespace av_speech_in_noise {
 struct Target {
@@ -53,7 +54,9 @@ struct SyllableTrial : open_set::Trial, Evaluative, Flaggable {
     Syllable subjectSyllable{};
 };
 
-struct FreeResponseTrial : FreeResponse, open_set::Trial {};
+struct FreeResponseTrial : FreeResponse, open_set::Trial {
+    std::string time;
+};
 
 class Writable {
   public:
