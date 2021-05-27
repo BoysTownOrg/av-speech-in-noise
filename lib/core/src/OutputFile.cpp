@@ -345,6 +345,8 @@ class FreeResponseTrialFormatter : public TrialFormatter {
         : trial_{trial_} {}
 
     auto insertHeading(std::ostream &stream) -> std::ostream & override {
+        insert(stream, HeadingItem::time);
+        insertCommaAndSpace(stream);
         insert(stream, HeadingItem::target);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::freeResponse);
@@ -352,6 +354,8 @@ class FreeResponseTrialFormatter : public TrialFormatter {
     }
 
     auto insertTrial(std::ostream &stream) -> std::ostream & override {
+        insert(stream, trial_.time);
+        insertCommaAndSpace(stream);
         insert(stream, trial_.target);
         insertCommaAndSpace(stream);
         insert(stream, trial_.response);
