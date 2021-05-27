@@ -7,6 +7,8 @@
 #include "IMaskerPlayer.hpp"
 #include "IRecognitionTestModel.hpp"
 #include "IOutputFile.hpp"
+#include <av-speech-in-noise/Interface.hpp>
+#include <string>
 
 namespace av_speech_in_noise {
 class EyeTracker : public Writable {
@@ -18,12 +20,18 @@ class EyeTracker : public Writable {
     virtual auto currentSystemTime() -> EyeTrackerSystemTime = 0;
 };
 
+class Clock {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Clock);
+    virtual auto time() -> std::string = 0;
+};
+
 class RecognitionTestModelImpl : public TargetPlayer::Observer,
                                  public MaskerPlayer::Observer,
                                  public RecognitionTestModel {
   public:
     RecognitionTestModelImpl(TargetPlayer &, MaskerPlayer &,
-        ResponseEvaluator &, OutputFile &, Randomizer &, EyeTracker &);
+        ResponseEvaluator &, OutputFile &, Randomizer &, EyeTracker &, Clock &);
     void attach(Model::Observer *) override;
     void initialize(TestMethod *, const Test &) override;
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
@@ -64,6 +72,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     OutputFile &outputFile;
     Randomizer &randomizer;
     EyeTracker &eyeTracker;
+    Clock &clock;
     EyeTrackerTargetPlayerSynchronization
         lastEyeTrackerTargetPlayerSynchronization{};
     TargetStartTime lastTargetStartTime{};

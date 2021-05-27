@@ -273,10 +273,11 @@ static void saveOutputFileAndPrepareNextTrialAfter(
 
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
-    OutputFile &outputFile, Randomizer &randomizer, EyeTracker &eyeTracker)
+    OutputFile &outputFile, Randomizer &randomizer, EyeTracker &eyeTracker,
+    Clock &clock)
     : maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
       evaluator{evaluator}, outputFile{outputFile}, randomizer{randomizer},
-      eyeTracker{eyeTracker}, testMethod{&nullTestMethod} {
+      eyeTracker{eyeTracker}, clock{clock}, testMethod{&nullTestMethod} {
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
 }
@@ -357,6 +358,7 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
         },
         settings.audioDevice);
 
+    clock.time();
     if (eyeTracking) {
         eyeTracker.allocateRecordingTimeSeconds(
             Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);

@@ -431,6 +431,19 @@ class EyeTrackerStub : public EyeTracker {
     bool stopped_{};
 };
 
+class ClockStub : public Clock {
+  public:
+    [[nodiscard]] auto timeQueried() const -> bool { return timeQueried_; }
+
+    auto time() -> std::string {
+        timeQueried_ = true;
+        return {};
+    }
+
+  private:
+    bool timeQueried_{};
+};
+
 void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel.dB_SPL = x; }
 
 void setCurrentTarget(TestMethodStub &m, std::string s) {
@@ -625,8 +638,9 @@ class RecognitionTestModelTests : public ::testing::Test {
     OutputFileStub outputFile;
     RandomizerStub randomizer;
     EyeTrackerStub eyeTracker;
+    ClockStub clock;
     RecognitionTestModelImpl model{targetPlayer, maskerPlayer, evaluator,
-        outputFile, randomizer, eyeTracker};
+        outputFile, randomizer, eyeTracker, clock};
     TestMethodStub testMethod;
     Calibration calibration{};
     PlayingCalibration playingCalibration{calibration, targetPlayer};
@@ -1065,6 +1079,13 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
         initializingTestWithDelayedMasker);
 }
+
+RECOGNITION_TEST_MODEL_TEST(playTrialCapturesTimeStampForEventualReporting) {
+    run(initializingTest, model);
+    run(playingTrial, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(clock.timeQueried());
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestOpensNewOutputFilePassingTestIdentity) {
     run(initializingTest, model);
