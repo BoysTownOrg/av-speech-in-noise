@@ -3,16 +3,16 @@ import SwiftUI
 class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
     let testSettingsPathControl = NSPathControl()
-    let sessionUI: SwiftSessionUI
+    let sessionUI = SwiftSessionUI()
     let testSetupUI: SwiftTestSetupUI
 
     override init() {
         testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
-        sessionUI = SwiftSessionUI()
-        AvSpeechInNoiseMain.default(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI)
     }
 
     func applicationDidFinishLaunching(_: Notification) {
+        AvSpeechInNoiseMain.default(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI)
+
         let userDefaults = UserDefaults()
         sessionUI.audioDevice_.string = userDefaults.string(forKey: "AudioDevice") ?? ""
 
