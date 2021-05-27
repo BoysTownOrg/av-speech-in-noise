@@ -16,6 +16,10 @@ class ControlStub : public Control {
         observer->notifyThatMenuHasBeenSelected();
     }
 
+    void notifyThatCloseButtonHasBeenClicked() {
+        observer->notifyThatCloseButtonHasBeenClicked();
+    }
+
     void attach(Observer *a) override { observer = a; }
 
   private:
@@ -128,6 +132,12 @@ EYE_TRACKER_CALIBRATION_VALIDATION_CONTROLLER_TEST(
     startsInteractorWhenMenuSelected) {
     control.notifyThatMenuHasBeenSelected();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(interactor.started());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_CONTROLLER_TEST(
+    finishesInteractorWhenCloseButtonClicked) {
+    control.notifyThatCloseButtonHasBeenClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(interactor.finished());
 }
 }
 }

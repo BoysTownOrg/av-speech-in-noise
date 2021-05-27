@@ -121,5 +121,7 @@ Controller::Controller(Control &control, Interactor &interactor)
 }
 
 void Controller::notifyThatMenuHasBeenSelected() { interactor.start(); }
+
+void Controller::notifyThatCloseButtonHasBeenClicked() { interactor.finish(); }
 }
 }

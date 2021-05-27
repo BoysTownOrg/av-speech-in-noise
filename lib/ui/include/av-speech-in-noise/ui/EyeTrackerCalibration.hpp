@@ -120,6 +120,7 @@ class Control {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatMenuHasBeenSelected() = 0;
+        virtual void notifyThatCloseButtonHasBeenClicked() = 0;
     };
 
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
@@ -130,6 +131,7 @@ class Controller : public Control::Observer {
   public:
     Controller(Control &, Interactor &);
     void notifyThatMenuHasBeenSelected() override;
+    void notifyThatCloseButtonHasBeenClicked() override;
 
   private:
     Interactor &interactor;
