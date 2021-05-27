@@ -27,7 +27,8 @@ enum class HeadingItem {
     secondKeywordEvaluation,
     thirdKeywordEvaluation,
     subjectSyllable,
-    correctSyllable
+    correctSyllable,
+    time
 };
 
 constexpr auto name(HeadingItem i) -> const char * {
@@ -74,6 +75,8 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "subject syllable";
     case HeadingItem::correctSyllable:
         return "correct syllable";
+    case HeadingItem::time:
+        return "time";
     }
 }
 

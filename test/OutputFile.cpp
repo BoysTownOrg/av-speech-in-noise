@@ -441,6 +441,7 @@ class WritingFreeResponseTrial : public WritingFlaggableTrial {
     WritingFreeResponseTrial() {
         trial.target = "a";
         trial.response = "b";
+        trial.time = "c";
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
@@ -449,6 +450,8 @@ class WritingFreeResponseTrial : public WritingFlaggableTrial {
             writer, "a", at(headingLabels_, HeadingItem::target), line);
         assertNthCommaDelimitedEntryOfLine(
             writer, "b", at(headingLabels_, HeadingItem::freeResponse), line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "c", at(headingLabels_, HeadingItem::time), line);
     }
 
     void run(OutputFileImpl &file) override { file.write(trial); }
@@ -463,8 +466,8 @@ class WritingFreeResponseTrial : public WritingFlaggableTrial {
 
   private:
     FreeResponseTrial trial{};
-    std::map<HeadingItem, gsl::index> headingLabels_{
-        {HeadingItem::target, 1}, {HeadingItem::freeResponse, 2}};
+    std::map<HeadingItem, gsl::index> headingLabels_{{HeadingItem::time, 1},
+        {HeadingItem::target, 2}, {HeadingItem::freeResponse, 3}};
 };
 
 class WritingThreeKeywordsTrial : public WritingFlaggableTrial {
