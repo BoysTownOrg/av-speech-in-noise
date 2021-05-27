@@ -353,37 +353,43 @@ class AppKitControl : public Control {
 
 namespace av_speech_in_noise {
 namespace eye_tracker_calibration {
+static auto subjectWindow() -> NSWindow * {
+    const auto screen{[[NSScreen screens] lastObject]};
+    const auto screenFrame{screen.frame};
+    const auto nsViewController{nsTabViewControllerWithoutTabControl()};
+    nsViewController.view.frame = screenFrame;
+    const auto window{
+        [NSWindow windowWithContentViewController:nsViewController]};
+    [window setStyleMask:NSWindowStyleMaskBorderless];
+    [window setFrame:screenFrame display:YES];
+    window.level = NSScreenSaverWindowLevel;
+    return window;
+}
+
 static void initialize(TobiiProTracker &tracker,
     NSObject<EyeTrackerRunMenu> *menu,
     NSObject<AvSpeechInNoiseCalibrationValidationTesterView>
         *validationTesterView) {
-    const auto subjectNSViewController{nsTabViewControllerWithoutTabControl()};
-    const auto subjectScreen{[[NSScreen screens] lastObject]};
-    const auto subjectScreenFrame{subjectScreen.frame};
     const auto testerScreen{[[NSScreen screens] firstObject]};
     const auto testerScreenFrame{testerScreen.frame};
-    subjectNSViewController.view.frame = subjectScreenFrame;
-    const auto subjectWindow{
-        [NSWindow windowWithContentViewController:subjectNSViewController]};
-    [subjectWindow setStyleMask:NSWindowStyleMaskBorderless];
-    [subjectWindow setFrame:subjectScreenFrame display:YES];
     const auto testerNSViewController{nsTabViewControllerWithoutTabControl()};
     testerNSViewController.view.frame = testerScreenFrame;
     const auto testerWindow{
         [NSWindow windowWithContentViewController:testerNSViewController]};
     testerWindow.styleMask = NSWindowStyleMaskBorderless;
     [testerWindow setFrame:testerScreenFrame display:YES];
-    subjectWindow.level = NSScreenSaverWindowLevel;
     testerWindow.level = NSScreenSaverWindowLevel;
     const auto menuObserver{
         [[AvSpeechInNoiseEyeTrackerMenuObserverImpl alloc] init]};
     [menu attach:menuObserver];
     static validation::AppKitTesterView validationTesterViewAdapted{
         validationTesterView};
-    static AppKitSubjectView subjectView{subjectWindow};
+    static AppKitSubjectView subjectView{subjectWindow()};
+    static AppKitSubjectView validationSubjectView{subjectWindow()};
     static AppKitTesterUI testerUI{testerWindow, menuObserver};
     static SubjectPresenterImpl subjectPresenter{subjectView};
-    static SubjectPresenterImpl validationSubjectPresenter{subjectView};
+    static SubjectPresenterImpl validationSubjectPresenter{
+        validationSubjectView};
     static TesterPresenterImpl testerPresenter{testerUI};
     static validation::TesterPresenterImpl validationTesterPresenter{
         validationTesterViewAdapted};
