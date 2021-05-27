@@ -324,6 +324,7 @@ struct SwiftTestView: View {
             Text("Play Trial")
         }
         .disabled(!nextTrialButtonEnabled.value)
+        .padding(.top, 40).padding(.bottom)
     }
 }
 
@@ -478,12 +479,12 @@ struct SwiftFreeResponseView: View {
             Form {
                 Toggle("flagged", isOn: $flagged.value)
                 TextField("response", text: $freeResponse.string)
+                Button(action: {
+                    observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
+                }) {
+                    Text("Submit")
+                }
             }.padding()
-            Button(action: {
-                observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
-            }) {
-                Text("Submit")
-            }
         }
     }
 }
