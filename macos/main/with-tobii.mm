@@ -387,10 +387,9 @@ static void initialize(TobiiProTracker &tracker,
     static TesterPresenterImpl testerPresenter{testerUI};
     static validation::TesterPresenterImpl validationTesterPresenter{
         validationTesterViewAdapted};
-    static auto validationTobiiProValidator{tracker.calibrationValidator()};
+    static auto validator{tracker.calibrationValidator()};
     static validation::InteractorImpl validationInteractor{
-        validationSubjectPresenter, validationTesterPresenter,
-        validationTobiiProValidator,
+        validationSubjectPresenter, validationTesterPresenter, validator,
         {{0.5, 0.5}, {0.3F, 0.3F}, {0.3F, 0.7F}, {0.7F, 0.3F}, {0.7F, 0.7F}}};
     static auto calibrator{tracker.calibrator()};
     static InteractorImpl interactor{subjectPresenter, testerPresenter,

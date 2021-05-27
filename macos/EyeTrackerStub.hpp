@@ -4,7 +4,7 @@
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 
 namespace av_speech_in_noise {
-class EyeTrackerStub : public eye_tracking::Tracker {
+class EyeTrackerStub : public EyeTracker {
     void allocateRecordingTimeSeconds(double) override {}
     void start() override {}
     void stop() override {}
