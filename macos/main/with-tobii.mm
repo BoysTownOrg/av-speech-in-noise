@@ -11,27 +11,17 @@
 #include <vector>
 #include <algorithm>
 
-@interface AvSpeechInNoiseEyeTrackerMenuObserverImpl
+@interface AvSpeechInNoiseEyeTrackerCalibrationControlObserverProxy
     : NSObject <EyeTrackerMenuObserver>
 @end
 
-@implementation AvSpeechInNoiseEyeTrackerMenuObserverImpl {
+@implementation AvSpeechInNoiseEyeTrackerCalibrationControlObserverProxy {
   @public
-    av_speech_in_noise::eye_tracker_calibration::Control::Observer
-        *calibrationObserver;
+    av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
 }
 
 - (void)notifyThatRunCalibrationHasBeenClicked {
-    calibrationObserver->notifyThatMenuHasBeenSelected();
-}
-@end
-
-@interface AvSpeechInNoiseEyeTrackerCalibrationTesterViewActions : NSObject
-@end
-
-@implementation AvSpeechInNoiseEyeTrackerCalibrationTesterViewActions {
-  @public
-    av_speech_in_noise::eye_tracker_calibration::Control::Observer *observer;
+    observer->notifyThatMenuHasBeenSelected();
 }
 
 - (void)notifyThatSubmitButtonHasBeenClicked {
@@ -238,13 +228,11 @@ class AppKitSubjectView : public SubjectView {
 class AppKitTesterUI : public TesterView, public Control {
   public:
     explicit AppKitTesterUI(NSWindow *window,
-        AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver)
+        AvSpeechInNoiseEyeTrackerCalibrationControlObserverProxy *observerProxy)
         : view{[[AvSpeechInNoiseEyeTrackerCalibrationTesterNSView alloc] init]},
-          actions{[[AvSpeechInNoiseEyeTrackerCalibrationTesterViewActions
-              alloc] init]},
-          menuObserver{menuObserver}, window{window} {
+          observerProxy{observerProxy}, window{window} {
         const auto submitButton {
-            nsButton("confirm", actions,
+            nsButton("confirm", observerProxy,
                 @selector(notifyThatSubmitButtonHasBeenClicked))
         };
         addAutolayoutEnabledSubview(window.contentViewController.view, view);
@@ -273,8 +261,7 @@ class AppKitTesterUI : public TesterView, public Control {
 
     void attach(Observer *a) override {
         view->observer = a; // window mouseUp
-        menuObserver->calibrationObserver = a; // menu
-        actions->observer = a; // submit button
+        observerProxy->observer = a; // menu and submit button
     }
 
     void drawRed(Line line) override {
@@ -312,8 +299,7 @@ class AppKitTesterUI : public TesterView, public Control {
 
   private:
     AvSpeechInNoiseEyeTrackerCalibrationTesterNSView *view;
-    AvSpeechInNoiseEyeTrackerCalibrationTesterViewActions *actions;
-    AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver;
+    AvSpeechInNoiseEyeTrackerCalibrationControlObserverProxy *observerProxy;
     NSWindow *window;
 };
 }
@@ -322,7 +308,7 @@ namespace validation {
 class AppKitTesterUI : public TesterView, public Control {
   public:
     explicit AppKitTesterUI(
-        NSObject<AvSpeechInNoiseCalibrationValidationTesterUI> *ui)
+        NSObject<AvSpeechInNoiseEyeTrackerCalibrationValidationTesterUI> *ui)
         : ui{ui} {}
 
     void attach(Observer *a) override {
@@ -354,7 +340,7 @@ class AppKitTesterUI : public TesterView, public Control {
     void hide() override { [ui hide]; }
 
   private:
-    NSObject<AvSpeechInNoiseCalibrationValidationTesterUI> *ui;
+    NSObject<AvSpeechInNoiseEyeTrackerCalibrationValidationTesterUI> *ui;
 };
 }
 }
@@ -376,7 +362,7 @@ static auto subjectWindow() -> NSWindow * {
 
 static void initialize(TobiiProTracker &tracker,
     NSObject<EyeTrackerRunMenu> *menu,
-    NSObject<AvSpeechInNoiseCalibrationValidationTesterUI>
+    NSObject<AvSpeechInNoiseEyeTrackerCalibrationValidationTesterUI>
         *validationTesterUI) {
     const auto testerScreen{[[NSScreen screens] firstObject]};
     const auto testerScreenFrame{testerScreen.frame};
@@ -387,8 +373,8 @@ static void initialize(TobiiProTracker &tracker,
     testerWindow.styleMask = NSWindowStyleMaskBorderless;
     [testerWindow setFrame:testerScreenFrame display:YES];
     testerWindow.level = NSScreenSaverWindowLevel;
-    const auto menuObserver{
-        [[AvSpeechInNoiseEyeTrackerMenuObserverImpl alloc] init]};
+    const auto menuObserver{[
+        [AvSpeechInNoiseEyeTrackerCalibrationControlObserverProxy alloc] init]};
     [menu attach:menuObserver];
     static validation::AppKitTesterUI validationTesterViewAdapted{
         validationTesterUI};
@@ -423,8 +409,8 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<CorrectKeywordsUI> *correctKeywordsUI,
     NSObject<PassFailUI> *passFailUI,
     NSObject<EyeTrackerRunMenu> *eyeTrackerMenu,
-    NSObject<AvSpeechInNoiseCalibrationValidationTesterUI>
-        *calibrationValidationTesterUI) {
+    NSObject<AvSpeechInNoiseEyeTrackerCalibrationValidationTesterUI>
+        *eyeTrackerCalibrationValidationTesterUI) {
     static TobiiProTracker eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
@@ -436,7 +422,7 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
     static PassFailUIImpl passFailUIAdapted{passFailUI};
     eye_tracker_calibration::initialize(
-        eyeTracker, eyeTrackerMenu, calibrationValidationTesterUI);
+        eyeTracker, eyeTrackerMenu, eyeTrackerCalibrationValidationTesterUI);
     initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
         testSetupViewFactory, sessionUIAdapted, testUIAdapted,
         freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
@@ -461,7 +447,7 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
                              withEyeTrackerMenu:
                                  (NSObject<EyeTrackerRunMenu> *)eyeTrackerMenu
     withEyeTrackerCalibrationValidationTesterUI:
-        (NSObject<AvSpeechInNoiseCalibrationValidationTesterUI> *)
+        (NSObject<AvSpeechInNoiseEyeTrackerCalibrationValidationTesterUI> *)
             eyeTrackerCalibrationValidationTesterUI {
     av_speech_in_noise::main(testSetupUIFactory, sessionUI, testUI,
         freeResponseUI, syllablesUI, chooseKeywordsUI, correctKeywordsUI,

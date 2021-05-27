@@ -150,7 +150,7 @@
 - (void)notifyThatMenuHasBeenSelected;
 @end
 
-@protocol AvSpeechInNoiseCalibrationValidationTesterUI
+@protocol AvSpeechInNoiseEyeTrackerCalibrationValidationTesterUI
 - (void)attach:
     (id<AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserver>)observer;
 - (void)setLeftEyeAccuracyDegrees:(NSString *)degrees;
@@ -196,7 +196,7 @@
                              withEyeTrackerMenu:
                                  (NSObject<EyeTrackerRunMenu> *)eyeTrackerMenu
     withEyeTrackerCalibrationValidationTesterUI:
-        (NSObject<AvSpeechInNoiseCalibrationValidationTesterUI> *)
+        (NSObject<AvSpeechInNoiseEyeTrackerCalibrationValidationTesterUI> *)
             eyeTrackerCalibrationValidationTesterUI;
 @end
 

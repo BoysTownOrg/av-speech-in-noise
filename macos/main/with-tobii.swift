@@ -77,7 +77,7 @@ class EyeTrackerCalibrationValidationControlObservableObserver: ObservableObject
     @Published var observer: AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserver? = nil
 }
 
-class EyeTrackerCalibrationValidationTesterUI: NSObject, AvSpeechInNoiseCalibrationValidationTesterUI {
+class EyeTrackerCalibrationValidationTesterUI: NSObject, AvSpeechInNoiseEyeTrackerCalibrationValidationTesterUI {
     let observableObserver = EyeTrackerCalibrationValidationControlObservableObserver()
     let showing = ObservableBool()
     let leftEyeAccuracyDegrees = ObservableString()
@@ -156,7 +156,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             terminatingAlert.runModal()
             NSApp.terminate(nil)
         }
-        AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu, withEyeTrackerCalibrationValidationTesterUI: eyeTrackerCalibrationValidationTesterUI)
+        AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu, with: eyeTrackerCalibrationValidationTesterUI)
 
         let userDefaults = UserDefaults()
         sessionUI.audioDevice_.string = userDefaults.string(forKey: "AudioDevice") ?? ""
