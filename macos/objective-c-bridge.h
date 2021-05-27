@@ -139,24 +139,26 @@
 
 @protocol EyeTrackerMenuObserver
 - (void)notifyThatRunCalibrationHasBeenClicked;
-- (void)notifyThatRunCalibrationValidationHasBeenClicked;
 @end
 
 @protocol EyeTrackerRunMenu
 - (void)attach:(id<EyeTrackerMenuObserver>)observer;
 @end
 
-@protocol AvSpeechInNoiseCalibrationValidationTesterView
+@protocol AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserver
+- (void)notifyThatCloseButtonHasBeenClicked;
+- (void)notifyThatMenuHasBeenSelected;
+@end
+
+@protocol AvSpeechInNoiseCalibrationValidationTesterUI
+- (void)attach:
+    (id<AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserver>)observer;
 - (void)setLeftEyeAccuracyDegrees:(NSString *)degrees;
 - (void)setLeftEyePrecisionDegrees:(NSString *)degrees;
 - (void)setRightEyeAccuracyDegrees:(NSString *)degrees;
 - (void)setRightEyePrecisionDegrees:(NSString *)degrees;
 - (void)show;
 - (void)hide;
-@end
-
-@protocol AvSpeechInNoiseEyeTrackingCalibrationValidationMenuObserver
-- (void)notifyThatRunHasBeenClicked;
 @end
 
 @interface AvSpeechInNoiseMain : NSObject
@@ -179,21 +181,23 @@
            withPassFailUI:(NSObject<PassFailUI> *)passFailUI;
 
 + (void)withTobiiPro:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
-                          withSessionUI:(NSObject<SessionUI> *)sessionUI
-                             withTestUI:(NSObject<TestUI> *)testUI
-                     withFreeResponseUI:
-                         (NSObject<FreeResponseUI> *)freeResponseUI
-                        withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
-                   withChooseKeywordsUI:
-                       (NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
-                  withCorrectKeywordsUI:
-                      (NSObject<CorrectKeywordsUI> *)correctKeywordsUI
-                         withPassFailUI:(NSObject<PassFailUI> *)passFailUI
-                     withEyeTrackerMenu:
-                         (NSObject<EyeTrackerRunMenu> *)eyeTrackerMenu
-    withCalibrationValidationTesterView:
-        (NSObject<AvSpeechInNoiseCalibrationValidationTesterView> *)
-            calibrationValidationTesterView;
+                                  withSessionUI:(NSObject<SessionUI> *)sessionUI
+                                     withTestUI:(NSObject<TestUI> *)testUI
+                             withFreeResponseUI:
+                                 (NSObject<FreeResponseUI> *)freeResponseUI
+                                withSyllablesUI:
+                                    (NSObject<SyllablesUI> *)syllablesUI
+                           withChooseKeywordsUI:
+                               (NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
+                          withCorrectKeywordsUI:
+                              (NSObject<CorrectKeywordsUI> *)correctKeywordsUI
+                                 withPassFailUI:
+                                     (NSObject<PassFailUI> *)passFailUI
+                             withEyeTrackerMenu:
+                                 (NSObject<EyeTrackerRunMenu> *)eyeTrackerMenu
+    withEyeTrackerCalibrationValidationTesterUI:
+        (NSObject<AvSpeechInNoiseCalibrationValidationTesterUI> *)
+            eyeTrackerCalibrationValidationTesterUI;
 @end
 
 @interface AvSpeechInNoiseUtility : NSObject

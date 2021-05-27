@@ -33,68 +33,82 @@ class SwiftEyeTrackerRunMenu: NSObject, EyeTrackerRunMenu {
     }
 }
 
-struct CalibrationValidationTesterSwiftView : View {
+struct CalibrationValidationTesterSwiftView: View {
     @ObservedObject var showing: ObservableBool
     @ObservedObject var leftEyeAccuracyDegrees: ObservableString
     @ObservedObject var rightEyeAccuracyDegrees: ObservableString
     @ObservedObject var leftEyePrecisionDegrees: ObservableString
     @ObservedObject var rightEyePrecisionDegrees: ObservableString
-    
-    init(view: CalibrationValidationTesterView) {
-        showing = view.showing
-        leftEyePrecisionDegrees = view.leftEyePrecisionDegrees
-        leftEyeAccuracyDegrees = view.leftEyeAccuracyDegrees
-        rightEyePrecisionDegrees = view.rightEyePrecisionDegrees
-        rightEyeAccuracyDegrees = view.rightEyeAccuracyDegrees
+    @ObservedObject var observableObserver: EyeTrackerCalibrationValidationControlObservableObserver
+
+    init(ui: EyeTrackerCalibrationValidationTesterUI) {
+        showing = ui.showing
+        leftEyePrecisionDegrees = ui.leftEyePrecisionDegrees
+        leftEyeAccuracyDegrees = ui.leftEyeAccuracyDegrees
+        rightEyePrecisionDegrees = ui.rightEyePrecisionDegrees
+        rightEyeAccuracyDegrees = ui.rightEyeAccuracyDegrees
+        observableObserver = ui.observableObserver
     }
-    
+
     var body: some View {
         if showing.value {
-            HStack() {
-                List() {
+            HStack {
+                List {
                     Section(header: Text("accuracy (degrees)")) {
                         TextField("left", text: $leftEyeAccuracyDegrees.string).disabled(/*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
                         TextField("right", text: $rightEyeAccuracyDegrees.string).disabled(/*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
                     }
                 }
-                List() {
+                List {
                     Section(header: Text("precision (degrees)")) {
                         TextField("left", text: $leftEyePrecisionDegrees.string).disabled(/*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
                         TextField("right", text: $rightEyePrecisionDegrees.string).disabled(/*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
                     }
                 }
-            }
+                Button("Close") {
+                    observableObserver.observer?.notifyThatCloseButtonHasBeenClicked()
+                }
+            }.padding()
         }
     }
 }
 
-class CalibrationValidationTesterView : NSObject, AvSpeechInNoiseCalibrationValidationTesterView {
+class EyeTrackerCalibrationValidationControlObservableObserver: ObservableObject {
+    @Published var observer: AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserver? = nil
+}
+
+class EyeTrackerCalibrationValidationTesterUI: NSObject, AvSpeechInNoiseCalibrationValidationTesterUI {
+    let observableObserver = EyeTrackerCalibrationValidationControlObservableObserver()
     let showing = ObservableBool()
     let leftEyeAccuracyDegrees = ObservableString()
     let rightEyeAccuracyDegrees = ObservableString()
     let leftEyePrecisionDegrees = ObservableString()
     let rightEyePrecisionDegrees = ObservableString()
     
+    func attach(_ observer: AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserver!) {
+        observableObserver.observer = observer
+    }
+
     func setLeftEyeAccuracyDegrees(_ degrees: String!) {
         leftEyeAccuracyDegrees.string = degrees
     }
-    
+
     func setLeftEyePrecisionDegrees(_ degrees: String!) {
         leftEyePrecisionDegrees.string = degrees
     }
-    
+
     func setRightEyeAccuracyDegrees(_ degrees: String!) {
         rightEyeAccuracyDegrees.string = degrees
     }
-    
+
     func setRightEyePrecisionDegrees(_ degrees: String!) {
         rightEyePrecisionDegrees.string = degrees
     }
-    
+
     func show() {
         showing.value = true
     }
-    
+
     func hide() {
         showing.value = false
     }
@@ -106,13 +120,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let sessionUI: SwiftSessionUI
     let testSetupUI: SwiftTestSetupUI
     let eyeTrackerRunMenu: SwiftEyeTrackerRunMenu
-    let calibrationValidationTesterView: CalibrationValidationTesterView
+    let eyeTrackerCalibrationValidationTesterUI: EyeTrackerCalibrationValidationTesterUI
 
-    init(eyeTrackerRunMenu: SwiftEyeTrackerRunMenu) {
+    init(eyeTrackerRunMenu: SwiftEyeTrackerRunMenu, eyeTrackerCalibrationValidationTesterUI: EyeTrackerCalibrationValidationTesterUI) {
         testSetupUI = SwiftTestSetupUI(testSettingsPathControl: testSettingsPathControl)
         sessionUI = SwiftSessionUI()
-        calibrationValidationTesterView = CalibrationValidationTesterView()
         self.eyeTrackerRunMenu = eyeTrackerRunMenu
+        self.eyeTrackerCalibrationValidationTesterUI = eyeTrackerCalibrationValidationTesterUI
     }
 
     func applicationDidFinishLaunching(_: Notification) {
@@ -142,14 +156,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             terminatingAlert.runModal()
             NSApp.terminate(nil)
         }
-        AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu, with: calibrationValidationTesterView)
+        AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu, withEyeTrackerCalibrationValidationTesterUI: eyeTrackerCalibrationValidationTesterUI)
 
         let userDefaults = UserDefaults()
         sessionUI.audioDevice_.string = userDefaults.string(forKey: "AudioDevice") ?? ""
 
         let contentView = SwiftSessionView(ui: sessionUI, showingTestSetup: testSetupUI.showing) {
             SwiftTestSetupView(ui: self.testSetupUI, testSettingsPathControl: self.testSettingsPathControl)
-            CalibrationValidationTesterSwiftView(view: self.calibrationValidationTesterView)
+            CalibrationValidationTesterSwiftView(ui: self.eyeTrackerCalibrationValidationTesterUI)
         }
 
         window = NSWindow(
@@ -174,9 +188,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 class AppMenuReceiver: NSObject {
     let aboutTobiiPro = AboutTobiiPro()
     let eyeTrackerRunMenu: SwiftEyeTrackerRunMenu
+    let eyeTrackerCalibrationValidationTesterUI: EyeTrackerCalibrationValidationTesterUI
 
-    init(eyeTrackerRunMenu: SwiftEyeTrackerRunMenu) {
+    init(eyeTrackerRunMenu: SwiftEyeTrackerRunMenu, eyeTrackerCalibrationValidationTesterUI: EyeTrackerCalibrationValidationTesterUI) {
         self.eyeTrackerRunMenu = eyeTrackerRunMenu
+        self.eyeTrackerCalibrationValidationTesterUI = eyeTrackerCalibrationValidationTesterUI
     }
 
     @objc
@@ -188,10 +204,10 @@ class AppMenuReceiver: NSObject {
     func notifyThatRunEyeTrackerCalibrationHasBeenClicked() {
         eyeTrackerRunMenu.observer?.notifyThatRunCalibrationHasBeenClicked()
     }
-    
+
     @objc
     func notifyThatRunEyeTrackerCalibrationValidationHasBeenClicked() {
-        eyeTrackerRunMenu.observer?.notifyThatRunCalibrationValidationHasBeenClicked()
+        eyeTrackerCalibrationValidationTesterUI.observableObserver.observer?.notifyThatMenuHasBeenSelected()
     }
 }
 
@@ -199,7 +215,8 @@ class AppMenuReceiver: NSObject {
 enum SwiftMain {
     static func main() {
         let eyeTrackerRunMenu = SwiftEyeTrackerRunMenu()
-        let appMenuReceiver = AppMenuReceiver(eyeTrackerRunMenu: eyeTrackerRunMenu)
+        let eyeTrackerCalibrationValidationTesterUI = EyeTrackerCalibrationValidationTesterUI()
+        let appMenuReceiver = AppMenuReceiver(eyeTrackerRunMenu: eyeTrackerRunMenu, eyeTrackerCalibrationValidationTesterUI: eyeTrackerCalibrationValidationTesterUI)
         let applicationName = ProcessInfo.processInfo.processName
         let menu = NSMenu()
         let menuItemOne = NSMenuItem()
@@ -218,7 +235,7 @@ enum SwiftMain {
         runEyeTrackerCalibrationValidation.target = appMenuReceiver
         runMenu.submenu?.items = [runEyeTrackerCalibration, runEyeTrackerCalibrationValidation]
         menu.items = [menuItemOne, runMenu, legalMenu]
-        let delegate = AppDelegate(eyeTrackerRunMenu: eyeTrackerRunMenu)
+        let delegate = AppDelegate(eyeTrackerRunMenu: eyeTrackerRunMenu, eyeTrackerCalibrationValidationTesterUI: eyeTrackerCalibrationValidationTesterUI)
         NSApplication.shared.delegate = delegate
         NSApplication.shared.mainMenu = menu
         _ = NSApplicationMain(CommandLine.argc, CommandLine.unsafeArgv)

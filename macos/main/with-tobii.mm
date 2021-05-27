@@ -19,16 +19,10 @@
   @public
     av_speech_in_noise::eye_tracker_calibration::Control::Observer
         *calibrationObserver;
-    av_speech_in_noise::eye_tracker_calibration::validation::Control::Observer
-        *calibrationValidationObserver;
 }
 
 - (void)notifyThatRunCalibrationHasBeenClicked {
     calibrationObserver->notifyThatMenuHasBeenSelected();
-}
-
-- (void)notifyThatRunCalibrationValidationHasBeenClicked {
-    calibrationValidationObserver->notifyThatMenuHasBeenSelected();
 }
 @end
 
@@ -42,6 +36,26 @@
 
 - (void)notifyThatSubmitButtonHasBeenClicked {
     observer->notifyThatSubmitButtonHasBeenClicked();
+}
+@end
+
+@interface AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserverProxy
+    : NSObject <AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserver>
+@end
+
+@implementation
+    AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserverProxy {
+  @public
+    av_speech_in_noise::eye_tracker_calibration::validation::Control::Observer
+        *observer;
+}
+
+- (void)notifyThatCloseButtonHasBeenClicked {
+    observer->notifyThatCloseButtonHasBeenClicked();
+}
+
+- (void)notifyThatMenuHasBeenSelected {
+    observer->notifyThatMenuHasBeenSelected();
 }
 @end
 
@@ -305,48 +319,42 @@ class AppKitTesterUI : public TesterView, public Control {
 }
 
 namespace validation {
-class AppKitTesterView : public TesterView {
+class AppKitTesterUI : public TesterView, public Control {
   public:
-    explicit AppKitTesterView(
-        NSObject<AvSpeechInNoiseCalibrationValidationTesterView> *view)
-        : view{view} {}
+    explicit AppKitTesterUI(
+        NSObject<AvSpeechInNoiseCalibrationValidationTesterUI> *ui)
+        : ui{ui} {}
+
+    void attach(Observer *a) override {
+        const auto adapted{
+            [[AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserverProxy
+                alloc] init]};
+        adapted->observer = a;
+        [ui attach:adapted];
+    }
 
     void setLeftEyeAccuracyDegrees(const std::string &s) override {
-        [view setLeftEyeAccuracyDegrees:nsString(s)];
+        [ui setLeftEyeAccuracyDegrees:nsString(s)];
     }
 
     void setLeftEyePrecisionDegrees(const std::string &s) override {
-        [view setLeftEyePrecisionDegrees:nsString(s)];
+        [ui setLeftEyePrecisionDegrees:nsString(s)];
     }
 
     void setRightEyeAccuracyDegrees(const std::string &s) override {
-        [view setRightEyeAccuracyDegrees:nsString(s)];
+        [ui setRightEyeAccuracyDegrees:nsString(s)];
     }
 
     void setRightEyePrecisionDegrees(const std::string &s) override {
-        [view setRightEyePrecisionDegrees:nsString(s)];
+        [ui setRightEyePrecisionDegrees:nsString(s)];
     }
 
-    void show() override { [view show]; }
+    void show() override { [ui show]; }
 
-    void hide() override { [view hide]; }
-
-  private:
-    NSObject<AvSpeechInNoiseCalibrationValidationTesterView> *view;
-};
-
-class AppKitControl : public Control {
-  public:
-    explicit AppKitControl(
-        AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver)
-        : menuObserver{menuObserver} {}
-
-    void attach(Observer *a) override {
-        menuObserver->calibrationValidationObserver = a;
-    }
+    void hide() override { [ui hide]; }
 
   private:
-    AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver;
+    NSObject<AvSpeechInNoiseCalibrationValidationTesterUI> *ui;
 };
 }
 }
@@ -368,8 +376,8 @@ static auto subjectWindow() -> NSWindow * {
 
 static void initialize(TobiiProTracker &tracker,
     NSObject<EyeTrackerRunMenu> *menu,
-    NSObject<AvSpeechInNoiseCalibrationValidationTesterView>
-        *validationTesterView) {
+    NSObject<AvSpeechInNoiseCalibrationValidationTesterUI>
+        *validationTesterUI) {
     const auto testerScreen{[[NSScreen screens] firstObject]};
     const auto testerScreenFrame{testerScreen.frame};
     const auto testerNSViewController{nsTabViewControllerWithoutTabControl()};
@@ -382,8 +390,8 @@ static void initialize(TobiiProTracker &tracker,
     const auto menuObserver{
         [[AvSpeechInNoiseEyeTrackerMenuObserverImpl alloc] init]};
     [menu attach:menuObserver];
-    static validation::AppKitTesterView validationTesterViewAdapted{
-        validationTesterView};
+    static validation::AppKitTesterUI validationTesterViewAdapted{
+        validationTesterUI};
     static AppKitSubjectView subjectView{subjectWindow()};
     static AppKitSubjectView validationSubjectView{subjectWindow()};
     static AppKitTesterUI testerUI{testerWindow, menuObserver};
@@ -402,9 +410,8 @@ static void initialize(TobiiProTracker &tracker,
         calibrator,
         {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
     static Controller controller{testerUI, interactor};
-    static validation::AppKitControl validationControl{menuObserver};
     static validation::Controller validationController{
-        validationControl, validationInteractor};
+        validationTesterViewAdapted, validationInteractor};
 }
 }
 
@@ -416,8 +423,8 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<CorrectKeywordsUI> *correctKeywordsUI,
     NSObject<PassFailUI> *passFailUI,
     NSObject<EyeTrackerRunMenu> *eyeTrackerMenu,
-    NSObject<AvSpeechInNoiseCalibrationValidationTesterView>
-        *calibrationValidationTesterView) {
+    NSObject<AvSpeechInNoiseCalibrationValidationTesterUI>
+        *calibrationValidationTesterUI) {
     static TobiiProTracker eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
@@ -429,7 +436,7 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
     static PassFailUIImpl passFailUIAdapted{passFailUI};
     eye_tracker_calibration::initialize(
-        eyeTracker, eyeTrackerMenu, calibrationValidationTesterView);
+        eyeTracker, eyeTrackerMenu, calibrationValidationTesterUI);
     initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
         testSetupViewFactory, sessionUIAdapted, testUIAdapted,
         freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
@@ -439,23 +446,25 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
 
 @implementation AvSpeechInNoiseMain
 + (void)withTobiiPro:(NSObject<TestSetupUIFactory> *)testSetupUIFactory
-                          withSessionUI:(NSObject<SessionUI> *)sessionUI
-                             withTestUI:(NSObject<TestUI> *)testUI
-                     withFreeResponseUI:
-                         (NSObject<FreeResponseUI> *)freeResponseUI
-                        withSyllablesUI:(NSObject<SyllablesUI> *)syllablesUI
-                   withChooseKeywordsUI:
-                       (NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
-                  withCorrectKeywordsUI:
-                      (NSObject<CorrectKeywordsUI> *)correctKeywordsUI
-                         withPassFailUI:(NSObject<PassFailUI> *)passFailUI
-                     withEyeTrackerMenu:
-                         (NSObject<EyeTrackerRunMenu> *)eyeTrackerMenu
-    withCalibrationValidationTesterView:
-        (NSObject<AvSpeechInNoiseCalibrationValidationTesterView> *)
-            calibrationValidationTesterView {
+                                  withSessionUI:(NSObject<SessionUI> *)sessionUI
+                                     withTestUI:(NSObject<TestUI> *)testUI
+                             withFreeResponseUI:
+                                 (NSObject<FreeResponseUI> *)freeResponseUI
+                                withSyllablesUI:
+                                    (NSObject<SyllablesUI> *)syllablesUI
+                           withChooseKeywordsUI:
+                               (NSObject<ChooseKeywordsUI> *)chooseKeywordsUI
+                          withCorrectKeywordsUI:
+                              (NSObject<CorrectKeywordsUI> *)correctKeywordsUI
+                                 withPassFailUI:
+                                     (NSObject<PassFailUI> *)passFailUI
+                             withEyeTrackerMenu:
+                                 (NSObject<EyeTrackerRunMenu> *)eyeTrackerMenu
+    withEyeTrackerCalibrationValidationTesterUI:
+        (NSObject<AvSpeechInNoiseCalibrationValidationTesterUI> *)
+            eyeTrackerCalibrationValidationTesterUI {
     av_speech_in_noise::main(testSetupUIFactory, sessionUI, testUI,
         freeResponseUI, syllablesUI, chooseKeywordsUI, correctKeywordsUI,
-        passFailUI, eyeTrackerMenu, calibrationValidationTesterView);
+        passFailUI, eyeTrackerMenu, eyeTrackerCalibrationValidationTesterUI);
 }
 @end
