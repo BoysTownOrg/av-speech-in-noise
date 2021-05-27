@@ -13,7 +13,7 @@ class AboutTobiiPro: NSObject {
 
     func showAboutPanel() {
         if aboutBoxWindowController == nil {
-            let styleMask: NSWindow.StyleMask = [.closable, .miniaturizable, /* .resizable,*/ .titled]
+            let styleMask: NSWindow.StyleMask = [.closable, .miniaturizable, .titled]
             let window = NSWindow()
             window.styleMask = styleMask
             window.title = "About Tobii Pro"
@@ -55,14 +55,14 @@ struct CalibrationValidationTesterSwiftView: View {
             HStack {
                 List {
                     Section(header: Text("accuracy (degrees)")) {
-                        TextField("left", text: $leftEyeAccuracyDegrees.string).disabled(/*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
-                        TextField("right", text: $rightEyeAccuracyDegrees.string).disabled(/*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
+                        TextField("left", text: $leftEyeAccuracyDegrees.string).disabled(true)
+                        TextField("right", text: $rightEyeAccuracyDegrees.string).disabled(true)
                     }
                 }
                 List {
                     Section(header: Text("precision (degrees)")) {
-                        TextField("left", text: $leftEyePrecisionDegrees.string).disabled(/*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
-                        TextField("right", text: $rightEyePrecisionDegrees.string).disabled(/*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
+                        TextField("left", text: $leftEyePrecisionDegrees.string).disabled(true)
+                        TextField("right", text: $rightEyePrecisionDegrees.string).disabled(true)
                     }
                 }
                 Button("Close") {
@@ -84,7 +84,7 @@ class EyeTrackerCalibrationValidationTesterUI: NSObject, AvSpeechInNoiseEyeTrack
     let rightEyeAccuracyDegrees = ObservableString()
     let leftEyePrecisionDegrees = ObservableString()
     let rightEyePrecisionDegrees = ObservableString()
-    
+
     func attach(_ observer: AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserver!) {
         observableObserver.observer = observer
     }
