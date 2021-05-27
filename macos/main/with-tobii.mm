@@ -45,10 +45,10 @@
 }
 @end
 
-@interface AvSpeechInNoiseAppKitCircleView : NSView
+@interface AvSpeechInNoiseCircleNSView : NSView
 @end
 
-@implementation AvSpeechInNoiseAppKitCircleView
+@implementation AvSpeechInNoiseCircleNSView
 - (void)drawRect:(NSRect)rect {
     NSBezierPath *thePath = [NSBezierPath bezierPath];
     [thePath appendBezierPathWithOvalInRect:rect];
@@ -118,11 +118,12 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
 }
 @end
 
-@interface AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate
+@interface AvSpeechInNoiseEyeTrackerCalibrationSubjectViewNSAnimationDelegate
     : NSObject <NSAnimationDelegate>
 @end
 
-@implementation AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate {
+@implementation
+    AvSpeechInNoiseEyeTrackerCalibrationSubjectViewNSAnimationDelegate {
   @public
     av_speech_in_noise::eye_tracker_calibration::SubjectView::Observer
         *observer;
@@ -164,15 +165,15 @@ class AppKitSubjectView : public SubjectView {
     static constexpr auto normalDotDiameterPoints{100};
     static constexpr auto shrunkenDotDiameterPoints{25};
 
-    explicit AppKitSubjectView(NSWindow *subjectWindow)
-        : circleView{[[AvSpeechInNoiseAppKitCircleView alloc]
+    explicit AppKitSubjectView(NSWindow *window)
+        : dot{[[AvSpeechInNoiseCircleNSView alloc]
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
                                 normalDotDiameterPoints)]},
-          animationDelegate{
-              [[AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate
+          animationDelegate{[
+              [AvSpeechInNoiseEyeTrackerCalibrationSubjectViewNSAnimationDelegate
                   alloc] init]},
-          subjectWindow{subjectWindow} {
-        [subjectWindow.contentViewController.view addSubview:circleView];
+          window{window} {
+        [window.contentViewController.view addSubview:dot];
     }
 
     void attach(SubjectView::Observer *a) override {
@@ -180,92 +181,86 @@ class AppKitSubjectView : public SubjectView {
     }
 
     void moveDotTo(WindowPoint point) override {
-        animate(circleView,
-            NSMakeRect(point.x * circleView.superview.frame.size.width -
-                    circleView.frame.size.width / 2,
-                point.y * circleView.superview.frame.size.height -
-                    circleView.frame.size.height / 2,
-                circleView.frame.size.width, circleView.frame.size.height),
+        animate(dot,
+            NSMakeRect(point.x * dot.superview.frame.size.width -
+                    dot.frame.size.width / 2,
+                point.y * dot.superview.frame.size.height -
+                    dot.frame.size.height / 2,
+                dot.frame.size.width, dot.frame.size.height),
             1.5, animationDelegate);
     }
 
     void shrinkDot() override {
-        animate(circleView,
-            NSMakeRect(circleView.frame.origin.x +
-                    (circleView.frame.size.width - shrunkenDotDiameterPoints) /
-                        2,
-                circleView.frame.origin.y +
-                    (circleView.frame.size.height - shrunkenDotDiameterPoints) /
-                        2,
+        animate(dot,
+            NSMakeRect(dot.frame.origin.x +
+                    (dot.frame.size.width - shrunkenDotDiameterPoints) / 2,
+                dot.frame.origin.y +
+                    (dot.frame.size.height - shrunkenDotDiameterPoints) / 2,
                 shrunkenDotDiameterPoints, shrunkenDotDiameterPoints),
             0.5, animationDelegate);
     }
 
     void growDot() override {
-        animate(circleView,
-            NSMakeRect(circleView.frame.origin.x +
-                    (circleView.frame.size.width - normalDotDiameterPoints) / 2,
-                circleView.frame.origin.y +
-                    (circleView.frame.size.height - normalDotDiameterPoints) /
-                        2,
+        animate(dot,
+            NSMakeRect(dot.frame.origin.x +
+                    (dot.frame.size.width - normalDotDiameterPoints) / 2,
+                dot.frame.origin.y +
+                    (dot.frame.size.height - normalDotDiameterPoints) / 2,
                 normalDotDiameterPoints, normalDotDiameterPoints),
             0.5, animationDelegate);
     }
 
-    void show() override { [subjectWindow makeKeyAndOrderFront:nil]; }
+    void show() override { [window makeKeyAndOrderFront:nil]; }
 
-    void hide() override { [subjectWindow orderOut:nil]; }
+    void hide() override { [window orderOut:nil]; }
 
   private:
-    AvSpeechInNoiseAppKitCircleView *circleView;
-    AvSpeechInNoiseEyeTrackerCalibrationAppKitAnimationDelegate
+    AvSpeechInNoiseCircleNSView *dot;
+    AvSpeechInNoiseEyeTrackerCalibrationSubjectViewNSAnimationDelegate
         *animationDelegate;
-    NSWindow *subjectWindow;
+    NSWindow *window;
 };
 
 class AppKitTesterUI : public TesterView, public Control {
   public:
-    explicit AppKitTesterUI(NSWindow *testerWindow,
-        AvSpeechInNoiseEyeTrackerMenuObserverImpl *eyeTrackingMenuObserver)
+    explicit AppKitTesterUI(NSWindow *window,
+        AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver)
         : view{[[AvSpeechInNoiseEyeTrackerCalibrationTesterNSView alloc] init]},
           actions{[[AvSpeechInNoiseEyeTrackerCalibrationTesterViewActions
               alloc] init]},
-          eyeTrackingMenuObserver{eyeTrackingMenuObserver}, testerWindow{
-                                                                testerWindow} {
+          menuObserver{menuObserver}, window{window} {
         const auto submitButton {
             nsButton("confirm", actions,
                 @selector(notifyThatSubmitButtonHasBeenClicked))
         };
+        addAutolayoutEnabledSubview(window.contentViewController.view, view);
         addAutolayoutEnabledSubview(
-            testerWindow.contentViewController.view, view);
-        addAutolayoutEnabledSubview(
-            testerWindow.contentViewController.view, submitButton);
+            window.contentViewController.view, submitButton);
         [NSLayoutConstraint activateConstraints:@[
             [view.leadingAnchor
-                constraintEqualToAnchor:testerWindow.contentViewController.view
+                constraintEqualToAnchor:window.contentViewController.view
                                             .leadingAnchor],
             [view.trailingAnchor
-                constraintEqualToAnchor:testerWindow.contentViewController.view
+                constraintEqualToAnchor:window.contentViewController.view
                                             .trailingAnchor],
-            [view.topAnchor
-                constraintEqualToAnchor:testerWindow.contentViewController.view
-                                            .topAnchor],
+            [view.topAnchor constraintEqualToAnchor:window.contentViewController
+                                                        .view.topAnchor],
             [view.bottomAnchor constraintEqualToAnchor:submitButton.topAnchor],
             [submitButton.trailingAnchor
-                constraintEqualToAnchor:testerWindow.contentViewController.view
+                constraintEqualToAnchor:window.contentViewController.view
                                             .trailingAnchor
                                constant:-8],
             [submitButton.bottomAnchor
-                constraintEqualToAnchor:testerWindow.contentViewController.view
+                constraintEqualToAnchor:window.contentViewController.view
                                             .bottomAnchor
                                constant:-8]
         ]];
     }
 
     void attach(Observer *a) override {
-        view->observer = a;
-        eyeTrackingMenuObserver->calibrationObserver = a;
-        actions->observer = a;
+        view->observer = a; // window mouseUp
+        menuObserver->calibrationObserver = a; // menu
+        actions->observer = a; // submit button
     }
 
     void drawRed(Line line) override {
@@ -297,15 +292,15 @@ class AppKitTesterUI : public TesterView, public Control {
         view->whiteCircleCenters.clear();
     }
 
-    void show() override { [testerWindow makeKeyAndOrderFront:nil]; }
+    void show() override { [window makeKeyAndOrderFront:nil]; }
 
-    void hide() override { [testerWindow orderOut:nil]; }
+    void hide() override { [window orderOut:nil]; }
 
   private:
     AvSpeechInNoiseEyeTrackerCalibrationTesterNSView *view;
     AvSpeechInNoiseEyeTrackerCalibrationTesterViewActions *actions;
-    AvSpeechInNoiseEyeTrackerMenuObserverImpl *eyeTrackingMenuObserver;
-    NSWindow *testerWindow;
+    AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver;
+    NSWindow *window;
 };
 }
 
@@ -342,20 +337,72 @@ class AppKitTesterView : public TesterView {
 
 class AppKitControl : public Control {
   public:
-    explicit AppKitControl(AvSpeechInNoiseEyeTrackerMenuObserverImpl *observer)
-        : observer{observer} {}
+    explicit AppKitControl(
+        AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver)
+        : menuObserver{menuObserver} {}
 
     void attach(Observer *a) override {
-        observer->calibrationValidationObserver = a;
+        menuObserver->calibrationValidationObserver = a;
     }
 
   private:
-    AvSpeechInNoiseEyeTrackerMenuObserverImpl *observer;
+    AvSpeechInNoiseEyeTrackerMenuObserverImpl *menuObserver;
 };
 }
 }
 
 namespace av_speech_in_noise {
+namespace eye_tracker_calibration {
+static void initialize(TobiiProTracker &tracker,
+    NSObject<EyeTrackerRunMenu> *menu,
+    NSObject<AvSpeechInNoiseCalibrationValidationTesterView>
+        *validationTesterView) {
+    const auto subjectNSViewController{nsTabViewControllerWithoutTabControl()};
+    const auto subjectScreen{[[NSScreen screens] lastObject]};
+    const auto subjectScreenFrame{subjectScreen.frame};
+    const auto testerScreen{[[NSScreen screens] firstObject]};
+    const auto testerScreenFrame{testerScreen.frame};
+    subjectNSViewController.view.frame = subjectScreenFrame;
+    const auto subjectWindow{
+        [NSWindow windowWithContentViewController:subjectNSViewController]};
+    [subjectWindow setStyleMask:NSWindowStyleMaskBorderless];
+    [subjectWindow setFrame:subjectScreenFrame display:YES];
+    const auto testerNSViewController{nsTabViewControllerWithoutTabControl()};
+    testerNSViewController.view.frame = testerScreenFrame;
+    const auto testerWindow{
+        [NSWindow windowWithContentViewController:testerNSViewController]};
+    testerWindow.styleMask = NSWindowStyleMaskBorderless;
+    [testerWindow setFrame:testerScreenFrame display:YES];
+    subjectWindow.level = NSScreenSaverWindowLevel;
+    testerWindow.level = NSScreenSaverWindowLevel;
+    const auto menuObserver{
+        [[AvSpeechInNoiseEyeTrackerMenuObserverImpl alloc] init]};
+    [menu attach:menuObserver];
+    static validation::AppKitTesterView validationTesterViewAdapted{
+        validationTesterView};
+    static AppKitSubjectView subjectView{subjectWindow};
+    static AppKitTesterUI testerUI{testerWindow, menuObserver};
+    static SubjectPresenterImpl subjectPresenter{subjectView};
+    static SubjectPresenterImpl validationSubjectPresenter{subjectView};
+    static TesterPresenterImpl testerPresenter{testerUI};
+    static validation::TesterPresenterImpl validationTesterPresenter{
+        validationTesterViewAdapted};
+    static auto validationTobiiProValidator{tracker.calibrationValidator()};
+    static validation::InteractorImpl validationInteractor{
+        validationSubjectPresenter, validationTesterPresenter,
+        validationTobiiProValidator,
+        {{0.5, 0.5}, {0.3F, 0.3F}, {0.3F, 0.7F}, {0.7F, 0.3F}, {0.7F, 0.7F}}};
+    static auto calibrator{tracker.calibrator()};
+    static InteractorImpl interactor{subjectPresenter, testerPresenter,
+        calibrator,
+        {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
+    static Controller controller{testerUI, interactor};
+    static validation::AppKitControl validationControl{menuObserver};
+    static validation::Controller validationController{
+        validationControl, validationInteractor};
+}
+}
+
 static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<SessionUI> *sessionUI, NSObject<TestUI> *testUI,
     NSObject<FreeResponseUI> *freeResponseUI,
@@ -376,70 +423,8 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static ChooseKeywordsUIImpl chooseKeywordsUIAdapted{chooseKeywordsUI};
     static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
     static PassFailUIImpl passFailUIAdapted{passFailUI};
-    const auto calibrationViewController{
-        nsTabViewControllerWithoutTabControl()};
-    const auto subjectScreen{[[NSScreen screens] lastObject]};
-    const auto subjectScreenFrame{subjectScreen.frame};
-    const auto testerScreen{[[NSScreen screens] firstObject]};
-    const auto testerScreenFrame{testerScreen.frame};
-    calibrationViewController.view.frame = subjectScreenFrame;
-    const auto animatingWindow{
-        [NSWindow windowWithContentViewController:calibrationViewController]};
-    [animatingWindow setStyleMask:NSWindowStyleMaskBorderless];
-    [animatingWindow setFrame:subjectScreenFrame display:YES];
-    const auto calibrationResultsViewController{
-        nsTabViewControllerWithoutTabControl()};
-    calibrationResultsViewController.view.frame = testerScreenFrame;
-    const auto calibrationResultsWindow{[NSWindow
-        windowWithContentViewController:calibrationResultsViewController]};
-    calibrationResultsWindow.styleMask = NSWindowStyleMaskBorderless;
-    [calibrationResultsWindow setFrame:testerScreenFrame display:YES];
-    animatingWindow.level = NSScreenSaverWindowLevel;
-    calibrationResultsWindow.level = NSScreenSaverWindowLevel;
-    const auto eyeTrackingMenuObserver{
-        [[AvSpeechInNoiseEyeTrackerMenuObserverImpl alloc] init]};
-    [eyeTrackerMenu attach:eyeTrackingMenuObserver];
-    static eye_tracker_calibration::validation::AppKitTesterView
-        eyeTrackingCalibrationValidationTesterViewAdapted{
-            calibrationValidationTesterView};
-    static eye_tracker_calibration::AppKitSubjectView
-        eyeTrackerCalibrationSubjectView{animatingWindow};
-    static eye_tracker_calibration::AppKitTesterUI
-        eyeTrackerCalibrationTesterUI{
-            calibrationResultsWindow, eyeTrackingMenuObserver};
-    static eye_tracker_calibration::SubjectPresenterImpl
-        eyeTrackerCalibrationSubjectPresenter{eyeTrackerCalibrationSubjectView};
-    static eye_tracker_calibration::SubjectPresenterImpl
-        eyeTrackerCalibrationValidationSubjectPresenter{
-            eyeTrackerCalibrationSubjectView};
-    static eye_tracker_calibration::TesterPresenterImpl
-        eyeTrackerCalibrationTesterPresenter{eyeTrackerCalibrationTesterUI};
-    static eye_tracker_calibration::validation::TesterPresenterImpl
-        eyeTrackingCalibrationValidationTesterPresenter{
-            eyeTrackingCalibrationValidationTesterViewAdapted};
-    static auto eyeTrackingCalibrationValidationTobiiProValidator{
-        eyeTracker.calibrationValidator()};
-    static eye_tracker_calibration::validation::InteractorImpl
-        eyeTrackingCalibrationValidationInteractor{
-            eyeTrackerCalibrationValidationSubjectPresenter,
-            eyeTrackingCalibrationValidationTesterPresenter,
-            eyeTrackingCalibrationValidationTobiiProValidator,
-            {{0.5, 0.5}, {0.3F, 0.3F}, {0.3F, 0.7F}, {0.7F, 0.3F},
-                {0.7F, 0.7F}}};
-    static auto calibrator{eyeTracker.calibrator()};
-    static eye_tracker_calibration::InteractorImpl
-        eyeTrackerCalibrationInteractor{eyeTrackerCalibrationSubjectPresenter,
-            eyeTrackerCalibrationTesterPresenter, calibrator,
-            {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F},
-                {0.9F, 0.9F}}};
-    static eye_tracker_calibration::Controller eyeTrackerCalibrationController{
-        eyeTrackerCalibrationTesterUI, eyeTrackerCalibrationInteractor};
-    static eye_tracker_calibration::validation::AppKitControl
-        eyeTrackingCalibrationValidationControl{eyeTrackingMenuObserver};
-    static eye_tracker_calibration::validation::Controller
-        eyeTrackingCalibrationValidationController{
-            eyeTrackingCalibrationValidationControl,
-            eyeTrackingCalibrationValidationInteractor};
+    eye_tracker_calibration::initialize(
+        eyeTracker, eyeTrackerMenu, calibrationValidationTesterView);
     initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
         testSetupViewFactory, sessionUIAdapted, testUIAdapted,
         freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
