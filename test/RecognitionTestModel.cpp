@@ -9,6 +9,7 @@
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
+#include <utility>
 
 namespace av_speech_in_noise {
 constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
@@ -19,6 +20,11 @@ constexpr auto operator==(
     const BinocularGazeSample &a, const BinocularGazeSample &b) -> bool {
     return a.systemTime.microseconds == b.systemTime.microseconds &&
         a.left == b.left && a.right == b.right;
+}
+
+static void assertEqual(
+    const std::string &expected, const std::string &actual) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected, actual);
 }
 
 namespace {
@@ -435,12 +441,15 @@ class ClockStub : public Clock {
   public:
     [[nodiscard]] auto timeQueried() const -> bool { return timeQueried_; }
 
-    auto time() -> std::string {
+    auto time() -> std::string override {
         timeQueried_ = true;
-        return {};
+        return time_;
     }
 
+    void setTime(std::string s) { time_ = std::move(s); }
+
   private:
+    std::string time_;
     bool timeQueried_{};
 };
 
@@ -708,7 +717,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         maskerPlayer.setDurationSeconds(10);
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0., randomizer.lowerFloatBound());
-        assertEqual(10. - 2 - 1 - 2 -
+        ::assertEqual(10. - 2 - 1 - 2 -
                 RecognitionTestModelImpl::targetOnsetFringeDuration.seconds -
                 RecognitionTestModelImpl::targetOffsetFringeDuration.seconds,
             randomizer.upperFloatBound(), 1e-15);
@@ -1186,7 +1195,7 @@ RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseWritesEyeGazes) {
     run(initializingTestWithEyeTracking, model);
     setEyeGazes(eyeTracker, {{{1}, {2, 3}, {4, 5}}, {{6}, {7, 8}, {9, 10}}});
     run(submittingCoordinateResponse, model);
-    assertEqual(
+    ::assertEqual(
         {{{1}, {2, 3}, {4, 5}}, {{6}, {7, 8}, {9, 10}}}, outputFile.eyeGazes());
 }
 
@@ -1405,7 +1414,7 @@ RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestSetsMaskerSteadyLevelDuration) {
     setDurationSeconds(targetPlayer, 1);
     run(initializingTest, model);
-    assertEqual(RecognitionTestModelImpl::targetOnsetFringeDuration.seconds +
+    ::assertEqual(RecognitionTestModelImpl::targetOnsetFringeDuration.seconds +
             RecognitionTestModelImpl::targetOffsetFringeDuration.seconds + 1,
         maskerPlayer.steadyLevelDuration().seconds, 1e-15);
 }
@@ -1718,7 +1727,7 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(audioDevicesReturnsOutputAudioDeviceDescriptions) {
     maskerPlayer.setOutputAudioDeviceDescriptions({"a", "b", "c"});
-    assertEqual({"a", "b", "c"}, model.audioDevices());
+    ::assertEqual({"a", "b", "c"}, model.audioDevices());
 }
 
 RECOGNITION_TEST_MODEL_TEST(testCompleteWhenComplete) {
@@ -1849,6 +1858,14 @@ RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesFlagged) {
 RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesWithoutFlag) {
     run(submittingThreeKeywords, model);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.threeKeywordsTrial().flagged);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitWritesTime) {
+    run(initializingTest, model);
+    clock.setTime("a");
+    run(playingTrial, model);
+    run(submittingFreeResponse, model);
+    assertEqual("a", outputFile.freeResponseTrial().time);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesTarget) {

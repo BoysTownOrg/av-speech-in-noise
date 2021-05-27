@@ -76,6 +76,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     EyeTrackerTargetPlayerSynchronization
         lastEyeTrackerTargetPlayerSynchronization{};
     TargetStartTime lastTargetStartTime{};
+    std::string playTrialTime;
     Model::Observer *listener_{};
     TestMethod *testMethod{};
     RealLevel maskerLevel_{};

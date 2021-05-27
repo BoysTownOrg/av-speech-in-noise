@@ -358,7 +358,7 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
         },
         settings.audioDevice);
 
-    clock.time();
+    playTrialTime = clock.time();
     if (eyeTracking) {
         eyeTracker.allocateRecordingTimeSeconds(
             Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);
@@ -446,6 +446,7 @@ void RecognitionTestModelImpl::submit(const FreeResponse &response) {
             trial.response = response.response;
             trial.target = targetName(evaluator, testMethod);
             trial.flagged = response.flagged;
+            trial.time = playTrialTime;
             outputFile.write(trial);
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
