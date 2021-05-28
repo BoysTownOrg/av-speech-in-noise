@@ -16,7 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let userDefaults = UserDefaults()
         sessionUI.audioDevice_.string = userDefaults.string(forKey: "AudioDevice") ?? ""
 
-        let contentView = SwiftSessionView(ui: sessionUI, showingTestSetup: testSetupUI.showing) {
+        let contentView = SwiftSessionView(ui: sessionUI) {
             SwiftTestSetupView(ui: self.testSetupUI, testSettingsPathControl: self.testSettingsPathControl)
         }
 

@@ -113,14 +113,12 @@ struct SettingsView: View {
 struct SwiftSessionView<Content: View>: View {
     @ObservedObject var showErrorMessage: ObservableBool
     @ObservedObject var errorMessage: ObservableString
-    @ObservedObject var showingTestSetup: ObservableBool
     let testSetupView: Content
     let ui: SwiftSessionUI
 
-    init(ui: SwiftSessionUI, showingTestSetup: ObservableBool, @ViewBuilder testSetupView: @escaping () -> Content) {
+    init(ui: SwiftSessionUI, @ViewBuilder testSetupView: @escaping () -> Content) {
         errorMessage = ui.errorMessage
         showErrorMessage = ui.showErrorMessage
-        self.showingTestSetup = showingTestSetup
         self.testSetupView = testSetupView()
         self.ui = ui
     }
@@ -132,16 +130,13 @@ struct SwiftSessionView<Content: View>: View {
                 message: Text(errorMessage.string)
             )
         }
-        if showingTestSetup.value {
-            testSetupView
-        } else {
-            SwiftTestView(ui: ui.testUI)
-            SwiftFreeResponseView(ui: ui.freeResponseUI)
-            SwiftSyllablesView(ui: ui.syllablesUI)
-            SwiftChooseKeywordsView(ui: ui.chooseKeywordsUI)
-            SwiftCorrectKeywordsView(ui: ui.correctKeywordsUI)
-            SwiftPassFailView(ui: ui.passFailUI)
-        }
+        testSetupView
+        SwiftTestView(ui: ui.testUI)
+        SwiftFreeResponseView(ui: ui.freeResponseUI)
+        SwiftSyllablesView(ui: ui.syllablesUI)
+        SwiftChooseKeywordsView(ui: ui.chooseKeywordsUI)
+        SwiftCorrectKeywordsView(ui: ui.correctKeywordsUI)
+        SwiftPassFailView(ui: ui.passFailUI)
     }
 }
 
@@ -182,6 +177,7 @@ struct SwiftTestSetupView: View {
     @ObservedObject var rmeSetting: ObservableString
     @ObservedObject var transducers: ObservableStringCollection
     @ObservedObject var observableObserver: TestSetupUIObserverObservable
+    @ObservedObject var showing: ObservableBool
     let testSettingsPathControl: NSPathControl
 
     init(ui: SwiftTestSetupUI, testSettingsPathControl: NSPathControl) {
@@ -193,57 +189,60 @@ struct SwiftTestSetupView: View {
         startingSnr = ui.startingSnr_
         transducer = ui.transducer_
         observableObserver = ui.observableObserver
+        showing = ui.showing
         self.testSettingsPathControl = testSettingsPathControl
         self.testSettingsPathControl.pathStyle = NSPathControl.Style.popUp
         self.testSettingsPathControl.allowedTypes = ["txt"]
     }
 
     var body: some View {
-        Form {
-            TextField(
-                "subject ID",
-                text: $subjectId.string
-            )
-            .disableAutocorrection(true)
-            TextField(
-                "tester ID",
-                text: $testerId.string
-            )
-            .disableAutocorrection(true)
-            TextField(
-                "session",
-                text: $session.string
-            )
-            .disableAutocorrection(true)
-            TextField(
-                "RME setting",
-                text: $rmeSetting.string
-            )
-            .disableAutocorrection(true)
-            Picker("Transducer", selection: $transducer.string) {
-                ForEach(transducers.items) {
-                    Text($0.string)
+        if showing.value {
+            Form {
+                TextField(
+                    "subject ID",
+                    text: $subjectId.string
+                )
+                .disableAutocorrection(true)
+                TextField(
+                    "tester ID",
+                    text: $testerId.string
+                )
+                .disableAutocorrection(true)
+                TextField(
+                    "session",
+                    text: $session.string
+                )
+                .disableAutocorrection(true)
+                TextField(
+                    "RME setting",
+                    text: $rmeSetting.string
+                )
+                .disableAutocorrection(true)
+                Picker("Transducer", selection: $transducer.string) {
+                    ForEach(transducers.items) {
+                        Text($0.string)
+                    }
                 }
-            }
-            HStack {
-                Wrap(testSettingsPathControl)
+                HStack {
+                    Wrap(testSettingsPathControl)
+                    Button(action: {
+                        observableObserver.observer?.notifyThatPlayCalibrationButtonHasBeenClicked()
+                    }) {
+                        Text("Play Calibration")
+                    }
+                }
+                TextField(
+                    "starting SNR (dB)",
+                    text: $startingSnr.string
+                )
+                .disableAutocorrection(true)
                 Button(action: {
-                    observableObserver.observer?.notifyThatPlayCalibrationButtonHasBeenClicked()
+                    observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
                 }) {
-                    Text("Play Calibration")
+                    Text("Confirm")
                 }
-            }
-            TextField(
-                "starting SNR (dB)",
-                text: $startingSnr.string
-            )
-            .disableAutocorrection(true)
-            Button(action: {
-                observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
-            }) {
-                Text("Confirm")
-            }
-        }.padding()
+            }.padding()
+        }
     }
 }
 
@@ -307,6 +306,7 @@ struct SwiftTestView: View {
     @ObservedObject var nextTrialButtonEnabled: ObservableBool
     @ObservedObject var primaryText: ObservableString
     @ObservedObject var secondaryText: ObservableString
+    @ObservedObject var showing: ObservableBool
 
     init(ui: SwiftTestUI) {
         observableObserver = ui.observableObserver
@@ -314,25 +314,28 @@ struct SwiftTestView: View {
         nextTrialButtonEnabled = ui.nextTrialButtonEnabled
         primaryText = ui.primaryText
         secondaryText = ui.secondaryText
+        showing = ui.showing
     }
 
     var body: some View {
-        HStack {
+        if showing.value {
+            HStack {
+                Button(action: {
+                    observableObserver.observer?.exitTest()
+                }) {
+                    Text("Exit Test")
+                }.disabled(!exitTestButtonEnabled.value)
+                Text(primaryText.string)
+                Text(secondaryText.string)
+            }
             Button(action: {
-                observableObserver.observer?.exitTest()
+                observableObserver.observer?.playTrial()
             }) {
-                Text("Exit Test")
-            }.disabled(!exitTestButtonEnabled.value)
-            Text(primaryText.string)
-            Text(secondaryText.string)
+                Text("Play Trial")
+            }
+            .disabled(!nextTrialButtonEnabled.value)
+            .padding(.top, 40).padding(.bottom)
         }
-        Button(action: {
-            observableObserver.observer?.playTrial()
-        }) {
-            Text("Play Trial")
-        }
-        .disabled(!nextTrialButtonEnabled.value)
-        .padding(.top, 40).padding(.bottom)
     }
 }
 
@@ -342,6 +345,7 @@ class SwiftTestUI: NSObject, TestUI {
     let nextTrialButtonEnabled = ObservableBool()
     let primaryText = ObservableString()
     let secondaryText = ObservableString()
+    let showing = ObservableBool()
 
     func attach(_ observer: TestUIObserver!) {
         observableObserver.observer = observer
@@ -355,9 +359,13 @@ class SwiftTestUI: NSObject, TestUI {
         exitTestButtonEnabled.value = false
     }
 
-    func show() {}
+    func show() {
+        showing.value = true
+    }
 
-    func hide() {}
+    func hide() {
+        showing.value = false
+    }
 
     func display(_ something: String!) {
         primaryText.string = something
