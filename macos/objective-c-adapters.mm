@@ -58,7 +58,7 @@
 
 @implementation FreeResponseUIObserverImpl {
   @public
-    av_speech_in_noise::FreeResponseControl::Observer *observer;
+    av_speech_in_noise::submitting_free_response::Control::Observer *observer;
 }
 
 - (void)notifyThatSubmitButtonHasBeenClicked {
@@ -377,36 +377,30 @@ void SessionUIImpl::populateAudioDeviceMenu(std::vector<std::string> v) {
     [sessionUI populateAudioDeviceMenu:nsstrings];
 }
 
-FreeResponseUIImpl::FreeResponseUIImpl(NSObject<FreeResponseUI> *freeResponseUI)
+namespace submitting_free_response {
+UIImpl::UIImpl(NSObject<FreeResponseUI> *freeResponseUI)
     : freeResponseUI{freeResponseUI} {}
 
-void FreeResponseUIImpl::attach(Observer *a) {
+void UIImpl::attach(Observer *a) {
     const auto adapted{[[FreeResponseUIObserverImpl alloc] init]};
     adapted->observer = a;
     [freeResponseUI attach:adapted];
 }
 
-void FreeResponseUIImpl::showFreeResponseSubmission() {
-    [freeResponseUI showFreeResponseSubmission];
-}
+void UIImpl::show() { [freeResponseUI showFreeResponseSubmission]; }
 
-void FreeResponseUIImpl::hideFreeResponseSubmission() {
-    [freeResponseUI hideFreeResponseSubmission];
-}
+void UIImpl::hide() { [freeResponseUI hideFreeResponseSubmission]; }
 
-auto FreeResponseUIImpl::freeResponse() -> std::string {
+auto UIImpl::response() -> std::string {
     return [freeResponseUI freeResponse].UTF8String;
 }
 
-auto FreeResponseUIImpl::flagged() -> bool {
-    return [freeResponseUI flagged] == YES;
-}
+auto UIImpl::flagged() -> bool { return [freeResponseUI flagged] == YES; }
 
-void FreeResponseUIImpl::clearFreeResponse() {
-    [freeResponseUI clearFreeResponse];
-}
+void UIImpl::clearResponse() { [freeResponseUI clearFreeResponse]; }
 
-void FreeResponseUIImpl::clearFlag() { [freeResponseUI clearFlag]; }
+void UIImpl::clearFlag() { [freeResponseUI clearFlag]; }
+}
 
 CorrectKeywordsUIImpl::CorrectKeywordsUIImpl(NSObject<CorrectKeywordsUI> *ui)
     : ui{ui} {}

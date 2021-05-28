@@ -42,7 +42,9 @@ class TestUI : public TestView, public TestControl {};
 
 class SessionUI : public SessionView, public SessionControl {};
 
-class FreeResponseUI : public FreeResponseView, public FreeResponseControl {};
+namespace submitting_free_response {
+class UI : public View, public Control {};
+}
 
 class SyllablesUI : public SyllablesView, public SyllablesControl {};
 
@@ -55,9 +57,9 @@ class CorrectKeywordsUI : public CorrectKeywordsView,
 class PassFailUI : public PassFailView, public PassFailControl {};
 
 void initializeAppAndRunEventLoop(EyeTracker &, OutputFileNameFactory &,
-    AppKitTestSetupUIFactory &, SessionUI &, TestUI &, FreeResponseUI &,
-    SyllablesUI &, ChooseKeywordsUI &, CorrectKeywordsUI &, PassFailUI &,
-    SessionController::Observer * = nullptr,
+    AppKitTestSetupUIFactory &, SessionUI &, TestUI &,
+    submitting_free_response::UI &, SyllablesUI &, ChooseKeywordsUI &,
+    CorrectKeywordsUI &, PassFailUI &, SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =
         "Documents/AvSpeechInNoise Data",
     AppKitRunMenuInitializer * = nullptr);

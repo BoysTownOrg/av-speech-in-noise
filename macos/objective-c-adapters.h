@@ -108,20 +108,22 @@ class SessionUIImpl : public SessionUI {
     NSObject<SessionUI> *sessionUI;
 };
 
-class FreeResponseUIImpl : public FreeResponseUI {
+namespace submitting_free_response {
+class UIImpl : public UI {
   public:
-    explicit FreeResponseUIImpl(NSObject<FreeResponseUI> *);
+    explicit UIImpl(NSObject<FreeResponseUI> *);
     void attach(Observer *a) override;
-    void showFreeResponseSubmission() override;
-    void hideFreeResponseSubmission() override;
-    auto freeResponse() -> std::string override;
+    void show() override;
+    void hide() override;
+    auto response() -> std::string override;
     auto flagged() -> bool override;
-    void clearFreeResponse() override;
+    void clearResponse() override;
     void clearFlag() override;
 
   private:
     NSObject<FreeResponseUI> *freeResponseUI;
 };
+}
 
 class CorrectKeywordsUIImpl : public CorrectKeywordsUI {
   public:

@@ -15,6 +15,7 @@
 #include <av-speech-in-noise/core/OutputFilePath.hpp>
 #include <av-speech-in-noise/core/ResponseEvaluator.hpp>
 #include <av-speech-in-noise/core/AdaptiveTrack.hpp>
+#include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/player/MaskerPlayerImpl.hpp>
 #include <av-speech-in-noise/player/TargetPlayerImpl.hpp>
 #include <av-speech-in-noise/player/AudioReaderSimplified.hpp>
@@ -209,7 +210,7 @@ static void addChild(NSTabViewController *parent, NSTabViewController *child) {
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     OutputFileNameFactory &outputFileNameFactory,
     AppKitTestSetupUIFactory &testSetupUIFactory, SessionUI &sessionUIMaybe,
-    TestUI &testUIMaybe, FreeResponseUI &freeResponseUIMaybe,
+    TestUI &testUIMaybe, submitting_free_response::UI &freeResponseUIMaybe,
     SyllablesUI &syllablesUIMaybe, ChooseKeywordsUI &chooseKeywordsUIMaybe,
     CorrectKeywordsUI &correctKeywordsUIMaybe, PassFailUI &passFailUIMaybe,
     SessionController::Observer *sessionControllerObserver,
@@ -322,7 +323,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
             subjectViewWidth, subjectViewHeight)};
     static ConsonantTaskPresenterImpl consonantPresenter{consonantView};
-    static FreeResponsePresenter freeResponsePresenter{
+    static submitting_free_response::Presenter freeResponsePresenter{
         testUIMaybe, freeResponseUIMaybe};
     static ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model,
         testUIMaybe, chooseKeywordsUIMaybe,
@@ -356,8 +357,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {"V", Syllable::vi}, {"W", Syllable::wi}, {"Z", Syllable::zi}}};
     static CorrectKeywordsController correctKeywordsController{
         testController, model, sessionUIMaybe, correctKeywordsUIMaybe};
-    static FreeResponseController freeResponseController{
-        testController, model, freeResponseUIMaybe};
+    static submitting_free_response::InteractorImpl
+        submittingFreeResponseInteractor{
+            fixedLevelMethod, recognitionTestModel, outputFile};
+    static submitting_free_response::Controller freeResponseController{
+        testController, submittingFreeResponseInteractor, freeResponseUIMaybe};
     static PassFailController passFailController{
         testController, model, passFailUIMaybe};
     static ConsonantTaskController consonantTaskController{
