@@ -14,6 +14,15 @@ class Interactor {
 };
 }
 
+namespace submitting_pass_fail {
+class Interactor {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
+    virtual void submitCorrectResponse() = 0;
+    virtual void submitIncorrectResponse() = 0;
+};
+}
+
 class Model {
   public:
     class Observer {
@@ -55,8 +64,6 @@ class Model {
     virtual void submit(const ConsonantResponse &) = 0;
     virtual void submit(const ThreeKeywordsResponse &) = 0;
     virtual void submit(const SyllableResponse &) = 0;
-    virtual void submitCorrectResponse() = 0;
-    virtual void submitIncorrectResponse() = 0;
     virtual auto testComplete() -> bool = 0;
     virtual auto audioDevices() -> AudioDevices = 0;
     virtual auto trialNumber() -> int = 0;

@@ -410,18 +410,6 @@ void RecognitionTestModelImpl::fadeOutComplete() {
     trialInProgress_ = false;
 }
 
-void RecognitionTestModelImpl::submitCorrectResponse() {
-    saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
-        fullScaleLevel_);
-}
-
-void RecognitionTestModelImpl::submitIncorrectResponse() {
-    saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
-        fullScaleLevel_);
-}
-
 void RecognitionTestModelImpl::submit(
     const coordinate_response_measure::Response &response) {
     saveOutputFileAndPrepareNextTrialAfter(

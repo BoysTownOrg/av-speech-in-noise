@@ -2,8 +2,8 @@
 
 namespace av_speech_in_noise::submitting_pass_fail {
 Controller::Controller(
-    TestController &testController, Model &model, Control &view)
-    : testController{testController}, model{model} {
+    TestController &testController, Interactor &interactor, Control &view)
+    : testController{testController}, interactor{interactor} {
     view.attach(this);
 }
 
@@ -13,12 +13,12 @@ static void notifyThatUserIsDoneResponding(TestController &controller) {
 }
 
 void Controller::notifyThatCorrectButtonHasBeenClicked() {
-    model.submitCorrectResponse();
+    interactor.submitCorrectResponse();
     notifyThatUserIsDoneResponding(testController);
 }
 
 void Controller::notifyThatIncorrectButtonHasBeenClicked() {
-    model.submitIncorrectResponse();
+    interactor.submitIncorrectResponse();
     notifyThatUserIsDoneResponding(testController);
 }
 

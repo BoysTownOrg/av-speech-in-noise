@@ -157,18 +157,6 @@ void ModelImpl::submit(const coordinate_response_measure::Response &response) {
     model.submit(response);
 }
 
-void ModelImpl::submitCorrectResponse() {
-    adaptiveMethod.submitCorrectResponse();
-    adaptiveMethod.writeLastCorrectResponse(outputFile);
-    model.submitCorrectResponse();
-}
-
-void ModelImpl::submitIncorrectResponse() {
-    adaptiveMethod.submitIncorrectResponse();
-    adaptiveMethod.writeLastIncorrectResponse(outputFile);
-    model.submitIncorrectResponse();
-}
-
 void ModelImpl::submit(const ThreeKeywordsResponse &r) { model.submit(r); }
 
 void ModelImpl::submit(const SyllableResponse &r) { model.submit(r); }

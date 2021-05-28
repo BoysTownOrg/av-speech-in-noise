@@ -4,6 +4,7 @@
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "assert-utility.hpp"
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
+#include <av-speech-in-noise/core/SubmittingPassFail.hpp>
 #include <av-speech-in-noise/core/Model.hpp>
 #include <gtest/gtest.h>
 #include <sstream>
@@ -41,6 +42,8 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void resetTracks() override { tracksResetted_ = true; }
 
     auto log() -> const std::stringstream & { return log_; }
+
+    void log(const std::string &s) { log_ << s; }
 
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> LocalUrl override {
@@ -170,9 +173,10 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
 class RecognitionTestModelStub : public RecognitionTestModel {
   public:
-    explicit RecognitionTestModelStub(
+    explicit RecognitionTestModelStub(AdaptiveMethodStub &adaptiveMethod,
         FixedLevelMethodStub &fixedLevelMethodStub)
-        : fixedLevelMethodStub{fixedLevelMethodStub} {}
+        : adaptiveMethod{adaptiveMethod}, fixedLevelMethodStub{
+                                              fixedLevelMethodStub} {}
 
     [[nodiscard]] auto nextTrialPreparedIfNeeded() const -> bool {
         return nextTrialPreparedIfNeeded_;
@@ -181,6 +185,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     void prepareNextTrialIfNeeded() override {
         nextTrialPreparedIfNeeded_ = true;
         fixedLevelMethodStub.setCurrentTargetPath("TOOLATE");
+        adaptiveMethod.log("TOOLATE ");
     }
 
     void initialize(TestMethod *method, const Test &test) override {
@@ -316,20 +321,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
             t;
     }
 
-    void submitCorrectResponse() override {
-        if (testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_ !=
-            nullptr)
-            testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_
-                ->nextTarget();
-    }
-
-    void submitIncorrectResponse() override {
-        if (testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_ !=
-            nullptr)
-            testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_
-                ->nextTarget();
-    }
-
     void submit(const ThreeKeywordsResponse &f) override {
         threeKeywords_ = &f;
     }
@@ -344,6 +335,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     std::vector<std::string> audioDevices_{};
     std::string targetFileName_{};
     std::string playTrialTime_;
+    AdaptiveMethodStub &adaptiveMethod;
     FixedLevelMethodStub &fixedLevelMethodStub;
     TestMethod *testMethodToCallNextTargetOnSubmitConsonants_{};
     TestMethod *
@@ -788,7 +780,7 @@ class ModelTests : public ::testing::Test {
     FiniteTargetPlaylistWithRepeatablesStub silentIntervals;
     FiniteTargetPlaylistWithRepeatablesStub everyTargetOnce;
     RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
-    RecognitionTestModelStub internalModel{fixedLevelMethod};
+    RecognitionTestModelStub internalModel{adaptiveMethod, fixedLevelMethod};
     OutputFileStub outputFile;
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
@@ -881,15 +873,28 @@ class ModelTests : public ::testing::Test {
 
 class SubmittingFreeResponseTests : public ::testing::Test {
   protected:
+    AdaptiveMethodStub adaptiveTestMethod;
     FixedLevelMethodStub testMethod;
-    RecognitionTestModelStub model{testMethod};
+    RecognitionTestModelStub model{adaptiveTestMethod, testMethod};
     OutputFileStub outputFile;
     submitting_free_response::InteractorImpl interactor{
         testMethod, model, outputFile};
     FreeResponse freeResponse;
 };
 
+class SubmittingPassFailTests : public ::testing::Test {
+  protected:
+    AdaptiveMethodStub testMethod;
+    FixedLevelMethodStub fixedLevelMethod;
+    RecognitionTestModelStub model{testMethod, fixedLevelMethod};
+    OutputFileStub outputFile;
+    submitting_pass_fail::InteractorImpl interactor{
+        testMethod, model, outputFile};
+};
+
 #define SUBMITTING_FREE_RESPONSE_TEST(a) TEST_F(SubmittingFreeResponseTests, a)
+
+#define SUBMITTING_PASS_FAIL_TEST(a) TEST_F(SubmittingPassFailTests, a)
 
 SUBMITTING_FREE_RESPONSE_TEST(submittingFreeResponsePreparesNextTrialIfNeeded) {
     interactor.submit({});
@@ -936,6 +941,54 @@ SUBMITTING_FREE_RESPONSE_TEST(submitFreeResponseWritesTarget) {
 SUBMITTING_FREE_RESPONSE_TEST(submitFreeResponseSubmitsResponse) {
     interactor.submit(freeResponse);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFreeResponse());
+}
+
+SUBMITTING_PASS_FAIL_TEST(
+    submitCorrectResponseWritesTrialAfterSubmittingResponse) {
+    interactor.submitCorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(
+        testMethod.log(), "submitCorrectResponse writeLastCorrectResponse "));
+}
+
+SUBMITTING_PASS_FAIL_TEST(
+    submitIncorrectResponseWritesTrialAfterSubmittingResponse) {
+    interactor.submitIncorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(testMethod.log(),
+        "submitIncorrectResponse writeLastIncorrectResponse "));
+}
+
+SUBMITTING_PASS_FAIL_TEST(
+    submitCorrectResponseQueriesNextTargetAfterWritingResponse) {
+    interactor.submitCorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        contains(testMethod.log(), "writeLastCorrectResponse TOOLATE "));
+}
+
+SUBMITTING_PASS_FAIL_TEST(
+    submitIncorrectResponseQueriesNextTargetAfterWritingResponse) {
+    interactor.submitIncorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        contains(testMethod.log(), "writeLastIncorrectResponse TOOLATE "));
+}
+
+SUBMITTING_PASS_FAIL_TEST(submittingCorrectPreparesNextTrialIfNeeded) {
+    interactor.submitCorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_PASS_FAIL_TEST(submittingIncorrectPreparesNextTrialIfNeeded) {
+    interactor.submitIncorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_PASS_FAIL_TEST(submitCorrectSavesOutputFileAfterWritingTrial) {
+    interactor.submitCorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+SUBMITTING_PASS_FAIL_TEST(submitIncorrectSavesOutputFileAfterWritingTrial) {
+    interactor.submitIncorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
 }
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
@@ -1226,18 +1279,6 @@ MODEL_TEST(submitCorrectKeywordsWritesTrialAfterSubmittingResponse) {
         "submitCorrectKeywords writeLastCorrectKeywords "));
 }
 
-MODEL_TEST(submitCorrectResponseWritesTrialAfterSubmittingResponse) {
-    model.submitCorrectResponse();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(adaptiveMethod.log(),
-        "submitCorrectResponse writeLastCorrectResponse "));
-}
-
-MODEL_TEST(submitIncorrectResponseWritesTrialAfterSubmittingResponse) {
-    model.submitIncorrectResponse();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(adaptiveMethod.log(),
-        "submitIncorrectResponse writeLastIncorrectResponse "));
-}
-
 MODEL_TEST(submitConsonantQueriesNextTargetAfterWritingResponse) {
     internalModel.callNextOnSubmitConsonants(&fixedLevelMethod);
     ConsonantResponse r;
@@ -1253,22 +1294,6 @@ MODEL_TEST(submitCorrectKeywordsQueriesNextTargetAfterWritingResponse) {
     model.submit(r);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         contains(adaptiveMethod.log(), "writeLastCorrectKeywords nextTarget "));
-}
-
-MODEL_TEST(submitCorrectResponseQueriesNextTargetAfterWritingResponse) {
-    internalModel.callNextOnSubmitCorrectKeywordsOrCorrectOrIncorrect(
-        &adaptiveMethod);
-    model.submitCorrectResponse();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        contains(adaptiveMethod.log(), "writeLastCorrectResponse nextTarget "));
-}
-
-MODEL_TEST(submitIncorrectResponseQueriesNextTargetAfterWritingResponse) {
-    internalModel.callNextOnSubmitCorrectKeywordsOrCorrectOrIncorrect(
-        &adaptiveMethod);
-    model.submitIncorrectResponse();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(
-        adaptiveMethod.log(), "writeLastIncorrectResponse nextTarget "));
 }
 
 MODEL_TEST(playTrialPassesAudioSettings) {

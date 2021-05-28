@@ -23,13 +23,13 @@ class Control {
 
 class Controller : public TaskController, public Control::Observer {
   public:
-    Controller(TestController &, Model &, Control &);
+    Controller(TestController &, Interactor &, Control &);
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
 
   private:
     TestController &testController;
-    Model &model;
+    Interactor &interactor;
 };
 
 class Presenter : public TaskPresenter {

@@ -1,5 +1,4 @@
 #include "assert-utility.hpp"
-#include "ModelStub.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
 #include <av-speech-in-noise/ui/PassFail.hpp>
@@ -39,6 +38,27 @@ class ViewStub : public View {
     bool hidden_{};
 };
 
+class InteractorStub : public Interactor {
+  public:
+    void submitCorrectResponse() override { correctResponseSubmitted_ = true; }
+
+    void submitIncorrectResponse() override {
+        incorrectResponseSubmitted_ = true;
+    }
+
+    [[nodiscard]] auto incorrectResponseSubmitted() const -> bool {
+        return incorrectResponseSubmitted_;
+    }
+
+    [[nodiscard]] auto correctResponseSubmitted() const -> bool {
+        return correctResponseSubmitted_;
+    }
+
+  private:
+    bool correctResponseSubmitted_{};
+    bool incorrectResponseSubmitted_{};
+};
+
 void notifyThatIncorrectButtonHasBeenClicked(ControlStub &view) {
     view.notifyThatIncorrectButtonHasBeenClicked();
 }
@@ -53,7 +73,7 @@ void start(TaskPresenter &presenter) { presenter.start(); }
 
 class SubmittingPassFailControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
+    InteractorStub model;
     ControlStub control;
     TestControllerStub testController;
     Controller controller{testController, model, control};
