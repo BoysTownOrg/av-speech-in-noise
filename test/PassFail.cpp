@@ -6,9 +6,9 @@
 #include <gtest/gtest.h>
 #include <utility>
 
-namespace av_speech_in_noise {
+namespace av_speech_in_noise::submitting_pass_fail {
 namespace {
-class PassFailControlStub : public PassFailControl {
+class ControlStub : public Control {
   public:
     void notifyThatCorrectButtonHasBeenClicked() {
         listener_->notifyThatCorrectButtonHasBeenClicked();
@@ -24,15 +24,15 @@ class PassFailControlStub : public PassFailControl {
     Observer *listener_{};
 };
 
-class PassFailViewStub : public PassFailView {
+class ViewStub : public View {
   public:
-    void showEvaluationButtons() override { evaluationButtonsShown_ = true; }
+    void show() override { evaluationButtonsShown_ = true; }
 
     [[nodiscard]] auto evaluationButtonsShown() const -> bool {
         return evaluationButtonsShown_;
     }
 
-    void hideEvaluationButtons() override { evaluationButtonsHidden_ = true; }
+    void hide() override { evaluationButtonsHidden_ = true; }
 
     [[nodiscard]] auto evaluationButtonsHidden() const -> bool {
         return evaluationButtonsHidden_;
@@ -43,11 +43,11 @@ class PassFailViewStub : public PassFailView {
     bool evaluationButtonsHidden_{};
 };
 
-void notifyThatIncorrectButtonHasBeenClicked(PassFailControlStub &view) {
+void notifyThatIncorrectButtonHasBeenClicked(ControlStub &view) {
     view.notifyThatIncorrectButtonHasBeenClicked();
 }
 
-void notifyThatCorrectButtonHasBeenClicked(PassFailControlStub &view) {
+void notifyThatCorrectButtonHasBeenClicked(ControlStub &view) {
     view.notifyThatCorrectButtonHasBeenClicked();
 }
 
@@ -55,24 +55,25 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class PassFailControllerTests : public ::testing::Test {
+class SubmittingPassFailControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
-    PassFailControlStub control;
+    ControlStub control;
     TestControllerStub testController;
-    PassFailController controller{testController, model, control};
+    Controller controller{testController, model, control};
 };
 
-class PassFailPresenterTests : public ::testing::Test {
+class SubmittingPassFailPresenterTests : public ::testing::Test {
   protected:
     TestViewStub testView;
-    PassFailViewStub view;
-    PassFailPresenter presenter{testView, view};
+    ViewStub view;
+    Presenter presenter{testView, view};
 };
 
-#define PASS_FAIL_CONTROLLER_TEST(a) TEST_F(PassFailControllerTests, a)
+#define PASS_FAIL_CONTROLLER_TEST(a)                                           \
+    TEST_F(SubmittingPassFailControllerTests, a)
 
-#define PASS_FAIL_PRESENTER_TEST(a) TEST_F(PassFailPresenterTests, a)
+#define PASS_FAIL_PRESENTER_TEST(a) TEST_F(SubmittingPassFailPresenterTests, a)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).evaluationButtonsHidden())

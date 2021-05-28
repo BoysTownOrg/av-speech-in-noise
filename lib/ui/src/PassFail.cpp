@@ -1,8 +1,8 @@
 #include "PassFail.hpp"
 
-namespace av_speech_in_noise {
-PassFailController::PassFailController(
-    TestController &testController, Model &model, PassFailControl &view)
+namespace av_speech_in_noise::submitting_pass_fail {
+Controller::Controller(
+    TestController &testController, Model &model, Control &view)
     : testController{testController}, model{model} {
     view.attach(this);
 }
@@ -12,29 +12,24 @@ static void notifyThatUserIsDoneResponding(TestController &controller) {
         .notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
-void PassFailController::notifyThatCorrectButtonHasBeenClicked() {
+void Controller::notifyThatCorrectButtonHasBeenClicked() {
     model.submitCorrectResponse();
     notifyThatUserIsDoneResponding(testController);
 }
 
-void PassFailController::notifyThatIncorrectButtonHasBeenClicked() {
+void Controller::notifyThatIncorrectButtonHasBeenClicked() {
     model.submitIncorrectResponse();
     notifyThatUserIsDoneResponding(testController);
 }
 
-PassFailPresenter::PassFailPresenter(
-    TestView &experimenterView, PassFailView &view)
+Presenter::Presenter(TestView &experimenterView, View &view)
     : testView{experimenterView}, view{view} {}
 
-void PassFailPresenter::start() { testView.showNextTrialButton(); }
+void Presenter::start() { testView.showNextTrialButton(); }
 
-void PassFailPresenter::stop() { view.hideEvaluationButtons(); }
+void Presenter::stop() { view.hide(); }
 
-void PassFailPresenter::hideResponseSubmission() {
-    view.hideEvaluationButtons();
-}
+void Presenter::hideResponseSubmission() { view.hide(); }
 
-void PassFailPresenter::showResponseSubmission() {
-    view.showEvaluationButtons();
-}
+void Presenter::showResponseSubmission() { view.show(); }
 }
