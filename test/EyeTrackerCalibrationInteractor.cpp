@@ -20,17 +20,22 @@ static void assertEqual(const Result &expected, const Result &actual) {
 }
 
 namespace {
-class IPresenterStub : public IPresenter {
+class SubjectPresenterStub : public SubjectPresenter {
   public:
     void attach(Observer *a) override { observer = a; }
+
     void present(Point x) override { presentedPoint_ = x; }
-    void present(const std::vector<Result> &r) override { results_ = r; }
+
     void notifyThatPointIsReady() { observer->notifyThatPointIsReady(); }
+
     auto presentedPoint() -> Point { return presentedPoint_; }
-    auto results() -> std::vector<Result> { return results_; }
+
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+
     void stop() override { stopped_ = true; }
+
     [[nodiscard]] auto started() const -> bool { return started_; }
+
     void start() override { started_ = true; }
 
   private:
@@ -41,7 +46,27 @@ class IPresenterStub : public IPresenter {
     bool started_{};
 };
 
-class EyeTrackerCalibratorStub : public EyeTrackerCalibrator {
+class TesterPresenterStub : public TesterPresenter {
+  public:
+    void present(const std::vector<Result> &r) override { results_ = r; }
+
+    auto results() -> std::vector<Result> { return results_; }
+
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+
+    void stop() override { stopped_ = true; }
+
+    [[nodiscard]] auto started() const -> bool { return started_; }
+
+    void start() override { started_ = true; }
+
+  private:
+    std::vector<Result> results_{};
+    bool stopped_{};
+    bool started_{};
+};
+
+class CalibratorStub : public Calibrator {
   public:
     void collect(Point x) override { calibratedPoint_ = x; }
 
@@ -73,19 +98,97 @@ class EyeTrackerCalibratorStub : public EyeTrackerCalibrator {
 
 class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
   protected:
-    IPresenterStub presenter;
-    EyeTrackerCalibratorStub calibrator;
-    Interactor interactor{
-        presenter, calibrator, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
+    SubjectPresenterStub subjectPresenter;
+    TesterPresenterStub testerPresenter;
+    CalibratorStub calibrator;
+    InteractorImpl interactor{subjectPresenter, testerPresenter, calibrator,
+        {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
 };
 }
 
-static void notifyThatPointIsReady(IPresenterStub &presenter) {
+namespace validation {
+static void assertEqual(const Angle &expected, const Angle &actual) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.degrees, actual.degrees);
+}
+
+static void assertEqual(
+    const MonocularResult &expected, const MonocularResult &actual) {
+    assertEqual(expected.errorOfMeanGaze, actual.errorOfMeanGaze);
+    assertEqual(expected.standardDeviationFromTheMeanGaze,
+        actual.standardDeviationFromTheMeanGaze);
+}
+
+static void assertEqual(const Result &expected, const Result &actual) {
+    assertEqual(expected.left, actual.left);
+    assertEqual(expected.right, actual.right);
+}
+
+namespace {
+class ValidatorStub : public Validator {
+  public:
+    [[nodiscard]] auto acquired() const -> bool { return acquired_; }
+
+    void acquire() override { acquired_ = true; }
+
+    [[nodiscard]] auto released() const -> bool { return released_; }
+
+    void release() override { released_ = true; }
+
+    auto validatedPoint() -> Point { return validatedPoint_; }
+
+    void collect(Point p) override { validatedPoint_ = p; }
+
+    void set(Result r) { result_ = r; }
+
+    auto result() -> Result override { return result_; }
+
+  private:
+    validation::Result result_{};
+    Point validatedPoint_{};
+    bool acquired_{};
+    bool released_{};
+};
+
+class TesterPresenterStub : public TesterPresenter {
+  public:
+    void present(const Result &b) override { result_ = b; }
+
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+
+    void stop() override { stopped_ = true; }
+
+    [[nodiscard]] auto started() const -> bool { return started_; }
+
+    void start() override { started_ = true; }
+
+    auto result() -> Result { return result_; }
+
+  private:
+    Result result_{};
+    bool stopped_{};
+    bool started_{};
+};
+
+class EyeTrackerCalibrationValidationInteractorTests : public ::testing::Test {
+  protected:
+    SubjectPresenterStub subjectPresenter;
+    TesterPresenterStub testerPresenter;
+    ValidatorStub validator;
+    InteractorImpl interactor{subjectPresenter, testerPresenter, validator,
+        {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
+};
+}
+}
+
+static void notifyThatPointIsReady(SubjectPresenterStub &presenter) {
     presenter.notifyThatPointIsReady();
 }
 
 #define EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(a)                             \
     TEST_F(EyeTrackerCalibrationInteractorTests, a)
+
+#define EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(a)                  \
+    TEST_F(EyeTrackerCalibrationValidationInteractorTests, a)
 
 namespace {
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(acquiresCalibratorOnCalibrate) {
@@ -96,68 +199,69 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(acquiresCalibratorOnCalibrate) {
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     doesNotReleaseCalibratorUntilAllPointsAreCalibrated) {
     interactor.start();
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
     interactor.finish();
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(calibrator.released());
-    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(subjectPresenter);
     interactor.finish();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(calibrator.released());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(stopsPresenterOnFinish) {
     interactor.start();
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
     interactor.finish();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.stopped());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(subjectPresenter.stopped());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testerPresenter.stopped());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(startsPresenter) {
     interactor.start();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.started());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(subjectPresenter.started());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testerPresenter.started());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsFirstPointOnCalibrate) {
     interactor.start();
-    assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
+    assertEqual(Point{0.1F, 0.2F}, subjectPresenter.presentedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(calibratesPointWhenPointReady) {
     interactor.start();
-    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(subjectPresenter);
     assertEqual(Point{0.1F, 0.2F}, calibrator.calibratedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     presentsNextPointAfterCalibratingPrevious) {
     interactor.start();
-    notifyThatPointIsReady(presenter);
-    assertEqual(Point{0.3F, 0.4F}, presenter.presentedPoint());
+    notifyThatPointIsReady(subjectPresenter);
+    assertEqual(Point{0.3F, 0.4F}, subjectPresenter.presentedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(doesNotPresentAnymorePoints) {
     interactor.start();
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
-    assertEqual(Point{0.5F, 0.6F}, presenter.presentedPoint());
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    assertEqual(Point{0.5F, 0.6F}, subjectPresenter.presentedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(restarts) {
     interactor.start();
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
     interactor.finish();
     interactor.start();
-    assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
+    assertEqual(Point{0.1F, 0.2F}, subjectPresenter.presentedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     presentsResultsAfterFinalPointCalibrated) {
-    std::vector<Result> results;
     calibrator.set({{{{0.11F, 0.22F}, {0.33F, 0.44F}},
                         {{0.55F, 0.66F}, {0.77F, 0.88F}}, {0.1F, 0.2F}},
         {{{0.99F, 0.111F}, {0.222F, 0.333F}},
@@ -165,9 +269,9 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
         {{{0.888F, 0.999F}, {0.01F, 0.02F}}, {{0.03F, 0.04F}, {0.05F, 0.06F}},
             {0.5F, 0.6F}}});
     interactor.start();
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
     ::assertEqual<Result>(
         {{{{0.11F, 0.22F}, {0.33F, 0.44F}}, {{0.55F, 0.66F}, {0.77F, 0.88F}},
              {0.1F, 0.2F}},
@@ -175,35 +279,35 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
                 {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
             {{{0.888F, 0.999F}, {0.01F, 0.02F}},
                 {{0.03F, 0.04F}, {0.05F, 0.06F}}, {0.5F, 0.6F}}},
-        presenter.results(),
+        testerPresenter.results(),
         [](const Result &a, const Result &b) { assertEqual(a, b); });
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsPointForRedo) {
     interactor.start();
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
     interactor.redo(Point{0.1F, 0.2F});
-    assertEqual(Point{0.1F, 0.2F}, presenter.presentedPoint());
+    assertEqual(Point{0.1F, 0.2F}, subjectPresenter.presentedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     findsPointClosestToThatRequestedWhenRedoing) {
     interactor.start();
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
     interactor.redo(Point{0.31F, 0.42F});
-    assertEqual(Point{0.3F, 0.4F}, presenter.presentedPoint());
+    assertEqual(Point{0.3F, 0.4F}, subjectPresenter.presentedPoint());
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     removesDataCollectedForPointBeingRedone) {
     interactor.start();
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
     interactor.redo(Point{0.31F, 0.42F});
     assertEqual(Point{0.3F, 0.4F}, calibrator.discardedPoint());
 }
@@ -211,12 +315,96 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     doesNotAcceptAdditionalRedosWhileOneInProgress) {
     interactor.start();
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
-    notifyThatPointIsReady(presenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
     interactor.redo(Point{0.31F, 0.42F});
     interactor.redo(Point{0.51F, 0.62F});
     assertEqual(Point{0.3F, 0.4F}, calibrator.discardedPoint());
+}
+}
+
+namespace validation {
+namespace {
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(acquiresValidatorOnStart) {
+    interactor.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(validator.acquired());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(
+    doesNotReleaseValidatorUntilAllPointsAreValidated) {
+    interactor.start();
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    interactor.finish();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(validator.released());
+    notifyThatPointIsReady(subjectPresenter);
+    interactor.finish();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(validator.released());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(stopsPresenterOnFinish) {
+    interactor.start();
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    interactor.finish();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(subjectPresenter.stopped());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testerPresenter.stopped());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(startsPresenter) {
+    interactor.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(subjectPresenter.started());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testerPresenter.started());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(presentsFirstPointOnStart) {
+    interactor.start();
+    assertEqual(Point{0.1F, 0.2F}, subjectPresenter.presentedPoint());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(validatesPointWhenReady) {
+    interactor.start();
+    notifyThatPointIsReady(subjectPresenter);
+    assertEqual(Point{0.1F, 0.2F}, validator.validatedPoint());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(
+    presentsNextPointAfterValidatingOne) {
+    interactor.start();
+    notifyThatPointIsReady(subjectPresenter);
+    assertEqual(Point{0.3F, 0.4F}, subjectPresenter.presentedPoint());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(
+    doesNotPresentAnymorePointsWhenExhausted) {
+    interactor.start();
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    assertEqual(Point{0.5F, 0.6F}, subjectPresenter.presentedPoint());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(restarts) {
+    interactor.start();
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    interactor.finish();
+    interactor.start();
+    assertEqual(Point{0.1F, 0.2F}, subjectPresenter.presentedPoint());
+}
+
+EYE_TRACKER_CALIBRATION_VALIDATION_INTERACTOR_TEST(
+    presentsResultsAfterFinalPointCalibrated) {
+    validator.set(Result{{{1}, {2}}, {{3}, {4}}});
+    interactor.start();
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    assertEqual(Result{{{1}, {2}}, {{3}, {4}}}, testerPresenter.result());
+}
 }
 }
 }

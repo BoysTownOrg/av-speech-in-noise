@@ -3,59 +3,90 @@
 #include <cmath>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
-static auto transferOne(std::vector<Point> &a, std::vector<Point> &b) -> Point {
-    const auto p{a.front()};
-    a.erase(a.begin());
-    b.push_back(p);
-    return p;
-}
-
 static auto distance(Point a, Point b) -> float {
     return std::hypot(a.x - b.x, a.y - b.y);
 }
 
-static void present(IPresenter &presenter, const std::vector<Point> &points) {
+static void present(
+    SubjectPresenter &presenter, const std::vector<Point> &points) {
     presenter.present(points.front());
 }
 
-Interactor::Interactor(IPresenter &presenter, EyeTrackerCalibrator &calibrator,
+InteractorImpl::InteractorImpl(SubjectPresenter &subjectPresenter,
+    TesterPresenter &testerPresenter, Calibrator &calibrator,
     std::vector<Point> points)
-    : calibrationPoints{std::move(points)}, presenter{presenter},
-      calibrator{calibrator} {
-    presenter.attach(this);
+    : points{std::move(points)}, subjectPresenter{subjectPresenter},
+      testerPresenter{testerPresenter}, calibrator{calibrator} {
+    subjectPresenter.attach(this);
 }
 
-void Interactor::notifyThatPointIsReady() {
-    calibrator.collect(transferOne(pointsToCalibrate, pointsCalibrated));
+void InteractorImpl::notifyThatPointIsReady() {
+    calibrator.collect(pointsToCalibrate.front());
+    pointsToCalibrate.erase(pointsToCalibrate.begin());
     if (pointsToCalibrate.empty())
-        presenter.present(calibrator.results());
+        testerPresenter.present(calibrator.results());
     else
-        present(presenter, pointsToCalibrate);
+        present(subjectPresenter, pointsToCalibrate);
 }
 
-void Interactor::start() {
+void InteractorImpl::start() {
     calibrator.acquire();
-    pointsToCalibrate = calibrationPoints;
-    presenter.start();
-    present(presenter, pointsToCalibrate);
+    pointsToCalibrate = points;
+    subjectPresenter.start();
+    testerPresenter.start();
+    present(subjectPresenter, pointsToCalibrate);
 }
 
-void Interactor::finish() {
+void InteractorImpl::finish() {
     if (pointsToCalibrate.empty()) {
         calibrator.release();
-        presenter.stop();
+        subjectPresenter.stop();
+        testerPresenter.stop();
     }
 }
 
-void Interactor::redo(Point p) {
-    if (pointsCalibrated.empty() || !pointsToCalibrate.empty())
+void InteractorImpl::redo(Point p) {
+    if (!pointsToCalibrate.empty())
         return;
-    const auto closestPoint{
-        min_element(pointsCalibrated.begin(), pointsCalibrated.end(),
-            [p](Point a, Point b) { return distance(p, a) < distance(p, b); })};
+    const auto closestPoint{min_element(points.begin(), points.end(),
+        [p](Point a, Point b) { return distance(p, a) < distance(p, b); })};
     calibrator.discard(*closestPoint);
     pointsToCalibrate.push_back(*closestPoint);
-    pointsCalibrated.erase(closestPoint);
-    present(presenter, pointsToCalibrate);
+    present(subjectPresenter, pointsToCalibrate);
+}
+
+namespace validation {
+InteractorImpl::InteractorImpl(SubjectPresenter &subjectPresenter,
+    TesterPresenter &testerPresenter, Validator &validator,
+    std::vector<Point> points)
+    : points{std::move(points)}, subjectPresenter{subjectPresenter},
+      testerPresenter{testerPresenter}, validator{validator} {
+    subjectPresenter.attach(this);
+}
+
+void InteractorImpl::start() {
+    validator.acquire();
+    subjectPresenter.start();
+    testerPresenter.start();
+    pointsToValidate = points;
+    present(subjectPresenter, pointsToValidate);
+}
+
+void InteractorImpl::finish() {
+    if (pointsToValidate.empty()) {
+        validator.release();
+        subjectPresenter.stop();
+        testerPresenter.stop();
+    }
+}
+
+void InteractorImpl::notifyThatPointIsReady() {
+    validator.collect(pointsToValidate.front());
+    pointsToValidate.erase(pointsToValidate.begin());
+    if (pointsToValidate.empty())
+        testerPresenter.present(validator.result());
+    else
+        present(subjectPresenter, pointsToValidate);
+}
 }
 }

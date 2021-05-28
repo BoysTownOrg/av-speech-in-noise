@@ -1,18 +1,36 @@
 #include "EyeTrackerCalibration.hpp"
+#include <sstream>
+#include <algorithm>
+#include <cmath>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
 static auto windowPoint(Point p) -> WindowPoint { return {p.x, 1 - p.y}; }
 
-static void moveDotTo(View &view, Point p, Presenter::DotState &dotState) {
+static void moveDotTo(
+    SubjectView &view, Point p, SubjectPresenterImpl::DotState &dotState) {
     view.moveDotTo(windowPoint(p));
-    dotState = Presenter::DotState::moving;
+    dotState = SubjectPresenterImpl::DotState::moving;
 }
 
-void Presenter::start() { view.show(); }
+TesterPresenterImpl::TesterPresenterImpl(TesterView &view) : view{view} {}
 
-void Presenter::stop() { view.hide(); }
+void TesterPresenterImpl::start() { view.show(); }
 
-void Presenter::present(Point x) {
+void TesterPresenterImpl::stop() { view.hide(); }
+
+SubjectPresenterImpl::SubjectPresenterImpl(SubjectView &view) : view{view} {
+    view.attach(this);
+}
+
+void SubjectPresenterImpl::attach(SubjectPresenter::Observer *a) {
+    observer = a;
+}
+
+void SubjectPresenterImpl::start() { view.show(); }
+
+void SubjectPresenterImpl::stop() { view.hide(); }
+
+void SubjectPresenterImpl::present(Point x) {
     pointPresenting = x;
     if (dotState == DotState::shrunk) {
         view.growDot();
@@ -21,7 +39,7 @@ void Presenter::present(Point x) {
         moveDotTo(view, pointPresenting, dotState);
 }
 
-void Presenter::notifyThatAnimationHasFinished() {
+void SubjectPresenterImpl::notifyThatAnimationHasFinished() {
     if (dotState == DotState::growing)
         moveDotTo(view, pointPresenting, dotState);
     else if (dotState == DotState::shrinking) {
@@ -34,18 +52,24 @@ void Presenter::notifyThatAnimationHasFinished() {
     }
 }
 
-void Presenter::present(const std::vector<Result> &results) {
+void TesterPresenterImpl::present(const std::vector<Result> &results) {
     view.clear();
-    for (const auto &result : results) {
+    for_each(results.begin(), results.end(), [&](const Result &result) {
         view.drawWhiteCircleWithCenter(windowPoint(result.point));
-        for (const auto point : result.leftEyeMappedPoints)
-            view.drawRed(Line{windowPoint(result.point), windowPoint(point)});
-        for (const auto point : result.rightEyeMappedPoints)
-            view.drawGreen(Line{windowPoint(result.point), windowPoint(point)});
-    }
+        for_each(result.leftEyeMappedPoints.begin(),
+            result.leftEyeMappedPoints.end(), [&](const Point &point) {
+                view.drawRed(
+                    Line{windowPoint(result.point), windowPoint(point)});
+            });
+        for_each(result.rightEyeMappedPoints.begin(),
+            result.rightEyeMappedPoints.end(), [&](const Point &point) {
+                view.drawGreen(
+                    Line{windowPoint(result.point), windowPoint(point)});
+            });
+    });
 }
 
-Controller::Controller(Control &control, IInteractor &interactor)
+Controller::Controller(Control &control, Interactor &interactor)
     : interactor{interactor}, control{control} {
     control.attach(this);
 }
@@ -53,12 +77,13 @@ Controller::Controller(Control &control, IInteractor &interactor)
 void Controller::notifyThatWindowHasBeenTouched(WindowPoint point) {
     const auto whiteCircleCenters{control.whiteCircleCenters()};
     const auto whiteCircleDiameter{control.whiteCircleDiameter()};
-    auto found{find_if(whiteCircleCenters.begin(), whiteCircleCenters.end(),
-        [whiteCircleDiameter, point](WindowPoint candidate) {
-            return std::hypot(point.x - candidate.x, point.y - candidate.y) <=
-                whiteCircleDiameter / 2;
-        })};
-    if (found != whiteCircleCenters.end())
+    if (const auto found{find_if(whiteCircleCenters.begin(),
+            whiteCircleCenters.end(),
+            [whiteCircleDiameter, point](WindowPoint candidate) {
+                return std::hypot(point.x - candidate.x,
+                           point.y - candidate.y) <= whiteCircleDiameter / 2;
+            })};
+        found != whiteCircleCenters.end())
         interactor.redo(Point{
             static_cast<float>(found->x), 1 - static_cast<float>(found->y)});
 }
@@ -66,4 +91,37 @@ void Controller::notifyThatWindowHasBeenTouched(WindowPoint point) {
 void Controller::notifyThatSubmitButtonHasBeenClicked() { interactor.finish(); }
 
 void Controller::notifyThatMenuHasBeenSelected() { interactor.start(); }
+
+namespace validation {
+TesterPresenterImpl::TesterPresenterImpl(TesterView &view) : view{view} {}
+
+void TesterPresenterImpl::start() { view.show(); }
+
+void TesterPresenterImpl::stop() { view.hide(); }
+
+static auto format(float x) -> std::string {
+    std::stringstream stream;
+    stream << x;
+    return stream.str();
+}
+
+void TesterPresenterImpl::present(const Result &result) {
+    view.setLeftEyeAccuracyDegrees(format(result.left.errorOfMeanGaze.degrees));
+    view.setLeftEyePrecisionDegrees(
+        format(result.left.standardDeviationFromTheMeanGaze.degrees));
+    view.setRightEyeAccuracyDegrees(
+        format(result.right.errorOfMeanGaze.degrees));
+    view.setRightEyePrecisionDegrees(
+        format(result.right.standardDeviationFromTheMeanGaze.degrees));
+}
+
+Controller::Controller(Control &control, Interactor &interactor)
+    : interactor{interactor} {
+    control.attach(this);
+}
+
+void Controller::notifyThatMenuHasBeenSelected() { interactor.start(); }
+
+void Controller::notifyThatCloseButtonHasBeenClicked() { interactor.finish(); }
+}
 }

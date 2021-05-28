@@ -16,18 +16,27 @@
 #define AV_SPEECH_IN_NOISE_ASSERT_EQUAL(expected, actual)                      \
     ASSERT_EQ(expected, actual)
 
+template <typename T> void assertEqual(const T &expected, const T &actual) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected, actual);
+}
+
+inline void assertEqual(
+    const std::string &expected, const std::string &actual) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected, actual);
+}
+
 template <typename T>
 void assertEqual(const std::vector<T> &expected, const std::vector<T> &actual) {
-    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(expected.size(), actual.size());
+    assertEqual(expected.size(), actual.size());
     for (typename std::vector<T>::size_type i{0}; i < expected.size(); ++i)
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.at(i), actual.at(i));
+        assertEqual(expected.at(i), actual.at(i));
 }
 
 template <typename T>
 static void assertEqual(const std::vector<T> &expected,
     const std::vector<T> &actual,
     const std::function<void(const T &, const T &)> &elementAssertion) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.size(), actual.size());
+    assertEqual(expected.size(), actual.size());
     for (typename std::vector<T>::size_type i{0}; i < expected.size(); ++i)
         elementAssertion(expected.at(i), actual.at(i));
 }
@@ -39,7 +48,7 @@ template <typename T> void assertEqual(T expected, T actual, T tolerance) {
 template <typename T>
 void assertEqual(
     const std::vector<T> &expected, const std::vector<T> &actual, T tolerance) {
-    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(expected.size(), actual.size());
+    assertEqual(expected.size(), actual.size());
     for (typename std::vector<T>::size_type i{0}; i < expected.size(); ++i)
         assertEqual(expected.at(i), actual.at(i), tolerance);
 }

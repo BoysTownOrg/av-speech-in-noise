@@ -47,12 +47,17 @@ option(AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING "Enables tobii eye tracking"
 if(${AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING})
   include(FindPkgConfig)
   pkg_check_modules(TOBIIRESEARCH IMPORTED_TARGET tobii_research)
+  add_library(tobii-research-addons SHARED IMPORTED)
+  set_target_properties(
+    tobii-research-addons
+    PROPERTIES IMPORTED_LOCATION
+               "/usr/local/lib/tobii_research/libtobii_research_addons.dylib")
   add_macos_bundle(
     av-speech-in-noise-with-tobii-macos-bundle
     org.boystown.av-speech-in-noise-with-tobii "AV Speech in Noise"
     main/with-tobii.mm main/with-tobii.swift TobiiProEyeTracker.cpp)
   target_link_libraries(av-speech-in-noise-with-tobii-macos-bundle
-                        PkgConfig::TOBIIRESEARCH)
+                        PkgConfig::TOBIIRESEARCH tobii-research-addons)
 endif()
 set(AV_SPEECH_IN_NOISE_MACOS_RESOURCES
     ""

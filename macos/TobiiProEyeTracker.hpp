@@ -3,6 +3,7 @@
 
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
+#include <screen_based_calibration_validation.h>
 #include <tobii_research.h>
 #include <tobii_research_calibration.h>
 #include <tobii_research_eyetracker.h>
@@ -13,10 +14,69 @@
 #include <ostream>
 
 namespace av_speech_in_noise {
-class TobiiEyeTracker : public EyeTracker {
+namespace eye_tracker_calibration {
+class TobiiProCalibrator : public Calibrator {
   public:
-    TobiiEyeTracker();
-    ~TobiiEyeTracker() override;
+    explicit TobiiProCalibrator(TobiiResearchEyeTracker *);
+    void acquire() override;
+    void release() override;
+    void discard(Point) override;
+    void collect(Point) override;
+    auto results() -> std::vector<Result> override;
+
+    class ComputeAndApply;
+
+    auto computeAndApply() -> ComputeAndApply;
+
+    class ComputeAndApply {
+      public:
+        explicit ComputeAndApply(TobiiResearchEyeTracker *);
+        auto success() -> bool;
+        auto results() -> std::vector<Result>;
+        ~ComputeAndApply();
+
+      private:
+        TobiiResearchCalibrationResult *result{};
+    };
+
+  private:
+    TobiiResearchEyeTracker *eyetracker{};
+};
+
+namespace validation {
+class TobiiProValidator : public Validator {
+  public:
+    explicit TobiiProValidator(TobiiResearchEyeTracker *eyetracker);
+    void acquire() override;
+    void collect(Point) override;
+    auto result() -> Result override;
+    void release() override;
+    ~TobiiProValidator() override;
+
+    class ResultAdapter;
+
+    auto resultAdapter() -> ResultAdapter;
+
+    class ResultAdapter {
+      public:
+        explicit ResultAdapter(CalibrationValidator *validator);
+        auto result() -> Result;
+        ~ResultAdapter();
+
+      private:
+        CalibrationValidationResult *result_{};
+    };
+
+  private:
+    CalibrationValidator *validator{};
+};
+}
+}
+
+class TobiiProTracker : public EyeTracker {
+  public:
+    TobiiProTracker();
+    ~TobiiProTracker() override;
     void allocateRecordingTimeSeconds(double s) override;
     void start() override;
     void stop() override;
@@ -24,10 +84,9 @@ class TobiiEyeTracker : public EyeTracker {
     auto currentSystemTime() -> EyeTrackerSystemTime override;
     void write(std::ostream &) override;
 
-    class Calibration;
-    class CalibrationValidation;
-
-    auto calibration() -> Calibration;
+    auto calibrator() -> eye_tracker_calibration::TobiiProCalibrator;
+    auto calibrationValidator()
+        -> eye_tracker_calibration::validation::TobiiProValidator;
 
     class Address {
       public:
@@ -47,34 +106,6 @@ class TobiiEyeTracker : public EyeTracker {
 
       private:
         TobiiResearchCalibrationData *data{};
-    };
-
-    class Calibration : public eye_tracker_calibration::EyeTrackerCalibrator {
-      public:
-        explicit Calibration(TobiiResearchEyeTracker *);
-        void acquire() override;
-        void release() override;
-        void discard(eye_tracker_calibration::Point) override;
-        void collect(eye_tracker_calibration::Point) override;
-        auto results() -> std::vector<eye_tracker_calibration::Result> override;
-
-        class ComputeAndApply;
-
-        auto computeAndApply() -> ComputeAndApply;
-
-        class ComputeAndApply {
-          public:
-            explicit ComputeAndApply(TobiiResearchEyeTracker *);
-            auto success() -> bool;
-            auto results() -> std::vector<eye_tracker_calibration::Result>;
-            ~ComputeAndApply();
-
-          private:
-            TobiiResearchCalibrationResult *result{};
-        };
-
-      private:
-        TobiiResearchEyeTracker *eyetracker{};
     };
 
   private:
