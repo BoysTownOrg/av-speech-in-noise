@@ -3,9 +3,11 @@
 #include "TargetPlaylistStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "assert-utility.hpp"
+#include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/Model.hpp>
 #include <gtest/gtest.h>
 #include <sstream>
+#include <utility>
 
 namespace av_speech_in_noise {
 static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
@@ -116,11 +118,19 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         return {};
     }
 
-    auto currentTarget() -> LocalUrl override { return {}; }
+    auto currentTarget() -> LocalUrl override { return currentTarget_; }
+
+    void setCurrentTargetPath(std::string s) {
+        currentTarget_.path = std::move(s);
+    }
 
     auto snr() -> SNR override { return SNR{}; }
 
-    void submit(const FreeResponse &) override {}
+    void submit(const FreeResponse &) override {
+        submittedFreeResponse_ = true;
+    }
+
+    auto submittedFreeResponse() -> bool { return submittedFreeResponse_; }
 
     void submit(const ConsonantResponse &) override {
         submittedConsonant_ = true;
@@ -150,20 +160,27 @@ class FixedLevelMethodStub : public FixedLevelMethod {
   private:
     KeywordsTestResults keywordsTestResults_{};
     std::stringstream log_{};
+    LocalUrl currentTarget_;
     const FixedLevelTest *test_{};
     const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
     TargetPlaylist *targetList_{};
     bool submittedConsonant_{};
+    bool submittedFreeResponse_{};
 };
 
 class RecognitionTestModelStub : public RecognitionTestModel {
   public:
+    explicit RecognitionTestModelStub(
+        FixedLevelMethodStub &fixedLevelMethodStub)
+        : fixedLevelMethodStub{fixedLevelMethodStub} {}
+
     [[nodiscard]] auto nextTrialPreparedIfNeeded() const -> bool {
         return nextTrialPreparedIfNeeded_;
     }
 
     void prepareNextTrialIfNeeded() override {
         nextTrialPreparedIfNeeded_ = true;
+        fixedLevelMethodStub.setCurrentTargetPath("TOOLATE");
     }
 
     void initialize(TestMethod *method, const Test &test) override {
@@ -258,8 +275,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     [[nodiscard]] auto consonantResponse() const { return consonantResponse_; }
 
-    auto freeResponse() -> const FreeResponse * { return freeResponse_; }
-
     auto threeKeywords() -> const ThreeKeywordsResponse * {
         return threeKeywords_;
     }
@@ -315,17 +330,21 @@ class RecognitionTestModelStub : public RecognitionTestModel {
                 ->nextTarget();
     }
 
-    void submit(const FreeResponse &f) override { freeResponse_ = &f; }
-
     void submit(const ThreeKeywordsResponse &f) override {
         threeKeywords_ = &f;
     }
 
     void submit(const SyllableResponse &f) override { syllableResponse_ = &f; }
 
+    auto playTrialTime() -> std::string override { return playTrialTime_; }
+
+    void setPlayTrialTime(std::string s) { playTrialTime_ = std::move(s); }
+
   private:
     std::vector<std::string> audioDevices_{};
     std::string targetFileName_{};
+    std::string playTrialTime_;
+    FixedLevelMethodStub &fixedLevelMethodStub;
     TestMethod *testMethodToCallNextTargetOnSubmitConsonants_{};
     TestMethod *
         testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_{};
@@ -339,7 +358,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const coordinate_response_measure::Response *coordinateResponse_{};
     const CorrectKeywords *correctKeywords_{};
     const ConsonantResponse *consonantResponse_{};
-    const FreeResponse *freeResponse_{};
     const ThreeKeywordsResponse *threeKeywords_{};
     const SyllableResponse *syllableResponse_{};
     int trialNumber_{};
@@ -770,7 +788,7 @@ class ModelTests : public ::testing::Test {
     FiniteTargetPlaylistWithRepeatablesStub silentIntervals;
     FiniteTargetPlaylistWithRepeatablesStub everyTargetOnce;
     RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
-    RecognitionTestModelStub internalModel;
+    RecognitionTestModelStub internalModel{fixedLevelMethod};
     OutputFileStub outputFile;
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
@@ -860,6 +878,65 @@ class ModelTests : public ::testing::Test {
             &std::as_const(calibration), useCase.calibration(internalModel));
     }
 };
+
+class SubmittingFreeResponseTests : public ::testing::Test {
+  protected:
+    FixedLevelMethodStub testMethod;
+    RecognitionTestModelStub model{testMethod};
+    OutputFileStub outputFile;
+    submitting_free_response::InteractorImpl interactor{
+        testMethod, model, outputFile};
+    FreeResponse freeResponse;
+};
+
+#define SUBMITTING_FREE_RESPONSE_TEST(a) TEST_F(SubmittingFreeResponseTests, a)
+
+SUBMITTING_FREE_RESPONSE_TEST(submittingFreeResponsePreparesNextTrialIfNeeded) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_FREE_RESPONSE_TEST(
+    submitFreeResponseSavesOutputFileAfterWritingTrial) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+SUBMITTING_FREE_RESPONSE_TEST(submitFreeResponseWritesResponse) {
+    freeResponse.response = "a";
+    interactor.submit(freeResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, outputFile.freeResponseTrial().response);
+}
+
+SUBMITTING_FREE_RESPONSE_TEST(submitFreeResponseWritesFlagged) {
+    freeResponse.flagged = true;
+    interactor.submit(freeResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.freeResponseTrial().flagged);
+}
+
+SUBMITTING_FREE_RESPONSE_TEST(submitFreeResponseWritesWithoutFlag) {
+    interactor.submit(freeResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.freeResponseTrial().flagged);
+}
+
+SUBMITTING_FREE_RESPONSE_TEST(submitWritesTime) {
+    model.setPlayTrialTime("a");
+    interactor.submit(freeResponse);
+    assertEqual("a", outputFile.freeResponseTrial().time);
+}
+
+SUBMITTING_FREE_RESPONSE_TEST(submitFreeResponseWritesTarget) {
+    testMethod.setCurrentTargetPath("a/b/c.txt");
+    interactor.submit(freeResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c.txt"}, outputFile.freeResponseTrial().target);
+}
+
+SUBMITTING_FREE_RESPONSE_TEST(submitFreeResponseSubmitsResponse) {
+    interactor.submit(freeResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFreeResponse());
+}
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
 
@@ -1113,13 +1190,6 @@ MODEL_TEST(submitConsonantPassesConsonant) {
     model.submit(r);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(r), internalModel.consonantResponse());
-}
-
-MODEL_TEST(submitFreeResponsePassesFreeResponse) {
-    FreeResponse r;
-    model.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &std::as_const(r), internalModel.freeResponse());
 }
 
 MODEL_TEST(submitThreeKeywordsPassesThreeKeywords) {

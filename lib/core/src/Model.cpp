@@ -169,8 +169,6 @@ void ModelImpl::submitIncorrectResponse() {
     model.submitIncorrectResponse();
 }
 
-void ModelImpl::submit(const FreeResponse &response) { model.submit(response); }
-
 void ModelImpl::submit(const ThreeKeywordsResponse &r) { model.submit(r); }
 
 void ModelImpl::submit(const SyllableResponse &r) { model.submit(r); }

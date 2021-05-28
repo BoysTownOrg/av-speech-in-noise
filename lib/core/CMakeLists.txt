@@ -8,7 +8,8 @@ add_library(
   src/RecognitionTestModel.cpp
   src/ResponseEvaluator.cpp
   src/EyeTrackerCalibration.cpp
-  src/AdaptiveTrack.cpp)
+  src/AdaptiveTrack.cpp
+  src/SubmittingFreeResponse.cpp)
 target_include_directories(
   av-speech-in-noise-core-lib
   PUBLIC include

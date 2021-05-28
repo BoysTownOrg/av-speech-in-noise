@@ -395,10 +395,6 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void submit(const FreeResponse &) override {
-        throw RequestFailure{errorMessage};
-    }
-
     void submit(const CorrectKeywords &) override {
         throw RequestFailure{errorMessage};
     }

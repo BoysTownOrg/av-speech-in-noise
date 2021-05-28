@@ -6,7 +6,7 @@
 #include <gtest/gtest.h>
 #include <utility>
 
-namespace av_speech_in_noise::free_response {
+namespace av_speech_in_noise::submitting_free_response {
 namespace {
 class ControlStub : public Control {
   public:
@@ -18,7 +18,7 @@ class ControlStub : public Control {
 
     void setFreeResponse(std::string c) { freeResponse_ = std::move(c); }
 
-    auto freeResponse() -> std::string override { return freeResponse_; }
+    auto response() -> std::string override { return freeResponse_; }
 
     auto flagged() -> bool override { return flagged_; }
 
@@ -44,7 +44,7 @@ class ViewStub : public View {
         return freeResponseSubmissionHidden_;
     }
 
-    void clearFreeResponse() override { freeResponseCleared_ = true; }
+    void clearResponse() override { freeResponseCleared_ = true; }
 
     void clearFlag() override { flagCleared_ = true; }
 
@@ -69,9 +69,19 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
+class InteractorStub : public Interactor {
+  public:
+    void submit(const FreeResponse &s) override { freeResponse_ = s; }
+
+    auto response() -> FreeResponse { return freeResponse_; }
+
+  private:
+    FreeResponse freeResponse_;
+};
+
 class ControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
+    InteractorStub model;
     ControlStub control;
     TestControllerStub testController;
     Controller controller{testController, model, control};
@@ -128,14 +138,14 @@ FREE_RESPONSE_CONTROLLER_TEST(
     control.setFreeResponse("a");
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, model.freeResponse().response);
+        std::string{"a"}, model.response().response);
 }
 
 FREE_RESPONSE_CONTROLLER_TEST(
     responderSubmitsFlaggedFreeResponseAfterResponseButtonIsClicked) {
     control.setFlagged();
     notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.freeResponse().flagged);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.response().flagged);
 }
 
 FREE_RESPONSE_CONTROLLER_TEST(

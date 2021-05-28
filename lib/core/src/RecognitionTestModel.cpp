@@ -358,7 +358,7 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
         },
         settings.audioDevice);
 
-    playTrialTime = clock.time();
+    playTrialTime_ = clock.time();
     if (eyeTracking) {
         eyeTracker.allocateRecordingTimeSeconds(
             Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);
@@ -433,21 +433,6 @@ void RecognitionTestModelImpl::submit(
                 outputFile.write(lastEyeTrackerTargetPlayerSynchronization);
                 outputFile.write(eyeTracker.gazeSamples());
             }
-        },
-        testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, maskerLevel_, fullScaleLevel_);
-}
-
-void RecognitionTestModelImpl::submit(const FreeResponse &response) {
-    saveOutputFileAndPrepareNextTrialAfter(
-        [&]() {
-            testMethod->submit(response);
-            FreeResponseTrial trial;
-            trial.response = response.response;
-            trial.target = targetName(evaluator, testMethod);
-            trial.flagged = response.flagged;
-            trial.time = playTrialTime;
-            outputFile.write(trial);
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
         maskerPlayer, maskerLevel_, fullScaleLevel_);
@@ -536,5 +521,9 @@ auto RecognitionTestModelImpl::trialNumber() -> int { return trialNumber_; }
 
 auto RecognitionTestModelImpl::targetFileName() -> std::string {
     return targetName(evaluator, testMethod);
+}
+
+auto RecognitionTestModelImpl::playTrialTime() -> std::string {
+    return playTrialTime_;
 }
 }

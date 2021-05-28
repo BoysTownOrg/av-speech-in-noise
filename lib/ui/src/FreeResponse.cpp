@@ -1,8 +1,8 @@
 #include "FreeResponse.hpp"
 
-namespace av_speech_in_noise::free_response {
+namespace av_speech_in_noise::submitting_free_response {
 Controller::Controller(
-    TestController &testController, Model &model, Control &control)
+    TestController &testController, Interactor &model, Control &control)
     : testController{testController}, model{model}, control{control} {
     control.attach(this);
 }
@@ -10,7 +10,7 @@ Controller::Controller(
 void Controller::notifyThatSubmitButtonHasBeenClicked() {
     FreeResponse freeResponse;
     freeResponse.flagged = control.flagged();
-    freeResponse.response = control.freeResponse();
+    freeResponse.response = control.response();
     model.submit(freeResponse);
     testController.notifyThatUserIsDoneResponding();
 }
@@ -25,7 +25,7 @@ void Presenter::stop() { view.hide(); }
 void Presenter::hideResponseSubmission() { view.hide(); }
 
 void Presenter::showResponseSubmission() {
-    view.clearFreeResponse();
+    view.clearResponse();
     view.clearFlag();
     view.show();
 }

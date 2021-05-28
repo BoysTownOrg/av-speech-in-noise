@@ -9,7 +9,7 @@
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
 
-namespace av_speech_in_noise::free_response {
+namespace av_speech_in_noise::submitting_free_response {
 class Control {
   public:
     class Observer {
@@ -20,23 +20,23 @@ class Control {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
     virtual void attach(Observer *) = 0;
     virtual auto flagged() -> bool = 0;
-    virtual auto freeResponse() -> std::string = 0;
+    virtual auto response() -> std::string = 0;
 };
 
 class View : public av_speech_in_noise::View {
   public:
-    virtual void clearFreeResponse() = 0;
+    virtual void clearResponse() = 0;
     virtual void clearFlag() = 0;
 };
 
 class Controller : public TaskController, public Control::Observer {
   public:
-    Controller(TestController &, Model &, Control &);
+    Controller(TestController &, Interactor &, Control &);
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
     TestController &testController;
-    Model &model;
+    Interactor &model;
     Control &control;
 };
 

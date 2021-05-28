@@ -19,7 +19,6 @@ class RecognitionTestModel {
     virtual void playLeftSpeakerCalibration(const Calibration &) = 0;
     virtual void playRightSpeakerCalibration(const Calibration &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
-    virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const ThreeKeywordsResponse &) = 0;
     virtual void submit(const CorrectKeywords &) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
@@ -31,6 +30,7 @@ class RecognitionTestModel {
     virtual auto trialNumber() -> int = 0;
     virtual auto targetFileName() -> std::string = 0;
     virtual void prepareNextTrialIfNeeded() = 0;
+    virtual auto playTrialTime() -> std::string = 0;
 };
 }
 

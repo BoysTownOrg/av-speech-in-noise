@@ -108,8 +108,6 @@ class ModelStub : public Model {
         return correctResponseSubmitted_;
     }
 
-    [[nodiscard]] auto freeResponse() const { return freeResponse_; }
-
     auto consonantResponse() { return consonantResponse_; }
 
     [[nodiscard]] auto correctKeywords() const -> int {
@@ -234,8 +232,6 @@ class ModelStub : public Model {
         incorrectResponseSubmitted_ = true;
     }
 
-    void submit(const FreeResponse &s) override { freeResponse_ = s; }
-
     void submit(const CorrectKeywords &s) override { correctKeywords_ = s; }
 
     void submit(const ConsonantResponse &s) override { consonantResponse_ = s; }
@@ -276,7 +272,6 @@ class ModelStub : public Model {
     coordinate_response_measure::Response responseParameters_{};
     std::vector<std::string> audioDevices_{};
     AdaptiveTestResults adaptiveTestResults_{};
-    FreeResponse freeResponse_{};
     ConsonantResponse consonantResponse_{};
     CorrectKeywords correctKeywords_{};
     ThreeKeywordsResponse threeKeywords_{};

@@ -278,21 +278,6 @@ class PlayingTrial : public AudioDeviceUseCase {
     AudioSettings trial;
 };
 
-class SubmittingFreeResponse : public TargetWritingUseCase {
-  public:
-    explicit SubmittingFreeResponse(const FreeResponse &response = {})
-        : response{response} {}
-
-    void run(RecognitionTestModelImpl &m) override { m.submit(response); }
-
-    auto target(OutputFileStub &file) -> std::string override {
-        return file.freeResponseTrial().target;
-    }
-
-  private:
-    const FreeResponse &response;
-};
-
 class SubmittingThreeKeywords : public TargetWritingUseCase {
   public:
     explicit SubmittingThreeKeywords(const ThreeKeywordsResponse &response = {})
@@ -670,7 +655,6 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingCorrectResponse submittingCorrectResponse;
     SubmittingIncorrectResponse submittingIncorrectResponse;
     FreeResponse freeResponse{};
-    SubmittingFreeResponse submittingFreeResponse{freeResponse};
     ThreeKeywordsResponse threeKeywords;
     SubmittingThreeKeywords submittingThreeKeywords{threeKeywords};
     SyllableResponse syllableResponse;
@@ -1298,11 +1282,6 @@ RECOGNITION_TEST_MODEL_TEST(submittingIncorrectResponseIncrementsTrialNumber) {
     assertYieldsTrialNumber(submittingIncorrectResponse, 2);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submittingFreeResponseIncrementsTrialNumber) {
-    run(initializingTest, model);
-    assertYieldsTrialNumber(submittingFreeResponse, 2);
-}
-
 RECOGNITION_TEST_MODEL_TEST(submittingThreeKeywordsIncrementsTrialNumber) {
     run(initializingTest, model);
     assertYieldsTrialNumber(submittingThreeKeywords, 2);
@@ -1354,12 +1333,6 @@ RECOGNITION_TEST_MODEL_TEST(
     submittingIncorrectResponsePassesNextTargetToTargetPlayer) {
     run(initializingTest, model);
     assertPassesNextTargetToPlayer(submittingIncorrectResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submittingFreeResponsePassesNextTargetToTargetPlayer) {
-    run(initializingTest, model);
-    assertPassesNextTargetToPlayer(submittingFreeResponse);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1454,12 +1427,6 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    submitFreeResponseSeeksToRandomMaskerPositionWithinTrialDuration) {
-    assertSeeksToRandomMaskerPositionWithinTrialDuration(
-        submittingFreeResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
     submitCorrectKeywordsSeeksToRandomMaskerPositionWithinTrialDuration) {
     assertSeeksToRandomMaskerPositionWithinTrialDuration(
         submittingCorrectKeywords);
@@ -1487,10 +1454,6 @@ RECOGNITION_TEST_MODEL_TEST(
     assertMaskerPlayerSeekedToRandomTime(submittingIncorrectResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSeeksToRandomMaskerPosition) {
-    assertMaskerPlayerSeekedToRandomTime(submittingFreeResponse);
-}
-
 RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(submittingCorrectKeywords);
 }
@@ -1514,10 +1477,6 @@ RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsTargetPlayerLevel) {
 
 RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingCoordinateResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSetsTargetPlayerLevel) {
-    assertSetsTargetLevel(submittingFreeResponse);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSetsTargetPlayerLevel) {
@@ -1598,11 +1557,6 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(submitConsonantSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingConsonant);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitFreeResponseSavesOutputFileAfterWritingTrial) {
-    assertSavesOutputFileAfterWritingTrial(submittingFreeResponse);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1748,11 +1702,6 @@ RECOGNITION_TEST_MODEL_TEST(submitConsonantDoesNotLoadNextTargetWhenComplete) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    submitFreeResponseDoesNotLoadNextTargetWhenComplete) {
-    assertResponseDoesNotLoadNextTargetWhenComplete(submittingFreeResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
     submitCorrectKeywordsDoesNotLoadNextTargetWhenComplete) {
     assertResponseDoesNotLoadNextTargetWhenComplete(submittingCorrectKeywords);
 }
@@ -1774,13 +1723,6 @@ RECOGNITION_TEST_MODEL_TEST(
     testMethod.setComplete();
     run(initializingTest, model);
     assertFilePathEquals(targetPlayer, "");
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesResponse) {
-    freeResponse.response = "a";
-    run(submittingFreeResponse, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, freeResponseTrial(outputFile).response);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesEachKeywordEvaluation) {
@@ -1838,17 +1780,6 @@ RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesFlagged) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().flagged);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesFlagged) {
-    freeResponse.flagged = true;
-    run(submittingFreeResponse, model);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(freeResponseTrial(outputFile).flagged);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesWithoutFlag) {
-    run(submittingFreeResponse, model);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(freeResponseTrial(outputFile).flagged);
-}
-
 RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesFlagged) {
     threeKeywords.flagged = true;
     run(submittingThreeKeywords, model);
@@ -1860,30 +1791,12 @@ RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesWithoutFlag) {
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.threeKeywordsTrial().flagged);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitWritesTime) {
-    run(initializingTest, model);
-    clock.setTime("a");
-    run(playingTrial, model);
-    run(submittingFreeResponse, model);
-    assertEqual("a", outputFile.freeResponseTrial().time);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesTarget) {
-    assertWritesTarget(submittingFreeResponse);
-}
-
 RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsWritesTarget) {
     assertWritesTarget(submittingThreeKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesTarget) {
     assertWritesTarget(submittingSyllable);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget) {
-    assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
-        submittingFreeResponse);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1908,12 +1821,6 @@ RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseQueriesNextTargetAfterWritingResponse) {
     assertTestMethodLogContains(
         submittingCoordinateResponse, "writeLastCoordinateResponse next ");
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSubmitsResponse) {
-    run(initializingTest, model);
-    run(submittingFreeResponse, model);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFreeResponse());
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitThreeKeywordsSubmitsToTestMethod) {

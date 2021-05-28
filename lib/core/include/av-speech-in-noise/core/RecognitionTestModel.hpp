@@ -42,7 +42,6 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     void playLeftSpeakerCalibration(const Calibration &) override;
     void playRightSpeakerCalibration(const Calibration &) override;
     void submit(const coordinate_response_measure::Response &) override;
-    void submit(const FreeResponse &) override;
     void submit(const CorrectKeywords &) override;
     void submit(const ConsonantResponse &) override;
     void submit(const ThreeKeywordsResponse &) override;
@@ -57,6 +56,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     void fadeOutComplete() override;
     void prepareNextTrialIfNeeded() override;
     void notifyThatPreRollHasCompleted() override;
+    auto playTrialTime() -> std::string override;
     static constexpr Delay maskerChannelDelay{0.004};
     static constexpr Duration targetOnsetFringeDuration{0.166};
     static constexpr Duration targetOffsetFringeDuration{
@@ -76,7 +76,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     EyeTrackerTargetPlayerSynchronization
         lastEyeTrackerTargetPlayerSynchronization{};
     TargetStartTime lastTargetStartTime{};
-    std::string playTrialTime;
+    std::string playTrialTime_;
     Model::Observer *listener_{};
     TestMethod *testMethod{};
     RealLevel maskerLevel_{};
