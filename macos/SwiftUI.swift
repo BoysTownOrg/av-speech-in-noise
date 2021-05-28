@@ -308,7 +308,9 @@ struct SwiftTestView: View {
     @ObservedObject var secondaryText: ObservableString
     @ObservedObject var showing: ObservableBool
     @ObservedObject var showingContinueTestingDialog: ObservableBool
+    @ObservedObject var showingSheet: ObservableBool
     @ObservedObject var continueTestingDialogText: ObservableString
+    @ObservedObject var sheetText: ObservableString
 
     init(ui: SwiftTestUI) {
         observableObserver = ui.observableObserver
@@ -319,6 +321,8 @@ struct SwiftTestView: View {
         showing = ui.showing
         showingContinueTestingDialog = ui.showingContinueTestingDialog
         continueTestingDialogText = ui.continueTestingDialogText
+        sheetText = ui.sheetText
+        showingSheet = ui.showingSheet
     }
 
     var body: some View {
@@ -350,6 +354,12 @@ struct SwiftTestView: View {
                     }
                 }
             }
+            if showingSheet.value {
+                Text(sheetText.string)
+                Button("Ok") {
+                    showingSheet.value = false
+                }
+            }
         }
     }
 }
@@ -362,7 +372,9 @@ class SwiftTestUI: NSObject, TestUI {
     let secondaryText = ObservableString()
     let showing = ObservableBool()
     let showingContinueTestingDialog = ObservableBool()
+    let showingSheet = ObservableBool()
     let continueTestingDialogText = ObservableString()
+    let sheetText = ObservableString()
 
     func attach(_ observer: TestUIObserver!) {
         observableObserver.observer = observer
@@ -412,7 +424,10 @@ class SwiftTestUI: NSObject, TestUI {
         continueTestingDialogText.string = something
     }
 
-    func showSheet(_: String!) {}
+    func showSheet(_ something: String!) {
+        showingSheet.value = true
+        sheetText.string = something
+    }
 }
 
 struct SwiftSyllablesView: View {
