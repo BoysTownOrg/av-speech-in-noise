@@ -622,15 +622,15 @@ struct SwiftChooseKeywordsView: View {
                 Text(textPrecedingFirstKeywordButton.string)
                 Button(firstKeywordButtonText.string, action: {
                     observableObserver.observer?.notifyThatFirstKeywordButtonIsClicked()
-                })
+                }).disabled(!firstKeywordCorrect_.value)
                 Text(textFollowingFirstKeywordButton.string)
                 Button(secondKeywordButtonText.string, action: {
                     observableObserver.observer?.notifyThatSecondKeywordButtonIsClicked()
-                })
+                }).disabled(!secondKeywordCorrect_.value)
                 Text(textFollowingSecondKeywordButton.string)
                 Button(thirdKeywordButtonText.string, action: {
                     observableObserver.observer?.notifyThatThirdKeywordButtonIsClicked()
-                })
+                }).disabled(!thirdKeywordCorrect_.value)
                 Text(textFollowingThirdKeywordButton.string)
             }
             HStack {
