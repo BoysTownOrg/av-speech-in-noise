@@ -305,19 +305,27 @@ struct SwiftTestView: View {
     @ObservedObject var observableObserver: TestUIObserverObservable
     @ObservedObject var exitTestButtonEnabled: ObservableBool
     @ObservedObject var nextTrialButtonEnabled: ObservableBool
+    @ObservedObject var primaryText: ObservableString
+    @ObservedObject var secondaryText: ObservableString
 
     init(ui: SwiftTestUI) {
         observableObserver = ui.observableObserver
         exitTestButtonEnabled = ui.exitTestButtonEnabled
         nextTrialButtonEnabled = ui.nextTrialButtonEnabled
+        primaryText = ui.primaryText
+        secondaryText = ui.secondaryText
     }
 
     var body: some View {
-        Button(action: {
-            observableObserver.observer?.exitTest()
-        }) {
-            Text("Exit Test")
-        }.disabled(!exitTestButtonEnabled.value)
+        HStack {
+            Button(action: {
+                observableObserver.observer?.exitTest()
+            }) {
+                Text("Exit Test")
+            }.disabled(!exitTestButtonEnabled.value)
+            Text(primaryText.string)
+            Text(secondaryText.string)
+        }
         Button(action: {
             observableObserver.observer?.playTrial()
         }) {
@@ -332,6 +340,8 @@ class SwiftTestUI: NSObject, TestUI {
     let observableObserver = TestUIObserverObservable()
     let exitTestButtonEnabled = ObservableBool()
     let nextTrialButtonEnabled = ObservableBool()
+    let primaryText = ObservableString()
+    let secondaryText = ObservableString()
 
     func attach(_ observer: TestUIObserver!) {
         observableObserver.observer = observer
@@ -349,9 +359,13 @@ class SwiftTestUI: NSObject, TestUI {
 
     func hide() {}
 
-    func display(_: String!) {}
+    func display(_ something: String!) {
+        primaryText.string = something
+    }
 
-    func secondaryDisplay(_: String!) {}
+    func secondaryDisplay(_ something: String!) {
+        secondaryText.string = something
+    }
 
     func showNextTrialButton() {
         nextTrialButtonEnabled.value = true
