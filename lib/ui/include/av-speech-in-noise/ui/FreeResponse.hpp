@@ -3,49 +3,46 @@
 
 #include "Task.hpp"
 #include "Test.hpp"
+#include "View.hpp"
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
 
-namespace av_speech_in_noise {
-class FreeResponseControl {
+namespace av_speech_in_noise::free_response {
+class Control {
   public:
     class Observer {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
     };
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(FreeResponseControl);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
     virtual void attach(Observer *) = 0;
     virtual auto flagged() -> bool = 0;
     virtual auto freeResponse() -> std::string = 0;
 };
 
-class FreeResponseView {
+class View : public av_speech_in_noise::View {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(FreeResponseView);
-    virtual void showFreeResponseSubmission() = 0;
-    virtual void hideFreeResponseSubmission() = 0;
     virtual void clearFreeResponse() = 0;
     virtual void clearFlag() = 0;
 };
 
-class FreeResponseController : public TaskController,
-                               public FreeResponseControl::Observer {
+class Controller : public TaskController, public Control::Observer {
   public:
-    FreeResponseController(TestController &, Model &, FreeResponseControl &);
+    Controller(TestController &, Model &, Control &);
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
     TestController &testController;
     Model &model;
-    FreeResponseControl &control;
+    Control &control;
 };
 
-class FreeResponsePresenter : public TaskPresenter {
+class Presenter : public TaskPresenter {
   public:
-    FreeResponsePresenter(TestView &, FreeResponseView &);
+    Presenter(TestView &, View &);
     void start() override;
     void stop() override;
     void hideResponseSubmission() override;
@@ -53,7 +50,7 @@ class FreeResponsePresenter : public TaskPresenter {
 
   private:
     TestView &testView;
-    FreeResponseView &view;
+    View &view;
 };
 }
 

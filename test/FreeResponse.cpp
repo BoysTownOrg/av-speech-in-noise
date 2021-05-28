@@ -6,9 +6,9 @@
 #include <gtest/gtest.h>
 #include <utility>
 
-namespace av_speech_in_noise {
+namespace av_speech_in_noise::free_response {
 namespace {
-class FreeResponseControlStub : public FreeResponseControl {
+class ControlStub : public Control {
   public:
     void notifyThatSubmitButtonHasBeenClicked() {
         listener_->notifyThatSubmitButtonHasBeenClicked();
@@ -30,19 +30,15 @@ class FreeResponseControlStub : public FreeResponseControl {
     bool flagged_{};
 };
 
-class FreeResponseViewStub : public FreeResponseView {
+class ViewStub : public View {
   public:
-    void showFreeResponseSubmission() override {
-        freeResponseSubmissionShown_ = true;
-    }
+    void show() override { freeResponseSubmissionShown_ = true; }
 
     [[nodiscard]] auto freeResponseSubmissionShown() const -> bool {
         return freeResponseSubmissionShown_;
     }
 
-    void hideFreeResponseSubmission() override {
-        freeResponseSubmissionHidden_ = true;
-    }
+    void hide() override { freeResponseSubmissionHidden_ = true; }
 
     [[nodiscard]] auto freeResponseSubmissionHidden() const -> bool {
         return freeResponseSubmissionHidden_;
@@ -65,7 +61,7 @@ class FreeResponseViewStub : public FreeResponseView {
     bool flagCleared_{};
 };
 
-void notifyThatSubmitButtonHasBeenClicked(FreeResponseControlStub &view) {
+void notifyThatSubmitButtonHasBeenClicked(ControlStub &view) {
     view.notifyThatSubmitButtonHasBeenClicked();
 }
 
@@ -73,24 +69,24 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class FreeResponseControllerTests : public ::testing::Test {
+class ControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
-    FreeResponseControlStub control;
+    ControlStub control;
     TestControllerStub testController;
-    FreeResponseController controller{testController, model, control};
+    Controller controller{testController, model, control};
 };
 
-class FreeResponsePresenterTests : public ::testing::Test {
+class PresenterTests : public ::testing::Test {
   protected:
     TestViewStub testView;
-    FreeResponseViewStub view;
-    FreeResponsePresenter presenter{testView, view};
+    ViewStub view;
+    Presenter presenter{testView, view};
 };
 
-#define FREE_RESPONSE_CONTROLLER_TEST(a) TEST_F(FreeResponseControllerTests, a)
+#define FREE_RESPONSE_CONTROLLER_TEST(a) TEST_F(ControllerTests, a)
 
-#define FREE_RESPONSE_PRESENTER_TEST(a) TEST_F(FreeResponsePresenterTests, a)
+#define FREE_RESPONSE_PRESENTER_TEST(a) TEST_F(PresenterTests, a)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).freeResponseSubmissionHidden())

@@ -1,13 +1,13 @@
 #include "FreeResponse.hpp"
 
-namespace av_speech_in_noise {
-FreeResponseController::FreeResponseController(
-    TestController &testController, Model &model, FreeResponseControl &control)
+namespace av_speech_in_noise::free_response {
+Controller::Controller(
+    TestController &testController, Model &model, Control &control)
     : testController{testController}, model{model}, control{control} {
     control.attach(this);
 }
 
-void FreeResponseController::notifyThatSubmitButtonHasBeenClicked() {
+void Controller::notifyThatSubmitButtonHasBeenClicked() {
     FreeResponse freeResponse;
     freeResponse.flagged = control.flagged();
     freeResponse.response = control.freeResponse();
@@ -15,21 +15,18 @@ void FreeResponseController::notifyThatSubmitButtonHasBeenClicked() {
     testController.notifyThatUserIsDoneResponding();
 }
 
-FreeResponsePresenter::FreeResponsePresenter(
-    TestView &testView, FreeResponseView &view)
+Presenter::Presenter(TestView &testView, View &view)
     : testView{testView}, view{view} {}
 
-void FreeResponsePresenter::start() { testView.showNextTrialButton(); }
+void Presenter::start() { testView.showNextTrialButton(); }
 
-void FreeResponsePresenter::stop() { view.hideFreeResponseSubmission(); }
+void Presenter::stop() { view.hide(); }
 
-void FreeResponsePresenter::hideResponseSubmission() {
-    view.hideFreeResponseSubmission();
-}
+void Presenter::hideResponseSubmission() { view.hide(); }
 
-void FreeResponsePresenter::showResponseSubmission() {
+void Presenter::showResponseSubmission() {
     view.clearFreeResponse();
     view.clearFlag();
-    view.showFreeResponseSubmission();
+    view.show();
 }
 }
