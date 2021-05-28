@@ -26,21 +26,17 @@ class ControlStub : public Control {
 
 class ViewStub : public View {
   public:
-    void show() override { evaluationButtonsShown_ = true; }
+    void show() override { shown_ = true; }
 
-    [[nodiscard]] auto evaluationButtonsShown() const -> bool {
-        return evaluationButtonsShown_;
-    }
+    [[nodiscard]] auto shown() const -> bool { return shown_; }
 
-    void hide() override { evaluationButtonsHidden_ = true; }
+    void hide() override { hidden_ = true; }
 
-    [[nodiscard]] auto evaluationButtonsHidden() const -> bool {
-        return evaluationButtonsHidden_;
-    }
+    [[nodiscard]] auto hidden() const -> bool { return hidden_; }
 
   private:
-    bool evaluationButtonsShown_{};
-    bool evaluationButtonsHidden_{};
+    bool shown_{};
+    bool hidden_{};
 };
 
 void notifyThatIncorrectButtonHasBeenClicked(ControlStub &view) {
@@ -76,7 +72,7 @@ class SubmittingPassFailPresenterTests : public ::testing::Test {
 #define PASS_FAIL_PRESENTER_TEST(a) TEST_F(SubmittingPassFailPresenterTests, a)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).evaluationButtonsHidden())
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).hidden())
 
 PASS_FAIL_PRESENTER_TEST(presenterHidesResponseSubmission) {
     presenter.hideResponseSubmission();
@@ -96,7 +92,7 @@ PASS_FAIL_PRESENTER_TEST(presenterShowsReadyButtonWhenStarted) {
 PASS_FAIL_PRESENTER_TEST(
     presenterShowsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.evaluationButtonsShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
 }
 
 PASS_FAIL_CONTROLLER_TEST(
