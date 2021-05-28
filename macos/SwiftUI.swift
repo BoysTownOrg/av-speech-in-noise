@@ -307,6 +307,8 @@ struct SwiftTestView: View {
     @ObservedObject var primaryText: ObservableString
     @ObservedObject var secondaryText: ObservableString
     @ObservedObject var showing: ObservableBool
+    @ObservedObject var showingContinueTestingDialog: ObservableBool
+    @ObservedObject var continueTestingDialogText: ObservableString
 
     init(ui: SwiftTestUI) {
         observableObserver = ui.observableObserver
@@ -315,6 +317,8 @@ struct SwiftTestView: View {
         primaryText = ui.primaryText
         secondaryText = ui.secondaryText
         showing = ui.showing
+        showingContinueTestingDialog = ui.showingContinueTestingDialog
+        continueTestingDialogText = ui.continueTestingDialogText
     }
 
     var body: some View {
@@ -335,6 +339,17 @@ struct SwiftTestView: View {
             }
             .disabled(!nextTrialButtonEnabled.value)
             .padding(.top, 40).padding(.bottom)
+            if showingContinueTestingDialog.value {
+                Text(continueTestingDialogText.string)
+                HStack {
+                    Button("Exit") {
+                        observableObserver.observer?.declineContinuingTesting()
+                    }
+                    Button("Continue") {
+                        observableObserver.observer?.acceptContinuingTesting()
+                    }
+                }
+            }
         }
     }
 }
@@ -346,6 +361,8 @@ class SwiftTestUI: NSObject, TestUI {
     let primaryText = ObservableString()
     let secondaryText = ObservableString()
     let showing = ObservableBool()
+    let showingContinueTestingDialog = ObservableBool()
+    let continueTestingDialogText = ObservableString()
 
     func attach(_ observer: TestUIObserver!) {
         observableObserver.observer = observer
@@ -383,11 +400,17 @@ class SwiftTestUI: NSObject, TestUI {
         nextTrialButtonEnabled.value = false
     }
 
-    func showContinueTestingDialog() {}
+    func showContinueTestingDialog() {
+        showingContinueTestingDialog.value = true
+    }
 
-    func hideContinueTestingDialog() {}
+    func hideContinueTestingDialog() {
+        showingContinueTestingDialog.value = false
+    }
 
-    func setContinueTestingDialogMessage(_: String!) {}
+    func setContinueTestingDialogMessage(_ something: String!) {
+        continueTestingDialogText.string = something
+    }
 
     func showSheet(_: String!) {}
 }
