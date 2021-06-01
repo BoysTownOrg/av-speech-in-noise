@@ -344,22 +344,28 @@ struct SwiftTestView: View {
                 }
                 .disabled(!nextTrialButtonEnabled.value)
                 .padding(.top, 40).padding(.bottom)
-                if showingContinueTestingDialog.value {
-                    Text(continueTestingDialogText.string)
-                    HStack {
-                        Button("Exit") {
-                            observableObserver.observer?.declineContinuingTesting()
-                        }
-                        Button("Continue") {
-                            observableObserver.observer?.acceptContinuingTesting()
-                        }
-                    }
-                }
             }
         }.alert(isPresented: $showingSheet.value) {
             Alert(
                 title: Text("FYI"),
                 message: Text(sheetText.string)
+            )
+        }.alert(isPresented: $showingContinueTestingDialog.value) {
+            Alert(
+                title: Text("Question"),
+                message: Text(continueTestingDialogText.string),
+                primaryButton: .default(
+                    Text("Continue"),
+                    action: {
+                        observableObserver.observer?.acceptContinuingTesting()
+                    }
+                ),
+                secondaryButton: .cancel(
+                    Text("Exit"),
+                    action: {
+                        observableObserver.observer?.declineContinuingTesting()
+                    }
+                )
             )
         }
     }
