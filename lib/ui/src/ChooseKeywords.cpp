@@ -6,16 +6,15 @@
 #include <algorithm>
 #include <iterator>
 
-namespace av_speech_in_noise {
-ChooseKeywordsController::ChooseKeywordsController(
-    TestController &testController, Model &model,
-    ChooseKeywordsControl &control, ChooseKeywordsPresenter &presenter)
+namespace av_speech_in_noise::submitting_keywords {
+Controller::Controller(TestController &testController, Model &model,
+    Control &control, Presenter &presenter)
     : testController{testController}, model{model}, control{control},
       presenter{presenter} {
     control.attach(this);
 }
 
-void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
+void Controller::notifyThatSubmitButtonHasBeenClicked() {
     ThreeKeywordsResponse threeKeywords{};
     threeKeywords.firstCorrect = control.firstKeywordCorrect();
     threeKeywords.secondCorrect = control.secondKeywordCorrect();
@@ -25,27 +24,27 @@ void ChooseKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
     testController.notifyThatUserIsDoneResponding();
 }
 
-void ChooseKeywordsController::notifyThatAllWrongButtonHasBeenClicked() {
+void Controller::notifyThatAllWrongButtonHasBeenClicked() {
     presenter.markAllKeywordsIncorrect();
 }
 
-void ChooseKeywordsController::notifyThatResetButtonIsClicked() {
+void Controller::notifyThatResetButtonIsClicked() {
     presenter.markAllKeywordsCorrect();
 }
 
-void ChooseKeywordsController::notifyThatFirstKeywordButtonIsClicked() {
+void Controller::notifyThatFirstKeywordButtonIsClicked() {
     presenter.markFirstKeywordIncorrect();
 }
 
-void ChooseKeywordsController::notifyThatSecondKeywordButtonIsClicked() {
+void Controller::notifyThatSecondKeywordButtonIsClicked() {
     presenter.markSecondKeywordIncorrect();
 }
 
-void ChooseKeywordsController::notifyThatThirdKeywordButtonIsClicked() {
+void Controller::notifyThatThirdKeywordButtonIsClicked() {
     presenter.markThirdKeywordIncorrect();
 }
 
-static void hideResponseSubmission(ChooseKeywordsView &view) {
+static void hideResponseSubmission(View &view) {
     view.hideResponseSubmission();
 }
 
@@ -68,21 +67,20 @@ static auto transformToSentencesWithThreeKeywordsFromExpectedFileNameSentence(
     return map;
 }
 
-ChooseKeywordsPresenterImpl::ChooseKeywordsPresenterImpl(Model &model,
-    TestView &testView, ChooseKeywordsView &view,
+PresenterImpl::PresenterImpl(Model &model, TestView &testView, View &view,
     const std::vector<SentenceWithThreeKeywords> &sentencesWithThreeKeywords)
     : sentencesWithThreeKeywordsFromExpectedFileNameSentence{transformToSentencesWithThreeKeywordsFromExpectedFileNameSentence(
           sentencesWithThreeKeywords)},
       model{model}, testView{testView}, view{view} {}
 
-void ChooseKeywordsPresenterImpl::start() { testView.showNextTrialButton(); }
+void PresenterImpl::start() { testView.showNextTrialButton(); }
 
-void ChooseKeywordsPresenterImpl::hideResponseSubmission() {
-    av_speech_in_noise::hideResponseSubmission(view);
+void PresenterImpl::hideResponseSubmission() {
+    submitting_keywords::hideResponseSubmission(view);
 }
 
-void ChooseKeywordsPresenterImpl::stop() {
-    av_speech_in_noise::hideResponseSubmission(view);
+void PresenterImpl::stop() {
+    submitting_keywords::hideResponseSubmission(view);
 }
 
 static auto mlstFileNameSentence(Model &model) -> std::string {
@@ -94,7 +92,7 @@ static auto mlstFileNameSentence(Model &model) -> std::string {
     return withoutApostrophesNorPeriods(mlstFileNameSentence);
 }
 
-void ChooseKeywordsPresenterImpl::showResponseSubmission() {
+void PresenterImpl::showResponseSubmission() {
     if (sentencesWithThreeKeywordsFromExpectedFileNameSentence.count(
             mlstFileNameSentence(model)) != 0)
         set(sentencesWithThreeKeywordsFromExpectedFileNameSentence.at(
@@ -131,7 +129,7 @@ constexpr auto captureAnythingExceptTrailingSpace{
 constexpr auto captureAnythingExceptLeadingOrTrailingSpace{
     concatenate(spaceIfPresent, captureAnythingExceptTrailingSpace.c)};
 
-void ChooseKeywordsPresenterImpl::set(
+void PresenterImpl::set(
     const SentenceWithThreeKeywords &sentenceWithThreeKeywords) {
     std::smatch match;
     std::regex_search(sentenceWithThreeKeywords.sentence, match,
@@ -151,25 +149,25 @@ void ChooseKeywordsPresenterImpl::set(
     view.setTextFollowingThirdKeywordButton(match[4]);
 }
 
-void ChooseKeywordsPresenterImpl::markFirstKeywordIncorrect() {
+void PresenterImpl::markFirstKeywordIncorrect() {
     view.markFirstKeywordIncorrect();
 }
 
-void ChooseKeywordsPresenterImpl::markSecondKeywordIncorrect() {
+void PresenterImpl::markSecondKeywordIncorrect() {
     view.markSecondKeywordIncorrect();
 }
 
-void ChooseKeywordsPresenterImpl::markThirdKeywordIncorrect() {
+void PresenterImpl::markThirdKeywordIncorrect() {
     view.markThirdKeywordIncorrect();
 }
 
-void ChooseKeywordsPresenterImpl::markAllKeywordsIncorrect() {
+void PresenterImpl::markAllKeywordsIncorrect() {
     view.markFirstKeywordIncorrect();
     view.markSecondKeywordIncorrect();
     view.markThirdKeywordIncorrect();
 }
 
-void ChooseKeywordsPresenterImpl::markAllKeywordsCorrect() {
+void PresenterImpl::markAllKeywordsCorrect() {
     view.markFirstKeywordCorrect();
     view.markSecondKeywordCorrect();
     view.markThirdKeywordCorrect();
@@ -194,7 +192,7 @@ auto sentencesWithThreeKeywords(std::string_view s)
     return sentencesWithThreeKeywords;
 }
 
-void ChooseKeywordsPresenterImpl::complete() {
+void PresenterImpl::complete() {
     const auto results{model.keywordsTestResults()};
     std::stringstream stream;
     stream << results.totalCorrect << " (" << std::setprecision(3)

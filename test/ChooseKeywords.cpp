@@ -5,9 +5,9 @@
 #include <av-speech-in-noise/ui/ChooseKeywords.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise {
+namespace av_speech_in_noise::submitting_keywords {
 namespace {
-class ChooseKeywordsViewStub : public ChooseKeywordsView {
+class ViewStub : public View {
   public:
     [[nodiscard]] auto responseSubmissionHidden() const -> bool {
         return responseSubmissionHidden_;
@@ -148,7 +148,7 @@ class ChooseKeywordsViewStub : public ChooseKeywordsView {
     bool markThirdKeywordCorrectCalled_{};
 };
 
-class ChooseKeywordsControlStub : public ChooseKeywordsControl {
+class ControlStub : public Control {
   public:
     void setFlagged() { flagged_ = true; }
 
@@ -200,7 +200,7 @@ class ChooseKeywordsControlStub : public ChooseKeywordsControl {
     bool thirdKeywordCorrect_{};
 };
 
-class ChooseKeywordsPresenterStub : public ChooseKeywordsPresenter {
+class PresenterStub : public Presenter {
   public:
     void markFirstKeywordIncorrect() override {
         markFirstKeywordIncorrectCalled_ = true;
@@ -248,41 +248,37 @@ class ChooseKeywordsPresenterStub : public ChooseKeywordsPresenter {
     bool allKeywordsMarkedCorrect_{};
 };
 
-auto markFirstKeywordIncorrectCalled(ChooseKeywordsPresenterStub &control)
-    -> bool {
+auto markFirstKeywordIncorrectCalled(PresenterStub &control) -> bool {
     return control.markFirstKeywordIncorrectCalled();
 }
 
-auto markSecondKeywordIncorrectCalled(ChooseKeywordsPresenterStub &control)
-    -> bool {
+auto markSecondKeywordIncorrectCalled(PresenterStub &control) -> bool {
     return control.markSecondKeywordIncorrectCalled();
 }
 
-auto markThirdKeywordIncorrectCalled(ChooseKeywordsPresenterStub &control)
-    -> bool {
+auto markThirdKeywordIncorrectCalled(PresenterStub &control) -> bool {
     return control.markThirdKeywordIncorrectCalled();
 }
 
-void notifyThatSubmitButtonHasBeenClicked(ChooseKeywordsControlStub &control) {
+void notifyThatSubmitButtonHasBeenClicked(ControlStub &control) {
     control.notifyThatSubmitButtonHasBeenClicked();
 }
 
 class ChooseKeywordsControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
-    ChooseKeywordsControlStub control;
-    ChooseKeywordsPresenterStub presenter;
+    ControlStub control;
+    PresenterStub presenter;
     TestControllerStub testController;
-    ChooseKeywordsController controller{
-        testController, model, control, presenter};
+    Controller controller{testController, model, control, presenter};
 };
 
 class ChooseKeywordsPresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
     TestViewStub testView;
-    ChooseKeywordsViewStub view;
-    ChooseKeywordsPresenterImpl presenter{model, testView, view,
+    ViewStub view;
+    PresenterImpl presenter{model, testView, view,
         {{"The visitors stretched before dinner.", "visitors", "stretched",
              "dinner"},
             {"Daddy's mouth is turning yellow.", "Daddy's", "mouth", "turning"},

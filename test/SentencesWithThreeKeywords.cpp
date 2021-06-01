@@ -2,7 +2,7 @@
 #include <av-speech-in-noise/ui/ChooseKeywords.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise {
+namespace av_speech_in_noise::submitting_keywords {
 namespace {
 
 class SentencesWithThreeKeywordsTests : public ::testing::Test {
