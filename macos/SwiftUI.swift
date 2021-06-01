@@ -326,33 +326,27 @@ struct SwiftTestView: View {
     }
 
     var body: some View {
-        VStack {
-            if showing.value {
-                HStack {
-                    Button(action: {
-                        observableObserver.observer?.exitTest()
-                    }) {
-                        Text("Exit Test")
-                    }.disabled(!exitTestButtonEnabled.value)
-                    Text(primaryText.string)
-                    Text(secondaryText.string)
-                }
+        if showing.value {
+            HStack {
                 Button(action: {
-                    observableObserver.observer?.playTrial()
+                    observableObserver.observer?.exitTest()
                 }) {
-                    Text("Play Trial")
-                }
-                .disabled(!nextTrialButtonEnabled.value)
-                .padding(.top, 40).padding(.bottom)
+                    Text("Exit Test")
+                }.disabled(!exitTestButtonEnabled.value)
+                Text(primaryText.string)
+                Text(secondaryText.string)
             }
-        }.alert(isPresented: $showingSheet.value) {
+            Button(action: {
+                observableObserver.observer?.playTrial()
+            }) {
+                Text("Play Trial")
+            }
+            .disabled(!nextTrialButtonEnabled.value)
+            .padding(.top, 40).padding(.bottom)
+        }
+        VStack {}.alert(isPresented: $showingContinueTestingDialog.value) {
             Alert(
-                title: Text("FYI"),
-                message: Text(sheetText.string)
-            )
-        }.alert(isPresented: $showingContinueTestingDialog.value) {
-            Alert(
-                title: Text("Question"),
+                title: Text("Results"),
                 message: Text(continueTestingDialogText.string),
                 primaryButton: .default(
                     Text("Continue"),
@@ -368,6 +362,13 @@ struct SwiftTestView: View {
                 )
             )
         }
+        VStack {}
+            .alert(isPresented: $showingSheet.value) {
+                Alert(
+                    title: Text("Results"),
+                    message: Text(sheetText.string)
+                )
+            }
     }
 }
 
@@ -482,17 +483,19 @@ struct SwiftSyllablesView: View {
 
     var body: some View {
         if showing.value {
-            Toggle("flagged", isOn: $flagged.value)
-            ForEach(syllables, content: { row in
-                HStack {
-                    ForEach(row.items, content: { column in
-                        Button(column.string, action: {
-                            syllable.string = column.string
-                            observableObserver.observer?.notifyThatResponseButtonHasBeenClicked()
+            Form {
+                Toggle("flagged", isOn: $flagged.value)
+                ForEach(syllables, content: { row in
+                    HStack {
+                        ForEach(row.items, content: { column in
+                            Button(column.string, action: {
+                                syllable.string = column.string
+                                observableObserver.observer?.notifyThatResponseButtonHasBeenClicked()
+                            })
                         })
-                    })
-                }
-            })
+                    }
+                })
+            }.padding()
         }
     }
 }
@@ -624,33 +627,35 @@ struct SwiftChooseKeywordsView: View {
 
     var body: some View {
         if showing.value {
-            Toggle("flagged", isOn: $flagged_.value)
-            HStack {
-                Text(textPrecedingFirstKeywordButton.string)
-                Button(firstKeywordButtonText.string, action: {
-                    observableObserver.observer?.notifyThatFirstKeywordButtonIsClicked()
-                }).disabled(!firstKeywordCorrect_.value)
-                Text(textFollowingFirstKeywordButton.string)
-                Button(secondKeywordButtonText.string, action: {
-                    observableObserver.observer?.notifyThatSecondKeywordButtonIsClicked()
-                }).disabled(!secondKeywordCorrect_.value)
-                Text(textFollowingSecondKeywordButton.string)
-                Button(thirdKeywordButtonText.string, action: {
-                    observableObserver.observer?.notifyThatThirdKeywordButtonIsClicked()
-                }).disabled(!thirdKeywordCorrect_.value)
-                Text(textFollowingThirdKeywordButton.string)
-            }
-            HStack {
-                Button("Reset", action: {
-                    observableObserver.observer?.notifyThatResetButtonIsClicked()
-                })
-                Button("All wrong", action: {
-                    observableObserver.observer?.notifyThatAllWrongButtonHasBeenClicked()
-                })
-                Button("Submit", action: {
-                    observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
-                })
-            }
+            Form {
+                Toggle("flagged", isOn: $flagged_.value)
+                HStack {
+                    Text(textPrecedingFirstKeywordButton.string)
+                    Button(firstKeywordButtonText.string, action: {
+                        observableObserver.observer?.notifyThatFirstKeywordButtonIsClicked()
+                    }).disabled(!firstKeywordCorrect_.value)
+                    Text(textFollowingFirstKeywordButton.string)
+                    Button(secondKeywordButtonText.string, action: {
+                        observableObserver.observer?.notifyThatSecondKeywordButtonIsClicked()
+                    }).disabled(!secondKeywordCorrect_.value)
+                    Text(textFollowingSecondKeywordButton.string)
+                    Button(thirdKeywordButtonText.string, action: {
+                        observableObserver.observer?.notifyThatThirdKeywordButtonIsClicked()
+                    }).disabled(!thirdKeywordCorrect_.value)
+                    Text(textFollowingThirdKeywordButton.string)
+                }
+                HStack {
+                    Button("Reset", action: {
+                        observableObserver.observer?.notifyThatResetButtonIsClicked()
+                    })
+                    Button("All wrong", action: {
+                        observableObserver.observer?.notifyThatAllWrongButtonHasBeenClicked()
+                    })
+                    Button("Submit", action: {
+                        observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
+                    })
+                }
+            }.padding()
         }
     }
 }
@@ -773,7 +778,7 @@ struct SwiftCorrectKeywordsView: View {
                 Button("Submit", action: {
                     observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
                 })
-            }
+            }.padding()
         }
     }
 }
@@ -811,14 +816,16 @@ struct SwiftPassFailView: View {
 
     var body: some View {
         if showing.value {
-            HStack {
-                Button("Incorrect", action: {
-                    observableObserver.observer?.notifyThatIncorrectButtonHasBeenClicked()
-                })
-                Button("Correct", action: {
-                    observableObserver.observer?.notifyThatCorrectButtonHasBeenClicked()
-                })
-            }
+            Form {
+                HStack {
+                    Button("Incorrect", action: {
+                        observableObserver.observer?.notifyThatIncorrectButtonHasBeenClicked()
+                    })
+                    Button("Correct", action: {
+                        observableObserver.observer?.notifyThatCorrectButtonHasBeenClicked()
+                    })
+                }
+            }.padding()
         }
     }
 }
