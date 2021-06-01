@@ -84,7 +84,7 @@
 
 @implementation PassFailUIObserverImpl {
   @public
-    av_speech_in_noise::PassFailControl::Observer *observer;
+    av_speech_in_noise::submitting_pass_fail::Control::Observer *observer;
 }
 
 - (void)notifyThatCorrectButtonHasBeenClicked {
@@ -423,15 +423,17 @@ void CorrectKeywordsUIImpl::hideCorrectKeywordsSubmission() {
     [ui hideCorrectKeywordsSubmission];
 }
 
-PassFailUIImpl::PassFailUIImpl(NSObject<PassFailUI> *ui) : ui{ui} {}
+namespace submitting_pass_fail {
+UIImpl::UIImpl(NSObject<PassFailUI> *ui) : ui{ui} {}
 
-void PassFailUIImpl::attach(Observer *a) {
+void UIImpl::attach(Observer *a) {
     const auto adapted{[[PassFailUIObserverImpl alloc] init]};
     adapted->observer = a;
     [ui attach:adapted];
 }
 
-void PassFailUIImpl::showEvaluationButtons() { [ui showEvaluationButtons]; }
+void UIImpl::show() { [ui showEvaluationButtons]; }
 
-void PassFailUIImpl::hideEvaluationButtons() { [ui hideEvaluationButtons]; }
+void UIImpl::hide() { [ui hideEvaluationButtons]; }
+}
 }

@@ -13,6 +13,7 @@ class FixedLevelMethod : public virtual TestMethod {
     virtual void initialize(
         const FixedLevelFixedTrialsTest &, TargetPlaylist *) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
+    virtual void submit(const FreeResponse &) = 0;
     using TestMethod::submit;
     virtual void writeLastConsonant(OutputFile &) = 0;
     virtual auto keywordsTestResults() -> KeywordsTestResults = 0;

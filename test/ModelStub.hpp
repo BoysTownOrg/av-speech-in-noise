@@ -100,14 +100,6 @@ class ModelStub : public Model {
         return rightSpeakerCalibration_;
     }
 
-    [[nodiscard]] auto incorrectResponseSubmitted() const {
-        return incorrectResponseSubmitted_;
-    }
-
-    [[nodiscard]] auto correctResponseSubmitted() const {
-        return correctResponseSubmitted_;
-    }
-
     auto consonantResponse() { return consonantResponse_; }
 
     [[nodiscard]] auto correctKeywords() const -> int {
@@ -226,12 +218,6 @@ class ModelStub : public Model {
         rightSpeakerCalibration_ = p;
     }
 
-    void submitCorrectResponse() override { correctResponseSubmitted_ = true; }
-
-    void submitIncorrectResponse() override {
-        incorrectResponseSubmitted_ = true;
-    }
-
     void submit(const CorrectKeywords &s) override { correctKeywords_ = s; }
 
     void submit(const ConsonantResponse &s) override { consonantResponse_ = s; }
@@ -292,8 +278,6 @@ class ModelStub : public Model {
     bool fixedLevelTestWithEachTargetNTimesInitialized_{};
     bool initializedWithDelayedMasker_{};
     bool adaptiveTestInitializedWithEyeTracking_{};
-    bool correctResponseSubmitted_{};
-    bool incorrectResponseSubmitted_{};
     bool initializedWithCyclicTargets_{};
     bool adaptiveTestInitializedWithCyclicTargetsAndEyeTracking_{};
     bool adaptiveTestRestartedWhilePreservingCyclicTargets_{};

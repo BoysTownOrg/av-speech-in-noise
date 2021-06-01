@@ -421,7 +421,7 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
     static ChooseKeywordsUIImpl chooseKeywordsUIAdapted{chooseKeywordsUI};
     static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
-    static PassFailUIImpl passFailUIAdapted{passFailUI};
+    static submitting_pass_fail::UIImpl passFailUIAdapted{passFailUI};
     eye_tracker_calibration::initialize(
         eyeTracker, eyeTrackerMenu, eyeTrackerCalibrationValidationTesterUI);
     initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,

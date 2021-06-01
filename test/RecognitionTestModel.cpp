@@ -30,10 +30,6 @@ static void assertEqual(
 namespace {
 class TestMethodStub : public TestMethod {
   public:
-    auto submittedFreeResponse() const -> bool {
-        return submittedFreeResponse_;
-    }
-
     auto threeKeywords() -> const ThreeKeywordsResponse * {
         return threeKeywords_;
     }
@@ -64,11 +60,6 @@ class TestMethodStub : public TestMethod {
 
     void setCurrentTargetWhenNextTarget(std::string s) {
         currentTargetWhenNextTarget_ = std::move(s);
-    }
-
-    void submit(const FreeResponse &) override {
-        insert(log_, "submitFreeResponse ");
-        submittedFreeResponse_ = true;
     }
 
     void submit(const ThreeKeywordsResponse &p) override {
@@ -109,7 +100,6 @@ class TestMethodStub : public TestMethod {
     const SyllableResponse *syllableResponse_{};
     int snr_dB_{};
     bool complete_{};
-    bool submittedFreeResponse_{};
 };
 
 class UseCase {
@@ -340,28 +330,6 @@ class SubmittingCoordinateResponse : public UseCase {
 auto openSetAdaptiveTarget(OutputFileStub &file) -> std::string {
     return file.openSetAdaptiveTrial().target;
 }
-
-class SubmittingCorrectResponse : public TargetWritingUseCase {
-  public:
-    void run(RecognitionTestModelImpl &model) override {
-        model.submitCorrectResponse();
-    }
-
-    auto target(OutputFileStub &file) -> std::string override {
-        return openSetAdaptiveTarget(file);
-    }
-};
-
-class SubmittingIncorrectResponse : public TargetWritingUseCase {
-  public:
-    void run(RecognitionTestModelImpl &model) override {
-        model.submitIncorrectResponse();
-    }
-
-    auto target(OutputFileStub &file) -> std::string override {
-        return openSetAdaptiveTarget(file);
-    }
-};
 
 class EyeTrackerStub : public EyeTracker {
   public:
@@ -652,8 +620,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         &testMethod, test};
     PlayingTrial playingTrial;
     SubmittingCoordinateResponse submittingCoordinateResponse;
-    SubmittingCorrectResponse submittingCorrectResponse;
-    SubmittingIncorrectResponse submittingIncorrectResponse;
     FreeResponse freeResponse{};
     ThreeKeywordsResponse threeKeywords;
     SubmittingThreeKeywords submittingThreeKeywords{threeKeywords};
@@ -1272,16 +1238,6 @@ RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseIncrementsTrialNumber) {
     assertYieldsTrialNumber(submittingCoordinateResponse, 2);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submittingCorrectResponseIncrementsTrialNumber) {
-    run(initializingTest, model);
-    assertYieldsTrialNumber(submittingCorrectResponse, 2);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submittingIncorrectResponseIncrementsTrialNumber) {
-    run(initializingTest, model);
-    assertYieldsTrialNumber(submittingIncorrectResponse, 2);
-}
-
 RECOGNITION_TEST_MODEL_TEST(submittingThreeKeywordsIncrementsTrialNumber) {
     run(initializingTest, model);
     assertYieldsTrialNumber(submittingThreeKeywords, 2);
@@ -1321,18 +1277,6 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(submittingConsonantPassesNextTargetToTargetPlayer) {
     run(initializingTest, model);
     assertPassesNextTargetToPlayer(submittingConsonant);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submittingCorrectResponsePassesNextTargetToTargetPlayer) {
-    run(initializingTest, model);
-    assertPassesNextTargetToPlayer(submittingCorrectResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submittingIncorrectResponsePassesNextTargetToTargetPlayer) {
-    run(initializingTest, model);
-    assertPassesNextTargetToPlayer(submittingIncorrectResponse);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1415,18 +1359,6 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration) {
-    assertSeeksToRandomMaskerPositionWithinTrialDuration(
-        submittingCorrectResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitIncorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration) {
-    assertSeeksToRandomMaskerPositionWithinTrialDuration(
-        submittingIncorrectResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
     submitCorrectKeywordsSeeksToRandomMaskerPositionWithinTrialDuration) {
     assertSeeksToRandomMaskerPositionWithinTrialDuration(
         submittingCorrectKeywords);
@@ -1443,15 +1375,6 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(submitConsonantSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(submittingConsonant);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitCorrectResponseSeeksToRandomMaskerPosition) {
-    assertMaskerPlayerSeekedToRandomTime(submittingCorrectResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitIncorrectResponseSeeksToRandomMaskerPosition) {
-    assertMaskerPlayerSeekedToRandomTime(submittingIncorrectResponse);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSeeksToRandomMaskerPosition) {
@@ -1485,14 +1408,6 @@ RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSetsTargetPlayerLevel) {
 
 RECOGNITION_TEST_MODEL_TEST(submitConsonantSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingConsonant);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitCorrectResponseSetsTargetPlayerLevel) {
-    assertSetsTargetLevel(submittingCorrectResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitIncorrectResponseSetsTargetPlayerLevel) {
-    assertSetsTargetLevel(submittingIncorrectResponse);
 }
 
 void assertLevelSet(Calibration &calibration, PlayerLevelUseCase &useCase,
@@ -1571,16 +1486,6 @@ RECOGNITION_TEST_MODEL_TEST(submitSyllableSavesOutputFileAfterWritingTrial) {
 RECOGNITION_TEST_MODEL_TEST(
     submitCorrectKeywordsSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingCorrectKeywords);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectResponseSavesOutputFileAfterWritingTrial) {
-    assertSavesOutputFileAfterWritingTrial(submittingCorrectResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitIncorrectResponseSavesOutputFileAfterWritingTrial) {
-    assertSavesOutputFileAfterWritingTrial(submittingIncorrectResponse);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1704,17 +1609,6 @@ RECOGNITION_TEST_MODEL_TEST(submitConsonantDoesNotLoadNextTargetWhenComplete) {
 RECOGNITION_TEST_MODEL_TEST(
     submitCorrectKeywordsDoesNotLoadNextTargetWhenComplete) {
     assertResponseDoesNotLoadNextTargetWhenComplete(submittingCorrectKeywords);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectResponseDoesNotLoadNextTargetWhenComplete) {
-    assertResponseDoesNotLoadNextTargetWhenComplete(submittingCorrectResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitIncorrectResponseDoesNotLoadNextTargetWhenComplete) {
-    assertResponseDoesNotLoadNextTargetWhenComplete(
-        submittingIncorrectResponse);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

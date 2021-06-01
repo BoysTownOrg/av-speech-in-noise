@@ -23,8 +23,6 @@ class RecognitionTestModel {
     virtual void submit(const CorrectKeywords &) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
     virtual void submit(const SyllableResponse &) {}
-    virtual void submitCorrectResponse() = 0;
-    virtual void submitIncorrectResponse() = 0;
     virtual auto testComplete() -> bool = 0;
     virtual auto audioDevices() -> AudioDevices = 0;
     virtual auto trialNumber() -> int = 0;
