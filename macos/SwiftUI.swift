@@ -113,14 +113,12 @@ struct SettingsView: View {
 struct SwiftSessionView<Content: View>: View {
     @ObservedObject var showErrorMessage: ObservableBool
     @ObservedObject var errorMessage: ObservableString
-    @ObservedObject var showingTestSetup: ObservableBool
     let testSetupView: Content
     let ui: SwiftSessionUI
 
-    init(ui: SwiftSessionUI, showingTestSetup: ObservableBool, @ViewBuilder testSetupView: @escaping () -> Content) {
+    init(ui: SwiftSessionUI, @ViewBuilder testSetupView: @escaping () -> Content) {
         errorMessage = ui.errorMessage
         showErrorMessage = ui.showErrorMessage
-        self.showingTestSetup = showingTestSetup
         self.testSetupView = testSetupView()
         self.ui = ui
     }
@@ -132,16 +130,13 @@ struct SwiftSessionView<Content: View>: View {
                 message: Text(errorMessage.string)
             )
         }
-        if showingTestSetup.value {
-            testSetupView
-        } else {
-            SwiftTestView(ui: ui.testUI)
-            SwiftFreeResponseView(ui: ui.freeResponseUI)
-            SwiftSyllablesView(ui: ui.syllablesUI)
-            SwiftChooseKeywordsView(ui: ui.chooseKeywordsUI)
-            SwiftCorrectKeywordsView(ui: ui.correctKeywordsUI)
-            SwiftPassFailView(ui: ui.passFailUI)
-        }
+        testSetupView
+        SwiftTestView(ui: ui.testUI)
+        SwiftFreeResponseView(ui: ui.freeResponseUI)
+        SwiftSyllablesView(ui: ui.syllablesUI)
+        SwiftChooseKeywordsView(ui: ui.chooseKeywordsUI)
+        SwiftCorrectKeywordsView(ui: ui.correctKeywordsUI)
+        SwiftPassFailView(ui: ui.passFailUI)
     }
 }
 
@@ -182,6 +177,7 @@ struct SwiftTestSetupView: View {
     @ObservedObject var rmeSetting: ObservableString
     @ObservedObject var transducers: ObservableStringCollection
     @ObservedObject var observableObserver: TestSetupUIObserverObservable
+    @ObservedObject var showing: ObservableBool
     let testSettingsPathControl: NSPathControl
 
     init(ui: SwiftTestSetupUI, testSettingsPathControl: NSPathControl) {
@@ -193,57 +189,60 @@ struct SwiftTestSetupView: View {
         startingSnr = ui.startingSnr_
         transducer = ui.transducer_
         observableObserver = ui.observableObserver
+        showing = ui.showing
         self.testSettingsPathControl = testSettingsPathControl
         self.testSettingsPathControl.pathStyle = NSPathControl.Style.popUp
         self.testSettingsPathControl.allowedTypes = ["txt"]
     }
 
     var body: some View {
-        Form {
-            TextField(
-                "subject ID",
-                text: $subjectId.string
-            )
-            .disableAutocorrection(true)
-            TextField(
-                "tester ID",
-                text: $testerId.string
-            )
-            .disableAutocorrection(true)
-            TextField(
-                "session",
-                text: $session.string
-            )
-            .disableAutocorrection(true)
-            TextField(
-                "RME setting",
-                text: $rmeSetting.string
-            )
-            .disableAutocorrection(true)
-            Picker("Transducer", selection: $transducer.string) {
-                ForEach(transducers.items) {
-                    Text($0.string)
+        if showing.value {
+            Form {
+                TextField(
+                    "subject ID",
+                    text: $subjectId.string
+                )
+                .disableAutocorrection(true)
+                TextField(
+                    "tester ID",
+                    text: $testerId.string
+                )
+                .disableAutocorrection(true)
+                TextField(
+                    "session",
+                    text: $session.string
+                )
+                .disableAutocorrection(true)
+                TextField(
+                    "RME setting",
+                    text: $rmeSetting.string
+                )
+                .disableAutocorrection(true)
+                Picker("Transducer", selection: $transducer.string) {
+                    ForEach(transducers.items) {
+                        Text($0.string)
+                    }
                 }
-            }
-            HStack {
-                Wrap(testSettingsPathControl)
+                HStack {
+                    Wrap(testSettingsPathControl)
+                    Button(action: {
+                        observableObserver.observer?.notifyThatPlayCalibrationButtonHasBeenClicked()
+                    }) {
+                        Text("Play Calibration")
+                    }
+                }
+                TextField(
+                    "starting SNR (dB)",
+                    text: $startingSnr.string
+                )
+                .disableAutocorrection(true)
                 Button(action: {
-                    observableObserver.observer?.notifyThatPlayCalibrationButtonHasBeenClicked()
+                    observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
                 }) {
-                    Text("Play Calibration")
+                    Text("Confirm")
                 }
-            }
-            TextField(
-                "starting SNR (dB)",
-                text: $startingSnr.string
-            )
-            .disableAutocorrection(true)
-            Button(action: {
-                observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
-            }) {
-                Text("Confirm")
-            }
-        }.padding()
+            }.padding()
+        }
     }
 }
 
@@ -305,26 +304,71 @@ struct SwiftTestView: View {
     @ObservedObject var observableObserver: TestUIObserverObservable
     @ObservedObject var exitTestButtonEnabled: ObservableBool
     @ObservedObject var nextTrialButtonEnabled: ObservableBool
+    @ObservedObject var primaryText: ObservableString
+    @ObservedObject var secondaryText: ObservableString
+    @ObservedObject var showing: ObservableBool
+    @ObservedObject var showingContinueTestingDialog: ObservableBool
+    @ObservedObject var showingSheet: ObservableBool
+    @ObservedObject var continueTestingDialogText: ObservableString
+    @ObservedObject var sheetText: ObservableString
 
     init(ui: SwiftTestUI) {
         observableObserver = ui.observableObserver
         exitTestButtonEnabled = ui.exitTestButtonEnabled
         nextTrialButtonEnabled = ui.nextTrialButtonEnabled
+        primaryText = ui.primaryText
+        secondaryText = ui.secondaryText
+        showing = ui.showing
+        showingContinueTestingDialog = ui.showingContinueTestingDialog
+        continueTestingDialogText = ui.continueTestingDialogText
+        sheetText = ui.sheetText
+        showingSheet = ui.showingSheet
     }
 
     var body: some View {
-        Button(action: {
-            observableObserver.observer?.exitTest()
-        }) {
-            Text("Exit Test")
-        }.disabled(!exitTestButtonEnabled.value)
-        Button(action: {
-            observableObserver.observer?.playTrial()
-        }) {
-            Text("Play Trial")
+        if showing.value {
+            HStack {
+                Button(action: {
+                    observableObserver.observer?.exitTest()
+                }) {
+                    Text("Exit Test")
+                }.disabled(!exitTestButtonEnabled.value)
+                Text(primaryText.string)
+                Text(secondaryText.string)
+            }
+            Button(action: {
+                observableObserver.observer?.playTrial()
+            }) {
+                Text("Play Trial")
+            }
+            .disabled(!nextTrialButtonEnabled.value)
+            .padding(.top, 40).padding(.bottom)
         }
-        .disabled(!nextTrialButtonEnabled.value)
-        .padding(.top, 40).padding(.bottom)
+        VStack {}.alert(isPresented: $showingContinueTestingDialog.value) {
+            Alert(
+                title: Text("Results"),
+                message: Text(continueTestingDialogText.string),
+                primaryButton: .default(
+                    Text("Continue"),
+                    action: {
+                        observableObserver.observer?.acceptContinuingTesting()
+                    }
+                ),
+                secondaryButton: .cancel(
+                    Text("Exit"),
+                    action: {
+                        observableObserver.observer?.declineContinuingTesting()
+                    }
+                )
+            )
+        }
+        VStack {}
+            .alert(isPresented: $showingSheet.value) {
+                Alert(
+                    title: Text("Results"),
+                    message: Text(sheetText.string)
+                )
+            }
     }
 }
 
@@ -332,6 +376,13 @@ class SwiftTestUI: NSObject, TestUI {
     let observableObserver = TestUIObserverObservable()
     let exitTestButtonEnabled = ObservableBool()
     let nextTrialButtonEnabled = ObservableBool()
+    let primaryText = ObservableString()
+    let secondaryText = ObservableString()
+    let showing = ObservableBool()
+    let showingContinueTestingDialog = ObservableBool()
+    let showingSheet = ObservableBool()
+    let continueTestingDialogText = ObservableString()
+    let sheetText = ObservableString()
 
     func attach(_ observer: TestUIObserver!) {
         observableObserver.observer = observer
@@ -345,13 +396,21 @@ class SwiftTestUI: NSObject, TestUI {
         exitTestButtonEnabled.value = false
     }
 
-    func show() {}
+    func show() {
+        showing.value = true
+    }
 
-    func hide() {}
+    func hide() {
+        showing.value = false
+    }
 
-    func display(_: String!) {}
+    func display(_ something: String!) {
+        primaryText.string = something
+    }
 
-    func secondaryDisplay(_: String!) {}
+    func secondaryDisplay(_ something: String!) {
+        secondaryText.string = something
+    }
 
     func showNextTrialButton() {
         nextTrialButtonEnabled.value = true
@@ -361,13 +420,22 @@ class SwiftTestUI: NSObject, TestUI {
         nextTrialButtonEnabled.value = false
     }
 
-    func showContinueTestingDialog() {}
+    func showContinueTestingDialog() {
+        showingContinueTestingDialog.value = true
+    }
 
-    func hideContinueTestingDialog() {}
+    func hideContinueTestingDialog() {
+        showingContinueTestingDialog.value = false
+    }
 
-    func setContinueTestingDialogMessage(_: String!) {}
+    func setContinueTestingDialogMessage(_ something: String!) {
+        continueTestingDialogText.string = something
+    }
 
-    func showSheet(_: String!) {}
+    func showSheet(_ something: String!) {
+        showingSheet.value = true
+        sheetText.string = something
+    }
 }
 
 struct SwiftSyllablesView: View {
@@ -415,17 +483,19 @@ struct SwiftSyllablesView: View {
 
     var body: some View {
         if showing.value {
-            Toggle("flagged", isOn: $flagged.value)
-            ForEach(syllables, content: { row in
-                HStack {
-                    ForEach(row.items, content: { column in
-                        Button(column.string, action: {
-                            syllable.string = column.string
-                            observableObserver.observer?.notifyThatResponseButtonHasBeenClicked()
+            Form {
+                Toggle("flagged", isOn: $flagged.value)
+                ForEach(syllables, content: { row in
+                    HStack {
+                        ForEach(row.items, content: { column in
+                            Button(column.string, action: {
+                                syllable.string = column.string
+                                observableObserver.observer?.notifyThatResponseButtonHasBeenClicked()
+                            })
                         })
-                    })
-                }
-            })
+                    }
+                })
+            }.padding()
         }
     }
 }
@@ -557,33 +627,35 @@ struct SwiftChooseKeywordsView: View {
 
     var body: some View {
         if showing.value {
-            Toggle("flagged", isOn: $flagged_.value)
-            HStack {
-                Text(textPrecedingFirstKeywordButton.string)
-                Button(firstKeywordButtonText.string, action: {
-                    observableObserver.observer?.notifyThatFirstKeywordButtonIsClicked()
-                })
-                Text(textFollowingFirstKeywordButton.string)
-                Button(secondKeywordButtonText.string, action: {
-                    observableObserver.observer?.notifyThatSecondKeywordButtonIsClicked()
-                })
-                Text(textFollowingSecondKeywordButton.string)
-                Button(thirdKeywordButtonText.string, action: {
-                    observableObserver.observer?.notifyThatThirdKeywordButtonIsClicked()
-                })
-                Text(textFollowingThirdKeywordButton.string)
-            }
-            HStack {
-                Button("Reset", action: {
-                    observableObserver.observer?.notifyThatResetButtonIsClicked()
-                })
-                Button("All wrong", action: {
-                    observableObserver.observer?.notifyThatAllWrongButtonHasBeenClicked()
-                })
-                Button("Submit", action: {
-                    observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
-                })
-            }
+            Form {
+                Toggle("flagged", isOn: $flagged_.value)
+                HStack {
+                    Text(textPrecedingFirstKeywordButton.string)
+                    Button(firstKeywordButtonText.string, action: {
+                        observableObserver.observer?.notifyThatFirstKeywordButtonIsClicked()
+                    }).disabled(!firstKeywordCorrect_.value)
+                    Text(textFollowingFirstKeywordButton.string)
+                    Button(secondKeywordButtonText.string, action: {
+                        observableObserver.observer?.notifyThatSecondKeywordButtonIsClicked()
+                    }).disabled(!secondKeywordCorrect_.value)
+                    Text(textFollowingSecondKeywordButton.string)
+                    Button(thirdKeywordButtonText.string, action: {
+                        observableObserver.observer?.notifyThatThirdKeywordButtonIsClicked()
+                    }).disabled(!thirdKeywordCorrect_.value)
+                    Text(textFollowingThirdKeywordButton.string)
+                }
+                HStack {
+                    Button("Reset", action: {
+                        observableObserver.observer?.notifyThatResetButtonIsClicked()
+                    })
+                    Button("All wrong", action: {
+                        observableObserver.observer?.notifyThatAllWrongButtonHasBeenClicked()
+                    })
+                    Button("Submit", action: {
+                        observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
+                    })
+                }
+            }.padding()
         }
     }
 }
@@ -706,7 +778,7 @@ struct SwiftCorrectKeywordsView: View {
                 Button("Submit", action: {
                     observableObserver.observer?.notifyThatSubmitButtonHasBeenClicked()
                 })
-            }
+            }.padding()
         }
     }
 }
@@ -744,14 +816,16 @@ struct SwiftPassFailView: View {
 
     var body: some View {
         if showing.value {
-            HStack {
-                Button("Incorrect", action: {
-                    observableObserver.observer?.notifyThatIncorrectButtonHasBeenClicked()
-                })
-                Button("Correct", action: {
-                    observableObserver.observer?.notifyThatCorrectButtonHasBeenClicked()
-                })
-            }
+            Form {
+                HStack {
+                    Button("Incorrect", action: {
+                        observableObserver.observer?.notifyThatIncorrectButtonHasBeenClicked()
+                    })
+                    Button("Correct", action: {
+                        observableObserver.observer?.notifyThatCorrectButtonHasBeenClicked()
+                    })
+                }
+            }.padding()
         }
     }
 }
