@@ -13,7 +13,7 @@ namespace av_speech_in_noise {
 class AppKitConsonantUI : public ConsonantTaskView,
                           public ConsonantTaskControl {
   public:
-    explicit AppKitConsonantUI(NSRect);
+    explicit AppKitConsonantUI(NSWindow *);
     void attach(Observer *) override;
     void show() override;
     void hide() override;
@@ -41,7 +41,7 @@ class AppKitCoordinateResponseMeasureUI
     : public CoordinateResponseMeasureControl,
       public CoordinateResponseMeasureView {
   public:
-    explicit AppKitCoordinateResponseMeasureUI(NSRect);
+    explicit AppKitCoordinateResponseMeasureUI(NSWindow *);
     auto numberResponse() -> std::string override;
     auto greenResponse() -> bool override;
     auto blueResponse() -> bool override;

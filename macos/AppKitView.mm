@@ -168,14 +168,11 @@ static auto equallyDistributedConsonantImageButtonGrid(
     return grid;
 }
 
-AppKitConsonantUI::AppKitConsonantUI(NSRect r)
+AppKitConsonantUI::AppKitConsonantUI(NSWindow *window)
     : // Defer may be critical here...
-      window{[[NSWindow alloc] initWithContentRect:r
-                                         styleMask:NSWindowStyleMaskBorderless
-                                           backing:NSBackingStoreBuffered
-                                             defer:YES]},
-      readyButton{
-          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
+      window{window}, readyButton{[[NSView alloc]
+                          initWithFrame:NSMakeRect(0, 0, width(window.frame),
+                                            height(window.frame))]},
       actions{[[ConsonantUIActions alloc] init]} {
     actions->controller = this;
     responseButtons =
@@ -254,16 +251,15 @@ constexpr std::array<int, 8> numbers{{1, 2, 3, 4, 5, 6, 8, 9}};
 constexpr auto responseNumbers{std::size(numbers)};
 constexpr auto responseColors{4};
 
-AppKitCoordinateResponseMeasureUI::AppKitCoordinateResponseMeasureUI(NSRect r)
+AppKitCoordinateResponseMeasureUI::AppKitCoordinateResponseMeasureUI(
+    NSWindow *window)
     : // Defer may be critical here...
-      window{[[NSWindow alloc] initWithContentRect:r
-                                         styleMask:NSWindowStyleMaskBorderless
-                                           backing:NSBackingStoreBuffered
-                                             defer:YES]},
-      responseButtons{
-          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
+      window{window}, responseButtons{[[NSView alloc]
+                          initWithFrame:NSMakeRect(0, 0, width(window.frame),
+                                            height(window.frame))]},
       nextTrialButton{
-          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
+          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(window.frame),
+                                            height(window.frame))]},
       actions{[[CoordinateResponseMeasureUIActions alloc] init]} {
     actions->controller = this;
     addButtonRow(blueColor, 0);

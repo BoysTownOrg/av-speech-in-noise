@@ -320,13 +320,24 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto subjectViewWidth{subjectScreenWidth / 3};
     auto subjectViewLeadingEdge =
         subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
-    static AppKitConsonantUI consonantView{
-        NSMakeRect(subjectScreenOrigin.x + subjectScreenWidth / 4,
-            subjectScreenOrigin.y + subjectScreenSize.height / 12,
-            subjectScreenWidth / 2, subjectScreenSize.height / 2)};
+    static AppKitConsonantUI consonantView{[[NSWindow alloc]
+        initWithContentRect:NSMakeRect(
+                                subjectScreenOrigin.x + subjectScreenWidth / 4,
+                                subjectScreenOrigin.y +
+                                    subjectScreenSize.height / 12,
+                                subjectScreenWidth / 2,
+                                subjectScreenSize.height / 2)
+                  styleMask:NSWindowStyleMaskBorderless
+                    backing:NSBackingStoreBuffered
+                      defer:YES]};
     static AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
-        NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
-            subjectViewWidth, subjectViewHeight)};
+        [[NSWindow alloc]
+            initWithContentRect:NSMakeRect(subjectViewLeadingEdge,
+                                    subjectScreenOrigin.y, subjectViewWidth,
+                                    subjectViewHeight)
+                      styleMask:NSWindowStyleMaskBorderless
+                        backing:NSBackingStoreBuffered
+                          defer:YES]};
     static ConsonantTaskPresenterImpl consonantPresenter{consonantView};
     static submitting_free_response::Presenter freeResponsePresenter{
         testUIMaybe, freeResponseUIMaybe};
