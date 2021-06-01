@@ -114,7 +114,7 @@
 
 @implementation ChooseKeywordsUIObserverImpl {
   @public
-    av_speech_in_noise::ChooseKeywordsControl::Observer *observer;
+    av_speech_in_noise::submitting_keywords::Control::Observer *observer;
 }
 
 - (void)notifyThatFirstKeywordButtonIsClicked {
@@ -143,94 +143,74 @@
 @end
 
 namespace av_speech_in_noise {
+namespace submitting_keywords {
+UIImpl::UIImpl(NSObject<ChooseKeywordsUI> *ui) : ui{ui} {}
 
-ChooseKeywordsUIImpl::ChooseKeywordsUIImpl(NSObject<ChooseKeywordsUI> *ui)
-    : ui{ui} {}
-
-void ChooseKeywordsUIImpl::attach(Observer *a) {
+void UIImpl::attach(Observer *a) {
     const auto adapted{[[ChooseKeywordsUIObserverImpl alloc] init]};
     adapted->observer = a;
     [ui attach:adapted];
 }
 
-auto ChooseKeywordsUIImpl::firstKeywordCorrect() -> bool {
+auto UIImpl::firstKeywordCorrect() -> bool {
     return [ui firstKeywordCorrect] == YES;
 }
 
-auto ChooseKeywordsUIImpl::secondKeywordCorrect() -> bool {
+auto UIImpl::secondKeywordCorrect() -> bool {
     return [ui secondKeywordCorrect] == YES;
 }
 
-auto ChooseKeywordsUIImpl::thirdKeywordCorrect() -> bool {
+auto UIImpl::thirdKeywordCorrect() -> bool {
     return [ui thirdKeywordCorrect] == YES;
 }
 
-auto ChooseKeywordsUIImpl::flagged() -> bool { return [ui flagged] == YES; }
+auto UIImpl::flagged() -> bool { return [ui flagged] == YES; }
 
-void ChooseKeywordsUIImpl::clearFlag() { [ui clearFlag]; }
+void UIImpl::clearFlag() { [ui clearFlag]; }
 
-void ChooseKeywordsUIImpl::markFirstKeywordIncorrect() {
-    [ui markFirstKeywordIncorrect];
-}
+void UIImpl::markFirstKeywordIncorrect() { [ui markFirstKeywordIncorrect]; }
 
-void ChooseKeywordsUIImpl::markSecondKeywordIncorrect() {
-    [ui markSecondKeywordIncorrect];
-}
+void UIImpl::markSecondKeywordIncorrect() { [ui markSecondKeywordIncorrect]; }
 
-void ChooseKeywordsUIImpl::markThirdKeywordIncorrect() {
-    [ui markThirdKeywordIncorrect];
-}
+void UIImpl::markThirdKeywordIncorrect() { [ui markThirdKeywordIncorrect]; }
 
-void ChooseKeywordsUIImpl::markFirstKeywordCorrect() {
-    [ui markFirstKeywordCorrect];
-}
+void UIImpl::markFirstKeywordCorrect() { [ui markFirstKeywordCorrect]; }
 
-void ChooseKeywordsUIImpl::markSecondKeywordCorrect() {
-    [ui markSecondKeywordCorrect];
-}
+void UIImpl::markSecondKeywordCorrect() { [ui markSecondKeywordCorrect]; }
 
-void ChooseKeywordsUIImpl::markThirdKeywordCorrect() {
-    [ui markThirdKeywordCorrect];
-}
+void UIImpl::markThirdKeywordCorrect() { [ui markThirdKeywordCorrect]; }
 
-void ChooseKeywordsUIImpl::hideResponseSubmission() {
-    [ui hideResponseSubmission];
-}
+void UIImpl::hideResponseSubmission() { [ui hideResponseSubmission]; }
 
-void ChooseKeywordsUIImpl::showResponseSubmission() {
-    [ui showResponseSubmission];
-}
+void UIImpl::showResponseSubmission() { [ui showResponseSubmission]; }
 
-void ChooseKeywordsUIImpl::setFirstKeywordButtonText(const std::string &s) {
+void UIImpl::setFirstKeywordButtonText(const std::string &s) {
     [ui setFirstKeywordButtonText:nsString(s)];
 }
 
-void ChooseKeywordsUIImpl::setSecondKeywordButtonText(const std::string &s) {
+void UIImpl::setSecondKeywordButtonText(const std::string &s) {
     [ui setSecondKeywordButtonText:nsString(s)];
 }
 
-void ChooseKeywordsUIImpl::setThirdKeywordButtonText(const std::string &s) {
+void UIImpl::setThirdKeywordButtonText(const std::string &s) {
     [ui setThirdKeywordButtonText:nsString(s)];
 }
 
-void ChooseKeywordsUIImpl::setTextPrecedingFirstKeywordButton(
-    const std::string &s) {
+void UIImpl::setTextPrecedingFirstKeywordButton(const std::string &s) {
     [ui setTextPrecedingFirstKeywordButton:nsString(s)];
 }
 
-void ChooseKeywordsUIImpl::setTextFollowingFirstKeywordButton(
-    const std::string &s) {
+void UIImpl::setTextFollowingFirstKeywordButton(const std::string &s) {
     [ui setTextFollowingFirstKeywordButton:nsString(s)];
 }
 
-void ChooseKeywordsUIImpl::setTextFollowingSecondKeywordButton(
-    const std::string &s) {
+void UIImpl::setTextFollowingSecondKeywordButton(const std::string &s) {
     [ui setTextFollowingSecondKeywordButton:nsString(s)];
 }
 
-void ChooseKeywordsUIImpl::setTextFollowingThirdKeywordButton(
-    const std::string &s) {
+void UIImpl::setTextFollowingThirdKeywordButton(const std::string &s) {
     [ui setTextFollowingThirdKeywordButton:nsString(s)];
+}
 }
 
 SyllablesUIImpl::SyllablesUIImpl(NSObject<SyllablesUI> *syllablesUI)

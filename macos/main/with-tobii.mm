@@ -419,7 +419,8 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static submitting_free_response::UIImpl freeResponseUIAdapted{
         freeResponseUI};
     static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
-    static ChooseKeywordsUIImpl chooseKeywordsUIAdapted{chooseKeywordsUI};
+    static submitting_keywords::UIImpl chooseKeywordsUIAdapted{
+        chooseKeywordsUI};
     static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
     static submitting_pass_fail::UIImpl passFailUIAdapted{passFailUI};
     eye_tracker_calibration::initialize(

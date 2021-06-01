@@ -48,8 +48,9 @@ class UI : public View, public Control {};
 
 class SyllablesUI : public SyllablesView, public SyllablesControl {};
 
-class ChooseKeywordsUI : public ChooseKeywordsView,
-                         public ChooseKeywordsControl {};
+namespace submitting_keywords {
+class UI : public View, public Control {};
+}
 
 class CorrectKeywordsUI : public CorrectKeywordsView,
                           public CorrectKeywordsControl {};
@@ -60,7 +61,7 @@ class UI : public View, public Control {};
 
 void initializeAppAndRunEventLoop(EyeTracker &, OutputFileNameFactory &,
     AppKitTestSetupUIFactory &, SessionUI &, TestUI &,
-    submitting_free_response::UI &, SyllablesUI &, ChooseKeywordsUI &,
+    submitting_free_response::UI &, SyllablesUI &, submitting_keywords::UI &,
     CorrectKeywordsUI &, submitting_pass_fail::UI &,
     SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =

@@ -5,9 +5,10 @@
 #include "run.h"
 
 namespace av_speech_in_noise {
-class ChooseKeywordsUIImpl : public ChooseKeywordsUI {
+namespace submitting_keywords {
+class UIImpl : public UI {
   public:
-    explicit ChooseKeywordsUIImpl(NSObject<ChooseKeywordsUI> *);
+    explicit UIImpl(NSObject<ChooseKeywordsUI> *);
     void attach(Observer *a) override;
     auto firstKeywordCorrect() -> bool override;
     auto secondKeywordCorrect() -> bool override;
@@ -33,6 +34,7 @@ class ChooseKeywordsUIImpl : public ChooseKeywordsUI {
   private:
     NSObject<ChooseKeywordsUI> *ui;
 };
+}
 
 class SyllablesUIImpl : public SyllablesUI {
   public:

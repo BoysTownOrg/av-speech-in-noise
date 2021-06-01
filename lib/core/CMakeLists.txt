@@ -10,7 +10,8 @@ add_library(
   src/EyeTrackerCalibration.cpp
   src/AdaptiveTrack.cpp
   src/SubmittingFreeResponse.cpp
-  src/SubmittingPassFail.cpp)
+  src/SubmittingPassFail.cpp
+  src/SubmittingKeywords.cpp)
 target_include_directories(
   av-speech-in-noise-core-lib
   PUBLIC include

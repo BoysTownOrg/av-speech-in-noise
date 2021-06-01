@@ -12,10 +12,10 @@
 #include <map>
 #include <string_view>
 
-namespace av_speech_in_noise {
-class ChooseKeywordsView {
+namespace av_speech_in_noise::submitting_keywords {
+class View {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ChooseKeywordsView);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(View);
     virtual void hideResponseSubmission() = 0;
     virtual void showResponseSubmission() = 0;
     virtual void setFirstKeywordButtonText(const std::string &s) = 0;
@@ -34,7 +34,7 @@ class ChooseKeywordsView {
     virtual void clearFlag() = 0;
 };
 
-class ChooseKeywordsControl {
+class Control {
   public:
     class Observer {
       public:
@@ -46,8 +46,7 @@ class ChooseKeywordsControl {
         virtual void notifyThatSecondKeywordButtonIsClicked() = 0;
         virtual void notifyThatThirdKeywordButtonIsClicked() = 0;
     };
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
-        ChooseKeywordsControl);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
     virtual void attach(Observer *) = 0;
     virtual auto flagged() -> bool = 0;
     virtual auto firstKeywordCorrect() -> bool = 0;
@@ -55,10 +54,9 @@ class ChooseKeywordsControl {
     virtual auto thirdKeywordCorrect() -> bool = 0;
 };
 
-class ChooseKeywordsPresenter {
+class Presenter {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
-        ChooseKeywordsPresenter);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Presenter);
     virtual void markFirstKeywordIncorrect() = 0;
     virtual void markSecondKeywordIncorrect() = 0;
     virtual void markThirdKeywordIncorrect() = 0;
@@ -66,10 +64,9 @@ class ChooseKeywordsPresenter {
     virtual void markAllKeywordsCorrect() = 0;
 };
 
-class ChooseKeywordsController : public ChooseKeywordsControl::Observer {
+class Controller : public Control::Observer {
   public:
-    ChooseKeywordsController(TestController &, Model &, ChooseKeywordsControl &,
-        ChooseKeywordsPresenter &);
+    Controller(TestController &, Interactor &, Control &, Presenter &);
     void notifyThatSubmitButtonHasBeenClicked() override;
     void notifyThatAllWrongButtonHasBeenClicked() override;
     void notifyThatResetButtonIsClicked() override;
@@ -79,9 +76,9 @@ class ChooseKeywordsController : public ChooseKeywordsControl::Observer {
 
   private:
     TestController &testController;
-    Model &model;
-    ChooseKeywordsControl &control;
-    ChooseKeywordsPresenter &presenter;
+    Interactor &interactor;
+    Control &control;
+    Presenter &presenter;
 };
 
 struct SentenceWithThreeKeywords {
@@ -100,10 +97,9 @@ static auto operator==(const SentenceWithThreeKeywords &a,
         a.secondKeyword == b.secondKeyword && a.thirdKeyword == b.thirdKeyword;
 }
 
-class ChooseKeywordsPresenterImpl : public ChooseKeywordsPresenter,
-                                    public TaskPresenter {
+class PresenterImpl : public Presenter, public TaskPresenter {
   public:
-    ChooseKeywordsPresenterImpl(Model &, TestView &, ChooseKeywordsView &,
+    PresenterImpl(Model &, TestView &, View &,
         const std::vector<SentenceWithThreeKeywords> &);
     void start() override;
     void stop() override;
@@ -122,7 +118,7 @@ class ChooseKeywordsPresenterImpl : public ChooseKeywordsPresenter,
         sentencesWithThreeKeywordsFromExpectedFileNameSentence;
     Model &model;
     TestView &testView;
-    ChooseKeywordsView &view;
+    View &view;
 };
 }
 

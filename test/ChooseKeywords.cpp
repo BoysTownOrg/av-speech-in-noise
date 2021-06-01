@@ -2,12 +2,13 @@
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
 #include "ModelStub.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/ui/ChooseKeywords.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise {
+namespace av_speech_in_noise::submitting_keywords {
 namespace {
-class ChooseKeywordsViewStub : public ChooseKeywordsView {
+class ViewStub : public View {
   public:
     [[nodiscard]] auto responseSubmissionHidden() const -> bool {
         return responseSubmissionHidden_;
@@ -148,7 +149,7 @@ class ChooseKeywordsViewStub : public ChooseKeywordsView {
     bool markThirdKeywordCorrectCalled_{};
 };
 
-class ChooseKeywordsControlStub : public ChooseKeywordsControl {
+class ControlStub : public Control {
   public:
     void setFlagged() { flagged_ = true; }
 
@@ -200,7 +201,7 @@ class ChooseKeywordsControlStub : public ChooseKeywordsControl {
     bool thirdKeywordCorrect_{};
 };
 
-class ChooseKeywordsPresenterStub : public ChooseKeywordsPresenter {
+class PresenterStub : public Presenter {
   public:
     void markFirstKeywordIncorrect() override {
         markFirstKeywordIncorrectCalled_ = true;
@@ -248,41 +249,47 @@ class ChooseKeywordsPresenterStub : public ChooseKeywordsPresenter {
     bool allKeywordsMarkedCorrect_{};
 };
 
-auto markFirstKeywordIncorrectCalled(ChooseKeywordsPresenterStub &control)
-    -> bool {
+auto markFirstKeywordIncorrectCalled(PresenterStub &control) -> bool {
     return control.markFirstKeywordIncorrectCalled();
 }
 
-auto markSecondKeywordIncorrectCalled(ChooseKeywordsPresenterStub &control)
-    -> bool {
+auto markSecondKeywordIncorrectCalled(PresenterStub &control) -> bool {
     return control.markSecondKeywordIncorrectCalled();
 }
 
-auto markThirdKeywordIncorrectCalled(ChooseKeywordsPresenterStub &control)
-    -> bool {
+auto markThirdKeywordIncorrectCalled(PresenterStub &control) -> bool {
     return control.markThirdKeywordIncorrectCalled();
 }
 
-void notifyThatSubmitButtonHasBeenClicked(ChooseKeywordsControlStub &control) {
+void notifyThatSubmitButtonHasBeenClicked(ControlStub &control) {
     control.notifyThatSubmitButtonHasBeenClicked();
 }
 
+class InteractorStub : public Interactor {
+  public:
+    void submit(const ThreeKeywordsResponse &r) override { threeKeywords_ = r; }
+
+    auto threeKeywords() -> ThreeKeywordsResponse { return threeKeywords_; }
+
+  private:
+    ThreeKeywordsResponse threeKeywords_;
+};
+
 class ChooseKeywordsControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
-    ChooseKeywordsControlStub control;
-    ChooseKeywordsPresenterStub presenter;
+    InteractorStub interactor;
+    ControlStub control;
+    PresenterStub presenter;
     TestControllerStub testController;
-    ChooseKeywordsController controller{
-        testController, model, control, presenter};
+    Controller controller{testController, interactor, control, presenter};
 };
 
 class ChooseKeywordsPresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
     TestViewStub testView;
-    ChooseKeywordsViewStub view;
-    ChooseKeywordsPresenterImpl presenter{model, testView, view,
+    ViewStub view;
+    PresenterImpl presenter{model, testView, view,
         {{"The visitors stretched before dinner.", "visitors", "stretched",
              "dinner"},
             {"Daddy's mouth is turning yellow.", "Daddy's", "mouth", "turning"},
@@ -434,15 +441,15 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(
     control.setFirstKeywordCorrect();
     control.setThirdKeywordCorrect();
     notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().firstCorrect);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.threeKeywords().secondCorrect);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().thirdCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(interactor.threeKeywords().firstCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(interactor.threeKeywords().secondCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(interactor.threeKeywords().thirdCorrect);
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(submitsFlaggedAfterSubmitButtonIsClicked) {
     control.setFlagged();
     notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().flagged);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(interactor.threeKeywords().flagged);
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(marksAllIncorrectAfterAllWrongButtonIsClicked) {

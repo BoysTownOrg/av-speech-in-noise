@@ -3,8 +3,10 @@
 #include "TargetPlaylistStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
+#include <av-speech-in-noise/core/SubmittingKeywords.hpp>
 #include <av-speech-in-noise/core/Model.hpp>
 #include <gtest/gtest.h>
 #include <sstream>
@@ -132,7 +134,9 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         submittedFreeResponse_ = true;
     }
 
-    auto submittedFreeResponse() -> bool { return submittedFreeResponse_; }
+    auto submittedFreeResponse() const -> bool {
+        return submittedFreeResponse_;
+    }
 
     void submit(const ConsonantResponse &) override {
         submittedConsonant_ = true;
@@ -159,10 +163,19 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         keywordsTestResults_ = r;
     }
 
+    void submit(const ThreeKeywordsResponse &r) override {
+        threeKeywords_ = &r;
+    }
+
+    auto threeKeywords() -> const ThreeKeywordsResponse * {
+        return threeKeywords_;
+    }
+
   private:
     KeywordsTestResults keywordsTestResults_{};
     std::stringstream log_{};
     LocalUrl currentTarget_;
+    const ThreeKeywordsResponse *threeKeywords_{};
     const FixedLevelTest *test_{};
     const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
     TargetPlaylist *targetList_{};
@@ -318,10 +331,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     void callNextOnSubmitCorrectKeywordsOrCorrectOrIncorrect(TestMethod *t) {
         testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_ =
             t;
-    }
-
-    void submit(const ThreeKeywordsResponse &f) override {
-        threeKeywords_ = &f;
     }
 
     void submit(const SyllableResponse &f) override { syllableResponse_ = &f; }
@@ -891,9 +900,22 @@ class SubmittingPassFailTests : public ::testing::Test {
         testMethod, model, outputFile};
 };
 
+class SubmittingKeywordsTests : public ::testing::Test {
+  protected:
+    AdaptiveMethodStub testMethod;
+    FixedLevelMethodStub fixedLevelMethod;
+    RecognitionTestModelStub model{testMethod, fixedLevelMethod};
+    OutputFileStub outputFile;
+    submitting_keywords::InteractorImpl interactor{
+        fixedLevelMethod, model, outputFile};
+    ThreeKeywordsResponse threeKeywords;
+};
+
 #define SUBMITTING_FREE_RESPONSE_TEST(a) TEST_F(SubmittingFreeResponseTests, a)
 
 #define SUBMITTING_PASS_FAIL_TEST(a) TEST_F(SubmittingPassFailTests, a)
+
+#define SUBMITTING_KEYWORDS_TEST(a) TEST_F(SubmittingKeywordsTests, a)
 
 SUBMITTING_FREE_RESPONSE_TEST(submittingFreeResponsePreparesNextTrialIfNeeded) {
     interactor.submit({});
@@ -988,6 +1010,53 @@ SUBMITTING_PASS_FAIL_TEST(submitCorrectSavesOutputFileAfterWritingTrial) {
 SUBMITTING_PASS_FAIL_TEST(submitIncorrectSavesOutputFileAfterWritingTrial) {
     interactor.submitIncorrectResponse();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+SUBMITTING_KEYWORDS_TEST(preparesNextTrialIfNeeded) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_KEYWORDS_TEST(savesOutputFileAfterWritingTrial) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+SUBMITTING_KEYWORDS_TEST(writesFlagged) {
+    threeKeywords.flagged = true;
+    interactor.submit(threeKeywords);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.threeKeywordsTrial().flagged);
+}
+
+SUBMITTING_KEYWORDS_TEST(writesWithoutFlag) {
+    interactor.submit(threeKeywords);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.threeKeywordsTrial().flagged);
+}
+
+SUBMITTING_KEYWORDS_TEST(writesTarget) {
+    fixedLevelMethod.setCurrentTargetPath("a/b/c.txt");
+    interactor.submit(threeKeywords);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c.txt"}, outputFile.threeKeywordsTrial().target);
+}
+
+SUBMITTING_KEYWORDS_TEST(writesEachKeywordEvaluation) {
+    threeKeywords.firstCorrect = true;
+    threeKeywords.secondCorrect = false;
+    threeKeywords.thirdCorrect = true;
+    interactor.submit(threeKeywords);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        outputFile.threeKeywordsTrial().firstCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
+        outputFile.threeKeywordsTrial().secondCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        outputFile.threeKeywordsTrial().thirdCorrect);
+}
+
+SUBMITTING_KEYWORDS_TEST(submitThreeKeywordsSubmitsToTestMethod) {
+    interactor.submit(threeKeywords);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &threeKeywords, fixedLevelMethod.threeKeywords());
 }
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
@@ -1242,13 +1311,6 @@ MODEL_TEST(submitConsonantPassesConsonant) {
     model.submit(r);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(r), internalModel.consonantResponse());
-}
-
-MODEL_TEST(submitThreeKeywordsPassesThreeKeywords) {
-    ThreeKeywordsResponse r;
-    model.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &std::as_const(r), internalModel.threeKeywords());
 }
 
 MODEL_TEST(submitSyllablePassesSyllable) {

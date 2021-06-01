@@ -23,6 +23,14 @@ class Interactor {
 };
 }
 
+namespace submitting_keywords {
+class Interactor {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
+    virtual void submit(const ThreeKeywordsResponse &) = 0;
+};
+}
+
 class Model {
   public:
     class Observer {
@@ -62,7 +70,6 @@ class Model {
     virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void submit(const CorrectKeywords &) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
-    virtual void submit(const ThreeKeywordsResponse &) = 0;
     virtual void submit(const SyllableResponse &) = 0;
     virtual auto testComplete() -> bool = 0;
     virtual auto audioDevices() -> AudioDevices = 0;
