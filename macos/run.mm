@@ -4,6 +4,7 @@
 #include "AppKitView.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
+#include "av-speech-in-noise/ui/PassFail.hpp"
 #include <av-speech-in-noise/ui/SessionController.hpp>
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/ui/TestImpl.hpp>
@@ -16,6 +17,7 @@
 #include <av-speech-in-noise/core/ResponseEvaluator.hpp>
 #include <av-speech-in-noise/core/AdaptiveTrack.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
+#include <av-speech-in-noise/core/SubmittingPassFail.hpp>
 #include <av-speech-in-noise/player/MaskerPlayerImpl.hpp>
 #include <av-speech-in-noise/player/TargetPlayerImpl.hpp>
 #include <av-speech-in-noise/player/AudioReaderSimplified.hpp>
@@ -212,7 +214,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     AppKitTestSetupUIFactory &testSetupUIFactory, SessionUI &sessionUIMaybe,
     TestUI &testUIMaybe, submitting_free_response::UI &freeResponseUIMaybe,
     SyllablesUI &syllablesUIMaybe, ChooseKeywordsUI &chooseKeywordsUIMaybe,
-    CorrectKeywordsUI &correctKeywordsUIMaybe, PassFailUI &passFailUIMaybe,
+    CorrectKeywordsUI &correctKeywordsUIMaybe,
+    submitting_pass_fail::UI &passFailUIMaybe,
     SessionController::Observer *sessionControllerObserver,
     std::filesystem::path relativeOutputDirectory,
     AppKitRunMenuInitializer *appKitRunMenuInitializer) {
@@ -333,7 +336,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         syllablesUIMaybe, testUIMaybe};
     static CorrectKeywordsPresenter correctKeywordsPresenter{
         testUIMaybe, correctKeywordsUIMaybe};
-    static PassFailPresenter passFailPresenter{testUIMaybe, passFailUIMaybe};
+    static submitting_pass_fail::Presenter passFailPresenter{
+        testUIMaybe, passFailUIMaybe};
     static CoordinateResponseMeasurePresenter
         coordinateResponseMeasurePresenter{coordinateResponseMeasureView};
     static TestSetupPresenterImpl testSetupPresenter{
@@ -362,8 +366,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             fixedLevelMethod, recognitionTestModel, outputFile};
     static submitting_free_response::Controller freeResponseController{
         testController, submittingFreeResponseInteractor, freeResponseUIMaybe};
-    static PassFailController passFailController{
-        testController, model, passFailUIMaybe};
+    static submitting_pass_fail::InteractorImpl submittingPassFailInteractor{
+        adaptiveMethod, recognitionTestModel, outputFile};
+    static submitting_pass_fail::Controller passFailController{
+        testController, submittingPassFailInteractor, passFailUIMaybe};
     static ConsonantTaskController consonantTaskController{
         testController, model, consonantView, consonantPresenter};
     static CoordinateResponseMeasureController

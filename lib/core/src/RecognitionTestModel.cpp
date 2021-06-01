@@ -12,7 +12,6 @@ class NullTestMethod : public TestMethod {
     auto currentTarget() -> LocalUrl override { return {}; }
     auto snr() -> SNR override { return SNR{}; }
     void submit(const coordinate_response_measure::Response &) override {}
-    void submit(const FreeResponse &) override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
     void writeTestingParameters(OutputFile &) override {}
     void writeTestResult(OutputFile &) override {}
@@ -408,18 +407,6 @@ void RecognitionTestModelImpl::fadeOutComplete() {
         eyeTracker.stop();
     listener_->trialComplete();
     trialInProgress_ = false;
-}
-
-void RecognitionTestModelImpl::submitCorrectResponse() {
-    saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
-        fullScaleLevel_);
-}
-
-void RecognitionTestModelImpl::submitIncorrectResponse() {
-    saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
-        fullScaleLevel_);
 }
 
 void RecognitionTestModelImpl::submit(

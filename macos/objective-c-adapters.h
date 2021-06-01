@@ -137,16 +137,18 @@ class CorrectKeywordsUIImpl : public CorrectKeywordsUI {
     NSObject<CorrectKeywordsUI> *ui;
 };
 
-class PassFailUIImpl : public PassFailUI {
+namespace submitting_pass_fail {
+class UIImpl : public UI {
   public:
-    explicit PassFailUIImpl(NSObject<PassFailUI> *);
+    explicit UIImpl(NSObject<PassFailUI> *);
     void attach(Observer *a) override;
-    void showEvaluationButtons() override;
-    void hideEvaluationButtons() override;
+    void show() override;
+    void hide() override;
 
   private:
     NSObject<PassFailUI> *ui;
 };
+}
 }
 
 #endif

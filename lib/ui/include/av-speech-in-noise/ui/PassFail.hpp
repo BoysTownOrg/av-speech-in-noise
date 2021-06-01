@@ -3,12 +3,13 @@
 
 #include "Task.hpp"
 #include "Test.hpp"
+#include "View.hpp"
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 
-namespace av_speech_in_noise {
-class PassFailControl {
+namespace av_speech_in_noise::submitting_pass_fail {
+class Control {
   public:
     class Observer {
       public:
@@ -16,32 +17,24 @@ class PassFailControl {
         virtual void notifyThatCorrectButtonHasBeenClicked() = 0;
         virtual void notifyThatIncorrectButtonHasBeenClicked() = 0;
     };
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(PassFailControl);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
     virtual void attach(Observer *) = 0;
 };
 
-class PassFailView {
+class Controller : public TaskController, public Control::Observer {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(PassFailView);
-    virtual void showEvaluationButtons() = 0;
-    virtual void hideEvaluationButtons() = 0;
-};
-
-class PassFailController : public TaskController,
-                           public PassFailControl::Observer {
-  public:
-    PassFailController(TestController &, Model &, PassFailControl &);
+    Controller(TestController &, Interactor &, Control &);
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
 
   private:
     TestController &testController;
-    Model &model;
+    Interactor &interactor;
 };
 
-class PassFailPresenter : public TaskPresenter {
+class Presenter : public TaskPresenter {
   public:
-    PassFailPresenter(TestView &, PassFailView &);
+    Presenter(TestView &, View &);
     void start() override;
     void stop() override;
     void hideResponseSubmission() override;
@@ -49,7 +42,7 @@ class PassFailPresenter : public TaskPresenter {
 
   private:
     TestView &testView;
-    PassFailView &view;
+    View &view;
 };
 }
 

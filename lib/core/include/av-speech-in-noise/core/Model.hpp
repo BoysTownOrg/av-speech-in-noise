@@ -48,8 +48,6 @@ class ModelImpl : public Model {
     void submit(const ConsonantResponse &) override;
     void submit(const ThreeKeywordsResponse &) override;
     void submit(const SyllableResponse &) override;
-    void submitCorrectResponse() override;
-    void submitIncorrectResponse() override;
     auto testComplete() -> bool override;
     auto audioDevices() -> AudioDevices override;
     auto trialNumber() -> int override;

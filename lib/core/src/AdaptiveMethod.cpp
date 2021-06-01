@@ -187,8 +187,6 @@ void AdaptiveMethodImpl::submit(const CorrectKeywords &p) {
     selectNextList();
 }
 
-void AdaptiveMethodImpl::submit(const FreeResponse &) { selectNextList(); }
-
 void AdaptiveMethodImpl::writeTestResult(OutputFile &file) {
     file.write(av_speech_in_noise::testResults(
         targetListsWithTracks, thresholdReversals));

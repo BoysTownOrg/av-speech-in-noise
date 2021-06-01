@@ -1,14 +1,13 @@
 #include "assert-utility.hpp"
-#include "ModelStub.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
 #include <av-speech-in-noise/ui/PassFail.hpp>
 #include <gtest/gtest.h>
 #include <utility>
 
-namespace av_speech_in_noise {
+namespace av_speech_in_noise::submitting_pass_fail {
 namespace {
-class PassFailControlStub : public PassFailControl {
+class ControlStub : public Control {
   public:
     void notifyThatCorrectButtonHasBeenClicked() {
         listener_->notifyThatCorrectButtonHasBeenClicked();
@@ -24,30 +23,47 @@ class PassFailControlStub : public PassFailControl {
     Observer *listener_{};
 };
 
-class PassFailViewStub : public PassFailView {
+class ViewStub : public View {
   public:
-    void showEvaluationButtons() override { evaluationButtonsShown_ = true; }
+    void show() override { shown_ = true; }
 
-    [[nodiscard]] auto evaluationButtonsShown() const -> bool {
-        return evaluationButtonsShown_;
+    [[nodiscard]] auto shown() const -> bool { return shown_; }
+
+    void hide() override { hidden_ = true; }
+
+    [[nodiscard]] auto hidden() const -> bool { return hidden_; }
+
+  private:
+    bool shown_{};
+    bool hidden_{};
+};
+
+class InteractorStub : public Interactor {
+  public:
+    void submitCorrectResponse() override { correctResponseSubmitted_ = true; }
+
+    void submitIncorrectResponse() override {
+        incorrectResponseSubmitted_ = true;
     }
 
-    void hideEvaluationButtons() override { evaluationButtonsHidden_ = true; }
+    [[nodiscard]] auto incorrectResponseSubmitted() const -> bool {
+        return incorrectResponseSubmitted_;
+    }
 
-    [[nodiscard]] auto evaluationButtonsHidden() const -> bool {
-        return evaluationButtonsHidden_;
+    [[nodiscard]] auto correctResponseSubmitted() const -> bool {
+        return correctResponseSubmitted_;
     }
 
   private:
-    bool evaluationButtonsShown_{};
-    bool evaluationButtonsHidden_{};
+    bool correctResponseSubmitted_{};
+    bool incorrectResponseSubmitted_{};
 };
 
-void notifyThatIncorrectButtonHasBeenClicked(PassFailControlStub &view) {
+void notifyThatIncorrectButtonHasBeenClicked(ControlStub &view) {
     view.notifyThatIncorrectButtonHasBeenClicked();
 }
 
-void notifyThatCorrectButtonHasBeenClicked(PassFailControlStub &view) {
+void notifyThatCorrectButtonHasBeenClicked(ControlStub &view) {
     view.notifyThatCorrectButtonHasBeenClicked();
 }
 
@@ -55,27 +71,28 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class PassFailControllerTests : public ::testing::Test {
+class SubmittingPassFailControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
-    PassFailControlStub control;
+    InteractorStub model;
+    ControlStub control;
     TestControllerStub testController;
-    PassFailController controller{testController, model, control};
+    Controller controller{testController, model, control};
 };
 
-class PassFailPresenterTests : public ::testing::Test {
+class SubmittingPassFailPresenterTests : public ::testing::Test {
   protected:
     TestViewStub testView;
-    PassFailViewStub view;
-    PassFailPresenter presenter{testView, view};
+    ViewStub view;
+    Presenter presenter{testView, view};
 };
 
-#define PASS_FAIL_CONTROLLER_TEST(a) TEST_F(PassFailControllerTests, a)
+#define PASS_FAIL_CONTROLLER_TEST(a)                                           \
+    TEST_F(SubmittingPassFailControllerTests, a)
 
-#define PASS_FAIL_PRESENTER_TEST(a) TEST_F(PassFailPresenterTests, a)
+#define PASS_FAIL_PRESENTER_TEST(a) TEST_F(SubmittingPassFailPresenterTests, a)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).evaluationButtonsHidden())
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).hidden())
 
 PASS_FAIL_PRESENTER_TEST(presenterHidesResponseSubmission) {
     presenter.hideResponseSubmission();
@@ -95,7 +112,7 @@ PASS_FAIL_PRESENTER_TEST(presenterShowsReadyButtonWhenStarted) {
 PASS_FAIL_PRESENTER_TEST(
     presenterShowsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.evaluationButtonsShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
 }
 
 PASS_FAIL_CONTROLLER_TEST(
