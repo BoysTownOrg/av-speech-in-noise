@@ -39,7 +39,8 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
         congratulatesUserWhenTestCompletes;
     static SessionUIImpl sessionUIAdapted{sessionUI};
     static TestUIImpl testUIAdapted{testUI};
-    static FreeResponseUIImpl freeResponseUIAdapted{freeResponseUI};
+    static submitting_free_response::UIImpl freeResponseUIAdapted{
+        freeResponseUI};
     static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
     static ChooseKeywordsUIImpl chooseKeywordsUIAdapted{chooseKeywordsUI};
     static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
