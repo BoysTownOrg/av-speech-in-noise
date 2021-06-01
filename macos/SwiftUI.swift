@@ -326,40 +326,41 @@ struct SwiftTestView: View {
     }
 
     var body: some View {
-        if showing.value {
-            HStack {
-                Button(action: {
-                    observableObserver.observer?.exitTest()
-                }) {
-                    Text("Exit Test")
-                }.disabled(!exitTestButtonEnabled.value)
-                Text(primaryText.string)
-                Text(secondaryText.string)
-            }
-            Button(action: {
-                observableObserver.observer?.playTrial()
-            }) {
-                Text("Play Trial")
-            }
-            .disabled(!nextTrialButtonEnabled.value)
-            .padding(.top, 40).padding(.bottom)
-            if showingContinueTestingDialog.value {
-                Text(continueTestingDialogText.string)
+        VStack {
+            if showing.value {
                 HStack {
-                    Button("Exit") {
-                        observableObserver.observer?.declineContinuingTesting()
-                    }
-                    Button("Continue") {
-                        observableObserver.observer?.acceptContinuingTesting()
+                    Button(action: {
+                        observableObserver.observer?.exitTest()
+                    }) {
+                        Text("Exit Test")
+                    }.disabled(!exitTestButtonEnabled.value)
+                    Text(primaryText.string)
+                    Text(secondaryText.string)
+                }
+                Button(action: {
+                    observableObserver.observer?.playTrial()
+                }) {
+                    Text("Play Trial")
+                }
+                .disabled(!nextTrialButtonEnabled.value)
+                .padding(.top, 40).padding(.bottom)
+                if showingContinueTestingDialog.value {
+                    Text(continueTestingDialogText.string)
+                    HStack {
+                        Button("Exit") {
+                            observableObserver.observer?.declineContinuingTesting()
+                        }
+                        Button("Continue") {
+                            observableObserver.observer?.acceptContinuingTesting()
+                        }
                     }
                 }
             }
-            if showingSheet.value {
-                Text(sheetText.string)
-                Button("Ok") {
-                    showingSheet.value = false
-                }
-            }
+        }.alert(isPresented: $showingSheet.value) {
+            Alert(
+                title: Text("FYI"),
+                message: Text(sheetText.string)
+            )
         }
     }
 }
