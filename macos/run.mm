@@ -18,6 +18,7 @@
 #include <av-speech-in-noise/core/AdaptiveTrack.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
+#include <av-speech-in-noise/core/SubmittingKeywords.hpp>
 #include <av-speech-in-noise/player/MaskerPlayerImpl.hpp>
 #include <av-speech-in-noise/player/TargetPlayerImpl.hpp>
 #include <av-speech-in-noise/player/AudioReaderSimplified.hpp>
@@ -213,7 +214,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     OutputFileNameFactory &outputFileNameFactory,
     AppKitTestSetupUIFactory &testSetupUIFactory, SessionUI &sessionUIMaybe,
     TestUI &testUIMaybe, submitting_free_response::UI &freeResponseUIMaybe,
-    SyllablesUI &syllablesUIMaybe, ChooseKeywordsUI &chooseKeywordsUIMaybe,
+    SyllablesUI &syllablesUIMaybe,
+    submitting_keywords::UI &chooseKeywordsUIMaybe,
     CorrectKeywordsUI &correctKeywordsUIMaybe,
     submitting_pass_fail::UI &passFailUIMaybe,
     SessionController::Observer *sessionControllerObserver,
@@ -328,9 +330,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static ConsonantTaskPresenterImpl consonantPresenter{consonantView};
     static submitting_free_response::Presenter freeResponsePresenter{
         testUIMaybe, freeResponseUIMaybe};
-    static ChooseKeywordsPresenterImpl chooseKeywordsPresenter{model,
+    static submitting_keywords::PresenterImpl chooseKeywordsPresenter{model,
         testUIMaybe, chooseKeywordsUIMaybe,
-        sentencesWithThreeKeywords(
+        submitting_keywords::sentencesWithThreeKeywords(
             read_file(resourceUrl("mlst-c", "txt").path))};
     static SyllablesPresenterImpl syllablesPresenter{
         syllablesUIMaybe, testUIMaybe};
@@ -348,8 +350,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         model, sessionUIMaybe, testSetupPresenter, testPresenter};
     static TestControllerImpl testController{
         sessionController, model, sessionUIMaybe, testUIMaybe, testPresenter};
-    static ChooseKeywordsController chooseKeywordsController{
-        testController, model, chooseKeywordsUIMaybe, chooseKeywordsPresenter};
+    static submitting_keywords::InteractorImpl submittingKeywordsInteractor{
+        fixedLevelMethod, recognitionTestModel, outputFile};
+    static submitting_keywords::Controller chooseKeywordsController{
+        testController, submittingKeywordsInteractor, chooseKeywordsUIMaybe,
+        chooseKeywordsPresenter};
     static SyllablesController syllablesController{syllablesUIMaybe,
         testController, model,
         {{"B", Syllable::bi}, {"D", Syllable::di}, {"G", Syllable::dji},

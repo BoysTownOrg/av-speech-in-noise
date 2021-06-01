@@ -4,7 +4,7 @@
 #include "View.hpp"
 #include "Task.hpp"
 #include "Test.hpp"
-#include <av-speech-in-noise/core/SubmittingKeywords.hpp>
+#include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <string>
