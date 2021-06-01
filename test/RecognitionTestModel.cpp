@@ -30,10 +30,6 @@ static void assertEqual(
 namespace {
 class TestMethodStub : public TestMethod {
   public:
-    auto submittedFreeResponse() const -> bool {
-        return submittedFreeResponse_;
-    }
-
     auto threeKeywords() -> const ThreeKeywordsResponse * {
         return threeKeywords_;
     }
@@ -64,11 +60,6 @@ class TestMethodStub : public TestMethod {
 
     void setCurrentTargetWhenNextTarget(std::string s) {
         currentTargetWhenNextTarget_ = std::move(s);
-    }
-
-    void submit(const FreeResponse &) override {
-        insert(log_, "submitFreeResponse ");
-        submittedFreeResponse_ = true;
     }
 
     void submit(const ThreeKeywordsResponse &p) override {
@@ -109,7 +100,6 @@ class TestMethodStub : public TestMethod {
     const SyllableResponse *syllableResponse_{};
     int snr_dB_{};
     bool complete_{};
-    bool submittedFreeResponse_{};
 };
 
 class UseCase {

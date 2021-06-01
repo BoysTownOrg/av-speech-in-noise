@@ -52,7 +52,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void submitCorrectResponse() override;
     void submit(const CorrectKeywords &) override;
     void submit(const coordinate_response_measure::Response &) override;
-    void submit(const FreeResponse &) override;
     void writeLastCoordinateResponse(OutputFile &) override;
     void writeLastCorrectResponse(OutputFile &) override;
     void writeLastIncorrectResponse(OutputFile &) override;

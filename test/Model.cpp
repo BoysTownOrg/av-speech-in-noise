@@ -56,7 +56,6 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void submitIncorrectResponse() override {
         log_ << "submitIncorrectResponse ";
     }
-    void submit(const FreeResponse &) override {}
     void submit(const CorrectKeywords &) override {
         log_ << "submitCorrectKeywords ";
     }

@@ -14,7 +14,6 @@ class TestMethod {
     virtual auto nextTarget() -> LocalUrl = 0;
     virtual auto currentTarget() -> LocalUrl = 0;
     virtual auto snr() -> SNR = 0;
-    virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void submit(const ThreeKeywordsResponse &) {}
     virtual void submit(const SyllableResponse &) {}
