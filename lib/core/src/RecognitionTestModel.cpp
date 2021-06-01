@@ -425,22 +425,6 @@ void RecognitionTestModelImpl::submit(
         maskerPlayer, maskerLevel_, fullScaleLevel_);
 }
 
-void RecognitionTestModelImpl::submit(const ThreeKeywordsResponse &p) {
-    saveOutputFileAndPrepareNextTrialAfter(
-        [&]() {
-            testMethod->submit(p);
-            ThreeKeywordsTrial trial;
-            trial.firstCorrect = p.firstCorrect;
-            trial.secondCorrect = p.secondCorrect;
-            trial.thirdCorrect = p.thirdCorrect;
-            trial.target = targetName(evaluator, testMethod);
-            trial.flagged = p.flagged;
-            outputFile.write(trial);
-        },
-        testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, maskerLevel_, fullScaleLevel_);
-}
-
 void RecognitionTestModelImpl::submit(const SyllableResponse &p) {
     saveOutputFileAndPrepareNextTrialAfter(
         [&]() {

@@ -4,7 +4,7 @@
 #include "View.hpp"
 #include "Task.hpp"
 #include "Test.hpp"
-#include <av-speech-in-noise/core/IModel.hpp>
+#include <av-speech-in-noise/core/SubmittingKeywords.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <string>
@@ -66,7 +66,7 @@ class Presenter {
 
 class Controller : public Control::Observer {
   public:
-    Controller(TestController &, Model &, Control &, Presenter &);
+    Controller(TestController &, Interactor &, Control &, Presenter &);
     void notifyThatSubmitButtonHasBeenClicked() override;
     void notifyThatAllWrongButtonHasBeenClicked() override;
     void notifyThatResetButtonIsClicked() override;
@@ -76,7 +76,7 @@ class Controller : public Control::Observer {
 
   private:
     TestController &testController;
-    Model &model;
+    Interactor &interactor;
     Control &control;
     Presenter &presenter;
 };

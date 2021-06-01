@@ -7,10 +7,10 @@
 #include <iterator>
 
 namespace av_speech_in_noise::submitting_keywords {
-Controller::Controller(TestController &testController, Model &model,
+Controller::Controller(TestController &testController, Interactor &interactor,
     Control &control, Presenter &presenter)
-    : testController{testController}, model{model}, control{control},
-      presenter{presenter} {
+    : testController{testController},
+      interactor{interactor}, control{control}, presenter{presenter} {
     control.attach(this);
 }
 
@@ -20,7 +20,7 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
     threeKeywords.secondCorrect = control.secondKeywordCorrect();
     threeKeywords.thirdCorrect = control.thirdKeywordCorrect();
     threeKeywords.flagged = control.flagged();
-    model.submit(threeKeywords);
+    interactor.submit(threeKeywords);
     testController.notifyThatUserIsDoneResponding();
 }
 

@@ -2,6 +2,7 @@
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
 #include "ModelStub.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/ui/ChooseKeywords.hpp>
 #include <gtest/gtest.h>
 
@@ -264,13 +265,23 @@ void notifyThatSubmitButtonHasBeenClicked(ControlStub &control) {
     control.notifyThatSubmitButtonHasBeenClicked();
 }
 
+class InteractorStub : public Interactor {
+  public:
+    void submit(const ThreeKeywordsResponse &r) override { threeKeywords_ = r; }
+
+    auto threeKeywords() -> ThreeKeywordsResponse { return threeKeywords_; }
+
+  private:
+    ThreeKeywordsResponse threeKeywords_;
+};
+
 class ChooseKeywordsControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
+    InteractorStub interactor;
     ControlStub control;
     PresenterStub presenter;
     TestControllerStub testController;
-    Controller controller{testController, model, control, presenter};
+    Controller controller{testController, interactor, control, presenter};
 };
 
 class ChooseKeywordsPresenterTests : public ::testing::Test {
@@ -430,15 +441,15 @@ CHOOSE_KEYWORDS_CONTROLLER_TEST(
     control.setFirstKeywordCorrect();
     control.setThirdKeywordCorrect();
     notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().firstCorrect);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.threeKeywords().secondCorrect);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().thirdCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(interactor.threeKeywords().firstCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(interactor.threeKeywords().secondCorrect);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(interactor.threeKeywords().thirdCorrect);
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(submitsFlaggedAfterSubmitButtonIsClicked) {
     control.setFlagged();
     notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.threeKeywords().flagged);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(interactor.threeKeywords().flagged);
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(marksAllIncorrectAfterAllWrongButtonIsClicked) {
