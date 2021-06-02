@@ -90,7 +90,6 @@ static auto equallyDistributedConsonantImageButtonGrid(
                     return consonantImageButton(consonants, actions, consonant);
                 });
             const auto row{[NSStackView stackViewWithViews:nsArray(buttons)]};
-            row.distribution = NSStackViewDistributionFillEqually;
             return row;
         });
     const auto grid{[NSStackView stackViewWithViews:nsArray(rows)]};
@@ -105,7 +104,6 @@ AppKitConsonantUI::AppKitConsonantUI(NSView *view)
         equallyDistributedConsonantImageButtonGrid(consonants, actions,
             {{"b", "c", "d", "h"}, {"k", "m", "n", "p"}, {"s", "t", "v", "z"}});
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
-    responseButtons.distribution = NSStackViewDistributionFillEqually;
 
     readyButton =
         nsButton("", actions, @selector(notifyThatReadyButtonHasBeenClicked));
