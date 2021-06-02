@@ -222,16 +222,16 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     std::filesystem::path relativeOutputDirectory,
     AppKitRunMenuInitializer *appKitRunMenuInitializer) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
-    const auto subjectVideoWindow{
+    const auto subjectNSWindow{
         [[NSWindow alloc] initWithContentRect:subjectScreen.frame
                                     styleMask:NSWindowStyleMaskBorderless
                                       backing:NSBackingStoreBuffered
                                         defer:YES]};
-    [subjectVideoWindow makeKeyAndOrderFront:nil];
-    const auto subjectVideoView{
+    [subjectNSWindow makeKeyAndOrderFront:nil];
+    const auto videoNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
-    [subjectVideoWindow.contentView addSubview:subjectVideoView];
-    static AvFoundationVideoPlayer videoPlayer{subjectVideoView};
+    [subjectNSWindow.contentView addSubview:videoNSView];
+    static AvFoundationVideoPlayer videoPlayer{videoNSView};
     static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
     static AudioReaderSimplified audioReader{bufferedReaderFactory};
     static TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
@@ -322,26 +322,23 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         allTargetsNTimes, recognitionTestModel, outputFile};
     static auto testSetupUI{testSetupUIFactory.make(nil)};
     const auto subjectScreenFrame{subjectScreen.frame};
-    const auto subjectScreenOrigin{subjectScreenFrame.origin};
     const auto subjectScreenSize{subjectScreenFrame.size};
     const auto subjectViewHeight{subjectScreenSize.height / 4};
     const auto subjectScreenWidth{subjectScreenSize.width};
     const auto subjectViewWidth{subjectScreenWidth / 3};
-    auto subjectViewLeadingEdge =
-        subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
     const auto consonantNSView{[[NSView alloc]
         initWithFrame:NSMakeRect(subjectScreenWidth / 4,
                           subjectScreenSize.height / 12, subjectScreenWidth / 2,
                           subjectScreenSize.height / 2)]};
-    [subjectVideoWindow.contentView addSubview:consonantNSView];
-    static AppKitConsonantUI consonantView{consonantNSView};
-    const auto crmView{[[NSView alloc]
+    [subjectNSWindow.contentView addSubview:consonantNSView];
+    static AppKitConsonantUI consonantUI{consonantNSView};
+    const auto coordinateResponseMeasureNSView{[[NSView alloc]
         initWithFrame:NSMakeRect((subjectScreenWidth - subjectViewWidth) / 2, 0,
                           subjectViewWidth, subjectViewHeight)]};
-    [subjectVideoWindow.contentView addSubview:crmView];
+    [subjectNSWindow.contentView addSubview:coordinateResponseMeasureNSView];
     static AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
-        crmView};
-    static ConsonantTaskPresenterImpl consonantPresenter{consonantView};
+        coordinateResponseMeasureNSView};
+    static ConsonantTaskPresenterImpl consonantPresenter{consonantUI};
     static submitting_free_response::Presenter freeResponsePresenter{
         testUIMaybe, freeResponseUIMaybe};
     static submitting_keywords::PresenterImpl chooseKeywordsPresenter{model,
@@ -390,7 +387,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_pass_fail::Controller passFailController{
         testController, submittingPassFailInteractor, passFailUIMaybe};
     static ConsonantTaskController consonantTaskController{
-        testController, model, consonantView, consonantPresenter};
+        testController, model, consonantUI, consonantPresenter};
     static CoordinateResponseMeasureController
         coordinateResponseMeasureController{
             testController, model, coordinateResponseMeasureView};
