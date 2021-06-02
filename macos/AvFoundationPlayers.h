@@ -34,7 +34,7 @@ class AvFoundationBufferedAudioReaderFactory
 
 class AvFoundationVideoPlayer : public VideoPlayer {
   public:
-    explicit AvFoundationVideoPlayer(NSWindow *);
+    explicit AvFoundationVideoPlayer(NSView *);
     void playbackComplete();
     void play() override;
     void playAt(const PlayerTimeWithDelay &) override;
@@ -73,7 +73,7 @@ class AvFoundationVideoPlayer : public VideoPlayer {
     std::vector<gsl::span<float>> audio;
     MTAudioProcessingTapRef tap{};
     VideoPlayerActions *actions;
-    NSWindow *videoWindow;
+    NSView *view;
     AVPlayer *player;
     AVPlayerLayer *playerLayer;
     Observer *listener_{};

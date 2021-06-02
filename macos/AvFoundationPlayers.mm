@@ -148,9 +148,9 @@ static auto currentAsset(AVPlayer *player) -> AVAsset * {
     return player.currentItem.asset;
 }
 
-AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSWindow *window)
-    : actions{[VideoPlayerActions alloc]},
-      videoWindow{window}, player{[AVPlayer playerWithPlayerItem:nil]},
+AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSView *view)
+    : actions{[VideoPlayerActions alloc]}, view{view},
+      player{[AVPlayer playerWithPlayerItem:nil]},
       playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]} {
     MTAudioProcessingTapCallbacks callbacks;
     callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
@@ -205,18 +205,11 @@ void AvFoundationVideoPlayer::processTap_(CMItemCount numberFrames,
     listener_->fillAudioBuffer(audio);
 }
 
-void AvFoundationVideoPlayer::prepareWindow() {
-    addPlayerLayer();
-    showWindow();
-}
+void AvFoundationVideoPlayer::prepareWindow() { addPlayerLayer(); }
 
 void AvFoundationVideoPlayer::addPlayerLayer() {
-    [videoWindow.contentView setWantsLayer:YES];
-    [videoWindow.contentView.layer addSublayer:playerLayer];
-}
-
-void AvFoundationVideoPlayer::showWindow() {
-    [videoWindow makeKeyAndOrderFront:nil];
+    [view setWantsLayer:YES];
+    [view.layer addSublayer:playerLayer];
 }
 
 void AvFoundationVideoPlayer::attach(Observer *e) { listener_ = e; }
@@ -271,20 +264,21 @@ void AvFoundationVideoPlayer::resizeVideo() {
     size.height /= 3;
     size.width *= 2;
     size.width /= 3;
-    [videoWindow setContentSize:NSSizeFromCGSize(size)];
-    [playerLayer setFrame:videoWindow.contentView.bounds];
+    const auto nsSize{NSSizeFromCGSize(size)};
+    [view setFrameSize:nsSize];
+    [playerLayer setFrame:NSMakeRect(0, 0, nsSize.width, nsSize.height)];
 }
 
 void AvFoundationVideoPlayer::centerVideo() {
-    const auto screenFrame{[videoWindow.screen frame]};
+    const auto screenFrame{view.superview.frame};
     const auto screenOrigin{screenFrame.origin};
     const auto screenSize{screenFrame.size};
-    const auto windowSize{videoWindow.frame.size};
+    const auto windowSize{view.frame.size};
     const auto videoLeadingEdge =
         screenOrigin.x + (screenSize.width - windowSize.width) / 2;
     const auto videoBottomEdge =
         screenOrigin.y + (screenSize.height - windowSize.height) / 2;
-    [videoWindow setFrameOrigin:NSMakePoint(videoLeadingEdge, videoBottomEdge)];
+    [view setFrameOrigin:NSMakePoint(videoLeadingEdge, videoBottomEdge)];
 }
 
 void AvFoundationVideoPlayer::subscribeToPlaybackCompletion() {
@@ -307,9 +301,9 @@ void AvFoundationVideoPlayer::setDevice(int index) {
     player.audioOutputDeviceUniqueID = nsString(uid(index));
 }
 
-void AvFoundationVideoPlayer::hide() { [videoWindow setIsVisible:NO]; }
+void AvFoundationVideoPlayer::hide() { [view setHidden:YES]; }
 
-void AvFoundationVideoPlayer::show() { showWindow(); }
+void AvFoundationVideoPlayer::show() { [view setHidden:NO]; }
 
 auto AvFoundationVideoPlayer::deviceCount() -> int {
     return av_speech_in_noise::deviceCount();

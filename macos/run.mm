@@ -222,12 +222,16 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     std::filesystem::path relativeOutputDirectory,
     AppKitRunMenuInitializer *appKitRunMenuInitializer) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
-    static AvFoundationVideoPlayer videoPlayer{[[NSWindow alloc]
-        initWithContentRect:NSMakeRect(subjectScreen.frame.origin.x,
-                                subjectScreen.frame.origin.y, 0, 0)
-                  styleMask:NSWindowStyleMaskBorderless
-                    backing:NSBackingStoreBuffered
-                      defer:YES]};
+    const auto subjectVideoWindow{
+        [[NSWindow alloc] initWithContentRect:subjectScreen.frame
+                                    styleMask:NSWindowStyleMaskBorderless
+                                      backing:NSBackingStoreBuffered
+                                        defer:YES]};
+    [subjectVideoWindow makeKeyAndOrderFront:nil];
+    const auto subjectVideoView{
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
+    [subjectVideoWindow.contentView addSubview:subjectVideoView];
+    static AvFoundationVideoPlayer videoPlayer{subjectVideoView};
     static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
     static AudioReaderSimplified audioReader{bufferedReaderFactory};
     static TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
