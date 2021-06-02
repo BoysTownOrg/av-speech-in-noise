@@ -94,11 +94,6 @@ static auto equallyDistributedConsonantImageButtonGrid(
             return row;
         });
     const auto grid{[NSStackView stackViewWithViews:nsArray(rows)]};
-    // for (auto row : rows)
-    //     [NSLayoutConstraint activateConstraints:@[
-    //         [row.leadingAnchor constraintEqualToAnchor:grid.leadingAnchor],
-    //         [row.trailingAnchor constraintEqualToAnchor:grid.trailingAnchor]
-    //     ]];
     return grid;
 }
 
@@ -131,12 +126,6 @@ AppKitConsonantUI::AppKitConsonantUI(NSView *view)
         [readyButton.widthAnchor constraintEqualToAnchor:view.widthAnchor],
         [readyButton.heightAnchor constraintEqualToAnchor:view.heightAnchor],
     ]];
-    // for (NSStackView *row in responseButtons.views)
-    //     for (NSView *view in row.views)
-    //         [NSLayoutConstraint activateConstraints:@[
-    //             [view.topAnchor constraintEqualToAnchor:row.topAnchor],
-    //             [view.bottomAnchor constraintEqualToAnchor:row.bottomAnchor]
-    //         ]];
     hideResponseButtons();
     hideReadyButton();
 }
@@ -225,22 +214,17 @@ AppKitCoordinateResponseMeasureUI::AppKitCoordinateResponseMeasureUI(
                                             [NSFont fontWithName:@"Arial-Black"
                                                             size:48],
                                             NSFontAttributeName, nil]]];
+                [NSLayoutConstraint activateConstraints:@[
+                    [button.widthAnchor
+                        constraintEqualToAnchor:button.heightAnchor],
+                ]];
                 return button;
             });
             const auto row{[NSStackView stackViewWithViews:nsArray(buttons)]};
-            // row.distribution = NSStackViewDistributionFillEqually;
             return row;
         });
     responseButtons = [NSStackView stackViewWithViews:nsArray(rows)];
-    // for (auto row : rows)
-    //     [NSLayoutConstraint activateConstraints:@[
-    //         [row.leadingAnchor
-    //             constraintEqualToAnchor:responseButtons.leadingAnchor],
-    //         [row.trailingAnchor
-    //             constraintEqualToAnchor:responseButtons.trailingAnchor]
-    //     ]];
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
-    // responseButtons.distribution = NSStackViewDistributionFillEqually;
     nextTrialButton =
         nsButton("", actions, @selector(notifyThatReadyButtonHasBeenClicked));
     [nextTrialButton setBezelStyle:NSBezelStyleTexturedSquare];
@@ -261,12 +245,6 @@ AppKitCoordinateResponseMeasureUI::AppKitCoordinateResponseMeasureUI(
         [nextTrialButton.heightAnchor
             constraintEqualToAnchor:view.heightAnchor],
     ]];
-    // for (NSStackView *row in responseButtons.views)
-    //     for (NSView *view in row.views)
-    //         [NSLayoutConstraint activateConstraints:@[
-    //             [view.topAnchor constraintEqualToAnchor:row.topAnchor],
-    //             [view.bottomAnchor constraintEqualToAnchor:row.bottomAnchor]
-    //         ]];
     hideResponseButtons();
     hideNextTrialButton();
 }
