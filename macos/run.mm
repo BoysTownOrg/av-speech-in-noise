@@ -339,14 +339,12 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                   styleMask:NSWindowStyleMaskBorderless
                     backing:NSBackingStoreBuffered
                       defer:YES]};
+    const auto crmView{[[NSView alloc]
+        initWithFrame:NSMakeRect((subjectScreenWidth - subjectViewWidth) / 2, 0,
+                          subjectViewWidth, subjectViewHeight)]};
+    [subjectVideoWindow.contentView addSubview:crmView];
     static AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
-        [[NSWindow alloc]
-            initWithContentRect:NSMakeRect(subjectViewLeadingEdge,
-                                    subjectScreenOrigin.y, subjectViewWidth,
-                                    subjectViewHeight)
-                      styleMask:NSWindowStyleMaskBorderless
-                        backing:NSBackingStoreBuffered
-                          defer:YES]};
+        crmView};
     static ConsonantTaskPresenterImpl consonantPresenter{consonantView};
     static submitting_free_response::Presenter freeResponsePresenter{
         testUIMaybe, freeResponseUIMaybe};

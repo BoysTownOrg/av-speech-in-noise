@@ -252,14 +252,14 @@ constexpr auto responseNumbers{std::size(numbers)};
 constexpr auto responseColors{4};
 
 AppKitCoordinateResponseMeasureUI::AppKitCoordinateResponseMeasureUI(
-    NSWindow *window)
+    NSView *view)
     : // Defer may be critical here...
-      window{window}, responseButtons{[[NSView alloc]
-                          initWithFrame:NSMakeRect(0, 0, width(window.frame),
-                                            height(window.frame))]},
+      view{view}, responseButtons{[[NSView alloc]
+                      initWithFrame:NSMakeRect(0, 0, width(view.frame),
+                                        height(view.frame))]},
       nextTrialButton{
-          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(window.frame),
-                                            height(window.frame))]},
+          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(view.frame),
+                                            height(view.frame))]},
       actions{[[CoordinateResponseMeasureUIActions alloc] init]} {
     actions->controller = this;
     addButtonRow(blueColor, 0);
@@ -267,8 +267,8 @@ AppKitCoordinateResponseMeasureUI::AppKitCoordinateResponseMeasureUI(
     addButtonRow(whiteColor, 2);
     addButtonRow(redColor, 3);
     addNextTrialButton();
-    addSubview(window.contentView, nextTrialButton);
-    addSubview(window.contentView, responseButtons);
+    addSubview(view, nextTrialButton);
+    addSubview(view, responseButtons);
     hideResponseButtons();
     hideNextTrialButton();
 }
@@ -380,8 +380,10 @@ void AppKitCoordinateResponseMeasureUI::hideResponseButtons() {
 void AppKitCoordinateResponseMeasureUI::attach(Observer *e) { listener_ = e; }
 
 void AppKitCoordinateResponseMeasureUI::show() {
-    [window makeKeyAndOrderFront:nil];
+    av_speech_in_noise::show(view);
 }
 
-void AppKitCoordinateResponseMeasureUI::hide() { [window orderOut:nil]; }
+void AppKitCoordinateResponseMeasureUI::hide() {
+    av_speech_in_noise::hide(view);
+}
 }

@@ -41,7 +41,7 @@ class AppKitCoordinateResponseMeasureUI
     : public CoordinateResponseMeasureControl,
       public CoordinateResponseMeasureView {
   public:
-    explicit AppKitCoordinateResponseMeasureUI(NSWindow *);
+    explicit AppKitCoordinateResponseMeasureUI(NSView *);
     auto numberResponse() -> std::string override;
     auto greenResponse() -> bool override;
     auto blueResponse() -> bool override;
@@ -62,7 +62,7 @@ class AppKitCoordinateResponseMeasureUI
     void addNumberButton(NSColor *color, int number, int row, std::size_t col);
     void addButtonRow(NSColor *color, int row);
 
-    NSWindow *window;
+    NSView *view;
     NSView *responseButtons;
     NSView *nextTrialButton;
     NSButton *lastButtonPressed{};
