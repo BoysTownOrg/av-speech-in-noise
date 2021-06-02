@@ -13,7 +13,7 @@ namespace av_speech_in_noise {
 class AppKitConsonantUI : public ConsonantTaskView,
                           public ConsonantTaskControl {
   public:
-    explicit AppKitConsonantUI(NSWindow *);
+    explicit AppKitConsonantUI(NSView *);
     void attach(Observer *) override;
     void show() override;
     void hide() override;
@@ -29,7 +29,7 @@ class AppKitConsonantUI : public ConsonantTaskView,
 
   private:
     std::unordered_map<void *, std::string> consonants;
-    NSWindow *window;
+    NSView *view;
     NSStackView *responseButtons;
     NSView *readyButton;
     NSButton *lastButtonPressed{};

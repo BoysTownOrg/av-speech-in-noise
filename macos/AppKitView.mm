@@ -168,11 +168,11 @@ static auto equallyDistributedConsonantImageButtonGrid(
     return grid;
 }
 
-AppKitConsonantUI::AppKitConsonantUI(NSWindow *window)
+AppKitConsonantUI::AppKitConsonantUI(NSView *view)
     : // Defer may be critical here...
-      window{window}, readyButton{[[NSView alloc]
-                          initWithFrame:NSMakeRect(0, 0, width(window.frame),
-                                            height(window.frame))]},
+      view{view}, readyButton{[[NSView alloc]
+                      initWithFrame:NSMakeRect(0, 0, width(view.frame),
+                                        height(view.frame))]},
       actions{[[ConsonantUIActions alloc] init]} {
     actions->controller = this;
     responseButtons =
@@ -181,18 +181,16 @@ AppKitConsonantUI::AppKitConsonantUI(NSWindow *window)
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
     responseButtons.distribution = NSStackViewDistributionFillEqually;
     addReadyButton(readyButton, actions);
-    const auto contentView{window.contentView};
-    addSubview(contentView, readyButton);
-    addAutolayoutEnabledSubview(contentView, responseButtons);
+    addSubview(view, readyButton);
+    addAutolayoutEnabledSubview(view, responseButtons);
     [NSLayoutConstraint activateConstraints:@[
-        [responseButtons.topAnchor
-            constraintEqualToAnchor:contentView.topAnchor],
+        [responseButtons.topAnchor constraintEqualToAnchor:view.topAnchor],
         [responseButtons.bottomAnchor
-            constraintEqualToAnchor:contentView.bottomAnchor],
+            constraintEqualToAnchor:view.bottomAnchor],
         [responseButtons.leadingAnchor
-            constraintEqualToAnchor:contentView.leadingAnchor],
+            constraintEqualToAnchor:view.leadingAnchor],
         [responseButtons.trailingAnchor
-            constraintEqualToAnchor:contentView.trailingAnchor],
+            constraintEqualToAnchor:view.trailingAnchor],
     ]];
     for (NSStackView *row in responseButtons.views)
         for (NSView *view in row.views)
@@ -204,9 +202,9 @@ AppKitConsonantUI::AppKitConsonantUI(NSWindow *window)
     hideReadyButton();
 }
 
-void AppKitConsonantUI::show() { [window makeKeyAndOrderFront:nil]; }
+void AppKitConsonantUI::show() { av_speech_in_noise::show(view); }
 
-void AppKitConsonantUI::hide() { [window orderOut:nil]; }
+void AppKitConsonantUI::hide() { av_speech_in_noise::hide(view); }
 
 void AppKitConsonantUI::showReadyButton() {
     av_speech_in_noise::show(readyButton);
