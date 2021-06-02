@@ -94,11 +94,11 @@ static auto equallyDistributedConsonantImageButtonGrid(
             return row;
         });
     const auto grid{[NSStackView stackViewWithViews:nsArray(rows)]};
-    for (auto row : rows)
-        [NSLayoutConstraint activateConstraints:@[
-            [row.leadingAnchor constraintEqualToAnchor:grid.leadingAnchor],
-            [row.trailingAnchor constraintEqualToAnchor:grid.trailingAnchor]
-        ]];
+    // for (auto row : rows)
+    //     [NSLayoutConstraint activateConstraints:@[
+    //         [row.leadingAnchor constraintEqualToAnchor:grid.leadingAnchor],
+    //         [row.trailingAnchor constraintEqualToAnchor:grid.trailingAnchor]
+    //     ]];
     return grid;
 }
 
@@ -125,25 +125,18 @@ AppKitConsonantUI::AppKitConsonantUI(NSView *view)
     addAutolayoutEnabledSubview(view, readyButton);
     addAutolayoutEnabledSubview(view, responseButtons);
     [NSLayoutConstraint activateConstraints:@[
-        [responseButtons.topAnchor constraintEqualToAnchor:view.topAnchor],
-        [responseButtons.bottomAnchor
-            constraintEqualToAnchor:view.bottomAnchor],
-        [responseButtons.leadingAnchor
-            constraintEqualToAnchor:view.leadingAnchor],
-        [responseButtons.trailingAnchor
-            constraintEqualToAnchor:view.trailingAnchor],
-        [readyButton.topAnchor constraintEqualToAnchor:view.topAnchor],
-        [readyButton.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
-        [readyButton.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
-        [readyButton.trailingAnchor
-            constraintEqualToAnchor:view.trailingAnchor],
+        [responseButtons.widthAnchor constraintEqualToAnchor:view.widthAnchor],
+        [responseButtons.heightAnchor
+            constraintEqualToAnchor:view.heightAnchor],
+        [readyButton.widthAnchor constraintEqualToAnchor:view.widthAnchor],
+        [readyButton.heightAnchor constraintEqualToAnchor:view.heightAnchor],
     ]];
-    for (NSStackView *row in responseButtons.views)
-        for (NSView *view in row.views)
-            [NSLayoutConstraint activateConstraints:@[
-                [view.topAnchor constraintEqualToAnchor:row.topAnchor],
-                [view.bottomAnchor constraintEqualToAnchor:row.bottomAnchor]
-            ]];
+    // for (NSStackView *row in responseButtons.views)
+    //     for (NSView *view in row.views)
+    //         [NSLayoutConstraint activateConstraints:@[
+    //             [view.topAnchor constraintEqualToAnchor:row.topAnchor],
+    //             [view.bottomAnchor constraintEqualToAnchor:row.bottomAnchor]
+    //         ]];
     hideResponseButtons();
     hideReadyButton();
 }
@@ -198,78 +191,84 @@ constexpr auto responseColors{4};
 AppKitCoordinateResponseMeasureUI::AppKitCoordinateResponseMeasureUI(
     NSView *view)
     : // Defer may be critical here...
-      view{view}, responseButtons{[[NSView alloc]
-                      initWithFrame:NSMakeRect(0, 0, width(view.frame),
-                                        height(view.frame))]},
-      nextTrialButton{
-          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(view.frame),
-                                            height(view.frame))]},
-      actions{[[CoordinateResponseMeasureUIActions alloc] init]} {
+      view{view}, actions{[[CoordinateResponseMeasureUIActions alloc] init]} {
     actions->controller = this;
-    addButtonRow(blueColor, 0);
-    addButtonRow(greenColor, 1);
-    addButtonRow(whiteColor, 2);
-    addButtonRow(redColor, 3);
-    addNextTrialButton();
-    addSubview(view, nextTrialButton);
-    addSubview(view, responseButtons);
-    hideResponseButtons();
-    hideNextTrialButton();
-}
-
-void AppKitCoordinateResponseMeasureUI::addButtonRow(NSColor *color, int row) {
-    for (std::size_t col{0}; col < responseNumbers; ++col)
-        addNumberButton(color, numbers.at(col), row, col);
-}
-
-void AppKitCoordinateResponseMeasureUI::addNumberButton(
-    NSColor *color, int number, int row, std::size_t col) {
-    const auto title{nsString(std::to_string(number))};
-    const auto button {
-        [NSButton
-            buttonWithTitle:title
-                     target:actions
-                     action:@selector(notifyThatResponseButtonHasBeenClicked:)]
-    };
-    const auto responseWidth{width(responseButtons.frame) / responseNumbers};
-    const auto responseHeight{height(responseButtons.frame) / responseColors};
-    [button setFrame:NSMakeRect(responseWidth * col, responseHeight * row,
-                         responseWidth, responseHeight)];
-    [button setBezelStyle:NSBezelStyleTexturedSquare];
-    const auto style{[[NSMutableParagraphStyle alloc] init]};
-    [style setAlignment:NSTextAlignmentCenter];
-    [button
-        setAttributedTitle:
-            [[NSAttributedString alloc]
-                initWithString:title
-                    attributes:[NSDictionary dictionaryWithObjectsAndKeys:color,
-                                             NSForegroundColorAttributeName,
-                                             [NSNumber numberWithFloat:-4.0],
-                                             NSStrokeWidthAttributeName,
-                                             NSColor.blackColor,
-                                             NSStrokeColorAttributeName, style,
-                                             NSParagraphStyleAttributeName,
-                                             [NSFont fontWithName:@"Arial-Black"
-                                                             size:48],
-                                             NSFontAttributeName, nil]]];
-    addSubview(responseButtons, button);
-}
-
-void AppKitCoordinateResponseMeasureUI::addNextTrialButton() {
-    const auto button {
-        nsButton("", actions, @selector(notifyThatReadyButtonHasBeenClicked))
-    };
-    [button setBezelStyle:NSBezelStyleTexturedSquare];
+    std::vector<NSColor *> colors{blueColor, greenColor, whiteColor, redColor};
+    std::vector<NSView *> rows(responseColors);
+    std::transform(
+        colors.begin(), colors.end(), rows.begin(), [&](NSColor *color) {
+            std::vector<NSView *> buttons(responseNumbers);
+            std::generate(buttons.begin(), buttons.end(), [&, n = 0]() mutable {
+                const auto title{nsString(std::to_string(n++))};
+                const auto button {
+                    [NSButton
+                        buttonWithTitle:title
+                                 target:actions
+                                 action:@selector
+                                 (notifyThatResponseButtonHasBeenClicked:)]
+                };
+                [button setBezelStyle:NSBezelStyleTexturedSquare];
+                const auto style{[[NSMutableParagraphStyle alloc] init]};
+                [style setAlignment:NSTextAlignmentCenter];
+                [button setAttributedTitle:
+                            [[NSAttributedString alloc]
+                                initWithString:title
+                                    attributes:
+                                        [NSDictionary
+                                            dictionaryWithObjectsAndKeys:color,
+                                            NSForegroundColorAttributeName,
+                                            [NSNumber numberWithFloat:-4.0],
+                                            NSStrokeWidthAttributeName,
+                                            NSColor.blackColor,
+                                            NSStrokeColorAttributeName, style,
+                                            NSParagraphStyleAttributeName,
+                                            [NSFont fontWithName:@"Arial-Black"
+                                                            size:48],
+                                            NSFontAttributeName, nil]]];
+                return button;
+            });
+            const auto row{[NSStackView stackViewWithViews:nsArray(buttons)]};
+            // row.distribution = NSStackViewDistributionFillEqually;
+            return row;
+        });
+    responseButtons = [NSStackView stackViewWithViews:nsArray(rows)];
+    // for (auto row : rows)
+    //     [NSLayoutConstraint activateConstraints:@[
+    //         [row.leadingAnchor
+    //             constraintEqualToAnchor:responseButtons.leadingAnchor],
+    //         [row.trailingAnchor
+    //             constraintEqualToAnchor:responseButtons.trailingAnchor]
+    //     ]];
+    responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
+    // responseButtons.distribution = NSStackViewDistributionFillEqually;
+    nextTrialButton =
+        nsButton("", actions, @selector(notifyThatReadyButtonHasBeenClicked));
+    [nextTrialButton setBezelStyle:NSBezelStyleTexturedSquare];
     auto font{[NSFont fontWithName:@"Courier" size:36]};
-    [button
+    [nextTrialButton
         setAttributedTitle:
             [[NSAttributedString alloc]
                 initWithString:@"Press when ready"
                     attributes:[NSDictionary dictionaryWithObjectsAndKeys:font,
                                              NSFontAttributeName, nil]]];
-    [button setFrame:NSMakeRect(0, 0, width(nextTrialButton.frame),
-                         height(nextTrialButton.frame))];
-    addSubview(nextTrialButton, button);
+    addAutolayoutEnabledSubview(view, nextTrialButton);
+    addAutolayoutEnabledSubview(view, responseButtons);
+    [NSLayoutConstraint activateConstraints:@[
+        [responseButtons.widthAnchor constraintEqualToAnchor:view.widthAnchor],
+        [responseButtons.heightAnchor
+            constraintEqualToAnchor:view.heightAnchor],
+        [nextTrialButton.widthAnchor constraintEqualToAnchor:view.widthAnchor],
+        [nextTrialButton.heightAnchor
+            constraintEqualToAnchor:view.heightAnchor],
+    ]];
+    // for (NSStackView *row in responseButtons.views)
+    //     for (NSView *view in row.views)
+    //         [NSLayoutConstraint activateConstraints:@[
+    //             [view.topAnchor constraintEqualToAnchor:row.topAnchor],
+    //             [view.bottomAnchor constraintEqualToAnchor:row.bottomAnchor]
+    //         ]];
+    hideResponseButtons();
+    hideNextTrialButton();
 }
 
 auto AppKitCoordinateResponseMeasureUI::numberResponse() -> std::string {

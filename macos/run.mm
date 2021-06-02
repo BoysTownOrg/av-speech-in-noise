@@ -206,10 +206,6 @@ void TimerImpl::scheduleCallbackAfterSeconds(double x) {
 void TimerImpl::timerCallback() { listener->callback(); }
 }
 
-static void addChild(NSTabViewController *parent, NSTabViewController *child) {
-    [parent.view addSubview:child.view];
-}
-
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     OutputFileNameFactory &outputFileNameFactory,
     AppKitTestSetupUIFactory &testSetupUIFactory, SessionUI &sessionUIMaybe,
@@ -343,10 +339,23 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                            constant:-80]
     ]];
     static AppKitConsonantUI consonantUI{consonantNSView};
-    const auto coordinateResponseMeasureNSView{[[NSView alloc]
-        initWithFrame:NSMakeRect((subjectScreenWidth - subjectViewWidth) / 2, 0,
-                          subjectViewWidth, subjectViewHeight)]};
-    [subjectNSWindow.contentView addSubview:coordinateResponseMeasureNSView];
+    const auto coordinateResponseMeasureNSView{
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
+    addAutolayoutEnabledSubview(
+        subjectNSWindow.contentView, coordinateResponseMeasureNSView);
+    [NSLayoutConstraint activateConstraints:@[
+        [coordinateResponseMeasureNSView.centerXAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.centerXAnchor],
+        [coordinateResponseMeasureNSView.widthAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.widthAnchor
+                         multiplier:0.5],
+        [coordinateResponseMeasureNSView.heightAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.heightAnchor
+                         multiplier:0.5],
+        [coordinateResponseMeasureNSView.bottomAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.bottomAnchor
+                           constant:-80]
+    ]];
     static AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
         coordinateResponseMeasureNSView};
     static ConsonantTaskPresenterImpl consonantPresenter{consonantUI};

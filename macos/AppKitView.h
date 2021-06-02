@@ -63,8 +63,8 @@ class AppKitCoordinateResponseMeasureUI
     void addButtonRow(NSColor *color, int row);
 
     NSView *view;
-    NSView *responseButtons;
-    NSView *nextTrialButton;
+    NSStackView *responseButtons{};
+    NSButton *nextTrialButton;
     NSButton *lastButtonPressed{};
     CoordinateResponseMeasureUIActions *actions;
     Observer *listener_{};
