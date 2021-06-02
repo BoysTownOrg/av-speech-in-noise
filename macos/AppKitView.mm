@@ -121,23 +121,6 @@ static auto consonantImageButton(
     return button;
 }
 
-static void addReadyButton(NSView *parent, ConsonantUIActions *actions) {
-    const auto button {
-        nsButton("", actions, @selector(notifyThatReadyButtonHasBeenClicked))
-    };
-    [button setBezelStyle:NSBezelStyleTexturedSquare];
-    const auto font{[NSFont fontWithName:@"Courier" size:36]};
-    [button
-        setAttributedTitle:
-            [[NSAttributedString alloc]
-                initWithString:@"Press when ready"
-                    attributes:[NSDictionary dictionaryWithObjectsAndKeys:font,
-                                             NSFontAttributeName, nil]]];
-    [button
-        setFrame:NSMakeRect(0, 0, width(parent.frame), height(parent.frame))];
-    addSubview(parent, button);
-}
-
 static auto nsArray(const std::vector<NSView *> &v) -> NSArray * {
     return [NSArray arrayWithObjects:&v.front() count:v.size()];
 }
@@ -170,18 +153,25 @@ static auto equallyDistributedConsonantImageButtonGrid(
 
 AppKitConsonantUI::AppKitConsonantUI(NSView *view)
     : // Defer may be critical here...
-      view{view}, readyButton{[[NSView alloc]
-                      initWithFrame:NSMakeRect(0, 0, width(view.frame),
-                                        height(view.frame))]},
-      actions{[[ConsonantUIActions alloc] init]} {
+      view{view}, actions{[[ConsonantUIActions alloc] init]} {
     actions->controller = this;
     responseButtons =
         equallyDistributedConsonantImageButtonGrid(consonants, actions,
             {{"b", "c", "d", "h"}, {"k", "m", "n", "p"}, {"s", "t", "v", "z"}});
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
     responseButtons.distribution = NSStackViewDistributionFillEqually;
-    addReadyButton(readyButton, actions);
-    addSubview(view, readyButton);
+
+    readyButton =
+        nsButton("", actions, @selector(notifyThatReadyButtonHasBeenClicked));
+    [readyButton setBezelStyle:NSBezelStyleTexturedSquare];
+    const auto font{[NSFont fontWithName:@"Courier" size:36]};
+    [readyButton
+        setAttributedTitle:
+            [[NSAttributedString alloc]
+                initWithString:@"Press when ready"
+                    attributes:[NSDictionary dictionaryWithObjectsAndKeys:font,
+                                             NSFontAttributeName, nil]]];
+    addAutolayoutEnabledSubview(view, readyButton);
     addAutolayoutEnabledSubview(view, responseButtons);
     [NSLayoutConstraint activateConstraints:@[
         [responseButtons.topAnchor constraintEqualToAnchor:view.topAnchor],
@@ -190,6 +180,11 @@ AppKitConsonantUI::AppKitConsonantUI(NSView *view)
         [responseButtons.leadingAnchor
             constraintEqualToAnchor:view.leadingAnchor],
         [responseButtons.trailingAnchor
+            constraintEqualToAnchor:view.trailingAnchor],
+        [readyButton.topAnchor constraintEqualToAnchor:view.topAnchor],
+        [readyButton.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
+        [readyButton.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
+        [readyButton.trailingAnchor
             constraintEqualToAnchor:view.trailingAnchor],
     ]];
     for (NSStackView *row in responseButtons.views)

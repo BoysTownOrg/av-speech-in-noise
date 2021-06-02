@@ -326,11 +326,22 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto subjectViewHeight{subjectScreenSize.height / 4};
     const auto subjectScreenWidth{subjectScreenSize.width};
     const auto subjectViewWidth{subjectScreenWidth / 3};
-    const auto consonantNSView{[[NSView alloc]
-        initWithFrame:NSMakeRect(subjectScreenWidth / 4,
-                          subjectScreenSize.height / 12, subjectScreenWidth / 2,
-                          subjectScreenSize.height / 2)]};
-    [subjectNSWindow.contentView addSubview:consonantNSView];
+    const auto consonantNSView{
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
+    addAutolayoutEnabledSubview(subjectNSWindow.contentView, consonantNSView);
+    [NSLayoutConstraint activateConstraints:@[
+        [consonantNSView.centerXAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.centerXAnchor],
+        [consonantNSView.widthAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.widthAnchor
+                         multiplier:0.5],
+        [consonantNSView.heightAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.heightAnchor
+                         multiplier:0.5],
+        [consonantNSView.bottomAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.bottomAnchor
+                           constant:-80]
+    ]];
     static AppKitConsonantUI consonantUI{consonantNSView};
     const auto coordinateResponseMeasureNSView{[[NSView alloc]
         initWithFrame:NSMakeRect((subjectScreenWidth - subjectViewWidth) / 2, 0,

@@ -31,7 +31,7 @@ class AppKitConsonantUI : public ConsonantTaskView,
     std::unordered_map<void *, std::string> consonants;
     NSView *view;
     NSStackView *responseButtons;
-    NSView *readyButton;
+    NSButton *readyButton{};
     NSButton *lastButtonPressed{};
     ConsonantUIActions *actions;
     Observer *listener_{};
