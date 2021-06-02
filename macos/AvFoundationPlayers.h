@@ -34,7 +34,7 @@ class AvFoundationBufferedAudioReaderFactory
 
 class AvFoundationVideoPlayer : public VideoPlayer {
   public:
-    explicit AvFoundationVideoPlayer(NSScreen *);
+    explicit AvFoundationVideoPlayer(NSWindow *);
     void playbackComplete();
     void play() override;
     void playAt(const PlayerTimeWithDelay &) override;
@@ -76,7 +76,6 @@ class AvFoundationVideoPlayer : public VideoPlayer {
     NSWindow *videoWindow;
     AVPlayer *player;
     AVPlayerLayer *playerLayer;
-    NSScreen *screen;
     Observer *listener_{};
 };
 

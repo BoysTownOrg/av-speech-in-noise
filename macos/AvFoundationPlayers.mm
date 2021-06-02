@@ -148,16 +148,10 @@ static auto currentAsset(AVPlayer *player) -> AVAsset * {
     return player.currentItem.asset;
 }
 
-AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSScreen *screen)
+AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSWindow *window)
     : actions{[VideoPlayerActions alloc]},
-      videoWindow{
-          [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 0, 0)
-                                      styleMask:NSWindowStyleMaskBorderless
-                                        backing:NSBackingStoreBuffered
-                                          defer:YES]},
-      player{[AVPlayer playerWithPlayerItem:nil]},
-      playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]}, screen{
-                                                                     screen} {
+      videoWindow{window}, player{[AVPlayer playerWithPlayerItem:nil]},
+      playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]} {
     MTAudioProcessingTapCallbacks callbacks;
     callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
     callbacks.clientInfo = this;
@@ -282,7 +276,7 @@ void AvFoundationVideoPlayer::resizeVideo() {
 }
 
 void AvFoundationVideoPlayer::centerVideo() {
-    const auto screenFrame{[screen frame]};
+    const auto screenFrame{[videoWindow.screen frame]};
     const auto screenOrigin{screenFrame.origin};
     const auto screenSize{screenFrame.size};
     const auto windowSize{videoWindow.frame.size};
