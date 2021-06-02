@@ -230,7 +230,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     [subjectNSWindow makeKeyAndOrderFront:nil];
     const auto videoNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
-    [subjectNSWindow.contentView addSubview:videoNSView];
+    addAutolayoutEnabledSubview(subjectNSWindow.contentView, videoNSView);
     static AvFoundationVideoPlayer videoPlayer{videoNSView};
     static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
     static AudioReaderSimplified audioReader{bufferedReaderFactory};

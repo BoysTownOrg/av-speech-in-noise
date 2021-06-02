@@ -151,7 +151,9 @@ static auto currentAsset(AVPlayer *player) -> AVAsset * {
 AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSView *view)
     : actions{[VideoPlayerActions alloc]}, view{view},
       player{[AVPlayer playerWithPlayerItem:nil]},
-      playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]} {
+      playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]},
+      widthConstraint{[view.widthAnchor constraintEqualToConstant:0]},
+      heightConstraint{[view.heightAnchor constraintEqualToConstant:0]} {
     MTAudioProcessingTapCallbacks callbacks;
     callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
     callbacks.clientInfo = this;
@@ -164,6 +166,13 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSView *view)
     MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks,
         kMTAudioProcessingTapCreationFlag_PostEffects, &tap);
     prepareWindow();
+    [NSLayoutConstraint activateConstraints:@[
+        [view.centerXAnchor
+            constraintEqualToAnchor:view.superview.centerXAnchor],
+        [view.centerYAnchor
+            constraintEqualToAnchor:view.superview.centerYAnchor],
+        widthConstraint, heightConstraint
+    ]];
     actions->controller = this;
 }
 
@@ -250,10 +259,7 @@ void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     prepareVideo();
 }
 
-void AvFoundationVideoPlayer::prepareVideo() {
-    resizeVideo();
-    centerVideo();
-}
+void AvFoundationVideoPlayer::prepareVideo() { resizeVideo(); }
 
 void AvFoundationVideoPlayer::resizeVideo() {
     const auto asset{currentAsset(player)};
@@ -264,21 +270,10 @@ void AvFoundationVideoPlayer::resizeVideo() {
     size.height /= 3;
     size.width *= 2;
     size.width /= 3;
+    widthConstraint.constant = size.width;
+    heightConstraint.constant = size.height;
     const auto nsSize{NSSizeFromCGSize(size)};
-    [view setFrameSize:nsSize];
     [playerLayer setFrame:NSMakeRect(0, 0, nsSize.width, nsSize.height)];
-}
-
-void AvFoundationVideoPlayer::centerVideo() {
-    const auto screenFrame{view.superview.frame};
-    const auto screenOrigin{screenFrame.origin};
-    const auto screenSize{screenFrame.size};
-    const auto windowSize{view.frame.size};
-    const auto videoLeadingEdge =
-        screenOrigin.x + (screenSize.width - windowSize.width) / 2;
-    const auto videoBottomEdge =
-        screenOrigin.y + (screenSize.height - windowSize.height) / 2;
-    [view setFrameOrigin:NSMakePoint(videoLeadingEdge, videoBottomEdge)];
 }
 
 void AvFoundationVideoPlayer::subscribeToPlaybackCompletion() {

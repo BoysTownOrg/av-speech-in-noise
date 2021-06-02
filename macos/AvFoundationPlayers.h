@@ -76,6 +76,8 @@ class AvFoundationVideoPlayer : public VideoPlayer {
     NSView *view;
     AVPlayer *player;
     AVPlayerLayer *playerLayer;
+    NSLayoutConstraint *widthConstraint;
+    NSLayoutConstraint *heightConstraint;
     Observer *listener_{};
 };
 
