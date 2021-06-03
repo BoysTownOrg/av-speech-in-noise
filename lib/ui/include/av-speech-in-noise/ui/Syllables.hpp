@@ -36,7 +36,7 @@ class Presenter {
 
 class Controller : public Control::Observer {
   public:
-    Controller(Control &, TestController &, Model &,
+    Controller(Control &, TestController &, Interactor &,
         std::map<std::string, Syllable, std::less<>> map);
     void notifyThatResponseButtonHasBeenClicked() override;
 
@@ -44,7 +44,7 @@ class Controller : public Control::Observer {
     std::map<std::string, Syllable, std::less<>> map;
     Control &control;
     TestController &testController;
-    Model &model;
+    Interactor &model;
 };
 
 class PresenterImpl : public Presenter, public TaskPresenter {

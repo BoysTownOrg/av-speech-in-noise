@@ -1,7 +1,6 @@
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
-#include "ModelStub.hpp"
 #include <av-speech-in-noise/ui/Syllables.hpp>
 #include <gtest/gtest.h>
 
@@ -25,6 +24,16 @@ class ViewStub : public View {
     bool hidden_{};
     bool shown_{};
     bool flagCleared_{};
+};
+
+class InteractorStub : public Interactor {
+  public:
+    void submit(const SyllableResponse &s) override { syllableResponse_ = s; }
+
+    auto syllableResponse() -> SyllableResponse { return syllableResponse_; }
+
+  private:
+    SyllableResponse syllableResponse_{};
 };
 
 class ControlStub : public Control {
@@ -59,7 +68,7 @@ class SyllablesControllerTests : public ::testing::Test {
   protected:
     ControlStub control;
     TestControllerStub testController;
-    ModelStub model;
+    InteractorStub model;
     Controller controller{
         control, testController, model, {{"Ghee", Syllable::gi}}};
 };

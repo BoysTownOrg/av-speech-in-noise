@@ -20,7 +20,6 @@ class RecognitionTestModel {
     virtual void playRightSpeakerCalibration(const Calibration &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
-    virtual void submit(const SyllableResponse &) {}
     virtual auto testComplete() -> bool = 0;
     virtual auto audioDevices() -> AudioDevices = 0;
     virtual auto trialNumber() -> int = 0;

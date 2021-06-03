@@ -3,7 +3,7 @@
 
 namespace av_speech_in_noise::submitting_syllable {
 Controller::Controller(Control &control, TestController &testController,
-    Model &model, std::map<std::string, Syllable, std::less<>> map)
+    Interactor &model, std::map<std::string, Syllable, std::less<>> map)
     : map{std::move(map)}, control{control},
       testController{testController}, model{model} {
     control.attach(this);

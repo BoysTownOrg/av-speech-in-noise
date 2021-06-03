@@ -157,8 +157,6 @@ void ModelImpl::submit(const coordinate_response_measure::Response &response) {
     model.submit(response);
 }
 
-void ModelImpl::submit(const SyllableResponse &r) { model.submit(r); }
-
 void ModelImpl::submit(const ConsonantResponse &r) {
     fixedLevelMethod.submit(r);
     fixedLevelMethod.writeLastConsonant(outputFile);

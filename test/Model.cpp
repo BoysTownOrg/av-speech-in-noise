@@ -8,6 +8,7 @@
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
 #include <av-speech-in-noise/core/SubmittingKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingNumberKeywords.hpp>
+#include <av-speech-in-noise/core/SubmittingSyllable.hpp>
 #include <av-speech-in-noise/core/Model.hpp>
 #include <gtest/gtest.h>
 #include <sstream>
@@ -172,11 +173,18 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         return threeKeywords_;
     }
 
+    auto syllableResponse() -> const SyllableResponse * {
+        return syllableResponse_;
+    }
+
+    void submit(const SyllableResponse &r) override { syllableResponse_ = &r; }
+
   private:
     KeywordsTestResults keywordsTestResults_{};
     std::stringstream log_{};
     LocalUrl currentTarget_;
     const ThreeKeywordsResponse *threeKeywords_{};
+    const SyllableResponse *syllableResponse_{};
     const FixedLevelTest *test_{};
     const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
     TargetPlaylist *targetList_{};
@@ -325,8 +333,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_ =
             t;
     }
-
-    void submit(const SyllableResponse &f) override { syllableResponse_ = &f; }
 
     auto playTrialTime() -> std::string override { return playTrialTime_; }
 
@@ -915,6 +921,17 @@ class SubmittingNumberKeywordsTests : public ::testing::Test {
     CorrectKeywords correctKeywords;
 };
 
+class SubmittingSyllableTests : public ::testing::Test {
+  protected:
+    AdaptiveMethodStub testMethod;
+    FixedLevelMethodStub fixedLevelMethod;
+    RecognitionTestModelStub model{testMethod, fixedLevelMethod};
+    OutputFileStub outputFile;
+    submitting_syllable::InteractorImpl interactor{
+        fixedLevelMethod, model, outputFile};
+    SyllableResponse syllableResponse;
+};
+
 #define SUBMITTING_FREE_RESPONSE_TEST(a) TEST_F(SubmittingFreeResponseTests, a)
 
 #define SUBMITTING_PASS_FAIL_TEST(a) TEST_F(SubmittingPassFailTests, a)
@@ -923,6 +940,8 @@ class SubmittingNumberKeywordsTests : public ::testing::Test {
 
 #define SUBMITTING_NUMBER_KEYWORDS_TEST(a)                                     \
     TEST_F(SubmittingNumberKeywordsTests, a)
+
+#define SUBMITTING_SYLLABLE(a) TEST_F(SubmittingSyllableTests, a)
 
 SUBMITTING_FREE_RESPONSE_TEST(submittingFreeResponsePreparesNextTrialIfNeeded) {
     interactor.submit({});
@@ -1086,6 +1105,56 @@ SUBMITTING_NUMBER_KEYWORDS_TEST(queriesNextTargetAfterWritingResponse) {
 SUBMITTING_NUMBER_KEYWORDS_TEST(savesOutputFileAfterWritingTrial) {
     interactor.submit(correctKeywords);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+SUBMITTING_SYLLABLE(preparesNextTrialIfNeeded) {
+    interactor.submit(syllableResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_SYLLABLE(savesOutputFileAfterWritingTrial) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+SUBMITTING_SYLLABLE(writesSubjectSyllable) {
+    syllableResponse.syllable = Syllable::gi;
+    interactor.submit(syllableResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Syllable::gi, outputFile.syllableTrial().subjectSyllable);
+}
+
+SUBMITTING_SYLLABLE(writesCorrectSyllable) {
+    fixedLevelMethod.setCurrentTargetPath("a/b/say_vi_2-25ao.mov");
+    interactor.submit(syllableResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Syllable::vi, outputFile.syllableTrial().correctSyllable);
+}
+
+SUBMITTING_SYLLABLE(writesFlagged) {
+    syllableResponse.flagged = true;
+    interactor.submit(syllableResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().flagged);
+}
+
+SUBMITTING_SYLLABLE(writesTarget) {
+    fixedLevelMethod.setCurrentTargetPath("a/b/c.txt");
+    interactor.submit(syllableResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c.txt"}, outputFile.syllableTrial().target);
+}
+
+SUBMITTING_SYLLABLE(submitsToTestMethod) {
+    interactor.submit(syllableResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &syllableResponse, fixedLevelMethod.syllableResponse());
+}
+
+SUBMITTING_SYLLABLE(submitCorrectSyllable) {
+    fixedLevelMethod.setCurrentTargetPath("a/b/say_dji_3-25av.mov");
+    syllableResponse.syllable = Syllable::dji;
+    interactor.submit(syllableResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().correct);
 }
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
@@ -1333,13 +1402,6 @@ MODEL_TEST(submitConsonantPassesConsonant) {
     model.submit(r);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(r), internalModel.consonantResponse());
-}
-
-MODEL_TEST(submitSyllablePassesSyllable) {
-    SyllableResponse r{};
-    model.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &std::as_const(r), internalModel.syllableResponse());
 }
 
 MODEL_TEST(submitConsonantSubmitsResponse) {

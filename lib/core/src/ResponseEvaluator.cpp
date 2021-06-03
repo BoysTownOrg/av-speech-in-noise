@@ -34,52 +34,6 @@ static auto consonant(const std::string &match) -> char {
     return '\0';
 }
 
-static auto syllable(const std::string &match) -> Syllable {
-    if (match == "bi")
-        return Syllable::bi;
-    if (match == "di")
-        return Syllable::di;
-    if (match == "dji")
-        return Syllable::dji;
-    if (match == "fi")
-        return Syllable::fi;
-    if (match == "gi")
-        return Syllable::gi;
-    if (match == "hi")
-        return Syllable::hi;
-    if (match == "ji")
-        return Syllable::ji;
-    if (match == "ki")
-        return Syllable::ki;
-    if (match == "li")
-        return Syllable::li;
-    if (match == "mi")
-        return Syllable::mi;
-    if (match == "ni")
-        return Syllable::ni;
-    if (match == "pi")
-        return Syllable::pi;
-    if (match == "ri")
-        return Syllable::ri;
-    if (match == "shi")
-        return Syllable::shi;
-    if (match == "si")
-        return Syllable::si;
-    if (match == "thi")
-        return Syllable::thi;
-    if (match == "ti")
-        return Syllable::ti;
-    if (match == "tsi")
-        return Syllable::tsi;
-    if (match == "vi")
-        return Syllable::vi;
-    if (match == "wi")
-        return Syllable::wi;
-    if (match == "zi")
-        return Syllable::zi;
-    return Syllable::unknown;
-}
-
 static auto color(const std::string &colorName)
     -> coordinate_response_measure::Color {
     using coordinate_response_measure::Color;
@@ -109,14 +63,6 @@ static auto correctConsonant(const LocalUrl &url) -> char {
     std::smatch match;
     std::regex_search(stem, match, pattern);
     return match.size() > 1 ? consonant(match[1]) : '\0';
-}
-
-static auto correctSyllable(const LocalUrl &file) -> Syllable {
-    const auto stem{av_speech_in_noise::stem(file)};
-    std::regex pattern{"say_(.*?)_.*"};
-    std::smatch match;
-    std::regex_search(stem, match, pattern);
-    return match.size() > 1 ? syllable(match[1]) : Syllable::unknown;
 }
 
 static auto correctNumber(const LocalUrl &url) -> int {
@@ -168,14 +114,5 @@ auto ResponseEvaluatorImpl::correct(const LocalUrl &url,
 auto ResponseEvaluatorImpl::correct(
     const LocalUrl &url, const ConsonantResponse &r) -> bool {
     return av_speech_in_noise::correctConsonant(url) == r.consonant;
-}
-
-auto ResponseEvaluatorImpl::correct(
-    const LocalUrl &url, const SyllableResponse &response) -> bool {
-    return av_speech_in_noise::correctSyllable(url) == response.syllable;
-}
-
-auto ResponseEvaluatorImpl::correctSyllable(const LocalUrl &url) -> Syllable {
-    return av_speech_in_noise::correctSyllable(url);
 }
 }
