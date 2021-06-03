@@ -46,7 +46,9 @@ namespace submitting_free_response {
 class UI : public View, public Control {};
 }
 
-class SyllablesUI : public SyllablesView, public SyllablesControl {};
+namespace submitting_syllable {
+class UI : public View, public Control {};
+}
 
 namespace submitting_keywords {
 class UI : public View, public Control {};
@@ -62,9 +64,9 @@ class UI : public View, public Control {};
 
 void initializeAppAndRunEventLoop(EyeTracker &, OutputFileNameFactory &,
     AppKitTestSetupUIFactory &, SessionUI &, TestUI &,
-    submitting_free_response::UI &, SyllablesUI &, submitting_keywords::UI &,
-    submitting_number_keywords::UI &, submitting_pass_fail::UI &,
-    SessionController::Observer * = nullptr,
+    submitting_free_response::UI &, submitting_syllable::UI &,
+    submitting_keywords::UI &, submitting_number_keywords::UI &,
+    submitting_pass_fail::UI &, SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =
         "Documents/AvSpeechInNoise Data",
     AppKitRunMenuInitializer * = nullptr);

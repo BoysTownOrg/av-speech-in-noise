@@ -20,6 +20,7 @@
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
 #include <av-speech-in-noise/core/SubmittingKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingNumberKeywords.hpp>
+#include <av-speech-in-noise/core/SubmittingSyllable.hpp>
 #include <av-speech-in-noise/player/MaskerPlayerImpl.hpp>
 #include <av-speech-in-noise/player/TargetPlayerImpl.hpp>
 #include <av-speech-in-noise/player/AudioReaderSimplified.hpp>
@@ -215,7 +216,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     OutputFileNameFactory &outputFileNameFactory,
     AppKitTestSetupUIFactory &testSetupUIFactory, SessionUI &sessionUIMaybe,
     TestUI &testUIMaybe, submitting_free_response::UI &freeResponseUIMaybe,
-    SyllablesUI &syllablesUIMaybe,
+    submitting_syllable::UI &syllablesUIMaybe,
     submitting_keywords::UI &chooseKeywordsUIMaybe,
     submitting_number_keywords::UI &correctKeywordsUIMaybe,
     submitting_pass_fail::UI &passFailUIMaybe,
@@ -335,7 +336,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         testUIMaybe, chooseKeywordsUIMaybe,
         submitting_keywords::sentencesWithThreeKeywords(
             read_file(resourceUrl("mlst-c", "txt").path))};
-    static SyllablesPresenterImpl syllablesPresenter{
+    static submitting_syllable::PresenterImpl syllablesPresenter{
         syllablesUIMaybe, testUIMaybe};
     static submitting_number_keywords::Presenter correctKeywordsPresenter{
         testUIMaybe, correctKeywordsUIMaybe};
@@ -356,8 +357,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_keywords::Controller chooseKeywordsController{
         testController, submittingKeywordsInteractor, chooseKeywordsUIMaybe,
         chooseKeywordsPresenter};
-    static SyllablesController syllablesController{syllablesUIMaybe,
-        testController, model,
+    static submitting_syllable::InteractorImpl submittingSyllableInteractor{
+        fixedLevelMethod, recognitionTestModel, outputFile};
+    static submitting_syllable::Controller syllablesController{syllablesUIMaybe,
+        testController, submittingSyllableInteractor,
         {{"B", Syllable::bi}, {"D", Syllable::di}, {"G", Syllable::dji},
             {"F", Syllable::fi}, {"Ghee", Syllable::gi}, {"H", Syllable::hi},
             {"Yee", Syllable::ji}, {"K", Syllable::ki}, {"L", Syllable::li},

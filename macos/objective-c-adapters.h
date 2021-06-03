@@ -36,9 +36,10 @@ class UIImpl : public UI {
 };
 }
 
-class SyllablesUIImpl : public SyllablesUI {
+namespace submitting_syllable {
+class UIImpl : public UI {
   public:
-    explicit SyllablesUIImpl(NSObject<SyllablesUI> *);
+    explicit UIImpl(NSObject<SyllablesUI> *);
     void attach(Observer *a) override;
     void hide() override;
     void show() override;
@@ -49,6 +50,7 @@ class SyllablesUIImpl : public SyllablesUI {
   private:
     NSObject<SyllablesUI> *syllablesUI;
 };
+}
 
 class TestSetupUIImpl : public TestSetupUI {
   public:
