@@ -127,17 +127,19 @@ class UIImpl : public UI {
 };
 }
 
-class CorrectKeywordsUIImpl : public CorrectKeywordsUI {
+namespace submitting_number_keywords {
+class UIImpl : public UI {
   public:
-    explicit CorrectKeywordsUIImpl(NSObject<CorrectKeywordsUI> *);
+    explicit UIImpl(NSObject<CorrectKeywordsUI> *);
     void attach(Observer *a) override;
     auto correctKeywords() -> std::string override;
-    void showCorrectKeywordsSubmission() override;
-    void hideCorrectKeywordsSubmission() override;
+    void show() override;
+    void hide() override;
 
   private:
     NSObject<CorrectKeywordsUI> *ui;
 };
+}
 
 namespace submitting_pass_fail {
 class UIImpl : public UI {

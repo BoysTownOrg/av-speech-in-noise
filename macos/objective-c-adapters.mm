@@ -71,7 +71,7 @@
 
 @implementation CorrectKeywordsUIObserverImpl {
   @public
-    av_speech_in_noise::CorrectKeywordsControl::Observer *observer;
+    av_speech_in_noise::submitting_number_keywords::Control::Observer *observer;
 }
 
 - (void)notifyThatSubmitButtonHasBeenClicked {
@@ -382,25 +382,22 @@ void UIImpl::clearResponse() { [freeResponseUI clearFreeResponse]; }
 void UIImpl::clearFlag() { [freeResponseUI clearFlag]; }
 }
 
-CorrectKeywordsUIImpl::CorrectKeywordsUIImpl(NSObject<CorrectKeywordsUI> *ui)
-    : ui{ui} {}
+namespace submitting_number_keywords {
+UIImpl::UIImpl(NSObject<CorrectKeywordsUI> *ui) : ui{ui} {}
 
-void CorrectKeywordsUIImpl::attach(Observer *a) {
+void UIImpl::attach(Observer *a) {
     const auto adapted{[[CorrectKeywordsUIObserverImpl alloc] init]};
     adapted->observer = a;
     [ui attach:adapted];
 }
 
-auto CorrectKeywordsUIImpl::correctKeywords() -> std::string {
+auto UIImpl::correctKeywords() -> std::string {
     return [ui correctKeywords].UTF8String;
 }
 
-void CorrectKeywordsUIImpl::showCorrectKeywordsSubmission() {
-    [ui showCorrectKeywordsSubmission];
-}
+void UIImpl::show() { [ui showCorrectKeywordsSubmission]; }
 
-void CorrectKeywordsUIImpl::hideCorrectKeywordsSubmission() {
-    [ui hideCorrectKeywordsSubmission];
+void UIImpl::hide() { [ui hideCorrectKeywordsSubmission]; }
 }
 
 namespace submitting_pass_fail {

@@ -216,7 +216,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     TestUI &testUIMaybe, submitting_free_response::UI &freeResponseUIMaybe,
     SyllablesUI &syllablesUIMaybe,
     submitting_keywords::UI &chooseKeywordsUIMaybe,
-    CorrectKeywordsUI &correctKeywordsUIMaybe,
+    submitting_number_keywords::UI &correctKeywordsUIMaybe,
     submitting_pass_fail::UI &passFailUIMaybe,
     SessionController::Observer *sessionControllerObserver,
     std::filesystem::path relativeOutputDirectory,
@@ -336,7 +336,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             read_file(resourceUrl("mlst-c", "txt").path))};
     static SyllablesPresenterImpl syllablesPresenter{
         syllablesUIMaybe, testUIMaybe};
-    static CorrectKeywordsPresenter correctKeywordsPresenter{
+    static submitting_number_keywords::Presenter correctKeywordsPresenter{
         testUIMaybe, correctKeywordsUIMaybe};
     static submitting_pass_fail::Presenter passFailPresenter{
         testUIMaybe, passFailUIMaybe};
@@ -364,7 +364,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {"R", Syllable::ri}, {"Sh", Syllable::shi}, {"S", Syllable::si},
             {"Th", Syllable::thi}, {"T", Syllable::ti}, {"Ch", Syllable::tsi},
             {"V", Syllable::vi}, {"W", Syllable::wi}, {"Z", Syllable::zi}}};
-    static CorrectKeywordsController correctKeywordsController{
+    static submitting_number_keywords::Controller correctKeywordsController{
         testController, model, sessionUIMaybe, correctKeywordsUIMaybe};
     static submitting_free_response::InteractorImpl
         submittingFreeResponseInteractor{
