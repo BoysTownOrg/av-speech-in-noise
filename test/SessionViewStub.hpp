@@ -23,6 +23,10 @@ class SessionViewStub : public SessionView {
 
     void setScreens(const std::vector<Screen> &v) { screens_ = v; }
 
+    void setSubject(Screen s) { subjectScreen_ = std::move(s); }
+
+    auto subjectScreen() -> Screen { return subjectScreen_; }
+
     auto screens() -> std::vector<Screen> override { return screens_; }
 
     void populateSubjectScreenMenu(const std::vector<Screen> &v) override {
@@ -34,6 +38,7 @@ class SessionViewStub : public SessionView {
     std::vector<Screen> subjectScreens_;
     std::vector<Screen> screens_;
     std::string errorMessage_;
+    Screen subjectScreen_;
 };
 
 class SessionControlStub : public SessionControl {

@@ -29,6 +29,7 @@ class SessionView {
     virtual void populateSubjectScreenMenu(const std::vector<Screen> &) = 0;
     virtual auto screens() -> std::vector<Screen> = 0;
     virtual void showErrorMessage(std::string_view) = 0;
+    virtual auto subjectScreen() -> Screen = 0;
 };
 
 class SessionControl {
