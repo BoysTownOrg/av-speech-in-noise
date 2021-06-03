@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_MACOS_OBJECTIVE_C_ADAPTERS_H_
 
 #import "objective-c-bridge.h"
+#include <vector>
 #include "run.h"
 
 namespace av_speech_in_noise {
@@ -105,6 +106,7 @@ class SessionUIImpl : public SessionUI {
     void showErrorMessage(std::string_view s) override;
     auto audioDevice() -> std::string override;
     void populateAudioDeviceMenu(std::vector<std::string> v) override;
+    void populateSubjectScreenMenu(const std::vector<Screen> &) override;
 
   private:
     NSObject<SessionUI> *sessionUI;

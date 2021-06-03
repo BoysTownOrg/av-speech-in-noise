@@ -108,6 +108,7 @@
 - (void)showErrorMessage:(NSString *)something;
 - (NSString *)audioDevice;
 - (void)populateAudioDeviceMenu:(NSArray<NSString *> *)devices;
+- (void)populateSubjectScreenMenu:(NSArray<NSString *> *)screens;
 @end
 
 @protocol FreeResponseUI
