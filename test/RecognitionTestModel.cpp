@@ -22,18 +22,9 @@ constexpr auto operator==(
         a.left == b.left && a.right == b.right;
 }
 
-static void assertEqual(
-    const std::string &expected, const std::string &actual) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected, actual);
-}
-
 namespace {
 class TestMethodStub : public TestMethod {
   public:
-    auto syllableResponse() -> const SyllableResponse * {
-        return syllableResponse_;
-    }
-
     void setSnr_dB(int x) { snr_dB_ = x; }
 
     auto snr() -> SNR override { return SNR{snr_dB_}; }
@@ -56,11 +47,6 @@ class TestMethodStub : public TestMethod {
 
     void setCurrentTargetWhenNextTarget(std::string s) {
         currentTargetWhenNextTarget_ = std::move(s);
-    }
-
-    void submit(const SyllableResponse &p) override {
-        insert(log_, "submitSyllableResponse ");
-        syllableResponse_ = &p;
     }
 
     void submit(const coordinate_response_measure::Response &) override {
@@ -87,7 +73,6 @@ class TestMethodStub : public TestMethod {
     std::string currentTarget_{};
     std::string currentTargetWhenNextTarget_{};
     std::string nextTarget_{};
-    const SyllableResponse *syllableResponse_{};
     int snr_dB_{};
     bool complete_{};
 };
@@ -256,21 +241,6 @@ class PlayingTrial : public AudioDeviceUseCase {
 
   private:
     AudioSettings trial;
-};
-
-class SubmittingSyllable : public TargetWritingUseCase {
-  public:
-    explicit SubmittingSyllable(const SyllableResponse &response = {})
-        : response{response} {}
-
-    void run(RecognitionTestModelImpl &m) override { m.submit(response); }
-
-    auto target(OutputFileStub &file) -> std::string override {
-        return file.syllableTrial().target;
-    }
-
-  private:
-    const SyllableResponse &response;
 };
 
 class SubmittingConsonant : public TargetWritingUseCase {
@@ -587,7 +557,6 @@ class RecognitionTestModelTests : public ::testing::Test {
     FreeResponse freeResponse{};
     ThreeKeywordsResponse threeKeywords;
     SyllableResponse syllableResponse;
-    SubmittingSyllable submittingSyllable{syllableResponse};
     AudioSampleTimeWithOffset fadeInCompleteTime{};
     SubmittingConsonant submittingConsonant;
 
@@ -1200,11 +1169,6 @@ RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseIncrementsTrialNumber) {
     assertYieldsTrialNumber(submittingCoordinateResponse, 2);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submittingSyllableIncrementsTrialNumber) {
-    run(initializingTest, model);
-    assertYieldsTrialNumber(submittingSyllable, 2);
-}
-
 RECOGNITION_TEST_MODEL_TEST(submittingConsonantIncrementsTrialNumber) {
     run(initializingTest, model);
     assertYieldsTrialNumber(submittingConsonant, 2);
@@ -1390,10 +1354,6 @@ RECOGNITION_TEST_MODEL_TEST(submitConsonantSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingConsonant);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitSyllableSavesOutputFileAfterWritingTrial) {
-    assertSavesOutputFileAfterWritingTrial(submittingSyllable);
-}
-
 RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestThrowsRequestFailureIfFileFailsToOpen) {
     outputFile.throwOnOpen();
@@ -1520,58 +1480,6 @@ RECOGNITION_TEST_MODEL_TEST(
     assertFilePathEquals(targetPlayer, "");
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesSubjectSyllable) {
-    syllableResponse.syllable = Syllable::gi;
-    run(submittingSyllable, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Syllable::gi, outputFile.syllableTrial().subjectSyllable);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesCorrectSyllable) {
-    evaluator.setCorrectSyllable(Syllable::gi);
-    run(submittingSyllable, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Syllable::gi, outputFile.syllableTrial().correctSyllable);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitSyllablePassesTargetToEvaluatorForCorrectSyllable) {
-    run(initializingTest, model);
-    testMethod.setCurrentTarget("a");
-    run(submittingSyllable, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", evaluator.correctSyllableUrl().path);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitSyllablePassesTargetNameToEvaluatorForCorrectness) {
-    run(initializingTest, model);
-    testMethod.setCurrentTarget("a");
-    run(submittingSyllable, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", evaluator.isSyllableCorrectUrl().path);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitCorrectSyllable) {
-    evaluator.setSyllableIsCorrect();
-    run(submittingSyllable, model);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().correct);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesFlagged) {
-    syllableResponse.flagged = true;
-    run(submittingSyllable, model);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().flagged);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitSyllableWritesTarget) {
-    assertWritesTarget(submittingSyllable);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitSyllablePassesCurrentTargetToEvaluatorBeforeAdvancingTarget) {
-    assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
-        submittingSyllable);
-}
-
 RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseWritesTrialAfterSubmittingResponse) {
     assertTestMethodLogContains(submittingCoordinateResponse,
@@ -1582,13 +1490,6 @@ RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseQueriesNextTargetAfterWritingResponse) {
     assertTestMethodLogContains(
         submittingCoordinateResponse, "writeLastCoordinateResponse next ");
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitSyllableSubmitsToTestMethod) {
-    run(initializingTest, model);
-    run(submittingSyllable, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &syllableResponse, testMethod.syllableResponse());
 }
 }
 }

@@ -216,8 +216,6 @@ class ModelStub : public Model {
 
     void submit(const ConsonantResponse &s) override { consonantResponse_ = s; }
 
-    void submit(const SyllableResponse &s) override { syllableResponse_ = s; }
-
     void restartAdaptiveTestWhilePreservingTargets() override {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
     }
@@ -231,8 +229,6 @@ class ModelStub : public Model {
     auto keywordsTestResults() -> KeywordsTestResults override {
         return keywordsTestResults_;
     }
-
-    auto syllableResponse() -> SyllableResponse { return syllableResponse_; }
 
     void setKeywordTestResults(KeywordsTestResults k) {
         keywordsTestResults_ = k;
@@ -252,7 +248,6 @@ class ModelStub : public Model {
     AdaptiveTestResults adaptiveTestResults_{};
     ConsonantResponse consonantResponse_{};
     ThreeKeywordsResponse threeKeywords_{};
-    SyllableResponse syllableResponse_{};
     KeywordsTestResults keywordsTestResults_{};
     std::string targetFileName_{};
     Observer *listener_{};

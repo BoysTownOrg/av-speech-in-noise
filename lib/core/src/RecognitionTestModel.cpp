@@ -425,23 +425,6 @@ void RecognitionTestModelImpl::submit(
         maskerPlayer, maskerLevel_, fullScaleLevel_);
 }
 
-void RecognitionTestModelImpl::submit(const SyllableResponse &p) {
-    saveOutputFileAndPrepareNextTrialAfter(
-        [&]() {
-            testMethod->submit(p);
-            SyllableTrial trial;
-            trial.subjectSyllable = p.syllable;
-            trial.target = targetName(evaluator, testMethod);
-            trial.correctSyllable =
-                evaluator.correctSyllable(currentTarget(testMethod));
-            trial.correct = evaluator.correct(currentTarget(testMethod), p);
-            trial.flagged = p.flagged;
-            outputFile.write(trial);
-        },
-        testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, maskerLevel_, fullScaleLevel_);
-}
-
 void RecognitionTestModelImpl::submit(const ConsonantResponse &) {
     saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
         outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,

@@ -3,62 +3,60 @@
 
 #include "Task.hpp"
 #include "Test.hpp"
+#include "View.hpp"
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <map>
 #include <string>
 
-namespace av_speech_in_noise {
-class SyllablesView {
+namespace av_speech_in_noise::submitting_syllable {
+class View : public av_speech_in_noise::View {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SyllablesView);
-    virtual void hide() = 0;
-    virtual void show() = 0;
     virtual void clearFlag() = 0;
 };
 
-class SyllablesControl {
+class Control {
   public:
     class Observer {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatResponseButtonHasBeenClicked() = 0;
     };
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SyllablesControl);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
     virtual void attach(Observer *) = 0;
     virtual auto syllable() -> std::string = 0;
     virtual auto flagged() -> bool = 0;
 };
 
-class SyllablesPresenter {
+class Presenter {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SyllablesPresenter);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Presenter);
 };
 
-class SyllablesController : public SyllablesControl::Observer {
+class Controller : public Control::Observer {
   public:
-    SyllablesController(SyllablesControl &, TestController &, Model &,
+    Controller(Control &, TestController &, Interactor &,
         std::map<std::string, Syllable, std::less<>> map);
     void notifyThatResponseButtonHasBeenClicked() override;
 
   private:
     std::map<std::string, Syllable, std::less<>> map;
-    SyllablesControl &control;
+    Control &control;
     TestController &testController;
-    Model &model;
+    Interactor &model;
 };
 
-class SyllablesPresenterImpl : public SyllablesPresenter, public TaskPresenter {
+class PresenterImpl : public Presenter, public TaskPresenter {
   public:
-    SyllablesPresenterImpl(SyllablesView &, TestView &);
+    PresenterImpl(View &, TestView &);
     void start() override;
     void stop() override;
     void showResponseSubmission() override;
     void hideResponseSubmission() override;
 
   private:
-    SyllablesView &view;
+    View &view;
     TestView &testView;
 };
 }
