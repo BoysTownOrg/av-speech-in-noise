@@ -376,6 +376,10 @@ auto SessionUIImpl::screens() -> std::vector<Screen> {
     return screens;
 }
 
+auto SessionUIImpl::subjectScreen() -> Screen {
+    return Screen{[sessionUI subjectScreen].UTF8String};
+}
+
 namespace submitting_free_response {
 UIImpl::UIImpl(NSObject<FreeResponseUI> *freeResponseUI)
     : freeResponseUI{freeResponseUI} {}

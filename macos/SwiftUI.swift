@@ -172,6 +172,10 @@ class SwiftSessionUI: NSObject, SessionUI {
         return audioDevice_.string
     }
 
+    func subjectScreen() -> String! {
+        return subjectScreen_.string
+    }
+
     func populateAudioDeviceMenu(_ devices: [String]!) {
         for each in devices {
             audioDevices.items.append(IdentifiableString(string: each))

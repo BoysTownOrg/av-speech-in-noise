@@ -67,7 +67,7 @@ class SubjectViewStub : public SubjectView {
   public:
     [[nodiscard]] auto screenIndex() const -> int { return screenIndex_; }
 
-    void moveToScreen(int index) { screenIndex_ = index; }
+    void moveToScreen(int index) override { screenIndex_ = index; }
 
   private:
     int screenIndex_{};

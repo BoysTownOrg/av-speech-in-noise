@@ -204,6 +204,19 @@ void TimerImpl::scheduleCallbackAfterSeconds(double x) {
 }
 
 void TimerImpl::timerCallback() { listener->callback(); }
+
+class SubjectAppKitView : public SubjectView {
+  public:
+    explicit SubjectAppKitView(NSWindow *window) : window{window} {}
+
+    void moveToScreen(int index) override {
+        [window setFrame:[NSScreen.screens objectAtIndex:index].frame
+                 display:YES];
+    }
+
+  private:
+    NSWindow *window;
+};
 }
 
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
@@ -377,8 +390,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         *(testSetupUI.get()), sessionUIMaybe};
     static UninitializedTaskPresenterImpl taskPresenter;
     static TestPresenterImpl testPresenter{model, testUIMaybe, &taskPresenter};
+    static SubjectAppKitView subjectView{subjectNSWindow};
     static SessionControllerImpl sessionController{
-        model, sessionUIMaybe, testSetupPresenter, testPresenter};
+        model, sessionUIMaybe, subjectView, testSetupPresenter, testPresenter};
     static TestControllerImpl testController{
         sessionController, model, sessionUIMaybe, testUIMaybe, testPresenter};
     static submitting_keywords::InteractorImpl submittingKeywordsInteractor{

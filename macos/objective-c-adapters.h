@@ -108,6 +108,7 @@ class SessionUIImpl : public SessionUI {
     void populateAudioDeviceMenu(std::vector<std::string> v) override;
     void populateSubjectScreenMenu(const std::vector<Screen> &) override;
     auto screens() -> std::vector<Screen> override;
+    auto subjectScreen() -> Screen override;
 
   private:
     NSObject<SessionUI> *sessionUI;
