@@ -442,12 +442,6 @@ void RecognitionTestModelImpl::submit(const SyllableResponse &p) {
         maskerPlayer, maskerLevel_, fullScaleLevel_);
 }
 
-void RecognitionTestModelImpl::submit(const CorrectKeywords &) {
-    saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
-        fullScaleLevel_);
-}
-
 void RecognitionTestModelImpl::submit(const ConsonantResponse &) {
     saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
         outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,

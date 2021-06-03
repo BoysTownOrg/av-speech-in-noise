@@ -1,44 +1,38 @@
 #include "CorrectKeywords.hpp"
 #include "Input.hpp"
 
-namespace av_speech_in_noise {
-CorrectKeywordsController::CorrectKeywordsController(
-    TestController &testController, Model &model, SessionView &view,
-    CorrectKeywordsControl &keywordsView)
-    : testController{testController}, model{model},
+namespace av_speech_in_noise::submitting_number_keywords {
+Controller::Controller(TestController &testController, Interactor &interactor,
+    SessionView &view, Control &keywordsView)
+    : testController{testController}, interactor{interactor},
       sessionView{view}, control{keywordsView} {
     keywordsView.attach(this);
 }
 
 static void submitCorrectKeywords(
-    Model &model, CorrectKeywordsControl &control, TestController &controller) {
-    model.submit(
+    Interactor &interactor, Control &control, TestController &controller) {
+    interactor.submit(
         CorrectKeywords{readInteger(control.correctKeywords(), "number")});
     controller
         .notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion();
 }
 
-void CorrectKeywordsController::notifyThatSubmitButtonHasBeenClicked() {
+void Controller::notifyThatSubmitButtonHasBeenClicked() {
     try {
-        submitCorrectKeywords(model, control, testController);
+        submitCorrectKeywords(interactor, control, testController);
     } catch (const std::runtime_error &e) {
         sessionView.showErrorMessage(e.what());
     }
 }
 
-CorrectKeywordsPresenter::CorrectKeywordsPresenter(
-    TestView &testView, CorrectKeywordsView &view)
+Presenter::Presenter(TestView &testView, View &view)
     : testView{testView}, view{view} {}
 
-void CorrectKeywordsPresenter::start() { testView.showNextTrialButton(); }
+void Presenter::start() { testView.showNextTrialButton(); }
 
-void CorrectKeywordsPresenter::stop() { view.hideCorrectKeywordsSubmission(); }
+void Presenter::stop() { view.hide(); }
 
-void CorrectKeywordsPresenter::hideResponseSubmission() {
-    view.hideCorrectKeywordsSubmission();
-}
+void Presenter::hideResponseSubmission() { view.hide(); }
 
-void CorrectKeywordsPresenter::showResponseSubmission() {
-    view.showCorrectKeywordsSubmission();
-}
+void Presenter::showResponseSubmission() { view.show(); }
 }

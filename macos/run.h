@@ -52,8 +52,9 @@ namespace submitting_keywords {
 class UI : public View, public Control {};
 }
 
-class CorrectKeywordsUI : public CorrectKeywordsView,
-                          public CorrectKeywordsControl {};
+namespace submitting_number_keywords {
+class UI : public View, public Control {};
+}
 
 namespace submitting_pass_fail {
 class UI : public View, public Control {};
@@ -62,7 +63,7 @@ class UI : public View, public Control {};
 void initializeAppAndRunEventLoop(EyeTracker &, OutputFileNameFactory &,
     AppKitTestSetupUIFactory &, SessionUI &, TestUI &,
     submitting_free_response::UI &, SyllablesUI &, submitting_keywords::UI &,
-    CorrectKeywordsUI &, submitting_pass_fail::UI &,
+    submitting_number_keywords::UI &, submitting_pass_fail::UI &,
     SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =
         "Documents/AvSpeechInNoise Data",

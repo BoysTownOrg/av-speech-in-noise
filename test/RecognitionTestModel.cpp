@@ -273,17 +273,6 @@ class SubmittingSyllable : public TargetWritingUseCase {
     const SyllableResponse &response;
 };
 
-class SubmittingCorrectKeywords : public TargetWritingUseCase {
-  public:
-    void run(RecognitionTestModelImpl &m) override {
-        m.submit(CorrectKeywords{});
-    }
-
-    auto target(OutputFileStub &file) -> std::string override {
-        return file.correctKeywordsTrial().target;
-    }
-};
-
 class SubmittingConsonant : public TargetWritingUseCase {
   public:
     void run(RecognitionTestModelImpl &m) override {
@@ -600,7 +589,6 @@ class RecognitionTestModelTests : public ::testing::Test {
     SyllableResponse syllableResponse;
     SubmittingSyllable submittingSyllable{syllableResponse};
     AudioSampleTimeWithOffset fadeInCompleteTime{};
-    SubmittingCorrectKeywords submittingCorrectKeywords;
     SubmittingConsonant submittingConsonant;
 
     RecognitionTestModelTests() { model.attach(&listener); }
@@ -1217,24 +1205,9 @@ RECOGNITION_TEST_MODEL_TEST(submittingSyllableIncrementsTrialNumber) {
     assertYieldsTrialNumber(submittingSyllable, 2);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submittingCorrectKeywordsIncrementsTrialNumber) {
-    run(initializingTest, model);
-    assertYieldsTrialNumber(submittingCorrectKeywords, 2);
-}
-
 RECOGNITION_TEST_MODEL_TEST(submittingConsonantIncrementsTrialNumber) {
     run(initializingTest, model);
     assertYieldsTrialNumber(submittingConsonant, 2);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submittingCorrectKeywordsWritesTestResultWhenComplete) {
-    run(initializingTest, model);
-    testMethod.setComplete();
-    run(submittingCorrectKeywords, model);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        endsWith(testMethod.log(), "writeTestResult "));
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(log(outputFile), "save "));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1246,12 +1219,6 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(submittingConsonantPassesNextTargetToTargetPlayer) {
     run(initializingTest, model);
     assertPassesNextTargetToPlayer(submittingConsonant);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submittingCorrectKeywordsPassesNextTargetToTargetPlayer) {
-    run(initializingTest, model);
-    assertPassesNextTargetToPlayer(submittingCorrectKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
@@ -1321,12 +1288,6 @@ RECOGNITION_TEST_MODEL_TEST(
     assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingConsonant);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectKeywordsSeeksToRandomMaskerPositionWithinTrialDuration) {
-    assertSeeksToRandomMaskerPositionWithinTrialDuration(
-        submittingCorrectKeywords);
-}
-
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(initializingTest);
 }
@@ -1338,10 +1299,6 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(submitConsonantSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(submittingConsonant);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSeeksToRandomMaskerPosition) {
-    assertMaskerPlayerSeekedToRandomTime(submittingCorrectKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsInitialMaskerPlayerLevel) {
@@ -1363,10 +1320,6 @@ RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsTargetPlayerLevel) {
 
 RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingCoordinateResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSetsTargetPlayerLevel) {
-    assertSetsTargetLevel(submittingCorrectKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitConsonantSetsTargetPlayerLevel) {
@@ -1439,11 +1392,6 @@ RECOGNITION_TEST_MODEL_TEST(submitConsonantSavesOutputFileAfterWritingTrial) {
 
 RECOGNITION_TEST_MODEL_TEST(submitSyllableSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingSyllable);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectKeywordsSavesOutputFileAfterWritingTrial) {
-    assertSavesOutputFileAfterWritingTrial(submittingCorrectKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1562,11 +1510,6 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(submitConsonantDoesNotLoadNextTargetWhenComplete) {
     assertResponseDoesNotLoadNextTargetWhenComplete(submittingConsonant);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectKeywordsDoesNotLoadNextTargetWhenComplete) {
-    assertResponseDoesNotLoadNextTargetWhenComplete(submittingCorrectKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

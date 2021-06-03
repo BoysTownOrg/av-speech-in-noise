@@ -9,45 +9,36 @@
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
 
-namespace av_speech_in_noise {
-class CorrectKeywordsControl {
+namespace av_speech_in_noise::submitting_number_keywords {
+class Control {
   public:
     class Observer {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatSubmitButtonHasBeenClicked() = 0;
     };
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
-        CorrectKeywordsControl);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
     virtual void attach(Observer *) = 0;
     virtual auto correctKeywords() -> std::string = 0;
 };
 
-class CorrectKeywordsView {
+class Controller : public TaskController, public Control::Observer {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(CorrectKeywordsView);
-    virtual void showCorrectKeywordsSubmission() = 0;
-    virtual void hideCorrectKeywordsSubmission() = 0;
-};
-
-class CorrectKeywordsController : public TaskController,
-                                  public CorrectKeywordsControl::Observer {
-  public:
-    explicit CorrectKeywordsController(
-        TestController &, Model &, SessionView &, CorrectKeywordsControl &);
+    explicit Controller(
+        TestController &, Interactor &, SessionView &, Control &);
     void attach(TestController *);
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
     TestController &testController;
-    Model &model;
+    Interactor &interactor;
     SessionView &sessionView;
-    CorrectKeywordsControl &control;
+    Control &control;
 };
 
-class CorrectKeywordsPresenter : public TaskPresenter {
+class Presenter : public TaskPresenter {
   public:
-    explicit CorrectKeywordsPresenter(TestView &, CorrectKeywordsView &);
+    explicit Presenter(TestView &, View &);
     void start() override;
     void stop() override;
     void showResponseSubmission() override;
@@ -55,7 +46,7 @@ class CorrectKeywordsPresenter : public TaskPresenter {
 
   private:
     TestView &testView;
-    CorrectKeywordsView &view;
+    View &view;
 };
 }
 
