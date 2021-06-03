@@ -368,6 +368,14 @@ void SessionUIImpl::populateSubjectScreenMenu(const std::vector<Screen> &v) {
     [sessionUI populateSubjectScreenMenu:nsstrings];
 }
 
+auto SessionUIImpl::screens() -> std::vector<Screen> {
+    std::vector<Screen> screens;
+    for (NSScreen *item in [NSScreen screens]) {
+        screens.push_back(Screen{item.localizedName.UTF8String});
+    }
+    return screens;
+}
+
 namespace submitting_free_response {
 UIImpl::UIImpl(NSObject<FreeResponseUI> *freeResponseUI)
     : freeResponseUI{freeResponseUI} {}
