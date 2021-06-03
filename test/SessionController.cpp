@@ -134,7 +134,7 @@ TEST_F(SessionControllerTBDTests, constructorPopulatesSubjectScreenMenu) {
     SessionViewStub view;
     TestSetupPresenterStub testSetupPresenter;
     TestPresenterStub testPresenter;
-    model.setScreens({{"a"}, {"b"}, {"c"}});
+    view.setScreens({{"a"}, {"b"}, {"c"}});
     SessionControllerImpl controller{
         model, view, testSetupPresenter, testPresenter};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(

@@ -21,6 +21,10 @@ class SessionViewStub : public SessionView {
 
     auto subjectScreens() -> std::vector<Screen> { return subjectScreens_; }
 
+    void setScreens(const std::vector<Screen> &v) { screens_ = v; }
+
+    auto screens() -> std::vector<Screen> override { return screens_; }
+
     void populateSubjectScreenMenu(const std::vector<Screen> &v) override {
         subjectScreens_ = v;
     }
@@ -28,6 +32,7 @@ class SessionViewStub : public SessionView {
   private:
     std::vector<std::string> audioDevices_;
     std::vector<Screen> subjectScreens_;
+    std::vector<Screen> screens_;
     std::string errorMessage_;
 };
 

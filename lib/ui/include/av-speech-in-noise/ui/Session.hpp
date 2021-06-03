@@ -27,6 +27,7 @@ class SessionView {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SessionView);
     virtual void populateAudioDeviceMenu(std::vector<std::string>) = 0;
     virtual void populateSubjectScreenMenu(const std::vector<Screen> &) = 0;
+    virtual auto screens() -> std::vector<Screen> = 0;
     virtual void showErrorMessage(std::string_view) = 0;
 };
 

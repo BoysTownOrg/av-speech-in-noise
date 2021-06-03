@@ -78,7 +78,6 @@ class Model {
     virtual void submit(const SyllableResponse &) = 0;
     virtual auto testComplete() -> bool = 0;
     virtual auto audioDevices() -> AudioDevices = 0;
-    virtual auto screens() -> std::vector<Screen> = 0;
     virtual auto trialNumber() -> int = 0;
     virtual auto targetFileName() -> std::string = 0;
     virtual void restartAdaptiveTestWhilePreservingTargets() = 0;
