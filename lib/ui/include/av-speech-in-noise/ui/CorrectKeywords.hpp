@@ -24,13 +24,14 @@ class Control {
 
 class Controller : public TaskController, public Control::Observer {
   public:
-    explicit Controller(TestController &, Model &, SessionView &, Control &);
+    explicit Controller(
+        TestController &, Interactor &, SessionView &, Control &);
     void attach(TestController *);
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
     TestController &testController;
-    Model &model;
+    Interactor &interactor;
     SessionView &sessionView;
     Control &control;
 };

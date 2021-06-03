@@ -159,12 +159,6 @@ void ModelImpl::submit(const coordinate_response_measure::Response &response) {
 
 void ModelImpl::submit(const SyllableResponse &r) { model.submit(r); }
 
-void ModelImpl::submit(const CorrectKeywords &k) {
-    adaptiveMethod.submit(k);
-    adaptiveMethod.writeLastCorrectKeywords(outputFile);
-    model.submit(k);
-}
-
 void ModelImpl::submit(const ConsonantResponse &r) {
     fixedLevelMethod.submit(r);
     fixedLevelMethod.writeLastConsonant(outputFile);

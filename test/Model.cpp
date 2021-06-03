@@ -7,6 +7,7 @@
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
 #include <av-speech-in-noise/core/SubmittingKeywords.hpp>
+#include <av-speech-in-noise/core/SubmittingNumberKeywords.hpp>
 #include <av-speech-in-noise/core/Model.hpp>
 #include <gtest/gtest.h>
 #include <sstream>
@@ -238,14 +239,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void submit(const coordinate_response_measure::Response &p) override {
         coordinateResponse_ = &p;
-    }
-
-    void submit(const CorrectKeywords &p) override {
-        correctKeywords_ = &p;
-        if (testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_ !=
-            nullptr)
-            testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_
-                ->nextTarget();
     }
 
     void submit(const ConsonantResponse &p) override {
@@ -911,11 +904,25 @@ class SubmittingKeywordsTests : public ::testing::Test {
     ThreeKeywordsResponse threeKeywords;
 };
 
+class SubmittingNumberKeywordsTests : public ::testing::Test {
+  protected:
+    AdaptiveMethodStub testMethod;
+    FixedLevelMethodStub fixedLevelMethod;
+    RecognitionTestModelStub model{testMethod, fixedLevelMethod};
+    OutputFileStub outputFile;
+    submitting_number_keywords::InteractorImpl interactor{
+        testMethod, model, outputFile};
+    CorrectKeywords correctKeywords;
+};
+
 #define SUBMITTING_FREE_RESPONSE_TEST(a) TEST_F(SubmittingFreeResponseTests, a)
 
 #define SUBMITTING_PASS_FAIL_TEST(a) TEST_F(SubmittingPassFailTests, a)
 
 #define SUBMITTING_KEYWORDS_TEST(a) TEST_F(SubmittingKeywordsTests, a)
+
+#define SUBMITTING_NUMBER_KEYWORDS_TEST(a)                                     \
+    TEST_F(SubmittingNumberKeywordsTests, a)
 
 SUBMITTING_FREE_RESPONSE_TEST(submittingFreeResponsePreparesNextTrialIfNeeded) {
     interactor.submit({});
@@ -1057,6 +1064,28 @@ SUBMITTING_KEYWORDS_TEST(submitThreeKeywordsSubmitsToTestMethod) {
     interactor.submit(threeKeywords);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &threeKeywords, fixedLevelMethod.threeKeywords());
+}
+
+SUBMITTING_NUMBER_KEYWORDS_TEST(preparesNextTrialIfNeeded) {
+    interactor.submit(correctKeywords);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_NUMBER_KEYWORDS_TEST(writesTrialAfterSubmittingResponse) {
+    interactor.submit(correctKeywords);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(
+        testMethod.log(), "submitCorrectKeywords writeLastCorrectKeywords "));
+}
+
+SUBMITTING_NUMBER_KEYWORDS_TEST(queriesNextTargetAfterWritingResponse) {
+    interactor.submit(correctKeywords);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        contains(testMethod.log(), "writeLastCorrectKeywords TOOLATE "));
+}
+
+SUBMITTING_NUMBER_KEYWORDS_TEST(savesOutputFileAfterWritingTrial) {
+    interactor.submit(correctKeywords);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
 }
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
@@ -1299,13 +1328,6 @@ MODEL_TEST(submitResponsePassesCoordinateResponse) {
         &std::as_const(response), internalModel.coordinateResponse());
 }
 
-MODEL_TEST(submitCorrectKeywordsPassesCorrectKeywords) {
-    CorrectKeywords k;
-    model.submit(k);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &std::as_const(k), internalModel.correctKeywords());
-}
-
 MODEL_TEST(submitConsonantPassesConsonant) {
     ConsonantResponse r;
     model.submit(r);
@@ -1333,28 +1355,12 @@ MODEL_TEST(submitConsonantWritesTrialAfterSubmittingResponse) {
         fixedLevelMethod.log(), "submitConsonant writeLastConsonant "));
 }
 
-MODEL_TEST(submitCorrectKeywordsWritesTrialAfterSubmittingResponse) {
-    CorrectKeywords r;
-    model.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(adaptiveMethod.log(),
-        "submitCorrectKeywords writeLastCorrectKeywords "));
-}
-
 MODEL_TEST(submitConsonantQueriesNextTargetAfterWritingResponse) {
     internalModel.callNextOnSubmitConsonants(&fixedLevelMethod);
     ConsonantResponse r;
     model.submit(r);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         contains(fixedLevelMethod.log(), "writeLastConsonant nextTarget "));
-}
-
-MODEL_TEST(submitCorrectKeywordsQueriesNextTargetAfterWritingResponse) {
-    internalModel.callNextOnSubmitCorrectKeywordsOrCorrectOrIncorrect(
-        &adaptiveMethod);
-    CorrectKeywords r;
-    model.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        contains(adaptiveMethod.log(), "writeLastCorrectKeywords nextTarget "));
 }
 
 MODEL_TEST(playTrialPassesAudioSettings) {
