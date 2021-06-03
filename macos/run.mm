@@ -19,6 +19,7 @@
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
 #include <av-speech-in-noise/core/SubmittingKeywords.hpp>
+#include <av-speech-in-noise/core/SubmittingNumberKeywords.hpp>
 #include <av-speech-in-noise/player/MaskerPlayerImpl.hpp>
 #include <av-speech-in-noise/player/TargetPlayerImpl.hpp>
 #include <av-speech-in-noise/player/AudioReaderSimplified.hpp>
@@ -364,8 +365,12 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {"R", Syllable::ri}, {"Sh", Syllable::shi}, {"S", Syllable::si},
             {"Th", Syllable::thi}, {"T", Syllable::ti}, {"Ch", Syllable::tsi},
             {"V", Syllable::vi}, {"W", Syllable::wi}, {"Z", Syllable::zi}}};
+    static submitting_number_keywords::InteractorImpl
+        submittingNumberKeywordsInteractor{
+            adaptiveMethod, recognitionTestModel, outputFile};
     static submitting_number_keywords::Controller correctKeywordsController{
-        testController, model, sessionUIMaybe, correctKeywordsUIMaybe};
+        testController, submittingNumberKeywordsInteractor, sessionUIMaybe,
+        correctKeywordsUIMaybe};
     static submitting_free_response::InteractorImpl
         submittingFreeResponseInteractor{
             fixedLevelMethod, recognitionTestModel, outputFile};
