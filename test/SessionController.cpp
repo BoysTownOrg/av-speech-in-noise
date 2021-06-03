@@ -128,5 +128,21 @@ TEST_F(SessionControllerTBDTests, constructorPopulatesAudioDeviceMenu) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"c"}, view.audioDevices().at(2));
 }
+
+TEST_F(SessionControllerTBDTests, constructorPopulatesSubjectScreenMenu) {
+    ModelStub model;
+    SessionViewStub view;
+    TestSetupPresenterStub testSetupPresenter;
+    TestPresenterStub testPresenter;
+    model.setScreens({{"a"}, {"b"}, {"c"}});
+    SessionControllerImpl controller{
+        model, view, testSetupPresenter, testPresenter};
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, view.subjectScreens().at(0).name);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"b"}, view.subjectScreens().at(1).name);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c"}, view.subjectScreens().at(2).name);
+}
 }
 }

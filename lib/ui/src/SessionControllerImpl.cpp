@@ -5,6 +5,7 @@ SessionControllerImpl::SessionControllerImpl(Model &model, SessionView &view,
     TestSetupPresenter &testSetupPresenter, TestPresenter &testPresenter)
     : testSetupPresenter{testSetupPresenter}, testPresenter{testPresenter} {
     view.populateAudioDeviceMenu(model.audioDevices());
+    view.populateSubjectScreenMenu(model.screens());
 }
 
 void SessionControllerImpl::prepare(TaskPresenter &p) {

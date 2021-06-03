@@ -49,6 +49,7 @@ class ModelImpl : public Model {
     void submit(const SyllableResponse &) override;
     auto testComplete() -> bool override;
     auto audioDevices() -> AudioDevices override;
+    auto screens() -> std::vector<Screen> override { return {}; }
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
     auto adaptiveTestResults() -> AdaptiveTestResults override;

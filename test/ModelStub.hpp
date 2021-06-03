@@ -189,6 +189,10 @@ class ModelStub : public Model {
         audioDevices_ = std::move(v);
     }
 
+    void setScreens(const std::vector<Screen> &v) { screens_ = v; }
+
+    auto screens() -> std::vector<Screen> override { return screens_; }
+
     void setTestComplete() { testComplete_ = true; }
 
     auto testComplete() -> bool override { return testComplete_; }
@@ -255,6 +259,7 @@ class ModelStub : public Model {
     AudioSettings trialParameters_{};
     coordinate_response_measure::Response responseParameters_{};
     std::vector<std::string> audioDevices_{};
+    std::vector<Screen> screens_;
     AdaptiveTestResults adaptiveTestResults_{};
     ConsonantResponse consonantResponse_{};
     CorrectKeywords correctKeywords_{};

@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 namespace av_speech_in_noise {
 namespace {
@@ -417,6 +418,7 @@ class RequestFailingModel : public Model {
 
     auto testComplete() -> bool override { return {}; }
     auto audioDevices() -> AudioDevices override { return {}; }
+    auto screens() -> std::vector<Screen> override { return {}; }
     auto adaptiveTestResults() -> AdaptiveTestResults override { return {}; }
     auto keywordsTestResults() -> KeywordsTestResults override { return {}; }
     void attach(Observer *) override {}
