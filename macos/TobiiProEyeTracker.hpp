@@ -36,7 +36,7 @@ class TobiiProCalibrator : public Calibrator {
         ~ComputeAndApply();
 
       private:
-        TobiiResearchCalibrationResult *result{};
+        TobiiResearchCalibrationResult *tobiiResult{};
     };
 
   private:
