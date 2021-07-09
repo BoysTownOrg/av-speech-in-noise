@@ -356,7 +356,7 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
 void RecognitionTestModelImpl::initializeWithEyeTracking(
     TestMethod *method, const Test &test) {
     initialize_(method, test);
-    outputFile.write(eyeTracker);
+    //    outputFile.write(eyeTracker);
     useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);

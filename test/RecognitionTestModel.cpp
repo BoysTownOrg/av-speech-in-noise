@@ -790,11 +790,9 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingClosesOutputFile_Opens_WritesTestAndWritesEyeTrackerCalibrationDataInOrder) {
-    run(initializingTestWithEyeTracking, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"close openNewFile writeTest writeWritable "},
-        string(log(outputFile)));
+    initializeTestWithEyeTrackingClosesOutputFile_Opens_AndWritesTestInOrder) {
+    assertClosesOutputFileOpensAndWritesTestInOrder(
+        initializingTestWithEyeTracking);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
