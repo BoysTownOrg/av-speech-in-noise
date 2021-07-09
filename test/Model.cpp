@@ -1367,6 +1367,12 @@ MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
         internalModel.initializedWithDelayedMasker());
 }
 
+MODEL_TEST(
+    initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesWithEyeTracking) {
+    run(initializingFixedLevelTestWithAllTargetsAndEyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
+}
+
 MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
