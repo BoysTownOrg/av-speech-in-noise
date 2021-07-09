@@ -94,7 +94,8 @@ void ModelImpl::initialize(const FixedLevelTestWithEachTargetNTimes &test) {
 void ModelImpl::initializeWithAllTargetsAndEyeTracking(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
-    av_speech_in_noise::initialize(model, fixedLevelMethod, test);
+    av_speech_in_noise::initializeWithEyeTracking(
+        model, fixedLevelMethod, test);
 }
 
 void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &test) {
