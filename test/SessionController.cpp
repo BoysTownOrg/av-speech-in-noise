@@ -1,8 +1,11 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "SessionViewStub.hpp"
+
 #include <av-speech-in-noise/ui/SessionController.hpp>
+
 #include <gtest/gtest.h>
+
 #include <utility>
 
 namespace av_speech_in_noise {
@@ -63,25 +66,11 @@ class SessionControllerObserverStub : public SessionController::Observer {
     bool notifiedThatTestIsComplete_{};
 };
 
-class SubjectViewStub : public SubjectView {
-  public:
-    [[nodiscard]] auto screenIndex() const -> int { return screenIndex_; }
-
-    void moveToScreen(int index) override { screenIndex_ = index; }
-
-  private:
-    int screenIndex_{};
-};
-
 class SessionControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
-    SessionViewStub view;
     TestSetupPresenterStub testSetupPresenter;
     TestPresenterStub testPresenter;
-    SubjectViewStub subjectView;
-    SessionControllerImpl controller{
-        model, view, subjectView, testSetupPresenter, testPresenter};
+    SessionControllerImpl controller{testSetupPresenter, testPresenter};
     TaskPresenterStub taskPresenter;
 };
 
@@ -91,13 +80,6 @@ SESSION_CONTROLLER_TEST(prepareStopsTestSetup) {
     TaskPresenterStub taskPresenter;
     controller.prepare(taskPresenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testSetupPresenter.stopped());
-}
-
-SESSION_CONTROLLER_TEST(prepareMovesSubjectViewToScreen) {
-    view.setScreens({{"a"}, {"b"}, {"c"}, {"d"}});
-    view.setSubject(Screen{"c"});
-    controller.prepare(taskPresenter);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2, subjectView.screenIndex());
 }
 
 SESSION_CONTROLLER_TEST(prepareStartsTest) {
@@ -130,17 +112,15 @@ SESSION_CONTROLLER_TEST(forwardsTestIsCompleteNotification) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatTestIsComplete());
 }
 
-class SessionControllerTBDTests : public ::testing::Test {};
+class SessionPresenterTests : public ::testing::Test {};
 
-TEST_F(SessionControllerTBDTests, constructorPopulatesAudioDeviceMenu) {
+#define SESSION_PRESENTER_TEST(a) TEST_F(SessionPresenterTests, a)
+
+SESSION_PRESENTER_TEST(constructorPopulatesAudioDeviceMenu) {
     ModelStub model;
     SessionViewStub view;
-    TestSetupPresenterStub testSetupPresenter;
-    TestPresenterStub testPresenter;
-    SubjectViewStub subjectView;
     model.setAudioDevices({"a", "b", "c"});
-    SessionControllerImpl controller{
-        model, view, subjectView, testSetupPresenter, testPresenter};
+    SessionPresenterImpl presenter{view, model};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.audioDevices().at(0));
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -149,15 +129,11 @@ TEST_F(SessionControllerTBDTests, constructorPopulatesAudioDeviceMenu) {
         std::string{"c"}, view.audioDevices().at(2));
 }
 
-TEST_F(SessionControllerTBDTests, constructorPopulatesSubjectScreenMenu) {
+SESSION_PRESENTER_TEST(constructorPopulatesSubjectScreenMenu) {
     ModelStub model;
     SessionViewStub view;
-    TestSetupPresenterStub testSetupPresenter;
-    TestPresenterStub testPresenter;
-    SubjectViewStub subjectView;
     view.setScreens({{"a"}, {"b"}, {"c"}});
-    SessionControllerImpl controller{
-        model, view, subjectView, testSetupPresenter, testPresenter};
+    SessionPresenterImpl presenter{view, model};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.subjectScreens().at(0).name);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(

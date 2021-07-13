@@ -2,8 +2,11 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_SESSION_HPP_
 
 #include "Task.hpp"
+#include "Presenter.hpp"
+
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
+
 #include <vector>
 #include <string>
 #include <string_view>
@@ -21,6 +24,8 @@ class SessionController {
     virtual void prepare(TaskPresenter &) = 0;
     virtual void attach(Observer *) {}
 };
+
+class SessionPresenter : public Presenter {};
 
 class SessionView {
   public:
