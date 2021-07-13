@@ -356,14 +356,11 @@ void SessionUIImpl::populateAudioDeviceMenu(std::vector<std::string> v) {
 }
 
 void SessionUIImpl::populateSubjectScreenMenu(const std::vector<Screen> &v) {
-    const auto nsstrings{[NSMutableArray new]};
-    for_each(v.begin(), v.end(), [&nsstrings](const Screen &screen) {
-        if (screen.name.c_str() == nullptr)
-            return;
-        const auto nsstr{[NSString stringWithUTF8String:screen.name.c_str()]};
-        [nsstrings addObject:nsstr];
+    const auto adapted{[NSMutableArray<NSString *> arrayWithCapacity:v.size()]};
+    for_each(v.begin(), v.end(), [&adapted](const Screen &screen) {
+        [adapted addObject:nsString(screen.name)];
     });
-    [sessionUI populateSubjectScreenMenu:nsstrings];
+    [sessionUI populateAudioDeviceMenu:adapted];
 }
 
 auto SessionUIImpl::screens() -> std::vector<Screen> {
