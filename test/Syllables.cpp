@@ -1,13 +1,12 @@
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
-#include "ModelStub.hpp"
 #include <av-speech-in-noise/ui/Syllables.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise {
+namespace av_speech_in_noise::submitting_syllable {
 namespace {
-class SyllablesViewStub : public SyllablesView {
+class ViewStub : public View {
   public:
     [[nodiscard]] auto hidden() const -> bool { return hidden_; }
 
@@ -27,7 +26,17 @@ class SyllablesViewStub : public SyllablesView {
     bool flagCleared_{};
 };
 
-class SyllablesControlStub : public SyllablesControl {
+class InteractorStub : public Interactor {
+  public:
+    void submit(const SyllableResponse &s) override { syllableResponse_ = s; }
+
+    auto syllableResponse() -> SyllableResponse { return syllableResponse_; }
+
+  private:
+    SyllableResponse syllableResponse_{};
+};
+
+class ControlStub : public Control {
   public:
     void notifyThatResponseButtonHasBeenClicked() {
         observer->notifyThatResponseButtonHasBeenClicked();
@@ -49,26 +58,26 @@ class SyllablesControlStub : public SyllablesControl {
     bool flagged_{};
 };
 
-void notifyThatResponseButtonHasBeenClicked(SyllablesControlStub &control) {
+void notifyThatResponseButtonHasBeenClicked(ControlStub &control) {
     control.notifyThatResponseButtonHasBeenClicked();
 }
 
-class SyllablesPresenterStub : public SyllablesPresenter {};
+class PresenterStub : public Presenter {};
 
 class SyllablesControllerTests : public ::testing::Test {
   protected:
-    SyllablesControlStub control;
+    ControlStub control;
     TestControllerStub testController;
-    ModelStub model;
-    SyllablesController controller{
+    InteractorStub model;
+    Controller controller{
         control, testController, model, {{"Ghee", Syllable::gi}}};
 };
 
 class SyllablesPresenterTests : public ::testing::Test {
   protected:
-    SyllablesViewStub view;
+    ViewStub view;
     TestViewStub testView;
-    SyllablesPresenterImpl presenter{view, testView};
+    PresenterImpl presenter{view, testView};
 };
 
 #define SYLLABLES_CONTROLLER_TEST(a) TEST_F(SyllablesControllerTests, a)

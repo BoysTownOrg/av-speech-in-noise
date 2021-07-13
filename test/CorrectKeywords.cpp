@@ -1,15 +1,25 @@
 #include "assert-utility.hpp"
-#include "ModelStub.hpp"
 #include "SessionViewStub.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/ui/CorrectKeywords.hpp>
 #include <gtest/gtest.h>
 #include <utility>
 
-namespace av_speech_in_noise {
+namespace av_speech_in_noise::submitting_number_keywords {
 namespace {
-class CorrectKeywordsControlStub : public CorrectKeywordsControl {
+class InteractorStub : public Interactor {
+  public:
+    void submit(const CorrectKeywords &s) override { correctKeywords_ = s; }
+
+    auto correctKeywords() -> CorrectKeywords { return correctKeywords_; }
+
+  private:
+    CorrectKeywords correctKeywords_;
+};
+
+class ControlStub : public Control {
   public:
     void notifyThatSubmitButtonHasBeenClicked() {
         listener_->notifyThatSubmitButtonHasBeenClicked();
@@ -26,19 +36,15 @@ class CorrectKeywordsControlStub : public CorrectKeywordsControl {
     Observer *listener_{};
 };
 
-class CorrectKeywordsViewStub : public CorrectKeywordsView {
+class ViewStub : public View {
   public:
-    void showCorrectKeywordsSubmission() override {
-        correctKeywordsSubmissionShown_ = true;
-    }
+    void show() override { correctKeywordsSubmissionShown_ = true; }
 
     [[nodiscard]] auto correctKeywordsSubmissionShown() const -> bool {
         return correctKeywordsSubmissionShown_;
     }
 
-    void hideCorrectKeywordsSubmission() override {
-        correctKeywordsSubmissionHidden_ = true;
-    }
+    void hide() override { correctKeywordsSubmissionHidden_ = true; }
 
     [[nodiscard]] auto correctKeywordsSubmissionHidden() const -> bool {
         return correctKeywordsSubmissionHidden_;
@@ -49,7 +55,7 @@ class CorrectKeywordsViewStub : public CorrectKeywordsView {
     bool correctKeywordsSubmissionHidden_{};
 };
 
-void notifyThatSubmitButtonHasBeenClicked(CorrectKeywordsControlStub &view) {
+void notifyThatSubmitButtonHasBeenClicked(ControlStub &view) {
     view.notifyThatSubmitButtonHasBeenClicked();
 }
 
@@ -59,19 +65,18 @@ void start(TaskPresenter &presenter) { presenter.start(); }
 
 class CorrectKeywordsControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
+    InteractorStub model;
     SessionViewStub sessionView;
-    CorrectKeywordsControlStub control;
+    ControlStub control;
     TestControllerStub testController;
-    CorrectKeywordsController controller{
-        testController, model, sessionView, control};
+    Controller controller{testController, model, sessionView, control};
 };
 
 class CorrectKeywordsPresenterTests : public ::testing::Test {
   protected:
     TestViewStub testView;
-    CorrectKeywordsViewStub view;
-    CorrectKeywordsPresenter presenter{testView, view};
+    ViewStub view;
+    Presenter presenter{testView, view};
 };
 
 #define CORRECT_KEYWORDS_CONTROLLER_TEST(a)                                    \
@@ -108,7 +113,7 @@ CORRECT_KEYWORDS_CONTROLLER_TEST(
     responderSubmitsConsonantAfterResponseButtonIsClicked) {
     control.setCorrectKeywords("1");
     notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.correctKeywords());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.correctKeywords().count);
 }
 
 CORRECT_KEYWORDS_CONTROLLER_TEST(

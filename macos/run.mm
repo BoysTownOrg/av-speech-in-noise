@@ -4,7 +4,8 @@
 #include "AppKitView.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
-#include "av-speech-in-noise/ui/PassFail.hpp"
+
+#include <av-speech-in-noise/ui/PassFail.hpp>
 #include <av-speech-in-noise/ui/SessionController.hpp>
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/ui/TestImpl.hpp>
@@ -19,11 +20,14 @@
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
 #include <av-speech-in-noise/core/SubmittingKeywords.hpp>
+#include <av-speech-in-noise/core/SubmittingNumberKeywords.hpp>
+#include <av-speech-in-noise/core/SubmittingSyllable.hpp>
 #include <av-speech-in-noise/player/MaskerPlayerImpl.hpp>
 #include <av-speech-in-noise/player/TargetPlayerImpl.hpp>
 #include <av-speech-in-noise/player/AudioReaderSimplified.hpp>
 #include <av-speech-in-noise/playlist/RandomizedTargetPlaylists.hpp>
 #include <av-speech-in-noise/playlist/FileFilterDecorator.hpp>
+
 #include <fstream>
 #include <sstream>
 #include <utility>
@@ -223,13 +227,12 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     OutputFileNameFactory &outputFileNameFactory,
     AppKitTestSetupUIFactory &testSetupUIFactory, SessionUI &sessionUIMaybe,
     TestUI &testUIMaybe, submitting_free_response::UI &freeResponseUIMaybe,
-    SyllablesUI &syllablesUIMaybe,
+    submitting_syllable::UI &syllablesUIMaybe,
     submitting_keywords::UI &chooseKeywordsUIMaybe,
-    CorrectKeywordsUI &correctKeywordsUIMaybe,
+    submitting_number_keywords::UI &correctKeywordsUIMaybe,
     submitting_pass_fail::UI &passFailUIMaybe,
     SessionController::Observer *sessionControllerObserver,
-    std::filesystem::path relativeOutputDirectory,
-    AppKitRunMenuInitializer *appKitRunMenuInitializer) {
+    std::filesystem::path relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     const auto subjectNSWindow{
         [[NSWindow alloc] initWithContentRect:subjectScreen.frame
@@ -378,9 +381,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         testUIMaybe, chooseKeywordsUIMaybe,
         submitting_keywords::sentencesWithThreeKeywords(
             read_file(resourceUrl("mlst-c", "txt").path))};
-    static SyllablesPresenterImpl syllablesPresenter{
+    static submitting_syllable::PresenterImpl syllablesPresenter{
         syllablesUIMaybe, testUIMaybe};
-    static CorrectKeywordsPresenter correctKeywordsPresenter{
+    static submitting_number_keywords::Presenter correctKeywordsPresenter{
         testUIMaybe, correctKeywordsUIMaybe};
     static submitting_pass_fail::Presenter passFailPresenter{
         testUIMaybe, passFailUIMaybe};
@@ -400,8 +403,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_keywords::Controller chooseKeywordsController{
         testController, submittingKeywordsInteractor, chooseKeywordsUIMaybe,
         chooseKeywordsPresenter};
-    static SyllablesController syllablesController{syllablesUIMaybe,
-        testController, model,
+    static submitting_syllable::InteractorImpl submittingSyllableInteractor{
+        fixedLevelMethod, recognitionTestModel, outputFile};
+    static submitting_syllable::Controller syllablesController{syllablesUIMaybe,
+        testController, submittingSyllableInteractor,
         {{"B", Syllable::bi}, {"D", Syllable::di}, {"G", Syllable::dji},
             {"F", Syllable::fi}, {"Ghee", Syllable::gi}, {"H", Syllable::hi},
             {"Yee", Syllable::ji}, {"K", Syllable::ki}, {"L", Syllable::li},
@@ -409,8 +414,12 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {"R", Syllable::ri}, {"Sh", Syllable::shi}, {"S", Syllable::si},
             {"Th", Syllable::thi}, {"T", Syllable::ti}, {"Ch", Syllable::tsi},
             {"V", Syllable::vi}, {"W", Syllable::wi}, {"Z", Syllable::zi}}};
-    static CorrectKeywordsController correctKeywordsController{
-        testController, model, sessionUIMaybe, correctKeywordsUIMaybe};
+    static submitting_number_keywords::InteractorImpl
+        submittingNumberKeywordsInteractor{
+            adaptiveMethod, recognitionTestModel, outputFile};
+    static submitting_number_keywords::Controller correctKeywordsController{
+        testController, submittingNumberKeywordsInteractor, sessionUIMaybe,
+        correctKeywordsUIMaybe};
     static submitting_free_response::InteractorImpl
         submittingFreeResponseInteractor{
             fixedLevelMethod, recognitionTestModel, outputFile};

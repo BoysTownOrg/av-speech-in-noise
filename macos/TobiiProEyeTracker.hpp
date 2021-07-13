@@ -3,12 +3,15 @@
 
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
+
 #include <screen_based_calibration_validation.h>
 #include <tobii_research.h>
 #include <tobii_research_calibration.h>
 #include <tobii_research_eyetracker.h>
 #include <tobii_research_streams.h>
+
 #include <gsl/gsl>
+
 #include <vector>
 #include <cstddef>
 #include <ostream>
@@ -34,9 +37,13 @@ class TobiiProCalibrator : public Calibrator {
         auto success() -> bool;
         auto results() -> std::vector<Result>;
         ~ComputeAndApply();
+        ComputeAndApply(const ComputeAndApply &) = delete;
+        ComputeAndApply(ComputeAndApply &&) = delete;
+        auto operator=(const ComputeAndApply &) -> ComputeAndApply & = delete;
+        auto operator=(ComputeAndApply &&) -> ComputeAndApply & = delete;
 
       private:
-        TobiiResearchCalibrationResult *result{};
+        TobiiResearchCalibrationResult *tobiiResult{};
     };
 
   private:
@@ -52,6 +59,10 @@ class TobiiProValidator : public Validator {
     auto result() -> Result override;
     void release() override;
     ~TobiiProValidator() override;
+    TobiiProValidator(const TobiiProValidator &) = delete;
+    TobiiProValidator(TobiiProValidator &&) = delete;
+    auto operator=(const TobiiProValidator &) -> TobiiProValidator & = delete;
+    auto operator=(TobiiProValidator &&) -> TobiiProValidator & = delete;
 
     class ResultAdapter;
 
@@ -62,6 +73,10 @@ class TobiiProValidator : public Validator {
         explicit ResultAdapter(CalibrationValidator *validator);
         auto result() -> Result;
         ~ResultAdapter();
+        ResultAdapter(const ResultAdapter &) = delete;
+        ResultAdapter(ResultAdapter &&) = delete;
+        auto operator=(const ResultAdapter &) -> ResultAdapter & = delete;
+        auto operator=(ResultAdapter &&) -> ResultAdapter & = delete;
 
       private:
         CalibrationValidationResult *result_{};
@@ -77,6 +92,10 @@ class TobiiProTracker : public EyeTracker {
   public:
     TobiiProTracker();
     ~TobiiProTracker() override;
+    TobiiProTracker(const TobiiProTracker &) = delete;
+    TobiiProTracker(TobiiProTracker &&) = delete;
+    auto operator=(const TobiiProTracker &) -> TobiiProTracker & = delete;
+    auto operator=(TobiiProTracker &&) -> TobiiProTracker & = delete;
     void allocateRecordingTimeSeconds(double s) override;
     void start() override;
     void stop() override;
@@ -93,6 +112,10 @@ class TobiiProTracker : public EyeTracker {
         explicit Address(TobiiResearchEyeTracker *);
         auto get() -> const char * { return address; }
         ~Address();
+        Address(const Address &) = delete;
+        Address(Address &&) = delete;
+        auto operator=(const Address &) -> Address & = delete;
+        auto operator=(Address &&) -> Address & = delete;
 
       private:
         char *address{};
@@ -103,6 +126,10 @@ class TobiiProTracker : public EyeTracker {
         explicit CalibrationData(TobiiResearchEyeTracker *);
         void write(std::ostream &);
         ~CalibrationData();
+        CalibrationData(const CalibrationData &) = delete;
+        CalibrationData(CalibrationData &&) = delete;
+        auto operator=(const CalibrationData &) -> CalibrationData & = delete;
+        auto operator=(CalibrationData &&) -> CalibrationData & = delete;
 
       private:
         TobiiResearchCalibrationData *data{};

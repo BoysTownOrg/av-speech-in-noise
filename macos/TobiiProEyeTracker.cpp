@@ -2,6 +2,10 @@
 #include "TobiiProEyeTracker.hpp"
 #include <gsl/gsl>
 #include <thread>
+#include <functional>
+#include <tobii_research.h>
+#include <tobii_research_calibration.h>
+#include <tobii_research_streams.h>
 
 namespace av_speech_in_noise {
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
@@ -163,48 +167,59 @@ auto TobiiProCalibrator::computeAndApply() -> ComputeAndApply {
 TobiiProCalibrator::ComputeAndApply::ComputeAndApply(
     TobiiResearchEyeTracker *eyetracker) {
     tobii_research_screen_based_calibration_compute_and_apply(
-        eyetracker, &result);
+        eyetracker, &tobiiResult);
 }
 
 auto TobiiProCalibrator::ComputeAndApply::success() -> bool {
-    return result != nullptr &&
-        result->status == TOBII_RESEARCH_CALIBRATION_SUCCESS;
+    return tobiiResult != nullptr &&
+        tobiiResult->status == TOBII_RESEARCH_CALIBRATION_SUCCESS;
+}
+
+static auto point(const TobiiResearchNormalizedPoint2D &tobiiPoint2D) -> Point {
+    return {tobiiPoint2D.x, tobiiPoint2D.y};
+}
+
+static void transform(
+    gsl::span<const TobiiResearchCalibrationSample> tobiiSamples,
+    std::vector<Point> &points,
+    const std::function<TobiiResearchCalibrationEyeData(
+        const TobiiResearchCalibrationSample &)> &f) {
+    transform(tobiiSamples.begin(), tobiiSamples.end(),
+        std::back_inserter(points),
+        [&f](const TobiiResearchCalibrationSample &tobiiSample) {
+            return point(f(tobiiSample).position_on_display_area);
+        });
 }
 
 auto TobiiProCalibrator::ComputeAndApply::results() -> std::vector<Result> {
-    if (result == nullptr)
+    if (tobiiResult == nullptr)
         return {};
-    std::vector<Result> results{result->calibration_point_count};
-    const gsl::span<TobiiResearchCalibrationPoint> calibrationPoints{
-        result->calibration_points, result->calibration_point_count};
-    std::transform(calibrationPoints.begin(), calibrationPoints.end(),
-        std::back_inserter(results),
-        [](const TobiiResearchCalibrationPoint &p) {
-            Result transformedResult;
-            const gsl::span<TobiiResearchCalibrationSample> calibrationSamples{
-                p.calibration_samples, p.calibration_sample_count};
-            std::transform(calibrationSamples.begin(), calibrationSamples.end(),
-                std::back_inserter(transformedResult.leftEyeMappedPoints),
-                [](const TobiiResearchCalibrationSample &sample) {
-                    return Point{sample.left_eye.position_on_display_area.x,
-                        sample.left_eye.position_on_display_area.y};
+    std::vector<Result> results{tobiiResult->calibration_point_count};
+    const gsl::span<const TobiiResearchCalibrationPoint> tobiiPoints{
+        tobiiResult->calibration_points, tobiiResult->calibration_point_count};
+    transform(tobiiPoints.begin(), tobiiPoints.end(), results.begin(),
+        [](const TobiiResearchCalibrationPoint &tobiiPoint) {
+            Result result;
+            const gsl::span<const TobiiResearchCalibrationSample> tobiiSamples{
+                tobiiPoint.calibration_samples,
+                tobiiPoint.calibration_sample_count};
+            transform(tobiiSamples, result.leftEyeMappedPoints,
+                [](const TobiiResearchCalibrationSample &tobiiSample) {
+                    return tobiiSample.left_eye;
                 });
-            std::transform(calibrationSamples.begin(), calibrationSamples.end(),
-                std::back_inserter(transformedResult.rightEyeMappedPoints),
-                [](const TobiiResearchCalibrationSample &sample) {
-                    return Point{sample.right_eye.position_on_display_area.x,
-                        sample.right_eye.position_on_display_area.y};
+            transform(tobiiSamples, result.rightEyeMappedPoints,
+                [](const TobiiResearchCalibrationSample &tobiiSample) {
+                    return tobiiSample.right_eye;
                 });
-            transformedResult.point = {
-                p.position_on_display_area.x, p.position_on_display_area.y};
-            return transformedResult;
+            result.point = point(tobiiPoint.position_on_display_area);
+            return result;
         });
 
     return results;
 }
 
 TobiiProCalibrator::ComputeAndApply::~ComputeAndApply() {
-    tobii_research_free_screen_based_calibration_result(result);
+    tobii_research_free_screen_based_calibration_result(tobiiResult);
 }
 
 namespace validation {

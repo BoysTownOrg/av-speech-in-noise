@@ -1,7 +1,9 @@
 #include "AppKitView.h"
 #include "AppKit-utility.h"
 #include "Foundation-utility.h"
+
 #include <gsl/gsl>
+
 #include <iterator>
 #include <array>
 #include <algorithm>

@@ -5,14 +5,20 @@
 #include "../objective-c-bridge.h"
 #include "../objective-c-adapters.h"
 #include "../TobiiProEyeTracker.hpp"
+
 #include <av-speech-in-noise/ui/EyeTrackerCalibration.hpp>
 #include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
+
 #import <AppKit/AppKit.h>
+
 #include <vector>
 #include <algorithm>
 
-@interface AvSpeechInNoiseEyeTrackerCalibrationControlObserverProxy
-    : NSObject <EyeTrackerMenuObserver>
+@interface AvSpeechInNoiseEyeTrackerCalibrationControlObserverProxy : NSObject
+@end
+
+@interface AvSpeechInNoiseEyeTrackerCalibrationControlObserverProxy () <
+    EyeTrackerMenuObserver>
 @end
 
 @implementation AvSpeechInNoiseEyeTrackerCalibrationControlObserverProxy {
@@ -30,7 +36,11 @@
 @end
 
 @interface AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserverProxy
-    : NSObject <AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserver>
+    : NSObject
+@end
+
+@interface AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserverProxy () <
+    AvSpeechInNoiseEyeTrackerCalibrationValidationControlObserver>
 @end
 
 @implementation
@@ -229,7 +239,7 @@ class AppKitTesterUI : public TesterView, public Control {
   public:
     explicit AppKitTesterUI(NSWindow *window,
         AvSpeechInNoiseEyeTrackerCalibrationControlObserverProxy *observerProxy)
-        : view{[[AvSpeechInNoiseEyeTrackerCalibrationTesterNSView alloc] init]},
+        : view{[AvSpeechInNoiseEyeTrackerCalibrationTesterNSView new]},
           observerProxy{observerProxy}, window{window} {
         const auto submitButton {
             nsButton("confirm", observerProxy,
@@ -418,10 +428,11 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static TestUIImpl testUIAdapted{testUI};
     static submitting_free_response::UIImpl freeResponseUIAdapted{
         freeResponseUI};
-    static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
+    static submitting_syllable::UIImpl syllablesUIAdapted{syllablesUI};
     static submitting_keywords::UIImpl chooseKeywordsUIAdapted{
         chooseKeywordsUI};
-    static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
+    static submitting_number_keywords::UIImpl correctKeywordsUIAdapted{
+        correctKeywordsUI};
     static submitting_pass_fail::UIImpl passFailUIAdapted{passFailUI};
     eye_tracker_calibration::initialize(
         eyeTracker, eyeTrackerMenu, eyeTrackerCalibrationValidationTesterUI);

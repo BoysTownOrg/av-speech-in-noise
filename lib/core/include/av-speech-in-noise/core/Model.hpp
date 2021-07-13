@@ -44,9 +44,7 @@ class ModelImpl : public Model {
     void playLeftSpeakerCalibration(const Calibration &) override;
     void playRightSpeakerCalibration(const Calibration &) override;
     void submit(const coordinate_response_measure::Response &) override;
-    void submit(const CorrectKeywords &) override;
     void submit(const ConsonantResponse &) override;
-    void submit(const SyllableResponse &) override;
     auto testComplete() -> bool override;
     auto audioDevices() -> AudioDevices override;
     auto trialNumber() -> int override;

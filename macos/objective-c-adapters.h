@@ -2,7 +2,7 @@
 #define AV_SPEECH_IN_NOISE_MACOS_OBJECTIVE_C_ADAPTERS_H_
 
 #import "objective-c-bridge.h"
-#include <vector>
+
 #include "run.h"
 
 namespace av_speech_in_noise {
@@ -37,9 +37,10 @@ class UIImpl : public UI {
 };
 }
 
-class SyllablesUIImpl : public SyllablesUI {
+namespace submitting_syllable {
+class UIImpl : public UI {
   public:
-    explicit SyllablesUIImpl(NSObject<SyllablesUI> *);
+    explicit UIImpl(NSObject<SyllablesUI> *);
     void attach(Observer *a) override;
     void hide() override;
     void show() override;
@@ -50,6 +51,7 @@ class SyllablesUIImpl : public SyllablesUI {
   private:
     NSObject<SyllablesUI> *syllablesUI;
 };
+}
 
 class TestSetupUIImpl : public TestSetupUI {
   public:
@@ -131,17 +133,19 @@ class UIImpl : public UI {
 };
 }
 
-class CorrectKeywordsUIImpl : public CorrectKeywordsUI {
+namespace submitting_number_keywords {
+class UIImpl : public UI {
   public:
-    explicit CorrectKeywordsUIImpl(NSObject<CorrectKeywordsUI> *);
+    explicit UIImpl(NSObject<CorrectKeywordsUI> *);
     void attach(Observer *a) override;
     auto correctKeywords() -> std::string override;
-    void showCorrectKeywordsSubmission() override;
-    void hideCorrectKeywordsSubmission() override;
+    void show() override;
+    void hide() override;
 
   private:
     NSObject<CorrectKeywordsUI> *ui;
 };
+}
 
 namespace submitting_pass_fail {
 class UIImpl : public UI {

@@ -396,10 +396,6 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void submit(const CorrectKeywords &) override {
-        throw RequestFailure{errorMessage};
-    }
-
     void submit(const ConsonantResponse &) override {
         throw RequestFailure{errorMessage};
     }
@@ -421,7 +417,6 @@ class RequestFailingModel : public Model {
     auto adaptiveTestResults() -> AdaptiveTestResults override { return {}; }
     auto keywordsTestResults() -> KeywordsTestResults override { return {}; }
     void attach(Observer *) override {}
-    void submit(const SyllableResponse &) override {}
     void restartAdaptiveTestWhilePreservingTargets() override {}
 };
 

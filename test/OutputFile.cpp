@@ -43,7 +43,7 @@ class WriterStub : public Writer {
 
 class WritableStub : public Writable {
   public:
-    void write(std::ostream &) override {}
+    void write(std::ostream &stream) override { stream << "writable"; }
 };
 
 class OutputFilePathStub : public OutputFilePath {
@@ -1044,6 +1044,12 @@ OUTPUT_FILE_TEST(writeWritablePassWritable) {
     file.write(writable);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(writable), writer.writable());
+}
+
+OUTPUT_FILE_TEST(writeWritableWritesNewLine) {
+    WritableStub writable;
+    file.write(writable);
+    assertEndsWith(writer, "\n");
 }
 
 class FailingWriter : public Writer {

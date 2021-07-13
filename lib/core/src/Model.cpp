@@ -94,7 +94,8 @@ void ModelImpl::initialize(const FixedLevelTestWithEachTargetNTimes &test) {
 void ModelImpl::initializeWithAllTargetsAndEyeTracking(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
-    av_speech_in_noise::initialize(model, fixedLevelMethod, test);
+    av_speech_in_noise::initializeWithEyeTracking(
+        model, fixedLevelMethod, test);
 }
 
 void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &test) {
@@ -155,14 +156,6 @@ void ModelImpl::playTrial(const AudioSettings &settings) {
 
 void ModelImpl::submit(const coordinate_response_measure::Response &response) {
     model.submit(response);
-}
-
-void ModelImpl::submit(const SyllableResponse &r) { model.submit(r); }
-
-void ModelImpl::submit(const CorrectKeywords &k) {
-    adaptiveMethod.submit(k);
-    adaptiveMethod.writeLastCorrectKeywords(outputFile);
-    model.submit(k);
 }
 
 void ModelImpl::submit(const ConsonantResponse &r) {

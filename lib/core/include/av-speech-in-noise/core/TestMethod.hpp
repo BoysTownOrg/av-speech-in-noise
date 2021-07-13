@@ -15,7 +15,6 @@ class TestMethod {
     virtual auto currentTarget() -> LocalUrl = 0;
     virtual auto snr() -> SNR = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
-    virtual void submit(const SyllableResponse &) {}
     virtual void writeTestingParameters(OutputFile &) = 0;
     virtual void writeLastCoordinateResponse(OutputFile &) = 0;
     virtual void writeTestResult(OutputFile &) = 0;

@@ -36,6 +36,22 @@ struct Screen {
     std::string name;
 };
 
+namespace submitting_number_keywords {
+class Interactor {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
+    virtual void submit(const CorrectKeywords &) = 0;
+};
+}
+
+namespace submitting_syllable {
+class Interactor {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
+    virtual void submit(const SyllableResponse &) = 0;
+};
+}
+
 class Model {
   public:
     class Observer {
@@ -73,9 +89,7 @@ class Model {
     virtual void playRightSpeakerCalibration(const Calibration &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
-    virtual void submit(const CorrectKeywords &) = 0;
     virtual void submit(const ConsonantResponse &) = 0;
-    virtual void submit(const SyllableResponse &) = 0;
     virtual auto testComplete() -> bool = 0;
     virtual auto audioDevices() -> AudioDevices = 0;
     virtual auto trialNumber() -> int = 0;

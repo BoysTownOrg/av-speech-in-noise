@@ -102,10 +102,6 @@ class ModelStub : public Model {
 
     auto consonantResponse() { return consonantResponse_; }
 
-    [[nodiscard]] auto correctKeywords() const -> int {
-        return correctKeywords_.count;
-    }
-
     [[nodiscard]] auto adaptiveTestRestartedWhilePreservingCyclicTargets() const
         -> bool {
         return adaptiveTestRestartedWhilePreservingCyclicTargets_;
@@ -218,11 +214,7 @@ class ModelStub : public Model {
         rightSpeakerCalibration_ = p;
     }
 
-    void submit(const CorrectKeywords &s) override { correctKeywords_ = s; }
-
     void submit(const ConsonantResponse &s) override { consonantResponse_ = s; }
-
-    void submit(const SyllableResponse &s) override { syllableResponse_ = s; }
 
     void restartAdaptiveTestWhilePreservingTargets() override {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
@@ -237,8 +229,6 @@ class ModelStub : public Model {
     auto keywordsTestResults() -> KeywordsTestResults override {
         return keywordsTestResults_;
     }
-
-    auto syllableResponse() -> SyllableResponse { return syllableResponse_; }
 
     void setKeywordTestResults(KeywordsTestResults k) {
         keywordsTestResults_ = k;
@@ -257,9 +247,7 @@ class ModelStub : public Model {
     std::vector<std::string> audioDevices_{};
     AdaptiveTestResults adaptiveTestResults_{};
     ConsonantResponse consonantResponse_{};
-    CorrectKeywords correctKeywords_{};
     ThreeKeywordsResponse threeKeywords_{};
-    SyllableResponse syllableResponse_{};
     KeywordsTestResults keywordsTestResults_{};
     std::string targetFileName_{};
     Observer *listener_{};

@@ -1,5 +1,6 @@
 #import "objective-c-adapters.h"
 #include "Foundation-utility.h"
+
 #include <algorithm>
 #include <string>
 
@@ -71,7 +72,7 @@
 
 @implementation CorrectKeywordsUIObserverImpl {
   @public
-    av_speech_in_noise::CorrectKeywordsControl::Observer *observer;
+    av_speech_in_noise::submitting_number_keywords::Control::Observer *observer;
 }
 
 - (void)notifyThatSubmitButtonHasBeenClicked {
@@ -101,7 +102,7 @@
 
 @implementation SyllablesUIObserverImpl {
   @public
-    av_speech_in_noise::SyllablesControl::Observer *observer;
+    av_speech_in_noise::submitting_syllable::Control::Observer *observer;
 }
 
 - (void)notifyThatResponseButtonHasBeenClicked {
@@ -213,26 +214,27 @@ void UIImpl::setTextFollowingThirdKeywordButton(const std::string &s) {
 }
 }
 
-SyllablesUIImpl::SyllablesUIImpl(NSObject<SyllablesUI> *syllablesUI)
-    : syllablesUI{syllablesUI} {}
+namespace submitting_syllable {
+UIImpl::UIImpl(NSObject<SyllablesUI> *syllablesUI) : syllablesUI{syllablesUI} {}
 
-void SyllablesUIImpl::attach(Observer *a) {
+void UIImpl::attach(Observer *a) {
     const auto adapted{[[SyllablesUIObserverImpl alloc] init]};
     adapted->observer = a;
     [syllablesUI attach:adapted];
 }
 
-void SyllablesUIImpl::hide() { [syllablesUI hide]; }
+void UIImpl::hide() { [syllablesUI hide]; }
 
-void SyllablesUIImpl::show() { [syllablesUI show]; }
+void UIImpl::show() { [syllablesUI show]; }
 
-auto SyllablesUIImpl::syllable() -> std::string {
+auto UIImpl::syllable() -> std::string {
     return [syllablesUI syllable].UTF8String;
 }
 
-auto SyllablesUIImpl::flagged() -> bool { return [syllablesUI flagged] == YES; }
+auto UIImpl::flagged() -> bool { return [syllablesUI flagged] == YES; }
 
-void SyllablesUIImpl::clearFlag() { [syllablesUI clearFlag]; }
+void UIImpl::clearFlag() { [syllablesUI clearFlag]; }
+}
 
 TestSetupUIImpl::TestSetupUIImpl(NSObject<TestSetupUI> *testSetupUI)
     : testSetupUI{testSetupUI} {}
@@ -270,12 +272,11 @@ auto TestSetupUIImpl::rmeSetting() -> std::string {
 }
 
 void TestSetupUIImpl::populateTransducerMenu(std::vector<std::string> v) {
-    id nsstrings = [NSMutableArray new];
-    for_each(v.begin(), v.end(), [&nsstrings](const std::string &str) {
-        id nsstr = [NSString stringWithUTF8String:str.c_str()];
-        [nsstrings addObject:nsstr];
+    const auto adapted{[NSMutableArray<NSString *> arrayWithCapacity:v.size()]};
+    for_each(v.begin(), v.end(), [&adapted](const std::string &str) {
+        [adapted addObject:nsString(str)];
     });
-    [testSetupUI populateTransducerMenu:nsstrings];
+    [testSetupUI populateTransducerMenu:adapted];
 }
 
 void TestSetupUIImpl::attach(Observer *a) {
@@ -347,14 +348,11 @@ auto SessionUIImpl::audioDevice() -> std::string {
 }
 
 void SessionUIImpl::populateAudioDeviceMenu(std::vector<std::string> v) {
-    id nsstrings = [NSMutableArray new];
-    for_each(v.begin(), v.end(), [&nsstrings](const std::string &str) {
-        if (str.c_str() == nullptr)
-            return;
-        id nsstr = [NSString stringWithUTF8String:str.c_str()];
-        [nsstrings addObject:nsstr];
+    const auto adapted{[NSMutableArray<NSString *> arrayWithCapacity:v.size()]};
+    for_each(v.begin(), v.end(), [&adapted](const std::string &str) {
+        [adapted addObject:nsString(str)];
     });
-    [sessionUI populateAudioDeviceMenu:nsstrings];
+    [sessionUI populateAudioDeviceMenu:adapted];
 }
 
 void SessionUIImpl::populateSubjectScreenMenu(const std::vector<Screen> &v) {
@@ -405,25 +403,22 @@ void UIImpl::clearResponse() { [freeResponseUI clearFreeResponse]; }
 void UIImpl::clearFlag() { [freeResponseUI clearFlag]; }
 }
 
-CorrectKeywordsUIImpl::CorrectKeywordsUIImpl(NSObject<CorrectKeywordsUI> *ui)
-    : ui{ui} {}
+namespace submitting_number_keywords {
+UIImpl::UIImpl(NSObject<CorrectKeywordsUI> *ui) : ui{ui} {}
 
-void CorrectKeywordsUIImpl::attach(Observer *a) {
+void UIImpl::attach(Observer *a) {
     const auto adapted{[[CorrectKeywordsUIObserverImpl alloc] init]};
     adapted->observer = a;
     [ui attach:adapted];
 }
 
-auto CorrectKeywordsUIImpl::correctKeywords() -> std::string {
+auto UIImpl::correctKeywords() -> std::string {
     return [ui correctKeywords].UTF8String;
 }
 
-void CorrectKeywordsUIImpl::showCorrectKeywordsSubmission() {
-    [ui showCorrectKeywordsSubmission];
-}
+void UIImpl::show() { [ui showCorrectKeywordsSubmission]; }
 
-void CorrectKeywordsUIImpl::hideCorrectKeywordsSubmission() {
-    [ui hideCorrectKeywordsSubmission];
+void UIImpl::hide() { [ui hideCorrectKeywordsSubmission]; }
 }
 
 namespace submitting_pass_fail {

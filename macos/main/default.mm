@@ -18,10 +18,11 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static TestUIImpl testUIAdapted{testUI};
     static submitting_free_response::UIImpl freeResponseUIAdapted{
         freeResponseUI};
-    static SyllablesUIImpl syllablesUIAdapted{syllablesUI};
+    static submitting_syllable::UIImpl syllablesUIAdapted{syllablesUI};
     static submitting_keywords::UIImpl chooseKeywordsUIAdapted{
         chooseKeywordsUI};
-    static CorrectKeywordsUIImpl correctKeywordsUIAdapted{correctKeywordsUI};
+    static submitting_number_keywords::UIImpl correctKeywordsUIAdapted{
+        correctKeywordsUI};
     static submitting_pass_fail::UIImpl passFailUIAdapted{passFailUI};
     initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
         testSetupViewFactory, sessionUIAdapted, testUIAdapted,

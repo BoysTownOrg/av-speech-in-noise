@@ -1,5 +1,6 @@
 #include "RecognitionTestModel.hpp"
 #include "IOutputFile.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <gsl/gsl>
 #include <cmath>
 #include <functional>
@@ -247,8 +248,17 @@ static void preparePlayersForNextTrial(TestMethod *testMethod,
 
 static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, RealLevel maskerLevel,
-    RealLevel fullScaleLevel) {
+    MaskerPlayer &maskerPlayer, EyeTracker &eyeTracker, RealLevel maskerLevel,
+    RealLevel fullScaleLevel, bool eyeTracking,
+    TargetStartTime lastTargetStartTime,
+    EyeTrackerTargetPlayerSynchronization
+        lastEyeTrackerTargetPlayerSynchronization) {
+    if (eyeTracking) {
+        outputFile.write(lastTargetStartTime);
+        outputFile.write(lastEyeTrackerTargetPlayerSynchronization);
+        outputFile.write(eyeTracker.gazeSamples());
+        save(outputFile);
+    }
     if (!testMethod->complete()) {
         ++trialNumber_;
         preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
@@ -262,12 +272,17 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
 static void saveOutputFileAndPrepareNextTrialAfter(
     const std::function<void()> &f, TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, RealLevel maskerLevel,
-    RealLevel fullScaleLevel) {
+    MaskerPlayer &maskerPlayer, EyeTracker &eyeTracker, RealLevel maskerLevel,
+    RealLevel fullScaleLevel, bool eyeTracking,
+    TargetStartTime lastTargetStartTime,
+    EyeTrackerTargetPlayerSynchronization
+        lastEyeTrackerTargetPlayerSynchronization) {
     f();
     save(outputFile);
     prepareNextTrialIfNeeded(testMethod, trialNumber_, outputFile, randomizer,
-        targetPlayer, maskerPlayer, maskerLevel, fullScaleLevel);
+        targetPlayer, maskerPlayer, eyeTracker, maskerLevel, fullScaleLevel,
+        eyeTracking, lastTargetStartTime,
+        lastEyeTrackerTargetPlayerSynchronization);
 }
 
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
@@ -341,7 +356,7 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
 void RecognitionTestModelImpl::initializeWithEyeTracking(
     TestMethod *method, const Test &test) {
     initialize_(method, test);
-    outputFile.write(eyeTracker);
+    //    outputFile.write(eyeTracker);
     useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
@@ -415,49 +430,24 @@ void RecognitionTestModelImpl::submit(
         [&]() {
             testMethod->submit(response);
             testMethod->writeLastCoordinateResponse(outputFile);
-            if (eyeTracking) {
-                outputFile.write(lastTargetStartTime);
-                outputFile.write(lastEyeTrackerTargetPlayerSynchronization);
-                outputFile.write(eyeTracker.gazeSamples());
-            }
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, maskerLevel_, fullScaleLevel_);
-}
-
-void RecognitionTestModelImpl::submit(const SyllableResponse &p) {
-    saveOutputFileAndPrepareNextTrialAfter(
-        [&]() {
-            testMethod->submit(p);
-            SyllableTrial trial;
-            trial.subjectSyllable = p.syllable;
-            trial.target = targetName(evaluator, testMethod);
-            trial.correctSyllable =
-                evaluator.correctSyllable(currentTarget(testMethod));
-            trial.correct = evaluator.correct(currentTarget(testMethod), p);
-            trial.flagged = p.flagged;
-            outputFile.write(trial);
-        },
-        testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, maskerLevel_, fullScaleLevel_);
-}
-
-void RecognitionTestModelImpl::submit(const CorrectKeywords &) {
-    saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
-        fullScaleLevel_);
+        maskerPlayer, eyeTracker, maskerLevel_, fullScaleLevel_, eyeTracking,
+        lastTargetStartTime, lastEyeTrackerTargetPlayerSynchronization);
 }
 
 void RecognitionTestModelImpl::submit(const ConsonantResponse &) {
     saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
-        fullScaleLevel_);
+        outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracker,
+        maskerLevel_, fullScaleLevel_, eyeTracking, lastTargetStartTime,
+        lastEyeTrackerTargetPlayerSynchronization);
 }
 
 void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, maskerLevel_,
-        fullScaleLevel_);
+        outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracker,
+        maskerLevel_, fullScaleLevel_, eyeTracking, lastTargetStartTime,
+        lastEyeTrackerTargetPlayerSynchronization);
 }
 
 void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
