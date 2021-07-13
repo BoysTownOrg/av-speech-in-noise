@@ -18,7 +18,9 @@ void TesterPresenterImpl::start() { view.show(); }
 
 void TesterPresenterImpl::stop() { view.hide(); }
 
-SubjectPresenterImpl::SubjectPresenterImpl(SubjectView &view) : view{view} {
+SubjectPresenterImpl::SubjectPresenterImpl(
+    SubjectView &view, av_speech_in_noise::SubjectPresenter &parentPresenter)
+    : view{view}, parentPresenter{parentPresenter} {
     view.attach(this);
 }
 
@@ -26,9 +28,15 @@ void SubjectPresenterImpl::attach(SubjectPresenter::Observer *a) {
     observer = a;
 }
 
-void SubjectPresenterImpl::start() { view.show(); }
+void SubjectPresenterImpl::start() {
+    parentPresenter.start();
+    view.show();
+}
 
-void SubjectPresenterImpl::stop() { view.hide(); }
+void SubjectPresenterImpl::stop() {
+    view.hide();
+    parentPresenter.stop();
+}
 
 void SubjectPresenterImpl::present(Point x) {
     pointPresenting = x;

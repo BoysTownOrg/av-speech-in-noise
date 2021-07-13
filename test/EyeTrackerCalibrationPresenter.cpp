@@ -1,8 +1,25 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
+
 #include <av-speech-in-noise/ui/EyeTrackerCalibration.hpp>
+
 #include <gtest/gtest.h>
+
 #include <functional>
+
+namespace av_speech_in_noise {
+class SubjectPresenterStub : public SubjectPresenter {
+  public:
+    void start() override { started_ = true; }
+    void stop() override { stopped_ = true; }
+    [[nodiscard]] auto started() const -> bool { return started_; }
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+
+  private:
+    bool started_{};
+    bool stopped_{};
+};
+}
 
 namespace av_speech_in_noise::eye_tracker_calibration {
 static void assertEqual(WindowPoint expected, WindowPoint actual) {
@@ -184,7 +201,8 @@ namespace {
 class EyeTrackerCalibrationSubjectPresenterTests : public ::testing::Test {
   protected:
     SubjectViewStub view;
-    SubjectPresenterImpl presenter{view};
+    av_speech_in_noise::SubjectPresenterStub parentPresenter;
+    SubjectPresenterImpl presenter{view, parentPresenter};
 };
 
 class EyeTrackerCalibrationTesterPresenterTests : public ::testing::Test {
@@ -218,9 +236,19 @@ EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(startShowsView) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.shown());
 }
 
+EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(startStartsParent) {
+    presenter.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(parentPresenter.started());
+}
+
 EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(stopHidesView) {
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
+}
+
+EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(stopStopsParent) {
+    presenter.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(parentPresenter.stopped());
 }
 
 EYE_TRACKER_CALIBRATION_TESTER_PRESENTER_TEST(startShowsView) {
