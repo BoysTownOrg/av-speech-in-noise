@@ -66,11 +66,25 @@ class SessionControllerObserverStub : public SessionController::Observer {
     bool notifiedThatTestIsComplete_{};
 };
 
+class SubjectPresenterStub : public SubjectPresenter {
+  public:
+    void start() override { started_ = true; }
+    void stop() override { stopped_ = true; }
+    [[nodiscard]] auto started() const -> bool { return started_; }
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+
+  private:
+    bool started_{};
+    bool stopped_{};
+};
+
 class SessionControllerTests : public ::testing::Test {
   protected:
     TestSetupPresenterStub testSetupPresenter;
     TestPresenterStub testPresenter;
-    SessionControllerImpl controller{testSetupPresenter, testPresenter};
+    SubjectPresenterStub subjectPresenter;
+    SessionControllerImpl controller{
+        testSetupPresenter, testPresenter, subjectPresenter};
     TaskPresenterStub taskPresenter;
 };
 
@@ -88,6 +102,12 @@ SESSION_CONTROLLER_TEST(prepareStartsTest) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.started());
 }
 
+SESSION_CONTROLLER_TEST(prepareStartsSubject) {
+    TaskPresenterStub taskPresenter;
+    controller.prepare(taskPresenter);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(subjectPresenter.started());
+}
+
 SESSION_CONTROLLER_TEST(preparePassesTaskPresenter) {
     TaskPresenterStub taskPresenter;
     controller.prepare(taskPresenter);
@@ -95,12 +115,17 @@ SESSION_CONTROLLER_TEST(preparePassesTaskPresenter) {
         &taskPresenter, testPresenter.taskPresenter());
 }
 
-SESSION_CONTROLLER_TEST(testStopsAfterTestIsComplete) {
+SESSION_CONTROLLER_TEST(testSetupStartsAfterTestIsComplete) {
     controller.notifyThatTestIsComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testSetupPresenter.started());
 }
 
-SESSION_CONTROLLER_TEST(testSetupStartsAfterTestIsComplete) {
+SESSION_CONTROLLER_TEST(subjectStopsAfterTestIsComplete) {
+    controller.notifyThatTestIsComplete();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(subjectPresenter.stopped());
+}
+
+SESSION_CONTROLLER_TEST(testStopsAfterTestIsComplete) {
     controller.notifyThatTestIsComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.stopped());
 }

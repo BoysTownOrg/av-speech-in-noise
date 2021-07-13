@@ -4,6 +4,7 @@
 #include "TestSetup.hpp"
 #include "Test.hpp"
 #include "Session.hpp"
+#include "Subject.hpp"
 
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Model.hpp>
@@ -12,7 +13,8 @@
 namespace av_speech_in_noise {
 class SessionControllerImpl : public SessionController {
   public:
-    SessionControllerImpl(TestSetupPresenter &, TestPresenter &);
+    SessionControllerImpl(
+        TestSetupPresenter &, TestPresenter &, SubjectPresenter &);
     void notifyThatTestIsComplete() override;
     void prepare(TaskPresenter &) override;
     void attach(Observer *) override;
@@ -25,6 +27,7 @@ class SessionControllerImpl : public SessionController {
   private:
     Presenter &testSetupPresenter;
     TestPresenter &testPresenter;
+    SubjectPresenter &subjectPresenter;
     Observer *observer{};
 };
 
