@@ -160,6 +160,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         let userDefaults = UserDefaults()
         sessionUI.audioDevice_.string = userDefaults.string(forKey: "AudioDevice") ?? ""
+        sessionUI.subjectScreen_.string = userDefaults.string(forKey: "SubjectScreen") ?? ""
 
         let contentView = SwiftSessionView(ui: sessionUI) {
             SwiftTestSetupView(ui: self.testSetupUI, testSettingsPathControl: self.testSettingsPathControl)
@@ -182,6 +183,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_: Notification) {
         let userDefaults = UserDefaults()
         userDefaults.set(sessionUI.audioDevice_.string, forKey: "AudioDevice")
+        userDefaults.set(sessionUI.subjectScreen_.string, forKey: "SubjectScreen")
     }
 }
 
