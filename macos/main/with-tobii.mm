@@ -180,15 +180,15 @@ class AppKitSubjectView : public SubjectView {
     static constexpr auto normalDotDiameterPoints{100};
     static constexpr auto shrunkenDotDiameterPoints{25};
 
-    explicit AppKitSubjectView(NSWindow *window)
+    explicit AppKitSubjectView(NSView *view)
         : dot{[[AvSpeechInNoiseCircleNSView alloc]
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
                                 normalDotDiameterPoints)]},
           animationDelegate{[
               [AvSpeechInNoiseEyeTrackerCalibrationSubjectViewNSAnimationDelegate
-                  alloc] init]},
-          window{window} {
-        [window.contentViewController.view addSubview:dot];
+                  alloc] init]} {
+        [view addSubview:dot];
+        [dot setHidden:YES];
     }
 
     void attach(SubjectView::Observer *a) override {
@@ -225,15 +225,14 @@ class AppKitSubjectView : public SubjectView {
             0.5, animationDelegate);
     }
 
-    void show() override { [window makeKeyAndOrderFront:nil]; }
+    void show() override { [dot setHidden:NO]; }
 
-    void hide() override { [window orderOut:nil]; }
+    void hide() override { [dot setHidden:YES]; }
 
   private:
     AvSpeechInNoiseCircleNSView *dot;
     AvSpeechInNoiseEyeTrackerCalibrationSubjectViewNSAnimationDelegate
         *animationDelegate;
-    NSWindow *window;
 };
 
 class AppKitTesterUI : public TesterView, public Control {
@@ -391,8 +390,21 @@ static void initialize(TobiiProTracker &tracker,
     [menu attach:menuObserver];
     static validation::AppKitTesterUI validationTesterViewAdapted{
         validationTesterUI};
-    static AppKitSubjectView subjectView{subjectWindow};
-    static AppKitSubjectView validationSubjectView{subjectWindow};
+    // const auto subjectNSView{
+    //     [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
+    // addAutolayoutEnabledSubview(subjectWindow.contentView, subjectNSView);
+    // [NSLayoutConstraint activateConstraints:@[
+    //     [subjectNSView.widthAnchor
+    //         constraintEqualToAnchor:subjectWindow.contentView.widthAnchor],
+    //     [subjectNSView.heightAnchor
+    //         constraintEqualToAnchor:subjectWindow.contentView.heightAnchor],
+    //     [subjectNSView.centerXAnchor
+    //         constraintEqualToAnchor:subjectWindow.contentView.centerXAnchor],
+    //     [subjectNSView.centerYAnchor
+    //         constraintEqualToAnchor:subjectWindow.contentView.centerYAnchor]
+    // ]];
+    static AppKitSubjectView subjectView{subjectWindow.contentView};
+    static AppKitSubjectView validationSubjectView{subjectWindow.contentView};
     static AppKitTesterUI testerUI{testerWindow, menuObserver};
     static SubjectPresenterImpl subjectPresenter{
         subjectView, parentSubjectPresenter};
