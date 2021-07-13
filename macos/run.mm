@@ -219,6 +219,10 @@ class SubjectAppKitView : public SubjectView {
                  display:YES];
     }
 
+    void show() override { [window makeKeyAndOrderFront:nil]; }
+
+    void hide() override { [window orderOut:nil]; }
+
   private:
     NSWindow *window;
 };
@@ -240,7 +244,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                                     styleMask:NSWindowStyleMaskBorderless
                                       backing:NSBackingStoreBuffered
                                         defer:YES]};
-    [subjectNSWindow makeKeyAndOrderFront:nil];
     const auto videoNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
     addAutolayoutEnabledSubview(subjectNSWindow.contentView, videoNSView);
