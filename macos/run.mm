@@ -4,7 +4,8 @@
 #include "AppKitView.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
-#include "av-speech-in-noise/ui/PassFail.hpp"
+
+#include <av-speech-in-noise/ui/PassFail.hpp>
 #include <av-speech-in-noise/ui/SessionController.hpp>
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/ui/TestImpl.hpp>
@@ -26,6 +27,7 @@
 #include <av-speech-in-noise/player/AudioReaderSimplified.hpp>
 #include <av-speech-in-noise/playlist/RandomizedTargetPlaylists.hpp>
 #include <av-speech-in-noise/playlist/FileFilterDecorator.hpp>
+
 #include <fstream>
 #include <sstream>
 #include <utility>
@@ -208,10 +210,6 @@ void TimerImpl::scheduleCallbackAfterSeconds(double x) {
 void TimerImpl::timerCallback() { listener->callback(); }
 }
 
-static void addChild(NSTabViewController *parent, NSTabViewController *child) {
-    [parent.view addSubview:child.view];
-}
-
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     OutputFileNameFactory &outputFileNameFactory,
     AppKitTestSetupUIFactory &testSetupUIFactory, SessionUI &sessionUIMaybe,
@@ -221,8 +219,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     submitting_number_keywords::UI &correctKeywordsUIMaybe,
     submitting_pass_fail::UI &passFailUIMaybe,
     SessionController::Observer *sessionControllerObserver,
-    std::filesystem::path relativeOutputDirectory,
-    AppKitRunMenuInitializer *appKitRunMenuInitializer) {
+    std::filesystem::path relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
     static AvFoundationVideoPlayer videoPlayer{subjectScreen};
     static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
