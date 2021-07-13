@@ -388,21 +388,8 @@ static void initialize(TobiiProTracker &tracker,
     const auto menuObserver{[
         [AvSpeechInNoiseEyeTrackerCalibrationControlObserverProxy alloc] init]};
     [menu attach:menuObserver];
-    static validation::AppKitTesterUI validationTesterViewAdapted{
+    static validation::AppKitTesterUI validationTesterViewAdapter{
         validationTesterUI};
-    // const auto subjectNSView{
-    //     [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
-    // addAutolayoutEnabledSubview(subjectWindow.contentView, subjectNSView);
-    // [NSLayoutConstraint activateConstraints:@[
-    //     [subjectNSView.widthAnchor
-    //         constraintEqualToAnchor:subjectWindow.contentView.widthAnchor],
-    //     [subjectNSView.heightAnchor
-    //         constraintEqualToAnchor:subjectWindow.contentView.heightAnchor],
-    //     [subjectNSView.centerXAnchor
-    //         constraintEqualToAnchor:subjectWindow.contentView.centerXAnchor],
-    //     [subjectNSView.centerYAnchor
-    //         constraintEqualToAnchor:subjectWindow.contentView.centerYAnchor]
-    // ]];
     static AppKitSubjectView subjectView{subjectWindow.contentView};
     static AppKitSubjectView validationSubjectView{subjectWindow.contentView};
     static AppKitTesterUI testerUI{testerWindow, menuObserver};
@@ -412,7 +399,7 @@ static void initialize(TobiiProTracker &tracker,
         validationSubjectView, parentSubjectPresenter};
     static TesterPresenterImpl testerPresenter{testerUI};
     static validation::TesterPresenterImpl validationTesterPresenter{
-        validationTesterViewAdapted};
+        validationTesterViewAdapter};
     static auto validator{tracker.calibrationValidator()};
     static validation::InteractorImpl validationInteractor{
         validationSubjectPresenter, validationTesterPresenter, validator,
@@ -423,7 +410,7 @@ static void initialize(TobiiProTracker &tracker,
         {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
     static Controller controller{testerUI, interactor};
     static validation::Controller validationController{
-        validationTesterViewAdapted, validationInteractor};
+        validationTesterViewAdapter, validationInteractor};
 }
 }
 
@@ -440,28 +427,28 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static TobiiProTracker eyeTracker;
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
-    static SessionUIImpl sessionUIAdapted{sessionUI};
-    static TestUIImpl testUIAdapted{testUI};
-    static submitting_free_response::UIImpl freeResponseUIAdapted{
+    static SessionUIImpl sessionUIAdapter{sessionUI};
+    static TestUIImpl testUIAdapter{testUI};
+    static submitting_free_response::UIImpl freeResponseUIAdapter{
         freeResponseUI};
-    static submitting_syllable::UIImpl syllablesUIAdapted{syllablesUI};
-    static submitting_keywords::UIImpl chooseKeywordsUIAdapted{
+    static submitting_syllable::UIImpl syllablesUIAdapter{syllablesUI};
+    static submitting_keywords::UIImpl chooseKeywordsUIAdapter{
         chooseKeywordsUI};
-    static submitting_number_keywords::UIImpl correctKeywordsUIAdapted{
+    static submitting_number_keywords::UIImpl correctKeywordsUIAdapter{
         correctKeywordsUI};
-    static submitting_pass_fail::UIImpl passFailUIAdapted{passFailUI};
-    const auto subjectNSWindow{subjectWindow()};
-    static SubjectAppKitView subjectView{subjectNSWindow};
+    static submitting_pass_fail::UIImpl passFailUIAdapter{passFailUI};
+    const auto subjectWindow{av_speech_in_noise::subjectWindow()};
+    static SubjectAppKitView subjectView{subjectWindow};
     static av_speech_in_noise::SubjectPresenterImpl subjectPresenter{
-        subjectView, sessionUIAdapted};
+        subjectView, sessionUIAdapter};
     eye_tracker_calibration::initialize(eyeTracker, eyeTrackerMenu,
         eyeTrackerCalibrationValidationTesterUI, subjectPresenter,
-        subjectNSWindow);
+        subjectWindow);
     initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
-        testSetupViewFactory, sessionUIAdapted, testUIAdapted,
-        freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
-        correctKeywordsUIAdapted, passFailUIAdapted, subjectPresenter,
-        subjectNSWindow);
+        testSetupViewFactory, sessionUIAdapter, testUIAdapter,
+        freeResponseUIAdapter, syllablesUIAdapter, chooseKeywordsUIAdapter,
+        correctKeywordsUIAdapter, passFailUIAdapter, subjectPresenter,
+        subjectWindow);
 }
 }
 
