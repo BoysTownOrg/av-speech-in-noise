@@ -8,6 +8,10 @@
 #include <iterator>
 
 namespace av_speech_in_noise {
+static auto operator==(const Screen &a, const Screen &b) -> bool {
+    return a.name == b.name;
+}
+
 class SubjectPresenterImpl : public SubjectPresenter {
   public:
     SubjectPresenterImpl(SubjectView &view, SessionView &sessionView)

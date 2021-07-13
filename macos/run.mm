@@ -9,6 +9,7 @@
 #include <av-speech-in-noise/ui/SessionController.hpp>
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/ui/TestImpl.hpp>
+#include <av-speech-in-noise/ui/SubjectImpl.hpp>
 #include <av-speech-in-noise/core/Model.hpp>
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <av-speech-in-noise/core/AdaptiveMethod.hpp>
@@ -394,8 +395,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static UninitializedTaskPresenterImpl taskPresenter;
     static TestPresenterImpl testPresenter{model, testUIMaybe, &taskPresenter};
     static SubjectAppKitView subjectView{subjectNSWindow};
+    static SubjectPresenterImpl subjectPresenter{subjectView, sessionUIMaybe};
+    static SessionPresenterImpl sessionPresenter{sessionUIMaybe, model};
     static SessionControllerImpl sessionController{
-        model, sessionUIMaybe, subjectView, testSetupPresenter, testPresenter};
+        testSetupPresenter, testPresenter, subjectPresenter};
     static TestControllerImpl testController{
         sessionController, model, sessionUIMaybe, testUIMaybe, testPresenter};
     static submitting_keywords::InteractorImpl submittingKeywordsInteractor{
