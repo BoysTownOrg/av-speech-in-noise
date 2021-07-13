@@ -10,7 +10,9 @@ auto resourceUrl(const std::string &stem, const std::string &extension)
 }
 
 auto nsString(const std::string &s) -> NSString * {
-    return [NSString stringWithCString:s.c_str()
-                              encoding:NSString.defaultCStringEncoding];
+    // https://developer.apple.com/documentation/foundation/nsstring/1497379-stringwithutf8string?language=objc
+    // "Raises an exception if bytes is NULL."
+    return s.c_str() == nullptr ? [NSString string]
+                                : [NSString stringWithUTF8String:s.c_str()];
 }
 }

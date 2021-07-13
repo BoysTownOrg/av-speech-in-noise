@@ -1,5 +1,6 @@
 #import "objective-c-adapters.h"
 #include "Foundation-utility.h"
+
 #include <algorithm>
 #include <string>
 
@@ -271,12 +272,11 @@ auto TestSetupUIImpl::rmeSetting() -> std::string {
 }
 
 void TestSetupUIImpl::populateTransducerMenu(std::vector<std::string> v) {
-    id nsstrings = [NSMutableArray new];
-    for_each(v.begin(), v.end(), [&nsstrings](const std::string &str) {
-        id nsstr = [NSString stringWithUTF8String:str.c_str()];
-        [nsstrings addObject:nsstr];
+    const auto adapted{[NSMutableArray<NSString *> arrayWithCapacity:v.size()]};
+    for_each(v.begin(), v.end(), [&adapted](const std::string &str) {
+        [adapted addObject:nsString(str)];
     });
-    [testSetupUI populateTransducerMenu:nsstrings];
+    [testSetupUI populateTransducerMenu:adapted];
 }
 
 void TestSetupUIImpl::attach(Observer *a) {
@@ -348,14 +348,11 @@ auto SessionUIImpl::audioDevice() -> std::string {
 }
 
 void SessionUIImpl::populateAudioDeviceMenu(std::vector<std::string> v) {
-    id nsstrings = [NSMutableArray new];
-    for_each(v.begin(), v.end(), [&nsstrings](const std::string &str) {
-        if (str.c_str() == nullptr)
-            return;
-        id nsstr = [NSString stringWithUTF8String:str.c_str()];
-        [nsstrings addObject:nsstr];
+    const auto adapted{[NSMutableArray<NSString *> arrayWithCapacity:v.size()]};
+    for_each(v.begin(), v.end(), [&adapted](const std::string &str) {
+        [adapted addObject:nsString(str)];
     });
-    [sessionUI populateAudioDeviceMenu:nsstrings];
+    [sessionUI populateAudioDeviceMenu:adapted];
 }
 
 namespace submitting_free_response {

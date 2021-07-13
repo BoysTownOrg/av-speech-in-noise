@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_MACOS_RUN_H_
 
 #include "AppKitTestSetupUIFactory.h"
+
 #include <av-speech-in-noise/ui/Consonant.hpp>
 #include <av-speech-in-noise/ui/CorrectKeywords.hpp>
 #include <av-speech-in-noise/ui/PassFail.hpp>
@@ -12,6 +13,7 @@
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <av-speech-in-noise/core/OutputFilePath.hpp>
 #include <av-speech-in-noise/Interface.hpp>
+
 #include <memory>
 #include <filesystem>
 
@@ -68,8 +70,7 @@ void initializeAppAndRunEventLoop(EyeTracker &, OutputFileNameFactory &,
     submitting_keywords::UI &, submitting_number_keywords::UI &,
     submitting_pass_fail::UI &, SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =
-        "Documents/AvSpeechInNoise Data",
-    AppKitRunMenuInitializer * = nullptr);
+        "Documents/AvSpeechInNoise Data");
 }
 
 #endif

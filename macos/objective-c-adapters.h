@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_MACOS_OBJECTIVE_C_ADAPTERS_H_
 
 #import "objective-c-bridge.h"
+
 #include "run.h"
 
 namespace av_speech_in_noise {
