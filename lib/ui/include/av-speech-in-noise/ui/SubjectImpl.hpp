@@ -23,9 +23,10 @@ class SubjectPresenterImpl : public SubjectPresenter {
                 screens.begin(), screens.end(), sessionView.subjectScreen())};
             it != screens.end())
             view.moveToScreen(std::distance(screens.begin(), it));
+        view.show();
     }
 
-    void stop() override {}
+    void stop() override { view.hide(); }
 
   private:
     SubjectView &view;
