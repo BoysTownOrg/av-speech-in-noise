@@ -8,6 +8,7 @@
     }
     return self;
 }
+
 - (void)viewWillAppear {
     [super viewWillAppear];
     self.preferredContentSize = self.view.fittingSize;

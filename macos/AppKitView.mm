@@ -1,7 +1,9 @@
 #include "AppKitView.h"
 #include "AppKit-utility.h"
 #include "Foundation-utility.h"
+
 #include <gsl/gsl>
+
 #include <iterator>
 #include <array>
 #include <algorithm>
@@ -42,8 +44,6 @@
 @end
 
 namespace av_speech_in_noise {
-constexpr auto defaultMarginPoints{8};
-
 static void addSubview(NSView *parent, NSView *child) {
     [parent addSubview:child];
 }
@@ -52,56 +52,9 @@ static void hide(NSView *v) { [v setHidden:YES]; }
 
 static void show(NSView *v) { [v setHidden:NO]; }
 
-static void set(NSTextField *field, const std::string &s) {
-    [field setStringValue:nsString(s)];
-}
-
 constexpr auto width(const NSRect &r) -> CGFloat { return r.size.width; }
 
 constexpr auto height(const NSRect &r) -> CGFloat { return r.size.height; }
-
-static auto string(NSTextField *field) -> const char * {
-    return field.stringValue.UTF8String;
-}
-
-static void activateChildConstraintNestledInBottomRightCorner(
-    NSView *child, NSView *parent, CGFloat x) {
-
-    [NSLayoutConstraint activateConstraints:@[
-        [child.trailingAnchor constraintEqualToAnchor:parent.trailingAnchor
-                                             constant:-x],
-        [child.bottomAnchor constraintEqualToAnchor:parent.bottomAnchor
-                                           constant:-x]
-    ]];
-}
-
-static auto emptyTextField() -> NSTextField * {
-    return [NSTextField textFieldWithString:@""];
-}
-
-static auto label(const std::string &s) -> NSTextField * {
-    return [NSTextField labelWithString:nsString(s)];
-}
-
-static void setPlaceholder(NSTextField *field, const std::string &s) {
-    [field setPlaceholderString:nsString(s)];
-}
-
-static auto labeledView(NSView *field, const std::string &s) -> NSStackView * {
-    const auto label_{label(s)};
-    [label_ setContentHuggingPriority:251
-                       forOrientation:NSLayoutConstraintOrientationHorizontal];
-    const auto stack { [NSStackView stackViewWithViews:@[ label_, field ]] };
-    return stack;
-}
-
-static void activateConstraints(NSArray<NSLayoutConstraint *> *constraints) {
-    [NSLayoutConstraint activateConstraints:constraints];
-}
-
-static auto view(NSViewController *viewController) -> NSView * {
-    return viewController.view;
-}
 
 static auto consonantImageButton(
     std::unordered_map<void *, std::string> &consonants,

@@ -3,7 +3,9 @@
 
 #include <av-speech-in-noise/ui/TestSetup.hpp>
 #include <av-speech-in-noise/Interface.hpp>
+
 #import <AppKit/AppKit.h>
+
 #include <memory>
 
 namespace av_speech_in_noise {

@@ -3,7 +3,9 @@
 
 #include <av-speech-in-noise/ui/Consonant.hpp>
 #include <av-speech-in-noise/ui/CoordinateResponseMeasure.hpp>
+
 #import <AppKit/AppKit.h>
+
 #include <unordered_map>
 
 @class CoordinateResponseMeasureUIActions;
