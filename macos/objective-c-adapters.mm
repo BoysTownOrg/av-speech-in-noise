@@ -360,7 +360,7 @@ void SessionUIImpl::populateSubjectScreenMenu(const std::vector<Screen> &v) {
     for_each(v.begin(), v.end(), [&adapted](const Screen &screen) {
         [adapted addObject:nsString(screen.name)];
     });
-    [sessionUI populateAudioDeviceMenu:adapted];
+    [sessionUI populateSubjectScreenMenu:adapted];
 }
 
 auto SessionUIImpl::screens() -> std::vector<Screen> {
