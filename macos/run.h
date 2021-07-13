@@ -68,7 +68,8 @@ void initializeAppAndRunEventLoop(EyeTracker &, OutputFileNameFactory &,
     AppKitTestSetupUIFactory &, SessionUI &, TestUI &,
     submitting_free_response::UI &, submitting_syllable::UI &,
     submitting_keywords::UI &, submitting_number_keywords::UI &,
-    submitting_pass_fail::UI &, SessionController::Observer * = nullptr,
+    submitting_pass_fail::UI &, SubjectPresenter &subjectPresenter,
+    NSWindow *subjectNSWindow, SessionController::Observer * = nullptr,
     std::filesystem::path relativeOutputDirectory =
         "Documents/AvSpeechInNoise Data");
 }

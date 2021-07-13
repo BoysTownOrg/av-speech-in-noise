@@ -209,23 +209,6 @@ void TimerImpl::scheduleCallbackAfterSeconds(double x) {
 }
 
 void TimerImpl::timerCallback() { listener->callback(); }
-
-class SubjectAppKitView : public SubjectView {
-  public:
-    explicit SubjectAppKitView(NSWindow *window) : window{window} {}
-
-    void moveToScreen(int index) override {
-        [window setFrame:[NSScreen.screens objectAtIndex:index].frame
-                 display:YES];
-    }
-
-    void show() override { [window makeKeyAndOrderFront:nil]; }
-
-    void hide() override { [window orderOut:nil]; }
-
-  private:
-    NSWindow *window;
-};
 }
 
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
@@ -236,14 +219,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     submitting_keywords::UI &chooseKeywordsUIMaybe,
     submitting_number_keywords::UI &correctKeywordsUIMaybe,
     submitting_pass_fail::UI &passFailUIMaybe,
+    SubjectPresenter &subjectPresenter, NSWindow *subjectNSWindow,
     SessionController::Observer *sessionControllerObserver,
     std::filesystem::path relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
-    const auto subjectNSWindow{
-        [[NSWindow alloc] initWithContentRect:subjectScreen.frame
-                                    styleMask:NSWindowStyleMaskBorderless
-                                      backing:NSBackingStoreBuffered
-                                        defer:YES]};
     const auto videoNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
     addAutolayoutEnabledSubview(subjectNSWindow.contentView, videoNSView);
@@ -397,8 +376,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         *(testSetupUI.get()), sessionUIMaybe};
     static UninitializedTaskPresenterImpl taskPresenter;
     static TestPresenterImpl testPresenter{model, testUIMaybe, &taskPresenter};
-    static SubjectAppKitView subjectView{subjectNSWindow};
-    static SubjectPresenterImpl subjectPresenter{subjectView, sessionUIMaybe};
     static SessionPresenterImpl sessionPresenter{sessionUIMaybe, model};
     static SessionControllerImpl sessionController{
         testSetupPresenter, testPresenter, subjectPresenter};

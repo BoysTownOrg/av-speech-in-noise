@@ -8,6 +8,7 @@
 
 #include <av-speech-in-noise/ui/EyeTrackerCalibration.hpp>
 #include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
+#include <av-speech-in-noise/ui/SubjectImpl.hpp>
 
 #import <AppKit/AppKit.h>
 
@@ -356,7 +357,6 @@ class AppKitTesterUI : public TesterView, public Control {
 }
 
 namespace av_speech_in_noise {
-namespace eye_tracker_calibration {
 static auto subjectWindow() -> NSWindow * {
     const auto screen{[[NSScreen screens] lastObject]};
     const auto screenFrame{screen.frame};
@@ -370,10 +370,13 @@ static auto subjectWindow() -> NSWindow * {
     return window;
 }
 
+namespace eye_tracker_calibration {
 static void initialize(TobiiProTracker &tracker,
     NSObject<EyeTrackerRunMenu> *menu,
     NSObject<AvSpeechInNoiseEyeTrackerCalibrationValidationTesterUI>
-        *validationTesterUI) {
+        *validationTesterUI,
+    av_speech_in_noise::SubjectPresenter &parentSubjectPresenter,
+    NSWindow *subjectWindow) {
     const auto testerScreen{[[NSScreen screens] firstObject]};
     const auto testerScreenFrame{testerScreen.frame};
     const auto testerNSViewController{nsTabViewControllerWithoutTabControl()};
@@ -388,12 +391,13 @@ static void initialize(TobiiProTracker &tracker,
     [menu attach:menuObserver];
     static validation::AppKitTesterUI validationTesterViewAdapted{
         validationTesterUI};
-    static AppKitSubjectView subjectView{subjectWindow()};
-    static AppKitSubjectView validationSubjectView{subjectWindow()};
+    static AppKitSubjectView subjectView{subjectWindow};
+    static AppKitSubjectView validationSubjectView{subjectWindow};
     static AppKitTesterUI testerUI{testerWindow, menuObserver};
-    static SubjectPresenterImpl subjectPresenter{subjectView};
+    static SubjectPresenterImpl subjectPresenter{
+        subjectView, parentSubjectPresenter};
     static SubjectPresenterImpl validationSubjectPresenter{
-        validationSubjectView};
+        validationSubjectView, parentSubjectPresenter};
     static TesterPresenterImpl testerPresenter{testerUI};
     static validation::TesterPresenterImpl validationTesterPresenter{
         validationTesterViewAdapted};
@@ -434,12 +438,18 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static submitting_number_keywords::UIImpl correctKeywordsUIAdapted{
         correctKeywordsUI};
     static submitting_pass_fail::UIImpl passFailUIAdapted{passFailUI};
-    eye_tracker_calibration::initialize(
-        eyeTracker, eyeTrackerMenu, eyeTrackerCalibrationValidationTesterUI);
+    const auto subjectNSWindow{subjectWindow()};
+    static SubjectAppKitView subjectView{subjectNSWindow};
+    static av_speech_in_noise::SubjectPresenterImpl subjectPresenter{
+        subjectView, sessionUIAdapted};
+    eye_tracker_calibration::initialize(eyeTracker, eyeTrackerMenu,
+        eyeTrackerCalibrationValidationTesterUI, subjectPresenter,
+        subjectNSWindow);
     initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
         testSetupViewFactory, sessionUIAdapted, testUIAdapted,
         freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
-        correctKeywordsUIAdapted, passFailUIAdapted);
+        correctKeywordsUIAdapted, passFailUIAdapted, subjectPresenter,
+        subjectNSWindow);
 }
 }
 
