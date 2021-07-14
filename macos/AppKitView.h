@@ -3,6 +3,7 @@
 
 #include <av-speech-in-noise/ui/Consonant.hpp>
 #include <av-speech-in-noise/ui/CoordinateResponseMeasure.hpp>
+#include <av-speech-in-noise/ui/Subject.hpp>
 
 #import <AppKit/AppKit.h>
 
@@ -12,10 +13,27 @@
 @class ConsonantUIActions;
 
 namespace av_speech_in_noise {
+class SubjectAppKitView : public SubjectView {
+  public:
+    explicit SubjectAppKitView(NSWindow *window) : window{window} {}
+
+    void moveToScreen(int index) override {
+        [window setFrame:[NSScreen.screens objectAtIndex:index].frame
+                 display:YES];
+    }
+
+    void show() override { [window makeKeyAndOrderFront:nil]; }
+
+    void hide() override { [window orderOut:nil]; }
+
+  private:
+    NSWindow *window;
+};
+
 class AppKitConsonantUI : public ConsonantTaskView,
                           public ConsonantTaskControl {
   public:
-    explicit AppKitConsonantUI(NSRect);
+    explicit AppKitConsonantUI(NSView *);
     void attach(Observer *) override;
     void show() override;
     void hide() override;
@@ -31,9 +49,9 @@ class AppKitConsonantUI : public ConsonantTaskView,
 
   private:
     std::unordered_map<void *, std::string> consonants;
-    NSWindow *window;
+    NSView *view;
     NSStackView *responseButtons;
-    NSView *readyButton;
+    NSButton *readyButton{};
     NSButton *lastButtonPressed{};
     ConsonantUIActions *actions;
     Observer *listener_{};
@@ -43,7 +61,7 @@ class AppKitCoordinateResponseMeasureUI
     : public CoordinateResponseMeasureControl,
       public CoordinateResponseMeasureView {
   public:
-    explicit AppKitCoordinateResponseMeasureUI(NSRect);
+    explicit AppKitCoordinateResponseMeasureUI(NSView *);
     auto numberResponse() -> std::string override;
     auto greenResponse() -> bool override;
     auto blueResponse() -> bool override;
@@ -64,9 +82,9 @@ class AppKitCoordinateResponseMeasureUI
     void addNumberButton(NSColor *color, int number, int row, std::size_t col);
     void addButtonRow(NSColor *color, int row);
 
-    NSWindow *window;
-    NSView *responseButtons;
-    NSView *nextTrialButton;
+    NSView *view;
+    NSStackView *responseButtons{};
+    NSButton *nextTrialButton;
     NSButton *lastButtonPressed{};
     CoordinateResponseMeasureUIActions *actions;
     Observer *listener_{};

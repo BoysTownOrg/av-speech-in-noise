@@ -3,6 +3,10 @@
 #include "../objective-c-bridge.h"
 #include "../EyeTrackerStub.hpp"
 #include "../AppKit-utility.h"
+#include "../AppKitView.h"
+
+#include <av-speech-in-noise/ui/SubjectImpl.hpp>
+
 #import <AppKit/AppKit.h>
 
 namespace av_speech_in_noise {
@@ -47,11 +51,16 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static submitting_number_keywords::UIImpl correctKeywordsUIAdapted{
         correctKeywordsUI};
     static submitting_pass_fail::UIImpl passFailUIAdapted{passFailUI};
+    const auto subjectWindow{av_speech_in_noise::subjectWindow()};
+    static SubjectAppKitView subjectView{subjectWindow};
+    static av_speech_in_noise::SubjectPresenterImpl subjectPresenter{
+        subjectView, sessionUIAdapted};
     initializeAppAndRunEventLoop(eyeTracker, outputFileNameFactory,
         testSetupViewFactory, sessionUIAdapted, testUIAdapted,
         freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
-        correctKeywordsUIAdapted, passFailUIAdapted,
-        &congratulatesUserWhenTestCompletes, "Desktop/check your data here");
+        correctKeywordsUIAdapted, passFailUIAdapted, subjectPresenter,
+        subjectWindow, &congratulatesUserWhenTestCompletes,
+        "Desktop/check your data here");
 }
 }
 

@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 namespace av_speech_in_noise {
 namespace {

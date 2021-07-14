@@ -9,6 +9,7 @@
 #include <av-speech-in-noise/ui/SessionController.hpp>
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/ui/TestImpl.hpp>
+#include <av-speech-in-noise/ui/SubjectImpl.hpp>
 #include <av-speech-in-noise/core/Model.hpp>
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <av-speech-in-noise/core/AdaptiveMethod.hpp>
@@ -218,10 +219,14 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     submitting_keywords::UI &chooseKeywordsUIMaybe,
     submitting_number_keywords::UI &correctKeywordsUIMaybe,
     submitting_pass_fail::UI &passFailUIMaybe,
+    SubjectPresenter &subjectPresenter, NSWindow *subjectNSWindow,
     SessionController::Observer *sessionControllerObserver,
     std::filesystem::path relativeOutputDirectory) {
     const auto subjectScreen{[[NSScreen screens] lastObject]};
-    static AvFoundationVideoPlayer videoPlayer{subjectScreen};
+    const auto videoNSView{
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
+    addAutolayoutEnabledSubview(subjectNSWindow.contentView, videoNSView);
+    static AvFoundationVideoPlayer videoPlayer{videoNSView};
     static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
     static AudioReaderSimplified audioReader{bufferedReaderFactory};
     static TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
@@ -312,21 +317,47 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         allTargetsNTimes, recognitionTestModel, outputFile};
     static auto testSetupUI{testSetupUIFactory.make(nil)};
     const auto subjectScreenFrame{subjectScreen.frame};
-    const auto subjectScreenOrigin{subjectScreenFrame.origin};
     const auto subjectScreenSize{subjectScreenFrame.size};
     const auto subjectViewHeight{subjectScreenSize.height / 4};
     const auto subjectScreenWidth{subjectScreenSize.width};
     const auto subjectViewWidth{subjectScreenWidth / 3};
-    auto subjectViewLeadingEdge =
-        subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
-    static AppKitConsonantUI consonantView{
-        NSMakeRect(subjectScreenOrigin.x + subjectScreenWidth / 4,
-            subjectScreenOrigin.y + subjectScreenSize.height / 12,
-            subjectScreenWidth / 2, subjectScreenSize.height / 2)};
+    const auto consonantNSView{
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
+    addAutolayoutEnabledSubview(subjectNSWindow.contentView, consonantNSView);
+    [NSLayoutConstraint activateConstraints:@[
+        [consonantNSView.centerXAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.centerXAnchor],
+        [consonantNSView.widthAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.widthAnchor
+                         multiplier:0.5],
+        [consonantNSView.heightAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.heightAnchor
+                         multiplier:0.5],
+        [consonantNSView.bottomAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.bottomAnchor
+                           constant:-80]
+    ]];
+    static AppKitConsonantUI consonantUI{consonantNSView};
+    const auto coordinateResponseMeasureNSView{
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
+    addAutolayoutEnabledSubview(
+        subjectNSWindow.contentView, coordinateResponseMeasureNSView);
+    [NSLayoutConstraint activateConstraints:@[
+        [coordinateResponseMeasureNSView.centerXAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.centerXAnchor],
+        [coordinateResponseMeasureNSView.widthAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.widthAnchor
+                         multiplier:0.5],
+        [coordinateResponseMeasureNSView.heightAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.heightAnchor
+                         multiplier:0.5],
+        [coordinateResponseMeasureNSView.bottomAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.bottomAnchor
+                           constant:-80]
+    ]];
     static AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
-        NSMakeRect(subjectViewLeadingEdge, subjectScreenOrigin.y,
-            subjectViewWidth, subjectViewHeight)};
-    static ConsonantTaskPresenterImpl consonantPresenter{consonantView};
+        coordinateResponseMeasureNSView};
+    static ConsonantTaskPresenterImpl consonantPresenter{consonantUI};
     static submitting_free_response::Presenter freeResponsePresenter{
         testUIMaybe, freeResponseUIMaybe};
     static submitting_keywords::PresenterImpl chooseKeywordsPresenter{model,
@@ -345,8 +376,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         *(testSetupUI.get()), sessionUIMaybe};
     static UninitializedTaskPresenterImpl taskPresenter;
     static TestPresenterImpl testPresenter{model, testUIMaybe, &taskPresenter};
+    static SessionPresenterImpl sessionPresenter{sessionUIMaybe, model};
     static SessionControllerImpl sessionController{
-        model, sessionUIMaybe, testSetupPresenter, testPresenter};
+        testSetupPresenter, testPresenter, subjectPresenter};
     static TestControllerImpl testController{
         sessionController, model, sessionUIMaybe, testUIMaybe, testPresenter};
     static submitting_keywords::InteractorImpl submittingKeywordsInteractor{
@@ -381,7 +413,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_pass_fail::Controller passFailController{
         testController, submittingPassFailInteractor, passFailUIMaybe};
     static ConsonantTaskController consonantTaskController{
-        testController, model, consonantView, consonantPresenter};
+        testController, model, consonantUI, consonantPresenter};
     static CoordinateResponseMeasureController
         coordinateResponseMeasureController{
             testController, model, coordinateResponseMeasureView};

@@ -2,8 +2,11 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_EYETRACKERCALIBRATION_HPP_
 
 #include "View.hpp"
+#include "Subject.hpp"
+
 #include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
 #include <av-speech-in-noise/Interface.hpp>
+
 #include <string>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
@@ -42,7 +45,7 @@ class SubjectPresenterImpl : public SubjectView::Observer,
                              public SubjectPresenter {
   public:
     enum class DotState { idle, moving, shrinking, shrunk, growing };
-    explicit SubjectPresenterImpl(SubjectView &);
+    SubjectPresenterImpl(SubjectView &, av_speech_in_noise::SubjectPresenter &);
     void attach(SubjectPresenter::Observer *a) override;
     void start() override;
     void stop() override;
@@ -52,6 +55,7 @@ class SubjectPresenterImpl : public SubjectView::Observer,
   private:
     Point pointPresenting{};
     SubjectView &view;
+    av_speech_in_noise::SubjectPresenter &parentPresenter;
     SubjectPresenter::Observer *observer{};
     DotState dotState{DotState::idle};
 };

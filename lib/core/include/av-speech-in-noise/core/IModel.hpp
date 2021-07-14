@@ -4,6 +4,7 @@
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <stdexcept>
+#include <string>
 
 namespace av_speech_in_noise {
 namespace submitting_free_response {
@@ -30,6 +31,10 @@ class Interactor {
     virtual void submit(const ThreeKeywordsResponse &) = 0;
 };
 }
+
+struct Screen {
+    std::string name;
+};
 
 namespace submitting_number_keywords {
 class Interactor {

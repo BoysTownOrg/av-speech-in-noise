@@ -92,16 +92,25 @@ class ObservableString: ObservableObject {
 struct SettingsView: View {
     @ObservedObject var audioDevice: ObservableString
     @ObservedObject var audioDevices: ObservableStringCollection
+    @ObservedObject var subjectScreen: ObservableString
+    @ObservedObject var subjectScreens: ObservableStringCollection
 
     init(ui: SwiftSessionUI) {
         audioDevice = ui.audioDevice_
         audioDevices = ui.audioDevices
+        subjectScreen = ui.subjectScreen_
+        subjectScreens = ui.subjectScreens
     }
 
     var body: some View {
         Form {
             Picker("Audio Device", selection: $audioDevice.string) {
                 ForEach(audioDevices.items) {
+                    Text($0.string)
+                }
+            }
+            Picker("Subject Screen", selection: $subjectScreen.string) {
+                ForEach(subjectScreens.items) {
                     Text($0.string)
                 }
             }
@@ -141,9 +150,11 @@ struct SwiftSessionView<Content: View>: View {
 }
 
 class SwiftSessionUI: NSObject, SessionUI {
-    let audioDevice_ = ObservableString()
     let showErrorMessage = ObservableBool()
     let errorMessage = ObservableString()
+    let subjectScreen_ = ObservableString()
+    let subjectScreens = ObservableStringCollection()
+    let audioDevice_ = ObservableString()
     let audioDevices = ObservableStringCollection()
     let testUI = SwiftTestUI()
     let freeResponseUI = SwiftFreeResponseUI()
@@ -161,9 +172,19 @@ class SwiftSessionUI: NSObject, SessionUI {
         return audioDevice_.string
     }
 
+    func subjectScreen() -> String! {
+        return subjectScreen_.string
+    }
+
     func populateAudioDeviceMenu(_ devices: [String]!) {
         for each in devices {
             audioDevices.items.append(IdentifiableString(string: each))
+        }
+    }
+
+    func populateSubjectScreenMenu(_ screens: [String]!) {
+        for each in screens {
+            subjectScreens.items.append(IdentifiableString(string: each))
         }
     }
 }

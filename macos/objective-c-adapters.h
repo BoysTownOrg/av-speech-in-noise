@@ -108,6 +108,9 @@ class SessionUIImpl : public SessionUI {
     void showErrorMessage(std::string_view s) override;
     auto audioDevice() -> std::string override;
     void populateAudioDeviceMenu(std::vector<std::string> v) override;
+    void populateSubjectScreenMenu(const std::vector<Screen> &) override;
+    auto screens() -> std::vector<Screen> override;
+    auto subjectScreen() -> Screen override;
 
   private:
     NSObject<SessionUI> *sessionUI;

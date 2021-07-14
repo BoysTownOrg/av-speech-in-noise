@@ -4,14 +4,17 @@
 #include "TestSetup.hpp"
 #include "Test.hpp"
 #include "Session.hpp"
+#include "Subject.hpp"
+
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Model.hpp>
+#include <av-speech-in-noise/Interface.hpp>
 
 namespace av_speech_in_noise {
 class SessionControllerImpl : public SessionController {
   public:
     SessionControllerImpl(
-        Model &, SessionView &, TestSetupPresenter &, TestPresenter &);
+        TestSetupPresenter &, TestPresenter &, SubjectPresenter &);
     void notifyThatTestIsComplete() override;
     void prepare(TaskPresenter &) override;
     void attach(Observer *) override;
@@ -24,7 +27,20 @@ class SessionControllerImpl : public SessionController {
   private:
     Presenter &testSetupPresenter;
     TestPresenter &testPresenter;
+    SubjectPresenter &subjectPresenter;
     Observer *observer{};
+};
+
+class SessionPresenterImpl : public SessionPresenter {
+  public:
+    SessionPresenterImpl(SessionView &view, Model &model) {
+        view.populateAudioDeviceMenu(model.audioDevices());
+        view.populateSubjectScreenMenu(view.screens());
+    }
+
+    void start() override {}
+
+    void stop() override {}
 };
 }
 

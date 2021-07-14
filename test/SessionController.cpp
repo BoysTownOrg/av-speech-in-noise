@@ -1,8 +1,11 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "SessionViewStub.hpp"
+
 #include <av-speech-in-noise/ui/SessionController.hpp>
+
 #include <gtest/gtest.h>
+
 #include <utility>
 
 namespace av_speech_in_noise {
@@ -63,14 +66,26 @@ class SessionControllerObserverStub : public SessionController::Observer {
     bool notifiedThatTestIsComplete_{};
 };
 
+class SubjectPresenterStub : public SubjectPresenter {
+  public:
+    void start() override { started_ = true; }
+    void stop() override { stopped_ = true; }
+    [[nodiscard]] auto started() const -> bool { return started_; }
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+
+  private:
+    bool started_{};
+    bool stopped_{};
+};
+
 class SessionControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
-    SessionViewStub view;
     TestSetupPresenterStub testSetupPresenter;
     TestPresenterStub testPresenter;
+    SubjectPresenterStub subjectPresenter;
     SessionControllerImpl controller{
-        model, view, testSetupPresenter, testPresenter};
+        testSetupPresenter, testPresenter, subjectPresenter};
+    TaskPresenterStub taskPresenter;
 };
 
 #define SESSION_CONTROLLER_TEST(a) TEST_F(SessionControllerTests, a)
@@ -87,6 +102,12 @@ SESSION_CONTROLLER_TEST(prepareStartsTest) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.started());
 }
 
+SESSION_CONTROLLER_TEST(prepareStartsSubject) {
+    TaskPresenterStub taskPresenter;
+    controller.prepare(taskPresenter);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(subjectPresenter.started());
+}
+
 SESSION_CONTROLLER_TEST(preparePassesTaskPresenter) {
     TaskPresenterStub taskPresenter;
     controller.prepare(taskPresenter);
@@ -94,12 +115,17 @@ SESSION_CONTROLLER_TEST(preparePassesTaskPresenter) {
         &taskPresenter, testPresenter.taskPresenter());
 }
 
-SESSION_CONTROLLER_TEST(testStopsAfterTestIsComplete) {
+SESSION_CONTROLLER_TEST(testSetupStartsAfterTestIsComplete) {
     controller.notifyThatTestIsComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testSetupPresenter.started());
 }
 
-SESSION_CONTROLLER_TEST(testSetupStartsAfterTestIsComplete) {
+SESSION_CONTROLLER_TEST(subjectStopsAfterTestIsComplete) {
+    controller.notifyThatTestIsComplete();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(subjectPresenter.stopped());
+}
+
+SESSION_CONTROLLER_TEST(testStopsAfterTestIsComplete) {
     controller.notifyThatTestIsComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.stopped());
 }
@@ -111,22 +137,34 @@ SESSION_CONTROLLER_TEST(forwardsTestIsCompleteNotification) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatTestIsComplete());
 }
 
-class SessionControllerTBDTests : public ::testing::Test {};
+class SessionPresenterTests : public ::testing::Test {};
 
-TEST_F(SessionControllerTBDTests, constructorPopulatesAudioDeviceMenu) {
+#define SESSION_PRESENTER_TEST(a) TEST_F(SessionPresenterTests, a)
+
+SESSION_PRESENTER_TEST(constructorPopulatesAudioDeviceMenu) {
     ModelStub model;
     SessionViewStub view;
-    TestSetupPresenterStub testSetupPresenter;
-    TestPresenterStub testPresenter;
     model.setAudioDevices({"a", "b", "c"});
-    SessionControllerImpl controller{
-        model, view, testSetupPresenter, testPresenter};
+    SessionPresenterImpl presenter{view, model};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.audioDevices().at(0));
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"b"}, view.audioDevices().at(1));
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"c"}, view.audioDevices().at(2));
+}
+
+SESSION_PRESENTER_TEST(constructorPopulatesSubjectScreenMenu) {
+    ModelStub model;
+    SessionViewStub view;
+    view.setScreens({{"a"}, {"b"}, {"c"}});
+    SessionPresenterImpl presenter{view, model};
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, view.subjectScreens().at(0).name);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"b"}, view.subjectScreens().at(1).name);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c"}, view.subjectScreens().at(2).name);
 }
 }
 }

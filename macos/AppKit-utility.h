@@ -12,6 +12,7 @@ namespace av_speech_in_noise {
 auto nsTabViewControllerWithoutTabControl() -> NSTabViewController *;
 auto nsButton(const std::string &s, id target, SEL action) -> NSButton *;
 void addAutolayoutEnabledSubview(NSView *parent, NSView *child);
+auto subjectWindow() -> NSWindow *;
 }
 
 #endif

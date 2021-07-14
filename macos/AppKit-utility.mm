@@ -30,4 +30,17 @@ void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
     child.translatesAutoresizingMaskIntoConstraints = NO;
     [parent addSubview:child];
 }
+
+auto subjectWindow() -> NSWindow * {
+    const auto screen{[[NSScreen screens] lastObject]};
+    const auto screenFrame{screen.frame};
+    const auto nsViewController{nsTabViewControllerWithoutTabControl()};
+    nsViewController.view.frame = screenFrame;
+    const auto window{
+        [NSWindow windowWithContentViewController:nsViewController]};
+    [window setStyleMask:NSWindowStyleMaskBorderless];
+    [window setFrame:screenFrame display:YES];
+    window.level = NSScreenSaverWindowLevel;
+    return window;
+}
 }

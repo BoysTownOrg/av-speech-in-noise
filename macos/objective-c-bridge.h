@@ -107,7 +107,9 @@
 @protocol SessionUI
 - (void)showErrorMessage:(NSString *)something;
 - (NSString *)audioDevice;
+- (NSString *)subjectScreen;
 - (void)populateAudioDeviceMenu:(NSArray<NSString *> *)devices;
+- (void)populateSubjectScreenMenu:(NSArray<NSString *> *)screens;
 @end
 
 @protocol FreeResponseUI

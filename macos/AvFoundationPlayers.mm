@@ -148,16 +148,12 @@ static auto currentAsset(AVPlayer *player) -> AVAsset * {
     return player.currentItem.asset;
 }
 
-AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSScreen *screen)
-    : actions{[VideoPlayerActions alloc]},
-      videoWindow{
-          [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 0, 0)
-                                      styleMask:NSWindowStyleMaskBorderless
-                                        backing:NSBackingStoreBuffered
-                                          defer:YES]},
+AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSView *view)
+    : actions{[VideoPlayerActions alloc]}, view{view},
       player{[AVPlayer playerWithPlayerItem:nil]},
-      playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]}, screen{
-                                                                     screen} {
+      playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]},
+      widthConstraint{[view.widthAnchor constraintEqualToConstant:0]},
+      heightConstraint{[view.heightAnchor constraintEqualToConstant:0]} {
     MTAudioProcessingTapCallbacks callbacks;
     callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
     callbacks.clientInfo = this;
@@ -170,6 +166,13 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSScreen *screen)
     MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks,
         kMTAudioProcessingTapCreationFlag_PostEffects, &tap);
     prepareWindow();
+    [NSLayoutConstraint activateConstraints:@[
+        [view.centerXAnchor
+            constraintEqualToAnchor:view.superview.centerXAnchor],
+        [view.centerYAnchor
+            constraintEqualToAnchor:view.superview.centerYAnchor],
+        widthConstraint, heightConstraint
+    ]];
     actions->controller = this;
 }
 
@@ -211,18 +214,11 @@ void AvFoundationVideoPlayer::processTap_(CMItemCount numberFrames,
     listener_->fillAudioBuffer(audio);
 }
 
-void AvFoundationVideoPlayer::prepareWindow() {
-    addPlayerLayer();
-    showWindow();
-}
+void AvFoundationVideoPlayer::prepareWindow() { addPlayerLayer(); }
 
 void AvFoundationVideoPlayer::addPlayerLayer() {
-    [videoWindow.contentView setWantsLayer:YES];
-    [videoWindow.contentView.layer addSublayer:playerLayer];
-}
-
-void AvFoundationVideoPlayer::showWindow() {
-    [videoWindow makeKeyAndOrderFront:nil];
+    [view setWantsLayer:YES];
+    [view.layer addSublayer:playerLayer];
 }
 
 void AvFoundationVideoPlayer::attach(Observer *e) { listener_ = e; }
@@ -263,10 +259,7 @@ void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     prepareVideo();
 }
 
-void AvFoundationVideoPlayer::prepareVideo() {
-    resizeVideo();
-    centerVideo();
-}
+void AvFoundationVideoPlayer::prepareVideo() { resizeVideo(); }
 
 void AvFoundationVideoPlayer::resizeVideo() {
     const auto asset{currentAsset(player)};
@@ -277,20 +270,10 @@ void AvFoundationVideoPlayer::resizeVideo() {
     size.height /= 3;
     size.width *= 2;
     size.width /= 3;
-    [videoWindow setContentSize:NSSizeFromCGSize(size)];
-    [playerLayer setFrame:videoWindow.contentView.bounds];
-}
-
-void AvFoundationVideoPlayer::centerVideo() {
-    const auto screenFrame{[screen frame]};
-    const auto screenOrigin{screenFrame.origin};
-    const auto screenSize{screenFrame.size};
-    const auto windowSize{videoWindow.frame.size};
-    const auto videoLeadingEdge =
-        screenOrigin.x + (screenSize.width - windowSize.width) / 2;
-    const auto videoBottomEdge =
-        screenOrigin.y + (screenSize.height - windowSize.height) / 2;
-    [videoWindow setFrameOrigin:NSMakePoint(videoLeadingEdge, videoBottomEdge)];
+    widthConstraint.constant = size.width;
+    heightConstraint.constant = size.height;
+    const auto nsSize{NSSizeFromCGSize(size)};
+    [playerLayer setFrame:NSMakeRect(0, 0, nsSize.width, nsSize.height)];
 }
 
 void AvFoundationVideoPlayer::subscribeToPlaybackCompletion() {
@@ -313,9 +296,9 @@ void AvFoundationVideoPlayer::setDevice(int index) {
     player.audioOutputDeviceUniqueID = nsString(uid(index));
 }
 
-void AvFoundationVideoPlayer::hide() { [videoWindow setIsVisible:NO]; }
+void AvFoundationVideoPlayer::hide() { [view setHidden:YES]; }
 
-void AvFoundationVideoPlayer::show() { showWindow(); }
+void AvFoundationVideoPlayer::show() { [view setHidden:NO]; }
 
 auto AvFoundationVideoPlayer::deviceCount() -> int {
     return av_speech_in_noise::deviceCount();

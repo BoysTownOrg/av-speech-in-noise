@@ -355,6 +355,26 @@ void SessionUIImpl::populateAudioDeviceMenu(std::vector<std::string> v) {
     [sessionUI populateAudioDeviceMenu:adapted];
 }
 
+void SessionUIImpl::populateSubjectScreenMenu(const std::vector<Screen> &v) {
+    const auto adapted{[NSMutableArray<NSString *> arrayWithCapacity:v.size()]};
+    for_each(v.begin(), v.end(), [&adapted](const Screen &screen) {
+        [adapted addObject:nsString(screen.name)];
+    });
+    [sessionUI populateSubjectScreenMenu:adapted];
+}
+
+auto SessionUIImpl::screens() -> std::vector<Screen> {
+    std::vector<Screen> screens;
+    for (NSScreen *item in [NSScreen screens]) {
+        screens.push_back(Screen{item.localizedName.UTF8String});
+    }
+    return screens;
+}
+
+auto SessionUIImpl::subjectScreen() -> Screen {
+    return Screen{[sessionUI subjectScreen].UTF8String};
+}
+
 namespace submitting_free_response {
 UIImpl::UIImpl(NSObject<FreeResponseUI> *freeResponseUI)
     : freeResponseUI{freeResponseUI} {}
