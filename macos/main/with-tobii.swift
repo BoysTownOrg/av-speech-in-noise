@@ -130,15 +130,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_: Notification) {
-        let subjectScreen = NSScreen.screens.last
-        let subjectScreenOrigin = subjectScreen?.frame.origin ?? NSPoint()
-        let subjectScreenSize = subjectScreen?.frame.size ?? NSSize()
         let alertWindow = NSWindow(contentRect: NSRect(
-            x: subjectScreenOrigin.x,
-            y: subjectScreenOrigin.y,
-            width: subjectScreenSize.width,
-            height: subjectScreenSize.height
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0
         ), styleMask: .borderless, backing: .buffered, defer: false)
+        
+        let userDefaults = UserDefaults()
+        let userDefaultSubjectScreen = userDefaults.string(forKey: "SubjectScreen") ?? ""
+        if let screen = NSScreen.screens.first(where: {
+            (screen) -> Bool in  return screen.localizedName == userDefaultSubjectScreen
+        }) {
+            alertWindow.setFrame(screen.frame, display: true);
+        } else if let screen = NSScreen.screens.last {
+            alertWindow.setFrame(screen.frame, display: true);
+        }
         let alert = NSAlert()
         alert.messageText = ""
         alert.informativeText = "This software will store your eye tracking data.\n\nWe do so only for the purpose of the current study (17-13-XP). We never sell, distribute, or make profit on the collected data. Only staff and research personnel on the existing IRB will have access to the data. Any data used for publication or collaborative and/or learning purposes will be deidentified.\n\nThere is no direct benefit to you for doing this study. What we learn from this study may help doctors treat children who have a hard time hearing when it is noisy."
@@ -157,10 +164,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             NSApp.terminate(nil)
         }
         AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu, with: eyeTrackerCalibrationValidationTesterUI)
-
-        let userDefaults = UserDefaults()
+        
         sessionUI.audioDevice_.string = userDefaults.string(forKey: "AudioDevice") ?? ""
-        sessionUI.subjectScreen_.string = userDefaults.string(forKey: "SubjectScreen") ?? ""
+        sessionUI.subjectScreen_.string = userDefaultSubjectScreen
 
         let contentView = SwiftSessionView(ui: sessionUI) {
             SwiftTestSetupView(ui: self.testSetupUI, testSettingsPathControl: self.testSettingsPathControl)
