@@ -13,3 +13,6 @@ The application resource files are found [here](https://osf.io/r6ceh/). These fi
 $ cmake -S . -B build "-DAV_SPEECH_IN_NOISE_MACOS_RESOURCES=path/to/c.bmp;path/to/s.bmp;path/to/t.bmp; ..."
 ```
 See [the release workflow](.github/workflows/create-release.yml) for more details.
+
+## Documentation
+Documentation is released [here](https://github.com/BoysTownorg/av-speech-in-noise-document).
