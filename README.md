@@ -15,4 +15,4 @@ $ cmake -S . -B build "-DAV_SPEECH_IN_NOISE_MACOS_RESOURCES=path/to/c.bmp;path/t
 See [the release workflow](.github/workflows/create-release.yml) for more details.
 
 ## Documentation
-Documentation is released [here](https://github.com/BoysTownorg/av-speech-in-noise-document).
+End user documentation is released [here](https://github.com/BoysTownorg/av-speech-in-noise-document).
