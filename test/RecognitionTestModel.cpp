@@ -1072,10 +1072,12 @@ RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteStopsEyeTracker) {
 
 RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseWritesEyeGazes) {
     run(initializingTestWithEyeTracking, model);
-    setEyeGazes(
-        eyeTracker, {{{1}, {{2, 3}}, {{4, 5}}}, {{6}, {{7, 8}}, {{9, 10}}}});
+    setEyeGazes(eyeTracker,
+        {{{1}, {{}, {{}, {2, 3}}}, {{}, {{}, {4, 5}}}},
+            {{6}, {{}, {{}, {7, 8}}}, {{}, {{}, {9, 10}}}}});
     run(submittingCoordinateResponse, model);
-    ::assertEqual({{{1}, {{2, 3}}, {{4, 5}}}, {{6}, {{7, 8}}, {{9, 10}}}},
+    ::assertEqual({{{1}, {{}, {{}, {2, 3}}}, {{}, {{}, {4, 5}}}},
+                      {{6}, {{}, {{}, {7, 8}}}, {{}, {{}, {9, 10}}}}},
         outputFile.eyeGazes());
 }
 
