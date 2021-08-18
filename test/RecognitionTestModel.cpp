@@ -9,6 +9,7 @@
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
+#include <string>
 #include <utility>
 
 namespace av_speech_in_noise {
@@ -283,10 +284,6 @@ class SubmittingCoordinateResponse : public UseCase {
     }
 };
 
-auto openSetAdaptiveTarget(OutputFileStub &file) -> std::string {
-    return file.openSetAdaptiveTrial().target;
-}
-
 class EyeTrackerStub : public EyeTracker {
   public:
     auto recordingTimeAllocatedSeconds() const -> double {
@@ -355,8 +352,6 @@ class ClockStub : public Clock {
         return time_;
     }
 
-    void setTime(std::string s) { time_ = std::move(s); }
-
   private:
     std::string time_;
     bool timeQueried_{};
@@ -424,7 +419,9 @@ void assertPlayed(MaskerPlayerStub &player) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.played());
 }
 
-auto filePath(TargetPlayerStub &player) { return player.filePath(); }
+auto filePath(TargetPlayerStub &player) -> std::string {
+    return player.filePath();
+}
 
 void assertFilePathEquals(TargetPlayerStub &player, const std::string &what) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, filePath(player));
@@ -434,7 +431,9 @@ void assertFilePathEquals(MaskerPlayerStub &player, const std::string &what) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, player.filePath());
 }
 
-auto secondsSeeked(MaskerPlayerStub &player) { return player.secondsSeeked(); }
+auto secondsSeeked(MaskerPlayerStub &player) -> double {
+    return player.secondsSeeked();
+}
 
 void setFullScaleLevel_dB_SPL(Test &test, int x) {
     test.fullScaleLevel.dB_SPL = x;
@@ -458,10 +457,6 @@ void assertLevelEquals_dB(TargetPlayerStub &player, double x) {
 
 auto testComplete(RecognitionTestModelImpl &model) -> bool {
     return model.testComplete();
-}
-
-auto freeResponseTrial(OutputFileStub &file) {
-    return file.freeResponseTrial();
 }
 
 void assertOnlyUsingFirstChannel(TargetPlayerStub &player) {
@@ -687,23 +682,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         testMethod.setNextTarget("b");
         run(useCase, model);
         assertFilePathEquals(targetPlayer, "a");
-    }
-
-    void assertWritesTarget(TargetWritingUseCase &useCase) {
-        evaluator.setFileName("a");
-        run(useCase, model);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"a"}, useCase.target(outputFile));
-    }
-
-    void assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
-        UseCase &useCase) {
-        run(initializingTest, model);
-        setCurrentTarget(testMethod, "a");
-        testMethod.setCurrentTargetWhenNextTarget("b");
-        run(useCase, model);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"a"}, filePathForFileName(evaluator));
     }
 
     void assertTestMethodLogContains(
@@ -1094,10 +1072,11 @@ RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteStopsEyeTracker) {
 
 RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseWritesEyeGazes) {
     run(initializingTestWithEyeTracking, model);
-    setEyeGazes(eyeTracker, {{{1}, {2, 3}, {4, 5}}, {{6}, {7, 8}, {9, 10}}});
+    setEyeGazes(
+        eyeTracker, {{{1}, {{2, 3}}, {{4, 5}}}, {{6}, {{7, 8}}, {{9, 10}}}});
     run(submittingCoordinateResponse, model);
-    ::assertEqual(
-        {{{1}, {2, 3}, {4, 5}}, {{6}, {7, 8}, {9, 10}}}, outputFile.eyeGazes());
+    ::assertEqual({{{1}, {{2, 3}}, {{4, 5}}}, {{6}, {{7, 8}}, {{9, 10}}}},
+        outputFile.eyeGazes());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
