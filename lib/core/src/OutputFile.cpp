@@ -204,13 +204,13 @@ static auto operator<<(std::ostream &stream,
         insertNewLine(stream);
         insert(stream, g.systemTime.microseconds);
         insertCommaAndSpace(stream);
-        insert(stream, g.left.x);
+        insert(stream, g.left.position.relativeScreen.x);
         insert(stream, " ");
-        insert(stream, g.left.y);
+        insert(stream, g.left.position.relativeScreen.y);
         insertCommaAndSpace(stream);
-        insert(stream, g.right.x);
+        insert(stream, g.right.position.relativeScreen.x);
         insert(stream, " ");
-        insert(stream, g.right.y);
+        insert(stream, g.right.position.relativeScreen.y);
     });
     return insertNewLine(stream);
 }

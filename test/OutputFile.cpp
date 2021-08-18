@@ -670,7 +670,11 @@ class OutputFileTests : public ::testing::Test {
         std::vector<EyeGaze> left, std::vector<EyeGaze> right) {
         eyeGazes.resize(t.size());
         std::generate(eyeGazes.begin(), eyeGazes.end(), [&, n = 0]() mutable {
-            BinocularGazeSample gazeSamples{{t.at(n)}, left.at(n), right.at(n)};
+            BinocularGazeSample gazeSamples{{t.at(n)},
+                Gaze{GazeOrigin{},
+                    GazePosition{{}, Point2D{left.at(n).x, left.at(n).y}}},
+                Gaze{GazeOrigin{},
+                    GazePosition{{}, Point2D{right.at(n).x, right.at(n).y}}}};
             ++n;
             return gazeSamples;
         });

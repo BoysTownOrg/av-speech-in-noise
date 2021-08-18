@@ -162,6 +162,31 @@ struct EyeGaze {
     float y;
 };
 
+struct Point2D {
+    float x;
+    float y;
+};
+
+struct Point3D {
+    float x;
+    float y;
+    float z;
+};
+
+struct GazeOrigin {
+    Point3D relativeTrackbox;
+};
+
+struct GazePosition {
+    Point3D relativeTrackbox;
+    Point2D relativeScreen;
+};
+
+struct Gaze {
+    GazeOrigin origin;
+    GazePosition position;
+};
+
 struct EyeTrackerSystemTime {
     std::int_least64_t microseconds;
 };
@@ -177,8 +202,8 @@ struct EyeTrackerTargetPlayerSynchronization {
 
 struct BinocularGazeSample {
     EyeTrackerSystemTime systemTime;
-    EyeGaze left;
-    EyeGaze right;
+    Gaze left;
+    Gaze right;
 };
 
 using BinocularGazeSamples = typename std::vector<BinocularGazeSample>;
