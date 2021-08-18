@@ -43,6 +43,10 @@ static auto operator<<(std::ostream &os, Syllable item) -> std::ostream & {
     return os << name(item);
 }
 
+static auto operator<<(std::ostream &os, Point3D point) -> std::ostream & {
+    return os << point.x << ' ' << point.y << ' ' << point.z;
+}
+
 template <typename T>
 auto insert(std::ostream &stream, T item) -> std::ostream & {
     return stream << item;
@@ -204,18 +208,23 @@ static auto operator<<(std::ostream &stream,
     insert(stream, name(HeadingItem::leftGazePositionRelativeTracker));
     insertCommaAndSpace(stream);
     insert(stream, name(HeadingItem::rightGazePositionRelativeTracker));
-    std::for_each(gazeSamples.begin(), gazeSamples.end(), [&](auto g) {
-        insertNewLine(stream);
-        insert(stream, g.systemTime.microseconds);
-        insertCommaAndSpace(stream);
-        insert(stream, g.left.position.relativeScreen.x);
-        insert(stream, " ");
-        insert(stream, g.left.position.relativeScreen.y);
-        insertCommaAndSpace(stream);
-        insert(stream, g.right.position.relativeScreen.x);
-        insert(stream, " ");
-        insert(stream, g.right.position.relativeScreen.y);
-    });
+    std::for_each(gazeSamples.begin(), gazeSamples.end(),
+        [&](const BinocularGazeSample &g) {
+            insertNewLine(stream);
+            insert(stream, g.systemTime.microseconds);
+            insertCommaAndSpace(stream);
+            insert(stream, g.left.position.relativeScreen.x);
+            insert(stream, " ");
+            insert(stream, g.left.position.relativeScreen.y);
+            insertCommaAndSpace(stream);
+            insert(stream, g.right.position.relativeScreen.x);
+            insert(stream, " ");
+            insert(stream, g.right.position.relativeScreen.y);
+            insertCommaAndSpace(stream);
+            insert(stream, g.left.position.relativeTrackbox);
+            insertCommaAndSpace(stream);
+            insert(stream, g.right.position.relativeTrackbox);
+        });
     return insertNewLine(stream);
 }
 
