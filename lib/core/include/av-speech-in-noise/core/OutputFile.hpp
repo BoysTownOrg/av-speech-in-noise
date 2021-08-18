@@ -17,8 +17,8 @@ enum class HeadingItem {
     target,
     correctKeywords,
     freeResponse,
-    leftGaze,
-    rightGaze,
+    leftGazePositionRelativeScreen,
+    rightGazePositionRelativeScreen,
     eyeTrackerTime,
     targetPlayerTime,
     correctConsonant,
@@ -57,10 +57,10 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "response";
     case HeadingItem::correctKeywords:
         return "# correct keywords";
-    case HeadingItem::leftGaze:
-        return "left gaze [x y]";
-    case HeadingItem::rightGaze:
-        return "right gaze [x y]";
+    case HeadingItem::leftGazePositionRelativeScreen:
+        return "left gaze position relative screen [x y]";
+    case HeadingItem::rightGazePositionRelativeScreen:
+        return "right gaze position relative screen [x y]";
     case HeadingItem::eyeTrackerTime:
         return "eye tracker time (us)";
     case HeadingItem::targetPlayerTime:

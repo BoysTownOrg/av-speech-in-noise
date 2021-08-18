@@ -197,9 +197,9 @@ static auto operator<<(std::ostream &stream,
     const BinocularGazeSamples &gazeSamples) -> std::ostream & {
     insert(stream, name(HeadingItem::eyeTrackerTime));
     insertCommaAndSpace(stream);
-    insert(stream, name(HeadingItem::leftGaze));
+    insert(stream, name(HeadingItem::leftGazePositionRelativeScreen));
     insertCommaAndSpace(stream);
-    insert(stream, name(HeadingItem::rightGaze));
+    insert(stream, name(HeadingItem::rightGazePositionRelativeScreen));
     std::for_each(gazeSamples.begin(), gazeSamples.end(), [&](auto g) {
         insertNewLine(stream);
         insert(stream, g.systemTime.microseconds);

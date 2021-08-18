@@ -988,8 +988,10 @@ OUTPUT_FILE_TEST(writeEyeGazes) {
     write(file, eyeGazes);
     assertNthCommaDelimitedEntryOfLine(
         writer, HeadingItem::eyeTrackerTime, 1, 1);
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::leftGaze, 2, 1);
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::rightGaze, 3, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::leftGazePositionRelativeScreen, 2, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::rightGazePositionRelativeScreen, 3, 1);
     assertNthCommaDelimitedEntryOfLine(writer, "1", 1, 2);
     assertNthCommaDelimitedEntryOfLine(writer, "0.4 0.44", 2, 2);
     assertNthCommaDelimitedEntryOfLine(writer, "0.7 0.77", 3, 2);
