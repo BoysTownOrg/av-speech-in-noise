@@ -200,6 +200,10 @@ static auto operator<<(std::ostream &stream,
     insert(stream, name(HeadingItem::leftGazePositionRelativeScreen));
     insertCommaAndSpace(stream);
     insert(stream, name(HeadingItem::rightGazePositionRelativeScreen));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::leftGazePositionRelativeTracker));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::rightGazePositionRelativeTracker));
     std::for_each(gazeSamples.begin(), gazeSamples.end(), [&](auto g) {
         insertNewLine(stream);
         insert(stream, g.systemTime.microseconds);

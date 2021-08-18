@@ -666,8 +666,9 @@ class OutputFileTests : public ::testing::Test {
         assertHeadingAtLine(useCase, 3);
     }
 
-    void setEyeGazes(std::vector<std::int_least64_t> t,
-        std::vector<EyeGaze> left, std::vector<EyeGaze> right) {
+    void setGazePositionsRelativeScreenAndEyeTrackerTimes(
+        std::vector<std::int_least64_t> t, std::vector<EyeGaze> left,
+        std::vector<EyeGaze> right) {
         eyeGazes.resize(t.size());
         std::generate(eyeGazes.begin(), eyeGazes.end(), [&, n = 0]() mutable {
             BinocularGazeSample gazeSamples{{t.at(n)},
@@ -982,8 +983,9 @@ OUTPUT_FILE_TEST(writeFixedLevelTestWithAuditoryOnlyCondition) {
     assertConditionNameWritten(writingFixedLevelTest, Condition::auditoryOnly);
 }
 
-OUTPUT_FILE_TEST(writeEyeGazes) {
-    setEyeGazes({1, 2, 3}, {{0.4F, 0.44F}, {0.5F, 0.55F}, {0.6F, 0.66F}},
+OUTPUT_FILE_TEST(writeGazePositionsRelativeScreenAndEyeTrackerTime) {
+    setGazePositionsRelativeScreenAndEyeTrackerTimes({1, 2, 3},
+        {{0.4F, 0.44F}, {0.5F, 0.55F}, {0.6F, 0.66F}},
         {{0.7F, 0.77F}, {0.8F, 0.88F}, {0.9F, 0.99F}});
     write(file, eyeGazes);
     assertNthCommaDelimitedEntryOfLine(
@@ -1001,6 +1003,33 @@ OUTPUT_FILE_TEST(writeEyeGazes) {
     assertNthCommaDelimitedEntryOfLine(writer, "3", 1, 4);
     assertNthCommaDelimitedEntryOfLine(writer, "0.6 0.66", 2, 4);
     assertNthCommaDelimitedEntryOfLine(writer, "0.9 0.99", 3, 4);
+}
+
+OUTPUT_FILE_TEST(writeGazePositionsRelativeTracker) {
+    std::vector<Point3D> left{};
+    std::vector<Point3D> right{};
+    eyeGazes.resize(left.size());
+    std::generate(eyeGazes.begin(), eyeGazes.end(), [&, n = 0]() mutable {
+        BinocularGazeSample gazeSamples{{},
+            Gaze{GazeOrigin{}, GazePosition{left.at(n), {}}},
+            Gaze{GazeOrigin{}, GazePosition{right.at(n), {}}}};
+        ++n;
+        return gazeSamples;
+    });
+    write(file, eyeGazes);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::leftGazePositionRelativeTracker, 4, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::rightGazePositionRelativeTracker, 5, 1);
+    // assertNthCommaDelimitedEntryOfLine(writer, "1", 1, 2);
+    // assertNthCommaDelimitedEntryOfLine(writer, "0.4 0.44", 2, 2);
+    // assertNthCommaDelimitedEntryOfLine(writer, "0.7 0.77", 3, 2);
+    // assertNthCommaDelimitedEntryOfLine(writer, "2", 1, 3);
+    // assertNthCommaDelimitedEntryOfLine(writer, "0.5 0.55", 2, 3);
+    // assertNthCommaDelimitedEntryOfLine(writer, "0.8 0.88", 3, 3);
+    // assertNthCommaDelimitedEntryOfLine(writer, "3", 1, 4);
+    // assertNthCommaDelimitedEntryOfLine(writer, "0.6 0.66", 2, 4);
+    // assertNthCommaDelimitedEntryOfLine(writer, "0.9 0.99", 3, 4);
 }
 
 OUTPUT_FILE_TEST(writeTargetStartTime) {
