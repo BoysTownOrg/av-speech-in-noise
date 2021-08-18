@@ -111,6 +111,12 @@ static auto size(const std::vector<BinocularGazeSample> &v) -> gsl::index {
     return v.size();
 }
 
+static void assign(Point3D &p, TobiiResearchPoint3D other) {
+    p.x = other.x;
+    p.y = other.y;
+    p.z = other.z;
+}
+
 auto TobiiProTracker::gazeSamples() -> BinocularGazeSamples {
     BinocularGazeSamples gazeSamples(head > 0 ? head - 1 : 0);
     for (gsl::index i{0}; i < size(gazeSamples); ++i) {
@@ -125,34 +131,15 @@ auto TobiiProTracker::gazeSamples() -> BinocularGazeSamples {
         y(rightGazePositionRelativeScreen(gazeSamples, i)) =
             y(rightGazePositionOnDisplayArea(gazeData, i));
 
-        at(gazeSamples, i).left.position.relativeTrackbox.x =
-            at(gazeData, i).left_eye.gaze_point.position_in_user_coordinates.x;
-        at(gazeSamples, i).left.position.relativeTrackbox.y =
-            at(gazeData, i).left_eye.gaze_point.position_in_user_coordinates.y;
-        at(gazeSamples, i).left.position.relativeTrackbox.z =
-            at(gazeData, i).left_eye.gaze_point.position_in_user_coordinates.z;
-        at(gazeSamples, i).right.position.relativeTrackbox.x =
-            at(gazeData, i).right_eye.gaze_point.position_in_user_coordinates.x;
-        at(gazeSamples, i).right.position.relativeTrackbox.y =
-            at(gazeData, i).right_eye.gaze_point.position_in_user_coordinates.y;
-        at(gazeSamples, i).right.position.relativeTrackbox.z =
-            at(gazeData, i).right_eye.gaze_point.position_in_user_coordinates.z;
+        assign(at(gazeSamples, i).left.position.relativeTrackbox,
+            at(gazeData, i).left_eye.gaze_point.position_in_user_coordinates);
+        assign(at(gazeSamples, i).right.position.relativeTrackbox,
+            at(gazeData, i).right_eye.gaze_point.position_in_user_coordinates);
 
-        at(gazeSamples, i).left.origin.relativeTrackbox.x =
-            at(gazeData, i).left_eye.gaze_origin.position_in_user_coordinates.x;
-        at(gazeSamples, i).left.origin.relativeTrackbox.y =
-            at(gazeData, i).left_eye.gaze_origin.position_in_user_coordinates.y;
-        at(gazeSamples, i).left.origin.relativeTrackbox.z =
-            at(gazeData, i).left_eye.gaze_origin.position_in_user_coordinates.z;
-        at(gazeSamples, i).right.origin.relativeTrackbox.x =
-            at(gazeData, i)
-                .right_eye.gaze_origin.position_in_user_coordinates.x;
-        at(gazeSamples, i).right.origin.relativeTrackbox.y =
-            at(gazeData, i)
-                .right_eye.gaze_origin.position_in_user_coordinates.y;
-        at(gazeSamples, i).right.origin.relativeTrackbox.z =
-            at(gazeData, i)
-                .right_eye.gaze_origin.position_in_user_coordinates.z;
+        assign(at(gazeSamples, i).left.origin.relativeTrackbox,
+            at(gazeData, i).left_eye.gaze_origin.position_in_user_coordinates);
+        assign(at(gazeSamples, i).right.origin.relativeTrackbox,
+            at(gazeData, i).right_eye.gaze_origin.position_in_user_coordinates);
     }
     return gazeSamples;
 }
