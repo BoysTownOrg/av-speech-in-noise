@@ -72,53 +72,89 @@ static auto at(const std::vector<TobiiResearchGazeData> &b, gsl::index i)
     return b.at(i);
 }
 
-static auto eyeGaze(const TobiiResearchEyeData &d)
+static auto gazePositionOnDisplayArea(const TobiiResearchEyeData &d)
     -> const TobiiResearchNormalizedPoint2D & {
     return d.gaze_point.position_on_display_area;
 }
 
-static auto leftEyeGaze(const std::vector<TobiiResearchGazeData> &gaze,
-    gsl::index i) -> const TobiiResearchNormalizedPoint2D & {
-    return eyeGaze(at(gaze, i).left_eye);
+static auto leftGazePositionOnDisplayArea(
+    const std::vector<TobiiResearchGazeData> &gaze, gsl::index i)
+    -> const TobiiResearchNormalizedPoint2D & {
+    return gazePositionOnDisplayArea(at(gaze, i).left_eye);
 }
 
-static auto rightEyeGaze(const std::vector<TobiiResearchGazeData> &gaze,
-    gsl::index i) -> const TobiiResearchNormalizedPoint2D & {
-    return eyeGaze(at(gaze, i).right_eye);
+static auto rightGazePositionOnDisplayArea(
+    const std::vector<TobiiResearchGazeData> &gaze, gsl::index i)
+    -> const TobiiResearchNormalizedPoint2D & {
+    return gazePositionOnDisplayArea(at(gaze, i).right_eye);
 }
 
 static auto x(const TobiiResearchNormalizedPoint2D &p) -> float { return p.x; }
 
 static auto y(const TobiiResearchNormalizedPoint2D &p) -> float { return p.y; }
 
-static auto leftEyeGaze(std::vector<BinocularGazeSample> &b, gsl::index i)
-    -> EyeGaze & {
-    return at(b, i).left;
+static auto leftGazePositionRelativeScreen(
+    std::vector<BinocularGazeSample> &b, gsl::index i) -> Point2D & {
+    return at(b, i).left.position.relativeScreen;
 }
 
-static auto rightEyeGaze(BinocularGazeSamples &b, gsl::index i) -> EyeGaze & {
-    return at(b, i).right;
+static auto rightGazePositionRelativeScreen(
+    BinocularGazeSamples &b, gsl::index i) -> Point2D & {
+    return at(b, i).right.position.relativeScreen;
 }
 
-static auto x(EyeGaze &p) -> float & { return p.x; }
+static auto x(Point2D &p) -> float & { return p.x; }
 
-static auto y(EyeGaze &p) -> float & { return p.y; }
+static auto y(Point2D &p) -> float & { return p.y; }
 
 static auto size(const std::vector<BinocularGazeSample> &v) -> gsl::index {
     return v.size();
 }
 
 auto TobiiProTracker::gazeSamples() -> BinocularGazeSamples {
-    BinocularGazeSamples gazeSamples_(head > 0 ? head - 1 : 0);
-    for (gsl::index i{0}; i < size(gazeSamples_); ++i) {
-        at(gazeSamples_, i).systemTime.microseconds =
+    BinocularGazeSamples gazeSamples(head > 0 ? head - 1 : 0);
+    for (gsl::index i{0}; i < size(gazeSamples); ++i) {
+        at(gazeSamples, i).systemTime.microseconds =
             at(gazeData, i).system_time_stamp;
-        x(leftEyeGaze(gazeSamples_, i)) = x(leftEyeGaze(gazeData, i));
-        y(leftEyeGaze(gazeSamples_, i)) = y(leftEyeGaze(gazeData, i));
-        x(rightEyeGaze(gazeSamples_, i)) = x(rightEyeGaze(gazeData, i));
-        y(rightEyeGaze(gazeSamples_, i)) = y(rightEyeGaze(gazeData, i));
+        x(leftGazePositionRelativeScreen(gazeSamples, i)) =
+            x(leftGazePositionOnDisplayArea(gazeData, i));
+        y(leftGazePositionRelativeScreen(gazeSamples, i)) =
+            y(leftGazePositionOnDisplayArea(gazeData, i));
+        x(rightGazePositionRelativeScreen(gazeSamples, i)) =
+            x(rightGazePositionOnDisplayArea(gazeData, i));
+        y(rightGazePositionRelativeScreen(gazeSamples, i)) =
+            y(rightGazePositionOnDisplayArea(gazeData, i));
+
+        at(gazeSamples, i).left.position.relativeTrackbox.x =
+            at(gazeData, i).left_eye.gaze_point.position_in_user_coordinates.x;
+        at(gazeSamples, i).left.position.relativeTrackbox.y =
+            at(gazeData, i).left_eye.gaze_point.position_in_user_coordinates.y;
+        at(gazeSamples, i).left.position.relativeTrackbox.z =
+            at(gazeData, i).left_eye.gaze_point.position_in_user_coordinates.z;
+        at(gazeSamples, i).right.position.relativeTrackbox.x =
+            at(gazeData, i).right_eye.gaze_point.position_in_user_coordinates.x;
+        at(gazeSamples, i).right.position.relativeTrackbox.y =
+            at(gazeData, i).right_eye.gaze_point.position_in_user_coordinates.y;
+        at(gazeSamples, i).right.position.relativeTrackbox.z =
+            at(gazeData, i).right_eye.gaze_point.position_in_user_coordinates.z;
+
+        at(gazeSamples, i).left.origin.relativeTrackbox.x =
+            at(gazeData, i).left_eye.gaze_origin.position_in_user_coordinates.x;
+        at(gazeSamples, i).left.origin.relativeTrackbox.y =
+            at(gazeData, i).left_eye.gaze_origin.position_in_user_coordinates.y;
+        at(gazeSamples, i).left.origin.relativeTrackbox.z =
+            at(gazeData, i).left_eye.gaze_origin.position_in_user_coordinates.z;
+        at(gazeSamples, i).right.origin.relativeTrackbox.x =
+            at(gazeData, i)
+                .right_eye.gaze_origin.position_in_user_coordinates.x;
+        at(gazeSamples, i).right.origin.relativeTrackbox.y =
+            at(gazeData, i)
+                .right_eye.gaze_origin.position_in_user_coordinates.y;
+        at(gazeSamples, i).right.origin.relativeTrackbox.z =
+            at(gazeData, i)
+                .right_eye.gaze_origin.position_in_user_coordinates.z;
     }
-    return gazeSamples_;
+    return gazeSamples;
 }
 
 auto TobiiProTracker::currentSystemTime() -> EyeTrackerSystemTime {
