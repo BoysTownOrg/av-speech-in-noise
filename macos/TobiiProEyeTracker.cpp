@@ -1,11 +1,14 @@
 
 #include "TobiiProEyeTracker.hpp"
-#include <gsl/gsl>
-#include <thread>
-#include <functional>
+
 #include <tobii_research.h>
 #include <tobii_research_calibration.h>
 #include <tobii_research_streams.h>
+
+#include <gsl/gsl>
+
+#include <thread>
+#include <functional>
 
 namespace av_speech_in_noise {
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
@@ -77,36 +80,6 @@ static auto gazePositionOnDisplayArea(const TobiiResearchEyeData &d)
     return d.gaze_point.position_on_display_area;
 }
 
-static auto leftGazePositionOnDisplayArea(
-    const std::vector<TobiiResearchGazeData> &gaze, gsl::index i)
-    -> const TobiiResearchNormalizedPoint2D & {
-    return gazePositionOnDisplayArea(at(gaze, i).left_eye);
-}
-
-static auto rightGazePositionOnDisplayArea(
-    const std::vector<TobiiResearchGazeData> &gaze, gsl::index i)
-    -> const TobiiResearchNormalizedPoint2D & {
-    return gazePositionOnDisplayArea(at(gaze, i).right_eye);
-}
-
-static auto x(const TobiiResearchNormalizedPoint2D &p) -> float { return p.x; }
-
-static auto y(const TobiiResearchNormalizedPoint2D &p) -> float { return p.y; }
-
-static auto leftGazePositionRelativeScreen(
-    std::vector<BinocularGazeSample> &b, gsl::index i) -> Point2D & {
-    return at(b, i).left.position.relativeScreen;
-}
-
-static auto rightGazePositionRelativeScreen(
-    BinocularGazeSamples &b, gsl::index i) -> Point2D & {
-    return at(b, i).right.position.relativeScreen;
-}
-
-static auto x(Point2D &p) -> float & { return p.x; }
-
-static auto y(Point2D &p) -> float & { return p.y; }
-
 static auto size(const std::vector<BinocularGazeSample> &v) -> gsl::index {
     return v.size();
 }
@@ -117,19 +90,20 @@ static void assign(Point3D &p, TobiiResearchPoint3D other) {
     p.z = other.z;
 }
 
+static void assign(Point2D &p, TobiiResearchNormalizedPoint2D other) {
+    p.x = other.x;
+    p.y = other.y;
+}
+
 auto TobiiProTracker::gazeSamples() -> BinocularGazeSamples {
     BinocularGazeSamples gazeSamples(head > 0 ? head - 1 : 0);
     for (gsl::index i{0}; i < size(gazeSamples); ++i) {
         at(gazeSamples, i).systemTime.microseconds =
             at(gazeData, i).system_time_stamp;
-        x(leftGazePositionRelativeScreen(gazeSamples, i)) =
-            x(leftGazePositionOnDisplayArea(gazeData, i));
-        y(leftGazePositionRelativeScreen(gazeSamples, i)) =
-            y(leftGazePositionOnDisplayArea(gazeData, i));
-        x(rightGazePositionRelativeScreen(gazeSamples, i)) =
-            x(rightGazePositionOnDisplayArea(gazeData, i));
-        y(rightGazePositionRelativeScreen(gazeSamples, i)) =
-            y(rightGazePositionOnDisplayArea(gazeData, i));
+        assign(at(gazeSamples, i).left.position.relativeScreen,
+            gazePositionOnDisplayArea(at(gazeData, i).left_eye));
+        assign(at(gazeSamples, i).right.position.relativeScreen,
+            gazePositionOnDisplayArea(at(gazeData, i).right_eye));
 
         assign(at(gazeSamples, i).left.position.relativeTrackbox,
             at(gazeData, i).left_eye.gaze_point.position_in_user_coordinates);
