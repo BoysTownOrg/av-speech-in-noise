@@ -21,6 +21,8 @@ enum class HeadingItem {
     rightGazePositionRelativeScreen,
     leftGazePositionRelativeTracker,
     rightGazePositionRelativeTracker,
+    leftGazeOriginRelativeTracker,
+    rightGazeOriginRelativeTracker,
     eyeTrackerTime,
     targetPlayerTime,
     correctConsonant,
@@ -67,6 +69,10 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "left gaze position relative tracker [x y z]";
     case HeadingItem::rightGazePositionRelativeTracker:
         return "right gaze position relative tracker [x y z]";
+    case HeadingItem::leftGazeOriginRelativeTracker:
+        return "left gaze origin relative tracker [x y z]";
+    case HeadingItem::rightGazeOriginRelativeTracker:
+        return "right gaze origin relative tracker [x y z]";
     case HeadingItem::eyeTrackerTime:
         return "eye tracker time (us)";
     case HeadingItem::targetPlayerTime:

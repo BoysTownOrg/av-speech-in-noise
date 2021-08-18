@@ -208,6 +208,10 @@ static auto operator<<(std::ostream &stream,
     insert(stream, name(HeadingItem::leftGazePositionRelativeTracker));
     insertCommaAndSpace(stream);
     insert(stream, name(HeadingItem::rightGazePositionRelativeTracker));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::leftGazeOriginRelativeTracker));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::rightGazeOriginRelativeTracker));
     std::for_each(gazeSamples.begin(), gazeSamples.end(),
         [&](const BinocularGazeSample &g) {
             insertNewLine(stream);
@@ -224,6 +228,10 @@ static auto operator<<(std::ostream &stream,
             insert(stream, g.left.position.relativeTrackbox);
             insertCommaAndSpace(stream);
             insert(stream, g.right.position.relativeTrackbox);
+            insertCommaAndSpace(stream);
+            insert(stream, g.left.origin.relativeTrackbox);
+            insertCommaAndSpace(stream);
+            insert(stream, g.right.origin.relativeTrackbox);
         });
     return insertNewLine(stream);
 }
