@@ -47,6 +47,10 @@ static auto operator<<(std::ostream &os, Point3D point) -> std::ostream & {
     return os << point.x << ' ' << point.y << ' ' << point.z;
 }
 
+static auto operator<<(std::ostream &os, Point2D point) -> std::ostream & {
+    return os << point.x << ' ' << point.y;
+}
+
 template <typename T>
 auto insert(std::ostream &stream, T item) -> std::ostream & {
     return stream << item;
@@ -217,13 +221,9 @@ static auto operator<<(std::ostream &stream,
             insertNewLine(stream);
             insert(stream, g.systemTime.microseconds);
             insertCommaAndSpace(stream);
-            insert(stream, g.left.position.relativeScreen.x);
-            insert(stream, " ");
-            insert(stream, g.left.position.relativeScreen.y);
+            insert(stream, g.left.position.relativeScreen);
             insertCommaAndSpace(stream);
-            insert(stream, g.right.position.relativeScreen.x);
-            insert(stream, " ");
-            insert(stream, g.right.position.relativeScreen.y);
+            insert(stream, g.right.position.relativeScreen);
             insertCommaAndSpace(stream);
             insert(stream, g.left.position.relativeTrackbox);
             insertCommaAndSpace(stream);
