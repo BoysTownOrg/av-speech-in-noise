@@ -29,8 +29,6 @@ jobs:
           cp tobii_research/*.h /usr/local/include/tobii_research/
           cp tobii_research/*.dylib /usr/local/lib/tobii_research/
           cp tobii_research/*.pc /usr/local/lib/pkgconfig/
-      - name: install pkg-config
-        run: brew install pkg-config
       - name: determine application version
         run: echo "AV_SPEECH_IN_NOISE_VERSION=$(echo ${{ github.ref }} | cut -c 12-)" >> $GITHUB_ENV
       - name: generate build systems
@@ -51,7 +49,7 @@ jobs:
           install_name_tool -change @rpath/libtobii_research.dylib @executable_path/../Frameworks/libtobii_research.dylib "./build-with-eyetracking/macos/Release/AV Speech in Noise.app/Contents/MacOS/AV Speech in Noise"
           cp /usr/local/lib/tobii_research/libtobii_research_addons.dylib "./build-with-eyetracking/macos/Release/AV Speech in Noise.app/Contents/Frameworks"
           install_name_tool -change @rpath/libtobii_research_addons.dylib @executable_path/../Frameworks/libtobii_research_addons.dylib "./build-with-eyetracking/macos/Release/AV Speech in Noise.app/Contents/MacOS/AV Speech in Noise"
-          codesign --force --deep --sign ${{ secrets.CODE_SIGN_IDENTITY }} --timestamp --options=runtime "./build-with-eyetracking/macos/Release/AV Speech in Noise.app"
+          codesign --force --deep --sign "${{ secrets.CODE_SIGN_IDENTITY }}" --timestamp --options=runtime "./build-with-eyetracking/macos/Release/AV Speech in Noise.app"
       - name: notarize apps
         env:
           AV_SPEECH_IN_NOISE_BUNDLE_DIRECTORY: ./build/macos/Release
