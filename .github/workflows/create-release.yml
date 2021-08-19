@@ -26,7 +26,6 @@ jobs:
           unzip tobii_research.zip
           mkdir /usr/local/include/tobii_research
           mkdir /usr/local/lib/tobii_research
-          mkdir /usr/local/lib/pkgconfig
           cp tobii_research/*.h /usr/local/include/tobii_research/
           cp tobii_research/*.dylib /usr/local/lib/tobii_research/
           cp tobii_research/*.pc /usr/local/lib/pkgconfig/
