@@ -61,6 +61,6 @@ jobs:
           ditto -c -k --keepParent "./build-with-eyetracking/macos/Release/AV Speech in Noise.app" "./build-with-eyetracking/macos/Release/AV Speech in Noise.app.zip"
           xcrun altool --notarize-app --primary-bundle-id org.boystown.av-speech-in-noise-with-eyetracking --username ${{ secrets.APP_CONNECT_NOTARIZATION_USERNAME }} --password ${{ secrets.APP_CONNECT_NOTARIZATION_PASSWORD }} --file "./build-with-eyetracking/macos/Release/AV Speech in Noise.app.zip"
       - name: create GitHub release
-        run: gh create release $AV_SPEECH_IN_NOISE_VERSION ./build/macos/Release/*.zip "./build-with-eyetracking/macos/Release/AV Speech in Noise.app.zip"
+        run: gh release create $AV_SPEECH_IN_NOISE_VERSION ./build/macos/Release/*.zip "./build-with-eyetracking/macos/Release/AV Speech in Noise.app.zip"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
