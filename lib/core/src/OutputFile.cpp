@@ -43,6 +43,14 @@ static auto operator<<(std::ostream &os, Syllable item) -> std::ostream & {
     return os << name(item);
 }
 
+static auto operator<<(std::ostream &os, Point3D point) -> std::ostream & {
+    return os << point.x << ' ' << point.y << ' ' << point.z;
+}
+
+static auto operator<<(std::ostream &os, Point2D point) -> std::ostream & {
+    return os << point.x << ' ' << point.y;
+}
+
 template <typename T>
 auto insert(std::ostream &stream, T item) -> std::ostream & {
     return stream << item;
@@ -197,21 +205,34 @@ static auto operator<<(std::ostream &stream,
     const BinocularGazeSamples &gazeSamples) -> std::ostream & {
     insert(stream, name(HeadingItem::eyeTrackerTime));
     insertCommaAndSpace(stream);
-    insert(stream, name(HeadingItem::leftGaze));
+    insert(stream, name(HeadingItem::leftGazePositionRelativeScreen));
     insertCommaAndSpace(stream);
-    insert(stream, name(HeadingItem::rightGaze));
-    std::for_each(gazeSamples.begin(), gazeSamples.end(), [&](auto g) {
-        insertNewLine(stream);
-        insert(stream, g.systemTime.microseconds);
-        insertCommaAndSpace(stream);
-        insert(stream, g.left.x);
-        insert(stream, " ");
-        insert(stream, g.left.y);
-        insertCommaAndSpace(stream);
-        insert(stream, g.right.x);
-        insert(stream, " ");
-        insert(stream, g.right.y);
-    });
+    insert(stream, name(HeadingItem::rightGazePositionRelativeScreen));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::leftGazePositionRelativeTracker));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::rightGazePositionRelativeTracker));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::leftGazeOriginRelativeTracker));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::rightGazeOriginRelativeTracker));
+    std::for_each(gazeSamples.begin(), gazeSamples.end(),
+        [&](const BinocularGazeSample &g) {
+            insertNewLine(stream);
+            insert(stream, g.systemTime.microseconds);
+            insertCommaAndSpace(stream);
+            insert(stream, g.left.position.relativeScreen);
+            insertCommaAndSpace(stream);
+            insert(stream, g.right.position.relativeScreen);
+            insertCommaAndSpace(stream);
+            insert(stream, g.left.position.relativeTrackbox);
+            insertCommaAndSpace(stream);
+            insert(stream, g.right.position.relativeTrackbox);
+            insertCommaAndSpace(stream);
+            insert(stream, g.left.origin.relativeTrackbox);
+            insertCommaAndSpace(stream);
+            insert(stream, g.right.origin.relativeTrackbox);
+        });
     return insertNewLine(stream);
 }
 

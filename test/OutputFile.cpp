@@ -666,11 +666,16 @@ class OutputFileTests : public ::testing::Test {
         assertHeadingAtLine(useCase, 3);
     }
 
-    void setEyeGazes(std::vector<std::int_least64_t> t,
-        std::vector<EyeGaze> left, std::vector<EyeGaze> right) {
+    void setGazePositionsRelativeScreenAndEyeTrackerTimes(
+        std::vector<std::int_least64_t> t, std::vector<EyeGaze> left,
+        std::vector<EyeGaze> right) {
         eyeGazes.resize(t.size());
         std::generate(eyeGazes.begin(), eyeGazes.end(), [&, n = 0]() mutable {
-            BinocularGazeSample gazeSamples{{t.at(n)}, left.at(n), right.at(n)};
+            BinocularGazeSample gazeSamples{{t.at(n)},
+                Gaze{GazeOrigin{},
+                    GazePosition{{}, Point2D{left.at(n).x, left.at(n).y}}},
+                Gaze{GazeOrigin{},
+                    GazePosition{{}, Point2D{right.at(n).x, right.at(n).y}}}};
             ++n;
             return gazeSamples;
         });
@@ -978,14 +983,17 @@ OUTPUT_FILE_TEST(writeFixedLevelTestWithAuditoryOnlyCondition) {
     assertConditionNameWritten(writingFixedLevelTest, Condition::auditoryOnly);
 }
 
-OUTPUT_FILE_TEST(writeEyeGazes) {
-    setEyeGazes({1, 2, 3}, {{0.4F, 0.44F}, {0.5F, 0.55F}, {0.6F, 0.66F}},
+OUTPUT_FILE_TEST(writeGazePositionsRelativeScreenAndEyeTrackerTime) {
+    setGazePositionsRelativeScreenAndEyeTrackerTimes({1, 2, 3},
+        {{0.4F, 0.44F}, {0.5F, 0.55F}, {0.6F, 0.66F}},
         {{0.7F, 0.77F}, {0.8F, 0.88F}, {0.9F, 0.99F}});
     write(file, eyeGazes);
     assertNthCommaDelimitedEntryOfLine(
         writer, HeadingItem::eyeTrackerTime, 1, 1);
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::leftGaze, 2, 1);
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::rightGaze, 3, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::leftGazePositionRelativeScreen, 2, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::rightGazePositionRelativeScreen, 3, 1);
     assertNthCommaDelimitedEntryOfLine(writer, "1", 1, 2);
     assertNthCommaDelimitedEntryOfLine(writer, "0.4 0.44", 2, 2);
     assertNthCommaDelimitedEntryOfLine(writer, "0.7 0.77", 3, 2);
@@ -995,6 +1003,57 @@ OUTPUT_FILE_TEST(writeEyeGazes) {
     assertNthCommaDelimitedEntryOfLine(writer, "3", 1, 4);
     assertNthCommaDelimitedEntryOfLine(writer, "0.6 0.66", 2, 4);
     assertNthCommaDelimitedEntryOfLine(writer, "0.9 0.99", 3, 4);
+}
+
+OUTPUT_FILE_TEST(writeGazePositionsRelativeTracker) {
+    std::vector<Point3D> left{
+        {0.4F, 0.44F, 0.444F}, {0.5, 0.55F, 0.555F}, {0.6F, 0.66F, 0.666F}};
+    std::vector<Point3D> right{
+        {0.7F, 0.77F, 0.777F}, {0.8F, 0.88F, 0.888F}, {0.9F, 0.99F, 0.999F}};
+    eyeGazes.resize(left.size());
+    std::generate(eyeGazes.begin(), eyeGazes.end(), [&, n = 0]() mutable {
+        BinocularGazeSample gazeSamples{{},
+            Gaze{GazeOrigin{}, GazePosition{left.at(n), {}}},
+            Gaze{GazeOrigin{}, GazePosition{right.at(n), {}}}};
+        ++n;
+        return gazeSamples;
+    });
+    write(file, eyeGazes);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::leftGazePositionRelativeTracker, 4, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::rightGazePositionRelativeTracker, 5, 1);
+    assertNthCommaDelimitedEntryOfLine(writer, "0.4 0.44 0.444", 4, 2);
+    assertNthCommaDelimitedEntryOfLine(writer, "0.7 0.77 0.777", 5, 2);
+    assertNthCommaDelimitedEntryOfLine(writer, "0.5 0.55 0.555", 4, 3);
+    assertNthCommaDelimitedEntryOfLine(writer, "0.8 0.88 0.888", 5, 3);
+    assertNthCommaDelimitedEntryOfLine(writer, "0.6 0.66 0.666", 4, 4);
+    assertNthCommaDelimitedEntryOfLine(writer, "0.9 0.99 0.999", 5, 4);
+}
+
+OUTPUT_FILE_TEST(writeGazeOrigins) {
+    std::vector<Point3D> left{
+        {0.4F, 0.44F, 0.444F}, {0.5, 0.55F, 0.555F}, {0.6F, 0.66F, 0.666F}};
+    std::vector<Point3D> right{
+        {0.7F, 0.77F, 0.777F}, {0.8F, 0.88F, 0.888F}, {0.9F, 0.99F, 0.999F}};
+    eyeGazes.resize(left.size());
+    std::generate(eyeGazes.begin(), eyeGazes.end(), [&, n = 0]() mutable {
+        BinocularGazeSample gazeSamples{{}, Gaze{GazeOrigin{left.at(n)}, {}},
+            Gaze{GazeOrigin{right.at(n)}, {}}};
+        ++n;
+        return gazeSamples;
+    });
+    write(file, eyeGazes);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::leftGazeOriginRelativeTracker, 6, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::rightGazeOriginRelativeTracker, 7, 1);
+    assertNthCommaDelimitedEntryOfLine(writer, "0.4 0.44 0.444", 6, 2);
+    assertNthCommaDelimitedEntryOfLine(writer, "0.7 0.77 0.777", 7, 2);
+    assertNthCommaDelimitedEntryOfLine(writer, "0.5 0.55 0.555", 6, 3);
+    assertNthCommaDelimitedEntryOfLine(writer, "0.8 0.88 0.888", 7, 3);
+    assertNthCommaDelimitedEntryOfLine(writer, "0.6 0.66 0.666", 6, 4);
+    assertNthCommaDelimitedEntryOfLine(writer, "0.9 0.99 0.999", 7, 4);
 }
 
 OUTPUT_FILE_TEST(writeTargetStartTime) {
