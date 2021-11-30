@@ -222,7 +222,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     SubjectPresenter &subjectPresenter, NSWindow *subjectNSWindow,
     SessionController::Observer *sessionControllerObserver,
     std::filesystem::path relativeOutputDirectory) {
-    const auto subjectScreen{[[NSScreen screens] lastObject]};
     const auto videoNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
     addAutolayoutEnabledSubview(subjectNSWindow.contentView, videoNSView);
@@ -316,11 +315,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
         allTargetsNTimes, recognitionTestModel, outputFile};
     static auto testSetupUI{testSetupUIFactory.make(nil)};
-    const auto subjectScreenFrame{subjectScreen.frame};
-    const auto subjectScreenSize{subjectScreenFrame.size};
-    const auto subjectViewHeight{subjectScreenSize.height / 4};
-    const auto subjectScreenWidth{subjectScreenSize.width};
-    const auto subjectViewWidth{subjectScreenWidth / 3};
     const auto consonantNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
     addAutolayoutEnabledSubview(subjectNSWindow.contentView, consonantNSView);
@@ -373,7 +367,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static CoordinateResponseMeasurePresenter
         coordinateResponseMeasurePresenter{coordinateResponseMeasureView};
     static TestSetupPresenterImpl testSetupPresenter{
-        *(testSetupUI.get()), sessionUIMaybe};
+        *testSetupUI, sessionUIMaybe};
     static UninitializedTaskPresenterImpl taskPresenter;
     static TestPresenterImpl testPresenter{model, testUIMaybe, &taskPresenter};
     static SessionPresenterImpl sessionPresenter{sessionUIMaybe, model};
@@ -453,7 +447,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {Method::fixedLevelConsonants, consonantPresenter},
             {Method::adaptivePassFail, passFailPresenter},
             {Method::adaptivePassFailWithEyeTracking, passFailPresenter}}};
-    static TestSetupController testSetupController{*(testSetupUI.get()),
+    static TestSetupController testSetupController{*testSetupUI,
         sessionController, sessionUIMaybe, testSetupPresenter, model,
         testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);
