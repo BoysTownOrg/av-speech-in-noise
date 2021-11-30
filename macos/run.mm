@@ -213,21 +213,21 @@ void TimerImpl::timerCallback() { listener->callback(); }
 
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     OutputFileNameFactory &outputFileNameFactory,
-    AppKitTestSetupUIFactory &testSetupUIFactory, SessionUI &sessionUIMaybe,
-    TestUI &testUIMaybe, submitting_free_response::UI &freeResponseUIMaybe,
-    submitting_syllable::UI &syllablesUIMaybe,
-    submitting_keywords::UI &chooseKeywordsUIMaybe,
-    submitting_number_keywords::UI &correctKeywordsUIMaybe,
-    submitting_pass_fail::UI &passFailUIMaybe,
-    SubjectPresenter &subjectPresenter, NSWindow *subjectNSWindow,
+    AppKitTestSetupUIFactory &testSetupUIFactory, SessionUI &sessionUI,
+    TestUI &testUI, submitting_free_response::UI &freeResponseUI,
+    submitting_syllable::UI &syllablesUI,
+    submitting_keywords::UI &chooseKeywordsUI,
+    submitting_number_keywords::UI &correctKeywordsUI,
+    submitting_pass_fail::UI &passFailUI, SubjectPresenter &subjectPresenter,
+    NSWindow *subjectNSWindow,
     SessionController::Observer *sessionControllerObserver,
     std::filesystem::path relativeOutputDirectory) {
     const auto videoNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
     addAutolayoutEnabledSubview(subjectNSWindow.contentView, videoNSView);
     static AvFoundationVideoPlayer videoPlayer{videoNSView};
-    static AvFoundationBufferedAudioReaderFactory bufferedReaderFactory;
-    static AudioReaderSimplified audioReader{bufferedReaderFactory};
+    static AvFoundationBufferedAudioReaderFactory audioReaderFactory;
+    static AudioReaderSimplified audioReader{audioReaderFactory};
     static TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
     static AvFoundationAudioPlayer audioPlayer;
     static TimerImpl timer;
@@ -236,7 +236,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static FileWriter fileWriter;
     static TimeStampImpl timeStamp;
     static UnixFileSystemPath systemPath;
-    static auto outputFileName{outputFileNameFactory.make(timeStamp)};
+    static const auto outputFileName{outputFileNameFactory.make(timeStamp)};
     static OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
     outputFilePath.setRelativeOutputDirectory(
         std::move(relativeOutputDirectory));
@@ -314,7 +314,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
         allTargetsNTimes, recognitionTestModel, outputFile};
-    static auto testSetupUI{testSetupUIFactory.make(nil)};
+    static const auto testSetupUI{testSetupUIFactory.make(nil)};
     const auto consonantNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
     addAutolayoutEnabledSubview(subjectNSWindow.contentView, consonantNSView);
@@ -353,36 +353,35 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         coordinateResponseMeasureNSView};
     static ConsonantTaskPresenterImpl consonantPresenter{consonantUI};
     static submitting_free_response::Presenter freeResponsePresenter{
-        testUIMaybe, freeResponseUIMaybe};
+        testUI, freeResponseUI};
     static submitting_keywords::PresenterImpl chooseKeywordsPresenter{model,
-        testUIMaybe, chooseKeywordsUIMaybe,
+        testUI, chooseKeywordsUI,
         submitting_keywords::sentencesWithThreeKeywords(
             read_file(resourceUrl("mlst-c", "txt").path))};
     static submitting_syllable::PresenterImpl syllablesPresenter{
-        syllablesUIMaybe, testUIMaybe};
+        syllablesUI, testUI};
     static submitting_number_keywords::Presenter correctKeywordsPresenter{
-        testUIMaybe, correctKeywordsUIMaybe};
+        testUI, correctKeywordsUI};
     static submitting_pass_fail::Presenter passFailPresenter{
-        testUIMaybe, passFailUIMaybe};
+        testUI, passFailUI};
     static CoordinateResponseMeasurePresenter
         coordinateResponseMeasurePresenter{coordinateResponseMeasureView};
-    static TestSetupPresenterImpl testSetupPresenter{
-        *testSetupUI, sessionUIMaybe};
+    static TestSetupPresenterImpl testSetupPresenter{*testSetupUI, sessionUI};
     static UninitializedTaskPresenterImpl taskPresenter;
-    static TestPresenterImpl testPresenter{model, testUIMaybe, &taskPresenter};
-    static SessionPresenterImpl sessionPresenter{sessionUIMaybe, model};
+    static TestPresenterImpl testPresenter{model, testUI, &taskPresenter};
+    static SessionPresenterImpl sessionPresenter{sessionUI, model};
     static SessionControllerImpl sessionController{
         testSetupPresenter, testPresenter, subjectPresenter};
     static TestControllerImpl testController{
-        sessionController, model, sessionUIMaybe, testUIMaybe, testPresenter};
+        sessionController, model, sessionUI, testUI, testPresenter};
     static submitting_keywords::InteractorImpl submittingKeywordsInteractor{
         fixedLevelMethod, recognitionTestModel, outputFile};
     static submitting_keywords::Controller chooseKeywordsController{
-        testController, submittingKeywordsInteractor, chooseKeywordsUIMaybe,
+        testController, submittingKeywordsInteractor, chooseKeywordsUI,
         chooseKeywordsPresenter};
     static submitting_syllable::InteractorImpl submittingSyllableInteractor{
         fixedLevelMethod, recognitionTestModel, outputFile};
-    static submitting_syllable::Controller syllablesController{syllablesUIMaybe,
+    static submitting_syllable::Controller syllablesController{syllablesUI,
         testController, submittingSyllableInteractor,
         {{"B", Syllable::bi}, {"D", Syllable::di}, {"G", Syllable::dji},
             {"F", Syllable::fi}, {"Ghee", Syllable::gi}, {"H", Syllable::hi},
@@ -395,17 +394,17 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         submittingNumberKeywordsInteractor{
             adaptiveMethod, recognitionTestModel, outputFile};
     static submitting_number_keywords::Controller correctKeywordsController{
-        testController, submittingNumberKeywordsInteractor, sessionUIMaybe,
-        correctKeywordsUIMaybe};
+        testController, submittingNumberKeywordsInteractor, sessionUI,
+        correctKeywordsUI};
     static submitting_free_response::InteractorImpl
         submittingFreeResponseInteractor{
             fixedLevelMethod, recognitionTestModel, outputFile};
     static submitting_free_response::Controller freeResponseController{
-        testController, submittingFreeResponseInteractor, freeResponseUIMaybe};
+        testController, submittingFreeResponseInteractor, freeResponseUI};
     static submitting_pass_fail::InteractorImpl submittingPassFailInteractor{
         adaptiveMethod, recognitionTestModel, outputFile};
     static submitting_pass_fail::Controller passFailController{
-        testController, submittingPassFailInteractor, passFailUIMaybe};
+        testController, submittingPassFailInteractor, passFailUI};
     static ConsonantTaskController consonantTaskController{
         testController, model, consonantUI, consonantPresenter};
     static CoordinateResponseMeasureController
@@ -448,7 +447,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {Method::adaptivePassFail, passFailPresenter},
             {Method::adaptivePassFailWithEyeTracking, passFailPresenter}}};
     static TestSetupController testSetupController{*testSetupUI,
-        sessionController, sessionUIMaybe, testSetupPresenter, model,
+        sessionController, sessionUI, testSetupPresenter, model,
         testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);
 }
