@@ -226,7 +226,7 @@ struct SwiftTestSetupView: View {
             Spacer()
             HStack {
                 Spacer()
-                Form {
+                VStack {
                     TextField(
                         "Subject ID:",
                         text: $subjectId.string
