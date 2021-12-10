@@ -89,7 +89,7 @@ static auto meta(const LocalUrl &resourceUrl) -> std::string {
 
 static void push_back(NSPopUpButton *button,
     std::map<std::string, LocalUrl> &conditionUrls, const std::string &stem) {
-    const auto conditionName{meta(resourceUrl(stem, "txt"))};
+    const auto &conditionName{stem};
     conditionUrls[conditionName] = resourceUrl(stem, "txt");
     [button addItemWithTitle:nsString(conditionName)];
 }
@@ -149,15 +149,8 @@ FacemaskStudySetupView::FacemaskStudySetupView(NSViewController *controller)
     logo.layer.backgroundColor = NSColor.whiteColor.CGColor;
     push_back(condition, conditionUrls, "NoMask_AO");
     push_back(condition, conditionUrls, "NoMask_AV");
-    push_back(condition, conditionUrls, "ClearMask_AO");
-    push_back(condition, conditionUrls, "ClearMask_AV");
     push_back(condition, conditionUrls, "CommunicatorMask_AO");
     push_back(condition, conditionUrls, "CommunicatorMask_AV");
-    push_back(condition, conditionUrls, "FabricMask_AO");
-    push_back(condition, conditionUrls, "FabricMask_AV");
-    push_back(condition, conditionUrls, "HospitalMask_AO");
-    push_back(condition, conditionUrls, "HospitalMask_AV");
-    push_back(condition, conditionUrls, "NoMask_VO");
     const auto subjectIdWithLabel{labeledView(subjectIdField, "Subject ID:")};
     subjectIdWithLabel.alignment = NSLayoutAttributeFirstBaseline;
     subjectIdWithLabel.distribution = NSStackViewDistributionFill;
