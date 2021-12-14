@@ -893,7 +893,7 @@ class SwiftTestSetupUIFactory: NSObject, TestSetupUIFactory {
 }
 
 func conditionShortName(stem: String, testSettingsForShortName: inout [String: String]) -> String {
-    let name = AvSpeechInNoiseUtility.meta(stem, withExtension: "txt") ?? ""
+    let name = stem
     testSettingsForShortName[name] = AvSpeechInNoiseUtility.resourcePath(stem, withExtension: "txt")
     return name
 }
@@ -916,25 +916,27 @@ struct SwiftFacemaskStudyTestSetupView: View {
     var body: some View {
         VStack {
             HStack {
-                Image("btnrh")
+                Image("btnrh").resizable().aspectRatio(contentMode: .fit).frame(width: 318, height: 141, alignment: .topLeading).background(Color(.white))
                 Text("Facemask Study").font(.largeTitle)
             }
-            TextField("Subject ID", text: $subjectID_.string).font(.subheadline)
-            Picker("Test Settings", selection: $testSettingsShortName.string) {
-                ForEach(testSettingsShortNames.items) {
-                    Text($0.string)
+            Form {
+                TextField("Subject ID:", text: $subjectID_.string).font(.subheadline)
+                Picker("Condition:", selection: $testSettingsShortName.string) {
+                    ForEach(testSettingsShortNames.items) {
+                        Text($0.string)
+                    }
                 }
-            }.pickerStyle(RadioGroupPickerStyle())
-            Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
-            Button("START", action: {
-                observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
-            }).background(Color(Color.RGBColorSpace.sRGB, red: 114 / 255, green: 172 / 255, blue: 77 / 255, opacity: 1))
-            Button("play left speaker", action: {
-                observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
-            })
-            Button("play right speaker", action: {
-                observableObserver.observer?.notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked()
-            })
+                Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
+                Button("START", action: {
+                    observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
+                }).background(Color(Color.RGBColorSpace.sRGB, red: 114 / 255, green: 172 / 255, blue: 77 / 255, opacity: 1))
+                Button("play left speaker", action: {
+                    observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
+                })
+                Button("play right speaker", action: {
+                    observableObserver.observer?.notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked()
+                })
+            }
         }.background(Color(Color.RGBColorSpace.sRGB, red: 43 / 255, green: 97 / 255, blue: 198 / 255, opacity: 1))
     }
 }
@@ -952,15 +954,8 @@ class SwiftFacemaskStudyTestSetupUI: NSObject, TestSetupUI {
         testSettingsShortNames.items = [
             IdentifiableString(string: conditionShortName(stem: "NoMask_AO", testSettingsForShortName: &testSettingsForShortName)),
             IdentifiableString(string: conditionShortName(stem: "NoMask_AV", testSettingsForShortName: &testSettingsForShortName)),
-            IdentifiableString(string: conditionShortName(stem: "ClearMask_AO", testSettingsForShortName: &testSettingsForShortName)),
-            IdentifiableString(string: conditionShortName(stem: "ClearMask_AV", testSettingsForShortName: &testSettingsForShortName)),
             IdentifiableString(string: conditionShortName(stem: "CommunicatorMask_AO", testSettingsForShortName: &testSettingsForShortName)),
             IdentifiableString(string: conditionShortName(stem: "CommunicatorMask_AV", testSettingsForShortName: &testSettingsForShortName)),
-            IdentifiableString(string: conditionShortName(stem: "FabricMask_AO", testSettingsForShortName: &testSettingsForShortName)),
-            IdentifiableString(string: conditionShortName(stem: "FabricMask_AV", testSettingsForShortName: &testSettingsForShortName)),
-            IdentifiableString(string: conditionShortName(stem: "HospitalMask_AO", testSettingsForShortName: &testSettingsForShortName)),
-            IdentifiableString(string: conditionShortName(stem: "HospitalMask_AV", testSettingsForShortName: &testSettingsForShortName)),
-            IdentifiableString(string: conditionShortName(stem: "NoMask_VO", testSettingsForShortName: &testSettingsForShortName)),
         ]
         showing.value = true
     }
