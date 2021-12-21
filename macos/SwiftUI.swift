@@ -927,15 +927,21 @@ struct SwiftFacemaskStudyTestSetupView: View {
                     }
                 }.font(.largeTitle).foregroundColor(.yellow)
                 Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
-                Button("START", action: {
-                    observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
-                }).background(Color(Color.RGBColorSpace.sRGB, red: 114 / 255, green: 172 / 255, blue: 77 / 255, opacity: 1))
                 Button("play left speaker", action: {
                     observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
                 })
                 Button("play right speaker", action: {
                     observableObserver.observer?.notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked()
                 })
+                Button(action: {
+                    observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
+                }){
+                    Text("START").font(.largeTitle)
+                        .padding()
+                        .background(RoundedRectangle(cornerRadius: 8).fill(Color(Color.RGBColorSpace.sRGB, red: 114 / 255, green: 172 / 255, blue: 77 / 255, opacity: 1)))
+                        .frame(minWidth: 100)
+                }
+                .buttonStyle(PlainButtonStyle())
             }
         }.background(Color(Color.RGBColorSpace.sRGB, red: 43 / 255, green: 97 / 255, blue: 198 / 255, opacity: 1))
     }
