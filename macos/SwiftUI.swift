@@ -917,15 +917,15 @@ struct SwiftFacemaskStudyTestSetupView: View {
         VStack {
             HStack {
                 Image("btnrh").resizable().aspectRatio(contentMode: .fit).frame(width: 318, height: 141, alignment: .topLeading).background(Color(.white))
-                Text("Facemask Study").font(.largeTitle)
+                Text("Facemask Study").font(.system(size: 48))
             }
             Form {
-                TextField("Subject ID:", text: $subjectID_.string).font(.subheadline)
+                TextField("Subject ID:", text: $subjectID_.string).font(.largeTitle).foregroundColor(.yellow)
                 Picker("Condition:", selection: $testSettingsShortName.string) {
                     ForEach(testSettingsShortNames.items) {
                         Text($0.string)
                     }
-                }
+                }.font(.largeTitle).foregroundColor(.yellow)
                 Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
                 Button("START", action: {
                     observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
