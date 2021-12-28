@@ -918,7 +918,7 @@ struct SwiftFacemaskStudyTestSetupView: View {
             HStack {
                 Image("btnrh").resizable().aspectRatio(contentMode: .fit).frame(width: 318, height: 141, alignment: .topLeading).background(Color(.white))
                 Text("Facemask Study").font(.system(size: 48)).fixedSize(horizontal: true, vertical: false)
-            }
+            }.padding()
             Form {
                 TextField("Subject ID:", text: $subjectID_.string).font(.largeTitle).foregroundColor(.yellow)
                 Picker("Condition:", selection: $testSettingsShortName.string) {
@@ -942,7 +942,7 @@ struct SwiftFacemaskStudyTestSetupView: View {
                         .frame(minWidth: 100)
                 }
                 .buttonStyle(PlainButtonStyle())
-            }
+            }.padding()
         }.background(Color(Color.RGBColorSpace.sRGB, red: 43 / 255, green: 97 / 255, blue: 198 / 255, opacity: 1))
     }
 }
