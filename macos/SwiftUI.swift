@@ -917,7 +917,7 @@ struct SwiftFacemaskStudyTestSetupView: View {
         VStack {
             HStack {
                 Image("btnrh").resizable().aspectRatio(contentMode: .fit).frame(width: 318, height: 141, alignment: .topLeading).background(Color(.white))
-                Text("Facemask Study").font(.system(size: 48))
+                Text("Facemask Study").font(.system(size: 48)).fixedSize(horizontal: true, vertical: false)
             }
             Form {
                 TextField("Subject ID:", text: $subjectID_.string).font(.largeTitle).foregroundColor(.yellow)
