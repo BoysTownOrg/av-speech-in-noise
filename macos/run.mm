@@ -164,7 +164,7 @@ class TimeStampImpl : public TimeStamp {
         return time->tm_year + 1900;
     }
 
-    auto month() -> int override { return time->tm_mon; }
+    auto month() -> int override { return time->tm_mon + 1; }
 
     auto dayOfMonth() -> int override { return time->tm_mday; }
 
