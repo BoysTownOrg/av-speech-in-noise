@@ -218,57 +218,51 @@ struct SwiftTestSetupView: View {
 
     var body: some View {
         if showing.value {
-            Spacer()
-            HStack {
-                Spacer()
-                Form {
-                    TextField(
-                        "Subject ID:",
-                        text: $subjectId.string
-                    )
-                    .disableAutocorrection(true)
-                    TextField(
-                        "Tester ID:",
-                        text: $testerId.string
-                    )
-                    .disableAutocorrection(true)
-                    TextField(
-                        "Session:",
-                        text: $session.string
-                    )
-                    .disableAutocorrection(true)
-                    TextField(
-                        "RME setting:",
-                        text: $rmeSetting.string
-                    )
-                    .disableAutocorrection(true)
-                    Picker("Transducer:", selection: $transducer.string) {
-                        ForEach(transducers.items) {
-                            Text($0.string)
-                        }
-                    }
-                    HStack {
-                        Wrap(testSettingsPathControl)
-                        Button(action: {
-                            observableObserver.observer?.notifyThatPlayCalibrationButtonHasBeenClicked()
-                        }) {
-                            Text("Play Calibration")
-                        }
-                    }
-                    TextField(
-                        "Starting SNR (dB):",
-                        text: $startingSnr.string
-                    )
-                    .disableAutocorrection(true)
-                    Button(action: {
-                        observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
-                    }) {
-                        Text("Confirm")
+            Form {
+                TextField(
+                    "subject ID",
+                    text: $subjectId.string
+                )
+                .disableAutocorrection(true)
+                TextField(
+                    "tester ID",
+                    text: $testerId.string
+                )
+                .disableAutocorrection(true)
+                TextField(
+                    "session",
+                    text: $session.string
+                )
+                .disableAutocorrection(true)
+                TextField(
+                    "RME setting",
+                    text: $rmeSetting.string
+                )
+                .disableAutocorrection(true)
+                Picker("Transducer", selection: $transducer.string) {
+                    ForEach(transducers.items) {
+                        Text($0.string)
                     }
                 }
-                Spacer()
-            }
-            Spacer()
+                HStack {
+                    Wrap(testSettingsPathControl)
+                    Button(action: {
+                        observableObserver.observer?.notifyThatPlayCalibrationButtonHasBeenClicked()
+                    }) {
+                        Text("Play Calibration")
+                    }
+                }
+                TextField(
+                    "starting SNR (dB)",
+                    text: $startingSnr.string
+                )
+                .disableAutocorrection(true)
+                Button(action: {
+                    observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
+                }) {
+                    Text("Confirm")
+                }
+            }.padding()
         }
     }
 }
