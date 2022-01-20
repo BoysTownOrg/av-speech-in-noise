@@ -31,7 +31,6 @@ class FacemaskStudySetupView : public TestSetupUI {
   private:
     std::map<std::string, LocalUrl> conditionUrls;
     NSTextField *subjectIdField;
-    NSButton *minusTendBButton;
     NSPopUpButton *condition;
     FacemaskStudySetupViewActions *actions;
     Observer *listener_{};
