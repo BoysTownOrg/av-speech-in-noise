@@ -104,12 +104,12 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Picker("Audio Device:", selection: $audioDevice.string) {
+            Picker("Audio Device", selection: $audioDevice.string) {
                 ForEach(audioDevices.items) {
                     Text($0.string)
                 }
             }
-            Picker("Subject Screen:", selection: $subjectScreen.string) {
+            Picker("Subject Screen", selection: $subjectScreen.string) {
                 ForEach(subjectScreens.items) {
                     Text($0.string)
                 }
