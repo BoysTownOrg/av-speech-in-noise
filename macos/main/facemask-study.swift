@@ -29,6 +29,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_: Notification) {
         let userDefaults = UserDefaults()
         sessionUI.audioDevice_.string = userDefaults.string(forKey: "AudioDevice") ?? ""
+        sessionUI.subjectScreen_.string = userDefaults.string(forKey: "SubjectScreen") ?? ""
 
         let contentView = SwiftSessionView(ui: sessionUI) {
             SwiftFacemaskStudyTestSetupView(ui: self.testSetupUI) {
@@ -51,6 +52,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_: Notification) {
         let userDefaults = UserDefaults()
         userDefaults.set(sessionUI.audioDevice_.string, forKey: "AudioDevice")
+        userDefaults.set(sessionUI.subjectScreen_.string, forKey: "SubjectScreen")
     }
 }
 
