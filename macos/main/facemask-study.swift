@@ -134,17 +134,17 @@ struct SnrSwitch: View {
     }
 }
 
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate<Content: View>: NSObject, NSApplicationDelegate {
     var window: NSWindow!
     let sessionUI: SwiftSessionUI
     let minusTenDBStartingSnr = ObservableBool()
     let testSetupUI: SwiftFacemaskStudyTestSetupUI
-
-    override init() {
+    let snrView: () -> Content
+    
+    init(snrFunctor: @escaping () -> String, @ViewBuilder snrView: @escaping () -> Content) {
         sessionUI = SwiftSessionUI()
-        testSetupUI = SwiftFacemaskStudyTestSetupUI {
-            [minusTenDBStartingSnr] in minusTenDBStartingSnr.value ? "-10" : "0"
-        }
+        testSetupUI = SwiftFacemaskStudyTestSetupUI(snrFunctor: snrFunctor)
+        self.snrView = snrView
         AvSpeechInNoiseMain.facemaskStudy(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI)
     }
 
@@ -154,9 +154,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         sessionUI.subjectScreen_.string = userDefaults.string(forKey: "SubjectScreen") ?? ""
 
         let contentView = SwiftSessionView(ui: sessionUI) {
-            SwiftFacemaskStudyTestSetupView(ui: self.testSetupUI) {
-                SnrSwitch(minusTenDBStartingSnr: self.minusTenDBStartingSnr)
-            }
+            SwiftFacemaskStudyTestSetupView(ui: self.testSetupUI, snrView: self.snrView)
         }
 
         window = NSWindow(
@@ -198,7 +196,12 @@ class AppMenu: NSMenu {
 @main
 enum SwiftMain {
     static func main() {
-        let delegate = AppDelegate()
+        let minusTenDBStartingSnr = ObservableBool()
+        let delegate = AppDelegate (snrFunctor: {
+            [minusTenDBStartingSnr] in minusTenDBStartingSnr.value ? "-10" : "0"
+        }) {
+            SnrSwitch(minusTenDBStartingSnr: minusTenDBStartingSnr)
+        }
         let menu = AppMenu()
         NSApplication.shared.delegate = delegate
         NSApplication.shared.mainMenu = menu
