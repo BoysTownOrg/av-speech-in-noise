@@ -4,10 +4,12 @@
 #include <av-speech-in-noise/player/MaskerPlayerImpl.hpp>
 #include <av-speech-in-noise/player/TargetPlayerImpl.hpp>
 #include <av-speech-in-noise/player/AudioReaderSimplified.hpp>
+
 #import <CoreMedia/CoreMedia.h>
 #import <MediaToolbox/MediaToolbox.h>
 #import <AVFoundation/AVFoundation.h>
 #import <AppKit/AppKit.h>
+
 #include <vector>
 
 @class VideoPlayerActions;
@@ -15,7 +17,7 @@
 namespace av_speech_in_noise {
 class AvFoundationBufferedAudioReader : public BufferedAudioReader {
   public:
-    AvFoundationBufferedAudioReader(const LocalUrl &);
+    explicit AvFoundationBufferedAudioReader(const LocalUrl &);
     auto channel(gsl::index) -> std::vector<float> override;
     auto channels() -> gsl::index override;
 
@@ -84,6 +86,12 @@ class AvFoundationVideoPlayer : public VideoPlayer {
 class AvFoundationAudioPlayer : public AudioPlayer {
   public:
     AvFoundationAudioPlayer();
+    AvFoundationAudioPlayer(const AvFoundationAudioPlayer &) = delete;
+    auto operator=(const AvFoundationAudioPlayer &)
+        -> AvFoundationAudioPlayer & = delete;
+    AvFoundationAudioPlayer(AvFoundationAudioPlayer &&) = delete;
+    auto operator=(AvFoundationAudioPlayer &&)
+        -> AvFoundationAudioPlayer & = delete;
     ~AvFoundationAudioPlayer() override;
     void attach(Observer *) override;
     void loadFile(std::string filePath) override;
