@@ -1,7 +1,10 @@
 #include "AvFoundationPlayers.h"
 #include "Foundation-utility.h"
+
 #include <mach/mach_time.h>
+
 #include <gsl/gsl>
+
 #include <limits>
 
 @interface VideoPlayerActions : NSObject
@@ -53,7 +56,7 @@ auto loadPropertyData(AudioObjectID id_,
 
 static auto masterAddress(AudioObjectPropertySelector selector,
     AudioObjectPropertyScope scope) -> AudioObjectPropertyAddress {
-    return {selector, scope, kAudioObjectPropertyElementMaster};
+    return {selector, scope, kAudioObjectPropertyElementMain};
 }
 
 static auto globalAddress(AudioObjectPropertySelector s)
@@ -503,7 +506,7 @@ AvFoundationBufferedAudioReader::AvFoundationBufferedAudioReader(
 auto AvFoundationBufferedAudioReader::channel(gsl::index n)
     -> std::vector<float> {
     auto *const p{buffer.floatChannelData[n]};
-    return std::vector<float>(p, p + buffer.frameLength);
+    return {p, p + buffer.frameLength};
 }
 
 auto AvFoundationBufferedAudioReader::channels() -> gsl::index {
