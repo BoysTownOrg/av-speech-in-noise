@@ -228,7 +228,7 @@ void UIImpl::hide() { [syllablesUI hide]; }
 void UIImpl::show() { [syllablesUI show]; }
 
 auto UIImpl::syllable() -> std::string {
-    return [syllablesUI syllable].UTF8String;
+    return string([syllablesUI syllable]);
 }
 
 auto UIImpl::flagged() -> bool { return [syllablesUI flagged] == YES; }
@@ -244,31 +244,31 @@ void TestSetupUIImpl::show() { return [testSetupUI show]; }
 void TestSetupUIImpl::hide() { return [testSetupUI hide]; }
 
 auto TestSetupUIImpl::testerId() -> std::string {
-    return [testSetupUI testerId].UTF8String;
+    return string([testSetupUI testerId]);
 }
 
 auto TestSetupUIImpl::subjectId() -> std::string {
-    return [testSetupUI subjectId].UTF8String;
+    return string([testSetupUI subjectId]);
 }
 
 auto TestSetupUIImpl::session() -> std::string {
-    return [testSetupUI session].UTF8String;
+    return string([testSetupUI session]);
 }
 
 auto TestSetupUIImpl::testSettingsFile() -> std::string {
-    return [testSetupUI testSettingsFile].UTF8String;
+    return string([testSetupUI testSettingsFile]);
 }
 
 auto TestSetupUIImpl::startingSnr() -> std::string {
-    return [testSetupUI startingSnr].UTF8String;
+    return string([testSetupUI startingSnr]);
 }
 
 auto TestSetupUIImpl::transducer() -> std::string {
-    return [testSetupUI transducer].UTF8String;
+    return string([testSetupUI transducer]);
 }
 
 auto TestSetupUIImpl::rmeSetting() -> std::string {
-    return [testSetupUI rmeSetting].UTF8String;
+    return string([testSetupUI rmeSetting]);
 }
 
 void TestSetupUIImpl::populateTransducerMenu(std::vector<std::string> v) {
@@ -344,7 +344,7 @@ void SessionUIImpl::showErrorMessage(std::string_view s) {
 }
 
 auto SessionUIImpl::audioDevice() -> std::string {
-    return [sessionUI audioDevice].UTF8String;
+    return string([sessionUI audioDevice]);
 }
 
 void SessionUIImpl::populateAudioDeviceMenu(std::vector<std::string> v) {
@@ -366,13 +366,13 @@ void SessionUIImpl::populateSubjectScreenMenu(const std::vector<Screen> &v) {
 auto SessionUIImpl::screens() -> std::vector<Screen> {
     std::vector<Screen> screens;
     for (NSScreen *item in [NSScreen screens]) {
-        screens.push_back(Screen{item.localizedName.UTF8String});
+        screens.push_back(Screen{string(item.localizedName)});
     }
     return screens;
 }
 
 auto SessionUIImpl::subjectScreen() -> Screen {
-    return Screen{[sessionUI subjectScreen].UTF8String};
+    return Screen{string([sessionUI subjectScreen])};
 }
 
 namespace submitting_free_response {
@@ -390,7 +390,7 @@ void UIImpl::show() { [freeResponseUI showFreeResponseSubmission]; }
 void UIImpl::hide() { [freeResponseUI hideFreeResponseSubmission]; }
 
 auto UIImpl::response() -> std::string {
-    return [freeResponseUI freeResponse].UTF8String;
+    return string([freeResponseUI freeResponse]);
 }
 
 auto UIImpl::flagged() -> bool { return [freeResponseUI flagged] == YES; }
@@ -410,7 +410,7 @@ void UIImpl::attach(Observer *a) {
 }
 
 auto UIImpl::correctKeywords() -> std::string {
-    return [ui correctKeywords].UTF8String;
+    return string([ui correctKeywords]);
 }
 
 void UIImpl::show() { [ui showCorrectKeywordsSubmission]; }

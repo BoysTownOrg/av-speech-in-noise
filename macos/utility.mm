@@ -24,16 +24,16 @@ static auto read_file(std::string_view path) -> std::string {
 @implementation AvSpeechInNoiseUtility
 + (NSString *)meta:(NSString *)stem withExtension:(NSString *)extension {
     return av_speech_in_noise::nsString(
-        av_speech_in_noise::TestSettingsInterpreterImpl::meta(
-            read_file(av_speech_in_noise::resourceUrl(
-                stem.UTF8String, extension.UTF8String)
-                          .path)));
+        av_speech_in_noise::TestSettingsInterpreterImpl::meta(read_file(
+            av_speech_in_noise::resourceUrl(av_speech_in_noise::string(stem),
+                av_speech_in_noise::string(extension))
+                .path)));
 }
 
 + (NSString *)resourcePath:(NSString *)stem
              withExtension:(NSString *)extension {
-    return av_speech_in_noise::nsString(
-        av_speech_in_noise::resourceUrl(stem.UTF8String, extension.UTF8String)
-            .path);
+    return av_speech_in_noise::nsString(av_speech_in_noise::resourceUrl(
+        av_speech_in_noise::string(stem), av_speech_in_noise::string(extension))
+                                            .path);
 }
 @end

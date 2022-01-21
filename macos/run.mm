@@ -101,7 +101,7 @@ static auto collectContentsIf(const LocalUrl &directory,
     for (NSString *item in contents(parent)) {
         const auto path{[parent stringByAppendingPathComponent:item]};
         if (predicate(path))
-            items.push_back({[item UTF8String]});
+            items.push_back({string(item)});
     }
     return items;
 }

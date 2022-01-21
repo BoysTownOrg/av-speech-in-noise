@@ -12,6 +12,7 @@ auto resourceUrl(const std::string &stem, const std::string &extension)
     -> LocalUrl;
 
 auto nsString(const std::string &s) -> NSString *;
+auto string(NSString *) -> std::string;
 }
 
 #endif

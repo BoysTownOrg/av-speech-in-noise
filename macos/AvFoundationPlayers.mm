@@ -483,14 +483,15 @@ void AvFoundationVideoPlayer::preRoll() {
 }
 
 AvFoundationBufferedAudioReader::AvFoundationBufferedAudioReader(
-    const LocalUrl &url)
-    : file{[[AVAudioFile alloc]
-          initForReading:
-              [NSURL fileURLWithPath:
-                         nsString(url.path).stringByExpandingTildeInPath]
-            commonFormat:AVAudioPCMFormatFloat32
-             interleaved:NO
-                   error:nil]} {
+    const LocalUrl &url) {
+    const auto fileURL{[NSURL
+        fileURLWithPath:nsString(url.path).stringByExpandingTildeInPath]};
+    if (fileURL == nil)
+        throw CannotReadFile{};
+    file = [[AVAudioFile alloc] initForReading:fileURL
+                                  commonFormat:AVAudioPCMFormatFloat32
+                                   interleaved:NO
+                                         error:nil];
     if (file == nil)
         throw CannotReadFile{};
     buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:file.processingFormat

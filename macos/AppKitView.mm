@@ -250,7 +250,7 @@ AppKitCoordinateResponseMeasureUI::AppKitCoordinateResponseMeasureUI(
 }
 
 auto AppKitCoordinateResponseMeasureUI::numberResponse() -> std::string {
-    return lastButtonPressed.title.UTF8String;
+    return string(lastButtonPressed.title);
 }
 
 auto AppKitCoordinateResponseMeasureUI::greenResponse() -> bool {
