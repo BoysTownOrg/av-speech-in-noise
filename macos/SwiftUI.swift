@@ -887,21 +887,21 @@ func conditionShortName(stem: String, testSettingsForShortName: inout [String: S
     return name
 }
 
-struct SwiftFacemaskStudyTestSetupView: View {
+struct SwiftFacemaskStudyTestSetupView<Content: View>: View {
     @ObservedObject var subjectID_: ObservableString
     @ObservedObject var testSettingsShortName: ObservableString
     @ObservedObject var observableObserver: TestSetupUIObserverObservable
-    @ObservedObject var minusTenDBStartingSnr: ObservableBool
     @ObservedObject var testSettingsShortNames: ObservableStringCollection
     @ObservedObject var showing: ObservableBool
+    let snrView: Content
 
-    init(ui: SwiftFacemaskStudyTestSetupUI) {
+    init(ui: SwiftFacemaskStudyTestSetupUI, @ViewBuilder snrView: @escaping () -> Content) {
         subjectID_ = ui.subjectID_
         testSettingsShortName = ui.testSettingsShortName
         observableObserver = ui.observableObserver
-        minusTenDBStartingSnr = ui.minusTenDBStartingSnr
         testSettingsShortNames = ui.testSettingsShortNames
         showing = ui.showing
+        self.snrView = snrView()
     }
 
     var body: some View {
@@ -918,7 +918,7 @@ struct SwiftFacemaskStudyTestSetupView: View {
                             Text($0.string)
                         }
                     }.font(.largeTitle).foregroundColor(.yellow)
-                    Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
+                    snrView
                     Button("play left speaker", action: {
                         observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
                     })
@@ -945,11 +945,11 @@ class SwiftFacemaskStudyTestSetupUI: NSObject, TestSetupUI {
     let testSettingsShortName = ObservableString()
     let observableObserver = TestSetupUIObserverObservable()
     let showing = ObservableBool()
-    let minusTenDBStartingSnr = ObservableBool()
     let testSettingsShortNames = ObservableStringCollection()
     var testSettingsForShortName = [String: String]()
+    let snrFunctor: () -> String
 
-    override init() {
+    init(snrFunctor: @escaping () -> String) {
         testSettingsShortNames.items = [
             IdentifiableString(string: conditionShortName(stem: "NoMask_AO", testSettingsForShortName: &testSettingsForShortName)),
             IdentifiableString(string: conditionShortName(stem: "NoMask_AV", testSettingsForShortName: &testSettingsForShortName)),
@@ -957,6 +957,7 @@ class SwiftFacemaskStudyTestSetupUI: NSObject, TestSetupUI {
             IdentifiableString(string: conditionShortName(stem: "CommunicatorMask_AV", testSettingsForShortName: &testSettingsForShortName)),
         ]
         showing.value = true
+        self.snrFunctor = snrFunctor
     }
 
     func show() {
@@ -984,7 +985,7 @@ class SwiftFacemaskStudyTestSetupUI: NSObject, TestSetupUI {
     }
 
     func startingSnr() -> String! {
-        return minusTenDBStartingSnr.value ? "-10" : "0"
+        return snrFunctor()
     }
 
     func transducer() -> String! {

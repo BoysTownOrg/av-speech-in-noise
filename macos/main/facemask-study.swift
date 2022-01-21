@@ -1,12 +1,28 @@
 import SwiftUI
 
+struct SnrSwitch: View {
+    @ObservedObject var minusTenDBStartingSnr: ObservableBool
+
+    init(minusTenDBStartingSnr: ObservableBool) {
+        self.minusTenDBStartingSnr = minusTenDBStartingSnr
+    }
+
+    var body: some View {
+        Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
+    }
+}
+
 class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
     let sessionUI: SwiftSessionUI
-    let testSetupUI = SwiftFacemaskStudyTestSetupUI()
+    let minusTenDBStartingSnr = ObservableBool()
+    let testSetupUI: SwiftFacemaskStudyTestSetupUI
 
     override init() {
         sessionUI = SwiftSessionUI()
+        testSetupUI = SwiftFacemaskStudyTestSetupUI {
+            [minusTenDBStartingSnr] in minusTenDBStartingSnr.value ? "-10" : "0"
+        }
         AvSpeechInNoiseMain.facemaskStudy(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI)
     }
 
@@ -15,7 +31,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         sessionUI.audioDevice_.string = userDefaults.string(forKey: "AudioDevice") ?? ""
 
         let contentView = SwiftSessionView(ui: sessionUI) {
-            SwiftFacemaskStudyTestSetupView(ui: self.testSetupUI)
+            SwiftFacemaskStudyTestSetupView(ui: self.testSetupUI) {
+                SnrSwitch(minusTenDBStartingSnr: self.minusTenDBStartingSnr)
+            }
         }
 
         window = NSWindow(
