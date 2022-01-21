@@ -893,6 +893,7 @@ struct SwiftFacemaskStudyTestSetupView: View {
     @ObservedObject var observableObserver: TestSetupUIObserverObservable
     @ObservedObject var minusTenDBStartingSnr: ObservableBool
     @ObservedObject var testSettingsShortNames: ObservableStringCollection
+    @ObservedObject var showing: ObservableBool
 
     init(ui: SwiftFacemaskStudyTestSetupUI) {
         subjectID_ = ui.subjectID_
@@ -900,39 +901,42 @@ struct SwiftFacemaskStudyTestSetupView: View {
         observableObserver = ui.observableObserver
         minusTenDBStartingSnr = ui.minusTenDBStartingSnr
         testSettingsShortNames = ui.testSettingsShortNames
+        showing = ui.showing
     }
 
     var body: some View {
-        VStack {
-            HStack {
-                Image("btnrh").resizable().aspectRatio(contentMode: .fit).frame(width: 318, height: 141, alignment: .topLeading).background(Color(.white))
-                Text("Facemask Study").font(.system(size: 48)).fixedSize(horizontal: true, vertical: false)
-            }.padding()
-            Form {
-                TextField("Subject ID:", text: $subjectID_.string).font(.largeTitle).foregroundColor(.yellow)
-                Picker("Condition:", selection: $testSettingsShortName.string) {
-                    ForEach(testSettingsShortNames.items) {
-                        Text($0.string)
+        if showing.value {
+            VStack {
+                HStack {
+                    Image("btnrh").resizable().aspectRatio(contentMode: .fit).frame(width: 318, height: 141, alignment: .topLeading).background(Color(.white))
+                    Text("Facemask Study").font(.system(size: 48)).fixedSize(horizontal: true, vertical: false)
+                }.padding()
+                Form {
+                    TextField("Subject ID:", text: $subjectID_.string).font(.largeTitle).foregroundColor(.yellow)
+                    Picker("Condition:", selection: $testSettingsShortName.string) {
+                        ForEach(testSettingsShortNames.items) {
+                            Text($0.string)
+                        }
+                    }.font(.largeTitle).foregroundColor(.yellow)
+                    Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
+                    Button("play left speaker", action: {
+                        observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
+                    })
+                    Button("play right speaker", action: {
+                        observableObserver.observer?.notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked()
+                    })
+                    Button(action: {
+                        observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
+                    }) {
+                        Text("START").font(.largeTitle)
+                            .padding()
+                            .background(RoundedRectangle(cornerRadius: 8).fill(Color(Color.RGBColorSpace.sRGB, red: 114 / 255, green: 172 / 255, blue: 77 / 255, opacity: 1)))
+                            .frame(minWidth: 100)
                     }
-                }.font(.largeTitle).foregroundColor(.yellow)
-                Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
-                Button("play left speaker", action: {
-                    observableObserver.observer?.notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked()
-                })
-                Button("play right speaker", action: {
-                    observableObserver.observer?.notifyThatPlayRightSpeakerCalibrationButtonHasBeenClicked()
-                })
-                Button(action: {
-                    observableObserver.observer?.notifyThatConfirmButtonHasBeenClicked()
-                }){
-                    Text("START").font(.largeTitle)
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 8).fill(Color(Color.RGBColorSpace.sRGB, red: 114 / 255, green: 172 / 255, blue: 77 / 255, opacity: 1)))
-                        .frame(minWidth: 100)
-                }
-                .buttonStyle(PlainButtonStyle())
-            }.padding()
-        }.background(Color(Color.RGBColorSpace.sRGB, red: 43 / 255, green: 97 / 255, blue: 198 / 255, opacity: 1))
+                    .buttonStyle(PlainButtonStyle())
+                }.padding()
+            }.background(Color(Color.RGBColorSpace.sRGB, red: 43 / 255, green: 97 / 255, blue: 198 / 255, opacity: 1))
+        }
     }
 }
 
