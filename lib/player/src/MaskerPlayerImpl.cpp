@@ -1,5 +1,7 @@
 #include "MaskerPlayerImpl.hpp"
+
 #include <gsl/gsl>
+
 #include <cmath>
 #include <vector>
 #include <algorithm>

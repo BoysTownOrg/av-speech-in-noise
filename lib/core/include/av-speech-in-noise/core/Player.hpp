@@ -2,12 +2,15 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_PLAYERHPP_
 
 #include <av-speech-in-noise/Model.hpp>
+
 #include <gsl/gsl>
+
+#include <exception>
 #include <cstdint>
 
 namespace av_speech_in_noise {
-class InvalidAudioFile {};
-class InvalidAudioDevice {};
+class InvalidAudioFile : public std::exception {};
+class InvalidAudioDevice : public std::exception {};
 
 struct Duration {
     double seconds;
