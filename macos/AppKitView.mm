@@ -187,19 +187,21 @@ AppKitCoordinateResponseMeasureUI::AppKitCoordinateResponseMeasureUI(
     std::transform(
         colors.begin(), colors.end(), rows.begin(), [&](NSColor *color) {
             std::vector<NSView *> buttons(responseNumbers);
-            std::generate(buttons.begin(), buttons.end(), [&, n = 0]() mutable {
-                const auto title{nsString(std::to_string(n++))};
-                const auto button {
-                    [NSButton
-                        buttonWithTitle:title
-                                 target:actions
-                                 action:@selector
-                                 (notifyThatResponseButtonHasBeenClicked:)]
-                };
-                [button setBezelStyle:NSBezelStyleTexturedSquare];
-                const auto style{[[NSMutableParagraphStyle alloc] init]};
-                [style setAlignment:NSTextAlignmentCenter];
-                [button setAttributedTitle:
+            std::transform(numbers.begin(), numbers.end(), buttons.begin(),
+                [&](int number) {
+                    const auto title{nsString(std::to_string(number))};
+                    const auto button {
+                        [NSButton
+                            buttonWithTitle:title
+                                     target:actions
+                                     action:@selector
+                                     (notifyThatResponseButtonHasBeenClicked:)]
+                    };
+                    [button setBezelStyle:NSBezelStyleTexturedSquare];
+                    const auto style{[[NSMutableParagraphStyle alloc] init]};
+                    [style setAlignment:NSTextAlignmentCenter];
+                    [button
+                        setAttributedTitle:
                             [[NSAttributedString alloc]
                                 initWithString:title
                                     attributes:
@@ -214,12 +216,12 @@ AppKitCoordinateResponseMeasureUI::AppKitCoordinateResponseMeasureUI(
                                             [NSFont fontWithName:@"Arial-Black"
                                                             size:48],
                                             NSFontAttributeName, nil]]];
-                [NSLayoutConstraint activateConstraints:@[
-                    [button.widthAnchor
-                        constraintEqualToAnchor:button.heightAnchor],
-                ]];
-                return button;
-            });
+                    [NSLayoutConstraint activateConstraints:@[
+                        [button.widthAnchor
+                            constraintEqualToAnchor:button.heightAnchor],
+                    ]];
+                    return button;
+                });
             const auto row{[NSStackView stackViewWithViews:nsArray(buttons)]};
             return row;
         });
