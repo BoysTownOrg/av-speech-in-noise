@@ -1,29 +1,33 @@
 #include "SubdirectoryTargetPlaylistReader.hpp"
 
+#include <filesystem>
+
 namespace av_speech_in_noise {
 SubdirectoryTargetPlaylistReader::SubdirectoryTargetPlaylistReader(
     TargetPlaylistFactory *targetListFactory, DirectoryReader *directoryReader)
     : targetListFactory{targetListFactory}, directoryReader{directoryReader} {}
 
+static void add(TargetPlaylistReader::lists_type &lists,
+    TargetPlaylistFactory *factory, const LocalUrl &url) {
+    auto list{factory->make()};
+    list->loadFromDirectory(url);
+    lists.push_back(std::move(list));
+}
+
 auto SubdirectoryTargetPlaylistReader::read(const LocalUrl &directory)
     -> lists_type {
     lists_type lists{};
-    auto subDirectories_ = subDirectories(directory);
-    for (const auto &subDirectory : subDirectories_) {
-        lists.push_back(targetListFactory->make());
-        auto fullPath{directory.path};
-        fullPath.append("/" + subDirectory.path);
-        lists.back()->loadFromDirectory({fullPath});
-    }
-    if (subDirectories_.empty()) {
-        lists.push_back(targetListFactory->make());
-        lists.back()->loadFromDirectory(directory);
+    try {
+        const auto subDirectories = directoryReader->subDirectories(directory);
+        for (const auto &subDirectory : subDirectories)
+            add(lists, targetListFactory,
+                LocalUrl{
+                    std::filesystem::path{directory.path} / subDirectory.path});
+        if (subDirectories.empty())
+            add(lists, targetListFactory, directory);
+
+    } catch (const DirectoryReader::CannotRead &) {
     }
     return lists;
-}
-
-auto SubdirectoryTargetPlaylistReader::subDirectories(const LocalUrl &directory)
-    -> LocalUrls {
-    return directoryReader->subDirectories(directory);
 }
 }
