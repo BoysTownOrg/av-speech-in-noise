@@ -1,9 +1,14 @@
 #include "RandomizedTargetPlaylists.hpp"
+#include "SubdirectoryTargetPlaylistReader.hpp"
 #include <algorithm>
 
 namespace av_speech_in_noise {
 static auto filesIn(DirectoryReader *reader, const LocalUrl &s) -> LocalUrls {
-    return reader->filesIn(s);
+    try {
+        return reader->filesIn(s);
+    } catch (const DirectoryReader::CannotRead &) {
+        return {};
+    }
 }
 
 static auto shuffle(target_list::Randomizer *randomizer,

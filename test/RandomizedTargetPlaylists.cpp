@@ -1,5 +1,6 @@
 #include "DirectoryReaderStub.hpp"
 #include "assert-utility.hpp"
+#include "CannotReadDirectory.hpp"
 
 #include <av-speech-in-noise/playlist/FileFilterDecorator.hpp>
 #include <av-speech-in-noise/playlist/RandomizedTargetPlaylists.hpp>
@@ -143,6 +144,14 @@ void currentReturnsEmptyIfNoFiles(
 class RandomizedTargetPlaylistWithReplacementTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
+    RandomizerStub randomizer;
+    RandomizedTargetPlaylistWithReplacement list{&reader, &randomizer};
+};
+
+class RandomizedTargetPlaylistWithReplacementFailureTests
+    : public ::testing::Test {
+  protected:
+    CannotReadDirectory reader;
     RandomizerStub randomizer;
     RandomizedTargetPlaylistWithReplacement list{&reader, &randomizer};
 };
@@ -424,6 +433,12 @@ CYCLIC_RANDOMIZED_TARGET_PLAYLIST_TEST(nextCyclesBackToBeginningOfFiles) {
     assertNextEquals(list, "C:/a");
     assertNextEquals(list, "C:/b");
     assertNextEquals(list, "C:/c");
+}
+
+TEST_F(RandomizedTargetPlaylistWithReplacementFailureTests,
+    nextReturnsEmptyAfterLoad) {
+    loadFromDirectory(list, "maybe");
+    assertNextEquals(list, "");
 }
 
 auto filesIn(DirectoryReader &reader, const LocalUrl &directory = {})

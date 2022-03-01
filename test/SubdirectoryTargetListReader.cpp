@@ -1,23 +1,16 @@
 #include "DirectoryReaderStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "assert-utility.hpp"
+#include "CannotReadDirectory.hpp"
+
 #include <av-speech-in-noise/playlist/SubdirectoryTargetPlaylistReader.hpp>
+
 #include <gtest/gtest.h>
+
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
 namespace {
-class CannotReadDirectory : public DirectoryReader {
-  public:
-    auto subDirectories(const LocalUrl &directory) -> LocalUrls override {
-        throw CannotRead{directory.path};
-    }
-
-    auto filesIn(const LocalUrl &directory) -> LocalUrls override {
-        throw CannotRead{directory.path};
-    }
-};
-
 class TargetPlaylistFactoryStub : public TargetPlaylistFactory {
     std::vector<std::shared_ptr<av_speech_in_noise::TargetPlaylist>> lists_{};
 
