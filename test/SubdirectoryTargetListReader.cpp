@@ -7,6 +7,17 @@
 
 namespace av_speech_in_noise {
 namespace {
+class CannotReadDirectory : public DirectoryReader {
+  public:
+    auto subDirectories(const LocalUrl &directory) -> LocalUrls override {
+        throw CannotRead{directory.path};
+    }
+
+    auto filesIn(const LocalUrl &directory) -> LocalUrls override {
+        throw CannotRead{directory.path};
+    }
+};
+
 class TargetPlaylistFactoryStub : public TargetPlaylistFactory {
     std::vector<std::shared_ptr<av_speech_in_noise::TargetPlaylist>> lists_{};
 
@@ -94,6 +105,16 @@ TEST_F(SubdirectoryTargetPlaylistReaderTests,
     auto actual{read()};
     EXPECT_EQ(1, actual.size());
     EXPECT_EQ(targetList(0), actual.at(0));
+}
+
+class SubdirectoryTargetPlaylistReaderFailureTests : public ::testing::Test {};
+
+TEST_F(SubdirectoryTargetPlaylistReaderFailureTests, returnsEmptyList) {
+    TargetPlaylistFactoryStub targetListFactory;
+    CannotReadDirectory directoryReader;
+    SubdirectoryTargetPlaylistReader listReader{
+        &targetListFactory, &directoryReader};
+    EXPECT_TRUE(listReader.read({""}).empty());
 }
 }
 }

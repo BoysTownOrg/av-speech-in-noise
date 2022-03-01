@@ -3,6 +3,7 @@
 
 #include <av-speech-in-noise/core/AdaptiveMethod.hpp>
 #include <memory>
+#include <stdexcept>
 #include <vector>
 #include <string>
 
@@ -21,6 +22,10 @@ class DirectoryReader {
     virtual ~DirectoryReader() = default;
     DirectoryReader() = default;
     DirectoryReader(const DirectoryReader &) = default;
+    class CannotRead : public std::runtime_error {
+      public:
+        explicit CannotRead(const std::string &s) : std::runtime_error{s} {}
+    };
     virtual auto subDirectories(const LocalUrl &directory) -> LocalUrls = 0;
     virtual auto filesIn(const LocalUrl &directory) -> LocalUrls = 0;
 };
