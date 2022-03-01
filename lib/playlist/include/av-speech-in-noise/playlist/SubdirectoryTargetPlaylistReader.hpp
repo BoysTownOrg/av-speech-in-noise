@@ -1,7 +1,9 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_PLAYLIST_INCLUDE_AVSPEECHINNOISE_PLAYLIST_SUBDIRECTORYTARGETPLAYLISTREADERHPP_
 #define AV_SPEECH_IN_NOISE_LIB_PLAYLIST_INCLUDE_AVSPEECHINNOISE_PLAYLIST_SUBDIRECTORYTARGETPLAYLISTREADERHPP_
 
+#include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/AdaptiveMethod.hpp>
+
 #include <memory>
 #include <stdexcept>
 #include <vector>
@@ -12,16 +14,15 @@ using LocalUrls = typename std::vector<av_speech_in_noise::LocalUrl>;
 
 class TargetPlaylistFactory {
   public:
-    virtual ~TargetPlaylistFactory() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        TargetPlaylistFactory);
     virtual auto make()
         -> std::shared_ptr<av_speech_in_noise::TargetPlaylist> = 0;
 };
 
 class DirectoryReader {
   public:
-    virtual ~DirectoryReader() = default;
-    DirectoryReader() = default;
-    DirectoryReader(const DirectoryReader &) = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(DirectoryReader);
     class CannotRead : public std::runtime_error {
       public:
         explicit CannotRead(const std::string &s) : std::runtime_error{s} {}

@@ -1,5 +1,4 @@
 #include "SubdirectoryTargetPlaylistReader.hpp"
-#include "av-speech-in-noise/Model.hpp"
 
 #include <filesystem>
 
@@ -27,7 +26,7 @@ auto SubdirectoryTargetPlaylistReader::read(const LocalUrl &directory)
         if (subDirectories.empty())
             add(lists, targetListFactory, directory);
 
-    } catch (const DirectoryReader::CannotRead &e) {
+    } catch (const DirectoryReader::CannotRead &) {
     }
     return lists;
 }

@@ -1,9 +1,14 @@
 #include "DirectoryReaderStub.hpp"
 #include "assert-utility.hpp"
+
 #include <av-speech-in-noise/playlist/FileFilterDecorator.hpp>
 #include <av-speech-in-noise/playlist/RandomizedTargetPlaylists.hpp>
+
 #include <gtest/gtest.h>
+
 #include <algorithm>
+#include <iterator>
+#include <memory>
 
 namespace av_speech_in_noise {
 static auto operator==(const LocalUrl &a, const LocalUrl &b) -> bool {
@@ -578,28 +583,34 @@ RANDOM_SUBSET_FILES_TEST(returnsAllFilesIfLessThanAvailable) {
 
 class DirectoryReaderCompositeTests : public ::testing::Test {
   protected:
-    std::vector<DirectoryReaderStub> decorated;
+    std::vector<std::unique_ptr<DirectoryReaderStub>> decorated;
 
     auto construct() -> DirectoryReaderComposite {
         std::vector<DirectoryReader *> ptrs;
         for (auto &d : decorated)
-            ptrs.push_back(&d);
+            ptrs.push_back(d.get());
         return DirectoryReaderComposite{ptrs};
     }
 
-    void setDecoratedCount(int N) { decorated.resize(N); }
+    void setDecoratedCount(int N) {
+        decorated.clear();
+        std::generate_n(std::back_inserter(decorated), N,
+            []() { return std::make_unique<DirectoryReaderStub>(); });
+    }
 
     void assertEachDecoratedDirectory(const std::string &expected, int N) {
         for (int i = 0; i < N; ++i)
             AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-                expected, decorated.at(i).directory());
+                expected, decorated.at(i)->directory());
     }
 
-    auto decoratedAt(int n) -> auto & { return decorated.at(n); }
+    auto decoratedAt(int n) -> const std::unique_ptr<DirectoryReaderStub> & {
+        return decorated.at(n);
+    }
 
     void setFileNamesForDecorated(
         std::vector<av_speech_in_noise::LocalUrl> v, int n) {
-        decoratedAt(n).setFileNames(std::move(v));
+        decoratedAt(n)->setFileNames(std::move(v));
     }
 };
 
@@ -628,13 +639,13 @@ TEST_F(DirectoryReaderCompositeTests,
     auto reader = construct();
     subDirectories(reader, {"a"});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, directory(decoratedAt(0)));
+        std::string{"a"}, directory(*decoratedAt(0)));
 }
 
 DIRECTORY_READER_COMPOSITE_TEST(returnsSubdirectoriesFromFirstDecorated) {
     setDecoratedCount(3);
     auto reader = construct();
-    decoratedAt(0).setSubDirectories({{"a"}, {"b"}, {"c"}});
+    decoratedAt(0)->setSubDirectories({{"a"}, {"b"}, {"c"}});
     assertEqual({{"a"}, {"b"}, {"c"}}, subDirectories(reader));
 }
 }
