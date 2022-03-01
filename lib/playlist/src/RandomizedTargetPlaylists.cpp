@@ -1,6 +1,8 @@
 #include "RandomizedTargetPlaylists.hpp"
 #include "SubdirectoryTargetPlaylistReader.hpp"
+
 #include <algorithm>
+#include <filesystem>
 
 namespace av_speech_in_noise {
 static auto filesIn(DirectoryReader *reader, const LocalUrl &s) -> LocalUrls {
@@ -24,7 +26,7 @@ static auto currentFile(const LocalUrls &v) -> LocalUrl {
 
 static auto joinPaths(const LocalUrl &directory, const LocalUrl &file)
     -> LocalUrl {
-    return {directory.path + '/' + file.path};
+    return {std::filesystem::path{directory.path} / file.path};
 }
 
 static auto fullPathToLastFile(
