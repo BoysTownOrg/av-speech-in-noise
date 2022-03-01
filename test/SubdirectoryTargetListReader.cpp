@@ -1,8 +1,12 @@
 #include "DirectoryReaderStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "assert-utility.hpp"
+#include "CannotReadDirectory.hpp"
+
 #include <av-speech-in-noise/playlist/SubdirectoryTargetPlaylistReader.hpp>
+
 #include <gtest/gtest.h>
+
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
@@ -94,6 +98,16 @@ TEST_F(SubdirectoryTargetPlaylistReaderTests,
     auto actual{read()};
     EXPECT_EQ(1, actual.size());
     EXPECT_EQ(targetList(0), actual.at(0));
+}
+
+class SubdirectoryTargetPlaylistReaderFailureTests : public ::testing::Test {};
+
+TEST_F(SubdirectoryTargetPlaylistReaderFailureTests, returnsEmptyList) {
+    TargetPlaylistFactoryStub targetListFactory;
+    CannotReadDirectory directoryReader;
+    SubdirectoryTargetPlaylistReader listReader{
+        &targetListFactory, &directoryReader};
+    EXPECT_TRUE(listReader.read({""}).empty());
 }
 }
 }

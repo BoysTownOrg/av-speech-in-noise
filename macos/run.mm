@@ -90,8 +90,13 @@ class TimerImpl : public Timer {
 
 namespace av_speech_in_noise {
 static auto contents(NSString *parent) -> NSArray<NSString *> * {
-    return [[NSFileManager defaultManager] contentsOfDirectoryAtPath:parent
-                                                               error:nil];
+    NSError *error{nil};
+    const auto contents{
+        [[NSFileManager defaultManager] contentsOfDirectoryAtPath:parent
+                                                            error:&error]};
+    if (contents == nil)
+        throw DirectoryReader::CannotRead{string([error localizedDescription])};
+    return contents;
 }
 
 static auto collectContentsIf(const LocalUrl &directory,
