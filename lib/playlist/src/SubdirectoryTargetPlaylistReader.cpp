@@ -9,7 +9,7 @@ auto SubdirectoryTargetPlaylistReader::read(const LocalUrl &directory)
     -> lists_type {
     lists_type lists{};
     try {
-        auto subDirectories_ = subDirectories(directory);
+        auto subDirectories_ = directoryReader->subDirectories(directory);
         for (const auto &subDirectory : subDirectories_) {
             lists.push_back(targetListFactory->make());
             auto fullPath{directory.path};
@@ -23,10 +23,5 @@ auto SubdirectoryTargetPlaylistReader::read(const LocalUrl &directory)
     } catch (const DirectoryReader::CannotRead &e) {
     }
     return lists;
-}
-
-auto SubdirectoryTargetPlaylistReader::subDirectories(const LocalUrl &directory)
-    -> LocalUrls {
-    return directoryReader->subDirectories(directory);
 }
 }

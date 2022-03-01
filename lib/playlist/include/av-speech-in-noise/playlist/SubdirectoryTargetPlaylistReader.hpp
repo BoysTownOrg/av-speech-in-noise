@@ -38,9 +38,6 @@ class SubdirectoryTargetPlaylistReader : public TargetPlaylistReader {
     SubdirectoryTargetPlaylistReader(
         TargetPlaylistFactory *, DirectoryReader *);
     auto read(const LocalUrl &) -> lists_type override;
-
-  private:
-    auto subDirectories(const LocalUrl &directory) -> LocalUrls;
 };
 }
 
