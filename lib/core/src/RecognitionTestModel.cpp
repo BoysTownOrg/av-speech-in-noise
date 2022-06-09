@@ -431,6 +431,7 @@ void RecognitionTestModelImpl::fadeOutComplete() {
 
 void RecognitionTestModelImpl::submit(
     const coordinate_response_measure::Response &response) {
+    audioRecorder.stop();
     saveOutputFileAndPrepareNextTrialAfter(
         [&]() {
             testMethod->submit(response);

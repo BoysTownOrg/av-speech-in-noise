@@ -386,10 +386,15 @@ class AudioRecorderStub : public AudioRecorder {
 
     [[nodiscard]] auto initialized() const -> bool { return initialized_; }
 
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+
+    void stop() { stopped_ = true; }
+
   private:
     LocalUrl fileUrl_;
     bool started_{};
     bool initialized_{};
+    bool stopped_{};
 };
 
 void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel.dB_SPL = x; }
@@ -575,6 +580,12 @@ void setSampleRateHz(MaskerPlayerStub &player, double x) {
 void fadeInComplete(
     MaskerPlayerStub &player, const AudioSampleTimeWithOffset &t) {
     player.fadeInComplete(t);
+}
+
+void assertStopsAudioRecorder(UseCase &useCase, RecognitionTestModelImpl &model,
+    AudioRecorderStub &audioRecorder) {
+    run(useCase, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.stopped());
 }
 
 class RecognitionTestModelTests : public ::testing::Test {
@@ -1439,6 +1450,13 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(submitConsonantSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingConsonant);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    submitCoordinateStopsAudioRecordingForAudioRecordingEnabledTest) {
+    run(initializingTestWithAudioRecording, model);
+    assertStopsAudioRecorder(
+        submittingCoordinateResponse, model, audioRecorder);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
