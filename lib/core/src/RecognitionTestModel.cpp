@@ -304,10 +304,6 @@ void RecognitionTestModelImpl::attach(Model::Observer *listener) {
 void RecognitionTestModelImpl::initialize(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
-    targetPlayer.useAllChannels();
-    useAllChannels(maskerPlayer);
-    clearChannelDelays(maskerPlayer);
-    turnOff(eyeTracking);
 }
 
 void RecognitionTestModelImpl::initialize_(
@@ -334,6 +330,11 @@ void RecognitionTestModelImpl::initialize_(
         maskerPlayer, maskerLevel_, fullScaleLevel_);
     testMethod->writeTestingParameters(outputFile);
     trialNumber_ = 1;
+
+    useAllChannels(targetPlayer);
+    useAllChannels(maskerPlayer);
+    clearChannelDelays(maskerPlayer);
+    turnOff(eyeTracking);
 }
 
 void RecognitionTestModelImpl::initializeWithSingleSpeaker(
@@ -341,34 +342,24 @@ void RecognitionTestModelImpl::initializeWithSingleSpeaker(
     initialize_(testMethod_, test);
     useFirstChannelOnly(targetPlayer);
     maskerPlayer.useFirstChannelOnly();
-    clearChannelDelays(maskerPlayer);
-    turnOff(eyeTracking);
 }
 
 void RecognitionTestModelImpl::initializeWithDelayedMasker(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
     useFirstChannelOnly(targetPlayer);
-    useAllChannels(maskerPlayer);
     maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
-    turnOff(eyeTracking);
 }
 
 void RecognitionTestModelImpl::initializeWithEyeTracking(
     TestMethod *method, const Test &test) {
     initialize_(method, test);
-    useAllChannels(targetPlayer);
-    useAllChannels(maskerPlayer);
-    clearChannelDelays(maskerPlayer);
     eyeTracking = true;
 }
 
 void RecognitionTestModelImpl::initializeWithAudioRecording(
     TestMethod *method, const Test &test) {
     initialize_(method, test);
-    useAllChannels(targetPlayer);
-    useAllChannels(maskerPlayer);
-    clearChannelDelays(maskerPlayer);
 }
 
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
