@@ -379,11 +379,17 @@ class AudioRecorderStub : public AudioRecorder {
 
     auto fileUrl() -> LocalUrl { return fileUrl_; }
 
-    void initialize(const LocalUrl &url) { fileUrl_ = url; }
+    void initialize(const LocalUrl &url) override {
+        fileUrl_ = url;
+        initialized_ = true;
+    }
+
+    [[nodiscard]] auto initialized() const -> bool { return initialized_; }
 
   private:
     LocalUrl fileUrl_;
     bool started_{};
+    bool initialized_{};
 };
 
 void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel.dB_SPL = x; }
@@ -968,6 +974,12 @@ RECOGNITION_TEST_MODEL_TEST(
     run(initializingTestWithAudioRecording, model);
     run(playingTrial, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("tbd.wav", audioRecorder.fileUrl().path);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotInitializeRecorder) {
+    run(initializingTest, model);
+    run(playingTrial, model);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(audioRecorder.initialized());
 }
 
 RECOGNITION_TEST_MODEL_TEST(

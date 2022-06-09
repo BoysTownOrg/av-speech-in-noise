@@ -374,7 +374,8 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
         settings.audioDevice);
 
     playTrialTime_ = clock.time();
-    audioRecorder.initialize(LocalUrl{"tbd.wav"});
+    if (audioRecordingEnabled)
+        audioRecorder.initialize(LocalUrl{"tbd.wav"});
     if (eyeTracking) {
         eyeTracker.allocateRecordingTimeSeconds(
             Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);
