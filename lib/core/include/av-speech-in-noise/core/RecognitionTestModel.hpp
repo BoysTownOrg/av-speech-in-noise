@@ -87,6 +87,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     int trialNumber_{};
     Condition condition{};
     bool eyeTracking{};
+    bool audioRecordingEnabled{};
     bool trialInProgress_{};
 };
 }

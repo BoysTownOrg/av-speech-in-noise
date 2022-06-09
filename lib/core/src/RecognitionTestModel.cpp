@@ -335,6 +335,7 @@ void RecognitionTestModelImpl::initialize_(
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
     turnOff(eyeTracking);
+    audioRecordingEnabled = false;
 }
 
 void RecognitionTestModelImpl::initializeWithSingleSpeaker(
@@ -360,6 +361,7 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
 void RecognitionTestModelImpl::initializeWithAudioRecording(
     TestMethod *method, const Test &test) {
     initialize_(method, test);
+    audioRecordingEnabled = true;
 }
 
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
@@ -421,7 +423,8 @@ void RecognitionTestModelImpl::fadeOutComplete() {
         eyeTracker.stop();
     listener_->trialComplete();
     trialInProgress_ = false;
-    audioRecorder.start();
+    if (audioRecordingEnabled)
+        audioRecorder.start();
 }
 
 void RecognitionTestModelImpl::submit(

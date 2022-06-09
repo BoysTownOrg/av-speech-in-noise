@@ -988,6 +988,13 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    fadeOutCompleteForDefaultTestDoesNotStartRecording) {
+    run(initializingTest, model);
+    fadeOutComplete(maskerPlayer);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(audioRecorder.started());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     playTrialForDefaultTestDoesNotAllocateRecordingTimeForEyeTracking) {
     assertPlayTrialDoesNotAllocateRecordingTime(initializingTest);
 }
