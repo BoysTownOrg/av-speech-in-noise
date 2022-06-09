@@ -6,6 +6,7 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
@@ -376,7 +377,12 @@ class AudioRecorderStub : public AudioRecorder {
 
     void start() override { started_ = true; }
 
+    auto fileUrl() -> LocalUrl { return fileUrl_; }
+
+    void initialize(const LocalUrl &url) { fileUrl_ = url; }
+
   private:
+    LocalUrl fileUrl_;
     bool started_{};
 };
 
@@ -955,6 +961,13 @@ RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotStartEyeTracking) {
     run(initializingTest, model);
     run(playingTrial, model);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(started(eyeTracker));
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playTrialForTestWithAudioRecordingInitializesRecorder) {
+    run(initializingTestWithAudioRecording, model);
+    run(playingTrial, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("tbd.wav", audioRecorder.fileUrl().path);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

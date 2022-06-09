@@ -7,6 +7,7 @@
 #include "IMaskerPlayer.hpp"
 #include "IRecognitionTestModel.hpp"
 #include "IOutputFile.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <string>
 
@@ -29,6 +30,7 @@ class Clock {
 class AudioRecorder {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(AudioRecorder);
+    virtual void initialize(const LocalUrl &) = 0;
     virtual void start() = 0;
 };
 
