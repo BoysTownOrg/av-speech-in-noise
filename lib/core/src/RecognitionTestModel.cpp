@@ -365,7 +365,9 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
 }
 
 void RecognitionTestModelImpl::initializeWithAudioRecording(
-    TestMethod *method, const Test &test) {}
+    TestMethod *method, const Test &test) {
+    initialize_(method, test);
+}
 
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);

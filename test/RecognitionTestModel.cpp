@@ -374,7 +374,7 @@ class AudioRecorderStub : public AudioRecorder {
   public:
     [[nodiscard]] auto started() const -> bool { return started_; }
 
-    void start() { started_ = true; }
+    void start() override { started_ = true; }
 
   private:
     bool started_{};
@@ -819,6 +819,12 @@ RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithEyeTrackingClosesOutputFile_Opens_AndWritesTestInOrder) {
     assertClosesOutputFileOpensAndWritesTestInOrder(
         initializingTestWithEyeTracking);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithAudioRecordingClosesOutputFile_Opens_AndWritesTestInOrder) {
+    assertClosesOutputFileOpensAndWritesTestInOrder(
+        initializingTestWithAudioRecording);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
