@@ -1460,6 +1460,13 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submitCoordinateDoesNotStopAudioRecordingForDefaultTest) {
+    run(initializingTest, model);
+    run(submittingCoordinateResponse, model);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(audioRecorder.stopped());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestThrowsRequestFailureIfFileFailsToOpen) {
     outputFile.throwOnOpen();
     assertCallThrowsRequestFailure(
