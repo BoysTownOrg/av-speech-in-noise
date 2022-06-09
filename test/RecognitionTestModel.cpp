@@ -857,6 +857,21 @@ RECOGNITION_TEST_MODEL_TEST(
     assertMaskerPlayerChannelDelaysCleared(initializingTestWithEyeTracking);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithAudioRecordingUsesAllMaskerPlayerChannels) {
+    assertUsesAllMaskerPlayerChannels(initializingTestWithAudioRecording);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithAudioRecordingUsesAllTargetPlayerChannels) {
+    assertUsesAllTargetPlayerChannels(initializingTestWithAudioRecording);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithAudioRecordingClearsAllMaskerPlayerChannelDelays) {
+    assertMaskerPlayerChannelDelaysCleared(initializingTestWithAudioRecording);
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializeTestClearsAllMaskerPlayerChannelDelays) {
     run(initializingTest, model);
     assertChannelDelaysCleared(maskerPlayer);
