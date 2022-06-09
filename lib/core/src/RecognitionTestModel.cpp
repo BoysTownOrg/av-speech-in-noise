@@ -286,11 +286,12 @@ static void saveOutputFileAndPrepareNextTrialAfter(
 }
 
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
-    OutputFile &outputFile, Randomizer &randomizer, EyeTracker &eyeTracker,
-    Clock &clock)
+    MaskerPlayer &maskerPlayer, AudioRecorder &audioRecorder,
+    ResponseEvaluator &evaluator, OutputFile &outputFile,
+    Randomizer &randomizer, EyeTracker &eyeTracker, Clock &clock)
     : maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
-      evaluator{evaluator}, outputFile{outputFile}, randomizer{randomizer},
+      audioRecorder{audioRecorder}, evaluator{evaluator},
+      outputFile{outputFile}, randomizer{randomizer},
       eyeTracker{eyeTracker}, clock{clock}, testMethod{&nullTestMethod} {
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
@@ -363,6 +364,9 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
     eyeTracking = true;
 }
 
+void RecognitionTestModelImpl::initializeWithAudioRecording(
+    TestMethod *method, const Test &test) {}
+
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
@@ -422,6 +426,7 @@ void RecognitionTestModelImpl::fadeOutComplete() {
         eyeTracker.stop();
     listener_->trialComplete();
     trialInProgress_ = false;
+    audioRecorder.start();
 }
 
 void RecognitionTestModelImpl::submit(

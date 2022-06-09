@@ -165,6 +165,19 @@ class InitializingTestWithEyeTracking : public UseCase {
     }
 };
 
+class InitializingTestWithAudioRecording : public UseCase {
+    TestMethod *method;
+    const Test &test;
+
+  public:
+    InitializingTestWithAudioRecording(TestMethod *method, const Test &test)
+        : method{method}, test{test} {}
+
+    void run(RecognitionTestModelImpl &model) override {
+        model.initializeWithAudioRecording(method, test);
+    }
+};
+
 class AudioDeviceUseCase : public virtual UseCase {
   public:
     virtual void setAudioDevice(std::string) = 0;
@@ -357,6 +370,16 @@ class ClockStub : public Clock {
     bool timeQueried_{};
 };
 
+class AudioRecorderStub : public AudioRecorder {
+  public:
+    [[nodiscard]] auto started() const -> bool { return started_; }
+
+    void start() { started_ = true; }
+
+  private:
+    bool started_{};
+};
+
 void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel.dB_SPL = x; }
 
 void setCurrentTarget(TestMethodStub &m, std::string s) {
@@ -547,13 +570,14 @@ class RecognitionTestModelTests : public ::testing::Test {
     ModelObserverStub listener;
     TargetPlayerStub targetPlayer;
     MaskerPlayerStub maskerPlayer;
+    AudioRecorderStub audioRecorder;
     ResponseEvaluatorStub evaluator;
     OutputFileStub outputFile;
     RandomizerStub randomizer;
     EyeTrackerStub eyeTracker;
     ClockStub clock;
-    RecognitionTestModelImpl model{targetPlayer, maskerPlayer, evaluator,
-        outputFile, randomizer, eyeTracker, clock};
+    RecognitionTestModelImpl model{targetPlayer, maskerPlayer, audioRecorder,
+        evaluator, outputFile, randomizer, eyeTracker, clock};
     TestMethodStub testMethod;
     Calibration calibration{};
     PlayingCalibration playingCalibration{calibration, targetPlayer};
@@ -568,6 +592,8 @@ class RecognitionTestModelTests : public ::testing::Test {
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
         &testMethod};
     InitializingTestWithEyeTracking initializingTestWithEyeTracking{
+        &testMethod, test};
+    InitializingTestWithAudioRecording initializingTestWithAudioRecording{
         &testMethod, test};
     PlayingTrial playingTrial;
     SubmittingCoordinateResponse submittingCoordinateResponse;
@@ -931,6 +957,13 @@ RECOGNITION_TEST_MODEL_TEST(
     run(initializingTest, model);
     fadeOutComplete(maskerPlayer);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(stopped(eyeTracker));
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    fadeOutCompleteForTestWithAudioRecordingStartsRecording) {
+    run(initializingTestWithAudioRecording, model);
+    fadeOutComplete(maskerPlayer);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.started());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
