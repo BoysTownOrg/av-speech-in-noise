@@ -391,6 +391,13 @@ TEST_SETTINGS_INTERPRETER_TEST(
         fixedLevelTestIdentity);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithAllTargetsAndAudioRecordingPassesMethod) {
+    assertPassesTestMethod(interpreter, model, sessionController,
+        Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording,
+        fixedLevelTestIdentity);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesTestIdentity) {
     assertOverridesTestIdentity(interpreter, model, sessionController,
         Method::adaptivePassFail, adaptiveTestIdentity);
