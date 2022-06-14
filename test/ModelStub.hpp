@@ -3,6 +3,7 @@
 
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
+
 #include <utility>
 
 namespace av_speech_in_noise {
