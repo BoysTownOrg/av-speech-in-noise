@@ -3,14 +3,17 @@
 #include "TargetPlaylistStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/Model.hpp"
+
+#include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
 #include <av-speech-in-noise/core/SubmittingKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingNumberKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingSyllable.hpp>
 #include <av-speech-in-noise/core/Model.hpp>
+
 #include <gtest/gtest.h>
+
 #include <sstream>
 #include <utility>
 
@@ -295,17 +298,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         return coordinateResponse_;
     }
 
-    [[nodiscard]] auto correctKeywords() const { return correctKeywords_; }
-
     [[nodiscard]] auto consonantResponse() const { return consonantResponse_; }
-
-    auto threeKeywords() -> const ThreeKeywordsResponse * {
-        return threeKeywords_;
-    }
-
-    auto syllableResponse() -> const SyllableResponse * {
-        return syllableResponse_;
-    }
 
     [[nodiscard]] auto testMethod() const { return testMethod_; }
 
@@ -335,11 +328,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         testMethodToCallNextTargetOnSubmitConsonants_ = t;
     }
 
-    void callNextOnSubmitCorrectKeywordsOrCorrectOrIncorrect(TestMethod *t) {
-        testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_ =
-            t;
-    }
-
     auto playTrialTime() -> std::string override { return playTrialTime_; }
 
     void setPlayTrialTime(std::string s) { playTrialTime_ = std::move(s); }
@@ -351,8 +339,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     AdaptiveMethodStub &adaptiveMethod;
     FixedLevelMethodStub &fixedLevelMethodStub;
     TestMethod *testMethodToCallNextTargetOnSubmitConsonants_{};
-    TestMethod *
-        testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_{};
     const Model::Observer *listener_{};
     const Calibration *calibration_{};
     const Calibration *leftSpeakerCalibration_{};
@@ -361,10 +347,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const Test *test_{};
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
-    const CorrectKeywords *correctKeywords_{};
     const ConsonantResponse *consonantResponse_{};
-    const ThreeKeywordsResponse *threeKeywords_{};
-    const SyllableResponse *syllableResponse_{};
     int trialNumber_{};
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
