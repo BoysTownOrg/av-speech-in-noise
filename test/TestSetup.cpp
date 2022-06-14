@@ -1,9 +1,12 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "SessionViewStub.hpp"
+
 #include <av-speech-in-noise/ui/TestSetupImpl.hpp>
 #include <av-speech-in-noise/Model.hpp>
+
 #include <gtest/gtest.h>
+
 #include <algorithm>
 #include <utility>
 #include <vector>
