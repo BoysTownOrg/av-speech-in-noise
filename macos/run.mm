@@ -303,9 +303,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         &onlyIncludesTargetFileExtensions, &randomizer};
     static FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
     static LocalTimeClock localTimeClock;
+    static AvFoundationAudioRecorder audioRecorder;
     static RecognitionTestModelImpl recognitionTestModel{targetPlayer,
-        maskerPlayer, responseEvaluator, outputFile, randomizer, eyeTracker,
-        localTimeClock};
+        maskerPlayer, audioRecorder, responseEvaluator, outputFile, randomizer,
+        eyeTracker, localTimeClock};
     static RandomizedTargetPlaylistWithReplacement::Factory
         targetsWithReplacementFactory{
             &onlyIncludesTargetFileExtensions, &randomizer};
