@@ -252,7 +252,10 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     RealLevel fullScaleLevel, bool eyeTracking,
     TargetStartTime lastTargetStartTime,
     EyeTrackerTargetPlayerSynchronization
-        lastEyeTrackerTargetPlayerSynchronization) {
+        lastEyeTrackerTargetPlayerSynchronization,
+    bool audioRecordingEnabled, AudioRecorder &audioRecorder) {
+    if (audioRecordingEnabled)
+        audioRecorder.stop();
     if (eyeTracking) {
         outputFile.write(lastTargetStartTime);
         outputFile.write(lastEyeTrackerTargetPlayerSynchronization);
@@ -276,13 +279,15 @@ static void saveOutputFileAndPrepareNextTrialAfter(
     RealLevel fullScaleLevel, bool eyeTracking,
     TargetStartTime lastTargetStartTime,
     EyeTrackerTargetPlayerSynchronization
-        lastEyeTrackerTargetPlayerSynchronization) {
+        lastEyeTrackerTargetPlayerSynchronization,
+    bool audioRecordingEnabled, AudioRecorder &audioRecorder) {
     f();
     save(outputFile);
     prepareNextTrialIfNeeded(testMethod, trialNumber_, outputFile, randomizer,
         targetPlayer, maskerPlayer, eyeTracker, maskerLevel, fullScaleLevel,
         eyeTracking, lastTargetStartTime,
-        lastEyeTrackerTargetPlayerSynchronization);
+        lastEyeTrackerTargetPlayerSynchronization, audioRecordingEnabled,
+        audioRecorder);
 }
 
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
@@ -431,8 +436,6 @@ void RecognitionTestModelImpl::fadeOutComplete() {
 
 void RecognitionTestModelImpl::submit(
     const coordinate_response_measure::Response &response) {
-    if (audioRecordingEnabled)
-        audioRecorder.stop();
     saveOutputFileAndPrepareNextTrialAfter(
         [&]() {
             testMethod->submit(response);
@@ -440,21 +443,24 @@ void RecognitionTestModelImpl::submit(
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
         maskerPlayer, eyeTracker, maskerLevel_, fullScaleLevel_, eyeTracking,
-        lastTargetStartTime, lastEyeTrackerTargetPlayerSynchronization);
+        lastTargetStartTime, lastEyeTrackerTargetPlayerSynchronization,
+        audioRecordingEnabled, audioRecorder);
 }
 
 void RecognitionTestModelImpl::submit(const ConsonantResponse &) {
     saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
         outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracker,
         maskerLevel_, fullScaleLevel_, eyeTracking, lastTargetStartTime,
-        lastEyeTrackerTargetPlayerSynchronization);
+        lastEyeTrackerTargetPlayerSynchronization, audioRecordingEnabled,
+        audioRecorder);
 }
 
 void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
         outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracker,
         maskerLevel_, fullScaleLevel_, eyeTracking, lastTargetStartTime,
-        lastEyeTrackerTargetPlayerSynchronization);
+        lastEyeTrackerTargetPlayerSynchronization, audioRecordingEnabled,
+        audioRecorder);
 }
 
 void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {

@@ -582,12 +582,6 @@ void fadeInComplete(
     player.fadeInComplete(t);
 }
 
-void assertStopsAudioRecorder(UseCase &useCase, RecognitionTestModelImpl &model,
-    AudioRecorderStub &audioRecorder) {
-    run(useCase, model);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.stopped());
-}
-
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelObserverStub listener;
@@ -1453,16 +1447,16 @@ RECOGNITION_TEST_MODEL_TEST(submitConsonantSavesOutputFileAfterWritingTrial) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    submitCoordinateStopsAudioRecordingForAudioRecordingEnabledTest) {
+    preparingNextTrialStopsAudioRecordingForAudioRecordingEnabledTest) {
     run(initializingTestWithAudioRecording, model);
-    assertStopsAudioRecorder(
-        submittingCoordinateResponse, model, audioRecorder);
+    model.prepareNextTrialIfNeeded();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.stopped());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    submitCoordinateDoesNotStopAudioRecordingForDefaultTest) {
+    preparingNextTrialDoesNotStopAudioRecordingForDefaultTest) {
     run(initializingTest, model);
-    run(submittingCoordinateResponse, model);
+    model.prepareNextTrialIfNeeded();
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(audioRecorder.stopped());
 }
 
