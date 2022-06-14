@@ -1205,6 +1205,12 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
+    initializingFixedLevelTestWithAllTargetsAndAudioRecordingInitializesFixedLevelMethod) {
+    assertInitializesFixedLevelMethod(
+        initializingFixedLevelTestWithAllTargetsAndAudioRecording);
+}
+
+MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);

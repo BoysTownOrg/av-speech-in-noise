@@ -105,6 +105,7 @@ void ModelImpl::initializeWithAllTargetsAndEyeTracking(
 
 void ModelImpl::initializeWithAllTargetsAndAudioRecording(
     const FixedLevelTest &test) {
+    av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
     av_speech_in_noise::initializeWithAudioRecording(
         model, fixedLevelMethod, test);
 }
