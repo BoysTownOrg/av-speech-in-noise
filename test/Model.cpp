@@ -235,6 +235,12 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         initializedWithEyeTracking_ = true;
     }
 
+    void initializeWithAudioRecording(
+        TestMethod *method, const Test &test) override {
+        testMethod_ = method;
+        test_ = &test;
+    }
+
     auto trialNumber() -> int override { return trialNumber_; }
 
     void setTrialNumber(int n) { trialNumber_ = n; }
@@ -729,6 +735,29 @@ class InitializingFixedLevelTestWithEachTargetNTimes
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
+class InitializingFixedLevelTestWithAllTargetsAndAudioRecording
+    : public InitializingFixedLevelTest {
+    FixedLevelTest test_;
+    FixedLevelMethodStub *method;
+
+  public:
+    explicit InitializingFixedLevelTestWithAllTargetsAndAudioRecording(
+        FixedLevelMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override {
+        model.initializeWithAllTargetsAndAudioRecording(test_);
+    }
+
+    void run(ModelImpl &model, const FixedLevelTest &test) override {
+        model.initializeWithAllTargetsAndAudioRecording(test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
 auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
     return m.initializedWithEyeTracking();
 }
@@ -827,6 +856,9 @@ class ModelTests : public ::testing::Test {
             &fixedLevelMethod};
     InitializingFixedLevelTestWithEachTargetNTimes
         initializingFixedLevelTestWithEachTargetNTimes{&fixedLevelMethod};
+    InitializingFixedLevelTestWithAllTargetsAndAudioRecording
+        initializingFixedLevelTestWithAllTargetsAndAudioRecording{
+            &fixedLevelMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
@@ -1327,6 +1359,12 @@ MODEL_TEST(
     initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesInternalModel) {
     assertInitializesInternalModel(
         initializingFixedLevelTestWithAllTargetsAndEyeTracking);
+}
+
+MODEL_TEST(
+    initializeFixedLevelTestWithAllTargetsAndAudioRecordingInitializesInternalModel) {
+    assertInitializesInternalModel(
+        initializingFixedLevelTestWithAllTargetsAndAudioRecording);
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesInternalModel) {

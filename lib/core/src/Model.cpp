@@ -60,6 +60,11 @@ static void initializeWithEyeTracking(
     model.initializeWithEyeTracking(&method, test);
 }
 
+static void initializeWithAudioRecording(
+    RecognitionTestModel &model, TestMethod &method, const Test &test) {
+    model.initializeWithAudioRecording(&method, test);
+}
+
 void ModelImpl::initializeWithTargetReplacement(
     const FixedLevelFixedTrialsTest &test) {
     av_speech_in_noise::initialize(
@@ -95,6 +100,12 @@ void ModelImpl::initializeWithAllTargetsAndEyeTracking(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
     av_speech_in_noise::initializeWithEyeTracking(
+        model, fixedLevelMethod, test);
+}
+
+void ModelImpl::initializeWithAllTargetsAndAudioRecording(
+    const FixedLevelTest &test) {
+    av_speech_in_noise::initializeWithAudioRecording(
         model, fixedLevelMethod, test);
 }
 
