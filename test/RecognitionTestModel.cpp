@@ -69,10 +69,6 @@ class TestMethodStub : public TestMethod {
 
     void setCurrentTarget(std::string s) { currentTarget_ = std::move(s); }
 
-    void setCurrentTargetWhenNextTarget(std::string s) {
-        currentTargetWhenNextTarget_ = std::move(s);
-    }
-
     void submit(const coordinate_response_measure::Response &) override {
         insert(log_, "submitCoordinateResponse ");
     }
@@ -388,7 +384,7 @@ class AudioRecorderStub : public AudioRecorder {
 
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
 
-    void stop() { stopped_ = true; }
+    void stop() override { stopped_ = true; }
 
   private:
     LocalUrl fileUrl_;
