@@ -121,6 +121,8 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     auto log() -> const std::stringstream & { return log_; }
 
+    void log(const std::string &s) { log_ << s; }
+
     auto complete() -> bool override { return {}; }
 
     auto nextTarget() -> LocalUrl override {
@@ -211,6 +213,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         nextTrialPreparedIfNeeded_ = true;
         fixedLevelMethodStub.setCurrentTargetPath("TOOLATE");
         adaptiveMethod.log("TOOLATE ");
+        fixedLevelMethodStub.log("TOOLATE ");
     }
 
     void initialize(TestMethod *method, const Test &test) override {
@@ -1174,13 +1177,6 @@ SUBMITTING_SYLLABLE(submitCorrectSyllable) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().correct);
 }
 
-SUBMITTING_CONSONANT_TEST(submitConsonantPassesConsonant) {
-    ConsonantResponse r;
-    interactor.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &std::as_const(r), model.consonantResponse());
-}
-
 SUBMITTING_CONSONANT_TEST(submitConsonantSubmitsResponse) {
     ConsonantResponse r;
     interactor.submit(r);
@@ -1194,13 +1190,20 @@ SUBMITTING_CONSONANT_TEST(submitConsonantWritesTrialAfterSubmittingResponse) {
         contains(testMethod.log(), "submitConsonant writeLastConsonant "));
 }
 
-SUBMITTING_CONSONANT_TEST(
-    submitConsonantQueriesNextTargetAfterWritingResponse) {
-    model.callNextOnSubmitConsonants(&testMethod);
-    ConsonantResponse r;
-    interactor.submit(r);
+SUBMITTING_CONSONANT_TEST(queriesNextTargetAfterWritingResponse) {
+    interactor.submit({});
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        contains(testMethod.log(), "writeLastConsonant nextTarget "));
+        contains(testMethod.log(), "writeLastConsonant TOOLATE "));
+}
+
+SUBMITTING_CONSONANT_TEST(preparesNextTrialIfNeeded) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_CONSONANT_TEST(savesOutputFileAfterWritingTrial) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
 }
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)

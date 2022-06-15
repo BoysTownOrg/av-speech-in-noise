@@ -8,6 +8,7 @@ InteractorImpl::InteractorImpl(FixedLevelMethod &method,
 void InteractorImpl::submit(const ConsonantResponse &r) {
     method.submit(r);
     method.writeLastConsonant(outputFile);
-    model.submit(r);
+    outputFile.save();
+    model.prepareNextTrialIfNeeded();
 }
 }
