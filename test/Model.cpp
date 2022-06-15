@@ -3,14 +3,18 @@
 #include "TargetPlaylistStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/Model.hpp"
+
+#include <av-speech-in-noise/Model.hpp>
+#include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
 #include <av-speech-in-noise/core/SubmittingKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingNumberKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingSyllable.hpp>
 #include <av-speech-in-noise/core/Model.hpp>
+
 #include <gtest/gtest.h>
+
 #include <sstream>
 #include <utility>
 
@@ -889,6 +893,17 @@ class SubmittingFreeResponseTests : public ::testing::Test {
     FreeResponse freeResponse;
 };
 
+class SubmittingConsonantTests : public ::testing::Test {
+  protected:
+    AdaptiveMethodStub adaptiveTestMethod;
+    FixedLevelMethodStub testMethod;
+    RecognitionTestModelStub model{adaptiveTestMethod, testMethod};
+    OutputFileStub outputFile;
+    submitting_consonant::InteractorImpl interactor{
+        testMethod, model, outputFile};
+    ConsonantResponse response;
+};
+
 class SubmittingPassFailTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub testMethod;
@@ -937,6 +952,8 @@ class SubmittingSyllableTests : public ::testing::Test {
 #define SUBMITTING_PASS_FAIL_TEST(a) TEST_F(SubmittingPassFailTests, a)
 
 #define SUBMITTING_KEYWORDS_TEST(a) TEST_F(SubmittingKeywordsTests, a)
+
+#define SUBMITTING_CONSONANT_TEST(a) TEST_F(SubmittingConsonantTests, a)
 
 #define SUBMITTING_NUMBER_KEYWORDS_TEST(a)                                     \
     TEST_F(SubmittingNumberKeywordsTests, a)
@@ -1155,6 +1172,35 @@ SUBMITTING_SYLLABLE(submitCorrectSyllable) {
     syllableResponse.syllable = Syllable::dji;
     interactor.submit(syllableResponse);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().correct);
+}
+
+SUBMITTING_CONSONANT_TEST(submitConsonantPassesConsonant) {
+    ConsonantResponse r;
+    interactor.submit(r);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &std::as_const(r), model.consonantResponse());
+}
+
+SUBMITTING_CONSONANT_TEST(submitConsonantSubmitsResponse) {
+    ConsonantResponse r;
+    interactor.submit(r);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedConsonant());
+}
+
+SUBMITTING_CONSONANT_TEST(submitConsonantWritesTrialAfterSubmittingResponse) {
+    ConsonantResponse r;
+    interactor.submit(r);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        contains(testMethod.log(), "submitConsonant writeLastConsonant "));
+}
+
+SUBMITTING_CONSONANT_TEST(
+    submitConsonantQueriesNextTargetAfterWritingResponse) {
+    model.callNextOnSubmitConsonants(&testMethod);
+    ConsonantResponse r;
+    interactor.submit(r);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        contains(testMethod.log(), "writeLastConsonant nextTarget "));
 }
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
@@ -1401,34 +1447,6 @@ MODEL_TEST(submitResponsePassesCoordinateResponse) {
     model.submit(response);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(response), internalModel.coordinateResponse());
-}
-
-MODEL_TEST(submitConsonantPassesConsonant) {
-    ConsonantResponse r;
-    model.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &std::as_const(r), internalModel.consonantResponse());
-}
-
-MODEL_TEST(submitConsonantSubmitsResponse) {
-    ConsonantResponse r;
-    model.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(fixedLevelMethod.submittedConsonant());
-}
-
-MODEL_TEST(submitConsonantWritesTrialAfterSubmittingResponse) {
-    ConsonantResponse r;
-    model.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(
-        fixedLevelMethod.log(), "submitConsonant writeLastConsonant "));
-}
-
-MODEL_TEST(submitConsonantQueriesNextTargetAfterWritingResponse) {
-    internalModel.callNextOnSubmitConsonants(&fixedLevelMethod);
-    ConsonantResponse r;
-    model.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        contains(fixedLevelMethod.log(), "writeLastConsonant nextTarget "));
 }
 
 MODEL_TEST(playTrialPassesAudioSettings) {
