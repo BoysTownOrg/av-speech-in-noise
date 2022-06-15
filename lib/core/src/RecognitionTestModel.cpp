@@ -436,13 +436,6 @@ void RecognitionTestModelImpl::submit(
         lastTargetStartTime, lastEyeTrackerTargetPlayerSynchronization);
 }
 
-void RecognitionTestModelImpl::submit(const ConsonantResponse &) {
-    saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracker,
-        maskerLevel_, fullScaleLevel_, eyeTracking, lastTargetStartTime,
-        lastEyeTrackerTargetPlayerSynchronization);
-}
-
 void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
         outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracker,

@@ -256,12 +256,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         coordinateResponse_ = &p;
     }
 
-    void submit(const ConsonantResponse &p) override {
-        consonantResponse_ = &p;
-        if (testMethodToCallNextTargetOnSubmitConsonants_ != nullptr)
-            testMethodToCallNextTargetOnSubmitConsonants_->nextTarget();
-    }
-
     auto testComplete() -> bool override { return complete_; }
 
     auto audioDevices() -> std::vector<std::string> override {
