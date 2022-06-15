@@ -47,7 +47,7 @@ class Controller : public Control::Observer {
 
   private:
     TestController &testController;
-    Interactor &model;
+    Interactor &interactor;
     Control &control;
     Presenter &presenter;
 };

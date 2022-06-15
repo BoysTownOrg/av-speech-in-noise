@@ -1,11 +1,11 @@
 #include "Consonant.hpp"
 
 namespace av_speech_in_noise::submitting_consonant {
-Controller::Controller(TestController &testController, Interactor &model,
-    Control &view, Presenter &presenter)
-    : testController{testController}, model{model}, control{view},
-      presenter{presenter} {
-    view.attach(this);
+Controller::Controller(TestController &testController, Interactor &interactor,
+    Control &control, Presenter &presenter)
+    : testController{testController},
+      interactor{interactor}, control{control}, presenter{presenter} {
+    control.attach(this);
 }
 
 void Controller::notifyThatReadyButtonHasBeenClicked() {
@@ -14,7 +14,7 @@ void Controller::notifyThatReadyButtonHasBeenClicked() {
 }
 
 void Controller::notifyThatResponseButtonHasBeenClicked() {
-    model.submit(ConsonantResponse{control.consonant().front()});
+    interactor.submit(ConsonantResponse{control.consonant().front()});
     testController.notifyThatUserIsDoneRespondingAndIsReadyForNextTrial();
 }
 
