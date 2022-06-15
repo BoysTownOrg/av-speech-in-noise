@@ -3,14 +3,18 @@
 #include "TargetPlaylistStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/Model.hpp"
+
+#include <av-speech-in-noise/Model.hpp>
+#include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
 #include <av-speech-in-noise/core/SubmittingKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingNumberKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingSyllable.hpp>
 #include <av-speech-in-noise/core/Model.hpp>
+
 #include <gtest/gtest.h>
+
 #include <sstream>
 #include <utility>
 
@@ -117,6 +121,8 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     auto log() -> const std::stringstream & { return log_; }
 
+    void log(const std::string &s) { log_ << s; }
+
     auto complete() -> bool override { return {}; }
 
     auto nextTarget() -> LocalUrl override {
@@ -207,6 +213,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         nextTrialPreparedIfNeeded_ = true;
         fixedLevelMethodStub.setCurrentTargetPath("TOOLATE");
         adaptiveMethod.log("TOOLATE ");
+        fixedLevelMethodStub.log("TOOLATE ");
     }
 
     void initialize(TestMethod *method, const Test &test) override {
@@ -249,12 +256,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         coordinateResponse_ = &p;
     }
 
-    void submit(const ConsonantResponse &p) override {
-        consonantResponse_ = &p;
-        if (testMethodToCallNextTargetOnSubmitConsonants_ != nullptr)
-            testMethodToCallNextTargetOnSubmitConsonants_->nextTarget();
-    }
-
     auto testComplete() -> bool override { return complete_; }
 
     auto audioDevices() -> std::vector<std::string> override {
@@ -289,18 +290,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         return coordinateResponse_;
     }
 
-    [[nodiscard]] auto correctKeywords() const { return correctKeywords_; }
-
-    [[nodiscard]] auto consonantResponse() const { return consonantResponse_; }
-
-    auto threeKeywords() -> const ThreeKeywordsResponse * {
-        return threeKeywords_;
-    }
-
-    auto syllableResponse() -> const SyllableResponse * {
-        return syllableResponse_;
-    }
-
     [[nodiscard]] auto testMethod() const { return testMethod_; }
 
     [[nodiscard]] auto test() const { return test_; }
@@ -325,15 +314,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         audioDevices_ = std::move(v);
     }
 
-    void callNextOnSubmitConsonants(TestMethod *t) {
-        testMethodToCallNextTargetOnSubmitConsonants_ = t;
-    }
-
-    void callNextOnSubmitCorrectKeywordsOrCorrectOrIncorrect(TestMethod *t) {
-        testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_ =
-            t;
-    }
-
     auto playTrialTime() -> std::string override { return playTrialTime_; }
 
     void setPlayTrialTime(std::string s) { playTrialTime_ = std::move(s); }
@@ -344,9 +324,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     std::string playTrialTime_;
     AdaptiveMethodStub &adaptiveMethod;
     FixedLevelMethodStub &fixedLevelMethodStub;
-    TestMethod *testMethodToCallNextTargetOnSubmitConsonants_{};
-    TestMethod *
-        testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_{};
     const Model::Observer *listener_{};
     const Calibration *calibration_{};
     const Calibration *leftSpeakerCalibration_{};
@@ -355,10 +332,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const Test *test_{};
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
-    const CorrectKeywords *correctKeywords_{};
-    const ConsonantResponse *consonantResponse_{};
-    const ThreeKeywordsResponse *threeKeywords_{};
-    const SyllableResponse *syllableResponse_{};
     int trialNumber_{};
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
@@ -889,6 +862,17 @@ class SubmittingFreeResponseTests : public ::testing::Test {
     FreeResponse freeResponse;
 };
 
+class SubmittingConsonantTests : public ::testing::Test {
+  protected:
+    AdaptiveMethodStub adaptiveTestMethod;
+    FixedLevelMethodStub testMethod;
+    RecognitionTestModelStub model{adaptiveTestMethod, testMethod};
+    OutputFileStub outputFile;
+    submitting_consonant::InteractorImpl interactor{
+        testMethod, model, outputFile};
+    ConsonantResponse response;
+};
+
 class SubmittingPassFailTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub testMethod;
@@ -937,6 +921,8 @@ class SubmittingSyllableTests : public ::testing::Test {
 #define SUBMITTING_PASS_FAIL_TEST(a) TEST_F(SubmittingPassFailTests, a)
 
 #define SUBMITTING_KEYWORDS_TEST(a) TEST_F(SubmittingKeywordsTests, a)
+
+#define SUBMITTING_CONSONANT_TEST(a) TEST_F(SubmittingConsonantTests, a)
 
 #define SUBMITTING_NUMBER_KEYWORDS_TEST(a)                                     \
     TEST_F(SubmittingNumberKeywordsTests, a)
@@ -1155,6 +1141,35 @@ SUBMITTING_SYLLABLE(submitCorrectSyllable) {
     syllableResponse.syllable = Syllable::dji;
     interactor.submit(syllableResponse);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().correct);
+}
+
+SUBMITTING_CONSONANT_TEST(submitConsonantSubmitsResponse) {
+    ConsonantResponse r;
+    interactor.submit(r);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedConsonant());
+}
+
+SUBMITTING_CONSONANT_TEST(submitConsonantWritesTrialAfterSubmittingResponse) {
+    ConsonantResponse r;
+    interactor.submit(r);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        contains(testMethod.log(), "submitConsonant writeLastConsonant "));
+}
+
+SUBMITTING_CONSONANT_TEST(queriesNextTargetAfterWritingResponse) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        contains(testMethod.log(), "writeLastConsonant TOOLATE "));
+}
+
+SUBMITTING_CONSONANT_TEST(preparesNextTrialIfNeeded) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_CONSONANT_TEST(savesOutputFileAfterWritingTrial) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
 }
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
@@ -1401,34 +1416,6 @@ MODEL_TEST(submitResponsePassesCoordinateResponse) {
     model.submit(response);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(response), internalModel.coordinateResponse());
-}
-
-MODEL_TEST(submitConsonantPassesConsonant) {
-    ConsonantResponse r;
-    model.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &std::as_const(r), internalModel.consonantResponse());
-}
-
-MODEL_TEST(submitConsonantSubmitsResponse) {
-    ConsonantResponse r;
-    model.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(fixedLevelMethod.submittedConsonant());
-}
-
-MODEL_TEST(submitConsonantWritesTrialAfterSubmittingResponse) {
-    ConsonantResponse r;
-    model.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(
-        fixedLevelMethod.log(), "submitConsonant writeLastConsonant "));
-}
-
-MODEL_TEST(submitConsonantQueriesNextTargetAfterWritingResponse) {
-    internalModel.callNextOnSubmitConsonants(&fixedLevelMethod);
-    ConsonantResponse r;
-    model.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        contains(fixedLevelMethod.log(), "writeLastConsonant nextTarget "));
 }
 
 MODEL_TEST(playTrialPassesAudioSettings) {

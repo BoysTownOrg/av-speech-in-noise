@@ -31,7 +31,7 @@
 
 @implementation ConsonantUIActions {
   @public
-    av_speech_in_noise::AppKitConsonantUI *controller;
+    av_speech_in_noise::submitting_consonant::AppKitUI *controller;
 }
 
 - (void)notifyThatResponseButtonHasBeenClicked:(id)sender {
@@ -98,7 +98,8 @@ static auto equallyDistributedConsonantImageButtonGrid(
     return grid;
 }
 
-AppKitConsonantUI::AppKitConsonantUI(NSView *view)
+namespace submitting_consonant {
+AppKitUI::AppKitUI(NSView *view)
     : // Defer may be critical here...
       view{view}, actions{[[ConsonantUIActions alloc] init]} {
     actions->controller = this;
@@ -130,44 +131,41 @@ AppKitConsonantUI::AppKitConsonantUI(NSView *view)
     hideReadyButton();
 }
 
-void AppKitConsonantUI::show() { av_speech_in_noise::show(view); }
+void AppKitUI::show() { av_speech_in_noise::show(view); }
 
-void AppKitConsonantUI::hide() { av_speech_in_noise::hide(view); }
+void AppKitUI::hide() { av_speech_in_noise::hide(view); }
 
-void AppKitConsonantUI::showReadyButton() {
-    av_speech_in_noise::show(readyButton);
-}
+void AppKitUI::showReadyButton() { av_speech_in_noise::show(readyButton); }
 
-void AppKitConsonantUI::hideReadyButton() {
-    av_speech_in_noise::hide(readyButton);
-}
+void AppKitUI::hideReadyButton() { av_speech_in_noise::hide(readyButton); }
 
-void AppKitConsonantUI::attach(Observer *e) { listener_ = e; }
+void AppKitUI::attach(Observer *e) { listener_ = e; }
 
-void AppKitConsonantUI::notifyThatReadyButtonHasBeenClicked() {
+void AppKitUI::notifyThatReadyButtonHasBeenClicked() {
     listener_->notifyThatReadyButtonHasBeenClicked();
 }
 
-void AppKitConsonantUI::notifyThatResponseButtonHasBeenClicked(id sender) {
+void AppKitUI::notifyThatResponseButtonHasBeenClicked(id sender) {
     lastButtonPressed = sender;
     listener_->notifyThatResponseButtonHasBeenClicked();
 }
 
-void AppKitConsonantUI::showResponseButtons() {
+void AppKitUI::showResponseButtons() {
     av_speech_in_noise::show(responseButtons);
 }
 
-void AppKitConsonantUI::hideResponseButtons() {
+void AppKitUI::hideResponseButtons() {
     av_speech_in_noise::hide(responseButtons);
 }
 
-auto AppKitConsonantUI::consonant() -> std::string {
+auto AppKitUI::consonant() -> std::string {
     return consonants.at((__bridge void *)lastButtonPressed);
 }
 
-void AppKitConsonantUI::hideCursor() { [NSCursor hide]; }
+void AppKitUI::hideCursor() { [NSCursor hide]; }
 
-void AppKitConsonantUI::showCursor() { [NSCursor unhide]; }
+void AppKitUI::showCursor() { [NSCursor unhide]; }
+}
 
 static const auto greenColor{NSColor.greenColor};
 static const auto redColor{NSColor.redColor};

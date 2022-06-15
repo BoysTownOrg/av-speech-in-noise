@@ -11,7 +11,8 @@ add_library(
   src/AdaptiveTrack.cpp
   src/SubmittingFreeResponse.cpp
   src/SubmittingPassFail.cpp
-  src/SubmittingKeywords.cpp)
+  src/SubmittingKeywords.cpp
+  src/SubmittingConsonant.cpp)
 target_include_directories(
   av-speech-in-noise-core-lib
   PUBLIC include

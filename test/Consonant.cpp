@@ -1,14 +1,17 @@
 #include "assert-utility.hpp"
-#include "ModelStub.hpp"
 #include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
+
+#include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/ui/Consonant.hpp>
+
 #include <gtest/gtest.h>
+
 #include <utility>
 
-namespace av_speech_in_noise {
+namespace av_speech_in_noise::submitting_consonant {
 namespace {
-class ConsonantControlStub : public ConsonantTaskControl {
+class ConsonantControlStub : public Control {
   public:
     void notifyThatReadyButtonHasBeenClicked() {
         listener_->notifyThatReadyButtonHasBeenClicked();
@@ -29,7 +32,7 @@ class ConsonantControlStub : public ConsonantTaskControl {
     Observer *listener_{};
 };
 
-class ConsonantViewStub : public ConsonantTaskView {
+class ConsonantViewStub : public View {
   public:
     void show() override { shown_ = true; }
 
@@ -82,7 +85,7 @@ class ConsonantViewStub : public ConsonantTaskView {
     bool cursorShown_{};
 };
 
-class ConsonantTaskPresenterStub : public ConsonantTaskPresenter {
+class ConsonantTaskPresenterStub : public Presenter {
   public:
     void hideReadyButton() override { readyButtonHidden_ = true; }
 
@@ -110,21 +113,30 @@ void notifyThatResponseButtonHasBeenClicked(ConsonantControlStub &view) {
     view.notifyThatResponseButtonHasBeenClicked();
 }
 
+class InteractorStub : public Interactor {
+  public:
+    void submit(const ConsonantResponse &s) override { freeResponse_ = s; }
+
+    auto response() -> ConsonantResponse { return freeResponse_; }
+
+  private:
+    ConsonantResponse freeResponse_;
+};
+
 class ConsonantTaskControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
+    InteractorStub model;
     ConsonantControlStub control;
     TestControllerStub testController;
     ConsonantTaskPresenterStub presenter;
-    ConsonantTaskController controller{
-        testController, model, control, presenter};
+    Controller controller{testController, model, control, presenter};
     TaskControllerObserverStub observer;
 };
 
 class ConsonantTaskPresenterTests : public ::testing::Test {
   protected:
     ConsonantViewStub view;
-    ConsonantTaskPresenterImpl presenter{view};
+    PresenterImpl presenter{view};
 };
 
 #define CONSONANT_TASK_CONTROLLER_TEST(a)                                      \
@@ -199,7 +211,7 @@ CONSONANT_TASK_CONTROLLER_TEST(hidesReadyButtonAfterClicked) {
 CONSONANT_TASK_CONTROLLER_TEST(submitsConsonantAfterResponseButtonIsClicked) {
     control.setConsonant("b");
     notifyThatResponseButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL('b', model.consonantResponse().consonant);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL('b', model.response().consonant);
 }
 
 CONSONANT_TASK_CONTROLLER_TEST(

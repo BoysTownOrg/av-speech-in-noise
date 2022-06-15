@@ -30,10 +30,10 @@ class SubjectAppKitView : public SubjectView {
     NSWindow *window;
 };
 
-class AppKitConsonantUI : public ConsonantTaskView,
-                          public ConsonantTaskControl {
+namespace submitting_consonant {
+class AppKitUI : public View, public Control {
   public:
-    explicit AppKitConsonantUI(NSView *);
+    explicit AppKitUI(NSView *);
     void attach(Observer *) override;
     void show() override;
     void hide() override;
@@ -56,6 +56,7 @@ class AppKitConsonantUI : public ConsonantTaskView,
     ConsonantUIActions *actions;
     Observer *listener_{};
 };
+}
 
 class AppKitCoordinateResponseMeasureUI
     : public CoordinateResponseMeasureControl,

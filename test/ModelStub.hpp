@@ -214,8 +214,6 @@ class ModelStub : public Model {
         rightSpeakerCalibration_ = p;
     }
 
-    void submit(const ConsonantResponse &s) override { consonantResponse_ = s; }
-
     void restartAdaptiveTestWhilePreservingTargets() override {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
     }
