@@ -290,18 +290,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         return coordinateResponse_;
     }
 
-    [[nodiscard]] auto correctKeywords() const { return correctKeywords_; }
-
-    [[nodiscard]] auto consonantResponse() const { return consonantResponse_; }
-
-    auto threeKeywords() -> const ThreeKeywordsResponse * {
-        return threeKeywords_;
-    }
-
-    auto syllableResponse() -> const SyllableResponse * {
-        return syllableResponse_;
-    }
-
     [[nodiscard]] auto testMethod() const { return testMethod_; }
 
     [[nodiscard]] auto test() const { return test_; }
@@ -326,15 +314,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         audioDevices_ = std::move(v);
     }
 
-    void callNextOnSubmitConsonants(TestMethod *t) {
-        testMethodToCallNextTargetOnSubmitConsonants_ = t;
-    }
-
-    void callNextOnSubmitCorrectKeywordsOrCorrectOrIncorrect(TestMethod *t) {
-        testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_ =
-            t;
-    }
-
     auto playTrialTime() -> std::string override { return playTrialTime_; }
 
     void setPlayTrialTime(std::string s) { playTrialTime_ = std::move(s); }
@@ -345,9 +324,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     std::string playTrialTime_;
     AdaptiveMethodStub &adaptiveMethod;
     FixedLevelMethodStub &fixedLevelMethodStub;
-    TestMethod *testMethodToCallNextTargetOnSubmitConsonants_{};
-    TestMethod *
-        testMethodToCallNextTargetOnSubmitCorrectKeywordsOrCorrectOrIncorrect_{};
     const Model::Observer *listener_{};
     const Calibration *calibration_{};
     const Calibration *leftSpeakerCalibration_{};
@@ -356,10 +332,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const Test *test_{};
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
-    const CorrectKeywords *correctKeywords_{};
-    const ConsonantResponse *consonantResponse_{};
-    const ThreeKeywordsResponse *threeKeywords_{};
-    const SyllableResponse *syllableResponse_{};
     int trialNumber_{};
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
