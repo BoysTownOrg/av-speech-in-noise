@@ -2,8 +2,8 @@
 
 namespace av_speech_in_noise::submitting_free_response {
 Controller::Controller(
-    TestController &testController, Interactor &model, Control &control)
-    : testController{testController}, model{model}, control{control} {
+    TestController &testController, Interactor &interactor, Control &control)
+    : testController{testController}, interactor{interactor}, control{control} {
     control.attach(this);
 }
 
@@ -11,7 +11,7 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
     FreeResponse freeResponse;
     freeResponse.flagged = control.flagged();
     freeResponse.response = control.response();
-    model.submit(freeResponse);
+    interactor.submit(freeResponse);
     testController.notifyThatUserIsDoneResponding();
 }
 
