@@ -11,15 +11,8 @@
 namespace av_speech_in_noise::submitting_consonant {
 class InteractorImpl : public Interactor {
   public:
-    InteractorImpl(FixedLevelMethod &method, RecognitionTestModel &model,
-        OutputFile &outputFile)
-        : method{method}, model{model}, outputFile{outputFile} {}
-
-    void submit(const ConsonantResponse &r) override {
-        method.submit(r);
-        method.writeLastConsonant(outputFile);
-        model.submit(r);
-    }
+    InteractorImpl(FixedLevelMethod &, RecognitionTestModel &, OutputFile &);
+    void submit(const ConsonantResponse &r) override;
 
   private:
     FixedLevelMethod &method;
