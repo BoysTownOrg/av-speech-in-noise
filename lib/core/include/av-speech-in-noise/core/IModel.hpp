@@ -52,6 +52,14 @@ class Interactor {
 };
 }
 
+namespace submitting_consonant {
+class Interactor {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
+    virtual void submit(const ConsonantResponse &) = 0;
+};
+}
+
 class Model {
   public:
     class Observer {

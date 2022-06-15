@@ -9,8 +9,8 @@
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
 
-namespace av_speech_in_noise {
-class ConsonantTaskControl {
+namespace av_speech_in_noise::submitting_consonant {
+class Control {
   public:
     class Observer {
       public:
@@ -18,12 +18,12 @@ class ConsonantTaskControl {
         virtual void notifyThatReadyButtonHasBeenClicked() = 0;
         virtual void notifyThatResponseButtonHasBeenClicked() = 0;
     };
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ConsonantTaskControl);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
     virtual void attach(Observer *) = 0;
     virtual auto consonant() -> std::string = 0;
 };
 
-class ConsonantTaskView : public virtual View {
+class View : public virtual av_speech_in_noise::View {
   public:
     virtual void showCursor() = 0;
     virtual void hideCursor() = 0;
@@ -33,31 +33,28 @@ class ConsonantTaskView : public virtual View {
     virtual void showResponseButtons() = 0;
 };
 
-class ConsonantTaskPresenter {
+class Presenter {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
-        ConsonantTaskPresenter);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Presenter);
     virtual void hideReadyButton() = 0;
 };
 
-class ConsonantTaskController : public ConsonantTaskControl::Observer {
+class Controller : public Control::Observer {
   public:
-    ConsonantTaskController(TestController &, Model &, ConsonantTaskControl &,
-        ConsonantTaskPresenter &);
+    Controller(TestController &, Interactor &, Control &, Presenter &);
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
 
   private:
     TestController &testController;
-    Model &model;
-    ConsonantTaskControl &control;
-    ConsonantTaskPresenter &presenter;
+    Interactor &model;
+    Control &control;
+    Presenter &presenter;
 };
 
-class ConsonantTaskPresenterImpl : public ConsonantTaskPresenter,
-                                   public TaskPresenter {
+class PresenterImpl : public Presenter, public TaskPresenter {
   public:
-    explicit ConsonantTaskPresenterImpl(ConsonantTaskView &);
+    explicit PresenterImpl(View &);
     void start() override;
     void stop() override;
     void showResponseSubmission() override;
@@ -66,7 +63,7 @@ class ConsonantTaskPresenterImpl : public ConsonantTaskPresenter,
     void notifyThatTrialHasStarted() override;
 
   private:
-    ConsonantTaskView &view;
+    View &view;
 };
 }
 
