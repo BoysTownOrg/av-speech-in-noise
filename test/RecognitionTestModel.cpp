@@ -103,11 +103,6 @@ class UseCase {
     virtual void run(RecognitionTestModelImpl &) = 0;
 };
 
-class TargetWritingUseCase : public virtual UseCase {
-  public:
-    virtual auto target(OutputFileStub &) -> std::string = 0;
-};
-
 class InitializingTest : public UseCase {
   public:
     explicit InitializingTest(TestMethod *method, const Test &test)
@@ -276,14 +271,10 @@ class PlayingTrial : public AudioDeviceUseCase {
     AudioSettings trial;
 };
 
-class SubmittingConsonant : public TargetWritingUseCase {
+class PreparingNextTrialIfNeeded : public UseCase {
   public:
     void run(RecognitionTestModelImpl &m) override {
-        m.submit(ConsonantResponse{});
-    }
-
-    auto target(OutputFileStub &file) -> std::string override {
-        return file.consonantTrial().target;
+        m.prepareNextTrialIfNeeded();
     }
 };
 
@@ -614,7 +605,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     ThreeKeywordsResponse threeKeywords;
     SyllableResponse syllableResponse;
     AudioSampleTimeWithOffset fadeInCompleteTime{};
-    SubmittingConsonant submittingConsonant;
+    PreparingNextTrialIfNeeded preparingNextTrialIfNeeded;
 
     RecognitionTestModelTests() { model.attach(&listener); }
 
@@ -1257,9 +1248,9 @@ RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseIncrementsTrialNumber) {
     assertYieldsTrialNumber(submittingCoordinateResponse, 2);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submittingConsonantIncrementsTrialNumber) {
+RECOGNITION_TEST_MODEL_TEST(preparingNextTrialIfNeededIncrementsTrialNumber) {
     run(initializingTest, model);
-    assertYieldsTrialNumber(submittingConsonant, 2);
+    assertYieldsTrialNumber(preparingNextTrialIfNeeded, 2);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1268,9 +1259,10 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesNextTargetToPlayer(submittingCoordinateResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submittingConsonantPassesNextTargetToTargetPlayer) {
+RECOGNITION_TEST_MODEL_TEST(
+    preparingNextTrialIfNeededPassesNextTargetToTargetPlayer) {
     run(initializingTest, model);
-    assertPassesNextTargetToPlayer(submittingConsonant);
+    assertPassesNextTargetToPlayer(preparingNextTrialIfNeeded);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
@@ -1336,8 +1328,9 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    submitConsonantSeeksToRandomMaskerPositionWithinTrialDuration) {
-    assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingConsonant);
+    preparingNextTrialIfNeededSeeksToRandomMaskerPositionWithinTrialDuration) {
+    assertSeeksToRandomMaskerPositionWithinTrialDuration(
+        preparingNextTrialIfNeeded);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSeeksToRandomMaskerPosition) {
@@ -1349,8 +1342,9 @@ RECOGNITION_TEST_MODEL_TEST(
     assertMaskerPlayerSeekedToRandomTime(submittingCoordinateResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitConsonantSeeksToRandomMaskerPosition) {
-    assertMaskerPlayerSeekedToRandomTime(submittingConsonant);
+RECOGNITION_TEST_MODEL_TEST(
+    preparingNextTrialIfNeededSeeksToRandomMaskerPosition) {
+    assertMaskerPlayerSeekedToRandomTime(preparingNextTrialIfNeeded);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsInitialMaskerPlayerLevel) {
@@ -1374,8 +1368,8 @@ RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingCoordinateResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitConsonantSetsTargetPlayerLevel) {
-    assertSetsTargetLevel(submittingConsonant);
+RECOGNITION_TEST_MODEL_TEST(preparingNextTrialIfNeededSetsTargetPlayerLevel) {
+    assertSetsTargetLevel(preparingNextTrialIfNeeded);
 }
 
 void assertLevelSet(Calibration &calibration, PlayerLevelUseCase &useCase,
@@ -1436,10 +1430,6 @@ RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteNotifiesTrialComplete) {
 RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingCoordinateResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submitConsonantSavesOutputFileAfterWritingTrial) {
-    assertSavesOutputFileAfterWritingTrial(submittingConsonant);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1570,8 +1560,9 @@ RECOGNITION_TEST_MODEL_TEST(
         submittingCoordinateResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitConsonantDoesNotLoadNextTargetWhenComplete) {
-    assertResponseDoesNotLoadNextTargetWhenComplete(submittingConsonant);
+RECOGNITION_TEST_MODEL_TEST(
+    preparingNextTrialIfNeededDoesNotLoadNextTargetWhenComplete) {
+    assertResponseDoesNotLoadNextTargetWhenComplete(preparingNextTrialIfNeeded);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

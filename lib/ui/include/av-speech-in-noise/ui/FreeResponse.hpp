@@ -36,7 +36,7 @@ class Controller : public TaskController, public Control::Observer {
 
   private:
     TestController &testController;
-    Interactor &model;
+    Interactor &interactor;
     Control &control;
 };
 

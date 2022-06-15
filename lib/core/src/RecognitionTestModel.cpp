@@ -448,14 +448,6 @@ void RecognitionTestModelImpl::submit(
         audioRecordingEnabled, audioRecorder);
 }
 
-void RecognitionTestModelImpl::submit(const ConsonantResponse &) {
-    saveOutputFileAndPrepareNextTrialAfter([]() {}, testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracker,
-        maskerLevel_, fullScaleLevel_, eyeTracking, lastTargetStartTime,
-        lastEyeTrackerTargetPlayerSynchronization, audioRecordingEnabled,
-        audioRecorder);
-}
-
 void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
         outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracker,

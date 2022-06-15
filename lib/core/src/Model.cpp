@@ -170,12 +170,6 @@ void ModelImpl::submit(const coordinate_response_measure::Response &response) {
     model.submit(response);
 }
 
-void ModelImpl::submit(const ConsonantResponse &r) {
-    fixedLevelMethod.submit(r);
-    fixedLevelMethod.writeLastConsonant(outputFile);
-    model.submit(r);
-}
-
 void ModelImpl::playCalibration(const Calibration &p) {
     model.playCalibration(p);
 }

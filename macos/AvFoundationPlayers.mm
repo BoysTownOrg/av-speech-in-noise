@@ -487,19 +487,28 @@ void AvFoundationVideoPlayer::preRoll() {
 
 AvFoundationBufferedAudioReader::AvFoundationBufferedAudioReader(
     const LocalUrl &url) {
-    const auto fileURL{[NSURL
-        fileURLWithPath:nsString(url.path).stringByExpandingTildeInPath]};
+    // https://developer.apple.com/documentation/foundation/nsurl/1414650-fileurlwithpath?language=objc
+    // "path should be a valid system path, and must not be an empty path."
+    if (url.path.empty())
+        throw CannotReadFile{};
+    const auto fileURL{
+        [NSURL fileURLWithPath:nsString(url.path).stringByExpandingTildeInPath
+                   isDirectory:NO]};
     if (fileURL == nil)
         throw CannotReadFile{};
-    file = [[AVAudioFile alloc] initForReading:fileURL
-                                  commonFormat:AVAudioPCMFormatFloat32
-                                   interleaved:NO
-                                         error:nil];
-    if (file == nil)
-        throw CannotReadFile{};
+    {
+        NSError *error{nil};
+        file = [[AVAudioFile alloc] initForReading:fileURL
+                                      commonFormat:AVAudioPCMFormatFloat32
+                                       interleaved:NO
+                                             error:&error];
+        if (file == nil)
+            throw CannotReadFile{};
+    }
     buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:file.processingFormat
                                            frameCapacity:file.length];
-    if ([file readIntoBuffer:buffer error:nil] == NO)
+    NSError *error{nil};
+    if ([file readIntoBuffer:buffer error:&error] == NO)
         throw CannotReadFile{};
 }
 

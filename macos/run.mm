@@ -5,6 +5,7 @@
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
 
+#include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/ui/PassFail.hpp>
 #include <av-speech-in-noise/ui/SessionController.hpp>
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
@@ -337,7 +338,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             constraintEqualToAnchor:subjectNSWindow.contentView.bottomAnchor
                            constant:-80]
     ]];
-    static AppKitConsonantUI consonantUI{consonantNSView};
+    static submitting_consonant::AppKitUI consonantUI{consonantNSView};
     const auto coordinateResponseMeasureNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
     addAutolayoutEnabledSubview(
@@ -357,7 +358,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     ]];
     static AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
         coordinateResponseMeasureNSView};
-    static ConsonantTaskPresenterImpl consonantPresenter{consonantUI};
+    static submitting_consonant::PresenterImpl consonantPresenter{consonantUI};
     static submitting_free_response::Presenter freeResponsePresenter{
         testUI, freeResponseUI};
     static submitting_keywords::PresenterImpl chooseKeywordsPresenter{model,
@@ -411,8 +412,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         adaptiveMethod, recognitionTestModel, outputFile};
     static submitting_pass_fail::Controller passFailController{
         testController, submittingPassFailInteractor, passFailUI};
-    static ConsonantTaskController consonantTaskController{
-        testController, model, consonantUI, consonantPresenter};
+    static submitting_consonant::InteractorImpl submittingConsonantInteractor{
+        fixedLevelMethod, recognitionTestModel, outputFile};
+    static submitting_consonant::Controller consonantTaskController{
+        testController, submittingConsonantInteractor, consonantUI,
+        consonantPresenter};
     static CoordinateResponseMeasureController
         coordinateResponseMeasureController{
             testController, model, coordinateResponseMeasureView};

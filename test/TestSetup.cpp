@@ -404,10 +404,6 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void submit(const ConsonantResponse &) override {
-        throw RequestFailure{errorMessage};
-    }
-
     void playCalibration(const Calibration &) override {
         throw RequestFailure{errorMessage};
     }
