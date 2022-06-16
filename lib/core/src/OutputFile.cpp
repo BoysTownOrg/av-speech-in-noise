@@ -674,4 +674,8 @@ void OutputFileImpl::write(Writable &w) {
     writer.write(w);
     writer.write("\n");
 }
+
+auto OutputFileImpl::parentPath() -> std::filesystem::path {
+    return path.outputDirectory();
+}
 }

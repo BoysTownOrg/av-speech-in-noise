@@ -196,7 +196,7 @@ class OutputFileImpl : public OutputFile {
     void write(const EyeTrackerTargetPlayerSynchronization &) override;
     void write(const SyllableTrial &) override;
     void write(Writable &) override;
-    auto parentPath() -> std::filesystem::path override { return {}; }
+    auto parentPath() -> std::filesystem::path override;
 
     enum class Trial : int;
 
