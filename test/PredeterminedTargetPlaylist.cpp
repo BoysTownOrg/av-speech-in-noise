@@ -16,7 +16,6 @@ class PredeterminedTargetPlaylist : public FiniteTargetPlaylistWithRepeatables {
         : fileReader{fileReader} {}
     void load(const LocalUrl &url) override {
         targets.clear();
-        index = -1;
         std::stringstream stream{fileReader.read(url)};
         for (std::string line; std::getline(stream, line);)
             targets.push_back(LocalUrl{line});
@@ -35,7 +34,6 @@ class PredeterminedTargetPlaylist : public FiniteTargetPlaylistWithRepeatables {
     TextFileReader &fileReader;
     std::vector<LocalUrl> targets;
     LocalUrl current_;
-    int index{};
 };
 
 class TextFileReaderStub : public TextFileReader {
