@@ -47,19 +47,19 @@ class TextFileReaderStub : public TextFileReader {
     std::string contents;
 };
 
-class PredeterminedTargetPlaylistTests : public ::testing::Test {};
-
-TEST_F(PredeterminedTargetPlaylistTests, passesPlaylistToTextFileReader) {
+class PredeterminedTargetPlaylistTests : public ::testing::Test {
+  protected:
     TextFileReaderStub fileReader;
     PredeterminedTargetPlaylist playlist{fileReader};
+};
+
+TEST_F(PredeterminedTargetPlaylistTests, passesPlaylistToTextFileReader) {
     playlist.load(LocalUrl{"/Users/user/playlist.txt"});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "/Users/user/playlist.txt", fileReader.url().path);
 }
 
 TEST_F(PredeterminedTargetPlaylistTests, returnsTargetsReadFromPlaylist) {
-    TextFileReaderStub fileReader;
-    PredeterminedTargetPlaylist playlist{fileReader};
     fileReader.setContents(R"(/Users/user/a.wav
 /Users/user/b.wav
 /Users/user/c.wav
