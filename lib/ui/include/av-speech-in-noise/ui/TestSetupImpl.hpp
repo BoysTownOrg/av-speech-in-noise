@@ -4,9 +4,12 @@
 #include "TestSetup.hpp"
 #include "Session.hpp"
 #include "Input.hpp"
+
+#include <av-speech-in-noise/core/TextFileReader.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
+
 #include <string>
 
 namespace av_speech_in_noise {
@@ -17,12 +20,6 @@ class TestSettingsInterpreter {
     virtual void initialize(Model &, SessionController &, const std::string &,
         const TestIdentity &, SNR) = 0;
     virtual auto calibration(const std::string &) -> Calibration = 0;
-};
-
-class TextFileReader {
-  public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TextFileReader);
-    virtual auto read(const LocalUrl &) -> std::string = 0;
 };
 
 enum class Transducer { headphone, oneSpeaker, twoSpeakers, unknown };
