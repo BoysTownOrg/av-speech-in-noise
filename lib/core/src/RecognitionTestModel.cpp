@@ -4,6 +4,7 @@
 #include <gsl/gsl>
 #include <cmath>
 #include <functional>
+#include <sstream>
 
 namespace av_speech_in_noise {
 namespace {
@@ -328,6 +329,7 @@ void RecognitionTestModelImpl::initialize_(
     fullScaleLevel_ = test.fullScaleLevel;
     maskerLevel_ = test.maskerLevel;
     condition = test.condition;
+    session = test.identity.session;
 
     hide(targetPlayer);
     maskerPlayer.apply(
@@ -380,8 +382,11 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
         settings.audioDevice);
 
     playTrialTime_ = clock.time();
-    if (audioRecordingEnabled)
-        audioRecorder.initialize(LocalUrl{"tbd.wav"});
+    if (audioRecordingEnabled) {
+        std::stringstream stream;
+        stream << trialNumber_ << '-' << session << ".wav";
+        audioRecorder.initialize(LocalUrl{stream.str()});
+    }
     if (eyeTracking) {
         eyeTracker.allocateRecordingTimeSeconds(
             Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);
