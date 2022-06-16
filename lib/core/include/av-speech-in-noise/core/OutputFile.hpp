@@ -3,6 +3,7 @@
 
 #include "IOutputFile.hpp"
 #include <av-speech-in-noise/Interface.hpp>
+#include <filesystem>
 #include <string>
 
 namespace av_speech_in_noise {
@@ -195,6 +196,7 @@ class OutputFileImpl : public OutputFile {
     void write(const EyeTrackerTargetPlayerSynchronization &) override;
     void write(const SyllableTrial &) override;
     void write(Writable &) override;
+    auto parentPath() -> std::filesystem::path override { return {}; }
 
     enum class Trial : int;
 

@@ -385,7 +385,8 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     if (audioRecordingEnabled) {
         std::stringstream stream;
         stream << trialNumber_ << '-' << session << ".wav";
-        audioRecorder.initialize(LocalUrl{stream.str()});
+        audioRecorder.initialize(
+            LocalUrl{outputFile.parentPath() / stream.str()});
     }
     if (eyeTracking) {
         eyeTracker.allocateRecordingTimeSeconds(

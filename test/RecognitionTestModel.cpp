@@ -964,10 +964,11 @@ RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotStartEyeTracking) {
 RECOGNITION_TEST_MODEL_TEST(
     playTrialForTestWithAudioRecordingInitializesRecorder) {
     test.identity.session = "smile";
+    outputFile.setParentPath("/Users/user/data");
     run(initializingTestWithAudioRecording, model);
     run(playingTrial, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        "1-smile.wav", audioRecorder.fileUrl().path);
+        "/Users/user/data/1-smile.wav", audioRecorder.fileUrl().path);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotInitializeRecorder) {

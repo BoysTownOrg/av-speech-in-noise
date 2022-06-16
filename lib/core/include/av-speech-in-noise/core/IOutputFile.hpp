@@ -4,6 +4,7 @@
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <exception>
+#include <filesystem>
 #include <ostream>
 #include <string>
 
@@ -87,6 +88,7 @@ class OutputFile {
     virtual void write(Writable &) = 0;
     virtual void close() = 0;
     virtual void save() = 0;
+    virtual auto parentPath() -> std::filesystem::path = 0;
 };
 }
 
