@@ -16,7 +16,7 @@ class TargetPlaylistStub : public virtual TargetPlaylist {
         currentWhenNext_ = std::move(s);
     }
 
-    void loadFromDirectory(const LocalUrl &directory) override {
+    void load(const LocalUrl &directory) override {
         insert(log_, "loadFromDirectory ");
         directory_ = directory.path;
     }

@@ -10,7 +10,7 @@ SubdirectoryTargetPlaylistReader::SubdirectoryTargetPlaylistReader(
 static void add(TargetPlaylistReader::lists_type &lists,
     TargetPlaylistFactory *factory, const LocalUrl &url) {
     auto list{factory->make()};
-    list->loadFromDirectory(url);
+    list->load(url);
     lists.push_back(std::move(list));
 }
 

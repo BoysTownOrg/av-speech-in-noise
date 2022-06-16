@@ -9,7 +9,7 @@ namespace av_speech_in_noise {
 class TargetPlaylist {
   public:
     virtual ~TargetPlaylist() = default;
-    virtual void loadFromDirectory(const LocalUrl &directory) = 0;
+    virtual void load(const LocalUrl &) = 0;
     virtual auto next() -> LocalUrl = 0;
     virtual auto current() -> LocalUrl = 0;
     virtual auto directory() -> LocalUrl = 0;

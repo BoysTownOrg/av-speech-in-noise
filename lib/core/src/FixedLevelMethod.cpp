@@ -4,9 +4,8 @@ namespace av_speech_in_noise {
 FixedLevelMethodImpl::FixedLevelMethodImpl(ResponseEvaluator &evaluator)
     : evaluator{evaluator} {}
 
-static void loadFromDirectory(
-    TargetPlaylist *list, const FixedLevelTest &test) {
-    list->loadFromDirectory(test.targetsUrl);
+static void load(TargetPlaylist *list, const FixedLevelTest &test) {
+    list->load(test.targetsUrl);
 }
 
 static void initialize(TargetPlaylist *&targetList,
@@ -15,7 +14,7 @@ static void initialize(TargetPlaylist *&targetList,
     targetList = list;
     test_ = &test;
     snr_ = test.snr;
-    loadFromDirectory(targetList, test);
+    load(targetList, test);
 }
 
 static void initialize(bool &usingFiniteTargetPlaylist_,
