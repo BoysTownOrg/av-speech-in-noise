@@ -15,17 +15,20 @@ class PredeterminedTargetPlaylist : public TargetPlaylist {
     explicit PredeterminedTargetPlaylist(TextFileReader &fileReader)
         : fileReader{fileReader} {}
     void load(const LocalUrl &url) override {
+        targets.clear();
+        index = 0;
         std::stringstream stream{fileReader.read(url)};
         for (std::string line; std::getline(stream, line);)
             targets.push_back(LocalUrl{line});
     }
-    auto next() -> LocalUrl override { return targets.at(0); }
+    auto next() -> LocalUrl override { return targets.at(index++); }
     auto current() -> LocalUrl override { return {}; }
     auto directory() -> LocalUrl override { return {}; }
 
   private:
     TextFileReader &fileReader;
     std::vector<LocalUrl> targets;
+    int index{};
 };
 
 class TextFileReaderStub : public TextFileReader {
@@ -63,5 +66,7 @@ TEST_F(PredeterminedTargetPlaylistTests, returnsTargetsReadFromPlaylist) {
 )");
     playlist.load({});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/a.wav", playlist.next().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/b.wav", playlist.next().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/c.wav", playlist.next().path);
 }
 }
