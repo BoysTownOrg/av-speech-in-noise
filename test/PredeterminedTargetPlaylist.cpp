@@ -1,41 +1,12 @@
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/Model.hpp"
-#include "av-speech-in-noise/core/TextFileReader.hpp"
-#include <av-speech-in-noise/core/TargetPlaylist.hpp>
+
+#include <av-speech-in-noise/playlist/PredeterminedTargetPlaylist.hpp>
 
 #include <gtest/gtest.h>
 
-#include <filesystem>
-#include <sstream>
 #include <string>
 
 namespace av_speech_in_noise {
-class PredeterminedTargetPlaylist : public FiniteTargetPlaylistWithRepeatables {
-  public:
-    explicit PredeterminedTargetPlaylist(TextFileReader &fileReader)
-        : fileReader{fileReader} {}
-    void load(const LocalUrl &url) override {
-        targets.clear();
-        std::stringstream stream{fileReader.read(url)};
-        for (std::string line; std::getline(stream, line);)
-            targets.push_back(LocalUrl{line});
-    }
-    auto next() -> LocalUrl override {
-        current_ = targets.front();
-        targets.erase(targets.begin());
-        return current_;
-    }
-    auto current() -> LocalUrl override { return current_; }
-    auto directory() -> LocalUrl override { return {}; }
-    auto empty() -> bool override { return targets.empty(); }
-    void reinsertCurrent() override { targets.push_back(current_); }
-
-  private:
-    TextFileReader &fileReader;
-    std::vector<LocalUrl> targets;
-    LocalUrl current_;
-};
-
 class TextFileReaderStub : public TextFileReader {
   public:
     auto read(const LocalUrl &url) -> std::string override {
