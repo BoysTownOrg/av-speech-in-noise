@@ -2,28 +2,10 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_OUTPUTFILEPATHHPP_
 
 #include "OutputFile.hpp"
+#include "FileSystemPath.hpp"
 #include <filesystem>
 
 namespace av_speech_in_noise {
-class TimeStamp {
-  public:
-    virtual ~TimeStamp() = default;
-    virtual auto year() -> int = 0;
-    virtual auto month() -> int = 0;
-    virtual auto dayOfMonth() -> int = 0;
-    virtual auto hour() -> int = 0;
-    virtual auto minute() -> int = 0;
-    virtual auto second() -> int = 0;
-    virtual void capture() = 0;
-};
-
-class FileSystemPath {
-  public:
-    virtual ~FileSystemPath() = default;
-    virtual auto homeDirectory() -> std::filesystem::path = 0;
-    virtual void createDirectory(const std::filesystem::path &) = 0;
-};
-
 class OutputFileName {
   public:
     virtual ~OutputFileName() = default;
