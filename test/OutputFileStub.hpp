@@ -3,11 +3,18 @@
 
 #include "LogString.hpp"
 #include <av-speech-in-noise/core/IOutputFile.hpp>
+#include <filesystem>
 #include <string>
 
 namespace av_speech_in_noise {
 class OutputFileStub : public OutputFile {
   public:
+    auto parentPath() -> std::filesystem::path { return parentPath_; }
+
+    void setParentPath(std::filesystem::path path) {
+        parentPath_ = std::move(path);
+    }
+
     auto targetStartTime() -> TargetStartTime { return targetStartTime_; }
 
     void save() override { addToLog("save "); }
@@ -173,6 +180,7 @@ class OutputFileStub : public OutputFile {
     BinocularGazeSamples eyeGazes_;
     AdaptiveTestResults adaptiveTestResult_{};
     std::stringstream log_{};
+    std::filesystem::path parentPath_;
     EyeTrackerTargetPlayerSynchronization
         eyeTrackerTargetPlayerSynchronization_{};
     TargetStartTime targetStartTime_{};

@@ -3,6 +3,7 @@
 
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
+
 #include <stdexcept>
 #include <string>
 
@@ -91,6 +92,8 @@ class Model {
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
     virtual void initialize(const FixedLevelTestWithEachTargetNTimes &) = 0;
     virtual void initializeWithAllTargetsAndEyeTracking(
+        const FixedLevelTest &) = 0;
+    virtual void initializeWithAllTargetsAndAudioRecording(
         const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playLeftSpeakerCalibration(const Calibration &) = 0;

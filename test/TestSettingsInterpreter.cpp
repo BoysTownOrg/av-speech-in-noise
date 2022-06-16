@@ -1,8 +1,11 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
+
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/Model.hpp>
+
 #include <gtest/gtest.h>
+
 #include <functional>
 
 namespace av_speech_in_noise {
@@ -388,6 +391,13 @@ TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingPassesMethod) {
     assertPassesTestMethod(interpreter, model, sessionController,
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
+        fixedLevelTestIdentity);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithAllTargetsAndAudioRecordingPassesMethod) {
+    assertPassesTestMethod(interpreter, model, sessionController,
+        Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording,
         fixedLevelTestIdentity);
 }
 

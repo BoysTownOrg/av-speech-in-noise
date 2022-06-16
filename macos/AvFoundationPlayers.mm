@@ -526,4 +526,21 @@ auto AvFoundationBufferedAudioReaderFactory::make(const LocalUrl &url)
     -> std::shared_ptr<BufferedAudioReader> {
     return std::make_shared<AvFoundationBufferedAudioReader>(url);
 }
+
+void AvFoundationAudioRecorder::initialize(const LocalUrl &url) {
+    NSError *error;
+    const auto format =
+        [[AVAudioFormat alloc] initStandardFormatWithSampleRate:44100
+                                                       channels:1];
+    audioRecorder = [[AVAudioRecorder alloc]
+        initWithURL:[NSURL fileURLWithPath:nsString(url.path)
+                                               .stringByExpandingTildeInPath]
+             format:format
+              error:&error];
+    [audioRecorder prepareToRecord];
+}
+
+void AvFoundationAudioRecorder::start() { [audioRecorder record]; }
+
+void AvFoundationAudioRecorder::stop() { [audioRecorder stop]; }
 }

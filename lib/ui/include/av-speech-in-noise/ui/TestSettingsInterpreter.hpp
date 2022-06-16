@@ -3,6 +3,7 @@
 
 #include "TestSetupImpl.hpp"
 #include "SessionController.hpp"
+
 #include <map>
 
 namespace av_speech_in_noise {
@@ -19,6 +20,7 @@ enum class Method {
     fixedLevelFreeResponseWithSilentIntervalTargets,
     fixedLevelFreeResponseWithAllTargets,
     fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
+    fixedLevelFreeResponseWithAllTargetsAndAudioRecording,
     fixedLevelCoordinateResponseMeasureWithTargetReplacement,
     fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
@@ -65,6 +67,8 @@ constexpr auto name(Method c) -> const char * {
         return "fixed-level choose keywords all stimuli";
     case Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking:
         return "fixed-level free response all stimuli eye tracking";
+    case Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording:
+        return "fixed-level free response all stimuli audio recording";
     case Method::fixedLevelSyllablesWithAllTargets:
         return "fixed-level syllables all stimuli";
     case Method::unknown:
@@ -136,7 +140,7 @@ constexpr auto name(TestSetting p) -> const char * {
 
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
-    TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>);
+    explicit TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>);
     void initialize(Model &, SessionController &, const std::string &,
         const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;

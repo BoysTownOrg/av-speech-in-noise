@@ -7,6 +7,7 @@
 #include "IMaskerPlayer.hpp"
 #include "IRecognitionTestModel.hpp"
 #include "IOutputFile.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <string>
 
@@ -26,17 +27,26 @@ class Clock {
     virtual auto time() -> std::string = 0;
 };
 
+class AudioRecorder {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(AudioRecorder);
+    virtual void initialize(const LocalUrl &) = 0;
+    virtual void start() = 0;
+    virtual void stop() = 0;
+};
+
 class RecognitionTestModelImpl : public TargetPlayer::Observer,
                                  public MaskerPlayer::Observer,
                                  public RecognitionTestModel {
   public:
-    RecognitionTestModelImpl(TargetPlayer &, MaskerPlayer &,
+    RecognitionTestModelImpl(TargetPlayer &, MaskerPlayer &, AudioRecorder &,
         ResponseEvaluator &, OutputFile &, Randomizer &, EyeTracker &, Clock &);
     void attach(Model::Observer *) override;
     void initialize(TestMethod *, const Test &) override;
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
     void initializeWithDelayedMasker(TestMethod *, const Test &) override;
     void initializeWithEyeTracking(TestMethod *, const Test &) override;
+    void initializeWithAudioRecording(TestMethod *, const Test &) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
     void playLeftSpeakerCalibration(const Calibration &) override;
@@ -62,6 +72,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
 
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
+    AudioRecorder &audioRecorder;
     ResponseEvaluator &evaluator;
     OutputFile &outputFile;
     Randomizer &randomizer;
@@ -71,6 +82,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
         lastEyeTrackerTargetPlayerSynchronization{};
     TargetStartTime lastTargetStartTime{};
     std::string playTrialTime_;
+    std::string session;
     Model::Observer *listener_{};
     TestMethod *testMethod{};
     RealLevel maskerLevel_{};
@@ -78,6 +90,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     int trialNumber_{};
     Condition condition{};
     bool eyeTracking{};
+    bool audioRecordingEnabled{};
     bool trialInProgress_{};
 };
 }

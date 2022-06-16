@@ -6,6 +6,7 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
@@ -67,10 +68,6 @@ class TestMethodStub : public TestMethod {
     auto currentTarget() -> LocalUrl override { return {currentTarget_}; }
 
     void setCurrentTarget(std::string s) { currentTarget_ = std::move(s); }
-
-    void setCurrentTargetWhenNextTarget(std::string s) {
-        currentTargetWhenNextTarget_ = std::move(s);
-    }
 
     void submit(const coordinate_response_measure::Response &) override {
         insert(log_, "submitCoordinateResponse ");
@@ -157,6 +154,19 @@ class InitializingTestWithEyeTracking : public UseCase {
 
     void run(RecognitionTestModelImpl &model) override {
         model.initializeWithEyeTracking(method, test);
+    }
+};
+
+class InitializingTestWithAudioRecording : public UseCase {
+    TestMethod *method;
+    const Test &test;
+
+  public:
+    InitializingTestWithAudioRecording(TestMethod *method, const Test &test)
+        : method{method}, test{test} {}
+
+    void run(RecognitionTestModelImpl &model) override {
+        model.initializeWithAudioRecording(method, test);
     }
 };
 
@@ -346,6 +356,32 @@ class ClockStub : public Clock {
   private:
     std::string time_;
     bool timeQueried_{};
+};
+
+class AudioRecorderStub : public AudioRecorder {
+  public:
+    [[nodiscard]] auto started() const -> bool { return started_; }
+
+    void start() override { started_ = true; }
+
+    auto fileUrl() -> LocalUrl { return fileUrl_; }
+
+    void initialize(const LocalUrl &url) override {
+        fileUrl_ = url;
+        initialized_ = true;
+    }
+
+    [[nodiscard]] auto initialized() const -> bool { return initialized_; }
+
+    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+
+    void stop() override { stopped_ = true; }
+
+  private:
+    LocalUrl fileUrl_;
+    bool started_{};
+    bool initialized_{};
+    bool stopped_{};
 };
 
 void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel.dB_SPL = x; }
@@ -538,13 +574,14 @@ class RecognitionTestModelTests : public ::testing::Test {
     ModelObserverStub listener;
     TargetPlayerStub targetPlayer;
     MaskerPlayerStub maskerPlayer;
+    AudioRecorderStub audioRecorder;
     ResponseEvaluatorStub evaluator;
     OutputFileStub outputFile;
     RandomizerStub randomizer;
     EyeTrackerStub eyeTracker;
     ClockStub clock;
-    RecognitionTestModelImpl model{targetPlayer, maskerPlayer, evaluator,
-        outputFile, randomizer, eyeTracker, clock};
+    RecognitionTestModelImpl model{targetPlayer, maskerPlayer, audioRecorder,
+        evaluator, outputFile, randomizer, eyeTracker, clock};
     TestMethodStub testMethod;
     Calibration calibration{};
     PlayingCalibration playingCalibration{calibration, targetPlayer};
@@ -559,6 +596,8 @@ class RecognitionTestModelTests : public ::testing::Test {
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
         &testMethod};
     InitializingTestWithEyeTracking initializingTestWithEyeTracking{
+        &testMethod, test};
+    InitializingTestWithAudioRecording initializingTestWithAudioRecording{
         &testMethod, test};
     PlayingTrial playingTrial;
     SubmittingCoordinateResponse submittingCoordinateResponse;
@@ -786,6 +825,12 @@ RECOGNITION_TEST_MODEL_TEST(
         initializingTestWithEyeTracking);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithAudioRecordingClosesOutputFile_Opens_AndWritesTestInOrder) {
+    assertClosesOutputFileOpensAndWritesTestInOrder(
+        initializingTestWithAudioRecording);
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
     run(initializingTest, model);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetPlayer.usingAllChannels());
@@ -814,6 +859,21 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithEyeTrackingClearsAllMaskerPlayerChannelDelays) {
     assertMaskerPlayerChannelDelaysCleared(initializingTestWithEyeTracking);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithAudioRecordingUsesAllMaskerPlayerChannels) {
+    assertUsesAllMaskerPlayerChannels(initializingTestWithAudioRecording);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithAudioRecordingUsesAllTargetPlayerChannels) {
+    assertUsesAllTargetPlayerChannels(initializingTestWithAudioRecording);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithAudioRecordingClearsAllMaskerPlayerChannelDelays) {
+    assertMaskerPlayerChannelDelaysCleared(initializingTestWithAudioRecording);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestClearsAllMaskerPlayerChannelDelays) {
@@ -902,6 +962,22 @@ RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotStartEyeTracking) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    playTrialForTestWithAudioRecordingInitializesRecorder) {
+    test.identity.session = "smile";
+    outputFile.setParentPath("/Users/user/data");
+    run(initializingTestWithAudioRecording, model);
+    run(playingTrial, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "/Users/user/data/1-smile.wav", audioRecorder.fileUrl().path);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotInitializeRecorder) {
+    run(initializingTest, model);
+    run(playingTrial, model);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(audioRecorder.initialized());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     playTrialForTestWithEyeTrackingStartsEyeTrackingAfterAllocatingRecordingTime) {
     run(initializingTestWithEyeTracking, model);
     run(playingTrial, model);
@@ -922,6 +998,20 @@ RECOGNITION_TEST_MODEL_TEST(
     run(initializingTest, model);
     fadeOutComplete(maskerPlayer);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(stopped(eyeTracker));
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    fadeOutCompleteForTestWithAudioRecordingStartsRecording) {
+    run(initializingTestWithAudioRecording, model);
+    fadeOutComplete(maskerPlayer);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.started());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    fadeOutCompleteForDefaultTestDoesNotStartRecording) {
+    run(initializingTest, model);
+    fadeOutComplete(maskerPlayer);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(audioRecorder.started());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1343,6 +1433,20 @@ RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteNotifiesTrialComplete) {
 RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingCoordinateResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    preparingNextTrialStopsAudioRecordingForAudioRecordingEnabledTest) {
+    run(initializingTestWithAudioRecording, model);
+    model.prepareNextTrialIfNeeded();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.stopped());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    preparingNextTrialDoesNotStopAudioRecordingForDefaultTest) {
+    run(initializingTest, model);
+    model.prepareNextTrialIfNeeded();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(audioRecorder.stopped());
 }
 
 RECOGNITION_TEST_MODEL_TEST(

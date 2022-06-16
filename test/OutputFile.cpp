@@ -690,6 +690,11 @@ class OutputFileTests : public ::testing::Test {
 
 #define OUTPUT_FILE_TEST(a) TEST_F(OutputFileTests, a)
 
+OUTPUT_FILE_TEST(parentPathIsParentPath) {
+    path.setOutputDirectory("/Users/user/data");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/data", file.parentPath());
+}
+
 OUTPUT_FILE_TEST(
     writingAdaptiveCoordinateResponseTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingAdaptiveCoordinateResponseTrial);

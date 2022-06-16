@@ -3,6 +3,7 @@
 
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
+
 #include <utility>
 
 namespace av_speech_in_noise {
@@ -177,6 +178,11 @@ class ModelStub : public Model {
         const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithAllTargetsAndEyeTrackingInitialized_ = true;
+    }
+
+    void initializeWithAllTargetsAndAudioRecording(
+        const FixedLevelTest &p) override {
+        fixedLevelTest_ = p;
     }
 
     void completeTrial() { listener_->trialComplete(); }
