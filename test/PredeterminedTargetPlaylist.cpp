@@ -24,7 +24,7 @@ class PredeterminedTargetPlaylist : public FiniteTargetPlaylistWithRepeatables {
     auto next() -> LocalUrl override { return targets.at(++index); }
     auto current() -> LocalUrl override { return targets.at(index); }
     auto directory() -> LocalUrl override { return {}; }
-    auto empty() -> bool override { return {}; }
+    auto empty() -> bool override { return index == targets.size() - 1; }
     void reinsertCurrent() override {}
 
   private:
@@ -83,5 +83,20 @@ TEST_F(PredeterminedTargetPlaylistTests, returnsCurrentTarget) {
         "/Users/user/a.wav", playlist.current().path);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "/Users/user/a.wav", playlist.current().path);
+}
+
+TEST_F(PredeterminedTargetPlaylistTests, emptyWhenEmpty) {
+    fileReader.setContents(R"(/Users/user/a.wav
+/Users/user/b.wav
+/Users/user/c.wav
+)");
+    playlist.load({});
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(playlist.empty());
+    playlist.next();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(playlist.empty());
+    playlist.next();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(playlist.empty());
+    playlist.next();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(playlist.empty());
 }
 }
