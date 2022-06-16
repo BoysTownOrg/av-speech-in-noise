@@ -86,4 +86,16 @@ TEST_F(PredeterminedTargetPlaylistTests, reinsertCurrentRevisitsAtTheEnd) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/c.wav", playlist.next().path);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/b.wav", playlist.next().path);
 }
+
+TEST_F(PredeterminedTargetPlaylistTests, directoryIsThatOfCurrentTarget) {
+    fileReader.setContents(R"(/Users/user/1/a.wav
+/Users/user/2/b.wav
+/Users/user/3/c.wav
+)");
+    playlist.load({});
+    playlist.next();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/1", playlist.directory().path);
+    playlist.next();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/2", playlist.directory().path);
+}
 }

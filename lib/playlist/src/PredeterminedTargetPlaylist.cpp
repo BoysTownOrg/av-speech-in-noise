@@ -1,5 +1,6 @@
 #include "PredeterminedTargetPlaylist.hpp"
 
+#include <filesystem>
 #include <sstream>
 
 namespace av_speech_in_noise {
@@ -22,7 +23,9 @@ auto PredeterminedTargetPlaylist::next() -> LocalUrl {
 
 auto PredeterminedTargetPlaylist::current() -> LocalUrl { return current_; }
 
-auto PredeterminedTargetPlaylist::directory() -> LocalUrl { return {}; }
+auto PredeterminedTargetPlaylist::directory() -> LocalUrl {
+    return LocalUrl{std::filesystem::path{current_.path}.parent_path()};
+}
 
 auto PredeterminedTargetPlaylist::empty() -> bool { return targets.empty(); }
 
