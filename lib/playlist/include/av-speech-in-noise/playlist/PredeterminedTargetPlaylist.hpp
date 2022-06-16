@@ -5,29 +5,18 @@
 #include <av-speech-in-noise/core/TargetPlaylist.hpp>
 #include <av-speech-in-noise/core/TextFileReader.hpp>
 
-#include <sstream>
 #include <vector>
 
 namespace av_speech_in_noise {
 class PredeterminedTargetPlaylist : public FiniteTargetPlaylistWithRepeatables {
   public:
-    explicit PredeterminedTargetPlaylist(TextFileReader &fileReader)
-        : fileReader{fileReader} {}
-    void load(const LocalUrl &url) override {
-        targets.clear();
-        std::stringstream stream{fileReader.read(url)};
-        for (std::string line; std::getline(stream, line);)
-            targets.push_back(LocalUrl{line});
-    }
-    auto next() -> LocalUrl override {
-        current_ = targets.front();
-        targets.erase(targets.begin());
-        return current_;
-    }
-    auto current() -> LocalUrl override { return current_; }
-    auto directory() -> LocalUrl override { return {}; }
-    auto empty() -> bool override { return targets.empty(); }
-    void reinsertCurrent() override { targets.push_back(current_); }
+    explicit PredeterminedTargetPlaylist(TextFileReader &fileReader);
+    void load(const LocalUrl &url) override;
+    auto next() -> LocalUrl override;
+    auto current() -> LocalUrl override;
+    auto directory() -> LocalUrl override;
+    auto empty() -> bool override;
+    void reinsertCurrent() override;
 
   private:
     TextFileReader &fileReader;
