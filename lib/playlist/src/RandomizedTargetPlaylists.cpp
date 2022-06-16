@@ -49,8 +49,7 @@ RandomizedTargetPlaylistWithReplacement::
         DirectoryReader *reader, target_list::Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void RandomizedTargetPlaylistWithReplacement::loadFromDirectory(
-    const LocalUrl &d) {
+void RandomizedTargetPlaylistWithReplacement::load(const LocalUrl &d) {
     shuffle(randomizer, files = filesIn(reader, directory_ = d));
 }
 
@@ -76,8 +75,7 @@ RandomizedTargetPlaylistWithoutReplacement::
         DirectoryReader *reader, target_list::Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void RandomizedTargetPlaylistWithoutReplacement::loadFromDirectory(
-    const LocalUrl &d) {
+void RandomizedTargetPlaylistWithoutReplacement::load(const LocalUrl &d) {
     shuffle(randomizer, files = filesIn(reader, directory_ = d));
 }
 
@@ -111,7 +109,7 @@ CyclicRandomizedTargetPlaylist::CyclicRandomizedTargetPlaylist(
     DirectoryReader *reader, target_list::Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void CyclicRandomizedTargetPlaylist::loadFromDirectory(const LocalUrl &d) {
+void CyclicRandomizedTargetPlaylist::load(const LocalUrl &d) {
     shuffle(randomizer, files = filesIn(reader, directory_ = d));
 }
 
@@ -136,8 +134,7 @@ EachTargetPlayedOnceThenShuffleAndRepeat::
         DirectoryReader *reader, target_list::Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void EachTargetPlayedOnceThenShuffleAndRepeat::loadFromDirectory(
-    const LocalUrl &d) {
+void EachTargetPlayedOnceThenShuffleAndRepeat::load(const LocalUrl &d) {
     shuffle(randomizer, files = filesIn(reader, directory_ = d));
     endOfPlaylistCount = 0;
     currentIndex = 0;

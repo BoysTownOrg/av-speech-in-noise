@@ -1,15 +1,18 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_TARGETPLAYLISTHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_TARGETPLAYLISTHPP_
 
+#include "av-speech-in-noise/Interface.hpp"
 #include <av-speech-in-noise/Model.hpp>
+
 #include <gsl/gsl>
+
 #include <string>
 
 namespace av_speech_in_noise {
 class TargetPlaylist {
   public:
-    virtual ~TargetPlaylist() = default;
-    virtual void loadFromDirectory(const LocalUrl &directory) = 0;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TargetPlaylist);
+    virtual void load(const LocalUrl &) = 0;
     virtual auto next() -> LocalUrl = 0;
     virtual auto current() -> LocalUrl = 0;
     virtual auto directory() -> LocalUrl = 0;

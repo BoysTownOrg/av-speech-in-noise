@@ -1,7 +1,7 @@
 add_library(
   av-speech-in-noise-playlist-lib
   src/FileFilterDecorator.cpp src/RandomizedTargetPlaylists.cpp
-  src/SubdirectoryTargetPlaylistReader.cpp)
+  src/SubdirectoryTargetPlaylistReader.cpp src/PredeterminedTargetPlaylist.cpp)
 target_include_directories(
   av-speech-in-noise-playlist-lib
   PUBLIC include

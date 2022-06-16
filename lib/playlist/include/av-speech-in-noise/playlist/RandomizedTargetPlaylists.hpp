@@ -37,7 +37,7 @@ class RandomizedTargetPlaylistWithReplacement : public TargetPlaylist {
 
     RandomizedTargetPlaylistWithReplacement(
         DirectoryReader *, target_list::Randomizer *);
-    void loadFromDirectory(const LocalUrl &) override;
+    void load(const LocalUrl &) override;
     auto next() -> LocalUrl override;
     auto current() -> LocalUrl override;
     auto directory() -> LocalUrl override;
@@ -56,7 +56,7 @@ class RandomizedTargetPlaylistWithoutReplacement
     RandomizedTargetPlaylistWithoutReplacement(
         DirectoryReader *, target_list::Randomizer *);
     auto empty() -> bool override;
-    void loadFromDirectory(const LocalUrl &directory) override;
+    void load(const LocalUrl &directory) override;
     auto next() -> LocalUrl override;
     auto current() -> LocalUrl override;
     void reinsertCurrent() override;
@@ -89,7 +89,7 @@ class CyclicRandomizedTargetPlaylist : public TargetPlaylist {
 
     CyclicRandomizedTargetPlaylist(
         DirectoryReader *, target_list::Randomizer *);
-    void loadFromDirectory(const LocalUrl &directory) override;
+    void load(const LocalUrl &directory) override;
     auto next() -> LocalUrl override;
     auto current() -> LocalUrl override;
     auto directory() -> LocalUrl override;
@@ -121,7 +121,7 @@ class EachTargetPlayedOnceThenShuffleAndRepeat
 
     EachTargetPlayedOnceThenShuffleAndRepeat(
         DirectoryReader *, target_list::Randomizer *);
-    void loadFromDirectory(const LocalUrl &directory) override;
+    void load(const LocalUrl &directory) override;
     auto next() -> LocalUrl override;
     auto current() -> LocalUrl override;
     auto directory() -> LocalUrl override;

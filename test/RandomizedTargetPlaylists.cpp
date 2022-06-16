@@ -47,7 +47,7 @@ class RandomizerStub : public target_list::Randomizer {
 };
 
 void loadFromDirectory(TargetPlaylist &list, const std::string &s = {}) {
-    list.loadFromDirectory({s});
+    list.load({s});
 }
 
 void setFileNames(
