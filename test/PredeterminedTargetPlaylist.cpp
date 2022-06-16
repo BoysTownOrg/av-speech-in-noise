@@ -21,15 +21,20 @@ class PredeterminedTargetPlaylist : public FiniteTargetPlaylistWithRepeatables {
         for (std::string line; std::getline(stream, line);)
             targets.push_back(LocalUrl{line});
     }
-    auto next() -> LocalUrl override { return targets.at(++index); }
-    auto current() -> LocalUrl override { return targets.at(index); }
+    auto next() -> LocalUrl override {
+        current_ = targets.front();
+        targets.erase(targets.begin());
+        return current_;
+    }
+    auto current() -> LocalUrl override { return current_; }
     auto directory() -> LocalUrl override { return {}; }
-    auto empty() -> bool override { return index == targets.size() - 1; }
-    void reinsertCurrent() override {}
+    auto empty() -> bool override { return targets.empty(); }
+    void reinsertCurrent() override { targets.push_back(current_); }
 
   private:
     TextFileReader &fileReader;
     std::vector<LocalUrl> targets;
+    LocalUrl current_;
     int index{};
 };
 
@@ -98,5 +103,18 @@ TEST_F(PredeterminedTargetPlaylistTests, emptyWhenEmpty) {
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(playlist.empty());
     playlist.next();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(playlist.empty());
+}
+
+TEST_F(PredeterminedTargetPlaylistTests, reinsertCurrentRevisitsAtTheEnd) {
+    fileReader.setContents(R"(/Users/user/a.wav
+/Users/user/b.wav
+/Users/user/c.wav
+)");
+    playlist.load({});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/a.wav", playlist.next().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/b.wav", playlist.next().path);
+    playlist.reinsertCurrent();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/c.wav", playlist.next().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/b.wav", playlist.next().path);
 }
 }
