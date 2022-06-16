@@ -7,10 +7,10 @@
 namespace av_speech_in_noise {
 class PredeterminedTargetPlaylist : public TargetPlaylist {
   public:
-    virtual void load(const LocalUrl &directory) {}
-    virtual auto next() -> LocalUrl { return {}; }
-    virtual auto current() -> LocalUrl { return {}; }
-    virtual auto directory() -> LocalUrl { return {}; }
+    void load(const LocalUrl &) override {}
+    auto next() -> LocalUrl override { return {}; }
+    auto current() -> LocalUrl override { return {}; }
+    auto directory() -> LocalUrl override { return {}; }
 };
 
 class PredeterminedTargetPlaylistTests : public ::testing::Test {};
