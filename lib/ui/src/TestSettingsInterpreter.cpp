@@ -152,7 +152,7 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
         assign(static_cast<Test &>(test), entryName, entry);
 }
 
-static auto name(const std::string &contents) -> std::string {
+static auto methodName(const std::string &contents) -> std::string {
     std::stringstream stream{contents};
     for (std::string line; std::getline(stream, line);)
         if (entryName(line) == name(TestSetting::method))
@@ -160,7 +160,7 @@ static auto name(const std::string &contents) -> std::string {
     return name(Method::unknown);
 }
 
-static auto method(const std::string &s) -> Method {
+static auto method(const std::string &contents) -> Method {
     static std::map<std::string, Method> methods{
         {name(Method::adaptivePassFail), Method::adaptivePassFail},
         {name(Method::adaptivePassFailWithEyeTracking),
@@ -206,7 +206,8 @@ static auto method(const std::string &s) -> Method {
             Method::fixedLevelSyllablesWithAllTargets},
         {name(Method::adaptiveCoordinateResponseMeasureWithEyeTracking),
             Method::adaptiveCoordinateResponseMeasureWithEyeTracking}};
-    return methods.count(s) != 0 ? methods.at(s) : Method::unknown;
+    const auto name{methodName(contents)};
+    return methods.count(name) != 0 ? methods.at(name) : Method::unknown;
 }
 
 static void initialize(AdaptiveTest &test, const std::string &contents,
@@ -372,7 +373,7 @@ static void initialize(Model &model, Method method, const std::string &contents,
 void TestSettingsInterpreterImpl::initialize(Model &model,
     SessionController &sessionController, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr) {
-    const auto method{av_speech_in_noise::method(name(contents))};
+    const auto method{av_speech_in_noise::method(contents)};
     av_speech_in_noise::initialize(
         model, method, contents, identity, startingSnr);
     if (!model.testComplete() && taskPresenters.count(method) != 0)
