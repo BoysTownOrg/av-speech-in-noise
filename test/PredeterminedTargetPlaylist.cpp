@@ -60,6 +60,19 @@ TEST_F(PredeterminedTargetPlaylistTests, doesNotRequireNewlineAtEOF) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(playlist.empty());
 }
 
+TEST_F(PredeterminedTargetPlaylistTests, removesTrailingAndLeadingWhitespace) {
+    fileReader.setContents(R"(/Users/user/a.wav 
+ /Users/user/b.wav
+ /Users/user/c.wav 
+)");
+    playlist.load({});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/a.wav", playlist.next().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/b.wav", playlist.next().path);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(playlist.empty());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/c.wav", playlist.next().path);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(playlist.empty());
+}
+
 TEST_F(PredeterminedTargetPlaylistTests, returnsCurrentTarget) {
     fileReader.setContents(R"(/Users/user/a.wav
 /Users/user/b.wav
