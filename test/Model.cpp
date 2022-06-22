@@ -1420,6 +1420,12 @@ MODEL_TEST(
         initializingFixedLevelTestWithAllTargetsAndAudioRecording);
 }
 
+MODEL_TEST(
+    initializeFixedLevelTestWithPredeterminedTargetsAndAudioRecordingInitializesInternalModel) {
+    assertInitializesInternalModel(
+        initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording);
+}
+
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingDefaultAdaptiveTest);
 }
