@@ -4,6 +4,7 @@
 #include "AppKitView.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
+#include "av-speech-in-noise/playlist/PredeterminedTargetPlaylist.hpp"
 
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/ui/PassFail.hpp>
@@ -317,10 +318,13 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         &onlyIncludesTargetFileExtensions, &randomizer};
     static SubdirectoryTargetPlaylistReader cyclicTargetsReader{
         &cyclicTargetsFactory, &directoryReader};
+    static PredeterminedTargetPlaylist predeterminedTargetPlaylist{
+        textFileReader};
     static ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
-        allTargetsNTimes, recognitionTestModel, outputFile};
+        allTargetsNTimes, predeterminedTargetPlaylist, recognitionTestModel,
+        outputFile};
     static const auto testSetupUI{testSetupUIFactory.make(nil)};
     const auto consonantNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
@@ -444,6 +448,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
                 freeResponsePresenter},
             {Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording,
+                freeResponsePresenter},
+            {Method::
+                    fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording,
                 freeResponsePresenter},
             {Method::fixedLevelFreeResponseWithSilentIntervalTargets,
                 freeResponsePresenter},
