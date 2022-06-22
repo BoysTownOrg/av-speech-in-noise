@@ -161,6 +161,7 @@ static auto method(const std::string &s) -> Method {
         {Method::adaptivePassFail, Method::adaptivePassFailWithEyeTracking,
             Method::adaptiveCorrectKeywords,
             Method::adaptiveCorrectKeywordsWithEyeTracking,
+            Method::adaptiveCoordinateResponseMeasure,
             Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
             Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
             Method::fixedLevelFreeResponseWithTargetReplacement,
@@ -168,12 +169,13 @@ static auto method(const std::string &s) -> Method {
             Method::fixedLevelFreeResponseWithAllTargets,
             Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
             Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording,
+            Method::
+                fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording,
             Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
             Method::
                 fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
             Method::
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-            Method::adaptiveCoordinateResponseMeasure,
             Method::fixedLevelConsonants,
             Method::fixedLevelChooseKeywordsWithAllTargets,
             Method::fixedLevelSyllablesWithAllTargets,
@@ -318,6 +320,12 @@ static void initialize(Model &model, Method method, const std::string &contents,
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {
                 model.initializeWithAllTargetsAndAudioRecording(test);
+            });
+    case Method::
+        fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording:
+        return av_speech_in_noise::initialize(method, contents, identity,
+            startingSnr, [&](const FixedLevelTest &test) {
+                model.initializeWithPredeterminedTargetsAndAudioRecording(test);
             });
     case Method::
         fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking:

@@ -375,6 +375,11 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
+    void initializeWithPredeterminedTargetsAndAudioRecording(
+        const FixedLevelTest &) override {
+        throw RequestFailure{errorMessage};
+    }
+
     void initializeWithSingleSpeaker(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
