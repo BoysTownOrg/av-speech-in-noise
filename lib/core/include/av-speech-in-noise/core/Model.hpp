@@ -19,6 +19,7 @@ class ModelImpl : public Model {
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         RepeatableFiniteTargetPlaylist &eachTargetNTimes,
+        FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
         RecognitionTestModel &, OutputFile &);
     void attach(Model::Observer *) override;
     void initialize(const AdaptiveTest &) override;
@@ -30,6 +31,8 @@ class ModelImpl : public Model {
     void initializeWithAllTargetsAndEyeTracking(
         const FixedLevelTest &) override;
     void initializeWithAllTargetsAndAudioRecording(
+        const FixedLevelTest &) override;
+    void initializeWithPredeterminedTargetsAndAudioRecording(
         const FixedLevelTest &) override;
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeWithDelayedMasker(const AdaptiveTest &) override;
@@ -64,6 +67,7 @@ class ModelImpl : public Model {
     TargetPlaylist &targetsWithReplacement;
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets;
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce;
+    FiniteTargetPlaylistWithRepeatables &predeterminedTargets;
     RepeatableFiniteTargetPlaylist &eachTargetNTimes;
     RecognitionTestModel &model;
     OutputFile &outputFile;

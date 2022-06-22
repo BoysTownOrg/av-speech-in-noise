@@ -8,11 +8,20 @@ PredeterminedTargetPlaylist::PredeterminedTargetPlaylist(
     TextFileReader &fileReader)
     : fileReader{fileReader} {}
 
+// https://stackoverflow.com/a/25829178
+static auto trim(std::string s) -> std::string {
+    const auto first = s.find_first_not_of(' ');
+    if (std::string::npos == first)
+        return s;
+    const auto last = s.find_last_not_of(' ');
+    return s.substr(first, (last - first + 1));
+}
+
 void PredeterminedTargetPlaylist::load(const LocalUrl &url) {
     targets.clear();
     std::stringstream stream{fileReader.read(url)};
     for (std::string line; std::getline(stream, line);)
-        targets.push_back(LocalUrl{line});
+        targets.push_back(LocalUrl{trim(line)});
 }
 
 auto PredeterminedTargetPlaylist::next() -> LocalUrl {

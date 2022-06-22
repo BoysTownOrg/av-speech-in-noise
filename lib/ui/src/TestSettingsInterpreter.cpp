@@ -1,8 +1,12 @@
 #include "TestSettingsInterpreter.hpp"
 #include <av-speech-in-noise/Model.hpp>
+
 #include <gsl/gsl>
+
+#include <map>
 #include <sstream>
 #include <functional>
+#include <string>
 #include <utility>
 
 namespace av_speech_in_noise {
@@ -148,7 +152,7 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
         assign(static_cast<Test &>(test), entryName, entry);
 }
 
-static auto name(const std::string &contents) -> std::string {
+static auto methodName(const std::string &contents) -> std::string {
     std::stringstream stream{contents};
     for (std::string line; std::getline(stream, line);)
         if (entryName(line) == name(TestSetting::method))
@@ -156,31 +160,54 @@ static auto name(const std::string &contents) -> std::string {
     return name(Method::unknown);
 }
 
-static auto method(const std::string &s) -> Method {
-    for (auto m :
-        {Method::adaptivePassFail, Method::adaptivePassFailWithEyeTracking,
-            Method::adaptiveCorrectKeywords,
-            Method::adaptiveCorrectKeywordsWithEyeTracking,
-            Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
-            Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
-            Method::fixedLevelFreeResponseWithTargetReplacement,
-            Method::fixedLevelFreeResponseWithSilentIntervalTargets,
-            Method::fixedLevelFreeResponseWithAllTargets,
-            Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
-            Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording,
-            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+static auto method(const std::string &contents) -> Method {
+    static std::map<std::string, Method> methods{
+        {name(Method::adaptivePassFail), Method::adaptivePassFail},
+        {name(Method::adaptivePassFailWithEyeTracking),
+            Method::adaptivePassFailWithEyeTracking},
+        {name(Method::adaptiveCorrectKeywords),
+            Method::adaptiveCorrectKeywords},
+        {name(Method::adaptiveCorrectKeywordsWithEyeTracking),
+            Method::adaptiveCorrectKeywordsWithEyeTracking},
+        {name(Method::adaptiveCoordinateResponseMeasure),
+            Method::adaptiveCoordinateResponseMeasure},
+        {name(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker),
+            Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker},
+        {name(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker),
+            Method::adaptiveCoordinateResponseMeasureWithDelayedMasker},
+        {name(Method::fixedLevelFreeResponseWithTargetReplacement),
+            Method::fixedLevelFreeResponseWithTargetReplacement},
+        {name(Method::fixedLevelFreeResponseWithSilentIntervalTargets),
+            Method::fixedLevelFreeResponseWithSilentIntervalTargets},
+        {name(Method::fixedLevelFreeResponseWithAllTargets),
+            Method::fixedLevelFreeResponseWithAllTargets},
+        {name(Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking),
+            Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking},
+        {name(Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording),
+            Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording},
+        {name(Method::
+                 fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording),
             Method::
-                fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
+                fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording},
+        {name(Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement),
+            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement},
+        {name(Method::
+                 fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking),
             Method::
-                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-            Method::adaptiveCoordinateResponseMeasure,
-            Method::fixedLevelConsonants,
-            Method::fixedLevelChooseKeywordsWithAllTargets,
-            Method::fixedLevelSyllablesWithAllTargets,
-            Method::adaptiveCoordinateResponseMeasureWithEyeTracking})
-        if (name(s) == name(m))
-            return m;
-    return Method::unknown;
+                fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking},
+        {name(Method::
+                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets),
+            Method::
+                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets},
+        {name(Method::fixedLevelConsonants), Method::fixedLevelConsonants},
+        {name(Method::fixedLevelChooseKeywordsWithAllTargets),
+            Method::fixedLevelChooseKeywordsWithAllTargets},
+        {name(Method::fixedLevelSyllablesWithAllTargets),
+            Method::fixedLevelSyllablesWithAllTargets},
+        {name(Method::adaptiveCoordinateResponseMeasureWithEyeTracking),
+            Method::adaptiveCoordinateResponseMeasureWithEyeTracking}};
+    const auto name{methodName(contents)};
+    return methods.count(name) != 0 ? methods.at(name) : Method::unknown;
 }
 
 static void initialize(AdaptiveTest &test, const std::string &contents,
@@ -318,6 +345,12 @@ static void initialize(Model &model, Method method, const std::string &contents,
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {
                 model.initializeWithAllTargetsAndAudioRecording(test);
+            });
+    case Method::
+        fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording:
+        return av_speech_in_noise::initialize(method, contents, identity,
+            startingSnr, [&](const FixedLevelTest &test) {
+                model.initializeWithPredeterminedTargetsAndAudioRecording(test);
             });
     case Method::
         fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking:

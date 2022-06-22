@@ -9,6 +9,7 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     RepeatableFiniteTargetPlaylist &eachTargetNTimes,
+    FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
     RecognitionTestModel &model, OutputFile &outputFile)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
@@ -16,6 +17,7 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
       targetsWithReplacement{targetsWithReplacement},
       silentIntervalTargets{silentIntervalTargets},
       everyTargetOnce{everyTargetOnce},
+      predeterminedTargets{predeterminedTargets},
       eachTargetNTimes{eachTargetNTimes}, model{model}, outputFile{outputFile} {
 }
 
@@ -106,6 +108,14 @@ void ModelImpl::initializeWithAllTargetsAndEyeTracking(
 void ModelImpl::initializeWithAllTargetsAndAudioRecording(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
+    av_speech_in_noise::initializeWithAudioRecording(
+        model, fixedLevelMethod, test);
+}
+
+void ModelImpl::initializeWithPredeterminedTargetsAndAudioRecording(
+    const FixedLevelTest &test) {
+    av_speech_in_noise::initialize(
+        fixedLevelMethod, test, predeterminedTargets);
     av_speech_in_noise::initializeWithAudioRecording(
         model, fixedLevelMethod, test);
 }

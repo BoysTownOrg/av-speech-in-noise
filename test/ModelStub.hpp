@@ -185,6 +185,11 @@ class ModelStub : public Model {
         fixedLevelTest_ = p;
     }
 
+    void initializeWithPredeterminedTargetsAndAudioRecording(
+        const FixedLevelTest &p) override {
+        fixedLevelTest_ = p;
+    }
+
     void completeTrial() { listener_->trialComplete(); }
 
     void setAudioDevices(std::vector<std::string> v) {
