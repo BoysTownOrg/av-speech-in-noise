@@ -11,21 +11,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: generate build system
         run: cmake -S . -B build -GXcode -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 -DAV_SPEECH_IN_NOISE_ENABLE_TESTS=1 -DCMAKE_Swift_LANGUAGE_VERSION=5
-      - name: build tests -- Release
+      - name: build tests
         run: cmake --build build --target av-speech-in-noise-test-exe --config Release
-      - name: test library -- Release
+      - name: test library
         run: ctest -V -C Release
         working-directory: ./build
-      - name: build tests -- Debug
-        run: cmake --build build --target av-speech-in-noise-test-exe --config Debug
-      - name: test library -- Debug
-        run: ctest -V -C Debug
-        working-directory: ./build
-      - name: build app -- Release
+      - name: build app
         run: cmake --build build --target av-speech-in-noise-macos-bundle --config Release
-      - name: build app -- Debug
-        run: cmake --build build --target av-speech-in-noise-macos-bundle --config Debug
-      - name: build facemask study -- Release
+      - name: build facemask study
         run: cmake --build build --target av-speech-in-noise-facemask-study-macos-bundle --config Release
-      - name: build facemask study -- Debug
-        run: cmake --build build --target av-speech-in-noise-facemask-study-macos-bundle --config Debug
