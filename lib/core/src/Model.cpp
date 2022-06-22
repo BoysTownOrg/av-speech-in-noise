@@ -110,6 +110,13 @@ void ModelImpl::initializeWithAllTargetsAndAudioRecording(
         model, fixedLevelMethod, test);
 }
 
+void ModelImpl::initializeWithPredeterminedTargetsAndAudioRecording(
+    const FixedLevelTest &test) {
+    av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
+    av_speech_in_noise::initializeWithAudioRecording(
+        model, fixedLevelMethod, test);
+}
+
 void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &test) {
     av_speech_in_noise::initialize(
         adaptiveMethod, test, targetsWithReplacementReader);

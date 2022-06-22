@@ -731,6 +731,29 @@ class InitializingFixedLevelTestWithAllTargetsAndAudioRecording
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
+class InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording
+    : public InitializingFixedLevelTest {
+    FixedLevelTest test_;
+    FixedLevelMethodStub *method;
+
+  public:
+    explicit InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording(
+        FixedLevelMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override {
+        model.initializeWithPredeterminedTargetsAndAudioRecording(test_);
+    }
+
+    void run(ModelImpl &model, const FixedLevelTest &test) override {
+        model.initializeWithPredeterminedTargetsAndAudioRecording(test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
 auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
     return m.initializedWithEyeTracking();
 }
@@ -831,6 +854,9 @@ class ModelTests : public ::testing::Test {
         initializingFixedLevelTestWithEachTargetNTimes{&fixedLevelMethod};
     InitializingFixedLevelTestWithAllTargetsAndAudioRecording
         initializingFixedLevelTestWithAllTargetsAndAudioRecording{
+            &fixedLevelMethod};
+    InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording
+        initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording{
             &fixedLevelMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
@@ -1240,6 +1266,12 @@ MODEL_TEST(
     initializingFixedLevelTestWithAllTargetsAndAudioRecordingInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelTestWithAllTargetsAndAudioRecording);
+}
+
+MODEL_TEST(
+    initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecordingInitializesFixedLevelMethod) {
+    assertInitializesFixedLevelMethod(
+        initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording);
 }
 
 MODEL_TEST(

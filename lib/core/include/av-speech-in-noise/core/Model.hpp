@@ -32,7 +32,7 @@ class ModelImpl : public Model {
     void initializeWithAllTargetsAndAudioRecording(
         const FixedLevelTest &) override;
     void initializeWithPredeterminedTargetsAndAudioRecording(
-        const FixedLevelTest &) override {}
+        const FixedLevelTest &) override;
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeWithDelayedMasker(const AdaptiveTest &) override;
     void initializeWithTargetReplacementAndEyeTracking(
