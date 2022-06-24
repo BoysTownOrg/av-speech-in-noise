@@ -38,9 +38,9 @@ class AudioRecorder {
 class EyeTracking : public RunningATest::Observer {
   public:
     EyeTracking(EyeTracker &, MaskerPlayer &, TargetPlayer &, OutputFile &);
-    void notifyThatTrialWillBegin() override;
-    void notifyThatTargetWillPlayAt(
-        const PlayerTimeWithDelay &timeToPlayWithDelay) override;
+    void notifyThatTrialWillBegin(
+        int trialNumber, std::string_view session) override;
+    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
     void notifyThatStimulusHasEnded() override;
     void notifyThatSubjectHasResponded() override;
 
@@ -51,6 +51,20 @@ class EyeTracking : public RunningATest::Observer {
     EyeTracker &eyeTracker;
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
+    OutputFile &outputFile;
+};
+
+class AudioRecording : public RunningATest::Observer {
+  public:
+    AudioRecording(AudioRecorder &, OutputFile &);
+    void notifyThatTrialWillBegin(
+        int trialNumber, std::string_view session) override;
+    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
+    void notifyThatStimulusHasEnded() override;
+    void notifyThatSubjectHasResponded() override;
+
+  private:
+    AudioRecorder &audioRecorder;
     OutputFile &outputFile;
 };
 
@@ -89,7 +103,8 @@ class RunningATestImpl : public TargetPlayer::Observer,
     void initialize_(TestMethod *, const Test &);
     void seekRandomMaskerPosition();
 
-    EyeTracking eyeTracking_;
+    EyeTracking eyeTracking;
+    AudioRecording audioRecording;
     RunningATest::Observer *observer;
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;

@@ -7,6 +7,7 @@
 #include <cmath>
 #include <functional>
 #include <sstream>
+#include <string_view>
 
 namespace av_speech_in_noise {
 namespace {
@@ -22,7 +23,7 @@ class NullTestMethod : public TestMethod {
 };
 
 class NullObserver : public RunningATest::Observer {
-    void notifyThatTrialWillBegin() override {}
+    void notifyThatTrialWillBegin(int trialNumber, std::string_view) override {}
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
     void notifyThatStimulusHasEnded() override {}
     void notifyThatSubjectHasResponded() override {}
@@ -262,8 +263,6 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     MaskerPlayer &maskerPlayer, RunningATest::Observer *observer,
     RealLevel maskerLevel, RealLevel fullScaleLevel, bool audioRecordingEnabled,
     AudioRecorder &audioRecorder) {
-    if (audioRecordingEnabled)
-        audioRecorder.stop();
     observer->notifyThatSubjectHasResponded();
     if (!testMethod->complete()) {
         ++trialNumber_;
@@ -293,7 +292,8 @@ EyeTracking::EyeTracking(EyeTracker &eyeTracker, MaskerPlayer &maskerPlayer,
     : eyeTracker{eyeTracker}, maskerPlayer{maskerPlayer},
       targetPlayer{targetPlayer}, outputFile{outputFile} {}
 
-void EyeTracking::notifyThatTrialWillBegin() {
+void EyeTracking::notifyThatTrialWillBegin(
+    int trialNumber, std::string_view session) {
     eyeTracker.allocateRecordingTimeSeconds(
         Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);
     eyeTracker.start();
@@ -320,15 +320,33 @@ void EyeTracking::notifyThatSubjectHasResponded() {
     save(outputFile);
 }
 
+AudioRecording::AudioRecording(
+    AudioRecorder &audioRecorder, OutputFile &outputFile)
+    : audioRecorder{audioRecorder}, outputFile{outputFile} {}
+
+void AudioRecording::notifyThatTrialWillBegin(
+    int trialNumber, std::string_view session) {
+    std::stringstream stream;
+    stream << trialNumber << '-' << session << ".wav";
+    audioRecorder.initialize(LocalUrl{outputFile.parentPath() / stream.str()});
+}
+
+void AudioRecording::notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) {}
+
+void AudioRecording::notifyThatStimulusHasEnded() { audioRecorder.start(); }
+
+void AudioRecording::notifyThatSubjectHasResponded() { audioRecorder.stop(); }
+
 RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, AudioRecorder &audioRecorder,
     ResponseEvaluator &evaluator, OutputFile &outputFile,
     Randomizer &randomizer, EyeTracker &eyeTracker, Clock &clock)
-    : eyeTracking_{eyeTracker, maskerPlayer, targetPlayer, outputFile},
-      observer{&nullObserver}, maskerPlayer{maskerPlayer},
-      targetPlayer{targetPlayer}, audioRecorder{audioRecorder},
-      evaluator{evaluator}, outputFile{outputFile},
-      randomizer{randomizer}, clock{clock}, testMethod{&nullTestMethod} {
+    : eyeTracking{eyeTracker, maskerPlayer, targetPlayer, outputFile},
+      audioRecording{audioRecorder, outputFile}, observer{&nullObserver},
+      maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
+      audioRecorder{audioRecorder}, evaluator{evaluator},
+      outputFile{outputFile}, randomizer{randomizer}, clock{clock},
+      testMethod{&nullTestMethod} {
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
 }
@@ -391,13 +409,14 @@ void RunningATestImpl::initializeWithDelayedMasker(
 void RunningATestImpl::initializeWithEyeTracking(
     TestMethod *method, const Test &test) {
     initialize_(method, test);
-    observer = &eyeTracking_;
+    observer = &eyeTracking;
 }
 
 void RunningATestImpl::initializeWithAudioRecording(
     TestMethod *method, const Test &test) {
     initialize_(method, test);
     audioRecordingEnabled = true;
+    observer = &audioRecording;
 }
 
 void RunningATestImpl::playTrial(const AudioSettings &settings) {
@@ -410,13 +429,7 @@ void RunningATestImpl::playTrial(const AudioSettings &settings) {
         settings.audioDevice);
 
     playTrialTime_ = clock.time();
-    if (audioRecordingEnabled) {
-        std::stringstream stream;
-        stream << trialNumber_ << '-' << session << ".wav";
-        audioRecorder.initialize(
-            LocalUrl{outputFile.parentPath() / stream.str()});
-    }
-    observer->notifyThatTrialWillBegin();
+    observer->notifyThatTrialWillBegin(trialNumber_, session);
     if (condition == Condition::audioVisual)
         show(targetPlayer);
     targetPlayer.preRoll();
@@ -442,8 +455,6 @@ void RunningATestImpl::fadeOutComplete() {
     observer->notifyThatStimulusHasEnded();
     listener_->trialComplete();
     trialInProgress_ = false;
-    if (audioRecordingEnabled)
-        audioRecorder.start();
 }
 
 void RunningATestImpl::submit(
