@@ -259,9 +259,8 @@ static void preparePlayersForNextTrial(TestMethod *testMethod,
 
 static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, EyeTracking &eyeTracking_,
-    RunningATest::Observer *observer, RealLevel maskerLevel,
-    RealLevel fullScaleLevel, bool eyeTracking, bool audioRecordingEnabled,
+    MaskerPlayer &maskerPlayer, RunningATest::Observer *observer,
+    RealLevel maskerLevel, RealLevel fullScaleLevel, bool audioRecordingEnabled,
     AudioRecorder &audioRecorder) {
     if (audioRecordingEnabled)
         audioRecorder.stop();
@@ -279,15 +278,14 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
 static void saveOutputFileAndPrepareNextTrialAfter(
     const std::function<void()> &f, TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, EyeTracking &eyeTracking_,
-    RunningATest::Observer *observer, RealLevel maskerLevel,
-    RealLevel fullScaleLevel, bool eyeTracking, bool audioRecordingEnabled,
+    MaskerPlayer &maskerPlayer, RunningATest::Observer *observer,
+    RealLevel maskerLevel, RealLevel fullScaleLevel, bool audioRecordingEnabled,
     AudioRecorder &audioRecorder) {
     f();
     save(outputFile);
     prepareNextTrialIfNeeded(testMethod, trialNumber_, outputFile, randomizer,
-        targetPlayer, maskerPlayer, eyeTracking_, observer, maskerLevel,
-        fullScaleLevel, eyeTracking, audioRecordingEnabled, audioRecorder);
+        targetPlayer, maskerPlayer, observer, maskerLevel, fullScaleLevel,
+        audioRecordingEnabled, audioRecorder);
 }
 
 EyeTracking::EyeTracking(EyeTracker &eyeTracker, MaskerPlayer &maskerPlayer,
@@ -372,7 +370,6 @@ void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test) {
     useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
-    turnOff(eyeTracking);
     observer = &nullObserver;
     audioRecordingEnabled = false;
 }
@@ -394,7 +391,6 @@ void RunningATestImpl::initializeWithDelayedMasker(
 void RunningATestImpl::initializeWithEyeTracking(
     TestMethod *method, const Test &test) {
     initialize_(method, test);
-    eyeTracking = true;
     observer = &eyeTracking_;
 }
 
@@ -458,15 +454,14 @@ void RunningATestImpl::submit(
             testMethod->writeLastCoordinateResponse(outputFile);
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, eyeTracking_, observer, maskerLevel_, fullScaleLevel_,
-        eyeTracking, audioRecordingEnabled, audioRecorder);
+        maskerPlayer, observer, maskerLevel_, fullScaleLevel_,
+        audioRecordingEnabled, audioRecorder);
 }
 
 void RunningATestImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracking_,
-        observer, maskerLevel_, fullScaleLevel_, eyeTracking,
-        audioRecordingEnabled, audioRecorder);
+        outputFile, randomizer, targetPlayer, maskerPlayer, observer,
+        maskerLevel_, fullScaleLevel_, audioRecordingEnabled, audioRecorder);
 }
 
 void RunningATestImpl::playCalibration(const Calibration &calibration) {

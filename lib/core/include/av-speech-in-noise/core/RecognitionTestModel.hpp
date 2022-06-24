@@ -106,7 +106,6 @@ class RunningATestImpl : public TargetPlayer::Observer,
     RealLevel fullScaleLevel_{};
     int trialNumber_{};
     Condition condition{};
-    bool eyeTracking{};
     bool audioRecordingEnabled{};
     bool trialInProgress_{};
 };
