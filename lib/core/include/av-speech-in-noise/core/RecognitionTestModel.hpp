@@ -96,11 +96,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     ResponseEvaluator &evaluator;
     OutputFile &outputFile;
     Randomizer &randomizer;
-    EyeTracker &eyeTracker;
     Clock &clock;
-    EyeTrackerTargetPlayerSynchronization
-        lastEyeTrackerTargetPlayerSynchronization{};
-    TargetStartTime lastTargetStartTime{};
     std::string playTrialTime_;
     std::string session;
     Model::Observer *listener_{};

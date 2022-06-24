@@ -252,9 +252,6 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, EyeTracking &eyeTracking_,
     RealLevel maskerLevel, RealLevel fullScaleLevel, bool eyeTracking,
-    TargetStartTime lastTargetStartTime,
-    EyeTrackerTargetPlayerSynchronization
-        lastEyeTrackerTargetPlayerSynchronization,
     bool audioRecordingEnabled, AudioRecorder &audioRecorder) {
     if (audioRecordingEnabled)
         audioRecorder.stop();
@@ -275,17 +272,12 @@ static void saveOutputFileAndPrepareNextTrialAfter(
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, EyeTracking &eyeTracking_,
     RealLevel maskerLevel, RealLevel fullScaleLevel, bool eyeTracking,
-    TargetStartTime lastTargetStartTime,
-    EyeTrackerTargetPlayerSynchronization
-        lastEyeTrackerTargetPlayerSynchronization,
     bool audioRecordingEnabled, AudioRecorder &audioRecorder) {
     f();
     save(outputFile);
     prepareNextTrialIfNeeded(testMethod, trialNumber_, outputFile, randomizer,
         targetPlayer, maskerPlayer, eyeTracking_, maskerLevel, fullScaleLevel,
-        eyeTracking, lastTargetStartTime,
-        lastEyeTrackerTargetPlayerSynchronization, audioRecordingEnabled,
-        audioRecorder);
+        eyeTracking, audioRecordingEnabled, audioRecorder);
 }
 
 EyeTracking::EyeTracking(EyeTracker &eyeTracker, MaskerPlayer &maskerPlayer,
@@ -327,8 +319,8 @@ RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     : eyeTracking_{eyeTracker, maskerPlayer, targetPlayer, outputFile},
       maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
       audioRecorder{audioRecorder}, evaluator{evaluator},
-      outputFile{outputFile}, randomizer{randomizer},
-      eyeTracker{eyeTracker}, clock{clock}, testMethod{&nullTestMethod} {
+      outputFile{outputFile}, randomizer{randomizer}, clock{clock},
+      testMethod{&nullTestMethod} {
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
 }
@@ -459,15 +451,13 @@ void RunningATestImpl::submit(
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
         maskerPlayer, eyeTracking_, maskerLevel_, fullScaleLevel_, eyeTracking,
-        lastTargetStartTime, lastEyeTrackerTargetPlayerSynchronization,
         audioRecordingEnabled, audioRecorder);
 }
 
 void RunningATestImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
         outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracking_,
-        maskerLevel_, fullScaleLevel_, eyeTracking, lastTargetStartTime,
-        lastEyeTrackerTargetPlayerSynchronization, audioRecordingEnabled,
+        maskerLevel_, fullScaleLevel_, eyeTracking, audioRecordingEnabled,
         audioRecorder);
 }
 
