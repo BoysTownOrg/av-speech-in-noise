@@ -20,9 +20,18 @@ class NullTestMethod : public TestMethod {
     void writeTestingParameters(OutputFile &) override {}
     void writeTestResult(OutputFile &) override {}
 };
+
+class NullObserver : public RunningATest::Observer {
+    void notifyThatTrialWillBegin() override {}
+    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
+    void notifyThatStimulusHasEnded() override {}
+    void notifyThatSubjectHasResponded() override {}
+};
 }
 
 static NullTestMethod nullTestMethod;
+
+static NullObserver nullObserver;
 
 static void useAllChannels(MaskerPlayer &player) { player.useAllChannels(); }
 
@@ -251,12 +260,12 @@ static void preparePlayersForNextTrial(TestMethod *testMethod,
 static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, EyeTracking &eyeTracking_,
-    RealLevel maskerLevel, RealLevel fullScaleLevel, bool eyeTracking,
-    bool audioRecordingEnabled, AudioRecorder &audioRecorder) {
+    RunningATest::Observer *observer, RealLevel maskerLevel,
+    RealLevel fullScaleLevel, bool eyeTracking, bool audioRecordingEnabled,
+    AudioRecorder &audioRecorder) {
     if (audioRecordingEnabled)
         audioRecorder.stop();
-    if (eyeTracking)
-        eyeTracking_.notifyThatSubjectHasResponded();
+    observer->notifyThatSubjectHasResponded();
     if (!testMethod->complete()) {
         ++trialNumber_;
         preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
@@ -271,13 +280,14 @@ static void saveOutputFileAndPrepareNextTrialAfter(
     const std::function<void()> &f, TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, EyeTracking &eyeTracking_,
-    RealLevel maskerLevel, RealLevel fullScaleLevel, bool eyeTracking,
-    bool audioRecordingEnabled, AudioRecorder &audioRecorder) {
+    RunningATest::Observer *observer, RealLevel maskerLevel,
+    RealLevel fullScaleLevel, bool eyeTracking, bool audioRecordingEnabled,
+    AudioRecorder &audioRecorder) {
     f();
     save(outputFile);
     prepareNextTrialIfNeeded(testMethod, trialNumber_, outputFile, randomizer,
-        targetPlayer, maskerPlayer, eyeTracking_, maskerLevel, fullScaleLevel,
-        eyeTracking, audioRecordingEnabled, audioRecorder);
+        targetPlayer, maskerPlayer, eyeTracking_, observer, maskerLevel,
+        fullScaleLevel, eyeTracking, audioRecordingEnabled, audioRecorder);
 }
 
 EyeTracking::EyeTracking(EyeTracker &eyeTracker, MaskerPlayer &maskerPlayer,
@@ -317,10 +327,10 @@ RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     ResponseEvaluator &evaluator, OutputFile &outputFile,
     Randomizer &randomizer, EyeTracker &eyeTracker, Clock &clock)
     : eyeTracking_{eyeTracker, maskerPlayer, targetPlayer, outputFile},
-      maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
-      audioRecorder{audioRecorder}, evaluator{evaluator},
-      outputFile{outputFile}, randomizer{randomizer}, clock{clock},
-      testMethod{&nullTestMethod} {
+      observer{&nullObserver}, maskerPlayer{maskerPlayer},
+      targetPlayer{targetPlayer}, audioRecorder{audioRecorder},
+      evaluator{evaluator}, outputFile{outputFile},
+      randomizer{randomizer}, clock{clock}, testMethod{&nullTestMethod} {
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
 }
@@ -363,6 +373,7 @@ void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test) {
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
     turnOff(eyeTracking);
+    observer = &nullObserver;
     audioRecordingEnabled = false;
 }
 
@@ -384,6 +395,7 @@ void RunningATestImpl::initializeWithEyeTracking(
     TestMethod *method, const Test &test) {
     initialize_(method, test);
     eyeTracking = true;
+    observer = &eyeTracking_;
 }
 
 void RunningATestImpl::initializeWithAudioRecording(
@@ -408,9 +420,7 @@ void RunningATestImpl::playTrial(const AudioSettings &settings) {
         audioRecorder.initialize(
             LocalUrl{outputFile.parentPath() / stream.str()});
     }
-    if (eyeTracking) {
-        eyeTracking_.notifyThatTrialWillBegin();
-    }
+    observer->notifyThatTrialWillBegin();
     if (condition == Condition::audioVisual)
         show(targetPlayer);
     targetPlayer.preRoll();
@@ -428,14 +438,12 @@ void RunningATestImpl::fadeInComplete(const AudioSampleTimeWithOffset &t) {
         Duration{offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
             .seconds};
     targetPlayer.playAt(timeToPlayWithDelay);
-    if (eyeTracking)
-        eyeTracking_.notifyThatTargetWillPlayAt(timeToPlayWithDelay);
+    observer->notifyThatTargetWillPlayAt(timeToPlayWithDelay);
 }
 
 void RunningATestImpl::fadeOutComplete() {
     hide(targetPlayer);
-    if (eyeTracking)
-        eyeTracking_.notifyThatStimulusHasEnded();
+    observer->notifyThatStimulusHasEnded();
     listener_->trialComplete();
     trialInProgress_ = false;
     if (audioRecordingEnabled)
@@ -450,15 +458,15 @@ void RunningATestImpl::submit(
             testMethod->writeLastCoordinateResponse(outputFile);
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, eyeTracking_, maskerLevel_, fullScaleLevel_, eyeTracking,
-        audioRecordingEnabled, audioRecorder);
+        maskerPlayer, eyeTracking_, observer, maskerLevel_, fullScaleLevel_,
+        eyeTracking, audioRecordingEnabled, audioRecorder);
 }
 
 void RunningATestImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
         outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracking_,
-        maskerLevel_, fullScaleLevel_, eyeTracking, audioRecordingEnabled,
-        audioRecorder);
+        observer, maskerLevel_, fullScaleLevel_, eyeTracking,
+        audioRecordingEnabled, audioRecorder);
 }
 
 void RunningATestImpl::playCalibration(const Calibration &calibration) {

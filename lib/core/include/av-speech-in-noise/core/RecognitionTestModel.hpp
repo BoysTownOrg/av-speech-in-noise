@@ -90,6 +90,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     void seekRandomMaskerPosition();
 
     EyeTracking eyeTracking_;
+    RunningATest::Observer *observer;
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
     AudioRecorder &audioRecorder;
