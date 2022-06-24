@@ -405,14 +405,13 @@ void RecognitionTestModelImpl::notifyThatPreRollHasCompleted() {
 
 void RecognitionTestModelImpl::fadeInComplete(
     const AudioSampleTimeWithOffset &t) {
+    PlayerTimeWithDelay timeToPlayWithDelay{};
+    timeToPlayWithDelay.playerTime = t.playerTime;
+    timeToPlayWithDelay.delay = Delay{
+        Duration{offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
+            .seconds};
+    targetPlayer.playAt(timeToPlayWithDelay);
     if (eyeTracking) {
-        PlayerTimeWithDelay timeToPlayWithDelay{};
-        timeToPlayWithDelay.playerTime = t.playerTime;
-        timeToPlayWithDelay.delay = Delay{Duration{
-            offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
-                                              .seconds};
-        targetPlayer.playAt(timeToPlayWithDelay);
-
         lastTargetStartTime.nanoseconds =
             nanoseconds(maskerPlayer, timeToPlayWithDelay);
 
@@ -421,13 +420,6 @@ void RecognitionTestModelImpl::fadeInComplete(
         lastEyeTrackerTargetPlayerSynchronization.targetPlayerSystemTime =
             TargetPlayerSystemTime{
                 nanoseconds(maskerPlayer, maskerPlayer.currentSystemTime())};
-    } else {
-        PlayerTimeWithDelay timeToPlayWithDelay{};
-        timeToPlayWithDelay.playerTime = t.playerTime;
-        timeToPlayWithDelay.delay = Delay{Duration{
-            offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
-                                              .seconds};
-        targetPlayer.playAt(timeToPlayWithDelay);
     }
 }
 

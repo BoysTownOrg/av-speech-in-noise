@@ -10,7 +10,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(GSL)
 
 add_subdirectory(lib)
-add_subdirectory(macos)
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  add_subdirectory(macos)
+endif()
 
 option(AV_SPEECH_IN_NOISE_ENABLE_TESTS
        "Enables tests for av-speech-in-noise target" OFF)
