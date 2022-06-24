@@ -10,7 +10,7 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     RepeatableFiniteTargetPlaylist &eachTargetNTimes,
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
-    RecognitionTestModel &model, OutputFile &outputFile)
+    RunningATest &model, OutputFile &outputFile)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
       cyclicTargetsReader{cyclicTargetsReader},
@@ -22,7 +22,7 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
 }
 
 static void initialize(
-    RecognitionTestModel &model, TestMethod &method, const Test &test) {
+    RunningATest &model, TestMethod &method, const Test &test) {
     model.initialize(&method, test);
 }
 
@@ -47,23 +47,23 @@ static void initialize(AdaptiveMethod &method, const AdaptiveTest &test,
     method.initialize(test, &reader);
 }
 
-static void initializeWithSingleSpeaker(RecognitionTestModel &model,
-    AdaptiveMethod &method, const AdaptiveTest &test) {
+static void initializeWithSingleSpeaker(
+    RunningATest &model, AdaptiveMethod &method, const AdaptiveTest &test) {
     model.initializeWithSingleSpeaker(&method, test);
 }
 
 static void initializeWithDelayedMasker(
-    RecognitionTestModel &model, TestMethod &method, const Test &test) {
+    RunningATest &model, TestMethod &method, const Test &test) {
     model.initializeWithDelayedMasker(&method, test);
 }
 
 static void initializeWithEyeTracking(
-    RecognitionTestModel &model, TestMethod &method, const Test &test) {
+    RunningATest &model, TestMethod &method, const Test &test) {
     model.initializeWithEyeTracking(&method, test);
 }
 
 static void initializeWithAudioRecording(
-    RecognitionTestModel &model, TestMethod &method, const Test &test) {
+    RunningATest &model, TestMethod &method, const Test &test) {
     model.initializeWithAudioRecording(&method, test);
 }
 

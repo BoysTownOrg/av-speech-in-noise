@@ -1,8 +1,8 @@
 #include "SubmittingPassFail.hpp"
 
 namespace av_speech_in_noise::submitting_pass_fail {
-InteractorImpl::InteractorImpl(AdaptiveMethod &adaptiveMethod,
-    RecognitionTestModel &model, OutputFile &outputFile)
+InteractorImpl::InteractorImpl(
+    AdaptiveMethod &adaptiveMethod, RunningATest &model, OutputFile &outputFile)
     : adaptiveMethod{adaptiveMethod}, model{model}, outputFile{outputFile} {}
 
 void InteractorImpl::submitCorrectResponse() {

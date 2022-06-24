@@ -9,12 +9,12 @@
 namespace av_speech_in_noise::submitting_free_response {
 class InteractorImpl : public Interactor {
   public:
-    InteractorImpl(FixedLevelMethod &, RecognitionTestModel &, OutputFile &);
+    InteractorImpl(FixedLevelMethod &, RunningATest &, OutputFile &);
     void submit(const FreeResponse &) override;
 
   private:
     FixedLevelMethod &method;
-    RecognitionTestModel &model;
+    RunningATest &model;
     OutputFile &outputFile;
 };
 }

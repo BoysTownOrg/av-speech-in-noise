@@ -100,7 +100,7 @@ class TestMethodStub : public TestMethod {
 class UseCase {
   public:
     virtual ~UseCase() = default;
-    virtual void run(RecognitionTestModelImpl &) = 0;
+    virtual void run(RunningATestImpl &) = 0;
 };
 
 class InitializingTest : public UseCase {
@@ -108,9 +108,7 @@ class InitializingTest : public UseCase {
     explicit InitializingTest(TestMethod *method, const Test &test)
         : test{test}, method{method} {}
 
-    void run(RecognitionTestModelImpl &m) override {
-        m.initialize(method, test);
-    }
+    void run(RunningATestImpl &m) override { m.initialize(method, test); }
 
   private:
     const Test &test{};
@@ -122,7 +120,7 @@ class InitializingTestWithSingleSpeaker : public UseCase {
     explicit InitializingTestWithSingleSpeaker(TestMethod *method)
         : method{method} {}
 
-    void run(RecognitionTestModelImpl &m) override {
+    void run(RunningATestImpl &m) override {
         m.initializeWithSingleSpeaker(method, {});
     }
 
@@ -135,7 +133,7 @@ class InitializingTestWithDelayedMasker : public UseCase {
     explicit InitializingTestWithDelayedMasker(TestMethod *method)
         : method{method} {}
 
-    void run(RecognitionTestModelImpl &m) override {
+    void run(RunningATestImpl &m) override {
         m.initializeWithDelayedMasker(method, {});
     }
 
@@ -152,7 +150,7 @@ class InitializingTestWithEyeTracking : public UseCase {
         TestMethod *method, const Test &test)
         : method{method}, test{test} {}
 
-    void run(RecognitionTestModelImpl &model) override {
+    void run(RunningATestImpl &model) override {
         model.initializeWithEyeTracking(method, test);
     }
 };
@@ -165,7 +163,7 @@ class InitializingTestWithAudioRecording : public UseCase {
     InitializingTestWithAudioRecording(TestMethod *method, const Test &test)
         : method{method}, test{test} {}
 
-    void run(RecognitionTestModelImpl &model) override {
+    void run(RunningATestImpl &model) override {
         model.initializeWithAudioRecording(method, test);
     }
 };
@@ -192,7 +190,7 @@ class PlayingCalibration : public AudioDeviceUseCase,
         calibration.audioDevice = std::move(s);
     }
 
-    void run(RecognitionTestModelImpl &model) override {
+    void run(RunningATestImpl &model) override {
         model.playCalibration(calibration);
     }
 
@@ -218,7 +216,7 @@ class PlayingLeftSpeakerCalibration : public AudioDeviceUseCase,
         calibration.audioDevice = std::move(s);
     }
 
-    void run(RecognitionTestModelImpl &model) override {
+    void run(RunningATestImpl &model) override {
         model.playLeftSpeakerCalibration(calibration);
     }
 
@@ -244,7 +242,7 @@ class PlayingRightSpeakerCalibration : public AudioDeviceUseCase,
         calibration.audioDevice = std::move(s);
     }
 
-    void run(RecognitionTestModelImpl &model) override {
+    void run(RunningATestImpl &model) override {
         model.playRightSpeakerCalibration(calibration);
     }
 
@@ -265,7 +263,7 @@ class PlayingTrial : public AudioDeviceUseCase {
         trial.audioDevice = std::move(s);
     }
 
-    void run(RecognitionTestModelImpl &m) override { m.playTrial(trial); }
+    void run(RunningATestImpl &m) override { m.playTrial(trial); }
 
   private:
     AudioSettings trial;
@@ -273,14 +271,12 @@ class PlayingTrial : public AudioDeviceUseCase {
 
 class PreparingNextTrialIfNeeded : public UseCase {
   public:
-    void run(RecognitionTestModelImpl &m) override {
-        m.prepareNextTrialIfNeeded();
-    }
+    void run(RunningATestImpl &m) override { m.prepareNextTrialIfNeeded(); }
 };
 
 class SubmittingCoordinateResponse : public UseCase {
   public:
-    void run(RecognitionTestModelImpl &m) override {
+    void run(RunningATestImpl &m) override {
         m.submit(coordinate_response_measure::Response{});
     }
 };
@@ -390,7 +386,7 @@ void setCurrentTarget(TestMethodStub &m, std::string s) {
     m.setCurrentTarget(std::move(s));
 }
 
-auto targetFileName(RecognitionTestModelImpl &m) -> std::string {
+auto targetFileName(RunningATestImpl &m) -> std::string {
     return m.targetFileName();
 }
 
@@ -428,9 +424,7 @@ auto log(OutputFileStub &file) -> const std::stringstream & {
     return file.log();
 }
 
-void run(UseCase &useCase, RecognitionTestModelImpl &model) {
-    useCase.run(model);
-}
+void run(UseCase &useCase, RunningATestImpl &model) { useCase.run(model); }
 
 auto fadedIn(MaskerPlayerStub &maskerPlayer) -> bool {
     return maskerPlayer.fadeInCalled();
@@ -482,7 +476,7 @@ void assertLevelEquals_dB(TargetPlayerStub &player, double x) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, player.level_dB());
 }
 
-auto testComplete(RecognitionTestModelImpl &model) -> bool {
+auto testComplete(RunningATestImpl &model) -> bool {
     return model.testComplete();
 }
 
@@ -506,12 +500,12 @@ void assertChannelDelaysCleared(MaskerPlayerStub &player) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.channelDelaysCleared());
 }
 
-auto targetPlayerObserver(const RecognitionTestModelImpl &model)
+auto targetPlayerObserver(const RunningATestImpl &model)
     -> const TargetPlayer::Observer * {
     return &model;
 }
 
-auto maskerPlayerObserver(const RecognitionTestModelImpl &model)
+auto maskerPlayerObserver(const RunningATestImpl &model)
     -> const MaskerPlayer::Observer * {
     return &model;
 }
@@ -520,7 +514,7 @@ void setEyeGazes(EyeTrackerStub &eyeTracker, BinocularGazeSamples g) {
     eyeTracker.setGazes(std::move(g));
 }
 
-void runIgnoringFailure(UseCase &useCase, RecognitionTestModelImpl &model) {
+void runIgnoringFailure(UseCase &useCase, RunningATestImpl &model) {
     try {
         run(useCase, model);
     } catch (const Model::RequestFailure &) {
@@ -580,8 +574,8 @@ class RecognitionTestModelTests : public ::testing::Test {
     RandomizerStub randomizer;
     EyeTrackerStub eyeTracker;
     ClockStub clock;
-    RecognitionTestModelImpl model{targetPlayer, maskerPlayer, audioRecorder,
-        evaluator, outputFile, randomizer, eyeTracker, clock};
+    RunningATestImpl model{targetPlayer, maskerPlayer, audioRecorder, evaluator,
+        outputFile, randomizer, eyeTracker, clock};
     TestMethodStub testMethod;
     Calibration calibration{};
     PlayingCalibration playingCalibration{calibration, targetPlayer};
@@ -646,8 +640,8 @@ class RecognitionTestModelTests : public ::testing::Test {
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0., randomizer.lowerFloatBound());
         ::assertEqual(10. - 2 - 1 - 2 -
-                RecognitionTestModelImpl::targetOnsetFringeDuration.seconds -
-                RecognitionTestModelImpl::targetOffsetFringeDuration.seconds,
+                RunningATestImpl::targetOnsetFringeDuration.seconds -
+                RunningATestImpl::targetOffsetFringeDuration.seconds,
             randomizer.upperFloatBound(), 1e-15);
     }
 
@@ -769,8 +763,8 @@ class RecognitionTestModelTests : public ::testing::Test {
         setFadeTimeSeconds(maskerPlayer, 4);
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3 + 2 * 4. +
-                RecognitionTestModelImpl::targetOnsetFringeDuration.seconds +
-                RecognitionTestModelImpl::targetOffsetFringeDuration.seconds,
+                RunningATestImpl::targetOnsetFringeDuration.seconds +
+                RunningATestImpl::targetOffsetFringeDuration.seconds,
             eyeTracker.recordingTimeAllocatedSeconds());
     }
 
@@ -929,7 +923,7 @@ RECOGNITION_TEST_MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         gsl::index{0}, maskerPlayer.channelDelayed());
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        RecognitionTestModelImpl::maskerChannelDelay.seconds,
+        RunningATestImpl::maskerChannelDelay.seconds,
         maskerPlayer.channelDelaySeconds());
 }
 
@@ -1118,7 +1112,7 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
         targetPlayer.timePlayedAt().playerTime.system);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        2 / 3. + RecognitionTestModelImpl::targetOnsetFringeDuration.seconds,
+        2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds,
         targetPlayer.timePlayedAt().delay.seconds);
 }
 
@@ -1131,7 +1125,7 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenNotEyeTracking) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
         targetPlayer.timePlayedAt().playerTime.system);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        2 / 3. + RecognitionTestModelImpl::targetOnsetFringeDuration.seconds,
+        2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds,
         targetPlayer.timePlayedAt().delay.seconds);
 }
 
@@ -1173,9 +1167,7 @@ RECOGNITION_TEST_MODEL_TEST(
     run(submittingCoordinateResponse, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1 +
             gsl::narrow_cast<std::uintmax_t>(
-                (2 / 3. +
-                    RecognitionTestModelImpl::targetOnsetFringeDuration
-                        .seconds) *
+                (2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds) *
                 1e9),
         outputFile.targetStartTime().nanoseconds);
 }
@@ -1308,8 +1300,8 @@ RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestSetsMaskerSteadyLevelDuration) {
     setDurationSeconds(targetPlayer, 1);
     run(initializingTest, model);
-    ::assertEqual(RecognitionTestModelImpl::targetOnsetFringeDuration.seconds +
-            RecognitionTestModelImpl::targetOffsetFringeDuration.seconds + 1,
+    ::assertEqual(RunningATestImpl::targetOnsetFringeDuration.seconds +
+            RunningATestImpl::targetOffsetFringeDuration.seconds + 1,
         maskerPlayer.steadyLevelDuration().seconds, 1e-15);
 }
 
@@ -1376,7 +1368,7 @@ RECOGNITION_TEST_MODEL_TEST(preparingNextTrialIfNeededSetsTargetPlayerLevel) {
 }
 
 void assertLevelSet(Calibration &calibration, PlayerLevelUseCase &useCase,
-    RecognitionTestModelImpl &model) {
+    RunningATestImpl &model) {
     calibration.level.dB_SPL = 1;
     calibration.fullScaleLevel.dB_SPL = 2;
     useCase.set(DigitalLevel{3});

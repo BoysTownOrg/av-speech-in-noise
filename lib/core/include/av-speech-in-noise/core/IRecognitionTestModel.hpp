@@ -1,14 +1,25 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_IRECOGNITIONTESTMODELHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_IRECOGNITIONTESTMODELHPP_
 
-#include "TestMethod.hpp"
+#include "Player.hpp"
 #include "IModel.hpp"
+#include "TestMethod.hpp"
+
 #include <string>
 
 namespace av_speech_in_noise {
-class RecognitionTestModel {
+class RunningATest {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RecognitionTestModel);
+    class Observer {
+      public:
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
+        virtual void notifyThatTrialWillBegin() = 0;
+        virtual void notifyThatTargetWillPlayAt(
+            const PlayerTimeWithDelay &) = 0;
+        virtual void notifyThatStimulusHasEnded() = 0;
+        virtual void notifyThatSubjectHasResponded() = 0;
+    };
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATest);
     virtual void attach(Model::Observer *) = 0;
     virtual void initialize(TestMethod *, const Test &) = 0;
     virtual void initializeWithSingleSpeaker(TestMethod *, const Test &) = 0;

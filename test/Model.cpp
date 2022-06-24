@@ -198,7 +198,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     bool submittedFreeResponse_{};
 };
 
-class RecognitionTestModelStub : public RecognitionTestModel {
+class RecognitionTestModelStub : public RunningATest {
   public:
     explicit RecognitionTestModelStub(AdaptiveMethodStub &adaptiveMethod,
         FixedLevelMethodStub &fixedLevelMethodStub)

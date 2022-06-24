@@ -35,11 +35,30 @@ class AudioRecorder {
     virtual void stop() = 0;
 };
 
-class RecognitionTestModelImpl : public TargetPlayer::Observer,
-                                 public MaskerPlayer::Observer,
-                                 public RecognitionTestModel {
+class EyeTracking : public RunningATest::Observer {
   public:
-    RecognitionTestModelImpl(TargetPlayer &, MaskerPlayer &, AudioRecorder &,
+    EyeTracking(EyeTracker &, MaskerPlayer &, TargetPlayer &, OutputFile &);
+    void notifyThatTrialWillBegin() override;
+    void notifyThatTargetWillPlayAt(
+        const PlayerTimeWithDelay &timeToPlayWithDelay) override;
+    void notifyThatStimulusHasEnded() override;
+    void notifyThatSubjectHasResponded() override;
+
+  private:
+    EyeTrackerTargetPlayerSynchronization
+        lastEyeTrackerTargetPlayerSynchronization{};
+    TargetStartTime lastTargetStartTime{};
+    EyeTracker &eyeTracker;
+    MaskerPlayer &maskerPlayer;
+    TargetPlayer &targetPlayer;
+    OutputFile &outputFile;
+};
+
+class RunningATestImpl : public TargetPlayer::Observer,
+                         public MaskerPlayer::Observer,
+                         public RunningATest {
+  public:
+    RunningATestImpl(TargetPlayer &, MaskerPlayer &, AudioRecorder &,
         ResponseEvaluator &, OutputFile &, Randomizer &, EyeTracker &, Clock &);
     void attach(Model::Observer *) override;
     void initialize(TestMethod *, const Test &) override;
@@ -70,6 +89,7 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
     void initialize_(TestMethod *, const Test &);
     void seekRandomMaskerPosition();
 
+    EyeTracking eyeTracking_;
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
     AudioRecorder &audioRecorder;

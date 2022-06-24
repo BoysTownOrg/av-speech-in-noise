@@ -3,7 +3,7 @@
 
 namespace av_speech_in_noise::submitting_keywords {
 InteractorImpl::InteractorImpl(FixedLevelMethod &method,
-    RecognitionTestModel &recognitionTestModel, OutputFile &outputFile)
+    RunningATest &recognitionTestModel, OutputFile &outputFile)
     : method{method}, recognitionTestModel{recognitionTestModel},
       outputFile{outputFile} {}
 

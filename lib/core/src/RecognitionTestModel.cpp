@@ -1,5 +1,7 @@
 #include "RecognitionTestModel.hpp"
+#include "IMaskerPlayer.hpp"
 #include "IOutputFile.hpp"
+#include "IRecognitionTestModel.hpp"
 #include "av-speech-in-noise/Model.hpp"
 #include <gsl/gsl>
 #include <cmath>
@@ -40,9 +42,8 @@ static constexpr auto operator+(const Duration &a, const Duration &b)
 }
 
 static auto steadyLevelDuration(TargetPlayer &player) -> Duration {
-    return player.duration() +
-        RecognitionTestModelImpl::targetOnsetFringeDuration +
-        RecognitionTestModelImpl::targetOffsetFringeDuration;
+    return player.duration() + RunningATestImpl::targetOnsetFringeDuration +
+        RunningATestImpl::targetOffsetFringeDuration;
 }
 
 static auto trialDuration(TargetPlayer &target, MaskerPlayer &masker)
@@ -249,20 +250,16 @@ static void preparePlayersForNextTrial(TestMethod *testMethod,
 
 static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, EyeTracker &eyeTracker, RealLevel maskerLevel,
-    RealLevel fullScaleLevel, bool eyeTracking,
+    MaskerPlayer &maskerPlayer, EyeTracking &eyeTracking_,
+    RealLevel maskerLevel, RealLevel fullScaleLevel, bool eyeTracking,
     TargetStartTime lastTargetStartTime,
     EyeTrackerTargetPlayerSynchronization
         lastEyeTrackerTargetPlayerSynchronization,
     bool audioRecordingEnabled, AudioRecorder &audioRecorder) {
     if (audioRecordingEnabled)
         audioRecorder.stop();
-    if (eyeTracking) {
-        outputFile.write(lastTargetStartTime);
-        outputFile.write(lastEyeTrackerTargetPlayerSynchronization);
-        outputFile.write(eyeTracker.gazeSamples());
-        save(outputFile);
-    }
+    if (eyeTracking)
+        eyeTracking_.notifyThatSubjectHasResponded();
     if (!testMethod->complete()) {
         ++trialNumber_;
         preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
@@ -276,8 +273,8 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
 static void saveOutputFileAndPrepareNextTrialAfter(
     const std::function<void()> &f, TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, EyeTracker &eyeTracker, RealLevel maskerLevel,
-    RealLevel fullScaleLevel, bool eyeTracking,
+    MaskerPlayer &maskerPlayer, EyeTracking &eyeTracking_,
+    RealLevel maskerLevel, RealLevel fullScaleLevel, bool eyeTracking,
     TargetStartTime lastTargetStartTime,
     EyeTrackerTargetPlayerSynchronization
         lastEyeTrackerTargetPlayerSynchronization,
@@ -285,17 +282,50 @@ static void saveOutputFileAndPrepareNextTrialAfter(
     f();
     save(outputFile);
     prepareNextTrialIfNeeded(testMethod, trialNumber_, outputFile, randomizer,
-        targetPlayer, maskerPlayer, eyeTracker, maskerLevel, fullScaleLevel,
+        targetPlayer, maskerPlayer, eyeTracking_, maskerLevel, fullScaleLevel,
         eyeTracking, lastTargetStartTime,
         lastEyeTrackerTargetPlayerSynchronization, audioRecordingEnabled,
         audioRecorder);
 }
 
-RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
+EyeTracking::EyeTracking(EyeTracker &eyeTracker, MaskerPlayer &maskerPlayer,
+    TargetPlayer &targetPlayer, OutputFile &outputFile)
+    : eyeTracker{eyeTracker}, maskerPlayer{maskerPlayer},
+      targetPlayer{targetPlayer}, outputFile{outputFile} {}
+
+void EyeTracking::notifyThatTrialWillBegin() {
+    eyeTracker.allocateRecordingTimeSeconds(
+        Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);
+    eyeTracker.start();
+}
+
+void EyeTracking::notifyThatTargetWillPlayAt(
+    const PlayerTimeWithDelay &timeToPlayWithDelay) {
+    lastTargetStartTime.nanoseconds =
+        nanoseconds(maskerPlayer, timeToPlayWithDelay);
+
+    lastEyeTrackerTargetPlayerSynchronization.eyeTrackerSystemTime =
+        eyeTracker.currentSystemTime();
+    lastEyeTrackerTargetPlayerSynchronization.targetPlayerSystemTime =
+        TargetPlayerSystemTime{
+            nanoseconds(maskerPlayer, maskerPlayer.currentSystemTime())};
+}
+
+void EyeTracking::notifyThatStimulusHasEnded() { eyeTracker.stop(); }
+
+void EyeTracking::notifyThatSubjectHasResponded() {
+    outputFile.write(lastTargetStartTime);
+    outputFile.write(lastEyeTrackerTargetPlayerSynchronization);
+    outputFile.write(eyeTracker.gazeSamples());
+    save(outputFile);
+}
+
+RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, AudioRecorder &audioRecorder,
     ResponseEvaluator &evaluator, OutputFile &outputFile,
     Randomizer &randomizer, EyeTracker &eyeTracker, Clock &clock)
-    : maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
+    : eyeTracking_{eyeTracker, maskerPlayer, targetPlayer, outputFile},
+      maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
       audioRecorder{audioRecorder}, evaluator{evaluator},
       outputFile{outputFile}, randomizer{randomizer},
       eyeTracker{eyeTracker}, clock{clock}, testMethod{&nullTestMethod} {
@@ -303,17 +333,15 @@ RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     maskerPlayer.attach(this);
 }
 
-void RecognitionTestModelImpl::attach(Model::Observer *listener) {
+void RunningATestImpl::attach(Model::Observer *listener) {
     listener_ = listener;
 }
 
-void RecognitionTestModelImpl::initialize(
-    TestMethod *testMethod_, const Test &test) {
+void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
 }
 
-void RecognitionTestModelImpl::initialize_(
-    TestMethod *testMethod_, const Test &test) {
+void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     if (testMethod_->complete())
@@ -346,33 +374,33 @@ void RecognitionTestModelImpl::initialize_(
     audioRecordingEnabled = false;
 }
 
-void RecognitionTestModelImpl::initializeWithSingleSpeaker(
+void RunningATestImpl::initializeWithSingleSpeaker(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
     useFirstChannelOnly(targetPlayer);
     maskerPlayer.useFirstChannelOnly();
 }
 
-void RecognitionTestModelImpl::initializeWithDelayedMasker(
+void RunningATestImpl::initializeWithDelayedMasker(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
     useFirstChannelOnly(targetPlayer);
     maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
 }
 
-void RecognitionTestModelImpl::initializeWithEyeTracking(
+void RunningATestImpl::initializeWithEyeTracking(
     TestMethod *method, const Test &test) {
     initialize_(method, test);
     eyeTracking = true;
 }
 
-void RecognitionTestModelImpl::initializeWithAudioRecording(
+void RunningATestImpl::initializeWithAudioRecording(
     TestMethod *method, const Test &test) {
     initialize_(method, test);
     audioRecordingEnabled = true;
 }
 
-void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
+void RunningATestImpl::playTrial(const AudioSettings &settings) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     throwRequestFailureOnInvalidAudioDevice(
@@ -389,9 +417,7 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
             LocalUrl{outputFile.parentPath() / stream.str()});
     }
     if (eyeTracking) {
-        eyeTracker.allocateRecordingTimeSeconds(
-            Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);
-        eyeTracker.start();
+        eyeTracking_.notifyThatTrialWillBegin();
     }
     if (condition == Condition::audioVisual)
         show(targetPlayer);
@@ -399,41 +425,32 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     trialInProgress_ = true;
 }
 
-void RecognitionTestModelImpl::notifyThatPreRollHasCompleted() {
+void RunningATestImpl::notifyThatPreRollHasCompleted() {
     maskerPlayer.fadeIn();
 }
 
-void RecognitionTestModelImpl::fadeInComplete(
-    const AudioSampleTimeWithOffset &t) {
+void RunningATestImpl::fadeInComplete(const AudioSampleTimeWithOffset &t) {
     PlayerTimeWithDelay timeToPlayWithDelay{};
     timeToPlayWithDelay.playerTime = t.playerTime;
     timeToPlayWithDelay.delay = Delay{
         Duration{offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
             .seconds};
     targetPlayer.playAt(timeToPlayWithDelay);
-    if (eyeTracking) {
-        lastTargetStartTime.nanoseconds =
-            nanoseconds(maskerPlayer, timeToPlayWithDelay);
-
-        lastEyeTrackerTargetPlayerSynchronization.eyeTrackerSystemTime =
-            eyeTracker.currentSystemTime();
-        lastEyeTrackerTargetPlayerSynchronization.targetPlayerSystemTime =
-            TargetPlayerSystemTime{
-                nanoseconds(maskerPlayer, maskerPlayer.currentSystemTime())};
-    }
+    if (eyeTracking)
+        eyeTracking_.notifyThatTargetWillPlayAt(timeToPlayWithDelay);
 }
 
-void RecognitionTestModelImpl::fadeOutComplete() {
+void RunningATestImpl::fadeOutComplete() {
     hide(targetPlayer);
     if (eyeTracking)
-        eyeTracker.stop();
+        eyeTracking_.notifyThatStimulusHasEnded();
     listener_->trialComplete();
     trialInProgress_ = false;
     if (audioRecordingEnabled)
         audioRecorder.start();
 }
 
-void RecognitionTestModelImpl::submit(
+void RunningATestImpl::submit(
     const coordinate_response_measure::Response &response) {
     saveOutputFileAndPrepareNextTrialAfter(
         [&]() {
@@ -441,54 +458,50 @@ void RecognitionTestModelImpl::submit(
             testMethod->writeLastCoordinateResponse(outputFile);
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, eyeTracker, maskerLevel_, fullScaleLevel_, eyeTracking,
+        maskerPlayer, eyeTracking_, maskerLevel_, fullScaleLevel_, eyeTracking,
         lastTargetStartTime, lastEyeTrackerTargetPlayerSynchronization,
         audioRecordingEnabled, audioRecorder);
 }
 
-void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
+void RunningATestImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracker,
+        outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracking_,
         maskerLevel_, fullScaleLevel_, eyeTracking, lastTargetStartTime,
         lastEyeTrackerTargetPlayerSynchronization, audioRecordingEnabled,
         audioRecorder);
 }
 
-void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
+void RunningATestImpl::playCalibration(const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
     targetPlayer.useAllChannels();
     play(targetPlayer, calibration);
 }
 
-void RecognitionTestModelImpl::playLeftSpeakerCalibration(
+void RunningATestImpl::playLeftSpeakerCalibration(
     const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
     maskerPlayer.useFirstChannelOnly();
     play(maskerPlayer, calibration);
 }
 
-void RecognitionTestModelImpl::playRightSpeakerCalibration(
+void RunningATestImpl::playRightSpeakerCalibration(
     const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
     maskerPlayer.useSecondChannelOnly();
     play(maskerPlayer, calibration);
 }
 
-auto RecognitionTestModelImpl::testComplete() -> bool {
-    return testMethod->complete();
-}
+auto RunningATestImpl::testComplete() -> bool { return testMethod->complete(); }
 
-auto RecognitionTestModelImpl::audioDevices() -> AudioDevices {
+auto RunningATestImpl::audioDevices() -> AudioDevices {
     return maskerPlayer.outputAudioDeviceDescriptions();
 }
 
-auto RecognitionTestModelImpl::trialNumber() -> int { return trialNumber_; }
+auto RunningATestImpl::trialNumber() -> int { return trialNumber_; }
 
-auto RecognitionTestModelImpl::targetFileName() -> std::string {
+auto RunningATestImpl::targetFileName() -> std::string {
     return targetName(evaluator, testMethod);
 }
 
-auto RecognitionTestModelImpl::playTrialTime() -> std::string {
-    return playTrialTime_;
-}
+auto RunningATestImpl::playTrialTime() -> std::string { return playTrialTime_; }
 }

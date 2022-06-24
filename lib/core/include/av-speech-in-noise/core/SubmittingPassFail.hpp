@@ -9,13 +9,13 @@
 namespace av_speech_in_noise::submitting_pass_fail {
 class InteractorImpl : public Interactor {
   public:
-    InteractorImpl(AdaptiveMethod &, RecognitionTestModel &, OutputFile &);
+    InteractorImpl(AdaptiveMethod &, RunningATest &, OutputFile &);
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
 
   private:
     AdaptiveMethod &adaptiveMethod;
-    RecognitionTestModel &model;
+    RunningATest &model;
     OutputFile &outputFile;
 };
 }

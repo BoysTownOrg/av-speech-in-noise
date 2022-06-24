@@ -11,12 +11,12 @@
 namespace av_speech_in_noise::submitting_consonant {
 class InteractorImpl : public Interactor {
   public:
-    InteractorImpl(FixedLevelMethod &, RecognitionTestModel &, OutputFile &);
+    InteractorImpl(FixedLevelMethod &, RunningATest &, OutputFile &);
     void submit(const ConsonantResponse &r) override;
 
   private:
     FixedLevelMethod &method;
-    RecognitionTestModel &model;
+    RunningATest &model;
     OutputFile &outputFile;
 };
 }
