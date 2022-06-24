@@ -108,7 +108,6 @@ class RunningATestImpl : public TargetPlayer::Observer,
     RunningATest::Observer *observer;
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
-    AudioRecorder &audioRecorder;
     ResponseEvaluator &evaluator;
     OutputFile &outputFile;
     Randomizer &randomizer;
@@ -121,7 +120,6 @@ class RunningATestImpl : public TargetPlayer::Observer,
     RealLevel fullScaleLevel_{};
     int trialNumber_{};
     Condition condition{};
-    bool audioRecordingEnabled{};
     bool trialInProgress_{};
 };
 }
