@@ -29,7 +29,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
   public:
     RunningATestImpl(TargetPlayer &, MaskerPlayer &, ResponseEvaluator &,
         OutputFile &, Randomizer &, Clock &);
-    void attach(Model::Observer *) override;
+    void attach(RunningATestFacade::Observer *) override;
     void initialize(
         TestMethod *, const Test &, RunningATest::Observer *) override;
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
@@ -65,7 +65,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     Randomizer &randomizer;
     Clock &clock;
     std::string playTrialTime_;
-    Model::Observer *listener_{};
+    RunningATestFacade::Observer *listener_{};
     TestMethod *testMethod{};
     RealLevel maskerLevel_{};
     RealLevel fullScaleLevel_{};

@@ -109,8 +109,8 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return calibration_;
     }
 
-    void initialize(Model &m, SessionController &sc, const std::string &t,
-        const TestIdentity &id, SNR snr) override {
+    void initialize(RunningATestFacade &m, SessionController &sc,
+        const std::string &t, const TestIdentity &id, SNR snr) override {
         startingSnr_ = snr.dB;
         sessionController_ = &sc;
         text_ = t;
@@ -329,7 +329,7 @@ class TestSetupPresenterTests : public ::testing::Test {
     TestSetupPresenterImpl presenter{view, sessionView};
 };
 
-class RequestFailingModel : public Model {
+class RequestFailingModel : public RunningATestFacade {
     std::string errorMessage{};
 
   public:

@@ -22,7 +22,7 @@ class RunningATest {
         virtual void notifyThatSubjectHasResponded() = 0;
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATest);
-    virtual void attach(Model::Observer *) = 0;
+    virtual void attach(RunningATestFacade::Observer *) = 0;
     virtual void initialize(
         TestMethod *, const Test &, Observer * = nullptr) = 0;
     virtual void initializeWithSingleSpeaker(TestMethod *, const Test &) = 0;

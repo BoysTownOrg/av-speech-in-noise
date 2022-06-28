@@ -10,7 +10,7 @@
 #include "IModel.hpp"
 
 namespace av_speech_in_noise {
-class ModelImpl : public Model {
+class ModelImpl : public RunningATestFacade {
   public:
     ModelImpl(AdaptiveMethod &, FixedLevelMethod &,
         TargetPlaylistReader &targetsWithReplacementReader,
@@ -22,7 +22,7 @@ class ModelImpl : public Model {
         FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
         RunningATest &, OutputFile &, RunningATest::Observer &audioRecording,
         RunningATest::Observer &eyeTracking);
-    void attach(Model::Observer *) override;
+    void attach(RunningATestFacade::Observer *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(
         const FixedLevelFixedTrialsTest &) override;

@@ -7,7 +7,7 @@
 #include <utility>
 
 namespace av_speech_in_noise {
-class ModelStub : public Model {
+class ModelStub : public RunningATestFacade {
   public:
     void setAdaptiveTestResults(AdaptiveTestResults v) {
         adaptiveTestResults_ = std::move(v);

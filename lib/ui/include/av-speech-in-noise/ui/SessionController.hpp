@@ -33,7 +33,7 @@ class SessionControllerImpl : public SessionController {
 
 class SessionPresenterImpl : public SessionPresenter {
   public:
-    SessionPresenterImpl(SessionView &view, Model &model) {
+    SessionPresenterImpl(SessionView &view, RunningATestFacade &model) {
         view.populateAudioDeviceMenu(model.audioDevices());
         view.populateSubjectScreenMenu(view.screens());
     }

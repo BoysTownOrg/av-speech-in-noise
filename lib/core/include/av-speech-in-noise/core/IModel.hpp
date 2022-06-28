@@ -61,7 +61,7 @@ class Interactor {
 };
 }
 
-class Model {
+class RunningATestFacade {
   public:
     class Observer {
       public:
@@ -74,7 +74,7 @@ class Model {
         explicit RequestFailure(const std::string &s) : std::runtime_error{s} {}
     };
 
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Model);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATestFacade);
     virtual void attach(Observer *) = 0;
     virtual void initialize(const AdaptiveTest &) = 0;
     virtual void initializeWithTargetReplacement(

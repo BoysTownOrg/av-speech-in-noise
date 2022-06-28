@@ -83,14 +83,14 @@ static void throwRequestFailureOnInvalidAudioDevice(
     try {
         f(device);
     } catch (const InvalidAudioDevice &) {
-        throw Model::RequestFailure{
+        throw RunningATestFacade::RequestFailure{
             "'" + device + "' is not a valid audio device."};
     }
 }
 
 static void throwRequestFailureIfTrialInProgress(bool f) {
     if (f)
-        throw Model::RequestFailure{"Trial in progress."};
+        throw RunningATestFacade::RequestFailure{"Trial in progress."};
 }
 
 static void apply(TargetPlayer &player, LevelAmplification x) {
@@ -129,7 +129,7 @@ static void tryOpening(OutputFile &file, const TestIdentity &p) {
     try {
         file.openNewFile(p);
     } catch (const OutputFile::OpenFailure &) {
-        throw Model::RequestFailure{"Unable to open output file."};
+        throw RunningATestFacade::RequestFailure{"Unable to open output file."};
     }
 }
 
@@ -168,7 +168,7 @@ static void throwRequestFailureOnInvalidAudioFile(
     try {
         f(s);
     } catch (const InvalidAudioFile &) {
-        throw Model::RequestFailure{"unable to read " + s.path};
+        throw RunningATestFacade::RequestFailure{"unable to read " + s.path};
     }
 }
 
@@ -276,7 +276,7 @@ RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     maskerPlayer.attach(this);
 }
 
-void RunningATestImpl::attach(Model::Observer *listener) {
+void RunningATestImpl::attach(RunningATestFacade::Observer *listener) {
     listener_ = listener;
 }
 

@@ -22,7 +22,7 @@ static auto subjectResponse(CoordinateResponseMeasureControl &control)
 }
 
 CoordinateResponseMeasureController::CoordinateResponseMeasureController(
-    TestController &testController, Model &model,
+    TestController &testController, RunningATestFacade &model,
     CoordinateResponseMeasureControl &control)
     : testController{testController}, model{model}, control{control} {
     control.attach(this);

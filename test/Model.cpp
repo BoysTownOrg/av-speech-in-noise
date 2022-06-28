@@ -272,7 +272,7 @@ class RecognitionTestModelStub : public RunningATest {
         return audioDevices_;
     }
 
-    void attach(Model::Observer *e) override { listener_ = e; }
+    void attach(RunningATestFacade::Observer *e) override { listener_ = e; }
 
     void playCalibration(const Calibration &c) override { calibration_ = &c; }
 
@@ -336,7 +336,7 @@ class RecognitionTestModelStub : public RunningATest {
     std::string playTrialTime_;
     AdaptiveMethodStub &adaptiveMethod;
     FixedLevelMethodStub &fixedLevelMethodStub;
-    const Model::Observer *listener_{};
+    const RunningATestFacade::Observer *listener_{};
     const Calibration *calibration_{};
     const Calibration *leftSpeakerCalibration_{};
     const Calibration *rightSpeakerCalibration_{};
@@ -768,14 +768,14 @@ auto initializedWithEyeTracking(
 class PlayingCalibrationUseCase {
   public:
     virtual ~PlayingCalibrationUseCase() = default;
-    virtual void run(Model &model, const Calibration &c) = 0;
+    virtual void run(RunningATestFacade &model, const Calibration &c) = 0;
     virtual auto calibration(RecognitionTestModelStub &model)
         -> const Calibration * = 0;
 };
 
 class PlayingCalibration : public PlayingCalibrationUseCase {
   public:
-    void run(Model &model, const Calibration &c) override {
+    void run(RunningATestFacade &model, const Calibration &c) override {
         model.playCalibration(c);
     }
 
@@ -787,7 +787,7 @@ class PlayingCalibration : public PlayingCalibrationUseCase {
 
 class PlayingLeftSpeakerCalibration : public PlayingCalibrationUseCase {
   public:
-    void run(Model &model, const Calibration &c) override {
+    void run(RunningATestFacade &model, const Calibration &c) override {
         model.playLeftSpeakerCalibration(c);
     }
 
@@ -799,7 +799,7 @@ class PlayingLeftSpeakerCalibration : public PlayingCalibrationUseCase {
 
 class PlayingRightSpeakerCalibration : public PlayingCalibrationUseCase {
   public:
-    void run(Model &model, const Calibration &c) override {
+    void run(RunningATestFacade &model, const Calibration &c) override {
         model.playRightSpeakerCalibration(c);
     }
 
@@ -1596,7 +1596,7 @@ MODEL_TEST(subscribesToListener) {
     ModelObserverStub listener;
     model.attach(&listener);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        static_cast<const Model::Observer *>(&listener),
+        static_cast<const RunningATestFacade::Observer *>(&listener),
         internalModel.listener());
 }
 }

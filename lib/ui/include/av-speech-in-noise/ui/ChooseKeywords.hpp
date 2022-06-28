@@ -99,7 +99,7 @@ static auto operator==(const SentenceWithThreeKeywords &a,
 
 class PresenterImpl : public Presenter, public TaskPresenter {
   public:
-    PresenterImpl(Model &, TestView &, View &,
+    PresenterImpl(RunningATestFacade &, TestView &, View &,
         const std::vector<SentenceWithThreeKeywords> &);
     void start() override;
     void stop() override;
@@ -116,7 +116,7 @@ class PresenterImpl : public Presenter, public TaskPresenter {
   private:
     std::map<std::string, SentenceWithThreeKeywords>
         sentencesWithThreeKeywordsFromExpectedFileNameSentence;
-    Model &model;
+    RunningATestFacade &model;
     TestView &testView;
     View &view;
 };

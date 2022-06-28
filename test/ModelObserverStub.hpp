@@ -4,7 +4,7 @@
 #include <av-speech-in-noise/core/IModel.hpp>
 
 namespace av_speech_in_noise {
-class ModelObserverStub : public Model::Observer {
+class ModelObserverStub : public RunningATestFacade::Observer {
     bool notified_{};
 
   public:

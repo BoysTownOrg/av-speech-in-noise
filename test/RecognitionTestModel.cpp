@@ -409,7 +409,7 @@ auto maskerPlayerObserver(const RunningATestImpl &model)
 void runIgnoringFailure(UseCase &useCase, RunningATestImpl &model) {
     try {
         run(useCase, model);
-    } catch (const Model::RequestFailure &) {
+    } catch (const RunningATestFacade::RequestFailure &) {
     }
 }
 
@@ -531,7 +531,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         try {
             run(useCase, model);
             FAIL() << "Expected Model::RequestFailure";
-        } catch (const Model::RequestFailure &e) {
+        } catch (const RunningATestFacade::RequestFailure &e) {
             AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, e.what());
         }
     }
