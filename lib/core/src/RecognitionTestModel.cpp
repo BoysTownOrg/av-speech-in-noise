@@ -57,8 +57,7 @@ static auto steadyLevelDuration(TargetPlayer &player) -> Duration {
         RunningATestImpl::targetOffsetFringeDuration;
 }
 
-static auto trialDuration(TargetPlayer &target, MaskerPlayer &masker)
-    -> Duration {
+auto trialDuration(TargetPlayer &target, MaskerPlayer &masker) -> Duration {
     return totalrampDuration(masker) + steadyLevelDuration(target);
 }
 
@@ -177,20 +176,6 @@ static void throwRequestFailureOnInvalidAudioFile(
     }
 }
 
-static auto nanoseconds(Delay x) -> std::uintmax_t {
-    return gsl::narrow_cast<std::uintmax_t>(x.seconds * 1e9);
-}
-
-static auto nanoseconds(MaskerPlayer &player, const PlayerTime &t)
-    -> std::uintmax_t {
-    return player.nanoseconds(t);
-}
-
-static auto nanoseconds(MaskerPlayer &player, const PlayerTimeWithDelay &t)
-    -> std::uintmax_t {
-    return nanoseconds(player, t.playerTime) + nanoseconds(t.delay);
-}
-
 static auto offsetDuration(
     MaskerPlayer &player, const AudioSampleTimeWithOffset &t) -> Duration {
     return Duration{t.sampleOffset / player.sampleRateHz()};
@@ -283,38 +268,6 @@ static void saveOutputFileAndPrepareNextTrialAfter(
     save(outputFile);
     prepareNextTrialIfNeeded(testMethod, trialNumber_, outputFile, randomizer,
         targetPlayer, maskerPlayer, observer, maskerLevel, fullScaleLevel);
-}
-
-EyeTracking::EyeTracking(EyeTracker &eyeTracker, MaskerPlayer &maskerPlayer,
-    TargetPlayer &targetPlayer, OutputFile &outputFile)
-    : eyeTracker{eyeTracker}, maskerPlayer{maskerPlayer},
-      targetPlayer{targetPlayer}, outputFile{outputFile} {}
-
-void EyeTracking::notifyThatTrialWillBegin(int trialNumber) {
-    eyeTracker.allocateRecordingTimeSeconds(
-        Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);
-    eyeTracker.start();
-}
-
-void EyeTracking::notifyThatTargetWillPlayAt(
-    const PlayerTimeWithDelay &timeToPlayWithDelay) {
-    lastTargetStartTime.nanoseconds =
-        nanoseconds(maskerPlayer, timeToPlayWithDelay);
-
-    lastEyeTrackerTargetPlayerSynchronization.eyeTrackerSystemTime =
-        eyeTracker.currentSystemTime();
-    lastEyeTrackerTargetPlayerSynchronization.targetPlayerSystemTime =
-        TargetPlayerSystemTime{
-            nanoseconds(maskerPlayer, maskerPlayer.currentSystemTime())};
-}
-
-void EyeTracking::notifyThatStimulusHasEnded() { eyeTracker.stop(); }
-
-void EyeTracking::notifyThatSubjectHasResponded() {
-    outputFile.write(lastTargetStartTime);
-    outputFile.write(lastEyeTrackerTargetPlayerSynchronization);
-    outputFile.write(eyeTracker.gazeSamples());
-    save(outputFile);
 }
 
 RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,

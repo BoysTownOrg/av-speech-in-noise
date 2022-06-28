@@ -8,6 +8,7 @@
 #include "IRecognitionTestModel.hpp"
 #include "IResponseEvaluator.hpp"
 #include "ITargetPlayer.hpp"
+#include "EyeTracking.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
@@ -16,38 +17,10 @@
 #include <string_view>
 
 namespace av_speech_in_noise {
-class EyeTracker : public Writable {
-  public:
-    virtual void allocateRecordingTimeSeconds(double) = 0;
-    virtual void start() = 0;
-    virtual void stop() = 0;
-    virtual auto gazeSamples() -> BinocularGazeSamples = 0;
-    virtual auto currentSystemTime() -> EyeTrackerSystemTime = 0;
-};
-
 class Clock {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Clock);
     virtual auto time() -> std::string = 0;
-};
-
-class EyeTracking : public RunningATest::Observer {
-  public:
-    EyeTracking(EyeTracker &, MaskerPlayer &, TargetPlayer &, OutputFile &);
-    void notifyThatNewTestIsReady(std::string_view session) override {}
-    void notifyThatTrialWillBegin(int trialNumber) override;
-    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
-    void notifyThatStimulusHasEnded() override;
-    void notifyThatSubjectHasResponded() override;
-
-  private:
-    EyeTrackerTargetPlayerSynchronization
-        lastEyeTrackerTargetPlayerSynchronization{};
-    TargetStartTime lastTargetStartTime{};
-    EyeTracker &eyeTracker;
-    MaskerPlayer &maskerPlayer;
-    TargetPlayer &targetPlayer;
-    OutputFile &outputFile;
 };
 
 class RunningATestImpl : public TargetPlayer::Observer,
