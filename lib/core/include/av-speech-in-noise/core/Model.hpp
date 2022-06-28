@@ -9,6 +9,9 @@
 #include "IRecognitionTestModel.hpp"
 #include "IModel.hpp"
 #include "AudioRecording.hpp"
+#include "EyeTracking.hpp"
+#include "IMaskerPlayer.hpp"
+#include "ITargetPlayer.hpp"
 
 namespace av_speech_in_noise {
 class ModelImpl : public Model {
@@ -21,7 +24,8 @@ class ModelImpl : public Model {
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         RepeatableFiniteTargetPlaylist &eachTargetNTimes,
         FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
-        RunningATest &, OutputFile &, AudioRecorder &);
+        RunningATest &, OutputFile &, AudioRecorder &, EyeTracker &,
+        MaskerPlayer &, TargetPlayer &);
     void attach(Model::Observer *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(
@@ -62,6 +66,7 @@ class ModelImpl : public Model {
     void initializeTest_(const AdaptiveTest &);
 
     AudioRecording audioRecording;
+    EyeTracking eyeTracking;
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
     TargetPlaylistReader &targetsWithReplacementReader;

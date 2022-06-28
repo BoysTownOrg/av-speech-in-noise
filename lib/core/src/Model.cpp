@@ -12,7 +12,9 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     RepeatableFiniteTargetPlaylist &eachTargetNTimes,
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
-    RunningATest &model, OutputFile &outputFile, AudioRecorder &audioRecorder)
+    RunningATest &model, OutputFile &outputFile, AudioRecorder &audioRecorder,
+    EyeTracker &eyeTracker, MaskerPlayer &maskerPlayer,
+    TargetPlayer &targetPlayer)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
       cyclicTargetsReader{cyclicTargetsReader},
@@ -21,7 +23,9 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
       everyTargetOnce{everyTargetOnce},
       predeterminedTargets{predeterminedTargets},
       eachTargetNTimes{eachTargetNTimes}, model{model}, outputFile{outputFile},
-      audioRecording{audioRecorder, outputFile} {}
+      audioRecording{audioRecorder, outputFile}, eyeTracking{eyeTracker,
+                                                     maskerPlayer, targetPlayer,
+                                                     outputFile} {}
 
 static void initialize(
     RunningATest &model, TestMethod &method, const Test &test) {
