@@ -274,8 +274,7 @@ RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer, EyeTracker &eyeTracker,
     Clock &clock)
-    : eyeTracking{eyeTracker, maskerPlayer, targetPlayer, outputFile},
-      observer{&nullObserver}, maskerPlayer{maskerPlayer},
+    : observer{&nullObserver}, maskerPlayer{maskerPlayer},
       targetPlayer{targetPlayer}, evaluator{evaluator}, outputFile{outputFile},
       randomizer{randomizer}, clock{clock}, testMethod{&nullTestMethod} {
     targetPlayer.attach(this);
@@ -340,9 +339,7 @@ void RunningATestImpl::initializeWithDelayedMasker(
 }
 
 void RunningATestImpl::initializeWithEyeTracking(
-    TestMethod *method, const Test &test) {
-    initialize_(method, test, &eyeTracking);
-}
+    TestMethod *method, const Test &test) {}
 
 void RunningATestImpl::playTrial(const AudioSettings &settings) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);

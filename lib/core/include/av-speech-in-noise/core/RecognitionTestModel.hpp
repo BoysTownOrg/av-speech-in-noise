@@ -57,7 +57,6 @@ class RunningATestImpl : public TargetPlayer::Observer,
     void initialize_(TestMethod *, const Test &, RunningATest::Observer *);
     void seekRandomMaskerPosition();
 
-    EyeTracking eyeTracking;
     RunningATest::Observer *observer;
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
