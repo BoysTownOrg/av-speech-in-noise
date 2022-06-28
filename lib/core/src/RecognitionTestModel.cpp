@@ -24,7 +24,7 @@ class NullTestMethod : public TestMethod {
 
 class NullObserver : public RunningATest::Observer {
     void notifyThatNewTestIsReady(std::string_view session) override {}
-    void notifyThatTrialWillBegin(int trialNumber, std::string_view) override {}
+    void notifyThatTrialWillBegin(int trialNumber) override {}
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
     void notifyThatStimulusHasEnded() override {}
     void notifyThatSubjectHasResponded() override {}
@@ -290,8 +290,7 @@ EyeTracking::EyeTracking(EyeTracker &eyeTracker, MaskerPlayer &maskerPlayer,
     : eyeTracker{eyeTracker}, maskerPlayer{maskerPlayer},
       targetPlayer{targetPlayer}, outputFile{outputFile} {}
 
-void EyeTracking::notifyThatTrialWillBegin(
-    int trialNumber, std::string_view session) {
+void EyeTracking::notifyThatTrialWillBegin(int trialNumber) {
     eyeTracker.allocateRecordingTimeSeconds(
         Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);
     eyeTracker.start();
@@ -322,8 +321,7 @@ AudioRecording::AudioRecording(
     AudioRecorder &audioRecorder, OutputFile &outputFile)
     : audioRecorder{audioRecorder}, outputFile{outputFile} {}
 
-void AudioRecording::notifyThatTrialWillBegin(
-    int trialNumber, std::string_view session) {
+void AudioRecording::notifyThatTrialWillBegin(int trialNumber) {
     std::stringstream stream;
     stream << trialNumber << '-' << session << ".wav";
     audioRecorder.initialize(LocalUrl{outputFile.parentPath() / stream.str()});
@@ -387,6 +385,7 @@ void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test,
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
     observer = observer_;
+    observer->notifyThatNewTestIsReady(test.identity.session);
 }
 
 void RunningATestImpl::initializeWithSingleSpeaker(
@@ -406,13 +405,11 @@ void RunningATestImpl::initializeWithDelayedMasker(
 void RunningATestImpl::initializeWithEyeTracking(
     TestMethod *method, const Test &test) {
     initialize_(method, test, &eyeTracking);
-    observer = &eyeTracking;
 }
 
 void RunningATestImpl::initializeWithAudioRecording(
     TestMethod *method, const Test &test) {
     initialize_(method, test, &audioRecording);
-    observer = &audioRecording;
 }
 
 void RunningATestImpl::playTrial(const AudioSettings &settings) {
@@ -425,7 +422,7 @@ void RunningATestImpl::playTrial(const AudioSettings &settings) {
         settings.audioDevice);
 
     playTrialTime_ = clock.time();
-    observer->notifyThatTrialWillBegin(trialNumber_, session);
+    observer->notifyThatTrialWillBegin(trialNumber_);
     if (condition == Condition::audioVisual)
         show(targetPlayer);
     targetPlayer.preRoll();

@@ -15,8 +15,7 @@ class RunningATest {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void notifyThatNewTestIsReady(std::string_view session) = 0;
-        virtual void notifyThatTrialWillBegin(
-            int trialNumber, std::string_view session) = 0;
+        virtual void notifyThatTrialWillBegin(int trialNumber) = 0;
         virtual void notifyThatTargetWillPlayAt(
             const PlayerTimeWithDelay &) = 0;
         virtual void notifyThatStimulusHasEnded() = 0;

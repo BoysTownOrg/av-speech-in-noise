@@ -40,8 +40,7 @@ class EyeTracking : public RunningATest::Observer {
   public:
     EyeTracking(EyeTracker &, MaskerPlayer &, TargetPlayer &, OutputFile &);
     void notifyThatNewTestIsReady(std::string_view session) override {}
-    void notifyThatTrialWillBegin(
-        int trialNumber, std::string_view session) override;
+    void notifyThatTrialWillBegin(int trialNumber) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
     void notifyThatStimulusHasEnded() override;
     void notifyThatSubjectHasResponded() override;
@@ -62,8 +61,7 @@ class AudioRecording : public RunningATest::Observer {
     void notifyThatNewTestIsReady(std::string_view session) override {
         this->session = session;
     }
-    void notifyThatTrialWillBegin(
-        int trialNumber, std::string_view session) override;
+    void notifyThatTrialWillBegin(int trialNumber) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
     void notifyThatStimulusHasEnded() override;
     void notifyThatSubjectHasResponded() override;
