@@ -1431,17 +1431,10 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    preparingNextTrialStopsAudioRecordingForAudioRecordingEnabledTest) {
-    run(initializingTestWithAudioRecording, model);
-    model.prepareNextTrialIfNeeded();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.stopped());
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    preparingNextTrialDoesNotStopAudioRecordingForDefaultTest) {
+    preparingNextTrialStopsNotifiesThatSubjectHasResponded) {
     run(initializingTest, model);
     model.prepareNextTrialIfNeeded();
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(audioRecorder.stopped());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatSubjectHasResponded);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
