@@ -3,10 +3,8 @@
 #include "TargetPlaylistStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "AudioRecorderStub.hpp"
-#include "MaskerPlayerStub.hpp"
-#include "TargetPlayerStub.hpp"
-#include "EyeTrackerStub.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/core/IRecognitionTestModel.hpp"
 
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
@@ -27,6 +25,19 @@ static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
     -> bool {
     return a.targetsUrl.path == b.targetsUrl.path && a.threshold == b.threshold;
 }
+
+class RunningATestObserverStub : public RunningATest::Observer {
+  public:
+    void notifyThatNewTestIsReady(std::string_view session) override {}
+
+    void notifyThatTrialWillBegin(int trialNumber) override {}
+
+    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
+
+    void notifyThatStimulusHasEnded() override {}
+
+    void notifyThatSubjectHasResponded() override {}
+};
 
 namespace {
 class AdaptiveMethodStub : public AdaptiveMethod {
@@ -220,9 +231,11 @@ class RecognitionTestModelStub : public RunningATest {
         fixedLevelMethodStub.log("TOOLATE ");
     }
 
-    void initialize(TestMethod *method, const Test &test, Observer *) override {
+    void initialize(
+        TestMethod *method, const Test &test, Observer *observer) override {
         testMethod_ = method;
         test_ = &test;
+        this->observer = observer;
     }
 
     void initializeWithSingleSpeaker(
@@ -321,6 +334,8 @@ class RecognitionTestModelStub : public RunningATest {
     auto playTrialTime() -> std::string override { return playTrialTime_; }
 
     void setPlayTrialTime(std::string s) { playTrialTime_ = std::move(s); }
+
+    const Observer *observer{};
 
   private:
     std::vector<std::string> audioDevices_{};
@@ -752,8 +767,9 @@ class InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
-    return m.initializedWithEyeTracking();
+auto initializedWithEyeTracking(
+    RecognitionTestModelStub &m, RunningATest::Observer *observer) -> bool {
+    return m.observer == observer;
 }
 
 class PlayingCalibrationUseCase {
@@ -814,14 +830,12 @@ class ModelTests : public ::testing::Test {
     RecognitionTestModelStub internalModel{adaptiveMethod, fixedLevelMethod};
     OutputFileStub outputFile;
     AudioRecorderStub audioRecorder;
-    EyeTrackerStub eyeTracker;
-    MaskerPlayerStub maskerPlayer;
-    TargetPlayerStub targetPlayer;
+    RunningATestObserverStub eyeTracking;
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervals, everyTargetOnce,
         eachTargetNTimes, predeterminedTargets, internalModel, outputFile,
-        audioRecorder, eyeTracker, maskerPlayer, targetPlayer};
+        audioRecorder, eyeTracking};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes;
@@ -1478,30 +1492,35 @@ MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
 MODEL_TEST(
     initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithAllTargetsAndEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        initializedWithEyeTracking(internalModel, &eyeTracking));
 }
 
 MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        initializedWithEyeTracking(internalModel, &eyeTracking));
 }
 
 MODEL_TEST(
     initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithCyclicTargetsAndEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        initializedWithEyeTracking(internalModel, &eyeTracking));
 }
 
 MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithTargetReplacementAndEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        initializedWithEyeTracking(internalModel, &eyeTracking));
 }
 
 MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        initializedWithEyeTracking(internalModel, &eyeTracking));
 }
 
 MODEL_TEST(submitResponsePassesCoordinateResponse) {

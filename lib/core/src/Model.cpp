@@ -1,6 +1,4 @@
 #include "Model.hpp"
-#include "AudioRecording.hpp"
-#include "IRecognitionTestModel.hpp"
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
@@ -13,8 +11,7 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     RepeatableFiniteTargetPlaylist &eachTargetNTimes,
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
     RunningATest &model, OutputFile &outputFile, AudioRecorder &audioRecorder,
-    EyeTracker &eyeTracker, MaskerPlayer &maskerPlayer,
-    TargetPlayer &targetPlayer)
+    RunningATest::Observer &eyeTracking)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
       cyclicTargetsReader{cyclicTargetsReader},
@@ -23,9 +20,7 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
       everyTargetOnce{everyTargetOnce},
       predeterminedTargets{predeterminedTargets},
       eachTargetNTimes{eachTargetNTimes}, model{model}, outputFile{outputFile},
-      audioRecording{audioRecorder, outputFile}, eyeTracking{eyeTracker,
-                                                     maskerPlayer, targetPlayer,
-                                                     outputFile} {}
+      audioRecording{audioRecorder, outputFile}, eyeTracking{eyeTracking} {}
 
 static void initialize(
     RunningATest &model, TestMethod &method, const Test &test) {
@@ -61,11 +56,6 @@ static void initializeWithSingleSpeaker(
 static void initializeWithDelayedMasker(
     RunningATest &model, TestMethod &method, const Test &test) {
     model.initializeWithDelayedMasker(&method, test);
-}
-
-static void initializeWithEyeTracking(
-    RunningATest &model, TestMethod &method, const Test &test) {
-    model.initializeWithEyeTracking(&method, test);
 }
 
 static void initialize(RunningATest &model, TestMethod &method,
@@ -107,8 +97,7 @@ void ModelImpl::initialize(const FixedLevelTestWithEachTargetNTimes &test) {
 void ModelImpl::initializeWithAllTargetsAndEyeTracking(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
-    av_speech_in_noise::initializeWithEyeTracking(
-        model, fixedLevelMethod, test);
+    av_speech_in_noise::initialize(model, fixedLevelMethod, test, &eyeTracking);
 }
 
 void ModelImpl::initializeWithAllTargetsAndAudioRecording(
@@ -144,22 +133,20 @@ void ModelImpl::initializeWithTargetReplacementAndEyeTracking(
     const FixedLevelFixedTrialsTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, targetsWithReplacement);
-    av_speech_in_noise::initializeWithEyeTracking(
-        model, fixedLevelMethod, test);
+    av_speech_in_noise::initialize(model, fixedLevelMethod, test, &eyeTracking);
 }
 
 void ModelImpl::initializeWithSilentIntervalTargetsAndEyeTracking(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, silentIntervalTargets);
-    av_speech_in_noise::initializeWithEyeTracking(
-        model, fixedLevelMethod, test);
+    av_speech_in_noise::initialize(model, fixedLevelMethod, test, &eyeTracking);
 }
 
 void ModelImpl::initializeWithEyeTracking(const AdaptiveTest &test) {
     av_speech_in_noise::initialize(
         adaptiveMethod, test, targetsWithReplacementReader);
-    av_speech_in_noise::initializeWithEyeTracking(model, adaptiveMethod, test);
+    av_speech_in_noise::initialize(model, adaptiveMethod, test, &eyeTracking);
 }
 
 void ModelImpl::initializeWithCyclicTargets(const AdaptiveTest &test) {
@@ -170,7 +157,7 @@ void ModelImpl::initializeWithCyclicTargets(const AdaptiveTest &test) {
 void ModelImpl::initializeWithCyclicTargetsAndEyeTracking(
     const AdaptiveTest &test) {
     av_speech_in_noise::initialize(adaptiveMethod, test, cyclicTargetsReader);
-    av_speech_in_noise::initializeWithEyeTracking(model, adaptiveMethod, test);
+    av_speech_in_noise::initialize(model, adaptiveMethod, test, &eyeTracking);
 }
 
 void ModelImpl::restartAdaptiveTestWhilePreservingTargets() {
