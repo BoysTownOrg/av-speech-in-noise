@@ -4,9 +4,7 @@
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "AudioRecorderStub.hpp"
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/core/IRecognitionTestModel.hpp"
 
-#include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>

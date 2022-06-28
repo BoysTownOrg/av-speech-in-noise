@@ -2,12 +2,12 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_MODELHPP_
 
 #include "TargetPlaylist.hpp"
-#include "TestMethod.hpp"
-#include "IOutputFile.hpp"
 #include "IAdaptiveMethod.hpp"
 #include "IFixedLevelMethod.hpp"
-#include "IRecognitionTestModel.hpp"
 #include "IModel.hpp"
+#include "IOutputFile.hpp"
+#include "IRecognitionTestModel.hpp"
+#include "TestMethod.hpp"
 
 namespace av_speech_in_noise {
 class RunningATestFacadeImpl : public RunningATestFacade {
@@ -72,7 +72,7 @@ class RunningATestFacadeImpl : public RunningATestFacade {
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce;
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets;
     RepeatableFiniteTargetPlaylist &eachTargetNTimes;
-    RunningATest &model;
+    RunningATest &runningATest;
     OutputFile &outputFile;
 };
 }
