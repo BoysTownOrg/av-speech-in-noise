@@ -917,31 +917,6 @@ auto eyeTrackerTargetPlayerSynchronization(OutputFileStub &file)
     return file.eyeTrackerTargetPlayerSynchronization();
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesSyncTimes) {
-    run(initializingTestWithEyeTracking, model);
-    setNanosecondsFromPlayerTime(maskerPlayer, 1);
-    setCurrentSystemTimeMicroseconds(eyeTracker, 2);
-    fadeInComplete(maskerPlayer, fadeInCompleteTime);
-    fadeOutComplete(maskerPlayer);
-    run(submittingCoordinateResponse, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::uintmax_t{1},
-        eyeTrackerTargetPlayerSynchronization(outputFile)
-            .targetPlayerSystemTime.nanoseconds);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::int_least64_t{2},
-        eyeTrackerTargetPlayerSynchronization(outputFile)
-            .eyeTrackerSystemTime.microseconds);
-}
-
-RECOGNITION_TEST_MODEL_TEST(passesCurrentMaskerTimeForNanosecondConversion) {
-    run(initializingTestWithEyeTracking, model);
-    av_speech_in_noise::PlayerTime t{};
-    t.system = 1;
-    maskerPlayer.setCurrentSystemTime(t);
-    fadeInComplete(maskerPlayer, fadeInCompleteTime);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
-        maskerPlayer.toNanosecondsSystemTime().at(1));
-}
-
 RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestPassesNextTargetToTargetPlayer) {
     assertPassesNextTargetToPlayer(initializingTest);

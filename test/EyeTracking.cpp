@@ -3,6 +3,7 @@
 #include "MaskerPlayerStub.hpp"
 #include "EyeTrackerStub.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include "av-speech-in-noise/core/Player.hpp"
 
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
@@ -103,5 +104,32 @@ TEST_F(EyeTrackingTests,
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         1 + gsl::narrow_cast<std::uintmax_t>(2 * 1e9),
         outputFile.targetStartTime().nanoseconds);
+}
+
+auto eyeTrackerTargetPlayerSynchronization(OutputFileStub &file)
+    -> EyeTrackerTargetPlayerSynchronization {
+    return file.eyeTrackerTargetPlayerSynchronization();
+}
+
+TEST_F(EyeTrackingTests, submitCoordinateResponseWritesSyncTimes) {
+    maskerPlayer.setNanosecondsFromPlayerTime(1);
+    eyeTracker.setCurrentSystemTime(EyeTrackerSystemTime{2});
+    eyeTracking.notifyThatTargetWillPlayAt({});
+    eyeTracking.notifyThatSubjectHasResponded();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::uintmax_t{1},
+        eyeTrackerTargetPlayerSynchronization(outputFile)
+            .targetPlayerSystemTime.nanoseconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::int_least64_t{2},
+        eyeTrackerTargetPlayerSynchronization(outputFile)
+            .eyeTrackerSystemTime.microseconds);
+}
+
+TEST_F(EyeTrackingTests, passesCurrentMaskerTimeForNanosecondConversion) {
+    av_speech_in_noise::PlayerTime t{};
+    t.system = 1;
+    maskerPlayer.setCurrentSystemTime(t);
+    eyeTracking.notifyThatTargetWillPlayAt({});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
+        maskerPlayer.toNanosecondsSystemTime().at(1));
 }
 }
