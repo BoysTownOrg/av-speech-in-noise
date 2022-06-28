@@ -2,7 +2,7 @@
 #include "IRecognitionTestModel.hpp"
 
 namespace av_speech_in_noise {
-ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
+RunningATestFacadeImpl::RunningATestFacadeImpl(AdaptiveMethod &adaptiveMethod,
     FixedLevelMethod &fixedLevelMethod,
     TargetPlaylistReader &targetsWithReplacementReader,
     TargetPlaylistReader &cyclicTargetsReader,
@@ -65,147 +65,161 @@ static void initialize(RunningATest &model, TestMethod &method,
     model.initialize(&method, test, observer);
 }
 
-void ModelImpl::initializeWithTargetReplacement(
+void RunningATestFacadeImpl::initializeWithTargetReplacement(
     const FixedLevelFixedTrialsTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, targetsWithReplacement);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
-void ModelImpl::initialize(const AdaptiveTest &test) {
+void RunningATestFacadeImpl::initialize(const AdaptiveTest &test) {
     av_speech_in_noise::initialize(
         adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initialize(model, adaptiveMethod, test);
 }
 
-void ModelImpl::initializeWithSilentIntervalTargets(
+void RunningATestFacadeImpl::initializeWithSilentIntervalTargets(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, silentIntervalTargets);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
-void ModelImpl::initializeWithAllTargets(const FixedLevelTest &test) {
+void RunningATestFacadeImpl::initializeWithAllTargets(
+    const FixedLevelTest &test) {
     av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
-void ModelImpl::initialize(const FixedLevelTestWithEachTargetNTimes &test) {
+void RunningATestFacadeImpl::initialize(
+    const FixedLevelTestWithEachTargetNTimes &test) {
     eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
     av_speech_in_noise::initialize(fixedLevelMethod, test, eachTargetNTimes);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
-void ModelImpl::initializeWithAllTargetsAndEyeTracking(
+void RunningATestFacadeImpl::initializeWithAllTargetsAndEyeTracking(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test, &eyeTracking);
 }
 
-void ModelImpl::initializeWithAllTargetsAndAudioRecording(
+void RunningATestFacadeImpl::initializeWithAllTargetsAndAudioRecording(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
     av_speech_in_noise::initialize(
         model, fixedLevelMethod, test, &audioRecording);
 }
 
-void ModelImpl::initializeWithPredeterminedTargetsAndAudioRecording(
-    const FixedLevelTest &test) {
+void RunningATestFacadeImpl::
+    initializeWithPredeterminedTargetsAndAudioRecording(
+        const FixedLevelTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, predeterminedTargets);
     av_speech_in_noise::initialize(
         model, fixedLevelMethod, test, &audioRecording);
 }
 
-void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &test) {
+void RunningATestFacadeImpl::initializeWithSingleSpeaker(
+    const AdaptiveTest &test) {
     av_speech_in_noise::initialize(
         adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initializeWithSingleSpeaker(
         model, adaptiveMethod, test);
 }
 
-void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
+void RunningATestFacadeImpl::initializeWithDelayedMasker(
+    const AdaptiveTest &test) {
     av_speech_in_noise::initialize(
         adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initializeWithDelayedMasker(
         model, adaptiveMethod, test);
 }
 
-void ModelImpl::initializeWithTargetReplacementAndEyeTracking(
+void RunningATestFacadeImpl::initializeWithTargetReplacementAndEyeTracking(
     const FixedLevelFixedTrialsTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, targetsWithReplacement);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test, &eyeTracking);
 }
 
-void ModelImpl::initializeWithSilentIntervalTargetsAndEyeTracking(
+void RunningATestFacadeImpl::initializeWithSilentIntervalTargetsAndEyeTracking(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, silentIntervalTargets);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test, &eyeTracking);
 }
 
-void ModelImpl::initializeWithEyeTracking(const AdaptiveTest &test) {
+void RunningATestFacadeImpl::initializeWithEyeTracking(
+    const AdaptiveTest &test) {
     av_speech_in_noise::initialize(
         adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initialize(model, adaptiveMethod, test, &eyeTracking);
 }
 
-void ModelImpl::initializeWithCyclicTargets(const AdaptiveTest &test) {
+void RunningATestFacadeImpl::initializeWithCyclicTargets(
+    const AdaptiveTest &test) {
     av_speech_in_noise::initialize(adaptiveMethod, test, cyclicTargetsReader);
     av_speech_in_noise::initialize(model, adaptiveMethod, test);
 }
 
-void ModelImpl::initializeWithCyclicTargetsAndEyeTracking(
+void RunningATestFacadeImpl::initializeWithCyclicTargetsAndEyeTracking(
     const AdaptiveTest &test) {
     av_speech_in_noise::initialize(adaptiveMethod, test, cyclicTargetsReader);
     av_speech_in_noise::initialize(model, adaptiveMethod, test, &eyeTracking);
 }
 
-void ModelImpl::restartAdaptiveTestWhilePreservingTargets() {
+void RunningATestFacadeImpl::restartAdaptiveTestWhilePreservingTargets() {
     adaptiveMethod.resetTracks();
     model.prepareNextTrialIfNeeded();
 }
 
-void ModelImpl::playTrial(const AudioSettings &settings) {
+void RunningATestFacadeImpl::playTrial(const AudioSettings &settings) {
     model.playTrial(settings);
 }
 
-void ModelImpl::submit(const coordinate_response_measure::Response &response) {
+void RunningATestFacadeImpl::submit(
+    const coordinate_response_measure::Response &response) {
     model.submit(response);
 }
 
-void ModelImpl::playCalibration(const Calibration &p) {
+void RunningATestFacadeImpl::playCalibration(const Calibration &p) {
     model.playCalibration(p);
 }
 
-void ModelImpl::playLeftSpeakerCalibration(const Calibration &p) {
+void RunningATestFacadeImpl::playLeftSpeakerCalibration(const Calibration &p) {
     model.playLeftSpeakerCalibration(p);
 }
 
-void ModelImpl::playRightSpeakerCalibration(const Calibration &p) {
+void RunningATestFacadeImpl::playRightSpeakerCalibration(const Calibration &p) {
     model.playRightSpeakerCalibration(p);
 }
 
-auto ModelImpl::testComplete() -> bool { return model.testComplete(); }
+auto RunningATestFacadeImpl::testComplete() -> bool {
+    return model.testComplete();
+}
 
-auto ModelImpl::audioDevices() -> std::vector<std::string> {
+auto RunningATestFacadeImpl::audioDevices() -> std::vector<std::string> {
     return model.audioDevices();
 }
 
-auto ModelImpl::adaptiveTestResults() -> AdaptiveTestResults {
+auto RunningATestFacadeImpl::adaptiveTestResults() -> AdaptiveTestResults {
     return adaptiveMethod.testResults();
 }
 
-void ModelImpl::attach(RunningATestFacade::Observer *e) { model.attach(e); }
+void RunningATestFacadeImpl::attach(RunningATestFacade::Observer *e) {
+    model.attach(e);
+}
 
-auto ModelImpl::trialNumber() -> int { return model.trialNumber(); }
+auto RunningATestFacadeImpl::trialNumber() -> int {
+    return model.trialNumber();
+}
 
-auto ModelImpl::targetFileName() -> std::string {
+auto RunningATestFacadeImpl::targetFileName() -> std::string {
     return model.targetFileName();
 }
 
-auto ModelImpl::keywordsTestResults() -> KeywordsTestResults {
+auto RunningATestFacadeImpl::keywordsTestResults() -> KeywordsTestResults {
     return fixedLevelMethod.keywordsTestResults();
 }
 }

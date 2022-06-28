@@ -10,9 +10,9 @@
 #include "IModel.hpp"
 
 namespace av_speech_in_noise {
-class ModelImpl : public RunningATestFacade {
+class RunningATestFacadeImpl : public RunningATestFacade {
   public:
-    ModelImpl(AdaptiveMethod &, FixedLevelMethod &,
+    RunningATestFacadeImpl(AdaptiveMethod &, FixedLevelMethod &,
         TargetPlaylistReader &targetsWithReplacementReader,
         TargetPlaylistReader &cyclicTargetsReader,
         TargetPlaylist &targetsWithReplacement,
