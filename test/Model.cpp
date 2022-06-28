@@ -1483,6 +1483,18 @@ MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
 }
 
 MODEL_TEST(
+    initializeFixedLevelTestWithAllTargetsAndAudioRecordingInitializesWithAudioRecording) {
+    run(initializingFixedLevelTestWithAllTargetsAndAudioRecording);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(internalModel.observer, &audioRecording);
+}
+
+MODEL_TEST(
+    initializeFixedLevelTestWithPredeterminedTargetsAndAudioRecordingInitializesWithAudioRecording) {
+    run(initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(internalModel.observer, &audioRecording);
+}
+
+MODEL_TEST(
     initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithAllTargetsAndEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
