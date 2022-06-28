@@ -27,4 +27,9 @@ TEST_F(AudioRecordingTests, startsRecordingWhenStimulusEnds) {
     audioRecording.notifyThatStimulusHasEnded();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.started());
 }
+
+TEST_F(AudioRecordingTests, stopsRecordingWhenSubjectResponds) {
+    audioRecording.notifyThatSubjectHasResponded();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.stopped());
+}
 }
