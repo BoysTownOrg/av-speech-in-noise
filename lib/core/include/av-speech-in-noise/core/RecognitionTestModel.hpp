@@ -2,13 +2,16 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_RECOGNITIONTESTMODELHPP_
 
 #include "Randomizer.hpp"
+#include "AudioRecording.hpp"
+#include "IMaskerPlayer.hpp"
+#include "IOutputFile.hpp"
+#include "IRecognitionTestModel.hpp"
 #include "IResponseEvaluator.hpp"
 #include "ITargetPlayer.hpp"
-#include "IMaskerPlayer.hpp"
-#include "IRecognitionTestModel.hpp"
-#include "IOutputFile.hpp"
-#include "av-speech-in-noise/Model.hpp"
+
 #include <av-speech-in-noise/Interface.hpp>
+#include <av-speech-in-noise/Model.hpp>
+
 #include <string>
 #include <string_view>
 
@@ -28,14 +31,6 @@ class Clock {
     virtual auto time() -> std::string = 0;
 };
 
-class AudioRecorder {
-  public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(AudioRecorder);
-    virtual void initialize(const LocalUrl &) = 0;
-    virtual void start() = 0;
-    virtual void stop() = 0;
-};
-
 class EyeTracking : public RunningATest::Observer {
   public:
     EyeTracking(EyeTracker &, MaskerPlayer &, TargetPlayer &, OutputFile &);
@@ -52,23 +47,6 @@ class EyeTracking : public RunningATest::Observer {
     EyeTracker &eyeTracker;
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
-    OutputFile &outputFile;
-};
-
-class AudioRecording : public RunningATest::Observer {
-  public:
-    AudioRecording(AudioRecorder &, OutputFile &);
-    void notifyThatNewTestIsReady(std::string_view session) override {
-        this->session = session;
-    }
-    void notifyThatTrialWillBegin(int trialNumber) override;
-    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
-    void notifyThatStimulusHasEnded() override;
-    void notifyThatSubjectHasResponded() override;
-
-  private:
-    std::string session;
-    AudioRecorder &audioRecorder;
     OutputFile &outputFile;
 };
 
