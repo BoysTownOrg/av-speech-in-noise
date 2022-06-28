@@ -5,10 +5,13 @@
 #include "RandomizerStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
+#include "AudioRecorderStub.hpp"
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/Model.hpp"
+
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+
 #include <gtest/gtest.h>
+
 #include <cmath>
 #include <string>
 #include <utility>
@@ -354,32 +357,6 @@ class ClockStub : public Clock {
   private:
     std::string time_;
     bool timeQueried_{};
-};
-
-class AudioRecorderStub : public AudioRecorder {
-  public:
-    [[nodiscard]] auto started() const -> bool { return started_; }
-
-    void start() override { started_ = true; }
-
-    auto fileUrl() -> LocalUrl { return fileUrl_; }
-
-    void initialize(const LocalUrl &url) override {
-        fileUrl_ = url;
-        initialized_ = true;
-    }
-
-    [[nodiscard]] auto initialized() const -> bool { return initialized_; }
-
-    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
-
-    void stop() override { stopped_ = true; }
-
-  private:
-    LocalUrl fileUrl_;
-    bool started_{};
-    bool initialized_{};
-    bool stopped_{};
 };
 
 void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel.dB_SPL = x; }

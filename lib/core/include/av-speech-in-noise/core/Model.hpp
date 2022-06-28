@@ -8,6 +8,7 @@
 #include "IFixedLevelMethod.hpp"
 #include "IRecognitionTestModel.hpp"
 #include "IModel.hpp"
+#include "AudioRecording.hpp"
 
 namespace av_speech_in_noise {
 class ModelImpl : public Model {
@@ -20,7 +21,7 @@ class ModelImpl : public Model {
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         RepeatableFiniteTargetPlaylist &eachTargetNTimes,
         FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
-        RunningATest &, OutputFile &);
+        RunningATest &, OutputFile &, AudioRecorder &);
     void attach(Model::Observer *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(
@@ -60,6 +61,7 @@ class ModelImpl : public Model {
   private:
     void initializeTest_(const AdaptiveTest &);
 
+    AudioRecording audioRecording;
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
     TargetPlaylistReader &targetsWithReplacementReader;

@@ -2,6 +2,7 @@
 #include "ModelObserverStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
+#include "AudioRecorderStub.hpp"
 #include "assert-utility.hpp"
 
 #include <av-speech-in-noise/Model.hpp>
@@ -815,10 +816,12 @@ class ModelTests : public ::testing::Test {
     RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
     RecognitionTestModelStub internalModel{adaptiveMethod, fixedLevelMethod};
     OutputFileStub outputFile;
+    AudioRecorderStub audioRecorder;
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervals, everyTargetOnce,
-        eachTargetNTimes, predeterminedTargets, internalModel, outputFile};
+        eachTargetNTimes, predeterminedTargets, internalModel, outputFile,
+        audioRecorder};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes;

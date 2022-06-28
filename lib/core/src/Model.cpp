@@ -1,4 +1,5 @@
 #include "Model.hpp"
+#include "AudioRecording.hpp"
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
@@ -10,7 +11,7 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     RepeatableFiniteTargetPlaylist &eachTargetNTimes,
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
-    RunningATest &model, OutputFile &outputFile)
+    RunningATest &model, OutputFile &outputFile, AudioRecorder &audioRecorder)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
       cyclicTargetsReader{cyclicTargetsReader},
@@ -18,8 +19,8 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
       silentIntervalTargets{silentIntervalTargets},
       everyTargetOnce{everyTargetOnce},
       predeterminedTargets{predeterminedTargets},
-      eachTargetNTimes{eachTargetNTimes}, model{model}, outputFile{outputFile} {
-}
+      eachTargetNTimes{eachTargetNTimes}, model{model}, outputFile{outputFile},
+      audioRecording{audioRecorder, outputFile} {}
 
 static void initialize(
     RunningATest &model, TestMethod &method, const Test &test) {
