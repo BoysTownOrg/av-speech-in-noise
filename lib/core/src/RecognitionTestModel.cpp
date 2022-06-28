@@ -337,9 +337,6 @@ void RunningATestImpl::initializeWithDelayedMasker(
     maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
 }
 
-void RunningATestImpl::initializeWithEyeTracking(
-    TestMethod *method, const Test &test) {}
-
 void RunningATestImpl::playTrial(const AudioSettings &settings) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 

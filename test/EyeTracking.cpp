@@ -49,7 +49,9 @@ class EyeTrackingTests : public ::testing::Test {
     EyeTracking eyeTracking{eyeTracker, maskerPlayer, targetPlayer, outputFile};
 };
 
-TEST_F(EyeTrackingTests,
+#define EYE_TRACKING_TEST(a) TEST_F(EyeTrackingTests, a)
+
+EYE_TRACKING_TEST(
     playTrialForTestWithEyeTrackingAllocatesTrialDurationsWorthRecordingTimeForEyeTracking) {
     targetPlayer.setDurationSeconds(3);
     maskerPlayer.setFadeTimeSeconds(4);
@@ -60,24 +62,24 @@ TEST_F(EyeTrackingTests,
         eyeTracker.recordingTimeAllocatedSeconds());
 }
 
-TEST_F(EyeTrackingTests, startsTrackerWhenTrialWillBegin) {
+EYE_TRACKING_TEST(startsTrackerWhenTrialWillBegin) {
     eyeTracking.notifyThatTrialWillBegin(1);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(eyeTracker.started());
 }
 
-TEST_F(EyeTrackingTests, startsTrackerAfterAllocatingRecordingTime) {
+EYE_TRACKING_TEST(startsTrackerAfterAllocatingRecordingTime) {
     eyeTracking.notifyThatTrialWillBegin(1);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"allocateRecordingTimeSeconds start "},
         string(eyeTracker.log()));
 }
 
-TEST_F(EyeTrackingTests, stopsTrackerWhenStimulusHasEnded) {
+EYE_TRACKING_TEST(stopsTrackerWhenStimulusHasEnded) {
     eyeTracking.notifyThatStimulusHasEnded();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(eyeTracker.stopped());
 }
 
-TEST_F(EyeTrackingTests, passesTargetStartSystemTimeForConversion) {
+EYE_TRACKING_TEST(passesTargetStartSystemTimeForConversion) {
     PlayerTimeWithDelay playerTime;
     playerTime.playerTime.system = 1;
     eyeTracking.notifyThatTargetWillPlayAt(playerTime);
@@ -85,7 +87,7 @@ TEST_F(EyeTrackingTests, passesTargetStartSystemTimeForConversion) {
         maskerPlayer.toNanosecondsSystemTime().at(0));
 }
 
-TEST_F(EyeTrackingTests, submittingCoordinateResponseWritesEyeGazes) {
+EYE_TRACKING_TEST(submittingCoordinateResponseWritesEyeGazes) {
     eyeTracker.setGazes({{{1}, {{}, {{}, {2, 3}}}, {{}, {{}, {4, 5}}}},
         {{6}, {{}, {{}, {7, 8}}}, {{}, {{}, {9, 10}}}}});
     eyeTracking.notifyThatSubjectHasResponded();
@@ -94,7 +96,7 @@ TEST_F(EyeTrackingTests, submittingCoordinateResponseWritesEyeGazes) {
         outputFile.eyeGazes());
 }
 
-TEST_F(EyeTrackingTests,
+EYE_TRACKING_TEST(
     submitCoordinateResponseWritesTargetStartTimeWhenEyeTracking) {
     maskerPlayer.setNanosecondsFromPlayerTime(1);
     PlayerTimeWithDelay playerTime;
@@ -111,7 +113,7 @@ auto eyeTrackerTargetPlayerSynchronization(OutputFileStub &file)
     return file.eyeTrackerTargetPlayerSynchronization();
 }
 
-TEST_F(EyeTrackingTests, submitCoordinateResponseWritesSyncTimes) {
+EYE_TRACKING_TEST(submitCoordinateResponseWritesSyncTimes) {
     maskerPlayer.setNanosecondsFromPlayerTime(1);
     eyeTracker.setCurrentSystemTime(EyeTrackerSystemTime{2});
     eyeTracking.notifyThatTargetWillPlayAt({});
@@ -124,7 +126,7 @@ TEST_F(EyeTrackingTests, submitCoordinateResponseWritesSyncTimes) {
             .eyeTrackerSystemTime.microseconds);
 }
 
-TEST_F(EyeTrackingTests, passesCurrentMaskerTimeForNanosecondConversion) {
+EYE_TRACKING_TEST(passesCurrentMaskerTimeForNanosecondConversion) {
     av_speech_in_noise::PlayerTime t{};
     t.system = 1;
     maskerPlayer.setCurrentSystemTime(t);
