@@ -1005,11 +1005,10 @@ RECOGNITION_TEST_MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(stopped(eyeTracker));
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    fadeOutCompleteForTestWithAudioRecordingStartsRecording) {
-    run(initializingTestWithAudioRecording, model);
+RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteNotifiesThatStimulusHasEnded) {
+    run(initializingTest, model);
     fadeOutComplete(maskerPlayer);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.started());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatStimulusHasEnded);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
