@@ -21,34 +21,6 @@ constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
     return a.x == b.x && a.y == b.y;
 }
 
-constexpr auto operator==(const Point2D &a, const Point2D &b) -> bool {
-    return a.x == b.x && a.y == b.y;
-}
-
-constexpr auto operator==(const Point3D &a, const Point3D &b) -> bool {
-    return a.x == b.x && a.y == b.y && a.z == b.z;
-}
-
-constexpr auto operator==(const GazeOrigin &a, const GazeOrigin &b) -> bool {
-    return a.relativeTrackbox == b.relativeTrackbox;
-}
-
-constexpr auto operator==(const GazePosition &a, const GazePosition &b)
-    -> bool {
-    return a.relativeTrackbox == b.relativeTrackbox &&
-        a.relativeScreen == b.relativeScreen;
-}
-
-constexpr auto operator==(const Gaze &a, const Gaze &b) -> bool {
-    return a.origin == b.origin && a.position == b.position;
-}
-
-constexpr auto operator==(
-    const BinocularGazeSample &a, const BinocularGazeSample &b) -> bool {
-    return a.systemTime.microseconds == b.systemTime.microseconds &&
-        a.left == b.left && a.right == b.right;
-}
-
 namespace {
 class TestMethodStub : public TestMethod {
   public:
@@ -938,17 +910,6 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAt) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds,
         targetPlayer.timePlayedAt().delay.seconds);
-}
-
-RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseWritesEyeGazes) {
-    run(initializingTestWithEyeTracking, model);
-    setEyeGazes(eyeTracker,
-        {{{1}, {{}, {{}, {2, 3}}}, {{}, {{}, {4, 5}}}},
-            {{6}, {{}, {{}, {7, 8}}}, {{}, {{}, {9, 10}}}}});
-    run(submittingCoordinateResponse, model);
-    ::assertEqual({{{1}, {{}, {{}, {2, 3}}}, {{}, {{}, {4, 5}}}},
-                      {{6}, {{}, {{}, {7, 8}}}, {{}, {{}, {9, 10}}}}},
-        outputFile.eyeGazes());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
