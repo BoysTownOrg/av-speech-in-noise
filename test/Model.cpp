@@ -290,10 +290,6 @@ class RecognitionTestModelStub : public RunningATest {
         return initializedWithDelayedMasker_;
     }
 
-    [[nodiscard]] auto initializedWithEyeTracking() const -> bool {
-        return initializedWithEyeTracking_;
-    }
-
     [[nodiscard]] auto coordinateResponse() const {
         return coordinateResponse_;
     }
@@ -346,7 +342,6 @@ class RecognitionTestModelStub : public RunningATest {
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
-    bool initializedWithEyeTracking_{};
     bool nextTrialPreparedIfNeeded_{};
 };
 
