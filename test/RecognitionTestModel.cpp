@@ -862,15 +862,6 @@ RECOGNITION_TEST_MODEL_TEST(playTrialNotifiesObserverOfTrialAboutToBegin) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithEyeTrackingStartsEyeTrackingAfterAllocatingRecordingTime) {
-    run(initializingTestWithEyeTracking, model);
-    run(playingTrial, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"allocateRecordingTimeSeconds start "},
-        string(eyeTracker.log()));
-}
-
-RECOGNITION_TEST_MODEL_TEST(
     fadeOutCompleteForTestWithEyeTrackingStopsEyeTracking) {
     run(initializingTestWithEyeTracking, model);
     fadeOutComplete(maskerPlayer);

@@ -34,4 +34,11 @@ TEST_F(EyeTrackingTests, startsTrackerWhenTrialWillBegin) {
     eyeTracking.notifyThatTrialWillBegin(1);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(eyeTracker.started());
 }
+
+TEST_F(EyeTrackingTests, startsTrackerAfterAllocatingRecordingTime) {
+    eyeTracking.notifyThatTrialWillBegin(1);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"allocateRecordingTimeSeconds start "},
+        string(eyeTracker.log()));
+}
 }
