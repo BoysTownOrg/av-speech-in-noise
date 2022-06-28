@@ -79,7 +79,8 @@ class RunningATestImpl : public TargetPlayer::Observer,
     RunningATestImpl(TargetPlayer &, MaskerPlayer &, AudioRecorder &,
         ResponseEvaluator &, OutputFile &, Randomizer &, EyeTracker &, Clock &);
     void attach(Model::Observer *) override;
-    void initialize(TestMethod *, const Test &) override;
+    void initialize(
+        TestMethod *, const Test &, RunningATest::Observer *) override;
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
     void initializeWithDelayedMasker(TestMethod *, const Test &) override;
     void initializeWithEyeTracking(TestMethod *, const Test &) override;

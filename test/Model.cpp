@@ -216,7 +216,7 @@ class RecognitionTestModelStub : public RunningATest {
         fixedLevelMethodStub.log("TOOLATE ");
     }
 
-    void initialize(TestMethod *method, const Test &test) override {
+    void initialize(TestMethod *method, const Test &test, Observer *) override {
         testMethod_ = method;
         test_ = &test;
     }

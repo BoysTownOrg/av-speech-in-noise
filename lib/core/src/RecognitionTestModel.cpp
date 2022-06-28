@@ -350,8 +350,10 @@ void RunningATestImpl::attach(Model::Observer *listener) {
     listener_ = listener;
 }
 
-void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test, &nullObserver);
+void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
+    RunningATest::Observer *observer) {
+    initialize_(
+        testMethod_, test, observer == nullptr ? &nullObserver : observer);
 }
 
 void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test,

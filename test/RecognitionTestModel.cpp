@@ -108,7 +108,9 @@ class InitializingTest : public UseCase {
     explicit InitializingTest(TestMethod *method, const Test &test)
         : test{test}, method{method} {}
 
-    void run(RunningATestImpl &m) override { m.initialize(method, test); }
+    void run(RunningATestImpl &m) override {
+        m.initialize(method, test, nullptr);
+    }
 
   private:
     const Test &test{};
