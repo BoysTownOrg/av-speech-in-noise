@@ -7,6 +7,7 @@
 #include "TargetPlayerStub.hpp"
 #include "AudioRecorderStub.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/core/IRecognitionTestModel.hpp"
 
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 
@@ -108,16 +109,18 @@ class UseCase {
 
 class InitializingTest : public UseCase {
   public:
-    explicit InitializingTest(TestMethod *method, const Test &test)
-        : test{test}, method{method} {}
+    explicit InitializingTest(
+        TestMethod *method, const Test &test, RunningATest::Observer *observer)
+        : test{test}, method{method}, observer{observer} {}
 
     void run(RunningATestImpl &m) override {
-        m.initialize(method, test, nullptr);
+        m.initialize(method, test, observer);
     }
 
   private:
     const Test &test{};
     TestMethod *method;
+    RunningATest::Observer *observer;
 };
 
 class InitializingTestWithSingleSpeaker : public UseCase {
@@ -359,6 +362,22 @@ class ClockStub : public Clock {
     bool timeQueried_{};
 };
 
+class RunningATestObserverStub : public RunningATest::Observer {
+  public:
+    void notifyThatNewTestIsReady(std::string_view session) override {
+        this->session = session;
+    }
+    void notifyThatTrialWillBegin(int trialNumber) override {
+        this->trialNumber = trialNumber;
+    }
+    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
+    void notifyThatStimulusHasEnded() override {}
+    void notifyThatSubjectHasResponded() override {}
+
+    std::string session;
+    int trialNumber;
+};
+
 void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel.dB_SPL = x; }
 
 void setCurrentTarget(TestMethodStub &m, std::string s) {
@@ -563,7 +582,8 @@ class RecognitionTestModelTests : public ::testing::Test {
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{
         calibration, maskerPlayer};
     av_speech_in_noise::Test test{};
-    InitializingTest initializingTest{&testMethod, test};
+    RunningATestObserverStub observer;
+    InitializingTest initializingTest{&testMethod, test, &observer};
     InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
         &testMethod};
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
@@ -934,14 +954,16 @@ RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotStartEyeTracking) {
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(started(eyeTracker));
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithAudioRecordingInitializesRecorder) {
+RECOGNITION_TEST_MODEL_TEST(initializeTestNotifiesObserverOfNewTest) {
     test.identity.session = "smile";
-    outputFile.setParentPath("/Users/user/data");
-    run(initializingTestWithAudioRecording, model);
+    run(initializingTest, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("smile", observer.session);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playTrialNotifiesObserverOfTrialAboutToBegin) {
+    run(initializingTest, model);
     run(playingTrial, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        "/Users/user/data/1-smile.wav", audioRecorder.fileUrl().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, observer.trialNumber);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotInitializeRecorder) {
