@@ -252,13 +252,6 @@ class RecognitionTestModelStub : public RunningATest {
         initializedWithDelayedMasker_ = true;
     }
 
-    void initializeWithEyeTracking(
-        TestMethod *method, const Test &test) override {
-        testMethod_ = method;
-        test_ = &test;
-        initializedWithEyeTracking_ = true;
-    }
-
     auto trialNumber() -> int override { return trialNumber_; }
 
     void setTrialNumber(int n) { trialNumber_ = n; }
