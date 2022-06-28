@@ -1,13 +1,13 @@
 #include "OutputFileStub.hpp"
-#include "TargetPlayerStub.hpp"
-#include "MaskerPlayerStub.hpp"
 #include "EyeTrackerStub.hpp"
+#include "MaskerPlayerStub.hpp"
+#include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
 #include "av-speech-in-noise/Model.hpp"
 #include "av-speech-in-noise/core/Player.hpp"
 
-#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <av-speech-in-noise/core/EyeTracking.hpp>
+#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 
 #include <gtest/gtest.h>
 
@@ -108,7 +108,7 @@ EYE_TRACKING_TEST(
         outputFile.targetStartTime().nanoseconds);
 }
 
-auto eyeTrackerTargetPlayerSynchronization(OutputFileStub &file)
+static auto eyeTrackerTargetPlayerSynchronization(OutputFileStub &file)
     -> EyeTrackerTargetPlayerSynchronization {
     return file.eyeTrackerTargetPlayerSynchronization();
 }
