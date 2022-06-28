@@ -34,7 +34,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
     void initializeWithDelayedMasker(TestMethod *, const Test &) override;
     void initializeWithEyeTracking(TestMethod *, const Test &) override;
-    void initializeWithAudioRecording(TestMethod *, const Test &) override;
+    void initializeWithAudioRecording(TestMethod *, const Test &);
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
     void playLeftSpeakerCalibration(const Calibration &) override;

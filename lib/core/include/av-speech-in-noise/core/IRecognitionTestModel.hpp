@@ -28,7 +28,6 @@ class RunningATest {
     virtual void initializeWithSingleSpeaker(TestMethod *, const Test &) = 0;
     virtual void initializeWithDelayedMasker(TestMethod *, const Test &) = 0;
     virtual void initializeWithEyeTracking(TestMethod *, const Test &) = 0;
-    virtual void initializeWithAudioRecording(TestMethod *, const Test &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playLeftSpeakerCalibration(const Calibration &) = 0;

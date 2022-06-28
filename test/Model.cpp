@@ -243,12 +243,6 @@ class RecognitionTestModelStub : public RunningATest {
         initializedWithEyeTracking_ = true;
     }
 
-    void initializeWithAudioRecording(
-        TestMethod *method, const Test &test) override {
-        testMethod_ = method;
-        test_ = &test;
-    }
-
     auto trialNumber() -> int override { return trialNumber_; }
 
     void setTrialNumber(int n) { trialNumber_ = n; }
