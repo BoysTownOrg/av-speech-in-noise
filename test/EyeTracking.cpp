@@ -92,4 +92,16 @@ TEST_F(EyeTrackingTests, submittingCoordinateResponseWritesEyeGazes) {
                       {{6}, {{}, {{}, {7, 8}}}, {{}, {{}, {9, 10}}}}},
         outputFile.eyeGazes());
 }
+
+TEST_F(EyeTrackingTests,
+    submitCoordinateResponseWritesTargetStartTimeWhenEyeTracking) {
+    maskerPlayer.setNanosecondsFromPlayerTime(1);
+    PlayerTimeWithDelay playerTime;
+    playerTime.delay.seconds = 2;
+    eyeTracking.notifyThatTargetWillPlayAt(playerTime);
+    eyeTracking.notifyThatSubjectHasResponded();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        1 + gsl::narrow_cast<std::uintmax_t>(2 * 1e9),
+        outputFile.targetStartTime().nanoseconds);
+}
 }

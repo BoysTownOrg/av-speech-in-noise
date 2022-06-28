@@ -912,22 +912,6 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAt) {
         targetPlayer.timePlayedAt().delay.seconds);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    submitCoordinateResponseWritesTargetStartTimeWhenEyeTracking) {
-    run(initializingTestWithEyeTracking, model);
-    setNanosecondsFromPlayerTime(maskerPlayer, 1);
-    setSampleOffset(fadeInCompleteTime, 2);
-    setSampleRateHz(maskerPlayer, 3);
-    fadeInComplete(maskerPlayer, fadeInCompleteTime);
-    fadeOutComplete(maskerPlayer);
-    run(submittingCoordinateResponse, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1 +
-            gsl::narrow_cast<std::uintmax_t>(
-                (2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds) *
-                1e9),
-        outputFile.targetStartTime().nanoseconds);
-}
-
 auto eyeTrackerTargetPlayerSynchronization(OutputFileStub &file)
     -> EyeTrackerTargetPlayerSynchronization {
     return file.eyeTrackerTargetPlayerSynchronization();
