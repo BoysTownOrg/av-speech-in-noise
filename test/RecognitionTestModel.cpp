@@ -5,9 +5,7 @@
 #include "RandomizerStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
-#include "AudioRecorderStub.hpp"
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/core/IRecognitionTestModel.hpp"
 
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 
@@ -160,19 +158,6 @@ class InitializingTestWithEyeTracking : public UseCase {
 
     void run(RunningATestImpl &model) override {
         model.initializeWithEyeTracking(method, test);
-    }
-};
-
-class InitializingTestWithAudioRecording : public UseCase {
-    TestMethod *method;
-    const Test &test;
-
-  public:
-    InitializingTestWithAudioRecording(TestMethod *method, const Test &test)
-        : method{method}, test{test} {}
-
-    void run(RunningATestImpl &model) override {
-        model.initializeWithAudioRecording(method, test);
     }
 };
 
@@ -576,14 +561,13 @@ class RecognitionTestModelTests : public ::testing::Test {
     ModelObserverStub listener;
     TargetPlayerStub targetPlayer;
     MaskerPlayerStub maskerPlayer;
-    AudioRecorderStub audioRecorder;
     ResponseEvaluatorStub evaluator;
     OutputFileStub outputFile;
     RandomizerStub randomizer;
     EyeTrackerStub eyeTracker;
     ClockStub clock;
-    RunningATestImpl model{targetPlayer, maskerPlayer, audioRecorder, evaluator,
-        outputFile, randomizer, eyeTracker, clock};
+    RunningATestImpl model{targetPlayer, maskerPlayer, evaluator, outputFile,
+        randomizer, eyeTracker, clock};
     TestMethodStub testMethod;
     Calibration calibration{};
     PlayingCalibration playingCalibration{calibration, targetPlayer};
@@ -599,8 +583,6 @@ class RecognitionTestModelTests : public ::testing::Test {
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
         &testMethod};
     InitializingTestWithEyeTracking initializingTestWithEyeTracking{
-        &testMethod, test};
-    InitializingTestWithAudioRecording initializingTestWithAudioRecording{
         &testMethod, test};
     PlayingTrial playingTrial;
     SubmittingCoordinateResponse submittingCoordinateResponse;
@@ -828,12 +810,6 @@ RECOGNITION_TEST_MODEL_TEST(
         initializingTestWithEyeTracking);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithAudioRecordingClosesOutputFile_Opens_AndWritesTestInOrder) {
-    assertClosesOutputFileOpensAndWritesTestInOrder(
-        initializingTestWithAudioRecording);
-}
-
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
     run(initializingTest, model);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetPlayer.usingAllChannels());
@@ -862,21 +838,6 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithEyeTrackingClearsAllMaskerPlayerChannelDelays) {
     assertMaskerPlayerChannelDelaysCleared(initializingTestWithEyeTracking);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithAudioRecordingUsesAllMaskerPlayerChannels) {
-    assertUsesAllMaskerPlayerChannels(initializingTestWithAudioRecording);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithAudioRecordingUsesAllTargetPlayerChannels) {
-    assertUsesAllTargetPlayerChannels(initializingTestWithAudioRecording);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithAudioRecordingClearsAllMaskerPlayerChannelDelays) {
-    assertMaskerPlayerChannelDelaysCleared(initializingTestWithAudioRecording);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestClearsAllMaskerPlayerChannelDelays) {
@@ -974,12 +935,6 @@ RECOGNITION_TEST_MODEL_TEST(playTrialNotifiesObserverOfTrialAboutToBegin) {
     run(initializingTest, model);
     run(playingTrial, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, observer.trialNumber);
-}
-
-RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotInitializeRecorder) {
-    run(initializingTest, model);
-    run(playingTrial, model);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(audioRecorder.initialized());
 }
 
 RECOGNITION_TEST_MODEL_TEST(

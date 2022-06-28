@@ -271,12 +271,11 @@ static void saveOutputFileAndPrepareNextTrialAfter(
 }
 
 RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, AudioRecorder &audioRecorder,
-    ResponseEvaluator &evaluator, OutputFile &outputFile,
-    Randomizer &randomizer, EyeTracker &eyeTracker, Clock &clock)
+    MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
+    OutputFile &outputFile, Randomizer &randomizer, EyeTracker &eyeTracker,
+    Clock &clock)
     : eyeTracking{eyeTracker, maskerPlayer, targetPlayer, outputFile},
-      audioRecording{audioRecorder, outputFile}, observer{&nullObserver},
-      maskerPlayer{maskerPlayer},
+      observer{&nullObserver}, maskerPlayer{maskerPlayer},
       targetPlayer{targetPlayer}, evaluator{evaluator}, outputFile{outputFile},
       randomizer{randomizer}, clock{clock}, testMethod{&nullTestMethod} {
     targetPlayer.attach(this);
@@ -346,9 +345,7 @@ void RunningATestImpl::initializeWithEyeTracking(
 }
 
 void RunningATestImpl::initializeWithAudioRecording(
-    TestMethod *method, const Test &test) {
-    initialize_(method, test, &audioRecording);
-}
+    TestMethod *method, const Test &test) {}
 
 void RunningATestImpl::playTrial(const AudioSettings &settings) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);

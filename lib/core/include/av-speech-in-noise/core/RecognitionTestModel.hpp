@@ -2,7 +2,6 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_RECOGNITIONTESTMODELHPP_
 
 #include "Randomizer.hpp"
-#include "AudioRecording.hpp"
 #include "IMaskerPlayer.hpp"
 #include "IOutputFile.hpp"
 #include "IRecognitionTestModel.hpp"
@@ -27,8 +26,8 @@ class RunningATestImpl : public TargetPlayer::Observer,
                          public MaskerPlayer::Observer,
                          public RunningATest {
   public:
-    RunningATestImpl(TargetPlayer &, MaskerPlayer &, AudioRecorder &,
-        ResponseEvaluator &, OutputFile &, Randomizer &, EyeTracker &, Clock &);
+    RunningATestImpl(TargetPlayer &, MaskerPlayer &, ResponseEvaluator &,
+        OutputFile &, Randomizer &, EyeTracker &, Clock &);
     void attach(Model::Observer *) override;
     void initialize(
         TestMethod *, const Test &, RunningATest::Observer *) override;
@@ -60,7 +59,6 @@ class RunningATestImpl : public TargetPlayer::Observer,
     void seekRandomMaskerPosition();
 
     EyeTracking eyeTracking;
-    AudioRecording audioRecording;
     RunningATest::Observer *observer;
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
