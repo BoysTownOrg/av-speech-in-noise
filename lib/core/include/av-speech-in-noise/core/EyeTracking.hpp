@@ -22,7 +22,7 @@ class EyeTracker : public Writable {
 class EyeTracking : public RunningATest::Observer {
   public:
     EyeTracking(EyeTracker &, MaskerPlayer &, TargetPlayer &, OutputFile &);
-    void notifyThatNewTestIsReady(std::string_view session) override {}
+    void notifyThatNewTestIsReady(std::string_view session) override;
     void notifyThatTrialWillBegin(int trialNumber) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
     void notifyThatStimulusHasEnded() override;

@@ -48,4 +48,6 @@ void EyeTracking::notifyThatSubjectHasResponded() {
     outputFile.write(eyeTracker.gazeSamples());
     outputFile.save();
 }
+
+void EyeTracking::notifyThatNewTestIsReady(std::string_view session) {}
 }
