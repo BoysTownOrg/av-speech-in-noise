@@ -849,24 +849,6 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesTestIdentityToOutputFile(initializingTestWithEyeTracking);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithEyeTrackingAllocatesTrialDurationsWorthRecordingTimeForEyeTracking) {
-    assertAllocatesTrialDurationForEyeTracking(
-        initializingTestWithEyeTracking, playingTrial);
-}
-
-RECOGNITION_TEST_MODEL_TEST(playTrialForTestWithEyeTrackingStartsEyeTracking) {
-    run(initializingTestWithEyeTracking, model);
-    run(playingTrial, model);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(started(eyeTracker));
-}
-
-RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotStartEyeTracking) {
-    run(initializingTest, model);
-    run(playingTrial, model);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(started(eyeTracker));
-}
-
 RECOGNITION_TEST_MODEL_TEST(initializeTestNotifiesObserverOfNewTest) {
     test.identity.session = "smile";
     run(initializingTest, model);

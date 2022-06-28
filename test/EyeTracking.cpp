@@ -29,4 +29,9 @@ TEST_F(EyeTrackingTests,
             RunningATestImpl::targetOffsetFringeDuration.seconds,
         eyeTracker.recordingTimeAllocatedSeconds());
 }
+
+TEST_F(EyeTrackingTests, startsTrackerWhenTrialWillBegin) {
+    eyeTracking.notifyThatTrialWillBegin(1);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(eyeTracker.started());
+}
 }
