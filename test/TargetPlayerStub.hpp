@@ -2,7 +2,9 @@
 #define TESTS_TARGETPLAYERSTUB_HPP_
 
 #include "LogString.hpp"
-#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+
+#include <av-speech-in-noise/core/ITargetPlayer.hpp>
+
 #include <utility>
 #include <string>
 
