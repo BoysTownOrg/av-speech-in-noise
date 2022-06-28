@@ -257,7 +257,10 @@ class RunningATestObserverStub : public RunningATest::Observer {
         this->trialNumber = trialNumber;
     }
 
-    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
+    void notifyThatTargetWillPlayAt(
+        const PlayerTimeWithDelay &playerTimeWithDelay) override {
+        this->playerTimeWithDelay = playerTimeWithDelay;
+    }
 
     void notifyThatStimulusHasEnded() override {
         notifiedThatStimulusHasEnded = true;
@@ -267,6 +270,7 @@ class RunningATestObserverStub : public RunningATest::Observer {
         notifiedThatSubjectHasResponded = true;
     }
 
+    PlayerTimeWithDelay playerTimeWithDelay;
     std::string session;
     int trialNumber{};
     bool notifiedThatStimulusHasEnded{};
@@ -849,6 +853,20 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAt) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds,
         targetPlayer.timePlayedAt().delay.seconds);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    fadeInCompleteNotifiesObserverThatTargetWillPlayAt) {
+    run(initializingTest, model);
+    setSystemTime(fadeInCompleteTime, 1);
+    setSampleOffset(fadeInCompleteTime, 2);
+    setSampleRateHz(maskerPlayer, 3);
+    fadeInComplete(maskerPlayer, fadeInCompleteTime);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
+        observer.playerTimeWithDelay.playerTime.system);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds,
+        observer.playerTimeWithDelay.delay.seconds);
 }
 
 auto eyeTrackerTargetPlayerSynchronization(OutputFileStub &file)
