@@ -120,20 +120,6 @@ class InitializingTestWithDelayedMasker : public UseCase {
     TestMethod *method;
 };
 
-class InitializingTestWithEyeTracking : public UseCase {
-    TestMethod *method;
-    const Test &test;
-
-  public:
-    explicit InitializingTestWithEyeTracking(
-        TestMethod *method, const Test &test)
-        : method{method}, test{test} {}
-
-    void run(RunningATestImpl &model) override {
-        model.initializeWithEyeTracking(method, test);
-    }
-};
-
 class AudioDeviceUseCase : public virtual UseCase {
   public:
     virtual void setAudioDevice(std::string) = 0;
@@ -496,8 +482,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         &testMethod};
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
         &testMethod};
-    InitializingTestWithEyeTracking initializingTestWithEyeTracking{
-        &testMethod, test};
     PlayingTrial playingTrial;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     FreeResponse freeResponse{};
@@ -661,29 +645,10 @@ class RecognitionTestModelTests : public ::testing::Test {
             std::string{"a"}, maskerPlayer.filePath());
     }
 
-    void assertAllocatesTrialDurationForEyeTracking(
-        UseCase &initializing, UseCase &useCase) {
-        run(initializing, model);
-        setDurationSeconds(targetPlayer, 3);
-        setFadeTimeSeconds(maskerPlayer, 4);
-        run(useCase, model);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3 + 2 * 4. +
-                RunningATestImpl::targetOnsetFringeDuration.seconds +
-                RunningATestImpl::targetOffsetFringeDuration.seconds,
-            eyeTracker.recordingTimeAllocatedSeconds());
-    }
-
     void assertPlayTrialDoesNotAllocateRecordingTime(UseCase &useCase) {
         run(useCase, model);
         run(playingTrial, model);
         AV_SPEECH_IN_NOISE_EXPECT_FALSE(eyeTracker.recordingTimeAllocated());
-    }
-
-    void
-    assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
-        UseCase &useCase) {
-        run(initializingTestWithEyeTracking, model);
-        assertPlayTrialDoesNotAllocateRecordingTime(useCase);
     }
 };
 
@@ -718,12 +683,6 @@ RECOGNITION_TEST_MODEL_TEST(
         initializingTestWithDelayedMasker);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingClosesOutputFile_Opens_AndWritesTestInOrder) {
-    assertClosesOutputFileOpensAndWritesTestInOrder(
-        initializingTestWithEyeTracking);
-}
-
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
     run(initializingTest, model);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetPlayer.usingAllChannels());
@@ -737,21 +696,6 @@ RECOGNITION_TEST_MODEL_TEST(playingCalibrationUsesAllTargetPlayerChannels) {
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllMaskerPlayerChannels) {
     run(initializingTest, model);
     assertUsingAllChannels(maskerPlayer);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingUsesAllMaskerPlayerChannels) {
-    assertUsesAllMaskerPlayerChannels(initializingTestWithEyeTracking);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingUsesAllTargetPlayerChannels) {
-    assertUsesAllTargetPlayerChannels(initializingTestWithEyeTracking);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingClearsAllMaskerPlayerChannelDelays) {
-    assertMaskerPlayerChannelDelaysCleared(initializingTestWithEyeTracking);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestClearsAllMaskerPlayerChannelDelays) {
@@ -814,11 +758,6 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestOpensNewOutputFilePassingTestInformation) {
     assertPassesTestIdentityToOutputFile(initializingTest);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingOpensNewOutputFilePassingTestInformation) {
-    assertPassesTestIdentityToOutputFile(initializingTestWithEyeTracking);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestNotifiesObserverOfNewTest) {
@@ -922,17 +861,8 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesNextTargetToPlayer(initializingTest);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingPassesNextTargetToTargetPlayer) {
-    assertPassesNextTargetToPlayer(initializingTestWithEyeTracking);
-}
-
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestResetsTrialNumber) {
     assertYieldsTrialNumber(initializingTest, 1);
-}
-
-RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingResetsTrialNumber) {
-    assertYieldsTrialNumber(initializingTestWithEyeTracking, 1);
 }
 
 RECOGNITION_TEST_MODEL_TEST(returnsTargetFileName) {
@@ -1000,11 +930,6 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesMaskerFilePathToMaskerPlayer(initializingTest);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingPassesMaskerFilePathToMaskerPlayer) {
-    assertPassesMaskerFilePathToMaskerPlayer(initializingTestWithEyeTracking);
-}
-
 RECOGNITION_TEST_MODEL_TEST(initializeTestPassesMaskerFilePathToMaskerPlayer) {
     setMaskerFilePath(test, "a");
     run(initializingTest, model);
@@ -1023,12 +948,6 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestSeeksToRandomMaskerPositionWithinTrialDuration) {
     assertSeeksToRandomMaskerPositionWithinTrialDuration(initializingTest);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingSeeksToRandomMaskerPositionWithinTrialDuration) {
-    assertSeeksToRandomMaskerPositionWithinTrialDuration(
-        initializingTestWithEyeTracking);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
