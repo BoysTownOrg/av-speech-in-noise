@@ -10,6 +10,7 @@
 #include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <string>
+#include <string_view>
 
 namespace av_speech_in_noise {
 class EyeTracker : public Writable {
@@ -38,6 +39,7 @@ class AudioRecorder {
 class EyeTracking : public RunningATest::Observer {
   public:
     EyeTracking(EyeTracker &, MaskerPlayer &, TargetPlayer &, OutputFile &);
+    void notifyThatNewTestIsReady(std::string_view session) override {}
     void notifyThatTrialWillBegin(
         int trialNumber, std::string_view session) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
@@ -57,6 +59,9 @@ class EyeTracking : public RunningATest::Observer {
 class AudioRecording : public RunningATest::Observer {
   public:
     AudioRecording(AudioRecorder &, OutputFile &);
+    void notifyThatNewTestIsReady(std::string_view session) override {
+        this->session = session;
+    }
     void notifyThatTrialWillBegin(
         int trialNumber, std::string_view session) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
@@ -64,6 +69,7 @@ class AudioRecording : public RunningATest::Observer {
     void notifyThatSubjectHasResponded() override;
 
   private:
+    std::string session;
     AudioRecorder &audioRecorder;
     OutputFile &outputFile;
 };
@@ -100,7 +106,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
         targetOnsetFringeDuration};
 
   private:
-    void initialize_(TestMethod *, const Test &);
+    void initialize_(TestMethod *, const Test &, RunningATest::Observer *);
     void seekRandomMaskerPosition();
 
     EyeTracking eyeTracking;

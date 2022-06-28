@@ -23,6 +23,7 @@ class NullTestMethod : public TestMethod {
 };
 
 class NullObserver : public RunningATest::Observer {
+    void notifyThatNewTestIsReady(std::string_view session) override {}
     void notifyThatTrialWillBegin(int trialNumber, std::string_view) override {}
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
     void notifyThatStimulusHasEnded() override {}
@@ -352,10 +353,11 @@ void RunningATestImpl::attach(Model::Observer *listener) {
 }
 
 void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test);
+    initialize_(testMethod_, test, &nullObserver);
 }
 
-void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test) {
+void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test,
+    RunningATest::Observer *observer_) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     if (testMethod_->complete())
@@ -384,32 +386,32 @@ void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test) {
     useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
-    observer = &nullObserver;
+    observer = observer_;
 }
 
 void RunningATestImpl::initializeWithSingleSpeaker(
     TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test);
+    initialize_(testMethod_, test, &nullObserver);
     useFirstChannelOnly(targetPlayer);
     maskerPlayer.useFirstChannelOnly();
 }
 
 void RunningATestImpl::initializeWithDelayedMasker(
     TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test);
+    initialize_(testMethod_, test, &nullObserver);
     useFirstChannelOnly(targetPlayer);
     maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
 }
 
 void RunningATestImpl::initializeWithEyeTracking(
     TestMethod *method, const Test &test) {
-    initialize_(method, test);
+    initialize_(method, test, &eyeTracking);
     observer = &eyeTracking;
 }
 
 void RunningATestImpl::initializeWithAudioRecording(
     TestMethod *method, const Test &test) {
-    initialize_(method, test);
+    initialize_(method, test, &audioRecording);
     observer = &audioRecording;
 }
 
