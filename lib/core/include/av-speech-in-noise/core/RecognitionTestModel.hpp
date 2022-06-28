@@ -7,7 +7,6 @@
 #include "IRecognitionTestModel.hpp"
 #include "IResponseEvaluator.hpp"
 #include "ITargetPlayer.hpp"
-#include "EyeTracking.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
@@ -22,12 +21,14 @@ class Clock {
     virtual auto time() -> std::string = 0;
 };
 
+auto trialDuration(TargetPlayer &target, MaskerPlayer &masker) -> Duration;
+
 class RunningATestImpl : public TargetPlayer::Observer,
                          public MaskerPlayer::Observer,
                          public RunningATest {
   public:
     RunningATestImpl(TargetPlayer &, MaskerPlayer &, ResponseEvaluator &,
-        OutputFile &, Randomizer &, EyeTracker &, Clock &);
+        OutputFile &, Randomizer &, Clock &);
     void attach(Model::Observer *) override;
     void initialize(
         TestMethod *, const Test &, RunningATest::Observer *) override;

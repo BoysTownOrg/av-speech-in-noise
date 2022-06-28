@@ -272,8 +272,7 @@ static void saveOutputFileAndPrepareNextTrialAfter(
 
 RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
-    OutputFile &outputFile, Randomizer &randomizer, EyeTracker &eyeTracker,
-    Clock &clock)
+    OutputFile &outputFile, Randomizer &randomizer, Clock &clock)
     : observer{&nullObserver}, maskerPlayer{maskerPlayer},
       targetPlayer{targetPlayer}, evaluator{evaluator}, outputFile{outputFile},
       randomizer{randomizer}, clock{clock}, testMethod{&nullTestMethod} {

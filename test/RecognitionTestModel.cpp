@@ -5,7 +5,6 @@
 #include "RandomizerStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
-#include "EyeTrackerStub.hpp"
 #include "assert-utility.hpp"
 
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
@@ -407,10 +406,6 @@ auto maskerPlayerObserver(const RunningATestImpl &model)
     return &model;
 }
 
-void setEyeGazes(EyeTrackerStub &eyeTracker, BinocularGazeSamples g) {
-    eyeTracker.setGazes(std::move(g));
-}
-
 void runIgnoringFailure(UseCase &useCase, RunningATestImpl &model) {
     try {
         run(useCase, model);
@@ -426,25 +421,12 @@ void setFadeTimeSeconds(MaskerPlayerStub &player, double x) {
     player.setFadeTimeSeconds(x);
 }
 
-auto started(EyeTrackerStub &eyeTracker) -> bool {
-    return eyeTracker.started();
-}
-
-auto stopped(EyeTrackerStub &eyeTracker) -> bool {
-    return eyeTracker.stopped();
-}
-
 void setSystemTime(AudioSampleTimeWithOffset &time, player_system_time_type s) {
     time.playerTime.system = s;
 }
 
 void setNanosecondsFromPlayerTime(MaskerPlayerStub &player, std::uintmax_t t) {
     player.setNanosecondsFromPlayerTime(t);
-}
-
-void setCurrentSystemTimeMicroseconds(
-    EyeTrackerStub &eyeTracker, std::int_least64_t t) {
-    eyeTracker.setCurrentSystemTime({t});
 }
 
 void setSampleOffset(AudioSampleTimeWithOffset &time, gsl::index n) {
@@ -468,10 +450,9 @@ class RecognitionTestModelTests : public ::testing::Test {
     ResponseEvaluatorStub evaluator;
     OutputFileStub outputFile;
     RandomizerStub randomizer;
-    EyeTrackerStub eyeTracker;
     ClockStub clock;
-    RunningATestImpl model{targetPlayer, maskerPlayer, evaluator, outputFile,
-        randomizer, eyeTracker, clock};
+    RunningATestImpl model{
+        targetPlayer, maskerPlayer, evaluator, outputFile, randomizer, clock};
     TestMethodStub testMethod;
     Calibration calibration{};
     PlayingCalibration playingCalibration{calibration, targetPlayer};
@@ -647,12 +628,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"a"}, maskerPlayer.filePath());
-    }
-
-    void assertPlayTrialDoesNotAllocateRecordingTime(UseCase &useCase) {
-        run(useCase, model);
-        run(playingTrial, model);
-        AV_SPEECH_IN_NOISE_EXPECT_FALSE(eyeTracker.recordingTimeAllocated());
     }
 };
 

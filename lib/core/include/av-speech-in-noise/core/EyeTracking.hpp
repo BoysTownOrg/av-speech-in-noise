@@ -10,8 +10,6 @@
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
-auto trialDuration(TargetPlayer &target, MaskerPlayer &masker) -> Duration;
-
 class EyeTracker : public Writable {
   public:
     virtual void allocateRecordingTimeSeconds(double) = 0;

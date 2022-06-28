@@ -1,5 +1,7 @@
 #include "EyeTracking.hpp"
 
+#include "RecognitionTestModel.hpp"
+
 namespace av_speech_in_noise {
 static auto nanoseconds(Delay x) -> std::uintmax_t {
     return gsl::narrow_cast<std::uintmax_t>(x.seconds * 1e9);
