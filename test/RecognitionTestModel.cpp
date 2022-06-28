@@ -425,10 +425,6 @@ void setSystemTime(AudioSampleTimeWithOffset &time, player_system_time_type s) {
     time.playerTime.system = s;
 }
 
-void setNanosecondsFromPlayerTime(MaskerPlayerStub &player, std::uintmax_t t) {
-    player.setNanosecondsFromPlayerTime(t);
-}
-
 void setSampleOffset(AudioSampleTimeWithOffset &time, gsl::index n) {
     time.sampleOffset = n;
 }

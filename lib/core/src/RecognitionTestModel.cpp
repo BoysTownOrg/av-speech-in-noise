@@ -1,9 +1,7 @@
 #include "RecognitionTestModel.hpp"
-#include "IMaskerPlayer.hpp"
-#include "IOutputFile.hpp"
-#include "IRecognitionTestModel.hpp"
-#include "av-speech-in-noise/Model.hpp"
+
 #include <gsl/gsl>
+
 #include <cmath>
 #include <functional>
 #include <sstream>
@@ -60,8 +58,6 @@ static auto steadyLevelDuration(TargetPlayer &player) -> Duration {
 auto trialDuration(TargetPlayer &target, MaskerPlayer &masker) -> Duration {
     return totalrampDuration(masker) + steadyLevelDuration(target);
 }
-
-static void turnOff(bool &b) { b = false; }
 
 static void useFirstChannelOnly(TargetPlayer &player) {
     player.useFirstChannelOnly();
@@ -285,9 +281,9 @@ void RunningATestImpl::attach(Model::Observer *listener) {
 }
 
 void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
-    RunningATest::Observer *observer) {
+    RunningATest::Observer *observer_) {
     initialize_(
-        testMethod_, test, observer == nullptr ? &nullObserver : observer);
+        testMethod_, test, observer_ == nullptr ? &nullObserver : observer_);
 }
 
 void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test,
