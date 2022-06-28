@@ -371,7 +371,6 @@ void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test,
     fullScaleLevel_ = test.fullScaleLevel;
     maskerLevel_ = test.maskerLevel;
     condition = test.condition;
-    session = test.identity.session;
 
     hide(targetPlayer);
     maskerPlayer.apply(

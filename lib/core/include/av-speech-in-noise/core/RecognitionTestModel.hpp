@@ -117,7 +117,6 @@ class RunningATestImpl : public TargetPlayer::Observer,
     Randomizer &randomizer;
     Clock &clock;
     std::string playTrialTime_;
-    std::string session;
     Model::Observer *listener_{};
     TestMethod *testMethod{};
     RealLevel maskerLevel_{};
