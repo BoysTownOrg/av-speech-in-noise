@@ -3,6 +3,7 @@
 #include "MaskerPlayerStub.hpp"
 #include "EyeTrackerStub.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/core/Player.hpp"
 
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <av-speech-in-noise/core/EyeTracking.hpp>
@@ -45,5 +46,13 @@ TEST_F(EyeTrackingTests, startsTrackerAfterAllocatingRecordingTime) {
 TEST_F(EyeTrackingTests, stopsTrackerWhenStimulusHasEnded) {
     eyeTracking.notifyThatStimulusHasEnded();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(eyeTracker.stopped());
+}
+
+TEST_F(EyeTrackingTests, passesTargetStartSystemTimeForConversion) {
+    PlayerTimeWithDelay playerTime;
+    playerTime.playerTime.system = 1;
+    eyeTracking.notifyThatTargetWillPlayAt(playerTime);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
+        maskerPlayer.toNanosecondsSystemTime().at(0));
 }
 }

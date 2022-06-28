@@ -867,41 +867,6 @@ RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteNotifiesThatStimulusHasEnded) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatStimulusHasEnded);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForDefaultTestDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTime(initializingTest);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithDelayedMaskerDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTime(
-        initializingTestWithDelayedMasker);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithSingleSpeakerDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTime(
-        initializingTestWithSingleSpeaker);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForDefaultTestFollowingTestWithEyeTrackingDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
-        initializingTest);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithSingleSpeakerFollowingTestWithEyeTrackingDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
-        initializingTestWithSingleSpeaker);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithDelayedMaskerFollowingTestWithEyeTrackingDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
-        initializingTestWithDelayedMasker);
-}
-
 RECOGNITION_TEST_MODEL_TEST(playTrialCapturesTimeStampForEventualReporting) {
     run(initializingTest, model);
     run(playingTrial, model);
@@ -962,20 +927,7 @@ RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationPlaysMasker) {
     assertPlayed(maskerPlayer);
 }
 
-RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
-    run(initializingTestWithEyeTracking, model);
-    setSystemTime(fadeInCompleteTime, 1);
-    setSampleOffset(fadeInCompleteTime, 2);
-    setSampleRateHz(maskerPlayer, 3);
-    fadeInComplete(maskerPlayer, fadeInCompleteTime);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
-        targetPlayer.timePlayedAt().playerTime.system);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds,
-        targetPlayer.timePlayedAt().delay.seconds);
-}
-
-RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenNotEyeTracking) {
+RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAt) {
     run(initializingTest, model);
     setSystemTime(fadeInCompleteTime, 1);
     setSampleOffset(fadeInCompleteTime, 2);
@@ -986,15 +938,6 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenNotEyeTracking) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds,
         targetPlayer.timePlayedAt().delay.seconds);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    fadeInCompletePassesTargetStartSystemTimeForConversionWhenEyeTracking) {
-    run(initializingTestWithEyeTracking, model);
-    setSystemTime(fadeInCompleteTime, 1);
-    fadeInComplete(maskerPlayer, fadeInCompleteTime);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
-        maskerPlayer.toNanosecondsSystemTime().at(0));
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteStopsEyeTracker) {
