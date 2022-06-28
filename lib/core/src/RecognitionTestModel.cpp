@@ -344,9 +344,6 @@ void RunningATestImpl::initializeWithEyeTracking(
     initialize_(method, test, &eyeTracking);
 }
 
-void RunningATestImpl::initializeWithAudioRecording(
-    TestMethod *method, const Test &test) {}
-
 void RunningATestImpl::playTrial(const AudioSettings &settings) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
