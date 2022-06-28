@@ -1,4 +1,5 @@
 #include "Model.hpp"
+#include "IRecognitionTestModel.hpp"
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
@@ -10,17 +11,18 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     RepeatableFiniteTargetPlaylist &eachTargetNTimes,
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
-    RunningATest &model, OutputFile &outputFile, AudioRecorder &audioRecorder,
-    RunningATest::Observer &eyeTracking)
-    : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
+    RunningATest &model, OutputFile &outputFile,
+    RunningATest::Observer &audioRecording, RunningATest::Observer &eyeTracking)
+    : audioRecording{audioRecording}, eyeTracking{eyeTracking},
+      adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
       cyclicTargetsReader{cyclicTargetsReader},
       targetsWithReplacement{targetsWithReplacement},
       silentIntervalTargets{silentIntervalTargets},
       everyTargetOnce{everyTargetOnce},
       predeterminedTargets{predeterminedTargets},
-      eachTargetNTimes{eachTargetNTimes}, model{model}, outputFile{outputFile},
-      audioRecording{audioRecorder, outputFile}, eyeTracking{eyeTracking} {}
+      eachTargetNTimes{eachTargetNTimes}, model{model}, outputFile{outputFile} {
+}
 
 static void initialize(
     RunningATest &model, TestMethod &method, const Test &test) {

@@ -822,13 +822,13 @@ class ModelTests : public ::testing::Test {
     RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
     RecognitionTestModelStub internalModel{adaptiveMethod, fixedLevelMethod};
     OutputFileStub outputFile;
-    AudioRecorderStub audioRecorder;
+    RunningATestObserverStub audioRecording;
     RunningATestObserverStub eyeTracking;
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervals, everyTargetOnce,
         eachTargetNTimes, predeterminedTargets, internalModel, outputFile,
-        audioRecorder, eyeTracking};
+        audioRecording, eyeTracking};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes;
