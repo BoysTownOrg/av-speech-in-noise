@@ -41,4 +41,9 @@ TEST_F(EyeTrackingTests, startsTrackerAfterAllocatingRecordingTime) {
         std::string{"allocateRecordingTimeSeconds start "},
         string(eyeTracker.log()));
 }
+
+TEST_F(EyeTrackingTests, stopsTrackerWhenStimulusHasEnded) {
+    eyeTracking.notifyThatStimulusHasEnded();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(eyeTracker.stopped());
+}
 }

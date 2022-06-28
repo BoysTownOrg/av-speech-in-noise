@@ -861,20 +861,6 @@ RECOGNITION_TEST_MODEL_TEST(playTrialNotifiesObserverOfTrialAboutToBegin) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, observer.trialNumber);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    fadeOutCompleteForTestWithEyeTrackingStopsEyeTracking) {
-    run(initializingTestWithEyeTracking, model);
-    fadeOutComplete(maskerPlayer);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(stopped(eyeTracker));
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    fadeOutCompleteForDefaultTestDoesNotStopEyeTracking) {
-    run(initializingTest, model);
-    fadeOutComplete(maskerPlayer);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(stopped(eyeTracker));
-}
-
 RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteNotifiesThatStimulusHasEnded) {
     run(initializingTest, model);
     fadeOutComplete(maskerPlayer);
