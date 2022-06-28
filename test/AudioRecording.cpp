@@ -14,8 +14,9 @@ class AudioRecordingTests : public ::testing::Test {
     AudioRecording audioRecording{audioRecorder, outputFile};
 };
 
-TEST_F(AudioRecordingTests,
-    playTrialForTestWithAudioRecordingInitializesRecorder) {
+#define AUDIO_RECORDING_TEST(a) TEST_F(AudioRecordingTests, a)
+
+AUDIO_RECORDING_TEST(initializesRecorderWhenTrialWillBegin) {
     outputFile.setParentPath("/Users/user/data");
     audioRecording.notifyThatNewTestIsReady("smile");
     audioRecording.notifyThatTrialWillBegin(3);
@@ -23,12 +24,12 @@ TEST_F(AudioRecordingTests,
         "/Users/user/data/3-smile.wav", audioRecorder.fileUrl().path);
 }
 
-TEST_F(AudioRecordingTests, startsRecordingWhenStimulusEnds) {
+AUDIO_RECORDING_TEST(startsRecordingWhenStimulusEnds) {
     audioRecording.notifyThatStimulusHasEnded();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.started());
 }
 
-TEST_F(AudioRecordingTests, stopsRecordingWhenSubjectResponds) {
+AUDIO_RECORDING_TEST(stopsRecordingWhenSubjectResponds) {
     audioRecording.notifyThatSubjectHasResponded();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.stopped());
 }

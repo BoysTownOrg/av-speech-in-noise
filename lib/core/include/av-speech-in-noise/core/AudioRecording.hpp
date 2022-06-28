@@ -20,9 +20,7 @@ class AudioRecorder {
 class AudioRecording : public RunningATest::Observer {
   public:
     AudioRecording(AudioRecorder &, OutputFile &);
-    void notifyThatNewTestIsReady(std::string_view session) override {
-        this->session = session;
-    }
+    void notifyThatNewTestIsReady(std::string_view session) override;
     void notifyThatTrialWillBegin(int trialNumber) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
     void notifyThatStimulusHasEnded() override;
