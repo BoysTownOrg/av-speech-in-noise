@@ -940,13 +940,6 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAt) {
         targetPlayer.timePlayedAt().delay.seconds);
 }
 
-RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteStopsEyeTracker) {
-    run(initializingTestWithEyeTracking, model);
-    fadeOutComplete(maskerPlayer);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"stop "}, string(eyeTracker.log()));
-}
-
 RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseWritesEyeGazes) {
     run(initializingTestWithEyeTracking, model);
     setEyeGazes(eyeTracker,
