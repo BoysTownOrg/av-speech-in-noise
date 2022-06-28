@@ -22,4 +22,9 @@ TEST_F(AudioRecordingTests,
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "/Users/user/data/3-smile.wav", audioRecorder.fileUrl().path);
 }
+
+TEST_F(AudioRecordingTests, startsRecordingWhenStimulusEnds) {
+    audioRecording.notifyThatStimulusHasEnded();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.started());
+}
 }

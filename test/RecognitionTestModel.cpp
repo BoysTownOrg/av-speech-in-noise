@@ -367,15 +367,25 @@ class RunningATestObserverStub : public RunningATest::Observer {
     void notifyThatNewTestIsReady(std::string_view session) override {
         this->session = session;
     }
+
     void notifyThatTrialWillBegin(int trialNumber) override {
         this->trialNumber = trialNumber;
     }
+
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
-    void notifyThatStimulusHasEnded() override {}
-    void notifyThatSubjectHasResponded() override {}
+
+    void notifyThatStimulusHasEnded() override {
+        notifiedThatStimulusHasEnded = true;
+    }
+
+    void notifyThatSubjectHasResponded() override {
+        notifiedThatSubjectHasResponded = true;
+    }
 
     std::string session;
-    int trialNumber;
+    int trialNumber{};
+    bool notifiedThatStimulusHasEnded{};
+    bool notifiedThatSubjectHasResponded{};
 };
 
 void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel.dB_SPL = x; }
