@@ -1,5 +1,6 @@
 #include "Model.hpp"
 #include "AudioRecording.hpp"
+#include "IRecognitionTestModel.hpp"
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
@@ -63,9 +64,9 @@ static void initializeWithEyeTracking(
     model.initializeWithEyeTracking(&method, test);
 }
 
-static void initializeWithAudioRecording(
-    RunningATest &model, TestMethod &method, const Test &test) {
-    model.initializeWithAudioRecording(&method, test);
+static void initializeWithAudioRecording(RunningATest &model,
+    TestMethod &method, const Test &test, RunningATest::Observer *observer) {
+    model.initialize(&method, test, observer);
 }
 
 void ModelImpl::initializeWithTargetReplacement(
@@ -110,7 +111,7 @@ void ModelImpl::initializeWithAllTargetsAndAudioRecording(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
     av_speech_in_noise::initializeWithAudioRecording(
-        model, fixedLevelMethod, test);
+        model, fixedLevelMethod, test, &audioRecording);
 }
 
 void ModelImpl::initializeWithPredeterminedTargetsAndAudioRecording(
@@ -118,7 +119,7 @@ void ModelImpl::initializeWithPredeterminedTargetsAndAudioRecording(
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, predeterminedTargets);
     av_speech_in_noise::initializeWithAudioRecording(
-        model, fixedLevelMethod, test);
+        model, fixedLevelMethod, test, &audioRecording);
 }
 
 void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &test) {
