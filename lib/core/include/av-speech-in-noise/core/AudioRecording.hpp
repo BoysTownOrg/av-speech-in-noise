@@ -3,6 +3,7 @@
 
 #include "IRecognitionTestModel.hpp"
 #include "IOutputFile.hpp"
+#include "FileSystemPath.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 
@@ -19,7 +20,7 @@ class AudioRecorder {
 
 class AudioRecording : public RunningATest::Observer {
   public:
-    AudioRecording(AudioRecorder &, OutputFile &);
+    AudioRecording(AudioRecorder &, OutputFile &, TimeStamp &);
     void notifyThatNewTestIsReady(std::string_view session) override;
     void notifyThatTrialWillBegin(int trialNumber) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
@@ -30,6 +31,7 @@ class AudioRecording : public RunningATest::Observer {
     std::string session;
     AudioRecorder &audioRecorder;
     OutputFile &outputFile;
+    TimeStamp &timeStamp;
 };
 }
 
