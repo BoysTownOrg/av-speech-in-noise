@@ -1,20 +1,32 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_IRECOGNITIONTESTMODELHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_IRECOGNITIONTESTMODELHPP_
 
-#include "TestMethod.hpp"
+#include "Player.hpp"
 #include "IModel.hpp"
+#include "TestMethod.hpp"
+
 #include <string>
+#include <string_view>
 
 namespace av_speech_in_noise {
-class RecognitionTestModel {
+class RunningATest {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RecognitionTestModel);
-    virtual void attach(Model::Observer *) = 0;
-    virtual void initialize(TestMethod *, const Test &) = 0;
+    class Observer {
+      public:
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
+        virtual void notifyThatNewTestIsReady(std::string_view session) = 0;
+        virtual void notifyThatTrialWillBegin(int trialNumber) = 0;
+        virtual void notifyThatTargetWillPlayAt(
+            const PlayerTimeWithDelay &) = 0;
+        virtual void notifyThatStimulusHasEnded() = 0;
+        virtual void notifyThatSubjectHasResponded() = 0;
+    };
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATest);
+    virtual void attach(RunningATestFacade::Observer *) = 0;
+    virtual void initialize(
+        TestMethod *, const Test &, Observer * = nullptr) = 0;
     virtual void initializeWithSingleSpeaker(TestMethod *, const Test &) = 0;
     virtual void initializeWithDelayedMasker(TestMethod *, const Test &) = 0;
-    virtual void initializeWithEyeTracking(TestMethod *, const Test &) = 0;
-    virtual void initializeWithAudioRecording(TestMethod *, const Test &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playLeftSpeakerCalibration(const Calibration &) = 0;

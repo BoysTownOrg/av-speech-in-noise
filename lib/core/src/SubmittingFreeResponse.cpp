@@ -2,8 +2,8 @@
 #include <filesystem>
 
 namespace av_speech_in_noise::submitting_free_response {
-InteractorImpl::InteractorImpl(FixedLevelMethod &method,
-    RecognitionTestModel &model, OutputFile &outputFile)
+InteractorImpl::InteractorImpl(
+    FixedLevelMethod &method, RunningATest &model, OutputFile &outputFile)
     : method{method}, model{model}, outputFile{outputFile} {}
 
 void InteractorImpl::submit(const FreeResponse &response) {

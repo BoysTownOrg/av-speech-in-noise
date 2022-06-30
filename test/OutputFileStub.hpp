@@ -2,14 +2,16 @@
 #define TESTS_OUTPUTFILESTUB_HPP_
 
 #include "LogString.hpp"
+
 #include <av-speech-in-noise/core/IOutputFile.hpp>
+
 #include <filesystem>
 #include <string>
 
 namespace av_speech_in_noise {
 class OutputFileStub : public OutputFile {
   public:
-    auto parentPath() -> std::filesystem::path { return parentPath_; }
+    auto parentPath() -> std::filesystem::path override { return parentPath_; }
 
     void setParentPath(std::filesystem::path path) {
         parentPath_ = std::move(path);

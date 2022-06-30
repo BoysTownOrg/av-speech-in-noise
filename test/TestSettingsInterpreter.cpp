@@ -82,9 +82,10 @@ auto fixedLevelTestWithEachTargetNTimes(ModelStub &m)
     return m.fixedLevelTestWithEachTargetNTimes();
 }
 
-void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
-    SessionController &sessionController, const std::vector<std::string> &v,
-    int startingSnr = {}, const TestIdentity &identity = {}) {
+void initialize(TestSettingsInterpreterImpl &interpreter,
+    RunningATestFacade &model, SessionController &sessionController,
+    const std::vector<std::string> &v, int startingSnr = {},
+    const TestIdentity &identity = {}) {
     interpreter.initialize(
         model, sessionController, concatenate(v), identity, SNR{startingSnr});
 }
@@ -140,8 +141,8 @@ void assertPassesSimpleFixedLevelSettings(
         fixedLevelTest(model).fullScaleLevel.dB_SPL);
 }
 
-void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
-    SessionController &sessionController, Method m,
+void initialize(TestSettingsInterpreterImpl &interpreter,
+    RunningATestFacade &model, SessionController &sessionController, Method m,
     const TestIdentity &identity = {}, int startingSnr = {}) {
     initialize(interpreter, model, sessionController,
         {entryWithNewline(TestSetting::method, m)}, startingSnr, identity);

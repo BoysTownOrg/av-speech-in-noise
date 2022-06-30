@@ -17,8 +17,8 @@ class TestSettingsInterpreter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
         TestSettingsInterpreter);
-    virtual void initialize(Model &, SessionController &, const std::string &,
-        const TestIdentity &, SNR) = 0;
+    virtual void initialize(RunningATestFacade &, SessionController &,
+        const std::string &, const TestIdentity &, SNR) = 0;
     virtual auto calibration(const std::string &) -> Calibration = 0;
 };
 
@@ -40,7 +40,7 @@ constexpr auto name(Transducer c) -> const char * {
 class TestSetupController : public TestSetupControl::Observer {
   public:
     TestSetupController(TestSetupControl &, SessionController &,
-        SessionControl &, TestSetupPresenter &, Model &,
+        SessionControl &, TestSetupPresenter &, RunningATestFacade &,
         TestSettingsInterpreter &, TextFileReader &);
     void notifyThatConfirmButtonHasBeenClicked() override;
     void notifyThatPlayCalibrationButtonHasBeenClicked() override;
@@ -52,7 +52,7 @@ class TestSetupController : public TestSetupControl::Observer {
     SessionController &sessionController;
     SessionControl &sessionControl;
     TestSetupPresenter &presenter;
-    Model &model;
+    RunningATestFacade &model;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
 };

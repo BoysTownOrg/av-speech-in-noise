@@ -5,7 +5,7 @@
 namespace av_speech_in_noise {
 TestSetupController::TestSetupController(TestSetupControl &control,
     SessionController &sessionController, SessionControl &sessionControl,
-    TestSetupPresenter &presenter, Model &model,
+    TestSetupPresenter &presenter, RunningATestFacade &model,
     TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader)
     : control{control}, sessionController{sessionController},

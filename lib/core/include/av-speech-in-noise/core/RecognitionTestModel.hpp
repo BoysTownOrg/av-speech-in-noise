@@ -2,51 +2,38 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_RECOGNITIONTESTMODELHPP_
 
 #include "Randomizer.hpp"
+#include "IMaskerPlayer.hpp"
+#include "IOutputFile.hpp"
+#include "IRecognitionTestModel.hpp"
 #include "IResponseEvaluator.hpp"
 #include "ITargetPlayer.hpp"
-#include "IMaskerPlayer.hpp"
-#include "IRecognitionTestModel.hpp"
-#include "IOutputFile.hpp"
-#include "av-speech-in-noise/Model.hpp"
+
 #include <av-speech-in-noise/Interface.hpp>
+#include <av-speech-in-noise/Model.hpp>
+
 #include <string>
+#include <string_view>
 
 namespace av_speech_in_noise {
-class EyeTracker : public Writable {
-  public:
-    virtual void allocateRecordingTimeSeconds(double) = 0;
-    virtual void start() = 0;
-    virtual void stop() = 0;
-    virtual auto gazeSamples() -> BinocularGazeSamples = 0;
-    virtual auto currentSystemTime() -> EyeTrackerSystemTime = 0;
-};
-
 class Clock {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Clock);
     virtual auto time() -> std::string = 0;
 };
 
-class AudioRecorder {
-  public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(AudioRecorder);
-    virtual void initialize(const LocalUrl &) = 0;
-    virtual void start() = 0;
-    virtual void stop() = 0;
-};
+auto trialDuration(TargetPlayer &target, MaskerPlayer &masker) -> Duration;
 
-class RecognitionTestModelImpl : public TargetPlayer::Observer,
-                                 public MaskerPlayer::Observer,
-                                 public RecognitionTestModel {
+class RunningATestImpl : public TargetPlayer::Observer,
+                         public MaskerPlayer::Observer,
+                         public RunningATest {
   public:
-    RecognitionTestModelImpl(TargetPlayer &, MaskerPlayer &, AudioRecorder &,
-        ResponseEvaluator &, OutputFile &, Randomizer &, EyeTracker &, Clock &);
-    void attach(Model::Observer *) override;
-    void initialize(TestMethod *, const Test &) override;
+    RunningATestImpl(TargetPlayer &, MaskerPlayer &, ResponseEvaluator &,
+        OutputFile &, Randomizer &, Clock &);
+    void attach(RunningATestFacade::Observer *) override;
+    void initialize(
+        TestMethod *, const Test &, RunningATest::Observer *) override;
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
     void initializeWithDelayedMasker(TestMethod *, const Test &) override;
-    void initializeWithEyeTracking(TestMethod *, const Test &) override;
-    void initializeWithAudioRecording(TestMethod *, const Test &) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
     void playLeftSpeakerCalibration(const Calibration &) override;
@@ -67,30 +54,23 @@ class RecognitionTestModelImpl : public TargetPlayer::Observer,
         targetOnsetFringeDuration};
 
   private:
-    void initialize_(TestMethod *, const Test &);
+    void initialize_(TestMethod *, const Test &, RunningATest::Observer *);
     void seekRandomMaskerPosition();
 
+    RunningATest::Observer *observer;
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
-    AudioRecorder &audioRecorder;
     ResponseEvaluator &evaluator;
     OutputFile &outputFile;
     Randomizer &randomizer;
-    EyeTracker &eyeTracker;
     Clock &clock;
-    EyeTrackerTargetPlayerSynchronization
-        lastEyeTrackerTargetPlayerSynchronization{};
-    TargetStartTime lastTargetStartTime{};
     std::string playTrialTime_;
-    std::string session;
-    Model::Observer *listener_{};
+    RunningATestFacade::Observer *listener_{};
     TestMethod *testMethod{};
     RealLevel maskerLevel_{};
     RealLevel fullScaleLevel_{};
     int trialNumber_{};
     Condition condition{};
-    bool eyeTracking{};
-    bool audioRecordingEnabled{};
     bool trialInProgress_{};
 };
 }

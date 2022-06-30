@@ -2,9 +2,9 @@
 #include "ModelObserverStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
+#include "AudioRecorderStub.hpp"
 #include "assert-utility.hpp"
 
-#include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
@@ -23,6 +23,19 @@ static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
     -> bool {
     return a.targetsUrl.path == b.targetsUrl.path && a.threshold == b.threshold;
 }
+
+class RunningATestObserverStub : public RunningATest::Observer {
+  public:
+    void notifyThatNewTestIsReady(std::string_view session) override {}
+
+    void notifyThatTrialWillBegin(int trialNumber) override {}
+
+    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
+
+    void notifyThatStimulusHasEnded() override {}
+
+    void notifyThatSubjectHasResponded() override {}
+};
 
 namespace {
 class AdaptiveMethodStub : public AdaptiveMethod {
@@ -198,7 +211,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     bool submittedFreeResponse_{};
 };
 
-class RecognitionTestModelStub : public RecognitionTestModel {
+class RecognitionTestModelStub : public RunningATest {
   public:
     explicit RecognitionTestModelStub(AdaptiveMethodStub &adaptiveMethod,
         FixedLevelMethodStub &fixedLevelMethodStub)
@@ -216,9 +229,11 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         fixedLevelMethodStub.log("TOOLATE ");
     }
 
-    void initialize(TestMethod *method, const Test &test) override {
+    void initialize(
+        TestMethod *method, const Test &test, Observer *observer) override {
         testMethod_ = method;
         test_ = &test;
+        this->observer = observer;
     }
 
     void initializeWithSingleSpeaker(
@@ -233,19 +248,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         testMethod_ = method;
         test_ = &test;
         initializedWithDelayedMasker_ = true;
-    }
-
-    void initializeWithEyeTracking(
-        TestMethod *method, const Test &test) override {
-        testMethod_ = method;
-        test_ = &test;
-        initializedWithEyeTracking_ = true;
-    }
-
-    void initializeWithAudioRecording(
-        TestMethod *method, const Test &test) override {
-        testMethod_ = method;
-        test_ = &test;
     }
 
     auto trialNumber() -> int override { return trialNumber_; }
@@ -268,7 +270,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         return audioDevices_;
     }
 
-    void attach(Model::Observer *e) override { listener_ = e; }
+    void attach(RunningATestFacade::Observer *e) override { listener_ = e; }
 
     void playCalibration(const Calibration &c) override { calibration_ = &c; }
 
@@ -286,10 +288,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     [[nodiscard]] auto initializedWithDelayedMasker() const -> bool {
         return initializedWithDelayedMasker_;
-    }
-
-    [[nodiscard]] auto initializedWithEyeTracking() const -> bool {
-        return initializedWithEyeTracking_;
     }
 
     [[nodiscard]] auto coordinateResponse() const {
@@ -324,13 +322,15 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void setPlayTrialTime(std::string s) { playTrialTime_ = std::move(s); }
 
+    const Observer *observer{};
+
   private:
     std::vector<std::string> audioDevices_{};
     std::string targetFileName_{};
     std::string playTrialTime_;
     AdaptiveMethodStub &adaptiveMethod;
     FixedLevelMethodStub &fixedLevelMethodStub;
-    const Model::Observer *listener_{};
+    const RunningATestFacade::Observer *listener_{};
     const Calibration *calibration_{};
     const Calibration *leftSpeakerCalibration_{};
     const Calibration *rightSpeakerCalibration_{};
@@ -342,77 +342,82 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
-    bool initializedWithEyeTracking_{};
     bool nextTrialPreparedIfNeeded_{};
 };
 
 class InitializingTestUseCase {
   public:
     virtual ~InitializingTestUseCase() = default;
-    virtual void run(ModelImpl &) = 0;
+    virtual void run(RunningATestFacadeImpl &) = 0;
     virtual auto test() -> const Test & = 0;
     virtual auto testMethod() -> const TestMethod * = 0;
 };
 
 class InitializingFixedLevelTest : public virtual InitializingTestUseCase {
   public:
-    virtual void run(ModelImpl &model, const FixedLevelTest &test) = 0;
+    virtual void run(
+        RunningATestFacadeImpl &model, const FixedLevelTest &test) = 0;
 };
 
 class InitializingFixedLevelFixedTrialsTest
     : public virtual InitializingTestUseCase {
   public:
-    virtual void run(
-        ModelImpl &model, const FixedLevelFixedTrialsTest &test) = 0;
+    virtual void run(RunningATestFacadeImpl &model,
+        const FixedLevelFixedTrialsTest &test) = 0;
 };
 
 class InitializingAdaptiveTest : public virtual InitializingTestUseCase {
   public:
-    virtual void run(ModelImpl &model, const AdaptiveTest &test) = 0;
+    virtual void run(
+        RunningATestFacadeImpl &model, const AdaptiveTest &test) = 0;
 };
 
-void initialize(ModelImpl &model, const AdaptiveTest &test) {
+void initialize(RunningATestFacadeImpl &model, const AdaptiveTest &test) {
     model.initialize(test);
 }
 
 void initializeWithTargetReplacement(
-    ModelImpl &model, const FixedLevelFixedTrialsTest &test) {
+    RunningATestFacadeImpl &model, const FixedLevelFixedTrialsTest &test) {
     model.initializeWithTargetReplacement(test);
 }
 
-void initializeWithSingleSpeaker(ModelImpl &model, const AdaptiveTest &test) {
+void initializeWithSingleSpeaker(
+    RunningATestFacadeImpl &model, const AdaptiveTest &test) {
     model.initializeWithSingleSpeaker(test);
 }
 
-void initializeWithDelayedMasker(ModelImpl &model, const AdaptiveTest &test) {
+void initializeWithDelayedMasker(
+    RunningATestFacadeImpl &model, const AdaptiveTest &test) {
     model.initializeWithDelayedMasker(test);
 }
 
-void initializeWithCyclicTargets(ModelImpl &model, const AdaptiveTest &test) {
+void initializeWithCyclicTargets(
+    RunningATestFacadeImpl &model, const AdaptiveTest &test) {
     model.initializeWithCyclicTargets(test);
 }
 
 void initializeWithCyclicTargetsAndEyeTracking(
-    ModelImpl &model, const AdaptiveTest &test) {
+    RunningATestFacadeImpl &model, const AdaptiveTest &test) {
     model.initializeWithCyclicTargetsAndEyeTracking(test);
 }
 
 void initializeWithSilentIntervalTargets(
-    ModelImpl &model, const FixedLevelTest &test) {
+    RunningATestFacadeImpl &model, const FixedLevelTest &test) {
     model.initializeWithSilentIntervalTargets(test);
 }
 
 void initializeWithTargetReplacementAndEyeTracking(
-    ModelImpl &model, const FixedLevelFixedTrialsTest &test) {
+    RunningATestFacadeImpl &model, const FixedLevelFixedTrialsTest &test) {
     model.initializeWithTargetReplacementAndEyeTracking(test);
 }
 
 void initializeWithSilentIntervalTargetsAndEyeTracking(
-    ModelImpl &model, const FixedLevelTest &test) {
+    RunningATestFacadeImpl &model, const FixedLevelTest &test) {
     model.initializeWithSilentIntervalTargetsAndEyeTracking(test);
 }
 
-void initializeWithEyeTracking(ModelImpl &model, const AdaptiveTest &test) {
+void initializeWithEyeTracking(
+    RunningATestFacadeImpl &model, const AdaptiveTest &test) {
     model.initializeWithEyeTracking(test);
 }
 
@@ -424,9 +429,11 @@ class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
     explicit InitializingDefaultAdaptiveTest(AdaptiveMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override { initialize(model, test_); }
+    void run(RunningATestFacadeImpl &model) override {
+        initialize(model, test_);
+    }
 
-    void run(ModelImpl &model, const AdaptiveTest &test) override {
+    void run(RunningATestFacadeImpl &model, const AdaptiveTest &test) override {
         initialize(model, test);
     }
 
@@ -444,11 +451,11 @@ class InitializingAdaptiveTestWithEyeTracking
     explicit InitializingAdaptiveTestWithEyeTracking(AdaptiveMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
+    void run(RunningATestFacadeImpl &model) override {
         initializeWithEyeTracking(model, test_);
     }
 
-    void run(ModelImpl &model, const AdaptiveTest &test) override {
+    void run(RunningATestFacadeImpl &model, const AdaptiveTest &test) override {
         initializeWithEyeTracking(model, test);
     }
 
@@ -467,11 +474,11 @@ class InitializingAdaptiveTestWithSingleSpeaker
         AdaptiveMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
+    void run(RunningATestFacadeImpl &model) override {
         initializeWithSingleSpeaker(model, test_);
     }
 
-    void run(ModelImpl &model, const AdaptiveTest &test) override {
+    void run(RunningATestFacadeImpl &model, const AdaptiveTest &test) override {
         initializeWithSingleSpeaker(model, test);
     }
 
@@ -490,11 +497,11 @@ class InitializingAdaptiveTestWithDelayedMasker
         AdaptiveMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
+    void run(RunningATestFacadeImpl &model) override {
         initializeWithDelayedMasker(model, test_);
     }
 
-    void run(ModelImpl &model, const AdaptiveTest &test) override {
+    void run(RunningATestFacadeImpl &model, const AdaptiveTest &test) override {
         initializeWithDelayedMasker(model, test);
     }
 
@@ -513,11 +520,11 @@ class InitializingAdaptiveTestWithCyclicTargets
         AdaptiveMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
+    void run(RunningATestFacadeImpl &model) override {
         initializeWithCyclicTargets(model, test_);
     }
 
-    void run(ModelImpl &model, const AdaptiveTest &test) override {
+    void run(RunningATestFacadeImpl &model, const AdaptiveTest &test) override {
         initializeWithCyclicTargets(model, test);
     }
 
@@ -536,11 +543,11 @@ class InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking
         AdaptiveMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
+    void run(RunningATestFacadeImpl &model) override {
         initializeWithCyclicTargetsAndEyeTracking(model, test_);
     }
 
-    void run(ModelImpl &model, const AdaptiveTest &test) override {
+    void run(RunningATestFacadeImpl &model, const AdaptiveTest &test) override {
         initializeWithCyclicTargetsAndEyeTracking(model, test);
     }
 
@@ -559,11 +566,12 @@ class InitializingFixedLevelTestWithTargetReplacement
         FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
+    void run(RunningATestFacadeImpl &model) override {
         initializeWithTargetReplacement(model, test_);
     }
 
-    void run(ModelImpl &model, const FixedLevelFixedTrialsTest &test) override {
+    void run(RunningATestFacadeImpl &model,
+        const FixedLevelFixedTrialsTest &test) override {
         initializeWithTargetReplacement(model, test);
     }
 
@@ -582,11 +590,12 @@ class InitializingFixedLevelTestWithSilentIntervalTargets
         FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
+    void run(RunningATestFacadeImpl &model) override {
         initializeWithSilentIntervalTargets(model, test_);
     }
 
-    void run(ModelImpl &model, const FixedLevelTest &test) override {
+    void run(
+        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
         initializeWithSilentIntervalTargets(model, test);
     }
 
@@ -605,11 +614,12 @@ class InitializingFixedLevelTestWithTargetReplacementAndEyeTracking
         FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
+    void run(RunningATestFacadeImpl &model) override {
         initializeWithTargetReplacementAndEyeTracking(model, test_);
     }
 
-    void run(ModelImpl &model, const FixedLevelFixedTrialsTest &test) override {
+    void run(RunningATestFacadeImpl &model,
+        const FixedLevelFixedTrialsTest &test) override {
         initializeWithTargetReplacementAndEyeTracking(model, test);
     }
 
@@ -628,11 +638,12 @@ class InitializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking
         FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
+    void run(RunningATestFacadeImpl &model) override {
         initializeWithSilentIntervalTargetsAndEyeTracking(model, test_);
     }
 
-    void run(ModelImpl &model, const FixedLevelTest &test) override {
+    void run(
+        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
         initializeWithSilentIntervalTargetsAndEyeTracking(model, test);
     }
 
@@ -651,11 +662,12 @@ class InitializingFixedLevelTestWithAllTargets
         FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
+    void run(RunningATestFacadeImpl &model) override {
         model.initializeWithAllTargets(test_);
     }
 
-    void run(ModelImpl &model, const FixedLevelTest &test) override {
+    void run(
+        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
         model.initializeWithAllTargets(test);
     }
 
@@ -674,11 +686,12 @@ class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
         FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
+    void run(RunningATestFacadeImpl &model) override {
         model.initializeWithAllTargetsAndEyeTracking(test_);
     }
 
-    void run(ModelImpl &model, const FixedLevelTest &test) override {
+    void run(
+        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
         model.initializeWithAllTargetsAndEyeTracking(test);
     }
 
@@ -697,9 +710,12 @@ class InitializingFixedLevelTestWithEachTargetNTimes
         FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override { model.initialize(test_); }
+    void run(RunningATestFacadeImpl &model) override {
+        model.initialize(test_);
+    }
 
-    void run(ModelImpl &model, const FixedLevelTestWithEachTargetNTimes &test) {
+    void run(RunningATestFacadeImpl &model,
+        const FixedLevelTestWithEachTargetNTimes &test) {
         model.initialize(test);
     }
 
@@ -718,11 +734,12 @@ class InitializingFixedLevelTestWithAllTargetsAndAudioRecording
         FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
+    void run(RunningATestFacadeImpl &model) override {
         model.initializeWithAllTargetsAndAudioRecording(test_);
     }
 
-    void run(ModelImpl &model, const FixedLevelTest &test) override {
+    void run(
+        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
         model.initializeWithAllTargetsAndAudioRecording(test);
     }
 
@@ -741,11 +758,12 @@ class InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording
         FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
+    void run(RunningATestFacadeImpl &model) override {
         model.initializeWithPredeterminedTargetsAndAudioRecording(test_);
     }
 
-    void run(ModelImpl &model, const FixedLevelTest &test) override {
+    void run(
+        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
         model.initializeWithPredeterminedTargetsAndAudioRecording(test);
     }
 
@@ -754,21 +772,22 @@ class InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
-    return m.initializedWithEyeTracking();
+auto initializedWithEyeTracking(
+    RecognitionTestModelStub &m, RunningATest::Observer *observer) -> bool {
+    return m.observer == observer;
 }
 
 class PlayingCalibrationUseCase {
   public:
     virtual ~PlayingCalibrationUseCase() = default;
-    virtual void run(Model &model, const Calibration &c) = 0;
+    virtual void run(RunningATestFacade &model, const Calibration &c) = 0;
     virtual auto calibration(RecognitionTestModelStub &model)
         -> const Calibration * = 0;
 };
 
 class PlayingCalibration : public PlayingCalibrationUseCase {
   public:
-    void run(Model &model, const Calibration &c) override {
+    void run(RunningATestFacade &model, const Calibration &c) override {
         model.playCalibration(c);
     }
 
@@ -780,7 +799,7 @@ class PlayingCalibration : public PlayingCalibrationUseCase {
 
 class PlayingLeftSpeakerCalibration : public PlayingCalibrationUseCase {
   public:
-    void run(Model &model, const Calibration &c) override {
+    void run(RunningATestFacade &model, const Calibration &c) override {
         model.playLeftSpeakerCalibration(c);
     }
 
@@ -792,7 +811,7 @@ class PlayingLeftSpeakerCalibration : public PlayingCalibrationUseCase {
 
 class PlayingRightSpeakerCalibration : public PlayingCalibrationUseCase {
   public:
-    void run(Model &model, const Calibration &c) override {
+    void run(RunningATestFacade &model, const Calibration &c) override {
         model.playRightSpeakerCalibration(c);
     }
 
@@ -815,10 +834,13 @@ class ModelTests : public ::testing::Test {
     RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
     RecognitionTestModelStub internalModel{adaptiveMethod, fixedLevelMethod};
     OutputFileStub outputFile;
-    ModelImpl model{adaptiveMethod, fixedLevelMethod,
+    RunningATestObserverStub audioRecording;
+    RunningATestObserverStub eyeTracking;
+    RunningATestFacadeImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervals, everyTargetOnce,
-        eachTargetNTimes, predeterminedTargets, internalModel, outputFile};
+        eachTargetNTimes, predeterminedTargets, internalModel, outputFile,
+        audioRecording, eyeTracking};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes;
@@ -1473,32 +1495,49 @@ MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
 }
 
 MODEL_TEST(
+    initializeFixedLevelTestWithAllTargetsAndAudioRecordingInitializesWithAudioRecording) {
+    run(initializingFixedLevelTestWithAllTargetsAndAudioRecording);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(internalModel.observer, &audioRecording);
+}
+
+MODEL_TEST(
+    initializeFixedLevelTestWithPredeterminedTargetsAndAudioRecordingInitializesWithAudioRecording) {
+    run(initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(internalModel.observer, &audioRecording);
+}
+
+MODEL_TEST(
     initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithAllTargetsAndEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        initializedWithEyeTracking(internalModel, &eyeTracking));
 }
 
 MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        initializedWithEyeTracking(internalModel, &eyeTracking));
 }
 
 MODEL_TEST(
     initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithCyclicTargetsAndEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        initializedWithEyeTracking(internalModel, &eyeTracking));
 }
 
 MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithTargetReplacementAndEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        initializedWithEyeTracking(internalModel, &eyeTracking));
 }
 
 MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(initializedWithEyeTracking(internalModel));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        initializedWithEyeTracking(internalModel, &eyeTracking));
 }
 
 MODEL_TEST(submitResponsePassesCoordinateResponse) {
@@ -1569,7 +1608,7 @@ MODEL_TEST(subscribesToListener) {
     ModelObserverStub listener;
     model.attach(&listener);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        static_cast<const Model::Observer *>(&listener),
+        static_cast<const RunningATestFacade::Observer *>(&listener),
         internalModel.listener());
 }
 }

@@ -283,8 +283,9 @@ static void initializeFixedLevelTestWithEachTargetNTimes(Method method,
     f(test);
 }
 
-static void initialize(Model &model, Method method, const std::string &contents,
-    const TestIdentity &identity, SNR startingSnr) {
+static void initialize(RunningATestFacade &model, Method method,
+    const std::string &contents, const TestIdentity &identity,
+    SNR startingSnr) {
     switch (method) {
     case Method::adaptiveCoordinateResponseMeasureWithDelayedMasker:
         return av_speech_in_noise::initialize(method, contents, identity,
@@ -370,7 +371,7 @@ static void initialize(Model &model, Method method, const std::string &contents,
     }
 }
 
-void TestSettingsInterpreterImpl::initialize(Model &model,
+void TestSettingsInterpreterImpl::initialize(RunningATestFacade &model,
     SessionController &sessionController, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr) {
     const auto method{av_speech_in_noise::method(contents)};

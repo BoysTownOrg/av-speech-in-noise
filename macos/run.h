@@ -12,6 +12,7 @@
 #include <av-speech-in-noise/ui/ChooseKeywords.hpp>
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 #include <av-speech-in-noise/core/OutputFilePath.hpp>
+#include <av-speech-in-noise/core/EyeTracking.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 
 #include <memory>

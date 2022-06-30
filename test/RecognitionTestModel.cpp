@@ -6,9 +6,11 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/Model.hpp"
+
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+
 #include <gtest/gtest.h>
+
 #include <cmath>
 #include <string>
 #include <utility>
@@ -16,34 +18,6 @@
 namespace av_speech_in_noise {
 constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
     return a.x == b.x && a.y == b.y;
-}
-
-constexpr auto operator==(const Point2D &a, const Point2D &b) -> bool {
-    return a.x == b.x && a.y == b.y;
-}
-
-constexpr auto operator==(const Point3D &a, const Point3D &b) -> bool {
-    return a.x == b.x && a.y == b.y && a.z == b.z;
-}
-
-constexpr auto operator==(const GazeOrigin &a, const GazeOrigin &b) -> bool {
-    return a.relativeTrackbox == b.relativeTrackbox;
-}
-
-constexpr auto operator==(const GazePosition &a, const GazePosition &b)
-    -> bool {
-    return a.relativeTrackbox == b.relativeTrackbox &&
-        a.relativeScreen == b.relativeScreen;
-}
-
-constexpr auto operator==(const Gaze &a, const Gaze &b) -> bool {
-    return a.origin == b.origin && a.position == b.position;
-}
-
-constexpr auto operator==(
-    const BinocularGazeSample &a, const BinocularGazeSample &b) -> bool {
-    return a.systemTime.microseconds == b.systemTime.microseconds &&
-        a.left == b.left && a.right == b.right;
 }
 
 namespace {
@@ -100,21 +74,23 @@ class TestMethodStub : public TestMethod {
 class UseCase {
   public:
     virtual ~UseCase() = default;
-    virtual void run(RecognitionTestModelImpl &) = 0;
+    virtual void run(RunningATestImpl &) = 0;
 };
 
 class InitializingTest : public UseCase {
   public:
-    explicit InitializingTest(TestMethod *method, const Test &test)
-        : test{test}, method{method} {}
+    explicit InitializingTest(
+        TestMethod *method, const Test &test, RunningATest::Observer *observer)
+        : test{test}, method{method}, observer{observer} {}
 
-    void run(RecognitionTestModelImpl &m) override {
-        m.initialize(method, test);
+    void run(RunningATestImpl &m) override {
+        m.initialize(method, test, observer);
     }
 
   private:
     const Test &test{};
     TestMethod *method;
+    RunningATest::Observer *observer;
 };
 
 class InitializingTestWithSingleSpeaker : public UseCase {
@@ -122,7 +98,7 @@ class InitializingTestWithSingleSpeaker : public UseCase {
     explicit InitializingTestWithSingleSpeaker(TestMethod *method)
         : method{method} {}
 
-    void run(RecognitionTestModelImpl &m) override {
+    void run(RunningATestImpl &m) override {
         m.initializeWithSingleSpeaker(method, {});
     }
 
@@ -135,39 +111,12 @@ class InitializingTestWithDelayedMasker : public UseCase {
     explicit InitializingTestWithDelayedMasker(TestMethod *method)
         : method{method} {}
 
-    void run(RecognitionTestModelImpl &m) override {
+    void run(RunningATestImpl &m) override {
         m.initializeWithDelayedMasker(method, {});
     }
 
   private:
     TestMethod *method;
-};
-
-class InitializingTestWithEyeTracking : public UseCase {
-    TestMethod *method;
-    const Test &test;
-
-  public:
-    explicit InitializingTestWithEyeTracking(
-        TestMethod *method, const Test &test)
-        : method{method}, test{test} {}
-
-    void run(RecognitionTestModelImpl &model) override {
-        model.initializeWithEyeTracking(method, test);
-    }
-};
-
-class InitializingTestWithAudioRecording : public UseCase {
-    TestMethod *method;
-    const Test &test;
-
-  public:
-    InitializingTestWithAudioRecording(TestMethod *method, const Test &test)
-        : method{method}, test{test} {}
-
-    void run(RecognitionTestModelImpl &model) override {
-        model.initializeWithAudioRecording(method, test);
-    }
 };
 
 class AudioDeviceUseCase : public virtual UseCase {
@@ -192,7 +141,7 @@ class PlayingCalibration : public AudioDeviceUseCase,
         calibration.audioDevice = std::move(s);
     }
 
-    void run(RecognitionTestModelImpl &model) override {
+    void run(RunningATestImpl &model) override {
         model.playCalibration(calibration);
     }
 
@@ -218,7 +167,7 @@ class PlayingLeftSpeakerCalibration : public AudioDeviceUseCase,
         calibration.audioDevice = std::move(s);
     }
 
-    void run(RecognitionTestModelImpl &model) override {
+    void run(RunningATestImpl &model) override {
         model.playLeftSpeakerCalibration(calibration);
     }
 
@@ -244,7 +193,7 @@ class PlayingRightSpeakerCalibration : public AudioDeviceUseCase,
         calibration.audioDevice = std::move(s);
     }
 
-    void run(RecognitionTestModelImpl &model) override {
+    void run(RunningATestImpl &model) override {
         model.playRightSpeakerCalibration(calibration);
     }
 
@@ -265,7 +214,7 @@ class PlayingTrial : public AudioDeviceUseCase {
         trial.audioDevice = std::move(s);
     }
 
-    void run(RecognitionTestModelImpl &m) override { m.playTrial(trial); }
+    void run(RunningATestImpl &m) override { m.playTrial(trial); }
 
   private:
     AudioSettings trial;
@@ -273,75 +222,14 @@ class PlayingTrial : public AudioDeviceUseCase {
 
 class PreparingNextTrialIfNeeded : public UseCase {
   public:
-    void run(RecognitionTestModelImpl &m) override {
-        m.prepareNextTrialIfNeeded();
-    }
+    void run(RunningATestImpl &m) override { m.prepareNextTrialIfNeeded(); }
 };
 
 class SubmittingCoordinateResponse : public UseCase {
   public:
-    void run(RecognitionTestModelImpl &m) override {
+    void run(RunningATestImpl &m) override {
         m.submit(coordinate_response_measure::Response{});
     }
-};
-
-class EyeTrackerStub : public EyeTracker {
-  public:
-    auto recordingTimeAllocatedSeconds() const -> double {
-        return recordingTimeAllocatedSeconds_;
-    }
-
-    auto started() const -> bool { return started_; }
-
-    auto stopped() const -> bool { return stopped_; }
-
-    auto log() const -> const std::stringstream & { return log_; }
-
-    void allocateRecordingTimeSeconds(double x) override {
-        insert(log_, "allocateRecordingTimeSeconds ");
-        recordingTimeAllocatedSeconds_ = x;
-        recordingTimeAllocated_ = true;
-    }
-
-    void start() override {
-        insert(log_, "start ");
-        started_ = true;
-    }
-
-    void stop() override {
-        insert(log_, "stop ");
-        stopped_ = true;
-    }
-
-    auto recordingTimeAllocated() const -> bool {
-        return recordingTimeAllocated_;
-    }
-
-    auto gazeSamples() -> BinocularGazeSamples override {
-        insert(log_, "gazeSamples ");
-        return gazeSamples_;
-    }
-
-    void setGazes(BinocularGazeSamples g) { gazeSamples_ = std::move(g); }
-
-    auto currentSystemTime() -> EyeTrackerSystemTime override {
-        return currentSystemTime_;
-    }
-
-    void setCurrentSystemTime(EyeTrackerSystemTime t) {
-        currentSystemTime_ = t;
-    }
-
-    void write(std::ostream &) override {}
-
-  private:
-    BinocularGazeSamples gazeSamples_;
-    std::stringstream log_{};
-    EyeTrackerSystemTime currentSystemTime_{};
-    double recordingTimeAllocatedSeconds_{};
-    bool recordingTimeAllocated_{};
-    bool started_{};
-    bool stopped_{};
 };
 
 class ClockStub : public Clock {
@@ -358,30 +246,34 @@ class ClockStub : public Clock {
     bool timeQueried_{};
 };
 
-class AudioRecorderStub : public AudioRecorder {
+class RunningATestObserverStub : public RunningATest::Observer {
   public:
-    [[nodiscard]] auto started() const -> bool { return started_; }
-
-    void start() override { started_ = true; }
-
-    auto fileUrl() -> LocalUrl { return fileUrl_; }
-
-    void initialize(const LocalUrl &url) override {
-        fileUrl_ = url;
-        initialized_ = true;
+    void notifyThatNewTestIsReady(std::string_view session) override {
+        this->session = session;
     }
 
-    [[nodiscard]] auto initialized() const -> bool { return initialized_; }
+    void notifyThatTrialWillBegin(int trialNumber) override {
+        this->trialNumber = trialNumber;
+    }
 
-    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
+    void notifyThatTargetWillPlayAt(
+        const PlayerTimeWithDelay &playerTimeWithDelay) override {
+        this->playerTimeWithDelay = playerTimeWithDelay;
+    }
 
-    void stop() override { stopped_ = true; }
+    void notifyThatStimulusHasEnded() override {
+        notifiedThatStimulusHasEnded = true;
+    }
 
-  private:
-    LocalUrl fileUrl_;
-    bool started_{};
-    bool initialized_{};
-    bool stopped_{};
+    void notifyThatSubjectHasResponded() override {
+        notifiedThatSubjectHasResponded = true;
+    }
+
+    PlayerTimeWithDelay playerTimeWithDelay;
+    std::string session;
+    int trialNumber{};
+    bool notifiedThatStimulusHasEnded{};
+    bool notifiedThatSubjectHasResponded{};
 };
 
 void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel.dB_SPL = x; }
@@ -390,7 +282,7 @@ void setCurrentTarget(TestMethodStub &m, std::string s) {
     m.setCurrentTarget(std::move(s));
 }
 
-auto targetFileName(RecognitionTestModelImpl &m) -> std::string {
+auto targetFileName(RunningATestImpl &m) -> std::string {
     return m.targetFileName();
 }
 
@@ -428,9 +320,7 @@ auto log(OutputFileStub &file) -> const std::stringstream & {
     return file.log();
 }
 
-void run(UseCase &useCase, RecognitionTestModelImpl &model) {
-    useCase.run(model);
-}
+void run(UseCase &useCase, RunningATestImpl &model) { useCase.run(model); }
 
 auto fadedIn(MaskerPlayerStub &maskerPlayer) -> bool {
     return maskerPlayer.fadeInCalled();
@@ -482,7 +372,7 @@ void assertLevelEquals_dB(TargetPlayerStub &player, double x) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, player.level_dB());
 }
 
-auto testComplete(RecognitionTestModelImpl &model) -> bool {
+auto testComplete(RunningATestImpl &model) -> bool {
     return model.testComplete();
 }
 
@@ -506,24 +396,20 @@ void assertChannelDelaysCleared(MaskerPlayerStub &player) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.channelDelaysCleared());
 }
 
-auto targetPlayerObserver(const RecognitionTestModelImpl &model)
+auto targetPlayerObserver(const RunningATestImpl &model)
     -> const TargetPlayer::Observer * {
     return &model;
 }
 
-auto maskerPlayerObserver(const RecognitionTestModelImpl &model)
+auto maskerPlayerObserver(const RunningATestImpl &model)
     -> const MaskerPlayer::Observer * {
     return &model;
 }
 
-void setEyeGazes(EyeTrackerStub &eyeTracker, BinocularGazeSamples g) {
-    eyeTracker.setGazes(std::move(g));
-}
-
-void runIgnoringFailure(UseCase &useCase, RecognitionTestModelImpl &model) {
+void runIgnoringFailure(UseCase &useCase, RunningATestImpl &model) {
     try {
         run(useCase, model);
-    } catch (const Model::RequestFailure &) {
+    } catch (const RunningATestFacade::RequestFailure &) {
     }
 }
 
@@ -535,25 +421,8 @@ void setFadeTimeSeconds(MaskerPlayerStub &player, double x) {
     player.setFadeTimeSeconds(x);
 }
 
-auto started(EyeTrackerStub &eyeTracker) -> bool {
-    return eyeTracker.started();
-}
-
-auto stopped(EyeTrackerStub &eyeTracker) -> bool {
-    return eyeTracker.stopped();
-}
-
 void setSystemTime(AudioSampleTimeWithOffset &time, player_system_time_type s) {
     time.playerTime.system = s;
-}
-
-void setNanosecondsFromPlayerTime(MaskerPlayerStub &player, std::uintmax_t t) {
-    player.setNanosecondsFromPlayerTime(t);
-}
-
-void setCurrentSystemTimeMicroseconds(
-    EyeTrackerStub &eyeTracker, std::int_least64_t t) {
-    eyeTracker.setCurrentSystemTime({t});
 }
 
 void setSampleOffset(AudioSampleTimeWithOffset &time, gsl::index n) {
@@ -574,14 +443,12 @@ class RecognitionTestModelTests : public ::testing::Test {
     ModelObserverStub listener;
     TargetPlayerStub targetPlayer;
     MaskerPlayerStub maskerPlayer;
-    AudioRecorderStub audioRecorder;
     ResponseEvaluatorStub evaluator;
     OutputFileStub outputFile;
     RandomizerStub randomizer;
-    EyeTrackerStub eyeTracker;
     ClockStub clock;
-    RecognitionTestModelImpl model{targetPlayer, maskerPlayer, audioRecorder,
-        evaluator, outputFile, randomizer, eyeTracker, clock};
+    RunningATestImpl model{
+        targetPlayer, maskerPlayer, evaluator, outputFile, randomizer, clock};
     TestMethodStub testMethod;
     Calibration calibration{};
     PlayingCalibration playingCalibration{calibration, targetPlayer};
@@ -590,15 +457,12 @@ class RecognitionTestModelTests : public ::testing::Test {
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{
         calibration, maskerPlayer};
     av_speech_in_noise::Test test{};
-    InitializingTest initializingTest{&testMethod, test};
+    RunningATestObserverStub observer;
+    InitializingTest initializingTest{&testMethod, test, &observer};
     InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
         &testMethod};
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
         &testMethod};
-    InitializingTestWithEyeTracking initializingTestWithEyeTracking{
-        &testMethod, test};
-    InitializingTestWithAudioRecording initializingTestWithAudioRecording{
-        &testMethod, test};
     PlayingTrial playingTrial;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     FreeResponse freeResponse{};
@@ -646,8 +510,8 @@ class RecognitionTestModelTests : public ::testing::Test {
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0., randomizer.lowerFloatBound());
         ::assertEqual(10. - 2 - 1 - 2 -
-                RecognitionTestModelImpl::targetOnsetFringeDuration.seconds -
-                RecognitionTestModelImpl::targetOffsetFringeDuration.seconds,
+                RunningATestImpl::targetOnsetFringeDuration.seconds -
+                RunningATestImpl::targetOffsetFringeDuration.seconds,
             randomizer.upperFloatBound(), 1e-15);
     }
 
@@ -667,7 +531,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         try {
             run(useCase, model);
             FAIL() << "Expected Model::RequestFailure";
-        } catch (const Model::RequestFailure &e) {
+        } catch (const RunningATestFacade::RequestFailure &e) {
             AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, e.what());
         }
     }
@@ -761,31 +625,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"a"}, maskerPlayer.filePath());
     }
-
-    void assertAllocatesTrialDurationForEyeTracking(
-        UseCase &initializing, UseCase &useCase) {
-        run(initializing, model);
-        setDurationSeconds(targetPlayer, 3);
-        setFadeTimeSeconds(maskerPlayer, 4);
-        run(useCase, model);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3 + 2 * 4. +
-                RecognitionTestModelImpl::targetOnsetFringeDuration.seconds +
-                RecognitionTestModelImpl::targetOffsetFringeDuration.seconds,
-            eyeTracker.recordingTimeAllocatedSeconds());
-    }
-
-    void assertPlayTrialDoesNotAllocateRecordingTime(UseCase &useCase) {
-        run(useCase, model);
-        run(playingTrial, model);
-        AV_SPEECH_IN_NOISE_EXPECT_FALSE(eyeTracker.recordingTimeAllocated());
-    }
-
-    void
-    assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
-        UseCase &useCase) {
-        run(initializingTestWithEyeTracking, model);
-        assertPlayTrialDoesNotAllocateRecordingTime(useCase);
-    }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -819,18 +658,6 @@ RECOGNITION_TEST_MODEL_TEST(
         initializingTestWithDelayedMasker);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingClosesOutputFile_Opens_AndWritesTestInOrder) {
-    assertClosesOutputFileOpensAndWritesTestInOrder(
-        initializingTestWithEyeTracking);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithAudioRecordingClosesOutputFile_Opens_AndWritesTestInOrder) {
-    assertClosesOutputFileOpensAndWritesTestInOrder(
-        initializingTestWithAudioRecording);
-}
-
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
     run(initializingTest, model);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(targetPlayer.usingAllChannels());
@@ -844,36 +671,6 @@ RECOGNITION_TEST_MODEL_TEST(playingCalibrationUsesAllTargetPlayerChannels) {
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllMaskerPlayerChannels) {
     run(initializingTest, model);
     assertUsingAllChannels(maskerPlayer);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingUsesAllMaskerPlayerChannels) {
-    assertUsesAllMaskerPlayerChannels(initializingTestWithEyeTracking);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingUsesAllTargetPlayerChannels) {
-    assertUsesAllTargetPlayerChannels(initializingTestWithEyeTracking);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingClearsAllMaskerPlayerChannelDelays) {
-    assertMaskerPlayerChannelDelaysCleared(initializingTestWithEyeTracking);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithAudioRecordingUsesAllMaskerPlayerChannels) {
-    assertUsesAllMaskerPlayerChannels(initializingTestWithAudioRecording);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithAudioRecordingUsesAllTargetPlayerChannels) {
-    assertUsesAllTargetPlayerChannels(initializingTestWithAudioRecording);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithAudioRecordingClearsAllMaskerPlayerChannelDelays) {
-    assertMaskerPlayerChannelDelaysCleared(initializingTestWithAudioRecording);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestClearsAllMaskerPlayerChannelDelays) {
@@ -929,7 +726,7 @@ RECOGNITION_TEST_MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         gsl::index{0}, maskerPlayer.channelDelayed());
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        RecognitionTestModelImpl::maskerChannelDelay.seconds,
+        RunningATestImpl::maskerChannelDelay.seconds,
         maskerPlayer.channelDelaySeconds());
 }
 
@@ -938,115 +735,22 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesTestIdentityToOutputFile(initializingTest);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingOpensNewOutputFilePassingTestInformation) {
-    assertPassesTestIdentityToOutputFile(initializingTestWithEyeTracking);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithEyeTrackingAllocatesTrialDurationsWorthRecordingTimeForEyeTracking) {
-    assertAllocatesTrialDurationForEyeTracking(
-        initializingTestWithEyeTracking, playingTrial);
-}
-
-RECOGNITION_TEST_MODEL_TEST(playTrialForTestWithEyeTrackingStartsEyeTracking) {
-    run(initializingTestWithEyeTracking, model);
-    run(playingTrial, model);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(started(eyeTracker));
-}
-
-RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotStartEyeTracking) {
-    run(initializingTest, model);
-    run(playingTrial, model);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(started(eyeTracker));
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithAudioRecordingInitializesRecorder) {
+RECOGNITION_TEST_MODEL_TEST(initializeTestNotifiesObserverOfNewTest) {
     test.identity.session = "smile";
-    outputFile.setParentPath("/Users/user/data");
-    run(initializingTestWithAudioRecording, model);
-    run(playingTrial, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        "/Users/user/data/1-smile.wav", audioRecorder.fileUrl().path);
+    run(initializingTest, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("smile", observer.session);
 }
 
-RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotInitializeRecorder) {
+RECOGNITION_TEST_MODEL_TEST(playTrialNotifiesObserverOfTrialAboutToBegin) {
     run(initializingTest, model);
     run(playingTrial, model);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(audioRecorder.initialized());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, observer.trialNumber);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithEyeTrackingStartsEyeTrackingAfterAllocatingRecordingTime) {
-    run(initializingTestWithEyeTracking, model);
-    run(playingTrial, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"allocateRecordingTimeSeconds start "},
-        string(eyeTracker.log()));
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    fadeOutCompleteForTestWithEyeTrackingStopsEyeTracking) {
-    run(initializingTestWithEyeTracking, model);
-    fadeOutComplete(maskerPlayer);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(stopped(eyeTracker));
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    fadeOutCompleteForDefaultTestDoesNotStopEyeTracking) {
+RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteNotifiesThatStimulusHasEnded) {
     run(initializingTest, model);
     fadeOutComplete(maskerPlayer);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(stopped(eyeTracker));
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    fadeOutCompleteForTestWithAudioRecordingStartsRecording) {
-    run(initializingTestWithAudioRecording, model);
-    fadeOutComplete(maskerPlayer);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.started());
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    fadeOutCompleteForDefaultTestDoesNotStartRecording) {
-    run(initializingTest, model);
-    fadeOutComplete(maskerPlayer);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(audioRecorder.started());
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForDefaultTestDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTime(initializingTest);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithDelayedMaskerDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTime(
-        initializingTestWithDelayedMasker);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithSingleSpeakerDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTime(
-        initializingTestWithSingleSpeaker);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForDefaultTestFollowingTestWithEyeTrackingDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
-        initializingTest);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithSingleSpeakerFollowingTestWithEyeTrackingDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
-        initializingTestWithSingleSpeaker);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithDelayedMaskerFollowingTestWithEyeTrackingDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
-        initializingTestWithDelayedMasker);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatStimulusHasEnded);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialCapturesTimeStampForEventualReporting) {
@@ -1109,20 +813,7 @@ RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationPlaysMasker) {
     assertPlayed(maskerPlayer);
 }
 
-RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
-    run(initializingTestWithEyeTracking, model);
-    setSystemTime(fadeInCompleteTime, 1);
-    setSampleOffset(fadeInCompleteTime, 2);
-    setSampleRateHz(maskerPlayer, 3);
-    fadeInComplete(maskerPlayer, fadeInCompleteTime);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
-        targetPlayer.timePlayedAt().playerTime.system);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        2 / 3. + RecognitionTestModelImpl::targetOnsetFringeDuration.seconds,
-        targetPlayer.timePlayedAt().delay.seconds);
-}
-
-RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenNotEyeTracking) {
+RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAt) {
     run(initializingTest, model);
     setSystemTime(fadeInCompleteTime, 1);
     setSampleOffset(fadeInCompleteTime, 2);
@@ -1131,53 +822,22 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenNotEyeTracking) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
         targetPlayer.timePlayedAt().playerTime.system);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        2 / 3. + RecognitionTestModelImpl::targetOnsetFringeDuration.seconds,
+        2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds,
         targetPlayer.timePlayedAt().delay.seconds);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    fadeInCompletePassesTargetStartSystemTimeForConversionWhenEyeTracking) {
-    run(initializingTestWithEyeTracking, model);
+    fadeInCompleteNotifiesObserverThatTargetWillPlayAt) {
+    run(initializingTest, model);
     setSystemTime(fadeInCompleteTime, 1);
-    fadeInComplete(maskerPlayer, fadeInCompleteTime);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
-        maskerPlayer.toNanosecondsSystemTime().at(0));
-}
-
-RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteStopsEyeTracker) {
-    run(initializingTestWithEyeTracking, model);
-    fadeOutComplete(maskerPlayer);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"stop "}, string(eyeTracker.log()));
-}
-
-RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseWritesEyeGazes) {
-    run(initializingTestWithEyeTracking, model);
-    setEyeGazes(eyeTracker,
-        {{{1}, {{}, {{}, {2, 3}}}, {{}, {{}, {4, 5}}}},
-            {{6}, {{}, {{}, {7, 8}}}, {{}, {{}, {9, 10}}}}});
-    run(submittingCoordinateResponse, model);
-    ::assertEqual({{{1}, {{}, {{}, {2, 3}}}, {{}, {{}, {4, 5}}}},
-                      {{6}, {{}, {{}, {7, 8}}}, {{}, {{}, {9, 10}}}}},
-        outputFile.eyeGazes());
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitCoordinateResponseWritesTargetStartTimeWhenEyeTracking) {
-    run(initializingTestWithEyeTracking, model);
-    setNanosecondsFromPlayerTime(maskerPlayer, 1);
     setSampleOffset(fadeInCompleteTime, 2);
     setSampleRateHz(maskerPlayer, 3);
     fadeInComplete(maskerPlayer, fadeInCompleteTime);
-    fadeOutComplete(maskerPlayer);
-    run(submittingCoordinateResponse, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1 +
-            gsl::narrow_cast<std::uintmax_t>(
-                (2 / 3. +
-                    RecognitionTestModelImpl::targetOnsetFringeDuration
-                        .seconds) *
-                1e9),
-        outputFile.targetStartTime().nanoseconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
+        observer.playerTimeWithDelay.playerTime.system);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds,
+        observer.playerTimeWithDelay.delay.seconds);
 }
 
 auto eyeTrackerTargetPlayerSynchronization(OutputFileStub &file)
@@ -1185,47 +845,13 @@ auto eyeTrackerTargetPlayerSynchronization(OutputFileStub &file)
     return file.eyeTrackerTargetPlayerSynchronization();
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesSyncTimes) {
-    run(initializingTestWithEyeTracking, model);
-    setNanosecondsFromPlayerTime(maskerPlayer, 1);
-    setCurrentSystemTimeMicroseconds(eyeTracker, 2);
-    fadeInComplete(maskerPlayer, fadeInCompleteTime);
-    fadeOutComplete(maskerPlayer);
-    run(submittingCoordinateResponse, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::uintmax_t{1},
-        eyeTrackerTargetPlayerSynchronization(outputFile)
-            .targetPlayerSystemTime.nanoseconds);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::int_least64_t{2},
-        eyeTrackerTargetPlayerSynchronization(outputFile)
-            .eyeTrackerSystemTime.microseconds);
-}
-
-RECOGNITION_TEST_MODEL_TEST(passesCurrentMaskerTimeForNanosecondConversion) {
-    run(initializingTestWithEyeTracking, model);
-    av_speech_in_noise::PlayerTime t{};
-    t.system = 1;
-    maskerPlayer.setCurrentSystemTime(t);
-    fadeInComplete(maskerPlayer, fadeInCompleteTime);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
-        maskerPlayer.toNanosecondsSystemTime().at(1));
-}
-
 RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestPassesNextTargetToTargetPlayer) {
     assertPassesNextTargetToPlayer(initializingTest);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingPassesNextTargetToTargetPlayer) {
-    assertPassesNextTargetToPlayer(initializingTestWithEyeTracking);
-}
-
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestResetsTrialNumber) {
     assertYieldsTrialNumber(initializingTest, 1);
-}
-
-RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingResetsTrialNumber) {
-    assertYieldsTrialNumber(initializingTestWithEyeTracking, 1);
 }
 
 RECOGNITION_TEST_MODEL_TEST(returnsTargetFileName) {
@@ -1293,11 +919,6 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesMaskerFilePathToMaskerPlayer(initializingTest);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingPassesMaskerFilePathToMaskerPlayer) {
-    assertPassesMaskerFilePathToMaskerPlayer(initializingTestWithEyeTracking);
-}
-
 RECOGNITION_TEST_MODEL_TEST(initializeTestPassesMaskerFilePathToMaskerPlayer) {
     setMaskerFilePath(test, "a");
     run(initializingTest, model);
@@ -1308,20 +929,14 @@ RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestSetsMaskerSteadyLevelDuration) {
     setDurationSeconds(targetPlayer, 1);
     run(initializingTest, model);
-    ::assertEqual(RecognitionTestModelImpl::targetOnsetFringeDuration.seconds +
-            RecognitionTestModelImpl::targetOffsetFringeDuration.seconds + 1,
+    ::assertEqual(RunningATestImpl::targetOnsetFringeDuration.seconds +
+            RunningATestImpl::targetOffsetFringeDuration.seconds + 1,
         maskerPlayer.steadyLevelDuration().seconds, 1e-15);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestSeeksToRandomMaskerPositionWithinTrialDuration) {
     assertSeeksToRandomMaskerPositionWithinTrialDuration(initializingTest);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingSeeksToRandomMaskerPositionWithinTrialDuration) {
-    assertSeeksToRandomMaskerPositionWithinTrialDuration(
-        initializingTestWithEyeTracking);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1376,7 +991,7 @@ RECOGNITION_TEST_MODEL_TEST(preparingNextTrialIfNeededSetsTargetPlayerLevel) {
 }
 
 void assertLevelSet(Calibration &calibration, PlayerLevelUseCase &useCase,
-    RecognitionTestModelImpl &model) {
+    RunningATestImpl &model) {
     calibration.level.dB_SPL = 1;
     calibration.fullScaleLevel.dB_SPL = 2;
     useCase.set(DigitalLevel{3});
@@ -1436,17 +1051,10 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    preparingNextTrialStopsAudioRecordingForAudioRecordingEnabledTest) {
-    run(initializingTestWithAudioRecording, model);
-    model.prepareNextTrialIfNeeded();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.stopped());
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    preparingNextTrialDoesNotStopAudioRecordingForDefaultTest) {
+    preparingNextTrialStopsNotifiesThatSubjectHasResponded) {
     run(initializingTest, model);
     model.prepareNextTrialIfNeeded();
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(audioRecorder.stopped());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatSubjectHasResponded);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

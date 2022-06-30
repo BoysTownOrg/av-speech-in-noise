@@ -12,7 +12,9 @@ add_library(
   src/SubmittingFreeResponse.cpp
   src/SubmittingPassFail.cpp
   src/SubmittingKeywords.cpp
-  src/SubmittingConsonant.cpp)
+  src/SubmittingConsonant.cpp
+  src/AudioRecording.cpp
+  src/EyeTracking.cpp)
 target_include_directories(
   av-speech-in-noise-core-lib
   PUBLIC include

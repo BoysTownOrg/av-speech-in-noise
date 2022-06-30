@@ -9,12 +9,12 @@
 namespace av_speech_in_noise::submitting_keywords {
 class InteractorImpl : public Interactor {
   public:
-    InteractorImpl(FixedLevelMethod &, RecognitionTestModel &, OutputFile &);
+    InteractorImpl(FixedLevelMethod &, RunningATest &, OutputFile &);
     void submit(const ThreeKeywordsResponse &p) override;
 
   private:
     FixedLevelMethod &method;
-    RecognitionTestModel &recognitionTestModel;
+    RunningATest &recognitionTestModel;
     OutputFile &outputFile;
 };
 }

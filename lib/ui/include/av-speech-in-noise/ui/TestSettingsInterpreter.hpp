@@ -146,8 +146,8 @@ constexpr auto name(TestSetting p) -> const char * {
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
     explicit TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>);
-    void initialize(Model &, SessionController &, const std::string &,
-        const TestIdentity &, SNR) override;
+    void initialize(RunningATestFacade &, SessionController &,
+        const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
 

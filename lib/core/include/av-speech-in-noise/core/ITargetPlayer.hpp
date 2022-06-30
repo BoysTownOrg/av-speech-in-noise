@@ -2,8 +2,10 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_ITARGETPLAYERHPP_
 
 #include "Player.hpp"
+
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
+
 #include <string>
 
 namespace av_speech_in_noise {

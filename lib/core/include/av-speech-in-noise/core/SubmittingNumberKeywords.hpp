@@ -9,8 +9,8 @@
 namespace av_speech_in_noise::submitting_number_keywords {
 class InteractorImpl : public Interactor {
   public:
-    InteractorImpl(AdaptiveMethod &method, RecognitionTestModel &model,
-        OutputFile &outputFile)
+    InteractorImpl(
+        AdaptiveMethod &method, RunningATest &model, OutputFile &outputFile)
         : method{method}, model{model}, outputFile{outputFile} {}
 
     void submit(const CorrectKeywords &k) override {
@@ -22,7 +22,7 @@ class InteractorImpl : public Interactor {
 
   private:
     AdaptiveMethod &method;
-    RecognitionTestModel &model;
+    RunningATest &model;
     OutputFile &outputFile;
 };
 }

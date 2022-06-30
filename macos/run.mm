@@ -4,8 +4,10 @@
 #include "AppKitView.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
-#include "av-speech-in-noise/playlist/PredeterminedTargetPlaylist.hpp"
+#include "av-speech-in-noise/core/AudioRecording.hpp"
+#include "av-speech-in-noise/core/EyeTracking.hpp"
 
+#include <av-speech-in-noise/playlist/PredeterminedTargetPlaylist.hpp>
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/ui/PassFail.hpp>
 #include <av-speech-in-noise/ui/SessionController.hpp>
@@ -306,9 +308,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
     static LocalTimeClock localTimeClock;
     static AvFoundationAudioRecorder audioRecorder;
-    static RecognitionTestModelImpl recognitionTestModel{targetPlayer,
-        maskerPlayer, audioRecorder, responseEvaluator, outputFile, randomizer,
-        eyeTracker, localTimeClock};
+    static RunningATestImpl recognitionTestModel{targetPlayer, maskerPlayer,
+        responseEvaluator, outputFile, randomizer, localTimeClock};
     static RandomizedTargetPlaylistWithReplacement::Factory
         targetsWithReplacementFactory{
             &onlyIncludesTargetFileExtensions, &randomizer};
@@ -320,11 +321,14 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         &cyclicTargetsFactory, &directoryReader};
     static PredeterminedTargetPlaylist predeterminedTargetPlaylist{
         textFileReader};
-    static ModelImpl model{adaptiveMethod, fixedLevelMethod,
+    static AudioRecording audioRecording{audioRecorder, outputFile};
+    static EyeTracking eyeTracking{
+        eyeTracker, maskerPlayer, targetPlayer, outputFile};
+    static RunningATestFacadeImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
         allTargetsNTimes, predeterminedTargetPlaylist, recognitionTestModel,
-        outputFile};
+        outputFile, audioRecording, eyeTracking};
     static const auto testSetupUI{testSetupUIFactory.make(nil)};
     const auto consonantNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};

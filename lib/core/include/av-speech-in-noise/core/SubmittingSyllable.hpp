@@ -65,8 +65,8 @@ static auto correctSyllable(const LocalUrl &file) -> Syllable {
 
 class InteractorImpl : public Interactor {
   public:
-    InteractorImpl(FixedLevelMethod &method, RecognitionTestModel &model,
-        OutputFile &outputFile)
+    InteractorImpl(
+        FixedLevelMethod &method, RunningATest &model, OutputFile &outputFile)
         : method{method}, model{model}, outputFile{outputFile} {}
 
     void submit(const SyllableResponse &p) override {
@@ -85,7 +85,7 @@ class InteractorImpl : public Interactor {
 
   private:
     FixedLevelMethod &method;
-    RecognitionTestModel &model;
+    RunningATest &model;
     OutputFile &outputFile;
 };
 }

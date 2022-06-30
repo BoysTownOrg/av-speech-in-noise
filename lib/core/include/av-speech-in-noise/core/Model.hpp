@@ -2,17 +2,17 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_MODELHPP_
 
 #include "TargetPlaylist.hpp"
-#include "TestMethod.hpp"
-#include "IOutputFile.hpp"
 #include "IAdaptiveMethod.hpp"
 #include "IFixedLevelMethod.hpp"
-#include "IRecognitionTestModel.hpp"
 #include "IModel.hpp"
+#include "IOutputFile.hpp"
+#include "IRecognitionTestModel.hpp"
+#include "TestMethod.hpp"
 
 namespace av_speech_in_noise {
-class ModelImpl : public Model {
+class RunningATestFacadeImpl : public RunningATestFacade {
   public:
-    ModelImpl(AdaptiveMethod &, FixedLevelMethod &,
+    RunningATestFacadeImpl(AdaptiveMethod &, FixedLevelMethod &,
         TargetPlaylistReader &targetsWithReplacementReader,
         TargetPlaylistReader &cyclicTargetsReader,
         TargetPlaylist &targetsWithReplacement,
@@ -20,8 +20,9 @@ class ModelImpl : public Model {
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         RepeatableFiniteTargetPlaylist &eachTargetNTimes,
         FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
-        RecognitionTestModel &, OutputFile &);
-    void attach(Model::Observer *) override;
+        RunningATest &, OutputFile &, RunningATest::Observer &audioRecording,
+        RunningATest::Observer &eyeTracking);
+    void attach(RunningATestFacade::Observer *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(
         const FixedLevelFixedTrialsTest &) override;
@@ -60,6 +61,8 @@ class ModelImpl : public Model {
   private:
     void initializeTest_(const AdaptiveTest &);
 
+    RunningATest::Observer &audioRecording;
+    RunningATest::Observer &eyeTracking;
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
     TargetPlaylistReader &targetsWithReplacementReader;
@@ -69,7 +72,7 @@ class ModelImpl : public Model {
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce;
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets;
     RepeatableFiniteTargetPlaylist &eachTargetNTimes;
-    RecognitionTestModel &model;
+    RunningATest &runningATest;
     OutputFile &outputFile;
 };
 }

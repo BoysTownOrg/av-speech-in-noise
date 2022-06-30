@@ -39,15 +39,15 @@ class CoordinateResponseMeasureController
     : public TaskController,
       public CoordinateResponseMeasureControl::Observer {
   public:
-    CoordinateResponseMeasureController(
-        TestController &, Model &, CoordinateResponseMeasureControl &);
+    CoordinateResponseMeasureController(TestController &, RunningATestFacade &,
+        CoordinateResponseMeasureControl &);
     void attach(TaskController::Observer *);
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
 
   private:
     TestController &testController;
-    Model &model;
+    RunningATestFacade &model;
     CoordinateResponseMeasureControl &control;
     TaskController::Observer *observer{};
 };

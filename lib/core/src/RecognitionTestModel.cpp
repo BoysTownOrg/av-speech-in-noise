@@ -1,10 +1,11 @@
 #include "RecognitionTestModel.hpp"
-#include "IOutputFile.hpp"
-#include "av-speech-in-noise/Model.hpp"
+
 #include <gsl/gsl>
+
 #include <cmath>
 #include <functional>
 #include <sstream>
+#include <string_view>
 
 namespace av_speech_in_noise {
 namespace {
@@ -18,9 +19,19 @@ class NullTestMethod : public TestMethod {
     void writeTestingParameters(OutputFile &) override {}
     void writeTestResult(OutputFile &) override {}
 };
+
+class NullObserver : public RunningATest::Observer {
+    void notifyThatNewTestIsReady(std::string_view session) override {}
+    void notifyThatTrialWillBegin(int trialNumber) override {}
+    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
+    void notifyThatStimulusHasEnded() override {}
+    void notifyThatSubjectHasResponded() override {}
+};
 }
 
 static NullTestMethod nullTestMethod;
+
+static NullObserver nullObserver;
 
 static void useAllChannels(MaskerPlayer &player) { player.useAllChannels(); }
 
@@ -40,17 +51,13 @@ static constexpr auto operator+(const Duration &a, const Duration &b)
 }
 
 static auto steadyLevelDuration(TargetPlayer &player) -> Duration {
-    return player.duration() +
-        RecognitionTestModelImpl::targetOnsetFringeDuration +
-        RecognitionTestModelImpl::targetOffsetFringeDuration;
+    return player.duration() + RunningATestImpl::targetOnsetFringeDuration +
+        RunningATestImpl::targetOffsetFringeDuration;
 }
 
-static auto trialDuration(TargetPlayer &target, MaskerPlayer &masker)
-    -> Duration {
+auto trialDuration(TargetPlayer &target, MaskerPlayer &masker) -> Duration {
     return totalrampDuration(masker) + steadyLevelDuration(target);
 }
-
-static void turnOff(bool &b) { b = false; }
 
 static void useFirstChannelOnly(TargetPlayer &player) {
     player.useFirstChannelOnly();
@@ -76,14 +83,14 @@ static void throwRequestFailureOnInvalidAudioDevice(
     try {
         f(device);
     } catch (const InvalidAudioDevice &) {
-        throw Model::RequestFailure{
+        throw RunningATestFacade::RequestFailure{
             "'" + device + "' is not a valid audio device."};
     }
 }
 
 static void throwRequestFailureIfTrialInProgress(bool f) {
     if (f)
-        throw Model::RequestFailure{"Trial in progress."};
+        throw RunningATestFacade::RequestFailure{"Trial in progress."};
 }
 
 static void apply(TargetPlayer &player, LevelAmplification x) {
@@ -122,7 +129,7 @@ static void tryOpening(OutputFile &file, const TestIdentity &p) {
     try {
         file.openNewFile(p);
     } catch (const OutputFile::OpenFailure &) {
-        throw Model::RequestFailure{"Unable to open output file."};
+        throw RunningATestFacade::RequestFailure{"Unable to open output file."};
     }
 }
 
@@ -161,22 +168,8 @@ static void throwRequestFailureOnInvalidAudioFile(
     try {
         f(s);
     } catch (const InvalidAudioFile &) {
-        throw Model::RequestFailure{"unable to read " + s.path};
+        throw RunningATestFacade::RequestFailure{"unable to read " + s.path};
     }
-}
-
-static auto nanoseconds(Delay x) -> std::uintmax_t {
-    return gsl::narrow_cast<std::uintmax_t>(x.seconds * 1e9);
-}
-
-static auto nanoseconds(MaskerPlayer &player, const PlayerTime &t)
-    -> std::uintmax_t {
-    return player.nanoseconds(t);
-}
-
-static auto nanoseconds(MaskerPlayer &player, const PlayerTimeWithDelay &t)
-    -> std::uintmax_t {
-    return nanoseconds(player, t.playerTime) + nanoseconds(t.delay);
 }
 
 static auto offsetDuration(
@@ -249,20 +242,9 @@ static void preparePlayersForNextTrial(TestMethod *testMethod,
 
 static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, EyeTracker &eyeTracker, RealLevel maskerLevel,
-    RealLevel fullScaleLevel, bool eyeTracking,
-    TargetStartTime lastTargetStartTime,
-    EyeTrackerTargetPlayerSynchronization
-        lastEyeTrackerTargetPlayerSynchronization,
-    bool audioRecordingEnabled, AudioRecorder &audioRecorder) {
-    if (audioRecordingEnabled)
-        audioRecorder.stop();
-    if (eyeTracking) {
-        outputFile.write(lastTargetStartTime);
-        outputFile.write(lastEyeTrackerTargetPlayerSynchronization);
-        outputFile.write(eyeTracker.gazeSamples());
-        save(outputFile);
-    }
+    MaskerPlayer &maskerPlayer, RunningATest::Observer *observer,
+    RealLevel maskerLevel, RealLevel fullScaleLevel) {
+    observer->notifyThatSubjectHasResponded();
     if (!testMethod->complete()) {
         ++trialNumber_;
         preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
@@ -276,44 +258,36 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
 static void saveOutputFileAndPrepareNextTrialAfter(
     const std::function<void()> &f, TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, EyeTracker &eyeTracker, RealLevel maskerLevel,
-    RealLevel fullScaleLevel, bool eyeTracking,
-    TargetStartTime lastTargetStartTime,
-    EyeTrackerTargetPlayerSynchronization
-        lastEyeTrackerTargetPlayerSynchronization,
-    bool audioRecordingEnabled, AudioRecorder &audioRecorder) {
+    MaskerPlayer &maskerPlayer, RunningATest::Observer *observer,
+    RealLevel maskerLevel, RealLevel fullScaleLevel) {
     f();
     save(outputFile);
     prepareNextTrialIfNeeded(testMethod, trialNumber_, outputFile, randomizer,
-        targetPlayer, maskerPlayer, eyeTracker, maskerLevel, fullScaleLevel,
-        eyeTracking, lastTargetStartTime,
-        lastEyeTrackerTargetPlayerSynchronization, audioRecordingEnabled,
-        audioRecorder);
+        targetPlayer, maskerPlayer, observer, maskerLevel, fullScaleLevel);
 }
 
-RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, AudioRecorder &audioRecorder,
-    ResponseEvaluator &evaluator, OutputFile &outputFile,
-    Randomizer &randomizer, EyeTracker &eyeTracker, Clock &clock)
-    : maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
-      audioRecorder{audioRecorder}, evaluator{evaluator},
-      outputFile{outputFile}, randomizer{randomizer},
-      eyeTracker{eyeTracker}, clock{clock}, testMethod{&nullTestMethod} {
+RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
+    MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
+    OutputFile &outputFile, Randomizer &randomizer, Clock &clock)
+    : observer{&nullObserver}, maskerPlayer{maskerPlayer},
+      targetPlayer{targetPlayer}, evaluator{evaluator}, outputFile{outputFile},
+      randomizer{randomizer}, clock{clock}, testMethod{&nullTestMethod} {
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
 }
 
-void RecognitionTestModelImpl::attach(Model::Observer *listener) {
+void RunningATestImpl::attach(RunningATestFacade::Observer *listener) {
     listener_ = listener;
 }
 
-void RecognitionTestModelImpl::initialize(
-    TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test);
+void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
+    RunningATest::Observer *observer_) {
+    initialize_(
+        testMethod_, test, observer_ == nullptr ? &nullObserver : observer_);
 }
 
-void RecognitionTestModelImpl::initialize_(
-    TestMethod *testMethod_, const Test &test) {
+void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test,
+    RunningATest::Observer *observer_) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     if (testMethod_->complete())
@@ -329,7 +303,6 @@ void RecognitionTestModelImpl::initialize_(
     fullScaleLevel_ = test.fullScaleLevel;
     maskerLevel_ = test.maskerLevel;
     condition = test.condition;
-    session = test.identity.session;
 
     hide(targetPlayer);
     maskerPlayer.apply(
@@ -342,37 +315,25 @@ void RecognitionTestModelImpl::initialize_(
     useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
-    turnOff(eyeTracking);
-    audioRecordingEnabled = false;
+    observer = observer_;
+    observer->notifyThatNewTestIsReady(test.identity.session);
 }
 
-void RecognitionTestModelImpl::initializeWithSingleSpeaker(
+void RunningATestImpl::initializeWithSingleSpeaker(
     TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test);
+    initialize_(testMethod_, test, &nullObserver);
     useFirstChannelOnly(targetPlayer);
     maskerPlayer.useFirstChannelOnly();
 }
 
-void RecognitionTestModelImpl::initializeWithDelayedMasker(
+void RunningATestImpl::initializeWithDelayedMasker(
     TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test);
+    initialize_(testMethod_, test, &nullObserver);
     useFirstChannelOnly(targetPlayer);
     maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
 }
 
-void RecognitionTestModelImpl::initializeWithEyeTracking(
-    TestMethod *method, const Test &test) {
-    initialize_(method, test);
-    eyeTracking = true;
-}
-
-void RecognitionTestModelImpl::initializeWithAudioRecording(
-    TestMethod *method, const Test &test) {
-    initialize_(method, test);
-    audioRecordingEnabled = true;
-}
-
-void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
+void RunningATestImpl::playTrial(const AudioSettings &settings) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     throwRequestFailureOnInvalidAudioDevice(
@@ -382,66 +343,35 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
         settings.audioDevice);
 
     playTrialTime_ = clock.time();
-    if (audioRecordingEnabled) {
-        std::stringstream stream;
-        stream << trialNumber_ << '-' << session << ".wav";
-        audioRecorder.initialize(
-            LocalUrl{outputFile.parentPath() / stream.str()});
-    }
-    if (eyeTracking) {
-        eyeTracker.allocateRecordingTimeSeconds(
-            Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);
-        eyeTracker.start();
-    }
+    observer->notifyThatTrialWillBegin(trialNumber_);
     if (condition == Condition::audioVisual)
         show(targetPlayer);
     targetPlayer.preRoll();
     trialInProgress_ = true;
 }
 
-void RecognitionTestModelImpl::notifyThatPreRollHasCompleted() {
+void RunningATestImpl::notifyThatPreRollHasCompleted() {
     maskerPlayer.fadeIn();
 }
 
-void RecognitionTestModelImpl::fadeInComplete(
-    const AudioSampleTimeWithOffset &t) {
-    if (eyeTracking) {
-        PlayerTimeWithDelay timeToPlayWithDelay{};
-        timeToPlayWithDelay.playerTime = t.playerTime;
-        timeToPlayWithDelay.delay = Delay{Duration{
-            offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
-                                              .seconds};
-        targetPlayer.playAt(timeToPlayWithDelay);
-
-        lastTargetStartTime.nanoseconds =
-            nanoseconds(maskerPlayer, timeToPlayWithDelay);
-
-        lastEyeTrackerTargetPlayerSynchronization.eyeTrackerSystemTime =
-            eyeTracker.currentSystemTime();
-        lastEyeTrackerTargetPlayerSynchronization.targetPlayerSystemTime =
-            TargetPlayerSystemTime{
-                nanoseconds(maskerPlayer, maskerPlayer.currentSystemTime())};
-    } else {
-        PlayerTimeWithDelay timeToPlayWithDelay{};
-        timeToPlayWithDelay.playerTime = t.playerTime;
-        timeToPlayWithDelay.delay = Delay{Duration{
-            offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
-                                              .seconds};
-        targetPlayer.playAt(timeToPlayWithDelay);
-    }
+void RunningATestImpl::fadeInComplete(const AudioSampleTimeWithOffset &t) {
+    PlayerTimeWithDelay timeToPlayWithDelay{};
+    timeToPlayWithDelay.playerTime = t.playerTime;
+    timeToPlayWithDelay.delay = Delay{
+        Duration{offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
+            .seconds};
+    targetPlayer.playAt(timeToPlayWithDelay);
+    observer->notifyThatTargetWillPlayAt(timeToPlayWithDelay);
 }
 
-void RecognitionTestModelImpl::fadeOutComplete() {
+void RunningATestImpl::fadeOutComplete() {
     hide(targetPlayer);
-    if (eyeTracking)
-        eyeTracker.stop();
+    observer->notifyThatStimulusHasEnded();
     listener_->trialComplete();
     trialInProgress_ = false;
-    if (audioRecordingEnabled)
-        audioRecorder.start();
 }
 
-void RecognitionTestModelImpl::submit(
+void RunningATestImpl::submit(
     const coordinate_response_measure::Response &response) {
     saveOutputFileAndPrepareNextTrialAfter(
         [&]() {
@@ -449,54 +379,46 @@ void RecognitionTestModelImpl::submit(
             testMethod->writeLastCoordinateResponse(outputFile);
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, eyeTracker, maskerLevel_, fullScaleLevel_, eyeTracking,
-        lastTargetStartTime, lastEyeTrackerTargetPlayerSynchronization,
-        audioRecordingEnabled, audioRecorder);
+        maskerPlayer, observer, maskerLevel_, fullScaleLevel_);
 }
 
-void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
+void RunningATestImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, eyeTracker,
-        maskerLevel_, fullScaleLevel_, eyeTracking, lastTargetStartTime,
-        lastEyeTrackerTargetPlayerSynchronization, audioRecordingEnabled,
-        audioRecorder);
+        outputFile, randomizer, targetPlayer, maskerPlayer, observer,
+        maskerLevel_, fullScaleLevel_);
 }
 
-void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
+void RunningATestImpl::playCalibration(const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
     targetPlayer.useAllChannels();
     play(targetPlayer, calibration);
 }
 
-void RecognitionTestModelImpl::playLeftSpeakerCalibration(
+void RunningATestImpl::playLeftSpeakerCalibration(
     const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
     maskerPlayer.useFirstChannelOnly();
     play(maskerPlayer, calibration);
 }
 
-void RecognitionTestModelImpl::playRightSpeakerCalibration(
+void RunningATestImpl::playRightSpeakerCalibration(
     const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
     maskerPlayer.useSecondChannelOnly();
     play(maskerPlayer, calibration);
 }
 
-auto RecognitionTestModelImpl::testComplete() -> bool {
-    return testMethod->complete();
-}
+auto RunningATestImpl::testComplete() -> bool { return testMethod->complete(); }
 
-auto RecognitionTestModelImpl::audioDevices() -> AudioDevices {
+auto RunningATestImpl::audioDevices() -> AudioDevices {
     return maskerPlayer.outputAudioDeviceDescriptions();
 }
 
-auto RecognitionTestModelImpl::trialNumber() -> int { return trialNumber_; }
+auto RunningATestImpl::trialNumber() -> int { return trialNumber_; }
 
-auto RecognitionTestModelImpl::targetFileName() -> std::string {
+auto RunningATestImpl::targetFileName() -> std::string {
     return targetName(evaluator, testMethod);
 }
 
-auto RecognitionTestModelImpl::playTrialTime() -> std::string {
-    return playTrialTime_;
-}
+auto RunningATestImpl::playTrialTime() -> std::string { return playTrialTime_; }
 }

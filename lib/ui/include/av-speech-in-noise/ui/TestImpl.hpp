@@ -10,8 +10,8 @@
 namespace av_speech_in_noise {
 class TestControllerImpl : public TestControl::Observer, public TestController {
   public:
-    TestControllerImpl(SessionController &, Model &, SessionControl &,
-        TestControl &, TestPresenter &);
+    TestControllerImpl(SessionController &, RunningATestFacade &,
+        SessionControl &, TestControl &, TestPresenter &);
     void exitTest() override;
     void playTrial() override;
     void declineContinuingTesting() override;
@@ -24,7 +24,7 @@ class TestControllerImpl : public TestControl::Observer, public TestController {
 
   private:
     SessionController &sessionController;
-    Model &model;
+    RunningATestFacade &model;
     SessionControl &sessionControl;
     TestPresenter &presenter;
 };
@@ -72,10 +72,11 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
     TaskPresenter *presenter{};
 };
 
-class TestPresenterImpl : public Model::Observer, public TestPresenter {
+class TestPresenterImpl : public RunningATestFacade::Observer,
+                          public TestPresenter {
   public:
     explicit TestPresenterImpl(
-        Model &, TestView &, UninitializedTaskPresenter *);
+        RunningATestFacade &, TestView &, UninitializedTaskPresenter *);
     void initialize(TaskPresenter &) override;
     void start() override;
     void stop() override;
@@ -88,7 +89,7 @@ class TestPresenterImpl : public Model::Observer, public TestPresenter {
     void completeTask() override;
 
   private:
-    Model &model;
+    RunningATestFacade &model;
     TestView &view;
     UninitializedTaskPresenter *taskPresenter;
 };

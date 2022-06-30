@@ -9,8 +9,8 @@ static void readyNextTrial(TestPresenter &presenter) {
 }
 
 TestControllerImpl::TestControllerImpl(SessionController &sessionController,
-    Model &model, SessionControl &sessionControl, TestControl &control,
-    TestPresenter &presenter)
+    RunningATestFacade &model, SessionControl &sessionControl,
+    TestControl &control, TestPresenter &presenter)
     : sessionController{sessionController}, model{model},
       sessionControl{sessionControl}, presenter{presenter} {
     control.attach(this);
@@ -24,8 +24,8 @@ void TestControllerImpl::exitTest() {
     notifyThatTestIsComplete(sessionController);
 }
 
-static void playTrial(
-    Model &model, SessionControl &control, TestPresenter &presenter) {
+static void playTrial(RunningATestFacade &model, SessionControl &control,
+    TestPresenter &presenter) {
     model.playTrial(AudioSettings{control.audioDevice()});
     presenter.notifyThatTrialHasStarted();
 }
@@ -43,21 +43,21 @@ void TestControllerImpl::acceptContinuingTesting() {
     readyNextTrial(presenter);
 }
 
-static void ifTestCompleteElse(Model &model, const std::function<void()> &f,
-    const std::function<void()> &g) {
+static void ifTestCompleteElse(RunningATestFacade &model,
+    const std::function<void()> &f, const std::function<void()> &g) {
     if (model.testComplete())
         f();
     else
         g();
 }
 
-static void readyNextTrialIfTestIncompleteElse(
-    Model &model, TestPresenter &presenter, const std::function<void()> &f) {
+static void readyNextTrialIfTestIncompleteElse(RunningATestFacade &model,
+    TestPresenter &presenter, const std::function<void()> &f) {
     presenter.hideResponseSubmission();
     ifTestCompleteElse(model, f, [&]() { readyNextTrial(presenter); });
 }
 
-static void notifyIfTestIsCompleteElse(Model &model,
+static void notifyIfTestIsCompleteElse(RunningATestFacade &model,
     SessionController &controller, const std::function<void()> &f) {
     ifTestCompleteElse(
         model, [&]() { notifyThatTestIsComplete(controller); }, f);
@@ -92,8 +92,8 @@ void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
     });
 }
 
-TestPresenterImpl::TestPresenterImpl(
-    Model &model, TestView &view, UninitializedTaskPresenter *taskPresenter)
+TestPresenterImpl::TestPresenterImpl(RunningATestFacade &model, TestView &view,
+    UninitializedTaskPresenter *taskPresenter)
     : model{model}, view{view}, taskPresenter{taskPresenter} {
     model.attach(this);
 }
