@@ -12,7 +12,14 @@ AudioRecording::AudioRecording(
 void AudioRecording::notifyThatTrialWillBegin(int trialNumber) {
     timeStamp.capture();
     std::stringstream filename;
-    filename << trialNumber << '-' << session << ".wav";
+    filename << trialNumber << '-' << session;
+    filename << '-' << timeStamp.year();
+    filename << '-' << timeStamp.month();
+    filename << '-' << timeStamp.dayOfMonth();
+    filename << '-' << timeStamp.hour();
+    filename << '-' << timeStamp.minute();
+    filename << '-' << timeStamp.second();
+    filename << ".wav";
     audioRecorder.initialize(
         LocalUrl{outputFile.parentPath() / filename.str()});
 }

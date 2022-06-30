@@ -21,9 +21,15 @@ class AudioRecordingTests : public ::testing::Test {
 AUDIO_RECORDING_TEST(initializesRecorderWhenTrialWillBegin) {
     outputFile.setParentPath("/Users/user/data");
     audioRecording.notifyThatNewTestIsReady("smile");
+    timeStamp.setYear(1);
+    timeStamp.setMonth(2);
+    timeStamp.setDayOfMonth(7);
+    timeStamp.setHour(4);
+    timeStamp.setMinute(5);
+    timeStamp.setSecond(6);
     audioRecording.notifyThatTrialWillBegin(3);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        "/Users/user/data/3-smile.wav", audioRecorder.fileUrl().path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/data/3-smile-1-2-7-4-5-6.wav",
+        audioRecorder.fileUrl().path);
 }
 
 AUDIO_RECORDING_TEST(generateFileNameCapturesTimePriorToQueries) {
