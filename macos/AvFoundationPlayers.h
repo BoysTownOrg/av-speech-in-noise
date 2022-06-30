@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_MACOS_MAIN_AVFOUNDATIONPLAYERS_H_
 
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/AudioRecording.hpp>
 #include <av-speech-in-noise/player/MaskerPlayerImpl.hpp>
 #include <av-speech-in-noise/player/TargetPlayerImpl.hpp>
 #include <av-speech-in-noise/player/AudioReaderSimplified.hpp>

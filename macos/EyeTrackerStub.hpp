@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_MACOS_EYETRACKERSTUB_HPP_
 #define AV_SPEECH_IN_NOISE_MACOS_EYETRACKERSTUB_HPP_
 
-#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/EyeTracking.hpp>
 
 namespace av_speech_in_noise {
 class EyeTrackerStub : public EyeTracker {
