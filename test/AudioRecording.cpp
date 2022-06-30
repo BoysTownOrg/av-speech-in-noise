@@ -1,5 +1,6 @@
 #include "AudioRecorderStub.hpp"
 #include "OutputFileStub.hpp"
+#include "TimeStampStub.hpp"
 #include "assert-utility.hpp"
 
 #include <av-speech-in-noise/core/AudioRecording.hpp>
@@ -11,7 +12,8 @@ class AudioRecordingTests : public ::testing::Test {
   protected:
     AudioRecorderStub audioRecorder;
     OutputFileStub outputFile;
-    AudioRecording audioRecording{audioRecorder, outputFile};
+    TimeStampStub timeStamp;
+    AudioRecording audioRecording{audioRecorder, outputFile, timeStamp};
 };
 
 #define AUDIO_RECORDING_TEST(a) TEST_F(AudioRecordingTests, a)
@@ -22,6 +24,11 @@ AUDIO_RECORDING_TEST(initializesRecorderWhenTrialWillBegin) {
     audioRecording.notifyThatTrialWillBegin(3);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "/Users/user/data/3-smile.wav", audioRecorder.fileUrl().path);
+}
+
+AUDIO_RECORDING_TEST(generateFileNameCapturesTimePriorToQueries) {
+    audioRecording.notifyThatTrialWillBegin(1);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(beginsWith(timeStamp.log(), "capture"));
 }
 
 AUDIO_RECORDING_TEST(startsRecordingWhenStimulusEnds) {
