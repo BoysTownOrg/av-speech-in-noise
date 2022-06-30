@@ -321,7 +321,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         &cyclicTargetsFactory, &directoryReader};
     static PredeterminedTargetPlaylist predeterminedTargetPlaylist{
         textFileReader};
-    static AudioRecording audioRecording{audioRecorder, outputFile};
+    static AudioRecording audioRecording{audioRecorder, outputFile, timeStamp};
     static EyeTracking eyeTracking{
         eyeTracker, maskerPlayer, targetPlayer, outputFile};
     static RunningATestFacadeImpl model{adaptiveMethod, fixedLevelMethod,
