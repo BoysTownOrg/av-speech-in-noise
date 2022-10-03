@@ -79,7 +79,7 @@ enum SwiftMain {
         terminatingAlert.messageText = ""
         switch AVCaptureDevice.authorizationStatus(for: .audio) {
             case .authorized:
-
+                break
             case .notDetermined: // The user has not yet been asked for camera access.
                 AVCaptureDevice.requestAccess(for: .audio) { granted in
                     if granted {
