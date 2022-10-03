@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
