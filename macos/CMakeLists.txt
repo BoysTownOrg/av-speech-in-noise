@@ -37,6 +37,7 @@ function(add_macos_bundle target identifier output_name)
                "${AV_SPEECH_IN_NOISE_MACOS_CODE_SIGN_IDENTITY}"
                XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS
                "${AV_SPEECH_IN_NOISE_MACOS_OTHER_CODE_SIGN_FLAGS}"
+               XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS ${CMAKE_SOURCE_DIR}/av-speech-in-noise.entitlements
                XCODE_ATTRIBUTE_CODE_SIGN_INJECT_BASE_ENTITLEMENTS NO
                XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER
                ${CMAKE_CURRENT_SOURCE_DIR}/objective-c-bridge.h)
