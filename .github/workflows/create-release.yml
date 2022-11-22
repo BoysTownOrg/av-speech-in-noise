@@ -20,9 +20,10 @@ jobs:
         env:
           OSF_TOKEN: ${{ secrets.OSF_ACCESS_TOKEN }}
         run: |
-          osf -p r6ceh fetch osfstorage/av-speech-in-noise-resources.zip
+          OSF_BINARY=$(find ~/Library/Python/ -name osf)
+          ${OSF_BINARY} -p r6ceh fetch osfstorage/av-speech-in-noise-resources.zip
           unzip av-speech-in-noise-resources.zip
-          osf -p nxq4v fetch osfstorage/tobii_research.zip
+          ${OSF_BINARY} -p nxq4v fetch osfstorage/tobii_research.zip
           unzip tobii_research.zip
           mkdir /usr/local/include/tobii_research
           mkdir /usr/local/lib/tobii_research
