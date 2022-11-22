@@ -13,17 +13,17 @@ jobs:
         with:
           p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
           p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
-      - name: install osfclient
-        run: pip3 install osfclient
       - uses: actions/checkout@v2
       - name: download resources
         env:
           OSF_TOKEN: ${{ secrets.OSF_ACCESS_TOKEN }}
         run: |
-          OSF_BINARY=$(find ~/Library/Python/ -name osf)
-          ${OSF_BINARY} -p r6ceh fetch osfstorage/av-speech-in-noise-resources.zip
+          python3 -m venv env
+          source env/bin/activate
+          pip install osfclient
+          osf -p r6ceh fetch osfstorage/av-speech-in-noise-resources.zip
           unzip av-speech-in-noise-resources.zip
-          ${OSF_BINARY} -p nxq4v fetch osfstorage/tobii_research.zip
+          osf -p nxq4v fetch osfstorage/tobii_research.zip
           unzip tobii_research.zip
           mkdir /usr/local/include/tobii_research
           mkdir /usr/local/lib/tobii_research
