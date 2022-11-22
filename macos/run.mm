@@ -159,7 +159,7 @@ class UnixFileSystemPath : public FileSystemPath {
     }
 
     void createDirectory(const std::filesystem::path &p) override {
-        create_directory(p);
+        create_directories(p);
     }
 };
 
@@ -247,8 +247,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static UnixFileSystemPath systemPath;
     static const auto outputFileName{outputFileNameFactory.make(timeStamp)};
     static OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
-    outputFilePath.setRelativeOutputDirectory(
-        std::move(relativeOutputDirectory));
     static OutputFileImpl outputFile{fileWriter, outputFilePath};
     static adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     static ResponseEvaluatorImpl responseEvaluator;

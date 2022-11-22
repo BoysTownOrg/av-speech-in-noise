@@ -239,6 +239,7 @@ void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     testIdentity.rmeSetting = "g";
     testIdentity.transducer = "h";
     testIdentity.meta = "k";
+    testIdentity.relativeOutputUrl.path = "n";
     initialize(interpreter, model, sessionController,
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::subjectId, "d"),
@@ -246,7 +247,8 @@ void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
             entryWithNewline(TestSetting::session, "f"),
             entryWithNewline(TestSetting::rmeSetting, "i"),
             entryWithNewline(TestSetting::transducer, "j"),
-            entryWithNewline(TestSetting::meta, "m")},
+            entryWithNewline(TestSetting::meta, "m"),
+            entryWithNewline(TestSetting::relativeOutputPath, "p")},
         0, testIdentity);
     assertSubjectIdEquals("d", f(model));
     assertTesterIdEquals("e", f(model));
@@ -254,6 +256,7 @@ void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"i"}, f(model).rmeSetting);
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"j"}, f(model).transducer);
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"m"}, f(model).meta);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"p"}, f(model).relativeOutputUrl.path);
 }
 
 void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter,

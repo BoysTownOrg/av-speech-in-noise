@@ -35,7 +35,7 @@ class OutputFilePathImpl : public OutputFilePath {
     OutputFilePathImpl(OutputFileName &, FileSystemPath &);
     auto generateFileName(const TestIdentity &) -> std::string override;
     auto outputDirectory() -> std::string override;
-    void setRelativeOutputDirectory(std::filesystem::path);
+    void setRelativeOutputDirectory(std::filesystem::path) override;
 
   private:
     auto outputDirectory_() -> std::string;

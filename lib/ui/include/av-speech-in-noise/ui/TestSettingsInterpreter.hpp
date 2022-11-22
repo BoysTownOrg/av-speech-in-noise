@@ -99,7 +99,8 @@ enum class TestSetting {
     session,
     rmeSetting,
     transducer,
-    meta
+    meta,
+    relativeOutputPath
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -140,6 +141,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "transducer";
     case TestSetting::meta:
         return "meta";
+    case TestSetting::relativeOutputPath:
+        return "relative output path";
     }
 }
 
