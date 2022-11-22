@@ -521,6 +521,14 @@ TEST_SETUP_CONTROLLER_TEST(
         std::string{"a"}, testSettingsInterpreter.identity().transducer);
 }
 
+TEST_SETUP_CONTROLLER_TEST(
+    confirmingTestSetupPassesDefaultRelativeOutputDirectory) {
+    run(confirmingTestSetup);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"Documents/AvSpeechInNoise Data"},
+        testSettingsInterpreter.identity().relativeOutputUrl.path);
+}
+
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesLevel) {
     assertPassesLevel(playingCalibration);
 }
