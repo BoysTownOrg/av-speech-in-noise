@@ -63,9 +63,18 @@ class OutputFilePathStub : public OutputFilePath {
 
     void setOutputDirectory(std::string s) { outputDirectory_ = std::move(s); }
 
+    void setRelativeOutputDirectory(std::filesystem::path p) override {
+        relativeOutputDirectory_ = p;
+    }
+
+    auto relativeOutputDirectory() -> std::string {
+        return relativeOutputDirectory_;
+    }
+
   private:
     std::string fileName_;
     std::string outputDirectory_;
+    std::string relativeOutputDirectory_;
     const TestIdentity *testIdentity_{};
 };
 
@@ -1084,6 +1093,14 @@ OUTPUT_FILE_TEST(openPassesFormattedFilePath) {
     path.setOutputDirectory("b");
     openNewFile(file);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"b/a.txt"}, writer.filePath());
+}
+
+OUTPUT_FILE_TEST(openSetsRelativeOutputDirectory) {
+    TestIdentity identity;
+    identity.relativeOutputUrl.path = "abc";
+    openNewFile(file, identity);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"abc"}, path.relativeOutputDirectory());
 }
 
 OUTPUT_FILE_TEST(closeClosesWriter) {

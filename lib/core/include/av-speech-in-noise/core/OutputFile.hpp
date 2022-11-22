@@ -173,6 +173,7 @@ class OutputFilePath {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(OutputFilePath);
     virtual auto generateFileName(const TestIdentity &) -> std::string = 0;
     virtual auto outputDirectory() -> std::string = 0;
+    virtual void setRelativeOutputDirectory(std::filesystem::path) = 0;
 };
 
 class OutputFileImpl : public OutputFile {

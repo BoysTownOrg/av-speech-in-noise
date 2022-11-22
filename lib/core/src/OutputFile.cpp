@@ -656,6 +656,7 @@ void OutputFileImpl::openNewFile(const TestIdentity &test) {
 
 auto OutputFileImpl::generateNewFilePath(const TestIdentity &test)
     -> std::string {
+    path.setRelativeOutputDirectory(test.relativeOutputUrl.path);
     return path.outputDirectory() + "/" + path.generateFileName(test) + ".txt";
 }
 
