@@ -33,6 +33,10 @@ struct FreeResponse : Flaggable {
     std::string response;
 };
 
+struct LocalUrl {
+    std::string path;
+};
+
 struct TestIdentity {
     std::string subjectId;
     std::string testerId;
@@ -41,6 +45,7 @@ struct TestIdentity {
     std::string rmeSetting;
     std::string transducer;
     std::string meta;
+    LocalUrl relativeOutputUrl;
 };
 
 struct ConsonantResponse {
@@ -80,10 +85,6 @@ enum class Condition { auditoryOnly, audioVisual };
 
 struct RealLevel {
     int dB_SPL{};
-};
-
-struct LocalUrl {
-    std::string path;
 };
 
 struct Test {
