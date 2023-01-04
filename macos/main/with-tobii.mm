@@ -196,6 +196,7 @@ class AppKitSubjectView : public SubjectView {
     }
 
     void moveDotTo(WindowPoint point) override {
+        dot.hidden = YES;
         animate(dot,
             NSMakeRect(point.x * dot.superview.frame.size.width -
                     dot.frame.size.width / 2,
@@ -206,6 +207,7 @@ class AppKitSubjectView : public SubjectView {
     }
 
     void shrinkDot() override {
+        dot.hidden = NO;
         animate(dot,
             NSMakeRect(dot.frame.origin.x +
                     (dot.frame.size.width - shrunkenDotDiameterPoints) / 2,
@@ -216,6 +218,7 @@ class AppKitSubjectView : public SubjectView {
     }
 
     void growDot() override {
+        dot.hidden = NO;
         animate(dot,
             NSMakeRect(dot.frame.origin.x +
                     (dot.frame.size.width - normalDotDiameterPoints) / 2,
