@@ -54,21 +54,25 @@ struct CalibrationValidationTesterSwiftView: View {
         if showing.value {
             HStack {
                 List {
-                    Section(header: Text("accuracy (degrees)")) {
-                        TextField("left", text: $leftEyeAccuracyDegrees.string).disabled(true)
-                        TextField("right", text: $rightEyeAccuracyDegrees.string).disabled(true)
+                    Form {
+                        Section(header: Text("accuracy (degrees)")) {
+                            TextField("left", text: $leftEyeAccuracyDegrees.string).disabled(true)
+                            TextField("right", text: $rightEyeAccuracyDegrees.string).disabled(true)
+                        }
                     }
                 }
                 List {
-                    Section(header: Text("precision (degrees)")) {
-                        TextField("left", text: $leftEyePrecisionDegrees.string).disabled(true)
-                        TextField("right", text: $rightEyePrecisionDegrees.string).disabled(true)
+                    Form {
+                        Section(header: Text("precision (degrees)")) {
+                            TextField("left", text: $leftEyePrecisionDegrees.string).disabled(true)
+                            TextField("right", text: $rightEyePrecisionDegrees.string).disabled(true)
+                        }
                     }
                 }
                 Button("Close") {
                     observableObserver.observer?.notifyThatCloseButtonHasBeenClicked()
                 }
-            }.padding()
+            }.frame(height: 200)
         }
     }
 }
