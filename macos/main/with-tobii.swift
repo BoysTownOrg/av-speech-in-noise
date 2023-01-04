@@ -54,21 +54,25 @@ struct CalibrationValidationTesterSwiftView: View {
         if showing.value {
             HStack {
                 List {
-                    Section(header: Text("accuracy (degrees)")) {
-                        TextField("left", text: $leftEyeAccuracyDegrees.string).disabled(true)
-                        TextField("right", text: $rightEyeAccuracyDegrees.string).disabled(true)
+                    Form {
+                        Section(header: Text("accuracy (degrees)")) {
+                            TextField("left", text: $leftEyeAccuracyDegrees.string).disabled(true)
+                            TextField("right", text: $rightEyeAccuracyDegrees.string).disabled(true)
+                        }
                     }
                 }
                 List {
-                    Section(header: Text("precision (degrees)")) {
-                        TextField("left", text: $leftEyePrecisionDegrees.string).disabled(true)
-                        TextField("right", text: $rightEyePrecisionDegrees.string).disabled(true)
+                    Form {
+                        Section(header: Text("precision (degrees)")) {
+                            TextField("left", text: $leftEyePrecisionDegrees.string).disabled(true)
+                            TextField("right", text: $rightEyePrecisionDegrees.string).disabled(true)
+                        }
                     }
                 }
                 Button("Close") {
                     observableObserver.observer?.notifyThatCloseButtonHasBeenClicked()
                 }
-            }.padding()
+            }.frame(height: 200)
         }
     }
 }
@@ -148,15 +152,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         let alert = NSAlert()
         alert.messageText = ""
-        alert.informativeText = "This software will store your eye tracking data.\n\nWe do so only for the purpose of the current study (17-13-XP). We never sell, distribute, or make profit on the collected data. Only staff and research personnel on the existing IRB will have access to the data. Any data used for publication or collaborative and/or learning purposes will be deidentified.\n\nThere is no direct benefit to you for doing this study. What we learn from this study may help doctors treat children who have a hard time hearing when it is noisy."
-        alert.addButton(withTitle: "No, I do not accept")
+        alert.informativeText = "This software will store your eye tracking data.\n\nWe do so only for the purpose of the current study (11-24-XP). We never sell, distribute, or make profit on the collected data. Only staff and research personnel on the existing IRB will have access to the data. Any data used for publication or collaborative and/or learning purposes will be deidentified.\n\nThere is no direct benefit to you for doing this study. What we learn from this study may help doctors treat children who have a hard time hearing when it is noisy."
         alert.addButton(withTitle: "Yes, I accept")
-        alertWindow.makeKeyAndOrderFront(nil)
+        alert.addButton(withTitle: "No, I do not accept")
         alert.beginSheetModal(for: alertWindow, completionHandler: { (response: NSApplication.ModalResponse) in
             alertWindow.orderOut(nil)
             NSApp.stopModal(withCode: response)
         })
-        if NSApp.runModal(for: alertWindow) == NSApplication.ModalResponse.alertFirstButtonReturn {
+        if NSApp.runModal(for: alertWindow) == NSApplication.ModalResponse.alertSecondButtonReturn {
             let terminatingAlert = NSAlert()
             terminatingAlert.messageText = ""
             terminatingAlert.informativeText = "User does not accept eye tracking terms. Terminating."

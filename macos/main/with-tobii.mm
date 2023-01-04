@@ -196,33 +196,36 @@ class AppKitSubjectView : public SubjectView {
     }
 
     void moveDotTo(WindowPoint point) override {
+        dot.hidden = YES;
         animate(dot,
             NSMakeRect(point.x * dot.superview.frame.size.width -
                     dot.frame.size.width / 2,
                 point.y * dot.superview.frame.size.height -
                     dot.frame.size.height / 2,
                 dot.frame.size.width, dot.frame.size.height),
-            1.5, animationDelegate);
+            0.5, animationDelegate);
     }
 
     void shrinkDot() override {
+        dot.hidden = NO;
         animate(dot,
             NSMakeRect(dot.frame.origin.x +
                     (dot.frame.size.width - shrunkenDotDiameterPoints) / 2,
                 dot.frame.origin.y +
                     (dot.frame.size.height - shrunkenDotDiameterPoints) / 2,
                 shrunkenDotDiameterPoints, shrunkenDotDiameterPoints),
-            0.5, animationDelegate);
+            2.0, animationDelegate);
     }
 
     void growDot() override {
+        dot.hidden = NO;
         animate(dot,
             NSMakeRect(dot.frame.origin.x +
                     (dot.frame.size.width - normalDotDiameterPoints) / 2,
                 dot.frame.origin.y +
                     (dot.frame.size.height - normalDotDiameterPoints) / 2,
                 normalDotDiameterPoints, normalDotDiameterPoints),
-            0.5, animationDelegate);
+            2.0, animationDelegate);
     }
 
     void show() override { [dot setHidden:NO]; }
