@@ -75,6 +75,7 @@ class SwiftFacemaskStudyTestSetupUI: NSObject, TestSetupUI {
             IdentifiableString(string: conditionShortName(stem: "CommunicatorMask_AO", testSettingsForShortName: &testSettingsForShortName)),
             IdentifiableString(string: conditionShortName(stem: "CommunicatorMask_AV", testSettingsForShortName: &testSettingsForShortName)),
         ]
+        testSettingsShortName.string = testSettingsShortNames.items[0].string
         showing.value = true
         self.snrFunctor = snrFunctor
     }
@@ -123,14 +124,20 @@ class SwiftFacemaskStudyTestSetupUI: NSObject, TestSetupUI {
 }
 
 struct SnrSwitch: View {
-    @ObservedObject var minusTenDBStartingSnr: ObservableBool
+    @ObservedObject var startingSnr: ObservableString
+    @ObservedObject var startingSnrs: ObservableStringCollection
 
-    init(minusTenDBStartingSnr: ObservableBool) {
-        self.minusTenDBStartingSnr = minusTenDBStartingSnr
+    init(startingSnr: ObservableString, startingSnrs: ObservableStringCollection) {
+        self.startingSnr = startingSnr
+        self.startingSnrs = startingSnrs
     }
 
     var body: some View {
-        Toggle("-10 dB SNR", isOn: $minusTenDBStartingSnr.value)
+        Picker("Starting SNR (dB):", selection: $startingSnr.string) {
+            ForEach(startingSnrs.items) {
+                Text($0.string)
+            }
+        }.font(.largeTitle).foregroundColor(.yellow)
     }
 }
 
@@ -196,11 +203,18 @@ class AppMenu: NSMenu {
 @main
 enum SwiftMain {
     static func main() {
-        let minusTenDBStartingSnr = ObservableBool()
+        let startingSnr = ObservableString()
+        startingSnr.string = "-8"
+        let startingSnrs = ObservableStringCollection()
+        startingSnrs.items = [
+            IdentifiableString(string: "-8"),
+            IdentifiableString(string: "-10"),
+            IdentifiableString(string: "-12"),
+        ]
         let delegate = AppDelegate (snrFunctor: {
-            [minusTenDBStartingSnr] in minusTenDBStartingSnr.value ? "-10" : "0"
+            [startingSnr] in startingSnr.string
         }) {
-            SnrSwitch(minusTenDBStartingSnr: minusTenDBStartingSnr)
+            SnrSwitch(startingSnr: startingSnr, startingSnrs: startingSnrs)
         }
         let menu = AppMenu()
         NSApplication.shared.delegate = delegate
