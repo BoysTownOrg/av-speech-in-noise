@@ -75,6 +75,7 @@ class SwiftFacemaskStudyTestSetupUI: NSObject, TestSetupUI {
             IdentifiableString(string: conditionShortName(stem: "CommunicatorMask_AO", testSettingsForShortName: &testSettingsForShortName)),
             IdentifiableString(string: conditionShortName(stem: "CommunicatorMask_AV", testSettingsForShortName: &testSettingsForShortName)),
         ]
+        testSettingsShortName.string = testSettingsShortNames.items[0].string
         showing.value = true
         self.snrFunctor = snrFunctor
     }
@@ -203,6 +204,7 @@ class AppMenu: NSMenu {
 enum SwiftMain {
     static func main() {
         let startingSnr = ObservableString()
+        startingSnr.string = "-8"
         let startingSnrs = ObservableStringCollection()
         startingSnrs.items = [
             IdentifiableString(string: "-8"),
