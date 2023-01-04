@@ -203,7 +203,7 @@ class AppKitSubjectView : public SubjectView {
                 point.y * dot.superview.frame.size.height -
                     dot.frame.size.height / 2,
                 dot.frame.size.width, dot.frame.size.height),
-            1.5, animationDelegate);
+            0.5, animationDelegate);
     }
 
     void shrinkDot() override {
@@ -214,7 +214,7 @@ class AppKitSubjectView : public SubjectView {
                 dot.frame.origin.y +
                     (dot.frame.size.height - shrunkenDotDiameterPoints) / 2,
                 shrunkenDotDiameterPoints, shrunkenDotDiameterPoints),
-            0.5, animationDelegate);
+            2.0, animationDelegate);
     }
 
     void growDot() override {
@@ -225,7 +225,7 @@ class AppKitSubjectView : public SubjectView {
                 dot.frame.origin.y +
                     (dot.frame.size.height - normalDotDiameterPoints) / 2,
                 normalDotDiameterPoints, normalDotDiameterPoints),
-            0.5, animationDelegate);
+            2.0, animationDelegate);
     }
 
     void show() override { [dot setHidden:NO]; }
