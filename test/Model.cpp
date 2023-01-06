@@ -1393,6 +1393,13 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
+    initializeFixedLevelTestWithPredeterminedTargetsAndEyeTrackingInitializesWithPredeterminedTargets) {
+    assertInitializesFixedLevelTestWithTargetPlaylist(
+        initializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking,
+        predeterminedTargets);
+}
+
+MODEL_TEST(
     initializeFixedLevelTestWithEachTargetNTimesInitializesWithEachTargetNTimes) {
     assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithEachTargetNTimes, eachTargetNTimes);
