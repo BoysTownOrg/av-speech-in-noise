@@ -47,6 +47,18 @@ static void applyToStepSize(TrackingSequence &sequence, int x) {
     sequence.stepSize = x;
 }
 
+static auto trim(std::string s) -> std::string {
+
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+        return std::isspace(ch) == 0;
+    }));
+    s.erase(std::find_if(s.rbegin(), s.rend(),
+                [](unsigned char ch) { return std::isspace(ch) == 0; })
+                .base(),
+        s.end());
+    return s;
+}
+
 static void applyToEachTrackingRule(AdaptiveTest &test,
     const std::function<void(TrackingSequence &, int)> &f,
     const std::string &entry) {
@@ -57,15 +69,15 @@ static void applyToEachTrackingRule(AdaptiveTest &test,
 }
 
 static auto entryName(const std::string &line) -> std::string {
-    return line.substr(0, entryDelimiter(line));
+    return trim(line.substr(0, entryDelimiter(line)));
 }
 
 static auto size(const std::string &s) -> gsl::index { return s.size(); }
 
 static auto entry(const std::string &line) -> std::string {
-    return entryDelimiter(line) + 2 > size(line)
+    return entryDelimiter(line) >= size(line) - 1
         ? ""
-        : line.substr(entryDelimiter(line) + 2);
+        : trim(line.substr(entryDelimiter(line) + 1));
 }
 
 static void applyToEachEntry(

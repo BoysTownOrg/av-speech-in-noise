@@ -141,6 +141,29 @@ void assertPassesSimpleFixedLevelSettings(
         fixedLevelTest(model).fullScaleLevel.dB_SPL);
 }
 
+void assertPassesSettingsWithExtraneousWhitespace(
+    TestSettingsInterpreterImpl &interpreter, ModelStub &model,
+    SessionController &sessionController, Method m,
+    const std::function<FixedLevelTest(ModelStub &)> &fixedLevelTest) {
+    initialize(interpreter, model, sessionController,
+        {withNewLine(std::string{"  "} + name(TestSetting::method) +
+             std::string{" :  "} + name(m) + "  "),
+            entryWithNewline(TestSetting::targets, "a"),
+            entryWithNewline(TestSetting::masker, "b"),
+            entryWithNewline(TestSetting::maskerLevel, "65")},
+        5);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, fixedLevelTest(model).targetsUrl.path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"b"}, fixedLevelTest(model).maskerFileUrl.path);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        65, fixedLevelTest(model).maskerLevel.dB_SPL);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(5, fixedLevelTest(model).snr.dB);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        SessionControllerImpl::fullScaleLevel.dB_SPL,
+        fixedLevelTest(model).fullScaleLevel.dB_SPL);
+}
+
 void initialize(TestSettingsInterpreterImpl &interpreter,
     RunningATestFacade &model, SessionController &sessionController, Method m,
     const TestIdentity &identity = {}, int startingSnr = {}) {
@@ -256,7 +279,8 @@ void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"i"}, f(model).rmeSetting);
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"j"}, f(model).transducer);
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"m"}, f(model).meta);
-    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"p"}, f(model).relativeOutputUrl.path);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
+        std::string{"p"}, f(model).relativeOutputUrl.path);
 }
 
 void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter,
@@ -696,6 +720,13 @@ TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAuditoryOnly) {
             entryWithNewline(TestSetting::condition, Condition::auditoryOnly)});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         Condition::auditoryOnly, fixedLevelTest(model).condition);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithAllTargetsPassesSettingsWithExtraneousWhitespace) {
+    assertPassesSettingsWithExtraneousWhitespace(interpreter, model,
+        sessionController, Method::fixedLevelFreeResponseWithAllTargets,
+        fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
