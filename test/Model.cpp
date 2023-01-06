@@ -772,6 +772,30 @@ class InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
+class InitializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking
+    : public InitializingFixedLevelTest {
+    FixedLevelTest test_;
+    FixedLevelMethodStub *method;
+
+  public:
+    explicit InitializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking(
+        FixedLevelMethodStub *method)
+        : method{method} {}
+
+    void run(RunningATestFacadeImpl &model) override {
+        model.initializeWithPredeterminedTargetsAndEyeTracking(test_);
+    }
+
+    void run(
+        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
+        model.initializeWithPredeterminedTargetsAndEyeTracking(test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
 auto initializedWithEyeTracking(
     RecognitionTestModelStub &m, RunningATest::Observer *observer) -> bool {
     return m.observer == observer;
@@ -880,6 +904,9 @@ class ModelTests : public ::testing::Test {
             &fixedLevelMethod};
     InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording
         initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording{
+            &fixedLevelMethod};
+    InitializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking
+        initializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking{
             &fixedLevelMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
@@ -1295,6 +1322,12 @@ MODEL_TEST(
     initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecordingInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording);
+}
+
+MODEL_TEST(
+    initializingFixedLevelTestWithPredeterminedTargetsAndEyeTrackingInitializesFixedLevelMethod) {
+    assertInitializesFixedLevelMethod(
+        initializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking);
 }
 
 MODEL_TEST(
