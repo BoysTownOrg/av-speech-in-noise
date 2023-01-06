@@ -1560,6 +1560,13 @@ MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {
 }
 
 MODEL_TEST(
+    initializeFixedLevelTestWithPredertiminedTargetsAndEyeTrackingInitializesWithEyeTracking) {
+    run(initializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        initializedWithEyeTracking(internalModel, &eyeTracking));
+}
+
+MODEL_TEST(
     initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithCyclicTargetsAndEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
