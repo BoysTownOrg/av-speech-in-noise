@@ -201,6 +201,10 @@ static auto method(const std::string &contents) -> Method {
                  fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets),
             Method::
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets},
+        {name(Method::
+                 fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking),
+            Method::
+                fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking},
         {name(Method::fixedLevelConsonants), Method::fixedLevelConsonants},
         {name(Method::fixedLevelChooseKeywordsWithAllTargets),
             Method::fixedLevelChooseKeywordsWithAllTargets},
@@ -354,6 +358,11 @@ static void initialize(RunningATestFacade &model, Method method,
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {
                 model.initializeWithPredeterminedTargetsAndAudioRecording(test);
+            });
+    case Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking:
+        return av_speech_in_noise::initialize(method, contents, identity,
+            startingSnr, [&](const FixedLevelTest &test) {
+                model.initializeWithPredeterminedTargetsAndEyeTracking(test);
             });
     case Method::
         fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking:

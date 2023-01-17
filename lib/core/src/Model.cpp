@@ -121,6 +121,14 @@ void RunningATestFacadeImpl::
         runningATest, fixedLevelMethod, test, &audioRecording);
 }
 
+void RunningATestFacadeImpl::initializeWithPredeterminedTargetsAndEyeTracking(
+    const FixedLevelTest &test) {
+    av_speech_in_noise::initialize(
+        fixedLevelMethod, test, predeterminedTargets);
+    av_speech_in_noise::initialize(
+        runningATest, fixedLevelMethod, test, &eyeTracking);
+}
+
 void RunningATestFacadeImpl::initializeWithSingleSpeaker(
     const AdaptiveTest &test) {
     av_speech_in_noise::initialize(

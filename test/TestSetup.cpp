@@ -380,6 +380,11 @@ class RequestFailingModel : public RunningATestFacade {
         throw RequestFailure{errorMessage};
     }
 
+    void initializeWithPredeterminedTargetsAndEyeTracking(
+        const FixedLevelTest &) override {
+        throw RequestFailure{errorMessage};
+    }
+
     void initializeWithSingleSpeaker(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }

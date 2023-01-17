@@ -454,6 +454,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {Method::
                     fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording,
                 freeResponsePresenter},
+            {Method::
+                    fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking,
+                freeResponsePresenter},
             {Method::fixedLevelFreeResponseWithSilentIntervalTargets,
                 freeResponsePresenter},
             {Method::fixedLevelFreeResponseWithTargetReplacement,

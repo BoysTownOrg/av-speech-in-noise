@@ -190,6 +190,11 @@ class ModelStub : public RunningATestFacade {
         fixedLevelTest_ = p;
     }
 
+    void initializeWithPredeterminedTargetsAndEyeTracking(
+        const FixedLevelTest &p) override {
+        fixedLevelTest_ = p;
+    }
+
     void completeTrial() { listener_->trialComplete(); }
 
     void setAudioDevices(std::vector<std::string> v) {
