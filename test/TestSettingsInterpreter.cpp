@@ -148,7 +148,7 @@ void assertPassesSettingsWithExtraneousWhitespace(
     initialize(interpreter, model, sessionController,
         {withNewLine(std::string{"  "} + name(TestSetting::method) +
              std::string{" :  "} + name(m) + "  "),
-            entryWithNewline(TestSetting::targets, "a"),
+            withNewLine(name(TestSetting::targets) + std::string{" :a "}),
             entryWithNewline(TestSetting::masker, "b"),
             entryWithNewline(TestSetting::maskerLevel, "65")},
         5);
