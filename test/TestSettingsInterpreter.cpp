@@ -436,6 +436,13 @@ TEST_SETTINGS_INTERPRETER_TEST(
         fixedLevelTestIdentity);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTrackingPassesMethod) {
+    assertPassesTestMethod(interpreter, model, sessionController,
+        Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking,
+        fixedLevelTestIdentity);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesTestIdentity) {
     assertOverridesTestIdentity(interpreter, model, sessionController,
         Method::adaptivePassFail, adaptiveTestIdentity);

@@ -28,7 +28,7 @@ class ConsonantControlStub : public Control {
     auto consonant() -> std::string override { return consonant_; }
 
   private:
-    std::string consonant_;
+    std::string consonant_{"a"};
     Observer *listener_{};
 };
 

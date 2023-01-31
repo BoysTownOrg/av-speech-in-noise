@@ -43,6 +43,7 @@ function(add_macos_bundle target identifier output_name)
                ${CMAKE_CURRENT_SOURCE_DIR}/objective-c-bridge.h)
 endfunction()
 
+enable_language(OBJCXX Swift)
 option(AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING "Enables tobii eye tracking"
        OFF)
 if(${AV_SPEECH_IN_NOISE_ENABLE_TOBII_EYETRACKING})

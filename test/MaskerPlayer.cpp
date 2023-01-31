@@ -11,6 +11,7 @@
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
+#include <thread>
 
 namespace av_speech_in_noise {
 constexpr auto operator==(const PlayerTime &a, const PlayerTime &b) -> bool {

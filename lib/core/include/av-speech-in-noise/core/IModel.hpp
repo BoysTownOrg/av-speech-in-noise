@@ -97,6 +97,8 @@ class RunningATestFacade {
         const FixedLevelTest &) = 0;
     virtual void initializeWithPredeterminedTargetsAndAudioRecording(
         const FixedLevelTest &) = 0;
+    virtual void initializeWithPredeterminedTargetsAndEyeTracking(
+        const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playLeftSpeakerCalibration(const Calibration &) = 0;
     virtual void playRightSpeakerCalibration(const Calibration &) = 0;
