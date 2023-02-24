@@ -99,7 +99,8 @@ void assertPassesSimpleAdaptiveSettings(
             entryWithNewline(TestSetting::masker, "b"),
             entryWithNewline(TestSetting::maskerLevel, "65"),
             entryWithNewline(TestSetting::thresholdReversals, "4"),
-            entryWithNewline(TestSetting::condition, Condition::audioVisual)},
+            entryWithNewline(TestSetting::condition, Condition::audioVisual),
+            entryWithNewline(TestSetting::keepVideoShown, "true")},
         5);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, adaptiveTest(model).targetsUrl.path);
@@ -117,6 +118,7 @@ void assertPassesSimpleAdaptiveSettings(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         SessionControllerImpl::fullScaleLevel.dB_SPL,
         adaptiveTest(model).fullScaleLevel.dB_SPL);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(true, adaptiveTest(model).keepVideoShown);
 }
 
 void assertPassesSimpleFixedLevelSettings(
@@ -256,7 +258,8 @@ void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"i"}, f(model).rmeSetting);
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"j"}, f(model).transducer);
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"m"}, f(model).meta);
-    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"p"}, f(model).relativeOutputUrl.path);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
+        std::string{"p"}, f(model).relativeOutputUrl.path);
 }
 
 void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter,

@@ -104,7 +104,8 @@ enum class TestSetting {
     rmeSetting,
     transducer,
     meta,
-    relativeOutputPath
+    relativeOutputPath,
+    keepVideoShown
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -147,6 +148,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "meta";
     case TestSetting::relativeOutputPath:
         return "relative output path";
+    case TestSetting::keepVideoShown:
+        return "keep video shown";
     }
 }
 
