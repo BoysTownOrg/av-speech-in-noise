@@ -106,6 +106,8 @@ static void assign(
         test.identity.meta = entry;
     else if (entryName == name(TestSetting::relativeOutputPath))
         test.identity.relativeOutputUrl.path = entry;
+    else if (entryName == name(TestSetting::keepVideoShown))
+        test.keepVideoShown = entry == "true";
     else if (entryName == name(TestSetting::condition))
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
             if (entry == name(c))

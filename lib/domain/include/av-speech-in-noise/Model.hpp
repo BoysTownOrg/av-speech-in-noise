@@ -94,6 +94,7 @@ struct Test {
     RealLevel maskerLevel;
     RealLevel fullScaleLevel;
     Condition condition{};
+    bool keepVideoShown{};
 };
 
 struct TrackingSequence {

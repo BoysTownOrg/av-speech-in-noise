@@ -1023,6 +1023,15 @@ RECOGNITION_TEST_MODEL_TEST(maskerFadeOutCompleteHidesTargetPlayer) {
     assertOnlyHidden(targetPlayer);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    maskerFadeOutCompleteDoesNotHideTargetPlayerWhenKeepingVideoShown) {
+    test.keepVideoShown = true;
+    run(initializingTest, model);
+    targetPlayer.clearHidden();
+    fadeOutComplete(maskerPlayer);
+    assertNotHidden(targetPlayer);
+}
+
 RECOGNITION_TEST_MODEL_TEST(startTrialDoesNotShowTargetPlayerWhenAuditoryOnly) {
     test.condition = Condition::auditoryOnly;
     run(initializingTest, model);
