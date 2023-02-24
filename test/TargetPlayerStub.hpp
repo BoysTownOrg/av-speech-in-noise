@@ -62,6 +62,8 @@ class TargetPlayerStub : public TargetPlayer {
 
     void hideVideo() override { videoHidden_ = true; }
 
+    void clearHidden() { videoHidden_ = false; }
+
     auto videoHidden() const { return videoHidden_; }
 
     auto played() const { return played_; }

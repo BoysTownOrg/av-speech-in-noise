@@ -303,6 +303,7 @@ void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test,
     fullScaleLevel_ = test.fullScaleLevel;
     maskerLevel_ = test.maskerLevel;
     condition = test.condition;
+    keepVideoShown = test.keepVideoShown;
 
     hide(targetPlayer);
     maskerPlayer.apply(
@@ -365,7 +366,8 @@ void RunningATestImpl::fadeInComplete(const AudioSampleTimeWithOffset &t) {
 }
 
 void RunningATestImpl::fadeOutComplete() {
-    hide(targetPlayer);
+    if (!keepVideoShown)
+        hide(targetPlayer);
     observer->notifyThatStimulusHasEnded();
     listener_->trialComplete();
     trialInProgress_ = false;

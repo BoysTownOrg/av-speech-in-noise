@@ -71,6 +71,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     RealLevel fullScaleLevel_{};
     int trialNumber_{};
     Condition condition{};
+    bool keepVideoShown{};
     bool trialInProgress_{};
 };
 }
