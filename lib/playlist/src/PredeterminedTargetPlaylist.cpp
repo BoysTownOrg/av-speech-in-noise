@@ -5,8 +5,8 @@
 
 namespace av_speech_in_noise {
 PredeterminedTargetPlaylist::PredeterminedTargetPlaylist(
-    TextFileReader &fileReader)
-    : fileReader{fileReader} {}
+    TextFileReader &fileReader, FileValidator &fileValidator)
+    : fileReader{fileReader}, fileValidator{fileValidator} {}
 
 // https://stackoverflow.com/a/25829178
 static auto trim(std::string s) -> std::string {
@@ -22,6 +22,9 @@ void PredeterminedTargetPlaylist::load(const LocalUrl &url) {
     std::stringstream stream{fileReader.read(url)};
     for (std::string line; std::getline(stream, line);)
         targets.push_back(LocalUrl{trim(line)});
+    for (const auto &target : targets)
+        if (!fileValidator.check(target))
+            throw LoadFailure{};
 }
 
 auto PredeterminedTargetPlaylist::next() -> LocalUrl {

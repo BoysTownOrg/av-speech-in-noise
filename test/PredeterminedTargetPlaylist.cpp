@@ -1,9 +1,12 @@
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/core/TargetPlaylist.hpp"
 
 #include <av-speech-in-noise/playlist/PredeterminedTargetPlaylist.hpp>
 
 #include <gtest/gtest.h>
 
+#include <map>
+#include <set>
 #include <string>
 
 namespace av_speech_in_noise {
@@ -23,11 +26,38 @@ class TextFileReaderStub : public TextFileReader {
     std::string contents;
 };
 
+class FileValidatorStub : public FileValidator {
+  public:
+    void failOn(std::string s) { failingFiles.insert(s); }
+
+    auto check(const LocalUrl &url) -> bool override {
+        return failingFiles.count(url.path) == 0;
+    }
+
+  private:
+    std::set<std::string> failingFiles;
+};
+
 class PredeterminedTargetPlaylistTests : public ::testing::Test {
   protected:
     TextFileReaderStub fileReader;
-    PredeterminedTargetPlaylist playlist{fileReader};
+    FileValidatorStub fileValidator;
+    PredeterminedTargetPlaylist playlist{fileReader, fileValidator};
 };
+
+TEST_F(PredeterminedTargetPlaylistTests,
+    throwsLoadFailureIfAnyTargetsFailToBeFound) {
+    fileReader.setContents(R"(/Users/user/a.wav
+/Users/user/b.wav
+/Users/user/c.wav
+)");
+    fileValidator.failOn("/Users/user/b.wav");
+    try {
+        playlist.load({});
+        FAIL() << "Expected TargetPlaylist::LoadFailure";
+    } catch (const TargetPlaylist::LoadFailure &) {
+    }
+}
 
 TEST_F(PredeterminedTargetPlaylistTests, passesPlaylistToTextFileReader) {
     playlist.load(LocalUrl{"/Users/user/playlist.txt"});
