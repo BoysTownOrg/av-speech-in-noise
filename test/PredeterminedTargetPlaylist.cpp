@@ -1,11 +1,9 @@
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/core/TargetPlaylist.hpp"
 
 #include <av-speech-in-noise/playlist/PredeterminedTargetPlaylist.hpp>
 
 #include <gtest/gtest.h>
 
-#include <map>
 #include <set>
 #include <string>
 

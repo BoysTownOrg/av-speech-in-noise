@@ -2,7 +2,6 @@
 #define AV_SPEECH_IN_NOISE_LIB_PLAYLIST_INCLUDE_AVSPEECHINNOISE_PLAYLIST_PREDETERMINEDTARGETPLAYLISTHPP_
 
 #include "av-speech-in-noise/Model.hpp"
-#include "av-speech-in-noise/playlist/SubdirectoryTargetPlaylistReader.hpp"
 #include <av-speech-in-noise/core/TargetPlaylist.hpp>
 #include <av-speech-in-noise/core/TextFileReader.hpp>
 
