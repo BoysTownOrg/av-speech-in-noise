@@ -9,15 +9,15 @@
 #include <vector>
 
 namespace av_speech_in_noise {
-class FileValidator {
+class TargetValidator {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(FileValidator);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TargetValidator);
     virtual auto check(const LocalUrl &) -> bool = 0;
 };
 
 class PredeterminedTargetPlaylist : public FiniteTargetPlaylistWithRepeatables {
   public:
-    PredeterminedTargetPlaylist(TextFileReader &fileReader, FileValidator &);
+    PredeterminedTargetPlaylist(TextFileReader &fileReader, TargetValidator &);
     void load(const LocalUrl &url) override;
     auto next() -> LocalUrl override;
     auto current() -> LocalUrl override;
@@ -27,7 +27,7 @@ class PredeterminedTargetPlaylist : public FiniteTargetPlaylistWithRepeatables {
 
   private:
     TextFileReader &fileReader;
-    FileValidator &fileValidator;
+    TargetValidator &targetValidator;
     std::vector<LocalUrl> targets;
     LocalUrl current_;
 };

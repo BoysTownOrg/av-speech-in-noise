@@ -26,7 +26,7 @@ class TextFileReaderStub : public TextFileReader {
     std::string contents;
 };
 
-class FileValidatorStub : public FileValidator {
+class FileValidatorStub : public TargetValidator {
   public:
     void failOn(std::string s) { failingFiles.insert(s); }
 
