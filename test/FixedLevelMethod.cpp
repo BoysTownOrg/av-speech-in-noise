@@ -186,6 +186,16 @@ PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
         std::string{"a"}, finiteTargetPlaylistWithRepeatables.directory().path);
 }
 
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
+    failingTargetListLoadThrowsRequestFailure) {
+    FailingTargetPlaylistStub targetPlaylist;
+    try {
+        method.initialize({}, &targetPlaylist);
+        FAIL() << "Expected RunningATestFacade::RequestFailure";
+    } catch (const RunningATestFacade::RequestFailure &) {
+    }
+}
+
 void assertComplete(FixedLevelMethodImpl &method) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(method.complete());
 }
