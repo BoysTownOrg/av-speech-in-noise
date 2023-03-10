@@ -30,7 +30,7 @@ class FileValidatorStub : public TargetValidator {
   public:
     void failOn(std::string s) { failingFiles.insert(s); }
 
-    auto check(const LocalUrl &url) -> bool override {
+    auto isValid(const LocalUrl &url) -> bool override {
         return failingFiles.count(url.path) == 0;
     }
 

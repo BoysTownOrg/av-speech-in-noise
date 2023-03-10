@@ -23,7 +23,7 @@ void PredeterminedTargetPlaylist::load(const LocalUrl &url) {
     for (std::string line; std::getline(stream, line);)
         targets.push_back(LocalUrl{trim(line)});
     for (const auto &target : targets)
-        if (!targetValidator.check(target))
+        if (!targetValidator.isValid(target))
             throw LoadFailure{};
 }
 

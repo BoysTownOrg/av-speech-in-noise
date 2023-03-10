@@ -138,7 +138,7 @@ class MacOsDirectoryReader : public DirectoryReader {
 
 class MacOsTargetValidator : public TargetValidator {
   public:
-    auto check(const LocalUrl &url) -> bool override {
+    auto isValid(const LocalUrl &url) -> bool override {
         return [[NSFileManager defaultManager]
                    fileExistsAtPath:nsString(url.path)] == YES;
     }
