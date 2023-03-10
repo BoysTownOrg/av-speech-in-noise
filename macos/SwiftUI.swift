@@ -41,11 +41,11 @@ extension Wrap {
 
 struct IdentifiableString: Identifiable {
     let string: String
-    var id: String { string }
+    let id = UUID()
 }
 
 struct IdentifiableStringCollection: Identifiable {
-    var id: String
+    let id = UUID()
     let items: [IdentifiableString]
 }
 
@@ -106,12 +106,12 @@ struct SettingsView: View {
         Form {
             Picker("Audio Device", selection: $audioDevice.string) {
                 ForEach(audioDevices.items) {
-                    Text($0.string)
+                    Text($0.string).tag($0.string)
                 }
             }
             Picker("Subject Screen", selection: $subjectScreen.string) {
                 ForEach(subjectScreens.items) {
-                    Text($0.string)
+                    Text($0.string).tag($0.string)
                 }
             }
         }
@@ -241,7 +241,7 @@ struct SwiftTestSetupView: View {
                 .disableAutocorrection(true)
                 Picker("Transducer", selection: $transducer.string) {
                     ForEach(transducers.items) {
-                        Text($0.string)
+                        Text($0.string).tag($0.string)
                     }
                 }
                 HStack {
@@ -473,7 +473,7 @@ struct SwiftSyllablesView: View {
     }
 
     private let syllables: [IdentifiableStringCollection] = [
-        IdentifiableStringCollection(id: "a", items: [
+        IdentifiableStringCollection(items: [
             IdentifiableString(string: "B"),
             IdentifiableString(string: "D"),
             IdentifiableString(string: "G"),
@@ -482,7 +482,7 @@ struct SwiftSyllablesView: View {
             IdentifiableString(string: "H"),
             IdentifiableString(string: "Yee"),
         ]),
-        IdentifiableStringCollection(id: "b", items: [
+        IdentifiableStringCollection(items: [
             IdentifiableString(string: "K"),
             IdentifiableString(string: "L"),
             IdentifiableString(string: "M"),
@@ -491,7 +491,7 @@ struct SwiftSyllablesView: View {
             IdentifiableString(string: "R"),
             IdentifiableString(string: "Sh"),
         ]),
-        IdentifiableStringCollection(id: "c", items: [
+        IdentifiableStringCollection(items: [
             IdentifiableString(string: "S"),
             IdentifiableString(string: "Th"),
             IdentifiableString(string: "T"),

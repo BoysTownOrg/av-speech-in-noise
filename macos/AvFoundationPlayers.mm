@@ -46,11 +46,13 @@ template <typename T>
 auto loadPropertyData(AudioObjectID id_,
     const AudioObjectPropertyAddress *address) -> std::vector<T> {
     UInt32 dataSize{};
-    getPropertyDataSize(id_, address, &dataSize);
+    if (getPropertyDataSize(id_, address, &dataSize) != 0)
+        NSLog(@"Some error calling AudioObjectGetPropertyDataSize encountered");
     std::vector<T> data(dataSize / sizeof(T));
     if (data.empty())
         return {};
-    getPropertyData(id_, address, &dataSize, &data.front());
+    if (getPropertyData(id_, address, &dataSize, &data.front()) != 0)
+        NSLog(@"Some error calling AudioObjectGetPropertyData encountered");
     return data;
 }
 
