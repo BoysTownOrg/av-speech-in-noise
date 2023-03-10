@@ -4,6 +4,7 @@
 #include "AppKitView.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
+#include "av-speech-in-noise/Model.hpp"
 #include "av-speech-in-noise/core/AudioRecording.hpp"
 #include "av-speech-in-noise/core/EyeTracking.hpp"
 
@@ -132,6 +133,14 @@ class MacOsDirectoryReader : public DirectoryReader {
     auto subDirectories(const LocalUrl &directory)
         -> std::vector<LocalUrl> override {
         return collectContentsIf(directory, isDirectory);
+    }
+};
+
+class MacOsTargetValidator : public TargetValidator {
+  public:
+    auto check(const LocalUrl &url) -> bool override {
+        return [[NSFileManager defaultManager]
+                   fileExistsAtPath:nsString(url.path)] == YES;
     }
 };
 
@@ -317,8 +326,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         &onlyIncludesTargetFileExtensions, &randomizer};
     static SubdirectoryTargetPlaylistReader cyclicTargetsReader{
         &cyclicTargetsFactory, &directoryReader};
+    static MacOsTargetValidator targetValidator;
     static PredeterminedTargetPlaylist predeterminedTargetPlaylist{
-        textFileReader};
+        textFileReader, targetValidator};
     static AudioRecording audioRecording{audioRecorder, outputFile, timeStamp};
     static EyeTracking eyeTracking{
         eyeTracker, maskerPlayer, targetPlayer, outputFile};
