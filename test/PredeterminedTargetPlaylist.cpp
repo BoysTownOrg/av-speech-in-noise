@@ -59,6 +59,18 @@ TEST_F(PredeterminedTargetPlaylistTests,
     }
 }
 
+TEST_F(PredeterminedTargetPlaylistTests, ignoresEmptyLines) {
+    fileReader.setContents(R"(/Users/user/a.wav
+/Users/user/b.wav
+
+/Users/user/c.wav
+
+  
+)");
+    fileValidator.failOn("");
+    playlist.load({});
+}
+
 TEST_F(PredeterminedTargetPlaylistTests, passesPlaylistToTextFileReader) {
     playlist.load(LocalUrl{"/Users/user/playlist.txt"});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
