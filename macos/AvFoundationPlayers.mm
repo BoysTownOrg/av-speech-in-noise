@@ -7,6 +7,7 @@
 #include <gsl/gsl>
 
 #include <limits>
+#include <stdexcept>
 
 @interface VideoPlayerActions : NSObject
 @end
@@ -86,11 +87,10 @@ static auto objectId(gsl::index device) -> AudioObjectID {
 
 static auto toString(CFStringRef deviceName) -> std::string {
     std::string buffer(128, '\0');
-    NSLog(@"This looks dangerous...");
-    CFStringGetCString(
-        deviceName, buffer.data(), buffer.size(), kCFStringEncodingUTF8);
+    if (CFStringGetCString(deviceName, buffer.data(), buffer.size(),
+            kCFStringEncodingUTF8) == NO)
+        NSLog(@"Failed call to CFStringGetCString");
     buffer.erase(std::find(buffer.begin(), buffer.end(), '\0'), buffer.end());
-    NSLog(@"Phew. We made it.");
     return buffer;
 }
 
@@ -139,7 +139,8 @@ static auto videoTrack(AVAsset *asset) -> AVAssetTrack * {
 
 static auto makeAvAsset(const std::string &filePath) -> AVURLAsset * {
     const auto url =
-        [NSURL fileURLWithPath:nsString(filePath).stringByExpandingTildeInPath];
+        [NSURL fileURLWithPath:nsString(filePath).stringByExpandingTildeInPath
+                   isDirectory:NO];
     return [AVURLAsset URLAssetWithURL:url options:nil];
 }
 
@@ -175,13 +176,14 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSView *view)
             kMTAudioProcessingTapCreationFlag_PostEffects, &tap) != 0)
         NSLog(@"Some error with MTAudioProcessingTapCreate encountered.");
     prepareWindow();
-    [NSLayoutConstraint activateConstraints:@[
-        [view.centerXAnchor
-            constraintEqualToAnchor:view.superview.centerXAnchor],
-        [view.centerYAnchor
-            constraintEqualToAnchor:view.superview.centerYAnchor],
-        widthConstraint, heightConstraint
-    ]];
+    if (view.superview != nullptr)
+        [NSLayoutConstraint activateConstraints:@[
+            [view.centerXAnchor
+                constraintEqualToAnchor:view.superview.centerXAnchor],
+            [view.centerYAnchor
+                constraintEqualToAnchor:view.superview.centerYAnchor],
+            widthConstraint, heightConstraint
+        ]];
     actions->controller = this;
 }
 
@@ -213,8 +215,8 @@ void AvFoundationVideoPlayer::processTap_(CMItemCount numberFrames,
     CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut) {
     if (MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut,
             flagsOut, nullptr, numberFramesOut) != 0)
-        NSLog(
-            @"Some error with MTAudioProcessingTapGetSourceAudio encountered.");
+        ; // Something failed, but how to respond is unclear given the high
+          // priority context.
 
     if (audio.size() != bufferListInOut->mNumberBuffers)
         return;
@@ -356,24 +358,24 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     auto *const audioComponent =
         AudioComponentFindNext(nullptr, &audioComponentDescription);
     if (audioComponent == nullptr)
-        NSLog(@"NULL returned from AudioComponentFindNext.");
+        throw std::runtime_error{"NULL returned from AudioComponentFindNext."};
     if (AudioComponentInstanceNew(audioComponent, &audioUnit) != 0)
         NSLog(@"AudioComponentInstanceNew failed.");
     if (AudioUnitInitialize(audioUnit) != 0)
-        NSLog(@"AudioUnitInitialize failed.");
+        throw std::runtime_error{"AudioUnitInitialize failed."};
     // enable output
     {
         UInt32 enable{1};
         if (AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
                 kAudioUnitScope_Output, 0, &enable, sizeof(enable)) != 0)
-            NSLog(@"AudioUnitSetProperty 1 failed.");
+            NSLog(@"AudioUnitSetProperty failed to enable output.");
     }
 
     // disable input
     UInt32 enable{0};
     if (AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
             kAudioUnitScope_Input, 1, &enable, sizeof(enable)) != 0)
-        NSLog(@"AudioUnitSetProperty 2 failed.");
+        NSLog(@"AudioUnitSetProperty failed to disable input.");
 
     // Set audio unit render callback.
     AURenderCallbackStruct renderCallbackStruct;
@@ -382,7 +384,7 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     if (AudioUnitSetProperty(audioUnit, kAudioUnitProperty_SetRenderCallback,
             kAudioUnitScope_Output, 0, &renderCallbackStruct,
             sizeof(AURenderCallbackStruct)) != 0)
-        NSLog(@"AudioUnitSetProperty 3 failed.");
+        NSLog(@"AudioUnitSetProperty failed to set render callback.");
 }
 
 AvFoundationAudioPlayer::~AvFoundationAudioPlayer() {
@@ -417,6 +419,10 @@ void AvFoundationAudioPlayer::attach(Observer *e) { listener_ = e; }
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     const auto asset{makeAvAsset(filePath)};
 
+    if (asset.playable == 0) {
+        NSLog(@"Unplayable AVURLAsset encountered.");
+    }
+
     AudioStreamBasicDescription streamFormat{};
 
     streamFormat.mSampleRate =
@@ -432,7 +438,7 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     if (AudioUnitSetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
             kAudioUnitScope_Input, 0, &streamFormat,
             sizeof(AudioStreamBasicDescription)) != 0)
-        NSLog(@"AudioUnitSetProperty 4 failed.");
+        NSLog(@"AudioUnitSetProperty failed to set stream format.");
 
     audio.resize(2);
 }
@@ -449,7 +455,7 @@ void AvFoundationAudioPlayer::setDevice(int index) {
     const auto deviceId{objectId(index)};
     if (AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_CurrentDevice,
             kAudioUnitScope_Global, 0, &deviceId, sizeof(deviceId)) != 0)
-        NSLog(@"AudioUnitSetProperty 5 failed.");
+        NSLog(@"AudioUnitSetProperty failed to set device.");
 }
 
 auto AvFoundationAudioPlayer::playing() -> bool {
@@ -457,7 +463,7 @@ auto AvFoundationAudioPlayer::playing() -> bool {
     UInt32 size{sizeof(auhalRunning)};
     if (AudioUnitGetProperty(audioUnit, kAudioOutputUnitProperty_IsRunning,
             kAudioUnitScope_Global, 0, &auhalRunning, &size) != 0)
-        NSLog(@"AudioUnitGetProperty 1 failed.");
+        NSLog(@"AudioUnitGetProperty failed to check whether playing.");
     return auhalRunning != 0U;
 }
 
@@ -468,7 +474,7 @@ auto AvFoundationAudioPlayer::sampleRateHz() -> double {
     UInt32 size{sizeof(AudioStreamBasicDescription)};
     if (AudioUnitGetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
             kAudioUnitScope_Input, 0, &streamFormat, &size) != 0)
-        NSLog(@"AudioUnitGetProperty 2 failed.");
+        NSLog(@"AudioUnitGetProperty failed to query sample rate.");
     return streamFormat.mSampleRate;
 }
 
@@ -560,11 +566,13 @@ void AvFoundationAudioRecorder::initialize(const LocalUrl &url) {
     const auto format =
         [[AVAudioFormat alloc] initStandardFormatWithSampleRate:44100
                                                        channels:1];
-    audioRecorder = [[AVAudioRecorder alloc]
-        initWithURL:[NSURL fileURLWithPath:nsString(url.path)
-                                               .stringByExpandingTildeInPath]
-             format:format
-              error:&error];
+    if (format != nullptr)
+        audioRecorder = [[AVAudioRecorder alloc]
+            initWithURL:[NSURL
+                            fileURLWithPath:nsString(url.path)
+                                                .stringByExpandingTildeInPath]
+                 format:format
+                  error:&error];
     if (audioRecorder == nullptr)
         NSLog(@"Failed to initialize audio recorder: %@",
             error.localizedDescription);

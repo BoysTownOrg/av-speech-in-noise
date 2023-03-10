@@ -44,10 +44,6 @@
 @end
 
 namespace av_speech_in_noise {
-static void addSubview(NSView *parent, NSView *child) {
-    [parent addSubview:child];
-}
-
 static void hide(NSView *v) { [v setHidden:YES]; }
 
 static void show(NSView *v) { [v setHidden:NO]; }
@@ -233,8 +229,11 @@ AppKitCoordinateResponseMeasureUI::AppKitCoordinateResponseMeasureUI(
         setAttributedTitle:
             [[NSAttributedString alloc]
                 initWithString:@"Press when ready"
-                    attributes:[NSDictionary dictionaryWithObjectsAndKeys:font,
-                                             NSFontAttributeName, nil]]];
+                    attributes:[NSDictionary
+                                   dictionaryWithObjectsAndKeys:font != nil
+                                       ? font
+                                       : [NSFont systemFontOfSize:36],
+                                   NSFontAttributeName, nil]]];
     addAutolayoutEnabledSubview(view, nextTrialButton);
     addAutolayoutEnabledSubview(view, responseButtons);
     [NSLayoutConstraint activateConstraints:@[
