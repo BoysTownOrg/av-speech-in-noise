@@ -65,9 +65,10 @@ TEST_F(PredeterminedTargetPlaylistTests, ignoresEmptyLines) {
 
 /Users/user/c.wav
 
-  
-)");
+    
+)"); // The last line has 4 spaces
     fileValidator.failOn("");
+    fileValidator.failOn("    ");
     playlist.load({});
 }
 

@@ -12,7 +12,7 @@ PredeterminedTargetPlaylist::PredeterminedTargetPlaylist(
 static auto trim(std::string s) -> std::string {
     const auto first = s.find_first_not_of(' ');
     if (std::string::npos == first)
-        return s;
+        return "";
     const auto last = s.find_last_not_of(' ');
     return s.substr(first, (last - first + 1));
 }
