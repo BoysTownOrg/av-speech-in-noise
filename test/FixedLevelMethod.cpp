@@ -5,6 +5,7 @@
 #include "assert-utility.hpp"
 #include <av-speech-in-noise/core/FixedLevelMethod.hpp>
 #include <gtest/gtest.h>
+#include <stdexcept>
 
 namespace av_speech_in_noise {
 namespace {
@@ -184,6 +185,16 @@ PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, finiteTargetPlaylistWithRepeatables.directory().path);
+}
+
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
+    failingTargetListLoadThrowsRequestFailure) {
+    FailingTargetPlaylistStub targetPlaylist;
+    try {
+        method.initialize({}, &targetPlaylist);
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error &) {
+    }
 }
 
 void assertComplete(FixedLevelMethodImpl &method) {

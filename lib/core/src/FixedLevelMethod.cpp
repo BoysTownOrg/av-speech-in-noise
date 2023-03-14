@@ -1,5 +1,8 @@
 #include "FixedLevelMethod.hpp"
 
+#include <sstream>
+#include <stdexcept>
+
 namespace av_speech_in_noise {
 FixedLevelMethodImpl::FixedLevelMethodImpl(ResponseEvaluator &evaluator)
     : evaluator{evaluator} {}
@@ -14,7 +17,13 @@ static void initialize(TargetPlaylist *&targetList,
     targetList = list;
     test_ = &test;
     snr_ = test.snr;
-    load(targetList, test);
+    try {
+        load(targetList, test);
+    } catch (const FiniteTargetPlaylist::LoadFailure &) {
+        std::stringstream stream;
+        stream << "Unable to load targets from " << test.targetsUrl.path;
+        throw std::runtime_error{stream.str()};
+    }
 }
 
 static void initialize(bool &usingFiniteTargetPlaylist_,

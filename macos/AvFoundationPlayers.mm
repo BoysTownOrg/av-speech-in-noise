@@ -1,11 +1,13 @@
 #include "AvFoundationPlayers.h"
 #include "Foundation-utility.h"
 
+#include <Foundation/Foundation.h>
 #include <mach/mach_time.h>
 
 #include <gsl/gsl>
 
 #include <limits>
+#include <stdexcept>
 
 @interface VideoPlayerActions : NSObject
 @end
@@ -46,11 +48,13 @@ template <typename T>
 auto loadPropertyData(AudioObjectID id_,
     const AudioObjectPropertyAddress *address) -> std::vector<T> {
     UInt32 dataSize{};
-    getPropertyDataSize(id_, address, &dataSize);
+    if (getPropertyDataSize(id_, address, &dataSize) != 0)
+        NSLog(@"Some error calling AudioObjectGetPropertyDataSize encountered");
     std::vector<T> data(dataSize / sizeof(T));
     if (data.empty())
         return {};
-    getPropertyData(id_, address, &dataSize, &data.front());
+    if (getPropertyData(id_, address, &dataSize, &data.front()) != 0)
+        NSLog(@"Some error calling AudioObjectGetPropertyData encountered");
     return data;
 }
 
@@ -83,8 +87,9 @@ static auto objectId(gsl::index device) -> AudioObjectID {
 
 static auto toString(CFStringRef deviceName) -> std::string {
     std::string buffer(128, '\0');
-    CFStringGetCString(
-        deviceName, buffer.data(), buffer.size(), kCFStringEncodingUTF8);
+    if (CFStringGetCString(deviceName, buffer.data(), buffer.size(),
+            kCFStringEncodingUTF8) == NO)
+        NSLog(@"Failed call to CFStringGetCString");
     buffer.erase(std::find(buffer.begin(), buffer.end(), '\0'), buffer.end());
     return buffer;
 }
@@ -134,7 +139,8 @@ static auto videoTrack(AVAsset *asset) -> AVAssetTrack * {
 
 static auto makeAvAsset(const std::string &filePath) -> AVURLAsset * {
     const auto url =
-        [NSURL fileURLWithPath:nsString(filePath).stringByExpandingTildeInPath];
+        [NSURL fileURLWithPath:nsString(filePath).stringByExpandingTildeInPath
+                   isDirectory:NO];
     return [AVURLAsset URLAssetWithURL:url options:nil];
 }
 
@@ -166,16 +172,18 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSView *view)
     callbacks.unprepare = unprepare;
     callbacks.finalize = finalize;
 
-    MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks,
-        kMTAudioProcessingTapCreationFlag_PostEffects, &tap);
+    if (MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks,
+            kMTAudioProcessingTapCreationFlag_PostEffects, &tap) != 0)
+        NSLog(@"Some error with MTAudioProcessingTapCreate encountered.");
     prepareWindow();
-    [NSLayoutConstraint activateConstraints:@[
-        [view.centerXAnchor
-            constraintEqualToAnchor:view.superview.centerXAnchor],
-        [view.centerYAnchor
-            constraintEqualToAnchor:view.superview.centerYAnchor],
-        widthConstraint, heightConstraint
-    ]];
+    if (view.superview != nullptr)
+        [NSLayoutConstraint activateConstraints:@[
+            [view.centerXAnchor
+                constraintEqualToAnchor:view.superview.centerXAnchor],
+            [view.centerYAnchor
+                constraintEqualToAnchor:view.superview.centerYAnchor],
+            widthConstraint, heightConstraint
+        ]];
     actions->controller = this;
 }
 
@@ -205,8 +213,10 @@ void AvFoundationVideoPlayer::processTap(MTAudioProcessingTapRef tap,
 void AvFoundationVideoPlayer::processTap_(CMItemCount numberFrames,
     MTAudioProcessingTapFlags, AudioBufferList *bufferListInOut,
     CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut) {
-    MTAudioProcessingTapGetSourceAudio(
-        tap, numberFrames, bufferListInOut, flagsOut, nullptr, numberFramesOut);
+    if (MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut,
+            flagsOut, nullptr, numberFramesOut) != 0)
+        ; // Something failed, but how to respond is unclear given the high
+          // priority context.
 
     if (audio.size() != bufferListInOut->mNumberBuffers)
         return;
@@ -248,8 +258,10 @@ void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     // It seems if AVPlayer's replaceCurrentItemWithPlayerItem is called with an
     // unplayable asset the player does not recover even when a subsequent call
     // passes one that is playable.
-    if (asset.playable == 0)
+    if (asset.playable == 0) {
+        NSLog(@"Unplayable AVURLAsset encountered.");
         return;
+    }
     const auto playerItem{[AVPlayerItem playerItemWithAsset:asset]};
     const auto audioMix{[AVMutableAudioMix audioMix]};
     const auto processing = [AVMutableAudioMixInputParameters
@@ -345,32 +357,41 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
 
     auto *const audioComponent =
         AudioComponentFindNext(nullptr, &audioComponentDescription);
-    AudioComponentInstanceNew(audioComponent, &audioUnit);
-    AudioUnitInitialize(audioUnit);
+    if (audioComponent == nullptr)
+        throw std::runtime_error{"NULL returned from AudioComponentFindNext."};
+    if (AudioComponentInstanceNew(audioComponent, &audioUnit) != 0)
+        NSLog(@"AudioComponentInstanceNew failed.");
+    if (AudioUnitInitialize(audioUnit) != 0)
+        throw std::runtime_error{"AudioUnitInitialize failed."};
     // enable output
     {
         UInt32 enable{1};
-        AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
-            kAudioUnitScope_Output, 0, &enable, sizeof(enable));
+        if (AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
+                kAudioUnitScope_Output, 0, &enable, sizeof(enable)) != 0)
+            NSLog(@"AudioUnitSetProperty failed to enable output.");
     }
 
     // disable input
     UInt32 enable{0};
-    AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
-        kAudioUnitScope_Input, 1, &enable, sizeof(enable));
+    if (AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
+            kAudioUnitScope_Input, 1, &enable, sizeof(enable)) != 0)
+        NSLog(@"AudioUnitSetProperty failed to disable input.");
 
     // Set audio unit render callback.
     AURenderCallbackStruct renderCallbackStruct;
     renderCallbackStruct.inputProc = AU_RenderCallback;
     renderCallbackStruct.inputProcRefCon = this;
-    AudioUnitSetProperty(audioUnit, kAudioUnitProperty_SetRenderCallback,
-        kAudioUnitScope_Output, 0, &renderCallbackStruct,
-        sizeof(AURenderCallbackStruct));
+    if (AudioUnitSetProperty(audioUnit, kAudioUnitProperty_SetRenderCallback,
+            kAudioUnitScope_Output, 0, &renderCallbackStruct,
+            sizeof(AURenderCallbackStruct)) != 0)
+        NSLog(@"AudioUnitSetProperty failed to set render callback.");
 }
 
 AvFoundationAudioPlayer::~AvFoundationAudioPlayer() {
-    AudioUnitUninitialize(audioUnit);
-    AudioComponentInstanceDispose(audioUnit);
+    if (AudioUnitUninitialize(audioUnit) != 0)
+        NSLog(@"AudioUnitUninitialize failed.");
+    if (AudioComponentInstanceDispose(audioUnit) != 0)
+        NSLog(@"AudioComponentInstanceDispose failed.");
 }
 
 auto AvFoundationAudioPlayer::AU_RenderCallback(void *inRefCon,
@@ -398,6 +419,10 @@ void AvFoundationAudioPlayer::attach(Observer *e) { listener_ = e; }
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     const auto asset{makeAvAsset(filePath)};
 
+    if (asset.playable == 0) {
+        NSLog(@"Unplayable AVURLAsset encountered.");
+    }
+
     AudioStreamBasicDescription streamFormat{};
 
     streamFormat.mSampleRate =
@@ -410,9 +435,10 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     streamFormat.mBitsPerChannel = 8 * sizeof(float);
     streamFormat.mFormatFlags =
         kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved;
-    AudioUnitSetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
-        kAudioUnitScope_Input, 0, &streamFormat,
-        sizeof(AudioStreamBasicDescription));
+    if (AudioUnitSetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
+            kAudioUnitScope_Input, 0, &streamFormat,
+            sizeof(AudioStreamBasicDescription)) != 0)
+        NSLog(@"AudioUnitSetProperty failed to set stream format.");
 
     audio.resize(2);
 }
@@ -427,15 +453,17 @@ auto AvFoundationAudioPlayer::deviceDescription(int index) -> std::string {
 
 void AvFoundationAudioPlayer::setDevice(int index) {
     const auto deviceId{objectId(index)};
-    AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_CurrentDevice,
-        kAudioUnitScope_Global, 0, &deviceId, sizeof(deviceId));
+    if (AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_CurrentDevice,
+            kAudioUnitScope_Global, 0, &deviceId, sizeof(deviceId)) != 0)
+        NSLog(@"AudioUnitSetProperty failed to set device.");
 }
 
 auto AvFoundationAudioPlayer::playing() -> bool {
     UInt32 auhalRunning{0};
     UInt32 size{sizeof(auhalRunning)};
-    AudioUnitGetProperty(audioUnit, kAudioOutputUnitProperty_IsRunning,
-        kAudioUnitScope_Global, 0, &auhalRunning, &size);
+    if (AudioUnitGetProperty(audioUnit, kAudioOutputUnitProperty_IsRunning,
+            kAudioUnitScope_Global, 0, &auhalRunning, &size) != 0)
+        NSLog(@"AudioUnitGetProperty failed to check whether playing.");
     return auhalRunning != 0U;
 }
 
@@ -444,12 +472,16 @@ void AvFoundationAudioPlayer::play() { AudioOutputUnitStart(audioUnit); }
 auto AvFoundationAudioPlayer::sampleRateHz() -> double {
     AudioStreamBasicDescription streamFormat{};
     UInt32 size{sizeof(AudioStreamBasicDescription)};
-    AudioUnitGetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
-        kAudioUnitScope_Input, 0, &streamFormat, &size);
+    if (AudioUnitGetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
+            kAudioUnitScope_Input, 0, &streamFormat, &size) != 0)
+        NSLog(@"AudioUnitGetProperty failed to query sample rate.");
     return streamFormat.mSampleRate;
 }
 
-void AvFoundationAudioPlayer::stop() { AudioOutputUnitStop(audioUnit); }
+void AvFoundationAudioPlayer::stop() {
+    if (AudioOutputUnitStop(audioUnit) != 0)
+        NSLog(@"AudioOutputUnitStop failed.");
+}
 
 auto AvFoundationAudioPlayer::outputDevice(int index) -> bool {
     return av_speech_in_noise::outputDevice(index);
@@ -481,6 +513,8 @@ auto AvFoundationAudioPlayer::currentSystemTime() -> PlayerTime {
 void AvFoundationVideoPlayer::preRoll() {
     [player prerollAtRate:1.
         completionHandler:^(BOOL finished) {
+          if (finished == NO)
+              NSLog(@"prerollAtRate failed.");
           listener_->notifyThatPreRollHasCompleted();
         }];
 }
@@ -532,11 +566,16 @@ void AvFoundationAudioRecorder::initialize(const LocalUrl &url) {
     const auto format =
         [[AVAudioFormat alloc] initStandardFormatWithSampleRate:44100
                                                        channels:1];
-    audioRecorder = [[AVAudioRecorder alloc]
-        initWithURL:[NSURL fileURLWithPath:nsString(url.path)
-                                               .stringByExpandingTildeInPath]
-             format:format
-              error:&error];
+    if (format != nullptr)
+        audioRecorder = [[AVAudioRecorder alloc]
+            initWithURL:[NSURL
+                            fileURLWithPath:nsString(url.path)
+                                                .stringByExpandingTildeInPath]
+                 format:format
+                  error:&error];
+    if (audioRecorder == nullptr)
+        NSLog(@"Failed to initialize audio recorder: %@",
+            error.localizedDescription);
     [audioRecorder prepareToRecord];
 }
 

@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 
 #include <functional>
+#include <stdexcept>
 
 namespace av_speech_in_noise {
 constexpr auto operator==(const TrackingSequence &a, const TrackingSequence &b)
@@ -308,10 +309,10 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     SessionControllerStub sessionController;
     TaskPresenterStub consonantPresenter;
     TaskPresenterStub passFailPresenter;
-    TestSettingsInterpreterImpl interpreter{
-        {{Method::fixedLevelConsonants, consonantPresenter},
-            {Method::adaptivePassFail, passFailPresenter},
-            {Method::unknown, passFailPresenter}}};
+    TestSettingsInterpreterImpl interpreter{{
+        {Method::fixedLevelConsonants, consonantPresenter},
+        {Method::adaptivePassFail, passFailPresenter},
+    }};
     TestIdentity testIdentity;
 };
 
@@ -333,6 +334,22 @@ TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         SessionControllerImpl::fullScaleLevel.dB_SPL,
         calibration.fullScaleLevel.dB_SPL);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(throwsRuntimeErrorIfMethodUnknown) {
+    try {
+        initialize(interpreter, model, sessionController,
+            {
+                entryWithNewline(
+                    TestSetting::method, "this is not a real test method"),
+            });
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error &e) {
+        AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
+            std::string{
+                "Test method not recognized: this is not a real test method"},
+            e.what());
+    }
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {

@@ -146,15 +146,27 @@ class TextFileReaderStub : public TextFileReader {
     [[nodiscard]] auto filePath() const -> std::string { return filePath_; }
 
     auto read(const LocalUrl &s) -> std::string override {
+        if (failOnRead_)
+            throw FileDoesNotExist{};
         filePath_ = s.path;
         return read_;
     }
+
+    void failOnRead() { failOnRead_ = true; }
 
     void setRead(std::string s) { read_ = std::move(s); }
 
   private:
     std::string filePath_;
     std::string read_;
+    bool failOnRead_{};
+};
+
+class FailingFileReader : public TextFileReader {
+  public:
+    auto read(const LocalUrl &) -> std::string override {
+        throw FileDoesNotExist{};
+    }
 };
 
 class TestSetupPresenterStub : public TestSetupPresenter {
@@ -685,6 +697,14 @@ TEST_SETUP_FAILURE_TEST(
     failingModel.setErrorMessage("a");
     control.playRightSpeakerCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
+}
+
+TEST_SETUP_FAILURE_TEST(
+    confirmTestSetupShowsErrorMessageWhenTextFileReaderFails) {
+    control.setTestSettingsFile("a");
+    textFileReader.failOnRead();
+    control.confirmTestSetup();
+    AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "Unable to read a");
 }
 }
 }

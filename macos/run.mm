@@ -4,6 +4,7 @@
 #include "AppKitView.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
+#include "av-speech-in-noise/Model.hpp"
 #include "av-speech-in-noise/core/AudioRecording.hpp"
 #include "av-speech-in-noise/core/EyeTracking.hpp"
 
@@ -44,9 +45,15 @@
 @end
 
 // https://stackoverflow.com/a/116220
+namespace {
+class FileCannotBeOpened {};
+}
 static auto read_file(std::string_view path) -> std::string {
     constexpr auto read_size = std::size_t{4096};
     auto stream = std::ifstream{path};
+    if (!stream.is_open()) {
+        throw FileCannotBeOpened{};
+    }
     stream.exceptions(std::ios_base::badbit);
 
     auto out = std::string{};
@@ -135,6 +142,14 @@ class MacOsDirectoryReader : public DirectoryReader {
     }
 };
 
+class MacOsTargetValidator : public TargetValidator {
+  public:
+    auto isValid(const LocalUrl &url) -> bool override {
+        return [[NSFileManager defaultManager]
+                   fileExistsAtPath:nsString(url.path)] == YES;
+    }
+};
+
 class FileWriter : public Writer {
     std::ofstream file{};
 
@@ -205,7 +220,11 @@ class LocalTimeClock : public Clock {
 class TextFileReaderImpl : public TextFileReader {
   public:
     auto read(const LocalUrl &s) -> std::string override {
-        return read_file(s.path);
+        try {
+            return read_file(s.path);
+        } catch (const ::FileCannotBeOpened &) {
+            throw FileDoesNotExist{};
+        }
     }
 };
 
@@ -317,8 +336,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         &onlyIncludesTargetFileExtensions, &randomizer};
     static SubdirectoryTargetPlaylistReader cyclicTargetsReader{
         &cyclicTargetsFactory, &directoryReader};
+    static MacOsTargetValidator targetValidator;
     static PredeterminedTargetPlaylist predeterminedTargetPlaylist{
-        textFileReader};
+        textFileReader, targetValidator};
     static AudioRecording audioRecording{audioRecorder, outputFile, timeStamp};
     static EyeTracking eyeTracking{
         eyeTracker, maskerPlayer, targetPlayer, outputFile};

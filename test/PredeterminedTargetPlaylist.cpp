@@ -4,9 +4,11 @@
 
 #include <gtest/gtest.h>
 
+#include <set>
 #include <string>
 
 namespace av_speech_in_noise {
+namespace {
 class TextFileReaderStub : public TextFileReader {
   public:
     auto read(const LocalUrl &url) -> std::string override {
@@ -23,10 +25,31 @@ class TextFileReaderStub : public TextFileReader {
     std::string contents;
 };
 
+class FailingFileReader : public TextFileReader {
+  public:
+    auto read(const LocalUrl &) -> std::string override {
+        throw FileDoesNotExist{};
+    }
+};
+
+class FileValidatorStub : public TargetValidator {
+  public:
+    void failOn(std::string s) { failingFiles.insert(s); }
+
+    auto isValid(const LocalUrl &url) -> bool override {
+        return failingFiles.count(url.path) == 0;
+    }
+
+  private:
+    std::set<std::string> failingFiles;
+};
+}
+
 class PredeterminedTargetPlaylistTests : public ::testing::Test {
   protected:
     TextFileReaderStub fileReader;
-    PredeterminedTargetPlaylist playlist{fileReader};
+    FileValidatorStub fileValidator;
+    PredeterminedTargetPlaylist playlist{fileReader, fileValidator};
 };
 
 TEST_F(PredeterminedTargetPlaylistTests, passesPlaylistToTextFileReader) {
@@ -124,5 +147,44 @@ TEST_F(PredeterminedTargetPlaylistTests, directoryIsThatOfCurrentTarget) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/1", playlist.directory().path);
     playlist.next();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("/Users/user/2", playlist.directory().path);
+}
+
+TEST_F(PredeterminedTargetPlaylistTests,
+    throwsLoadFailureIfAnyTargetsFailToBeFound) {
+    fileReader.setContents(R"(/Users/user/a.wav
+/Users/user/b.wav
+/Users/user/c.wav
+)");
+    fileValidator.failOn("/Users/user/b.wav");
+    try {
+        playlist.load({});
+        FAIL() << "Expected TargetPlaylist::LoadFailure";
+    } catch (const TargetPlaylist::LoadFailure &) {
+    }
+}
+
+TEST_F(PredeterminedTargetPlaylistTests, ignoresEmptyLines) {
+    fileReader.setContents(R"(/Users/user/a.wav
+/Users/user/b.wav
+
+/Users/user/c.wav
+
+    
+)"); // The last line has 4 spaces
+    fileValidator.failOn("");
+    fileValidator.failOn("    ");
+    playlist.load({});
+}
+
+TEST(PredeterminedTargetPlaylistWithFailingFileReaderTests,
+    throwsLoadFailureIfFileNotFound) {
+    FailingFileReader fileReader;
+    FileValidatorStub fileValidator;
+    PredeterminedTargetPlaylist playlist{fileReader, fileValidator};
+    try {
+        playlist.load({});
+        FAIL() << "Expected TargetPlaylist::LoadFailure";
+    } catch (const TargetPlaylist::LoadFailure &) {
+    }
 }
 }

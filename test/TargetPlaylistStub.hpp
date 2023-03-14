@@ -87,6 +87,17 @@ class FiniteTargetPlaylistWithRepeatablesStub
   private:
     bool reinsertCurrentCalled_{};
 };
+
+class FailingTargetPlaylistStub : public virtual TargetPlaylist {
+  public:
+    auto current() -> LocalUrl override { return {}; }
+
+    void load(const LocalUrl &) override { throw LoadFailure{}; }
+
+    auto next() -> LocalUrl override { return {}; }
+
+    auto directory() -> LocalUrl override { return {}; }
+};
 }
 
 #endif

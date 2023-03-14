@@ -10,6 +10,7 @@ namespace av_speech_in_noise {
 class TextFileReader {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TextFileReader);
+    class FileDoesNotExist {};
     virtual auto read(const LocalUrl &) -> std::string = 0;
 };
 }

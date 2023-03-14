@@ -12,6 +12,8 @@ namespace av_speech_in_noise {
 class TargetPlaylist {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TargetPlaylist);
+
+    class LoadFailure {};
     virtual void load(const LocalUrl &) = 0;
     virtual auto next() -> LocalUrl = 0;
     virtual auto current() -> LocalUrl = 0;

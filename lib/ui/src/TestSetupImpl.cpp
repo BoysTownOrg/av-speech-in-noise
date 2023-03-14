@@ -1,5 +1,7 @@
 #include "TestSetupImpl.hpp"
+#include "av-speech-in-noise/core/TextFileReader.hpp"
 #include <functional>
+#include <sstream>
 #include <utility>
 
 namespace av_speech_in_noise {
@@ -26,7 +28,14 @@ static void showErrorMessageOnRuntimeError(
 
 static auto readTestSettingsFile(
     TextFileReader &textFileReader, TestSetupControl &control) -> std::string {
-    return textFileReader.read(LocalUrl{control.testSettingsFile()});
+    const auto localUrl{LocalUrl{control.testSettingsFile()}};
+    try {
+        return textFileReader.read(localUrl);
+    } catch (const TextFileReader::FileDoesNotExist &) {
+        std::stringstream stream;
+        stream << "Unable to read " << localUrl.path;
+        throw std::runtime_error{stream.str()};
+    }
 }
 
 void TestSetupController::notifyThatConfirmButtonHasBeenClicked() {
