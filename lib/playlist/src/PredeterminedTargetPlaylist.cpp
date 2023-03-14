@@ -19,11 +19,15 @@ static auto trim(std::string s) -> std::string {
 
 void PredeterminedTargetPlaylist::load(const LocalUrl &url) {
     targets.clear();
-    std::stringstream stream{fileReader.read(url)};
-    for (std::string line; std::getline(stream, line);) {
-        const auto trimmed = trim(line);
-        if (!trimmed.empty())
-            targets.push_back(LocalUrl{trimmed});
+    try {
+        std::stringstream stream{fileReader.read(url)};
+        for (std::string line; std::getline(stream, line);) {
+            const auto trimmed = trim(line);
+            if (!trimmed.empty())
+                targets.push_back(LocalUrl{trimmed});
+        }
+    } catch (const TextFileReader::FileDoesNotExist &) {
+        throw LoadFailure{};
     }
     for (const auto &target : targets)
         if (!targetValidator.isValid(target))
