@@ -45,9 +45,15 @@
 @end
 
 // https://stackoverflow.com/a/116220
+namespace {
+class FileCannotBeOpened {};
+}
 static auto read_file(std::string_view path) -> std::string {
     constexpr auto read_size = std::size_t{4096};
     auto stream = std::ifstream{path};
+    if (!stream.is_open()) {
+        throw FileCannotBeOpened{};
+    }
     stream.exceptions(std::ios_base::badbit);
 
     auto out = std::string{};
@@ -214,7 +220,11 @@ class LocalTimeClock : public Clock {
 class TextFileReaderImpl : public TextFileReader {
   public:
     auto read(const LocalUrl &s) -> std::string override {
-        return read_file(s.path);
+        try {
+            return read_file(s.path);
+        } catch (const ::FileCannotBeOpened &) {
+            throw FileDoesNotExist{};
+        }
     }
 };
 
