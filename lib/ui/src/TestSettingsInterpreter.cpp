@@ -6,6 +6,7 @@
 #include <map>
 #include <sstream>
 #include <functional>
+#include <stdexcept>
 #include <string>
 #include <utility>
 
@@ -387,12 +388,16 @@ static void initialize(RunningATestFacade &model, Method method,
             });
     case Method::fixedLevelFreeResponseWithTargetReplacement:
     case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
-    case Method::unknown:
         return av_speech_in_noise::initializeFixedLevelFixedTrialsTest(method,
             contents, identity, startingSnr,
             [&](const FixedLevelFixedTrialsTest &test) {
                 model.initializeWithTargetReplacement(test);
             });
+    case Method::unknown: {
+        std::stringstream stream;
+        stream << "Test method not recognized: " << methodName(contents);
+        throw std::runtime_error{stream.str()};
+    }
     }
 }
 
