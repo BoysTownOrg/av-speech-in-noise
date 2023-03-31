@@ -513,6 +513,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         sessionController, sessionUI, testSetupPresenter, model,
         testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);
-    NSLog(@"Finished main initialization.")
+    NSLog(@"Finished main initialization.");
 }
 }
