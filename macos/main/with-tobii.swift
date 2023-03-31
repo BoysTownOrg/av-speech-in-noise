@@ -166,8 +166,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             terminatingAlert.runModal()
             NSApp.terminate(nil)
         }
+        NSLog("Initializing application...")
         AvSpeechInNoiseMain.withTobiiPro(SwiftTestSetupUIFactory(testSetupUI: testSetupUI), with: sessionUI, with: sessionUI.testUI, with: sessionUI.freeResponseUI, with: sessionUI.syllablesUI, with: sessionUI.chooseKeywordsUI, with: sessionUI.correctKeywordsUI, with: sessionUI.passFailUI, withEyeTrackerMenu: eyeTrackerRunMenu, with: eyeTrackerCalibrationValidationTesterUI)
         
+        NSLog("Restoring user defaults...")
         sessionUI.audioDevice_.string = userDefaults.string(forKey: "AudioDevice") ?? ""
         sessionUI.subjectScreen_.string = userDefaultSubjectScreen
         testSetupUI.subjectId_.string = userDefaults.string(forKey: "SubjectID") ?? ""
@@ -177,23 +179,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         testSetupUI.transducer_.string = userDefaults.string(forKey: "Transducer") ?? ""
         testSetupUI.testSettingsPathControl.url = URL(fileURLWithPath: userDefaults.string(forKey: "TestSettingsFilePath") ?? "")
         testSetupUI.rmeSetting_.string = userDefaults.string(forKey: "RMESetting") ?? ""
-
+        
+        NSLog("Creating session view...")
         let contentView = SwiftSessionView(ui: sessionUI) {
             SwiftTestSetupView(ui: self.testSetupUI, testSettingsPathControl: self.testSettingsPathControl)
             CalibrationValidationTesterSwiftView(ui: self.eyeTrackerCalibrationValidationTesterUI)
         }
-
+        
+        NSLog("Creating main window...")
         window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered, defer: false
         )
         window.isReleasedWhenClosed = false
+        
+        NSLog("Centering main window...")
         if let screen = NSScreen.screens.first {
             window.setFrameOrigin(NSMakePoint((screen.frame.width - 480) / 2, (screen.frame.height - 300) / 2))
         }
         window.contentView = NSHostingView(rootView: contentView)
         window.makeKeyAndOrderFront(nil)
+        NSLog("Finished opening application.")
     }
 
     func applicationWillTerminate(_: Notification) {
