@@ -41,6 +41,8 @@
 #include <functional>
 #include <filesystem>
 
+#include <Foundation/Foundation.h>
+
 @interface CallbackScheduler : NSObject
 @end
 
@@ -253,26 +255,34 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto videoNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
     addAutolayoutEnabledSubview(subjectNSWindow.contentView, videoNSView);
+    NSLog(@"Initializing video player...");
     static AvFoundationVideoPlayer videoPlayer{videoNSView};
+    NSLog(@"Initializing audio reader...");
     static AvFoundationBufferedAudioReaderFactory audioReaderFactory;
     static AudioReaderSimplified audioReader{audioReaderFactory};
+    NSLog(@"Initializing target player...");
     static TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
+    NSLog(@"Initializing audio player...");
     static AvFoundationAudioPlayer audioPlayer;
     static TimerImpl timer;
+    NSLog(@"Initializing masker player...");
     static MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader, &timer};
     maskerPlayer.setRampFor(Duration{0.02});
+    NSLog(@"Initializing output file...");
     static FileWriter fileWriter;
     static TimeStampImpl timeStamp;
     static UnixFileSystemPath systemPath;
     static const auto outputFileName{outputFileNameFactory.make(timeStamp)};
     static OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
     static OutputFileImpl outputFile{fileWriter, outputFilePath};
+    NSLog(@"Initializing adaptive method...");
     static adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     static ResponseEvaluatorImpl responseEvaluator;
     static TextFileReaderImpl textFileReader;
     static MersenneTwisterRandomizer randomizer;
     static AdaptiveMethodImpl adaptiveMethod{
         snrTrackFactory, responseEvaluator, randomizer};
+    NSLog(@"Initializing target playlists...");
     static MacOsDirectoryReader directoryReader;
     static FileExtensionFilter targetFileExtensionFilter{
         {".mov", ".avi", ".wav", ".mp4"}};
@@ -322,8 +332,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         &onlyIncludesTargetFileExtensions, &randomizer};
     static EachTargetPlayedOnceThenShuffleAndRepeat allTargetsNTimes{
         &onlyIncludesTargetFileExtensions, &randomizer};
+    NSLog(@"Initializing fixed level method...");
     static FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
     static LocalTimeClock localTimeClock;
+    NSLog(@"Initializing audio recorder...");
     static AvFoundationAudioRecorder audioRecorder;
     static RunningATestImpl recognitionTestModel{targetPlayer, maskerPlayer,
         responseEvaluator, outputFile, randomizer, localTimeClock};
@@ -339,7 +351,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static MacOsTargetValidator targetValidator;
     static PredeterminedTargetPlaylist predeterminedTargetPlaylist{
         textFileReader, targetValidator};
+    NSLog(@"Initializing audio recording...");
     static AudioRecording audioRecording{audioRecorder, outputFile, timeStamp};
+    NSLog(@"Initializing eye tracking...");
     static EyeTracking eyeTracking{
         eyeTracker, maskerPlayer, targetPlayer, outputFile};
     static RunningATestFacadeImpl model{adaptiveMethod, fixedLevelMethod,
@@ -347,7 +361,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
         allTargetsNTimes, predeterminedTargetPlaylist, recognitionTestModel,
         outputFile, audioRecording, eyeTracking};
+    NSLog(@"Initializing test setup UI...");
     static const auto testSetupUI{testSetupUIFactory.make(nil)};
+    NSLog(@"Initializing consonant UI...");
     const auto consonantNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
     addAutolayoutEnabledSubview(subjectNSWindow.contentView, consonantNSView);
@@ -365,6 +381,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                            constant:-80]
     ]];
     static submitting_consonant::AppKitUI consonantUI{consonantNSView};
+    NSLog(@"Initializing CRM UI...");
     const auto coordinateResponseMeasureNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
     addAutolayoutEnabledSubview(
@@ -384,6 +401,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     ]];
     static AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
         coordinateResponseMeasureNSView};
+    NSLog(@"Initializing presenters...");
     static submitting_consonant::PresenterImpl consonantPresenter{consonantUI};
     static submitting_free_response::Presenter freeResponsePresenter{
         testUI, freeResponseUI};
@@ -403,6 +421,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static UninitializedTaskPresenterImpl taskPresenter;
     static TestPresenterImpl testPresenter{model, testUI, &taskPresenter};
     static SessionPresenterImpl sessionPresenter{sessionUI, model};
+    NSLog(@"Initializing controllers...");
     static SessionControllerImpl sessionController{
         testSetupPresenter, testPresenter, subjectPresenter};
     static TestControllerImpl testController{
@@ -494,5 +513,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         sessionController, sessionUI, testSetupPresenter, model,
         testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);
+    NSLog(@"Finished main initialization.")
 }
 }

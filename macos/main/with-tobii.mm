@@ -11,6 +11,7 @@
 #include <av-speech-in-noise/ui/SubjectImpl.hpp>
 
 #import <AppKit/AppKit.h>
+#include <Foundation/Foundation.h>
 
 #include <vector>
 #include <algorithm>
@@ -414,7 +415,9 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     NSObject<EyeTrackerRunMenu> *eyeTrackerMenu,
     NSObject<AvSpeechInNoiseEyeTrackerCalibrationValidationTesterUI>
         *eyeTrackerCalibrationValidationTesterUI) {
+    NSLog(@"Initializing eye tracker...");
     static TobiiProTracker eyeTracker;
+    NSLog(@"Initializing swift UI adapters...");
     static TestSetupUIFactoryImpl testSetupViewFactory{testSetupUIFactory};
     static DefaultOutputFileNameFactory outputFileNameFactory;
     static SessionUIImpl sessionUIAdapter{sessionUI};
@@ -431,6 +434,7 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static SubjectAppKitView subjectView{subjectWindow};
     static av_speech_in_noise::SubjectPresenterImpl subjectPresenter{
         subjectView, sessionUIAdapter};
+    NSLog(@"Initializing eye tracker calibration...");
     eye_tracker_calibration::initialize(eyeTracker, eyeTrackerMenu,
         eyeTrackerCalibrationValidationTesterUI, subjectPresenter,
         subjectWindow);
