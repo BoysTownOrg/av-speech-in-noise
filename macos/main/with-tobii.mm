@@ -430,6 +430,7 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
     static submitting_number_keywords::UIImpl correctKeywordsUIAdapter{
         correctKeywordsUI};
     static submitting_pass_fail::UIImpl passFailUIAdapter{passFailUI};
+    NSLog(@"Initializing subject UI...");
     const auto subjectWindow{av_speech_in_noise::subjectWindow()};
     static SubjectAppKitView subjectView{subjectWindow};
     static av_speech_in_noise::SubjectPresenterImpl subjectPresenter{
