@@ -177,7 +177,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         testSetupUI.session_.string = userDefaults.string(forKey: "Session") ?? ""
         testSetupUI.startingSnr_.string = userDefaults.string(forKey: "StartingSNR") ?? ""
         testSetupUI.transducer_.string = userDefaults.string(forKey: "Transducer") ?? ""
-        testSetupUI.testSettingsPathControl.url = URL(fileURLWithPath: userDefaults.string(forKey: "TestSettingsFilePath") ?? "")
+        //testSetupUI.testSettingsPathControl.url = URL(fileURLWithPath: userDefaults.string(forKey: "TestSettingsFilePath") ?? "")
         testSetupUI.rmeSetting_.string = userDefaults.string(forKey: "RMESetting") ?? ""
         
         NSLog("Creating session view...")
