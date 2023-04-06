@@ -85,23 +85,22 @@ static auto objectId(gsl::index device) -> AudioObjectID {
     return globalAudioDevices.at(device);
 }
 
-static auto toString(CFStringRef deviceName) -> std::string {
-    std::string buffer(128, '\0');
-    if (CFStringGetCString(deviceName, buffer.data(), buffer.size(),
-            kCFStringEncodingUTF8) == NO)
-        NSLog(@"Failed call to CFStringGetCString");
-    buffer.erase(std::find(buffer.begin(), buffer.end(), '\0'), buffer.end());
-    return buffer;
-}
-
+// https://chromium.googlesource.com/chromium/src/media/+/7479f0acde23267d810b8e58c07b342719d9a923/audio/mac/audio_manager_mac.cc#68
 static auto stringProperty(AudioObjectPropertySelector s, int device)
     -> std::string {
     const auto address{globalAddress(s)};
-    const auto data{loadPropertyData<CFStringRef>(objectId(device), &address)};
-    if (data.empty())
-        return {};
+    const auto deviceID{objectId(device)};
+    CFStringRef name;
+    UInt32 size = sizeof(CFStringRef);
+    OSStatus result = AudioObjectGetPropertyData(
+        deviceID, &address, 0, nullptr, &size, &name);
+    if (result != kAudioHardwareNoError) {
+        return "";
+    }
+    const auto property{std::string{[(__bridge NSString *)name UTF8String]}};
+    CFRelease(name);
 
-    return toString(data.front());
+    return property;
 }
 
 static auto description(int device) -> std::string {
@@ -112,16 +111,36 @@ static auto uid(int device) -> std::string {
     return stringProperty(kAudioDevicePropertyDeviceUID, device);
 }
 
+// https://stackoverflow.com/a/4577271
 static auto outputDevice(int device) -> bool {
     const auto address = masterAddress(kAudioDevicePropertyStreamConfiguration,
         kAudioObjectPropertyScopeOutput);
-    const auto bufferLists =
-        loadPropertyData<AudioBufferList>(objectId(device), &address);
-    for (auto list : bufferLists)
-        for (UInt32 j{0}; j < list.mNumberBuffers; ++j)
-            if (list.mBuffers[j].mNumberChannels != 0)
-                return true;
-    return false;
+
+    const auto deviceID{objectId(device)};
+    UInt32 dataSize = 0;
+    OSStatus result = AudioObjectGetPropertyDataSize(
+        deviceID, &address, 0, nullptr, &dataSize);
+    if (result != kAudioHardwareNoError) {
+        return false;
+    }
+
+    AudioBufferList *bufferList =
+        static_cast<AudioBufferList *>(malloc(dataSize));
+    if (!bufferList) {
+        return false;
+    }
+
+    result = AudioObjectGetPropertyData(
+        deviceID, &address, 0, nullptr, &dataSize, bufferList);
+    if (result != kAudioHardwareNoError) {
+        free(bufferList);
+        return false;
+    }
+
+    const auto answer = bufferList->mNumberBuffers > 0;
+    free(bufferList);
+
+    return answer;
 }
 
 static auto firstTrack(AVAsset *asset, AVMediaType mediaType)
