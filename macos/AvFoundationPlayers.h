@@ -17,6 +17,8 @@
 @class VideoPlayerActions;
 
 namespace av_speech_in_noise {
+auto loadAudioDevices() -> std::vector<AudioObjectID>;
+
 class AvFoundationAudioRecorder : public AudioRecorder {
   public:
     void initialize(const LocalUrl &url) override;
@@ -48,7 +50,7 @@ class AvFoundationBufferedAudioReaderFactory
 
 class AvFoundationVideoPlayer : public VideoPlayer {
   public:
-    explicit AvFoundationVideoPlayer(NSView *);
+    AvFoundationVideoPlayer(NSView *, std::vector<AudioObjectID> audioDevices);
     void playbackComplete();
     void play() override;
     void playAt(const PlayerTimeWithDelay &) override;
@@ -85,6 +87,7 @@ class AvFoundationVideoPlayer : public VideoPlayer {
         MTAudioProcessingTapFlags *flagsOut);
 
     std::vector<gsl::span<float>> audio;
+    std::vector<AudioObjectID> audioDevices;
     MTAudioProcessingTapRef tap{};
     VideoPlayerActions *actions;
     NSView *view;
@@ -97,7 +100,7 @@ class AvFoundationVideoPlayer : public VideoPlayer {
 
 class AvFoundationAudioPlayer : public AudioPlayer {
   public:
-    AvFoundationAudioPlayer();
+    AvFoundationAudioPlayer(std::vector<AudioObjectID> audioDevices);
     AvFoundationAudioPlayer(const AvFoundationAudioPlayer &) = delete;
     auto operator=(const AvFoundationAudioPlayer &)
         -> AvFoundationAudioPlayer & = delete;
@@ -129,6 +132,7 @@ class AvFoundationAudioPlayer : public AudioPlayer {
         UInt32 inNumberFrames, AudioBufferList *ioData) -> OSStatus;
 
     std::vector<gsl::span<float>> audio;
+    std::vector<AudioObjectID> audioDevices;
     Observer *listener_{};
     AudioUnit audioUnit{};
     double sampleRate_{};

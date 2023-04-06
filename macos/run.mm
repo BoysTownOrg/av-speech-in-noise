@@ -255,15 +255,16 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     const auto videoNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
     addAutolayoutEnabledSubview(subjectNSWindow.contentView, videoNSView);
+    const auto audioDevices{loadAudioDevices()};
     NSLog(@"Initializing video player...");
-    static AvFoundationVideoPlayer videoPlayer{videoNSView};
+    static AvFoundationVideoPlayer videoPlayer{videoNSView, audioDevices};
     NSLog(@"Initializing audio reader...");
     static AvFoundationBufferedAudioReaderFactory audioReaderFactory;
     static AudioReaderSimplified audioReader{audioReaderFactory};
     NSLog(@"Initializing target player...");
     static TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
     NSLog(@"Initializing audio player...");
-    static AvFoundationAudioPlayer audioPlayer;
+    static AvFoundationAudioPlayer audioPlayer{audioDevices};
     static TimerImpl timer;
     NSLog(@"Initializing masker player...");
     static MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader, &timer};

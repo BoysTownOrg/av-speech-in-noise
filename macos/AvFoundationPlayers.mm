@@ -1,6 +1,7 @@
 #include "AvFoundationPlayers.h"
 #include "Foundation-utility.h"
 
+#include <CoreAudio/CoreAudio.h>
 #include <Foundation/Foundation.h>
 #include <mach/mach_time.h>
 
@@ -8,6 +9,7 @@
 
 #include <limits>
 #include <stdexcept>
+#include <vector>
 
 @interface VideoPlayerActions : NSObject
 @end
@@ -70,26 +72,25 @@ static auto globalAddress(AudioObjectPropertySelector s)
 
 // https://stackoverflow.com/questions/4575408/audioobjectgetpropertydata-to-get-a-list-of-input-devices
 // http://fdiv.net/2008/08/12/nssound-setplaybackdeviceidentifier-coreaudio-output-device-enumeration
-static auto loadDevices() -> std::vector<AudioObjectID> {
+auto loadAudioDevices() -> std::vector<AudioObjectID> {
     const auto address{globalAddress(kAudioHardwarePropertyDevices)};
     return loadPropertyData<AudioDeviceID>(kAudioObjectSystemObject, &address);
 }
 
-static std::vector<AudioDeviceID> globalAudioDevices{loadDevices()};
-
-static auto deviceCount() -> int {
-    return gsl::narrow<int>(globalAudioDevices.size());
+static auto deviceCount(const std::vector<AudioObjectID> &devices) -> int {
+    return gsl::narrow<int>(devices.size());
 }
 
-static auto objectId(gsl::index device) -> AudioObjectID {
-    return globalAudioDevices.at(device);
+static auto objectId(const std::vector<AudioObjectID> &devices,
+    gsl::index device) -> AudioObjectID {
+    return devices.at(device);
 }
 
 // https://chromium.googlesource.com/chromium/src/media/+/7479f0acde23267d810b8e58c07b342719d9a923/audio/mac/audio_manager_mac.cc#68
-static auto stringProperty(AudioObjectPropertySelector s, int device)
-    -> std::string {
+static auto stringProperty(const std::vector<AudioObjectID> &devices,
+    AudioObjectPropertySelector s, int device) -> std::string {
     const auto address{globalAddress(s)};
-    const auto deviceID{objectId(device)};
+    const auto deviceID{objectId(devices, device)};
     CFStringRef name;
     UInt32 size = sizeof(CFStringRef);
     OSStatus result = AudioObjectGetPropertyData(
@@ -103,20 +104,23 @@ static auto stringProperty(AudioObjectPropertySelector s, int device)
     return property;
 }
 
-static auto description(int device) -> std::string {
-    return stringProperty(kAudioObjectPropertyName, device);
+static auto description(const std::vector<AudioObjectID> &devices, int device)
+    -> std::string {
+    return stringProperty(devices, kAudioObjectPropertyName, device);
 }
 
-static auto uid(int device) -> std::string {
-    return stringProperty(kAudioDevicePropertyDeviceUID, device);
+static auto uid(const std::vector<AudioObjectID> &devices, int device)
+    -> std::string {
+    return stringProperty(devices, kAudioDevicePropertyDeviceUID, device);
 }
 
 // https://stackoverflow.com/a/4577271
-static auto outputDevice(int device) -> bool {
+static auto outputDevice(const std::vector<AudioObjectID> &devices, int device)
+    -> bool {
     const auto address = masterAddress(kAudioDevicePropertyStreamConfiguration,
         kAudioObjectPropertyScopeOutput);
 
-    const auto deviceID{objectId(device)};
+    const auto deviceID{objectId(devices, device)};
     UInt32 dataSize = 0;
     OSStatus result = AudioObjectGetPropertyDataSize(
         deviceID, &address, 0, nullptr, &dataSize);
@@ -176,8 +180,10 @@ static auto currentAsset(AVPlayer *player) -> AVAsset * {
     return player.currentItem.asset;
 }
 
-AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSView *view)
-    : actions{[[VideoPlayerActions alloc] init]}, view{view},
+AvFoundationVideoPlayer::AvFoundationVideoPlayer(
+    NSView *view, std::vector<AudioObjectID> audioDevices)
+    : audioDevices{std::move(audioDevices)},
+      actions{[[VideoPlayerActions alloc] init]}, view{view},
       player{[AVPlayer playerWithPlayerItem:nil]},
       playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]},
       widthConstraint{[view.widthAnchor constraintEqualToConstant:0]},
@@ -327,7 +333,7 @@ void AvFoundationVideoPlayer::playbackComplete() {
 }
 
 void AvFoundationVideoPlayer::setDevice(int index) {
-    player.audioOutputDeviceUniqueID = nsString(uid(index));
+    player.audioOutputDeviceUniqueID = nsString(uid(audioDevices, index));
 }
 
 void AvFoundationVideoPlayer::hide() { [view setHidden:YES]; }
@@ -335,11 +341,11 @@ void AvFoundationVideoPlayer::hide() { [view setHidden:YES]; }
 void AvFoundationVideoPlayer::show() { [view setHidden:NO]; }
 
 auto AvFoundationVideoPlayer::deviceCount() -> int {
-    return av_speech_in_noise::deviceCount();
+    return av_speech_in_noise::deviceCount(audioDevices);
 }
 
 auto AvFoundationVideoPlayer::deviceDescription(int index) -> std::string {
-    return description(index);
+    return description(audioDevices, index);
 }
 
 static auto playing(AVPlayer *player) -> bool {
@@ -365,7 +371,9 @@ auto AvFoundationVideoPlayer::durationSeconds() -> double {
     return durationSeconds_(player);
 }
 
-AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
+AvFoundationAudioPlayer::AvFoundationAudioPlayer(
+    std::vector<AudioObjectID> audioDevices)
+    : audioDevices{std::move(audioDevices)} {
     AudioComponentDescription audioComponentDescription;
     audioComponentDescription.componentType = kAudioUnitType_Output;
     audioComponentDescription.componentSubType = kAudioUnitSubType_HALOutput;
@@ -463,15 +471,15 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
 }
 
 auto AvFoundationAudioPlayer::deviceCount() -> int {
-    return av_speech_in_noise::deviceCount();
+    return av_speech_in_noise::deviceCount(audioDevices);
 }
 
 auto AvFoundationAudioPlayer::deviceDescription(int index) -> std::string {
-    return description(index);
+    return description(audioDevices, index);
 }
 
 void AvFoundationAudioPlayer::setDevice(int index) {
-    const auto deviceId{objectId(index)};
+    const auto deviceId{objectId(audioDevices, index)};
     if (AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_CurrentDevice,
             kAudioUnitScope_Global, 0, &deviceId, sizeof(deviceId)) != 0)
         NSLog(@"AudioUnitSetProperty failed to set device.");
@@ -503,7 +511,7 @@ void AvFoundationAudioPlayer::stop() {
 }
 
 auto AvFoundationAudioPlayer::outputDevice(int index) -> bool {
-    return av_speech_in_noise::outputDevice(index);
+    return av_speech_in_noise::outputDevice(audioDevices, index);
 }
 
 static auto numerator(const mach_timebase_info_data_t &t) -> uint32_t {
