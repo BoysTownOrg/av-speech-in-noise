@@ -54,13 +54,13 @@ jobs:
       - name: notarize apps
         env:
           AV_SPEECH_IN_NOISE_BUNDLE_DIRECTORY: ./build/macos/Release
+          APP_CONNECT_NOTARIZATION_USERNAME: ${{ secrets.APP_CONNECT_NOTARIZATION_USERNAME }}
+          APP_CONNECT_NOTARIZATION_PASSWORD: ${{ secrets.APP_CONNECT_NOTARIZATION_PASSWORD  }}
+          TEAM_IDENTITY: ${{ secrets.TEAM_IDENTITY  }}
         run: |
-          ditto -c -k --keepParent "$AV_SPEECH_IN_NOISE_BUNDLE_DIRECTORY/AV Speech in Noise.app" "$AV_SPEECH_IN_NOISE_BUNDLE_DIRECTORY/AV Speech in Noise.app.zip"
-          xcrun notarytool submit "$AV_SPEECH_IN_NOISE_BUNDLE_DIRECTORY/AV Speech in Noise.app.zip" --apple-id ${{ secrets.APP_CONNECT_NOTARIZATION_USERNAME }} --password ${{ secrets.APP_CONNECT_NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_IDENTITY }} --wait
-          ditto -c -k --keepParent "$AV_SPEECH_IN_NOISE_BUNDLE_DIRECTORY/Facemask Study.app" "$AV_SPEECH_IN_NOISE_BUNDLE_DIRECTORY/Facemask Study.app.zip"
-          xcrun notarytool submit "$AV_SPEECH_IN_NOISE_BUNDLE_DIRECTORY/Facemask Study.app.zip" --apple-id ${{ secrets.APP_CONNECT_NOTARIZATION_USERNAME }} --password ${{ secrets.APP_CONNECT_NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_IDENTITY }} --wait
-          ditto -c -k --keepParent "./build-with-eyetracking/macos/Release/AV Speech in Noise.app" "./build-with-eyetracking/macos/Release/with-eyetracking.zip"
-          xcrun notarytool submit "./build-with-eyetracking/macos/Release/with-eyetracking.zip" --apple-id ${{ secrets.APP_CONNECT_NOTARIZATION_USERNAME }} --password ${{ secrets.APP_CONNECT_NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_IDENTITY }} --wait
+          ./notarize-and-staple.sh "$AV_SPEECH_IN_NOISE_BUNDLE_DIRECTORY/AV Speech in Noise.app" "$AV_SPEECH_IN_NOISE_BUNDLE_DIRECTORY/AV Speech in Noise.app.zip"
+          ./notarize-and-staple.sh "$AV_SPEECH_IN_NOISE_BUNDLE_DIRECTORY/Facemask Study.app" "$AV_SPEECH_IN_NOISE_BUNDLE_DIRECTORY/Facemask Study.app.zip"
+          ./notarize-and-staple.sh  "./build-with-eyetracking/macos/Release/AV Speech in Noise.app" "./build-with-eyetracking/macos/Release/with-eyetracking.zip"
       - name: create GitHub release
         run: gh release create $AV_SPEECH_IN_NOISE_VERSION ./build/macos/Release/*.zip "./build-with-eyetracking/macos/Release/with-eyetracking.zip"
         env:
