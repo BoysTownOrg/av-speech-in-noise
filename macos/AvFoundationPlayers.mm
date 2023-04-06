@@ -177,7 +177,7 @@ static auto currentAsset(AVPlayer *player) -> AVAsset * {
 }
 
 AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSView *view)
-    : actions{[VideoPlayerActions alloc]}, view{view},
+    : actions{[[VideoPlayerActions alloc] init]}, view{view},
       player{[AVPlayer playerWithPlayerItem:nil]},
       playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]},
       widthConstraint{[view.widthAnchor constraintEqualToConstant:0]},
