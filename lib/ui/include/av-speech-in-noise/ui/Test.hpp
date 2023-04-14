@@ -45,6 +45,7 @@ class TestController {
     virtual void notifyThatUserIsDoneResponding() = 0;
     virtual void notifyThatUserIsReadyForNextTrial() = 0;
     virtual void notifyThatUserIsDoneRespondingAndIsReadyForNextTrial() {}
+    virtual void notifyThatUserHasRespondedButTrialIsNotQuiteDone() {}
 };
 
 class TestPresenter : public Presenter {

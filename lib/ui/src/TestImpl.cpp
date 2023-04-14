@@ -92,7 +92,7 @@ void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
     });
 }
 
-void TestControllerImpl::notifyThatUserHasResponded() {
+void TestControllerImpl::notifyThatUserHasRespondedButTrialIsNotQuiteDone() {
     presenter.hideResponseSubmission();
 }
 

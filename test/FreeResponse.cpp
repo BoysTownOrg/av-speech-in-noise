@@ -79,7 +79,7 @@ class InteractorStub : public Interactor {
     FreeResponse freeResponse_;
 };
 
-class ControllerTests : public ::testing::Test {
+class FreeResponseControllerTests : public ::testing::Test {
   protected:
     InteractorStub model;
     ControlStub control;
@@ -87,16 +87,16 @@ class ControllerTests : public ::testing::Test {
     Controller controller{testController, model, control};
 };
 
-class PresenterTests : public ::testing::Test {
+class FreeResponsePresenterTests : public ::testing::Test {
   protected:
     TestViewStub testView;
     ViewStub view;
     Presenter presenter{testView, view};
 };
 
-#define FREE_RESPONSE_CONTROLLER_TEST(a) TEST_F(ControllerTests, a)
+#define FREE_RESPONSE_CONTROLLER_TEST(a) TEST_F(FreeResponseControllerTests, a)
 
-#define FREE_RESPONSE_PRESENTER_TEST(a) TEST_F(PresenterTests, a)
+#define FREE_RESPONSE_PRESENTER_TEST(a) TEST_F(FreeResponsePresenterTests, a)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).freeResponseSubmissionHidden())
@@ -158,7 +158,7 @@ FREE_RESPONSE_CONTROLLER_TEST(
 
 namespace with_puzzle {
 namespace {
-class ControllerWithPuzzleTests : public ::testing::Test {
+class FreeResponseControllerWithPuzzleTests : public ::testing::Test {
   protected:
     InteractorStub model;
     ControlStub control;
@@ -166,19 +166,18 @@ class ControllerWithPuzzleTests : public ::testing::Test {
     Controller controller{testController, model, control};
 };
 
-class PresenterWithPuzzleTests : public ::testing::Test {
+class FreeResponsePresenterWithPuzzleTests : public ::testing::Test {
   protected:
     TestViewStub testView;
     ViewStub view;
     Presenter presenter{testView, view};
 };
 
-#define FREE_RESPONSE_CONTROLLER_TEST(a) TEST_F(ControllerWithPuzzleTests, a)
+#define FREE_RESPONSE_CONTROLLER_TEST(a)                                       \
+    TEST_F(FreeResponseControllerWithPuzzleTests, a)
 
-#define FREE_RESPONSE_PRESENTER_TEST(a) TEST_F(PresenterWithPuzzleTests, a)
-
-#define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).freeResponseSubmissionHidden())
+#define FREE_RESPONSE_PRESENTER_TEST(a)                                        \
+    TEST_F(FreeResponsePresenterWithPuzzleTests, a)
 
 FREE_RESPONSE_PRESENTER_TEST(presenterHidesResponseSubmission) {
     presenter.hideResponseSubmission();
@@ -228,10 +227,10 @@ FREE_RESPONSE_CONTROLLER_TEST(
 }
 
 FREE_RESPONSE_CONTROLLER_TEST(
-    responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
+    controllerNotifiesThatUserHasRespondedButTrialIsNotQuiteDoneAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController.notifiedThatUserIsDoneResponding());
+        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
 }
 }
 }

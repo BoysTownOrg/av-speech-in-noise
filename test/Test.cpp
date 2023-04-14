@@ -206,12 +206,16 @@ class NotifyingThatUserIsDoneResponding : public ControllerUseCase {
     TestControllerImpl &controller;
 };
 
-class NotifyingThatUserHasResponded : public ControllerUseCase {
+class NotifyingThatUserHasRespondedButTrialIsNotQuiteDone
+    : public ControllerUseCase {
   public:
-    explicit NotifyingThatUserHasResponded(TestControllerImpl &controller)
+    explicit NotifyingThatUserHasRespondedButTrialIsNotQuiteDone(
+        TestControllerImpl &controller)
         : controller{controller} {}
 
-    void run() override { controller.notifyThatUserHasResponded(); }
+    void run() override {
+        controller.notifyThatUserHasRespondedButTrialIsNotQuiteDone();
+    }
 
   private:
     TestControllerImpl &controller;
@@ -321,7 +325,8 @@ class TestControllerTests : public ::testing::Test {
             controller};
     NotifyingThatUserIsDoneResponding notifyingThatUserIsDoneResponding{
         controller};
-    NotifyingThatUserHasResponded notifyingThatUserHasResponded{controller};
+    NotifyingThatUserHasRespondedButTrialIsNotQuiteDone
+        notifyingThatUserHasRespondedButTrialIsNotQuiteDone{controller};
     NotifyingThatUserIsReadyForNextTrial notifyingThatUserIsReadyForNextTrial{
         controller};
     NotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial
@@ -517,8 +522,9 @@ TEST_CONTROLLER_TEST(
         notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial, presenter);
 }
 
-TEST_CONTROLLER_TEST(hidesResponseSubmissionAfterUserHasResponded) {
-    run(notifyingThatUserHasResponded);
+TEST_CONTROLLER_TEST(
+    hidesResponseSubmissionAfterUserHasRespondedButTrialIsNotQuiteDone) {
+    run(notifyingThatUserHasRespondedButTrialIsNotQuiteDone);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.responseSubmissionHidden());
 }
 

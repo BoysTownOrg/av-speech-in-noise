@@ -42,7 +42,7 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
     freeResponse.flagged = control.flagged();
     freeResponse.response = control.response();
     interactor.submit(freeResponse);
-    testController.notifyThatUserIsDoneResponding();
+    testController.notifyThatUserHasRespondedButTrialIsNotQuiteDone();
 }
 
 Presenter::Presenter(TestView &testView, View &view)
