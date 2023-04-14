@@ -1,6 +1,8 @@
 #ifndef AV_SPEECH_IN_NOISE_UI_INCLUDE_AV_SPEECH_IN_NOISE_UI_REVEALIMAGE_HPP_
 #define AV_SPEECH_IN_NOISE_UI_INCLUDE_AV_SPEECH_IN_NOISE_UI_REVEALIMAGE_HPP_
 
+#include "FreeResponse.hpp"
+
 #include <av-speech-in-noise/Interface.hpp>
 
 #include <gsl/gsl>
@@ -29,12 +31,12 @@ class Shuffler {
     virtual void shuffle(gsl::span<int>) = 0;
 };
 
-class RevealImage {
+class RevealImage : submitting_free_response::with_puzzle::Puzzle {
   public:
     RevealImage(
         NormallyMaskedImage &image, Shuffler &shuffler, int rows, int columns);
-    void next();
-    void reset();
+    void next() override;
+    void reset() override;
 
   private:
     std::vector<int> order;

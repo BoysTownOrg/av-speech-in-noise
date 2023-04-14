@@ -54,6 +54,13 @@ class Presenter : public TaskPresenter {
 };
 
 namespace with_puzzle {
+class Puzzle {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Puzzle);
+    virtual void reset() = 0;
+    virtual void next() = 0;
+};
+
 class Controller : public TaskController, public Control::Observer {
   public:
     Controller(TestController &, Interactor &, Control &);
