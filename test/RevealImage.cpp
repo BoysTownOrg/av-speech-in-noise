@@ -52,6 +52,7 @@ class RevealImage {
     void reset() {
         std::iota(order.begin(), order.end(), 0);
         shuffler.shuffle(order);
+        index = 0;
     }
 
   private:
@@ -176,6 +177,28 @@ TEST_F(RevealImageTests, resetReshufflesIndicesOfRevealableImageRegions) {
     randomizer.clearToShuffle();
     reveal.reset();
     assertEqual({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, randomizer.toShuffle());
+}
+
+TEST_F(RevealImageTests, resetResetsOrder) {
+    NormallyMaskedImageStub image{800, 600};
+    ShufflerStub randomizer;
+    const auto rows{3};
+    const auto columns{4};
+    RevealImage reveal{image, randomizer, rows, columns};
+    randomizer.setShuffled({0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11});
+    reveal.next();
+    reveal.next();
+    reveal.next();
+    randomizer.setShuffled({11, 0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9});
+    reveal.reset();
+    reveal.next();
+    auto actual = image.lastRevealedRegion();
+    auto expected = ImageRegion{};
+    expected.x = 600;
+    expected.y = 400;
+    expected.width = 800. / 4;
+    expected.height = 600. / 3;
+    ASSERT_EQUAL_IMAGE_REGIONS(expected, actual);
 }
 }
 }
