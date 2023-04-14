@@ -1,9 +1,10 @@
-#include "assert-utility.hpp"
-#include <algorithm>
 #include <av-speech-in-noise/Interface.hpp>
 
 #include <gsl/gsl>
+
+#include <vector>
 #include <numeric>
+#include <algorithm>
 
 namespace av_speech_in_noise {
 struct ImageRegion {
@@ -31,8 +32,7 @@ class RevealImage {
   public:
     RevealImage(
         NormallyMaskedImage &image, Shuffler &shuffler, int rows, int columns)
-        : order(rows * columns), index{0}, rows{rows}, columns{columns},
-          image{image} {
+        : order(rows * columns), rows{rows}, columns{columns}, image{image} {
         std::iota(order.begin(), order.end(), 0);
         shuffler.shuffle(order);
     }
@@ -51,13 +51,14 @@ class RevealImage {
 
   private:
     std::vector<int> order;
-    int index{};
+    gsl::index index{};
     int rows;
     int columns;
     NormallyMaskedImage &image;
 };
 }
 
+#include "assert-utility.hpp"
 #include "RandomizerStub.hpp"
 
 #include <gtest/gtest.h>
@@ -69,23 +70,23 @@ class NormallyMaskedImageStub : public NormallyMaskedImage {
     NormallyMaskedImageStub(double width, double height)
         : width_{width}, height_{height} {}
 
-    auto width() -> double { return width_; }
+    auto width() -> double override { return width_; }
 
-    auto height() -> double { return height_; }
+    auto height() -> double override { return height_; }
 
     auto lastRevealedRegion() -> ImageRegion { return lastRevealedRegion_; }
 
-    void reveal(ImageRegion region) { lastRevealedRegion_ = region; }
+    void reveal(ImageRegion region) override { lastRevealedRegion_ = region; }
 
   private:
-    ImageRegion lastRevealedRegion_;
+    ImageRegion lastRevealedRegion_{};
     double width_;
     double height_;
 };
 
 class ShufflerStub : public Shuffler {
   public:
-    void shuffle(gsl::span<int> s) {
+    void shuffle(gsl::span<int> s) override {
         toShuffle_.resize(s.size());
         std::copy(s.begin(), s.end(), toShuffle_.begin());
         std::copy(shuffled.begin(), shuffled.end(), s.begin());
@@ -103,10 +104,10 @@ class ShufflerStub : public Shuffler {
 class RevealImageTests : public ::testing::Test {};
 
 #define ASSERT_EQUAL_IMAGE_REGIONS(a, b)                                       \
-    EXPECT_EQ(a.x, b.x);                                                       \
-    EXPECT_EQ(a.y, b.y);                                                       \
-    EXPECT_EQ(a.width, b.width);                                               \
-    EXPECT_EQ(a.height, b.height)
+    EXPECT_EQ((a).x, (b).x);                                                   \
+    EXPECT_EQ((a).y, (b).y);                                                   \
+    EXPECT_EQ((a).width, (b).width);                                           \
+    EXPECT_EQ((a).height, (b).height)
 
 TEST_F(RevealImageTests, randomizesIndicesOfRevealableImageRegions) {
     NormallyMaskedImageStub image{0, 0};
@@ -117,7 +118,7 @@ TEST_F(RevealImageTests, randomizesIndicesOfRevealableImageRegions) {
     assertEqual({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, randomizer.toShuffle());
 }
 
-TEST_F(RevealImageTests, tbd) {
+TEST_F(RevealImageTests, revealsNextRegionAccordingToRandomOrder) {
     NormallyMaskedImageStub image{800, 600};
     ShufflerStub randomizer;
     const auto rows{3};
