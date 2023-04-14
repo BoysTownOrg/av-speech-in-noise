@@ -32,9 +32,9 @@ class RevealImage {
   public:
     RevealImage(
         NormallyMaskedImage &image, Shuffler &shuffler, int rows, int columns)
-        : order(rows * columns), rows{rows}, columns{columns}, image{image} {
-        std::iota(order.begin(), order.end(), 0);
-        shuffler.shuffle(order);
+        : order(rows * columns), rows{rows}, columns{columns}, image{image},
+          shuffler{shuffler} {
+        reset();
     }
 
     void next() {
@@ -49,12 +49,18 @@ class RevealImage {
         image.reveal(region);
     }
 
+    void reset() {
+        std::iota(order.begin(), order.end(), 0);
+        shuffler.shuffle(order);
+    }
+
   private:
     std::vector<int> order;
     gsl::index index{};
     int rows;
     int columns;
     NormallyMaskedImage &image;
+    Shuffler &shuffler;
 };
 }
 
@@ -95,6 +101,8 @@ class ShufflerStub : public Shuffler {
     void setShuffled(std::vector<int> v) { shuffled = std::move(v); }
 
     auto toShuffle() -> std::vector<int> { return toShuffle_; }
+
+    void clearToShuffle() { toShuffle_.clear(); }
 
   private:
     std::vector<int> shuffled;
@@ -157,6 +165,17 @@ TEST_F(RevealImageTests, revealsNextRegionAccordingToRandomOrder) {
     expected.width = 800. / 4;
     expected.height = 600. / 3;
     ASSERT_EQUAL_IMAGE_REGIONS(expected, actual);
+}
+
+TEST_F(RevealImageTests, resetReshufflesIndicesOfRevealableImageRegions) {
+    NormallyMaskedImageStub image{0, 0};
+    ShufflerStub randomizer;
+    const auto rows{3};
+    const auto columns{4};
+    RevealImage reveal{image, randomizer, rows, columns};
+    randomizer.clearToShuffle();
+    reveal.reset();
+    assertEqual({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, randomizer.toShuffle());
 }
 }
 }
