@@ -83,6 +83,26 @@ class ScopedBitmapContext {
     ~ScopedBitmapContext() { CGContextRelease(context); }
     CGContextRef context;
 };
+
+static auto scopedMaskedImage() -> std::unique_ptr<ScopedMaskedImage> {
+    NSURL *url = [[NSBundle mainBundle] URLForImageResource:@"wally.jpg"];
+    if (url == nil) {
+        throw std::runtime_error{"URL is nil. exiting."};
+    }
+    const auto imageSource{ScopedImageSource{(__bridge CFURLRef)(url)}};
+    const auto image{ScopedImage{imageSource.imageSource}};
+    const auto context{ScopedBitmapContext{image.image}};
+    CGContextSetRGBFillColor(context.context, 1, 1, 1, 1);
+    CGContextFillRect(context.context, CGRectMake(0, 0, 100, 100));
+    CGContextSetRGBFillColor(context.context, 1, 1, 1, 1);
+    CGContextFillRect(context.context, CGRectMake(100, 100, 100, 100));
+    CGContextSetRGBFillColor(context.context, 1, 1, 1, 0);
+    CGContextFillRect(context.context, CGRectMake(0, 100, 100, 100));
+    CGContextSetRGBFillColor(context.context, 0, 0, 0, 0);
+    CGContextFillRect(context.context, CGRectMake(100, 0, 100, 100));
+    const auto mask{ScopedBitmapImage{context.context}};
+    return std::make_unique<ScopedMaskedImage>(image.image, mask.image);
+}
 }
 
 @interface ImageView : NSView
@@ -119,34 +139,12 @@ class ScopedBitmapContext {
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    NSURL *url = [[NSBundle mainBundle] URLForImageResource:@"wally.jpg"];
-    if (url == nil) {
-        NSLog(@"URL is nil. exiting.");
-        return;
-    }
-    const auto imageSource{
-        av_speech_in_noise::ScopedImageSource{(__bridge CFURLRef)(url)}};
-    NSLog(@"image count: %zu", CGImageSourceGetCount(imageSource.imageSource));
-    const auto image{av_speech_in_noise::ScopedImage{imageSource.imageSource}};
-    NSLog(@"image width: %zu", CGImageGetWidth(image.image));
-    const auto context{av_speech_in_noise::ScopedBitmapContext{image.image}};
-    CGContextSetRGBFillColor(context.context, 1, 1, 1, 1);
-    CGContextFillRect(context.context, CGRectMake(0, 0, 100, 100));
-    CGContextSetRGBFillColor(context.context, 1, 1, 1, 1);
-    CGContextFillRect(context.context, CGRectMake(100, 100, 100, 100));
-    CGContextSetRGBFillColor(context.context, 1, 1, 1, 0);
-    CGContextFillRect(context.context, CGRectMake(0, 100, 100, 100));
-    CGContextSetRGBFillColor(context.context, 0, 0, 0, 0);
-    CGContextFillRect(context.context, CGRectMake(100, 0, 100, 100));
-    const auto mask{av_speech_in_noise::ScopedBitmapImage{context.context}};
-
     NSTabViewController *controller = [[NSTabViewController alloc] init];
     [controller setTabStyle:NSTabViewControllerTabStyleUnspecified];
-    NSWindow *window = [NSWindow windowWithContentViewController:controller];
+    const auto window = [NSWindow windowWithContentViewController:controller];
     [window makeKeyAndOrderFront:nil];
-    ImageView *view = [[ImageView alloc]
-        initWithImage:std::make_unique<av_speech_in_noise::ScopedMaskedImage>(
-                          image.image, mask.image)];
+    const auto view = [[ImageView alloc]
+        initWithImage:av_speech_in_noise::scopedMaskedImage()];
     [window.contentView addSubview:view];
 }
 
