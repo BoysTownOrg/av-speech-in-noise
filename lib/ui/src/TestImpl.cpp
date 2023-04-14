@@ -92,6 +92,10 @@ void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
     });
 }
 
+void TestControllerImpl::notifyThatUserHasResponded() {
+    presenter.hideResponseSubmission();
+}
+
 TestPresenterImpl::TestPresenterImpl(RunningATestFacade &model, TestView &view,
     UninitializedTaskPresenter *taskPresenter)
     : model{model}, view{view}, taskPresenter{taskPresenter} {

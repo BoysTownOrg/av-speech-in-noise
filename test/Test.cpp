@@ -206,6 +206,17 @@ class NotifyingThatUserIsDoneResponding : public ControllerUseCase {
     TestControllerImpl &controller;
 };
 
+class NotifyingThatUserHasResponded : public ControllerUseCase {
+  public:
+    explicit NotifyingThatUserHasResponded(TestControllerImpl &controller)
+        : controller{controller} {}
+
+    void run() override { controller.notifyThatUserHasResponded(); }
+
+  private:
+    TestControllerImpl &controller;
+};
+
 class NotifyingThatUserIsReadyForNextTrial : public ControllerUseCase {
   public:
     explicit NotifyingThatUserIsReadyForNextTrial(
@@ -310,6 +321,7 @@ class TestControllerTests : public ::testing::Test {
             controller};
     NotifyingThatUserIsDoneResponding notifyingThatUserIsDoneResponding{
         controller};
+    NotifyingThatUserHasResponded notifyingThatUserHasResponded{controller};
     NotifyingThatUserIsReadyForNextTrial notifyingThatUserIsReadyForNextTrial{
         controller};
     NotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial
@@ -503,6 +515,11 @@ TEST_CONTROLLER_TEST(
     updatesTrialInformationAfterNotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
         notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial, presenter);
+}
+
+TEST_CONTROLLER_TEST(hidesResponseSubmissionAfterUserHasResponded) {
+    run(notifyingThatUserHasResponded);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.responseSubmissionHidden());
 }
 
 TEST_CONTROLLER_TEST(hidesResponseSubmissionAfterUserIsDoneResponding) {
