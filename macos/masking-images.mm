@@ -11,6 +11,15 @@
 #include <memory>
 
 namespace av_speech_in_noise {
+class ScopedMaskedImage;
+}
+
+@interface ImageView : NSView
+- (instancetype)initWithImage:
+    (std::unique_ptr<av_speech_in_noise::ScopedMaskedImage>)image;
+@end
+
+namespace av_speech_in_noise {
 class ScopedMaskedImage {
   public:
     ScopedMaskedImage(CGImageRef image, CGImageRef mask)
@@ -103,13 +112,55 @@ static auto scopedMaskedImage() -> std::unique_ptr<ScopedMaskedImage> {
     const auto mask{ScopedBitmapImage{context.context}};
     return std::make_unique<ScopedMaskedImage>(image.image, mask.image);
 }
+
+struct ImageRegion {
+    double x;
+    double y;
+    double width;
+    double height;
+};
+
+static auto imageResource(NSString *imageName) -> NSURL * {
+    NSURL *url = [[NSBundle mainBundle] URLForImageResource:imageName];
+    if (url == nil) {
+        throw std::runtime_error{"Cannot get URL for image."};
+    }
+    return url;
 }
 
-@interface ImageView : NSView
-- (instancetype)initWithImage:
-    (std::unique_ptr<av_speech_in_noise::ScopedMaskedImage>)image;
-@end
+class TBD {
+    TBD(NSWindow *window, NSString *imageName)
+        : image{ScopedImage{
+              ScopedImageSource{(__bridge CFURLRef)(imageResource(imageName))}
+                  .imageSource}},
+          context{ScopedBitmapContext{image.image}}, window{window} {}
 
+    void drawSomething(ImageRegion region) {
+        CGContextSetRGBFillColor(context.context, 1, 1, 1, 1);
+        CGContextFillRect(context.context,
+            CGRectMake(region.x, region.y, region.width, region.height));
+    }
+
+    void addMaskedImageViewToWindow() {
+        const auto mask{ScopedBitmapImage{context.context}};
+        const auto imageView = [[ImageView alloc]
+            initWithImage:std::make_unique<ScopedMaskedImage>(
+                              image.image, mask.image)];
+
+        if (lastImageView != nil)
+            [lastImageView removeFromSuperview];
+        lastImageView = imageView;
+
+        [window.contentView addSubview:imageView];
+    }
+
+  private:
+    ScopedImage image;
+    ScopedBitmapContext context;
+    NSWindow *window;
+    NSView *lastImageView;
+};
+}
 @implementation ImageView {
     std::unique_ptr<av_speech_in_noise::ScopedMaskedImage> _image;
 }
