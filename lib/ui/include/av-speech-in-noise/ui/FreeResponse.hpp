@@ -52,6 +52,32 @@ class Presenter : public TaskPresenter {
     TestView &testView;
     View &view;
 };
+
+namespace with_puzzle {
+class Controller : public TaskController, public Control::Observer {
+  public:
+    Controller(TestController &, Interactor &, Control &);
+    void notifyThatSubmitButtonHasBeenClicked() override;
+
+  private:
+    TestController &testController;
+    Interactor &interactor;
+    Control &control;
+};
+
+class Presenter : public TaskPresenter {
+  public:
+    Presenter(TestView &, View &);
+    void start() override;
+    void stop() override;
+    void hideResponseSubmission() override;
+    void showResponseSubmission() override;
+
+  private:
+    TestView &testView;
+    View &view;
+};
+}
 }
 
 #endif
