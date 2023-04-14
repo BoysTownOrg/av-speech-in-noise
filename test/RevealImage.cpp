@@ -38,8 +38,10 @@ class RevealImage {
     }
 
     void next() {
+        if (index >= order.size())
+            return;
         ImageRegion region{};
-        const auto regionIndex = order.at(index);
+        const auto regionIndex = order.at(index++);
         region.x = (regionIndex % columns) * image.width() / columns;
         region.y = (regionIndex / columns) * image.height() / rows;
         region.width = image.width() / columns;
@@ -123,9 +125,17 @@ TEST_F(RevealImageTests, tbd) {
     randomizer.setShuffled({0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11});
     RevealImage reveal{image, randomizer, rows, columns};
     reveal.next();
-    const auto actual{image.lastRevealedRegion()};
+    auto actual{image.lastRevealedRegion()};
     auto expected{ImageRegion{}};
     expected.x = 0;
+    expected.y = 0;
+    expected.width = 800. / 4;
+    expected.height = 600. / 3;
+    ASSERT_EQUAL_IMAGE_REGIONS(expected, actual);
+    reveal.next();
+    actual = image.lastRevealedRegion();
+    expected = ImageRegion{};
+    expected.x = 400;
     expected.y = 0;
     expected.width = 800. / 4;
     expected.height = 600. / 3;
