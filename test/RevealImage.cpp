@@ -140,6 +140,14 @@ TEST_F(RevealImageTests, tbd) {
     expected.width = 800. / 4;
     expected.height = 600. / 3;
     ASSERT_EQUAL_IMAGE_REGIONS(expected, actual);
+    reveal.next();
+    actual = image.lastRevealedRegion();
+    expected = ImageRegion{};
+    expected.x = 0;
+    expected.y = 200;
+    expected.width = 800. / 4;
+    expected.height = 600. / 3;
+    ASSERT_EQUAL_IMAGE_REGIONS(expected, actual);
 }
 }
 }
