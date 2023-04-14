@@ -89,29 +89,21 @@ class ScopedBitmapContext {
             throw std::runtime_error{"Unable to create bitmap context"};
     }
 
-    ~ScopedBitmapContext() { CGContextRelease(context); }
+    ScopedBitmapContext &operator=(ScopedBitmapContext &&other) {
+        if (this != &other) {
+            CGContextRelease(context);
+            context = other.context;
+            other.context = nullptr;
+        }
+        return *this;
+    }
+
+    ~ScopedBitmapContext() {
+        if (context != nullptr)
+            CGContextRelease(context);
+    }
     CGContextRef context;
 };
-
-static auto scopedMaskedImage() -> std::unique_ptr<ScopedMaskedImage> {
-    NSURL *url = [[NSBundle mainBundle] URLForImageResource:@"wally.jpg"];
-    if (url == nil) {
-        throw std::runtime_error{"URL is nil. exiting."};
-    }
-    const auto imageSource{ScopedImageSource{(__bridge CFURLRef)(url)}};
-    const auto image{ScopedImage{imageSource.imageSource}};
-    const auto context{ScopedBitmapContext{image.image}};
-    CGContextSetRGBFillColor(context.context, 1, 1, 1, 1);
-    CGContextFillRect(context.context, CGRectMake(0, 0, 100, 100));
-    CGContextSetRGBFillColor(context.context, 1, 1, 1, 1);
-    CGContextFillRect(context.context, CGRectMake(100, 100, 100, 100));
-    CGContextSetRGBFillColor(context.context, 1, 1, 1, 0);
-    CGContextFillRect(context.context, CGRectMake(0, 100, 100, 100));
-    CGContextSetRGBFillColor(context.context, 0, 0, 0, 0);
-    CGContextFillRect(context.context, CGRectMake(100, 0, 100, 100));
-    const auto mask{ScopedBitmapImage{context.context}};
-    return std::make_unique<ScopedMaskedImage>(image.image, mask.image);
-}
 
 struct ImageRegion {
     double x;
@@ -133,16 +125,24 @@ class TBD {
         : image{ScopedImage{
               ScopedImageSource{(__bridge CFURLRef)(imageResource(imageName))}
                   .imageSource}},
-          context{ScopedBitmapContext{image.image}}, window{window} {}
+          window{window} {
+        reset();
+    }
 
-    void drawSomething(ImageRegion region) {
-        CGContextSetRGBFillColor(context.context, 1, 1, 1, 1);
-        CGContextFillRect(context.context,
+    void reset() {
+        context = std::make_unique<ScopedBitmapContext>(image.image);
+    }
+
+    void reveal(ImageRegion region) {
+        CGContextSetRGBFillColor(context->context, 1, 1, 1, 1);
+        CGContextFillRect(context->context,
             CGRectMake(region.x, region.y, region.width, region.height));
+
+        addMaskedImageViewToWindow();
     }
 
     void addMaskedImageViewToWindow() {
-        const auto mask{ScopedBitmapImage{context.context}};
+        const auto mask{ScopedBitmapImage{context->context}};
         const auto imageView = [[ImageView alloc]
             initWithImage:std::make_unique<ScopedMaskedImage>(
                               image.image, mask.image)];
@@ -156,7 +156,7 @@ class TBD {
 
   private:
     ScopedImage image;
-    ScopedBitmapContext context;
+    std::unique_ptr<ScopedBitmapContext> context;
     NSWindow *window;
     NSView *lastImageView;
 };
@@ -181,30 +181,4 @@ class TBD {
             CGImageGetHeight(_image->masked)),
         _image->masked);
 }
-@end
-
-@interface AppDelegate : NSObject <NSApplicationDelegate>
-
-@end
-
-@implementation AppDelegate
-
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    NSTabViewController *controller = [[NSTabViewController alloc] init];
-    [controller setTabStyle:NSTabViewControllerTabStyleUnspecified];
-    const auto window = [NSWindow windowWithContentViewController:controller];
-    [window makeKeyAndOrderFront:nil];
-    const auto view = [[ImageView alloc]
-        initWithImage:av_speech_in_noise::scopedMaskedImage()];
-    [window.contentView addSubview:view];
-}
-
-- (void)applicationWillTerminate:(NSNotification *)aNotification {
-    // Insert code here to tear down your application
-}
-
-- (BOOL)applicationSupportsSecureRestorableState:(NSApplication *)app {
-    return YES;
-}
-
 @end
