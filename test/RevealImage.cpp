@@ -6,9 +6,19 @@
 #include <numeric>
 
 namespace av_speech_in_noise {
-class Image {
+struct ImageRegion {
+    double x;
+    double y;
+    double width;
+    double height;
+};
+
+class NormallyMaskedImage {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Image);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(NormallyMaskedImage);
+    virtual auto width() -> double = 0;
+    virtual auto height() -> double = 0;
+    virtual void reveal(ImageRegion) = 0;
 };
 
 class Shuffler {
@@ -19,15 +29,30 @@ class Shuffler {
 
 class RevealImage {
   public:
-    RevealImage(Image &, Shuffler &shuffler, int rows, int columns)
-        : order(rows * columns) {
+    RevealImage(
+        NormallyMaskedImage &image, Shuffler &shuffler, int rows, int columns)
+        : order(rows * columns), index{0}, rows{rows}, columns{columns},
+          image{image} {
         std::iota(order.begin(), order.end(), 0);
         shuffler.shuffle(order);
     }
-    void next() {}
+
+    void next() {
+        ImageRegion region{};
+        const auto regionIndex = order.at(index);
+        region.x = (regionIndex % columns) * image.width() / columns;
+        region.y = (regionIndex / columns) * image.height() / rows;
+        region.width = image.width() / columns;
+        region.height = image.height() / rows;
+        image.reveal(region);
+    }
 
   private:
     std::vector<int> order;
+    int index{};
+    int rows;
+    int columns;
+    NormallyMaskedImage &image;
 };
 }
 
@@ -37,17 +62,23 @@ class RevealImage {
 
 namespace av_speech_in_noise {
 namespace {
-class ImageStub : public Image {
+class NormallyMaskedImageStub : public NormallyMaskedImage {
   public:
-    ImageStub(int width, int height) : width_{width}, height_{height} {}
+    NormallyMaskedImageStub(double width, double height)
+        : width_{width}, height_{height} {}
 
-    auto width() -> int { return width_; }
+    auto width() -> double { return width_; }
 
-    auto height() -> int { return height_; }
+    auto height() -> double { return height_; }
+
+    auto lastRevealedRegion() -> ImageRegion { return lastRevealedRegion_; }
+
+    void reveal(ImageRegion region) { lastRevealedRegion_ = region; }
 
   private:
-    int width_;
-    int height_;
+    ImageRegion lastRevealedRegion_;
+    double width_;
+    double height_;
 };
 
 class ShufflerStub : public Shuffler {
@@ -69,13 +100,36 @@ class ShufflerStub : public Shuffler {
 
 class RevealImageTests : public ::testing::Test {};
 
-TEST_F(RevealImageTests, tbd) {
-    ImageStub image{0, 0};
+#define ASSERT_EQUAL_IMAGE_REGIONS(a, b)                                       \
+    EXPECT_EQ(a.x, b.x);                                                       \
+    EXPECT_EQ(a.y, b.y);                                                       \
+    EXPECT_EQ(a.width, b.width);                                               \
+    EXPECT_EQ(a.height, b.height)
+
+TEST_F(RevealImageTests, randomizesIndicesOfRevealableImageRegions) {
+    NormallyMaskedImageStub image{0, 0};
     ShufflerStub randomizer;
     const auto rows{3};
     const auto columns{4};
     RevealImage reveal{image, randomizer, rows, columns};
     assertEqual({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, randomizer.toShuffle());
+}
+
+TEST_F(RevealImageTests, tbd) {
+    NormallyMaskedImageStub image{800, 600};
+    ShufflerStub randomizer;
+    const auto rows{3};
+    const auto columns{4};
+    randomizer.setShuffled({0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11});
+    RevealImage reveal{image, randomizer, rows, columns};
+    reveal.next();
+    const auto actual{image.lastRevealedRegion()};
+    auto expected{ImageRegion{}};
+    expected.x = 0;
+    expected.y = 0;
+    expected.width = 800. / 4;
+    expected.height = 600. / 3;
+    ASSERT_EQUAL_IMAGE_REGIONS(expected, actual);
 }
 }
 }

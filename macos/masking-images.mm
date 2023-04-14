@@ -129,6 +129,10 @@ class TBD {
         reset();
     }
 
+    auto width() -> double { return CGImageGetWidth(image.image); }
+
+    auto height() -> double { return CGImageGetHeight(image.image); }
+
     void reset() {
         context = std::make_unique<ScopedBitmapContext>(image.image);
     }
