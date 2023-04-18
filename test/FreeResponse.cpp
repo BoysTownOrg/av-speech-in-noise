@@ -234,6 +234,14 @@ FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
 }
+
+FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
+    controllerNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClickedIfFlagged) {
+    control.setFlagged();
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        testController.notifiedThatUserIsDoneResponding());
+}
 }
 }
 }
