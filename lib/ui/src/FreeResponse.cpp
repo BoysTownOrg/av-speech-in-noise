@@ -59,8 +59,10 @@ void Controller::callback() {
         puzzle.advance();
         readyToAdvancePuzzle_ = false;
         timer.scheduleCallbackAfterSeconds(1);
-    } else
+    } else {
         puzzle.hide();
+        testController.notifyThatUserIsDoneResponding();
+    }
 }
 
 Presenter::Presenter(TestView &testView, View &view)

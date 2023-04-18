@@ -330,6 +330,15 @@ FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
     timer.callback();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
 }
+
+FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
+    controllerNotifiesThatUserIsDoneRespondingAfterPuzzleHidden) {
+    notifyThatSubmitButtonHasBeenClicked(control);
+    timer.callback();
+    timer.callback();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        testController.notifiedThatUserIsDoneResponding());
+}
 }
 }
 }
