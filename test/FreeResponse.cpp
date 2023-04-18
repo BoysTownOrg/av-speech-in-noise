@@ -322,6 +322,14 @@ FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(controllerOnlyAdvancesPuzzleOnce) {
     timer.callback();
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(puzzle.advanced());
 }
+
+FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
+    controllerSchedulesCallbackAfterPuzzleAdvanced) {
+    notifyThatSubmitButtonHasBeenClicked(control);
+    timer.clearCallbackCount();
+    timer.callback();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
+}
 }
 }
 }

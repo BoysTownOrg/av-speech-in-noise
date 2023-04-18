@@ -58,6 +58,7 @@ void Controller::callback() {
     if (readyToAdvancePuzzle_) {
         puzzle.advance();
         readyToAdvancePuzzle_ = false;
+        timer.scheduleCallbackAfterSeconds(1);
     } else
         puzzle.hide();
 }
