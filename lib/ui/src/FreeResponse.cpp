@@ -49,13 +49,17 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
     else {
         testController.notifyThatUserHasRespondedButTrialIsNotQuiteDone();
         puzzle.show();
+        readyToAdvancePuzzle_ = true;
         timer.scheduleCallbackAfterSeconds(1);
     }
 }
 
 void Controller::callback() {
-    puzzle.advance();
-    puzzle.hide();
+    if (readyToAdvancePuzzle_) {
+        puzzle.advance();
+        readyToAdvancePuzzle_ = false;
+    } else
+        puzzle.hide();
 }
 
 Presenter::Presenter(TestView &testView, View &view)

@@ -168,11 +168,13 @@ class PuzzleStub : public Puzzle {
 
     [[nodiscard]] auto shown() const -> bool { return shown_; }
 
-    void show() { shown_ = true; }
+    void show() override { shown_ = true; }
 
     [[nodiscard]] auto hidden() const -> bool { return hidden_; }
 
-    void hide() { hidden_ = true; }
+    void hide() override { hidden_ = true; }
+
+    void clearAdvanced() { advanced_ = false; }
 
   private:
     bool advanced_{};
@@ -311,6 +313,14 @@ FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
     timer.callback();
     timer.callback();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.hidden());
+}
+
+FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(controllerOnlyAdvancesPuzzleOnce) {
+    notifyThatSubmitButtonHasBeenClicked(control);
+    timer.callback();
+    puzzle.clearAdvanced();
+    timer.callback();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(puzzle.advanced());
 }
 }
 }

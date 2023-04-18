@@ -89,6 +89,7 @@ class Controller : public TaskController,
     Control &control;
     Puzzle &puzzle;
     Timer &timer;
+    bool readyToAdvancePuzzle_{};
 };
 
 class Presenter : public TaskPresenter {
