@@ -24,6 +24,7 @@ class NormallyMaskedImage {
     virtual auto height() -> double = 0;
     virtual void reveal(ImageRegion) = 0;
     virtual void show() = 0;
+    virtual void hide() = 0;
 };
 
 class Shuffler {
@@ -39,6 +40,7 @@ class RevealImage : public submitting_free_response::with_puzzle::Puzzle {
     void advance() override;
     void reset() override;
     void show() override;
+    void hide() override;
 
   private:
     std::vector<int> order;

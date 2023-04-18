@@ -30,4 +30,6 @@ void RevealImage::reset() {
 }
 
 void RevealImage::show() { image.show(); }
+
+void RevealImage::hide() { image.hide(); }
 }
