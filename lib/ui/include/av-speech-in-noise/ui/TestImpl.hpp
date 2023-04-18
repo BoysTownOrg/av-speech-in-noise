@@ -21,7 +21,7 @@ class TestControllerImpl : public TestControl::Observer, public TestController {
     void notifyThatUserIsDoneResponding() override;
     void notifyThatUserIsReadyForNextTrial() override;
     void notifyThatUserIsDoneRespondingAndIsReadyForNextTrial() override;
-    void notifyThatUserHasRespondedButTrialIsNotQuiteDone();
+    void notifyThatUserHasRespondedButTrialIsNotQuiteDone() override;
 
   private:
     SessionController &sessionController;

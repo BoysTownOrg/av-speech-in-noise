@@ -281,7 +281,7 @@ FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
 }
 
 FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
-    controllerNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClickedIfFlagged) {
+    controllerNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClickedIfFlagged) {
     control.setFlagged();
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
