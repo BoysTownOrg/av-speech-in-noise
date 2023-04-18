@@ -60,6 +60,7 @@ class Puzzle {
     virtual void reset() = 0;
     virtual void advance() = 0;
     virtual void show() {}
+    virtual void hide() {}
 };
 
 class Timer {

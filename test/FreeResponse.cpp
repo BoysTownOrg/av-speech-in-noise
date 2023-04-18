@@ -170,9 +170,14 @@ class PuzzleStub : public Puzzle {
 
     void show() { shown_ = true; }
 
+    [[nodiscard]] auto hidden() const -> bool { return hidden_; }
+
+    void hide() { hidden_ = true; }
+
   private:
     bool advanced_{};
     bool shown_{};
+    bool hidden_{};
 };
 
 class TimerStub : public Timer {
@@ -294,10 +299,18 @@ FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
 }
 
 FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
-    controllerAdvancesPuzzleAfterCallback) {
+    controllerAdvancesPuzzleAfterFirstCallback) {
     notifyThatSubmitButtonHasBeenClicked(control);
     timer.callback();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.advanced());
+}
+
+FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
+    controllerHidesPuzzleAfterSecondCallback) {
+    notifyThatSubmitButtonHasBeenClicked(control);
+    timer.callback();
+    timer.callback();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.hidden());
 }
 }
 }

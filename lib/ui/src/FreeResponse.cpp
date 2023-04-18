@@ -53,7 +53,10 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
     }
 }
 
-void Controller::callback() { puzzle.advance(); }
+void Controller::callback() {
+    puzzle.advance();
+    puzzle.hide();
+}
 
 Presenter::Presenter(TestView &testView, View &view)
     : testView{testView}, view{view} {}
