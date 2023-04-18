@@ -74,10 +74,13 @@ class Timer {
     virtual void scheduleCallbackAfterSeconds(double) = 0;
 };
 
-class Controller : public TaskController, public Control::Observer {
+class Controller : public TaskController,
+                   public Control::Observer,
+                   public Timer::Observer {
   public:
     Controller(TestController &, Interactor &, Control &, Puzzle &, Timer &);
     void notifyThatSubmitButtonHasBeenClicked() override;
+    void callback() override;
 
   private:
     TestController &testController;

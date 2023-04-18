@@ -36,6 +36,7 @@ Controller::Controller(TestController &testController, Interactor &interactor,
     : testController{testController},
       interactor{interactor}, control{control}, puzzle{puzzle}, timer{timer} {
     control.attach(this);
+    timer.attach(this);
 }
 
 void Controller::notifyThatSubmitButtonHasBeenClicked() {
@@ -49,9 +50,10 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
         testController.notifyThatUserHasRespondedButTrialIsNotQuiteDone();
         puzzle.show();
         timer.scheduleCallbackAfterSeconds(1);
-        puzzle.advance();
     }
 }
+
+void Controller::callback() { puzzle.advance(); }
 
 Presenter::Presenter(TestView &testView, View &view)
     : testView{testView}, view{view} {}

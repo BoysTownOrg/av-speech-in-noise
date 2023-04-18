@@ -282,12 +282,6 @@ FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
 }
 
 FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
-    controllerAdvancesPuzzleAfterResponseButtonIsClicked) {
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.advanced());
-}
-
-FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
     controllerShowsPuzzleAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.shown());
@@ -297,6 +291,13 @@ FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
     controllerSchedulesCallbackAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
+}
+
+FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
+    controllerAdvancesPuzzleAfterCallback) {
+    notifyThatSubmitButtonHasBeenClicked(control);
+    timer.callback();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.advanced());
 }
 }
 }
