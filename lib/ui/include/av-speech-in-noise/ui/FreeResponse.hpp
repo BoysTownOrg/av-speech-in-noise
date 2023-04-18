@@ -62,9 +62,21 @@ class Puzzle {
     virtual void show() {}
 };
 
+class Timer {
+  public:
+    class Observer {
+      public:
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
+        virtual void callback() = 0;
+    };
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Timer);
+    virtual void attach(Observer *) = 0;
+    virtual void scheduleCallbackAfterSeconds(double) = 0;
+};
+
 class Controller : public TaskController, public Control::Observer {
   public:
-    Controller(TestController &, Interactor &, Control &, Puzzle &);
+    Controller(TestController &, Interactor &, Control &, Puzzle &, Timer &);
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
@@ -72,6 +84,7 @@ class Controller : public TaskController, public Control::Observer {
     Interactor &interactor;
     Control &control;
     Puzzle &puzzle;
+    Timer &timer;
 };
 
 class Presenter : public TaskPresenter {

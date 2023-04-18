@@ -175,13 +175,33 @@ class PuzzleStub : public Puzzle {
     bool shown_{};
 };
 
+class TimerStub : public Timer {
+  public:
+    void scheduleCallbackAfterSeconds(double) override {
+        callbackScheduled_ = true;
+    }
+
+    [[nodiscard]] auto callbackScheduled() const { return callbackScheduled_; }
+
+    void clearCallbackCount() { callbackScheduled_ = false; }
+
+    void callback() { observer->callback(); }
+
+    void attach(Observer *a) override { observer = a; }
+
+  private:
+    Observer *observer{};
+    bool callbackScheduled_{};
+};
+
 class FreeResponseControllerWithPuzzleTests : public ::testing::Test {
   protected:
     InteractorStub model;
     ControlStub control;
     PuzzleStub puzzle;
+    TimerStub timer;
     TestControllerStub testController;
-    Controller controller{testController, model, control, puzzle};
+    Controller controller{testController, model, control, puzzle, timer};
 };
 
 class FreeResponsePresenterWithPuzzleTests : public ::testing::Test {
@@ -271,6 +291,12 @@ FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
     controllerShowsPuzzleAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.shown());
+}
+
+FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
+    controllerSchedulesCallbackAfterResponseButtonIsClicked) {
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
 }
 }
 }

@@ -32,9 +32,9 @@ void Presenter::showResponseSubmission() {
 
 namespace with_puzzle {
 Controller::Controller(TestController &testController, Interactor &interactor,
-    Control &control, Puzzle &puzzle)
+    Control &control, Puzzle &puzzle, Timer &timer)
     : testController{testController},
-      interactor{interactor}, control{control}, puzzle{puzzle} {
+      interactor{interactor}, control{control}, puzzle{puzzle}, timer{timer} {
     control.attach(this);
 }
 
@@ -48,6 +48,7 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
     else {
         testController.notifyThatUserHasRespondedButTrialIsNotQuiteDone();
         puzzle.show();
+        timer.scheduleCallbackAfterSeconds(1);
         puzzle.advance();
     }
 }
