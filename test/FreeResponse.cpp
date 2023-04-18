@@ -158,12 +158,25 @@ FREE_RESPONSE_CONTROLLER_TEST(
 
 namespace with_puzzle {
 namespace {
+class PuzzleStub : public Puzzle {
+  public:
+    [[nodiscard]] auto advanced() const -> bool { return advanced_; }
+
+    void advance() override { advanced_ = true; }
+
+    void reset() override {}
+
+  private:
+    bool advanced_{};
+};
+
 class FreeResponseControllerWithPuzzleTests : public ::testing::Test {
   protected:
     InteractorStub model;
     ControlStub control;
+    PuzzleStub puzzle;
     TestControllerStub testController;
-    Controller controller{testController, model, control};
+    Controller controller{testController, model, control, puzzle};
 };
 
 class FreeResponsePresenterWithPuzzleTests : public ::testing::Test {
@@ -241,6 +254,12 @@ FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
+}
+
+FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
+    controllerAdvancesPuzzleAfterResponseButtonIsClicked) {
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.advanced());
 }
 }
 }

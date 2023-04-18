@@ -69,7 +69,7 @@ TEST_F(RevealImageTests, revealsNextRegionAccordingToRandomOrder) {
     const auto columns{4};
     randomizer.setShuffled({0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11});
     RevealImage reveal{image, randomizer, rows, columns};
-    reveal.next();
+    reveal.advance();
     auto actual{image.lastRevealedRegion()};
     auto expected{ImageRegion{}};
     expected.x = 0;
@@ -77,7 +77,7 @@ TEST_F(RevealImageTests, revealsNextRegionAccordingToRandomOrder) {
     expected.width = 800. / 4;
     expected.height = 600. / 3;
     ASSERT_EQUAL_IMAGE_REGIONS(expected, actual);
-    reveal.next();
+    reveal.advance();
     actual = image.lastRevealedRegion();
     expected = ImageRegion{};
     expected.x = 400;
@@ -85,7 +85,7 @@ TEST_F(RevealImageTests, revealsNextRegionAccordingToRandomOrder) {
     expected.width = 800. / 4;
     expected.height = 600. / 3;
     ASSERT_EQUAL_IMAGE_REGIONS(expected, actual);
-    reveal.next();
+    reveal.advance();
     actual = image.lastRevealedRegion();
     expected = ImageRegion{};
     expected.x = 0;
@@ -93,7 +93,7 @@ TEST_F(RevealImageTests, revealsNextRegionAccordingToRandomOrder) {
     expected.width = 800. / 4;
     expected.height = 600. / 3;
     ASSERT_EQUAL_IMAGE_REGIONS(expected, actual);
-    reveal.next();
+    reveal.advance();
     actual = image.lastRevealedRegion();
     expected = ImageRegion{};
     expected.x = 400;
@@ -121,12 +121,12 @@ TEST_F(RevealImageTests, resetResetsOrder) {
     const auto columns{4};
     RevealImage reveal{image, randomizer, rows, columns};
     randomizer.setShuffled({0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11});
-    reveal.next();
-    reveal.next();
-    reveal.next();
+    reveal.advance();
+    reveal.advance();
+    reveal.advance();
     randomizer.setShuffled({11, 0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9});
     reveal.reset();
-    reveal.next();
+    reveal.advance();
     auto actual = image.lastRevealedRegion();
     auto expected = ImageRegion{};
     expected.x = 600;

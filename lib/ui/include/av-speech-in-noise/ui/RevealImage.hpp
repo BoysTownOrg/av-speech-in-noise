@@ -35,7 +35,7 @@ class RevealImage : submitting_free_response::with_puzzle::Puzzle {
   public:
     RevealImage(
         NormallyMaskedImage &image, Shuffler &shuffler, int rows, int columns);
-    void next() override;
+    void advance() override;
     void reset() override;
 
   private:

@@ -11,7 +11,7 @@ RevealImage::RevealImage(
     reset();
 }
 
-void RevealImage::next() {
+void RevealImage::advance() {
     if (index >= order.size())
         return;
     ImageRegion region{};

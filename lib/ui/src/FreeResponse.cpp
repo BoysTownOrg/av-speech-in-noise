@@ -31,9 +31,10 @@ void Presenter::showResponseSubmission() {
 }
 
 namespace with_puzzle {
-Controller::Controller(
-    TestController &testController, Interactor &interactor, Control &control)
-    : testController{testController}, interactor{interactor}, control{control} {
+Controller::Controller(TestController &testController, Interactor &interactor,
+    Control &control, Puzzle &puzzle)
+    : testController{testController},
+      interactor{interactor}, control{control}, puzzle{puzzle} {
     control.attach(this);
 }
 
@@ -44,8 +45,10 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
     interactor.submit(freeResponse);
     if (freeResponse.flagged)
         testController.notifyThatUserIsDoneResponding();
-    else
+    else {
         testController.notifyThatUserHasRespondedButTrialIsNotQuiteDone();
+        puzzle.advance();
+    }
 }
 
 Presenter::Presenter(TestView &testView, View &view)

@@ -58,18 +58,19 @@ class Puzzle {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Puzzle);
     virtual void reset() = 0;
-    virtual void next() = 0;
+    virtual void advance() = 0;
 };
 
 class Controller : public TaskController, public Control::Observer {
   public:
-    Controller(TestController &, Interactor &, Control &);
+    Controller(TestController &, Interactor &, Control &, Puzzle &);
     void notifyThatSubmitButtonHasBeenClicked() override;
 
   private:
     TestController &testController;
     Interactor &interactor;
     Control &control;
+    Puzzle &puzzle;
 };
 
 class Presenter : public TaskPresenter {
