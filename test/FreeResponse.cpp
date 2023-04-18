@@ -134,7 +134,7 @@ FREE_RESPONSE_PRESENTER_TEST(presenterClearsFlagWhenShowingResponseSubmission) {
 }
 
 FREE_RESPONSE_CONTROLLER_TEST(
-    responderSubmitsFreeResponseAfterResponseButtonIsClicked) {
+    controllerSubmitsFreeResponseAfterResponseButtonIsClicked) {
     control.setFreeResponse("a");
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -142,14 +142,14 @@ FREE_RESPONSE_CONTROLLER_TEST(
 }
 
 FREE_RESPONSE_CONTROLLER_TEST(
-    responderSubmitsFlaggedFreeResponseAfterResponseButtonIsClicked) {
+    controllerSubmitsFlaggedFreeResponseAfterResponseButtonIsClicked) {
     control.setFlagged();
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.response().flagged);
 }
 
 FREE_RESPONSE_CONTROLLER_TEST(
-    responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
+    controllerNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
@@ -173,60 +173,62 @@ class FreeResponsePresenterWithPuzzleTests : public ::testing::Test {
     Presenter presenter{testView, view};
 };
 
-#define FREE_RESPONSE_CONTROLLER_TEST(a)                                       \
+#define FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(a)                           \
     TEST_F(FreeResponseControllerWithPuzzleTests, a)
 
-#define FREE_RESPONSE_PRESENTER_TEST(a)                                        \
+#define FREE_RESPONSE_PRESENTER_WITH_PUZZLE_TEST(a)                            \
     TEST_F(FreeResponsePresenterWithPuzzleTests, a)
 
-FREE_RESPONSE_PRESENTER_TEST(presenterHidesResponseSubmission) {
+FREE_RESPONSE_PRESENTER_WITH_PUZZLE_TEST(presenterHidesResponseSubmission) {
     presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-FREE_RESPONSE_PRESENTER_TEST(presenterHidesResponseButtonsWhenStopped) {
+FREE_RESPONSE_PRESENTER_WITH_PUZZLE_TEST(
+    presenterHidesResponseButtonsWhenStopped) {
     stop(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
 }
 
-FREE_RESPONSE_PRESENTER_TEST(presenterShowsReadyButtonWhenStarted) {
+FREE_RESPONSE_PRESENTER_WITH_PUZZLE_TEST(presenterShowsReadyButtonWhenStarted) {
     start(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
 }
 
-FREE_RESPONSE_PRESENTER_TEST(
+FREE_RESPONSE_PRESENTER_WITH_PUZZLE_TEST(
     presenterShowsResponseButtonWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.freeResponseSubmissionShown());
 }
 
-FREE_RESPONSE_PRESENTER_TEST(
+FREE_RESPONSE_PRESENTER_WITH_PUZZLE_TEST(
     presenterClearsFreeResponseWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.freeResponseCleared());
 }
 
-FREE_RESPONSE_PRESENTER_TEST(presenterClearsFlagWhenShowingResponseSubmission) {
+FREE_RESPONSE_PRESENTER_WITH_PUZZLE_TEST(
+    presenterClearsFlagWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.flagCleared());
 }
 
-FREE_RESPONSE_CONTROLLER_TEST(
-    responderSubmitsFreeResponseAfterResponseButtonIsClicked) {
+FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
+    controllerSubmitsFreeResponseAfterResponseButtonIsClicked) {
     control.setFreeResponse("a");
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, model.response().response);
 }
 
-FREE_RESPONSE_CONTROLLER_TEST(
-    responderSubmitsFlaggedFreeResponseAfterResponseButtonIsClicked) {
+FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
+    controllerSubmitsFlaggedFreeResponseAfterResponseButtonIsClicked) {
     control.setFlagged();
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.response().flagged);
 }
 
-FREE_RESPONSE_CONTROLLER_TEST(
+FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
     controllerNotifiesThatUserHasRespondedButTrialIsNotQuiteDoneAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
