@@ -20,10 +20,15 @@ class NormallyMaskedImageStub : public NormallyMaskedImage {
 
     void reveal(ImageRegion region) override { lastRevealedRegion_ = region; }
 
+    void show() { shown_ = true; }
+
+    [[nodiscard]] auto shown() const -> bool { return shown_; }
+
   private:
     ImageRegion lastRevealedRegion_{};
     double width_;
     double height_;
+    bool shown_{};
 };
 
 class ShufflerStub : public Shuffler {
@@ -134,6 +139,16 @@ TEST_F(RevealImageTests, resetResetsOrder) {
     expected.width = 800. / 4;
     expected.height = 600. / 3;
     ASSERT_EQUAL_IMAGE_REGIONS(expected, actual);
+}
+
+TEST_F(RevealImageTests, showShowsImage) {
+    NormallyMaskedImageStub image{0, 0};
+    ShufflerStub randomizer;
+    const auto rows{0};
+    const auto columns{0};
+    RevealImage reveal{image, randomizer, rows, columns};
+    reveal.show();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(image.shown());
 }
 }
 }

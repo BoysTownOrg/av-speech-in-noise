@@ -28,4 +28,6 @@ void RevealImage::reset() {
     shuffler.shuffle(order);
     index = 0;
 }
+
+void RevealImage::show() { image.show(); }
 }

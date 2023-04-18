@@ -23,6 +23,7 @@ class NormallyMaskedImage {
     virtual auto width() -> double = 0;
     virtual auto height() -> double = 0;
     virtual void reveal(ImageRegion) = 0;
+    virtual void show() = 0;
 };
 
 class Shuffler {
@@ -31,12 +32,13 @@ class Shuffler {
     virtual void shuffle(gsl::span<int>) = 0;
 };
 
-class RevealImage : submitting_free_response::with_puzzle::Puzzle {
+class RevealImage : public submitting_free_response::with_puzzle::Puzzle {
   public:
     RevealImage(
         NormallyMaskedImage &image, Shuffler &shuffler, int rows, int columns);
     void advance() override;
     void reset() override;
+    void show() override;
 
   private:
     std::vector<int> order;
