@@ -1,13 +1,14 @@
 #include "RevealImage.hpp"
 
+#include <cstddef>
 #include <numeric>
 #include <algorithm>
 
 namespace av_speech_in_noise {
 RevealImage::RevealImage(
     NormallyMaskedImage &image, Shuffler &shuffler, int rows, int columns)
-    : order(rows * columns), rows{rows}, columns{columns}, image{image},
-      shuffler{shuffler} {
+    : order(static_cast<std::vector<int>::size_type>(rows) * columns),
+      rows{rows}, columns{columns}, image{image}, shuffler{shuffler} {
     reset();
 }
 
