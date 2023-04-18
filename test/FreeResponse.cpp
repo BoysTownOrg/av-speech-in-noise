@@ -166,7 +166,7 @@ class PuzzleStub : public Puzzle {
 
     void reset() override { hasBeenReset_ = true; }
 
-    auto hasBeenReset() -> bool { return hasBeenReset_; }
+    [[nodiscard]] auto hasBeenReset() const -> bool { return hasBeenReset_; }
 
     [[nodiscard]] auto shown() const -> bool { return shown_; }
 

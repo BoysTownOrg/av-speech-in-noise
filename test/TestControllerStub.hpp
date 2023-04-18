@@ -48,7 +48,7 @@ class TestControllerStub : public TestController {
         return notifiedThatUserHasRespondedButTrialIsNotQuiteDone_;
     }
 
-    void notifyThatUserHasRespondedButTrialIsNotQuiteDone() {
+    void notifyThatUserHasRespondedButTrialIsNotQuiteDone() override {
         notifiedThatUserHasRespondedButTrialIsNotQuiteDone_ = true;
     }
 
