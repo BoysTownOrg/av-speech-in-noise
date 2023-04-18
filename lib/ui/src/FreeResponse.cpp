@@ -47,6 +47,7 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
         testController.notifyThatUserIsDoneResponding();
     else {
         testController.notifyThatUserHasRespondedButTrialIsNotQuiteDone();
+        puzzle.show();
         puzzle.advance();
     }
 }

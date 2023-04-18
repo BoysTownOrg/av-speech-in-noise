@@ -59,6 +59,7 @@ class Puzzle {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Puzzle);
     virtual void reset() = 0;
     virtual void advance() = 0;
+    virtual void show() {}
 };
 
 class Controller : public TaskController, public Control::Observer {

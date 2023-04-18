@@ -166,8 +166,13 @@ class PuzzleStub : public Puzzle {
 
     void reset() override {}
 
+    [[nodiscard]] auto shown() const -> bool { return shown_; }
+
+    void show() { shown_ = true; }
+
   private:
     bool advanced_{};
+    bool shown_{};
 };
 
 class FreeResponseControllerWithPuzzleTests : public ::testing::Test {
@@ -260,6 +265,12 @@ FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
     controllerAdvancesPuzzleAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.advanced());
+}
+
+FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(
+    controllerShowsPuzzleAfterResponseButtonIsClicked) {
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.shown());
 }
 }
 }
