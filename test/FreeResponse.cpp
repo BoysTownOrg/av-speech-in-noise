@@ -164,7 +164,9 @@ class PuzzleStub : public Puzzle {
 
     void advance() override { advanced_ = true; }
 
-    void reset() override {}
+    void reset() override { hasBeenReset_ = true; }
+
+    auto hasBeenReset() -> bool { return hasBeenReset_; }
 
     [[nodiscard]] auto shown() const -> bool { return shown_; }
 
@@ -180,6 +182,7 @@ class PuzzleStub : public Puzzle {
     bool advanced_{};
     bool shown_{};
     bool hidden_{};
+    bool hasBeenReset_{};
 };
 
 class TimerStub : public Timer {
@@ -215,7 +218,8 @@ class FreeResponsePresenterWithPuzzleTests : public ::testing::Test {
   protected:
     TestViewStub testView;
     ViewStub view;
-    Presenter presenter{testView, view};
+    PuzzleStub puzzle;
+    Presenter presenter{testView, view, puzzle};
 };
 
 #define FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(a)                           \
@@ -256,6 +260,11 @@ FREE_RESPONSE_PRESENTER_WITH_PUZZLE_TEST(
     presenterClearsFlagWhenShowingResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.flagCleared());
+}
+
+FREE_RESPONSE_PRESENTER_WITH_PUZZLE_TEST(presenterResetsPuzzleOnStart) {
+    presenter.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.hasBeenReset());
 }
 
 FREE_RESPONSE_CONTROLLER_WITH_PUZZLE_TEST(

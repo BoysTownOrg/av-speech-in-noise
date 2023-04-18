@@ -94,7 +94,7 @@ class Controller : public TaskController,
 
 class Presenter : public TaskPresenter {
   public:
-    Presenter(TestView &, View &);
+    Presenter(TestView &, View &, Puzzle &);
     void start() override;
     void stop() override;
     void hideResponseSubmission() override;
@@ -103,6 +103,7 @@ class Presenter : public TaskPresenter {
   private:
     TestView &testView;
     View &view;
+    Puzzle &puzzle;
 };
 }
 }

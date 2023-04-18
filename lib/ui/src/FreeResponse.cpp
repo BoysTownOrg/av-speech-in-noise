@@ -65,10 +65,13 @@ void Controller::callback() {
     }
 }
 
-Presenter::Presenter(TestView &testView, View &view)
-    : testView{testView}, view{view} {}
+Presenter::Presenter(TestView &testView, View &view, Puzzle &puzzle)
+    : testView{testView}, view{view}, puzzle{puzzle} {}
 
-void Presenter::start() { testView.showNextTrialButton(); }
+void Presenter::start() {
+    puzzle.reset();
+    testView.showNextTrialButton();
+}
 
 void Presenter::stop() { view.hide(); }
 
