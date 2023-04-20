@@ -635,7 +635,9 @@ class InitializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking
   public:
     explicit InitializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking(
         FixedLevelMethodStub *method)
-        : method{method} {}
+        : method{method} {
+        test_.peripheral = TestPeripheral::eyeTracking;
+    }
 
     void run(RunningATestFacadeImpl &model) override {
         initializeWithSilentIntervalTargetsAndEyeTracking(model, test_);
@@ -770,7 +772,9 @@ class InitializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking
   public:
     explicit InitializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking(
         FixedLevelMethodStub *method)
-        : method{method} {}
+        : method{method} {
+        test_.peripheral = TestPeripheral::eyeTracking;
+    }
 
     void run(RunningATestFacadeImpl &model) override {
         model.initializeWithPredeterminedTargetsAndEyeTracking(test_);
