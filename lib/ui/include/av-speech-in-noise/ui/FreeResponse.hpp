@@ -4,6 +4,7 @@
 #include "Task.hpp"
 #include "Test.hpp"
 #include "View.hpp"
+#include <av-speech-in-noise/core/ITimer.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
@@ -61,18 +62,6 @@ class Puzzle {
     virtual void advance() = 0;
     virtual void show() {}
     virtual void hide() {}
-};
-
-class Timer {
-  public:
-    class Observer {
-      public:
-        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
-        virtual void callback() = 0;
-    };
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Timer);
-    virtual void attach(Observer *) = 0;
-    virtual void scheduleCallbackAfterSeconds(double) = 0;
 };
 
 class Controller : public TaskController,
