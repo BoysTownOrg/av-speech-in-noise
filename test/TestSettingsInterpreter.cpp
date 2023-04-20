@@ -466,6 +466,17 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecordingSelectsAudioRecordingPeripheral) {
+    initialize(interpreter, model, sessionController,
+        Method::
+            fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        model.fixedLevelTestWithPredeterminedTargetsInitialized());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        TestPeripheral::audioRecording, model.fixedLevelTest().peripheral);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTrackingPassesMethod) {
     assertPassesTestMethod(interpreter, model, sessionController,
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking,
