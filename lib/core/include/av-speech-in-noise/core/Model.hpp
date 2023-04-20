@@ -30,17 +30,9 @@ class RunningATestFacadeImpl : public RunningATestFacade {
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
     void initializeWithAllTargets(const FixedLevelTest &) override;
     void initialize(const FixedLevelTestWithEachTargetNTimes &) override;
-    void initializeWithAllTargetsAndEyeTracking(
-        const FixedLevelTest &) override;
     void initializeWithPredeterminedTargets(const FixedLevelTest &) override;
-    void initializeWithPredeterminedTargetsAndEyeTracking(
-        const FixedLevelTest &) override;
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeWithDelayedMasker(const AdaptiveTest &) override;
-    void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelFixedTrialsTest &) override;
-    void initializeWithSilentIntervalTargetsAndEyeTracking(
-        const FixedLevelTest &);
     void initializeWithEyeTracking(const AdaptiveTest &) override;
     void initializeWithCyclicTargets(const AdaptiveTest &) override;
     void initializeWithCyclicTargetsAndEyeTracking(

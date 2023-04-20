@@ -69,7 +69,7 @@ void RunningATestFacadeImpl::initializeWithTargetReplacement(
     const FixedLevelFixedTrialsTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, targetsWithReplacement);
-    av_speech_in_noise::initialize(runningATest, fixedLevelMethod, test);
+    initializeFixedLevelTestWithPossiblePeripheral(test);
 }
 
 void RunningATestFacadeImpl::initialize(const AdaptiveTest &test) {
@@ -82,7 +82,7 @@ void RunningATestFacadeImpl::initializeWithSilentIntervalTargets(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, silentIntervalTargets);
-    av_speech_in_noise::initialize(runningATest, fixedLevelMethod, test);
+    initializeFixedLevelTestWithPossiblePeripheral(test);
 }
 
 void RunningATestFacadeImpl::initializeFixedLevelTestWithPossiblePeripheral(
@@ -108,27 +108,14 @@ void RunningATestFacadeImpl::initializeWithAllTargets(
     initializeFixedLevelTestWithPossiblePeripheral(test);
 }
 
-void RunningATestFacadeImpl::initializeWithAllTargetsAndEyeTracking(
-    const FixedLevelTest &test) {
-    av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
-    initializeFixedLevelTestWithPossiblePeripheral(test);
-}
-
 void RunningATestFacadeImpl::initialize(
     const FixedLevelTestWithEachTargetNTimes &test) {
     eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
     av_speech_in_noise::initialize(fixedLevelMethod, test, eachTargetNTimes);
-    av_speech_in_noise::initialize(runningATest, fixedLevelMethod, test);
-}
-
-void RunningATestFacadeImpl::initializeWithPredeterminedTargets(
-    const FixedLevelTest &test) {
-    av_speech_in_noise::initialize(
-        fixedLevelMethod, test, predeterminedTargets);
     initializeFixedLevelTestWithPossiblePeripheral(test);
 }
 
-void RunningATestFacadeImpl::initializeWithPredeterminedTargetsAndEyeTracking(
+void RunningATestFacadeImpl::initializeWithPredeterminedTargets(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, predeterminedTargets);
@@ -149,20 +136,6 @@ void RunningATestFacadeImpl::initializeWithDelayedMasker(
         adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initializeWithDelayedMasker(
         runningATest, adaptiveMethod, test);
-}
-
-void RunningATestFacadeImpl::initializeWithTargetReplacementAndEyeTracking(
-    const FixedLevelFixedTrialsTest &test) {
-    av_speech_in_noise::initialize(
-        fixedLevelMethod, test, targetsWithReplacement);
-    initializeFixedLevelTestWithPossiblePeripheral(test);
-}
-
-void RunningATestFacadeImpl::initializeWithSilentIntervalTargetsAndEyeTracking(
-    const FixedLevelTest &test) {
-    av_speech_in_noise::initialize(
-        fixedLevelMethod, test, silentIntervalTargets);
-    initializeFixedLevelTestWithPossiblePeripheral(test);
 }
 
 void RunningATestFacadeImpl::initializeWithEyeTracking(
