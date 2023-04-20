@@ -86,7 +86,7 @@ class RunningATestFacade {
     virtual void initializeWithEyeTracking(const AdaptiveTest &) = 0;
     virtual void initializeWithCyclicTargets(const AdaptiveTest &) = 0;
     virtual void initializeWithCyclicTargetsAndEyeTracking(
-        const AdaptiveTest &) = 0;
+        const AdaptiveTest &) {}
     virtual void initializeWithSilentIntervalTargets(
         const FixedLevelTest &) = 0;
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;

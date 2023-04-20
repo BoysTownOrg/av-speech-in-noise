@@ -2,28 +2,6 @@
 #include "IRecognitionTestModel.hpp"
 
 namespace av_speech_in_noise {
-RunningATestFacadeImpl::RunningATestFacadeImpl(AdaptiveMethod &adaptiveMethod,
-    FixedLevelMethod &fixedLevelMethod,
-    TargetPlaylistReader &targetsWithReplacementReader,
-    TargetPlaylistReader &cyclicTargetsReader,
-    TargetPlaylist &targetsWithReplacement,
-    FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
-    FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
-    RepeatableFiniteTargetPlaylist &eachTargetNTimes,
-    FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
-    RunningATest &model, OutputFile &outputFile,
-    RunningATest::Observer &audioRecording, RunningATest::Observer &eyeTracking)
-    : audioRecording{audioRecording}, eyeTracking{eyeTracking},
-      adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
-      targetsWithReplacementReader{targetsWithReplacementReader},
-      cyclicTargetsReader{cyclicTargetsReader},
-      targetsWithReplacement{targetsWithReplacement},
-      silentIntervalTargets{silentIntervalTargets},
-      everyTargetOnce{everyTargetOnce},
-      predeterminedTargets{predeterminedTargets},
-      eachTargetNTimes{eachTargetNTimes}, runningATest{model},
-      outputFile{outputFile} {}
-
 static void initialize(
     RunningATest &model, TestMethod &method, const Test &test) {
     model.initialize(&method, test);
@@ -64,6 +42,28 @@ static void initialize(RunningATest &model, TestMethod &method,
     const Test &test, RunningATest::Observer *observer) {
     model.initialize(&method, test, observer);
 }
+
+RunningATestFacadeImpl::RunningATestFacadeImpl(AdaptiveMethod &adaptiveMethod,
+    FixedLevelMethod &fixedLevelMethod,
+    TargetPlaylistReader &targetsWithReplacementReader,
+    TargetPlaylistReader &cyclicTargetsReader,
+    TargetPlaylist &targetsWithReplacement,
+    FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
+    FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
+    RepeatableFiniteTargetPlaylist &eachTargetNTimes,
+    FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
+    RunningATest &model, OutputFile &outputFile,
+    RunningATest::Observer &audioRecording, RunningATest::Observer &eyeTracking)
+    : audioRecording{audioRecording}, eyeTracking{eyeTracking},
+      adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
+      targetsWithReplacementReader{targetsWithReplacementReader},
+      cyclicTargetsReader{cyclicTargetsReader},
+      targetsWithReplacement{targetsWithReplacement},
+      silentIntervalTargets{silentIntervalTargets},
+      everyTargetOnce{everyTargetOnce},
+      predeterminedTargets{predeterminedTargets},
+      eachTargetNTimes{eachTargetNTimes}, runningATest{model},
+      outputFile{outputFile} {}
 
 void RunningATestFacadeImpl::initializeWithTargetReplacement(
     const FixedLevelFixedTrialsTest &test) {
@@ -149,13 +149,6 @@ void RunningATestFacadeImpl::initializeWithCyclicTargets(
     const AdaptiveTest &test) {
     av_speech_in_noise::initialize(adaptiveMethod, test, cyclicTargetsReader);
     initializeTestWithPossiblePeripheral(adaptiveMethod, test);
-}
-
-void RunningATestFacadeImpl::initializeWithCyclicTargetsAndEyeTracking(
-    const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(adaptiveMethod, test, cyclicTargetsReader);
-    av_speech_in_noise::initialize(
-        runningATest, adaptiveMethod, test, &eyeTracking);
 }
 
 void RunningATestFacadeImpl::restartAdaptiveTestWhilePreservingTargets() {

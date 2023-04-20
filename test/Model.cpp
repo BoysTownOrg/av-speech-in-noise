@@ -405,11 +405,6 @@ void initializeWithSilentIntervalTargets(
     model.initializeWithSilentIntervalTargets(test);
 }
 
-void initializeWithTargetReplacementAndEyeTracking(
-    RunningATestFacadeImpl &model, const FixedLevelFixedTrialsTest &test) {
-    model.initializeWithTargetReplacementAndEyeTracking(test);
-}
-
 void initializeWithEyeTracking(
     RunningATestFacadeImpl &model, const AdaptiveTest &test) {
     model.initializeWithEyeTracking(test);
@@ -527,10 +522,12 @@ class InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking
   public:
     explicit InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking(
         AdaptiveMethodStub *method)
-        : method{method} {}
+        : method{method} {
+        test_.peripheral = TestPeripheral::eyeTracking;
+    }
 
     void run(RunningATestFacadeImpl &model) override {
-        initializeWithCyclicTargetsAndEyeTracking(model, test_);
+        model.initializeWithCyclicTargets(test_);
     }
 
     auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
