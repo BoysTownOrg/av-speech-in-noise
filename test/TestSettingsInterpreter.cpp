@@ -539,8 +539,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
     adaptivePassFailWithEyeTrackingInitializesAdaptiveTest) {
     initialize(interpreter, model, sessionController,
         Method::adaptivePassFailWithEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        model.adaptiveTestInitializedWithEyeTracking());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        TestPeripheral::eyeTracking, model.adaptiveTest().peripheral);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
@@ -590,8 +590,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithEyeTrackingInitializesAdaptiveTest) {
     initialize(interpreter, model, sessionController,
         Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        model.adaptiveTestInitializedWithEyeTracking());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        TestPeripheral::eyeTracking, model.adaptiveTest().peripheral);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

@@ -334,7 +334,9 @@ static void initialize(RunningATestFacade &model, Method method,
     case Method::adaptivePassFailWithEyeTracking:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const AdaptiveTest &test) {
-                model.initializeWithEyeTracking(test);
+                auto test_{test};
+                test_.peripheral = TestPeripheral::eyeTracking;
+                model.initialize(test_);
             });
     case Method::adaptiveCoordinateResponseMeasure:
     case Method::adaptivePassFail:
