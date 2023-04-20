@@ -326,7 +326,9 @@ static void initialize(RunningATestFacade &model, Method method,
     case Method::adaptiveCorrectKeywordsWithEyeTracking:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const AdaptiveTest &test) {
-                model.initializeWithCyclicTargetsAndEyeTracking(test);
+                auto test_{test};
+                test_.peripheral = TestPeripheral::eyeTracking;
+                model.initializeWithCyclicTargets(test_);
             });
     case Method::adaptiveCoordinateResponseMeasureWithEyeTracking:
     case Method::adaptivePassFailWithEyeTracking:

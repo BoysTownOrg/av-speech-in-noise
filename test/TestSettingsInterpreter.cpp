@@ -553,8 +553,9 @@ TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCorrectKeywordsWithEyeTrackingInitializesAdaptiveTest) {
     initialize(interpreter, model, sessionController,
         Method::adaptiveCorrectKeywordsWithEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        model.adaptiveTestInitializedWithCyclicTargetsAndEyeTracking());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.initializedWithCyclicTargets());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        TestPeripheral::eyeTracking, model.adaptiveTest().peripheral);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
