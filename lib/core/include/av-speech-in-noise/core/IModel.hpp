@@ -93,11 +93,7 @@ class RunningATestFacade {
     virtual void initialize(const FixedLevelTestWithEachTargetNTimes &) = 0;
     virtual void initializeWithAllTargetsAndEyeTracking(
         const FixedLevelTest &) = 0;
-    virtual void initializeWithAllTargetsAndAudioRecording(
-        const FixedLevelTest &) = 0;
-    virtual void initializeWithPredeterminedTargets(const FixedLevelTest &) {}
-    virtual void initializeWithPredeterminedTargetsAndAudioRecording(
-        const FixedLevelTest &) = 0;
+    virtual void initializeWithPredeterminedTargets(const FixedLevelTest &) = 0;
     virtual void initializeWithPredeterminedTargetsAndEyeTracking(
         const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;

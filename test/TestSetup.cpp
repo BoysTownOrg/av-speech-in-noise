@@ -382,13 +382,7 @@ class RequestFailingModel : public RunningATestFacade {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeWithAllTargetsAndAudioRecording(
-        const FixedLevelTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithPredeterminedTargetsAndAudioRecording(
-        const FixedLevelTest &) override {
+    void initializeWithPredeterminedTargets(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 

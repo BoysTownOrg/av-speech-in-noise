@@ -184,17 +184,6 @@ class ModelStub : public RunningATestFacade {
         fixedLevelTestWithAllTargetsAndEyeTrackingInitialized_ = true;
     }
 
-    void initializeWithAllTargetsAndAudioRecording(
-        const FixedLevelTest &p) override {
-        fixedLevelTest_ = p;
-    }
-
-    void initializeWithPredeterminedTargetsAndAudioRecording(
-        const FixedLevelTest &p) override {
-        fixedLevelTest_ = p;
-        fixedLevelTestWithPredeterminedTargetsInitialized_ = true;
-    }
-
     void initializeWithPredeterminedTargetsAndEyeTracking(
         const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
