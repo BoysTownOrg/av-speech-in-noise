@@ -368,8 +368,7 @@ class InitializingFixedLevelFixedTrialsTest
 
 class InitializingAdaptiveTest : public virtual InitializingTestUseCase {
   public:
-    virtual void run(
-        RunningATestFacadeImpl &model, const AdaptiveTest &test) = 0;
+    virtual auto adaptiveTest() -> const AdaptiveTest & = 0;
 };
 
 void initialize(RunningATestFacadeImpl &model, const AdaptiveTest &test) {
@@ -428,9 +427,7 @@ class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
         initialize(model, test_);
     }
 
-    void run(RunningATestFacadeImpl &model, const AdaptiveTest &test) override {
-        initialize(model, test);
-    }
+    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
 
     auto test() -> const Test & override { return test_; }
 
@@ -444,15 +441,15 @@ class InitializingAdaptiveTestWithEyeTracking
 
   public:
     explicit InitializingAdaptiveTestWithEyeTracking(AdaptiveMethodStub *method)
-        : method{method} {}
+        : method{method} {
+        test_.peripheral = TestPeripheral::eyeTracking;
+    }
 
     void run(RunningATestFacadeImpl &model) override {
         initializeWithEyeTracking(model, test_);
     }
 
-    void run(RunningATestFacadeImpl &model, const AdaptiveTest &test) override {
-        initializeWithEyeTracking(model, test);
-    }
+    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
 
     auto test() -> const Test & override { return test_; }
 
@@ -473,9 +470,7 @@ class InitializingAdaptiveTestWithSingleSpeaker
         initializeWithSingleSpeaker(model, test_);
     }
 
-    void run(RunningATestFacadeImpl &model, const AdaptiveTest &test) override {
-        initializeWithSingleSpeaker(model, test);
-    }
+    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
 
     auto test() -> const Test & override { return test_; }
 
@@ -496,9 +491,7 @@ class InitializingAdaptiveTestWithDelayedMasker
         initializeWithDelayedMasker(model, test_);
     }
 
-    void run(RunningATestFacadeImpl &model, const AdaptiveTest &test) override {
-        initializeWithDelayedMasker(model, test);
-    }
+    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
 
     auto test() -> const Test & override { return test_; }
 
@@ -519,9 +512,7 @@ class InitializingAdaptiveTestWithCyclicTargets
         initializeWithCyclicTargets(model, test_);
     }
 
-    void run(RunningATestFacadeImpl &model, const AdaptiveTest &test) override {
-        initializeWithCyclicTargets(model, test);
-    }
+    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
 
     auto test() -> const Test & override { return test_; }
 
@@ -542,9 +533,7 @@ class InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking
         initializeWithCyclicTargetsAndEyeTracking(model, test_);
     }
 
-    void run(RunningATestFacadeImpl &model, const AdaptiveTest &test) override {
-        initializeWithCyclicTargetsAndEyeTracking(model, test);
-    }
+    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
 
     auto test() -> const Test & override { return test_; }
 
@@ -923,9 +912,9 @@ class ModelTests : public ::testing::Test {
 
     void assertInitializesAdaptiveMethod(
         InitializingAdaptiveTest &useCase, TargetPlaylistReader &reader) {
-        useCase.run(model, adaptiveTest);
+        useCase.run(model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            &std::as_const(adaptiveTest), adaptiveMethod.test());
+            &std::as_const(useCase.adaptiveTest()), adaptiveMethod.test());
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             &reader, adaptiveMethod.targetListReader());
     }

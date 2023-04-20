@@ -52,7 +52,7 @@ class RunningATestFacadeImpl : public RunningATestFacade {
 
   private:
     void initializeTest_(const AdaptiveTest &);
-    void initializeFixedLevelTestWithPossiblePeripheral(const FixedLevelTest &);
+    void initializeTestWithPossiblePeripheral(TestMethod &, const Test &);
 
     RunningATest::Observer &audioRecording;
     RunningATest::Observer &eyeTracking;
