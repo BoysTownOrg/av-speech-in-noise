@@ -409,6 +409,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_free_response::Presenter freeResponsePresenter{
         testUI, freeResponseUI};
     static MaskedCoreGraphicsImage maskedImage{subjectNSWindow, @"wally.jpg"};
+    static MaskedCoreGraphicsImage secondMaskedImage{
+        subjectNSWindow, @"wally-2.jpg"};
     static RevealImage revealImagePuzzle{maskedImage, randomizer, 12, 17};
     static submitting_free_response::with_puzzle::Presenter
         freeResponseWithPuzzlePresenter{
