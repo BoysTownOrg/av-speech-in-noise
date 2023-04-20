@@ -165,12 +165,6 @@ class ModelStub : public RunningATestFacade {
         fixedLevelTestWithTargetReplacementInitialized_ = true;
     }
 
-    void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelFixedTrialsTest &p) override {
-        fixedLevelFixedTrialsTest_ = p;
-        fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_ = true;
-    }
-
     void initializeWithSilentIntervalTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithSilentIntervalTargetsInitialized_ = true;
@@ -184,18 +178,6 @@ class ModelStub : public RunningATestFacade {
     void initializeWithAllTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithAllTargetsInitialized_ = true;
-    }
-
-    void initializeWithAllTargetsAndEyeTracking(
-        const FixedLevelTest &p) override {
-        fixedLevelTest_ = p;
-        fixedLevelTestWithAllTargetsAndEyeTrackingInitialized_ = true;
-    }
-
-    void initializeWithPredeterminedTargetsAndEyeTracking(
-        const FixedLevelTest &p) override {
-        fixedLevelTest_ = p;
-        fixedLevelTestWithPredeterminedTargetsInitialized_ = true;
     }
 
     void initializeWithPredeterminedTargets(const FixedLevelTest &p) override {

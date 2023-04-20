@@ -80,7 +80,7 @@ class RunningATestFacade {
     virtual void initializeWithTargetReplacement(
         const FixedLevelFixedTrialsTest &) = 0;
     virtual void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelFixedTrialsTest &) = 0;
+        const FixedLevelFixedTrialsTest &) {}
     virtual void initializeWithSingleSpeaker(const AdaptiveTest &) = 0;
     virtual void initializeWithDelayedMasker(const AdaptiveTest &) = 0;
     virtual void initializeWithEyeTracking(const AdaptiveTest &) = 0;
@@ -92,10 +92,10 @@ class RunningATestFacade {
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
     virtual void initialize(const FixedLevelTestWithEachTargetNTimes &) = 0;
     virtual void initializeWithAllTargetsAndEyeTracking(
-        const FixedLevelTest &) = 0;
+        const FixedLevelTest &) {}
     virtual void initializeWithPredeterminedTargets(const FixedLevelTest &) = 0;
     virtual void initializeWithPredeterminedTargetsAndEyeTracking(
-        const FixedLevelTest &) = 0;
+        const FixedLevelTest &) {}
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playLeftSpeakerCalibration(const Calibration &) = 0;
     virtual void playRightSpeakerCalibration(const Calibration &) = 0;
