@@ -96,7 +96,7 @@ struct Test {
     RealLevel maskerLevel;
     RealLevel fullScaleLevel;
     Condition condition{};
-    TestPeripheral peripheral;
+    TestPeripheral peripheral{TestPeripheral::none};
     bool keepVideoShown{};
 };
 

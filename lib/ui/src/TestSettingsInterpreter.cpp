@@ -361,7 +361,9 @@ static void initialize(RunningATestFacade &model, Method method,
     case Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {
-                model.initializeWithAllTargetsAndEyeTracking(test);
+                auto test_{test};
+                test_.peripheral = TestPeripheral::eyeTracking;
+                model.initializeWithAllTargets(test_);
             });
     case Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording:
         return av_speech_in_noise::initialize(method, contents, identity,
