@@ -364,11 +364,6 @@ class RequestFailingModel : public RunningATestFacade {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelFixedTrialsTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
@@ -377,17 +372,7 @@ class RequestFailingModel : public RunningATestFacade {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeWithAllTargetsAndEyeTracking(
-        const FixedLevelTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
     void initializeWithPredeterminedTargets(const FixedLevelTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithPredeterminedTargetsAndEyeTracking(
-        const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 
@@ -400,15 +385,6 @@ class RequestFailingModel : public RunningATestFacade {
     }
 
     void initializeWithCyclicTargets(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithCyclicTargetsAndEyeTracking(
-        const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithEyeTracking(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
 

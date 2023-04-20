@@ -33,7 +33,6 @@ class RunningATestFacadeImpl : public RunningATestFacade {
     void initializeWithPredeterminedTargets(const FixedLevelTest &) override;
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeWithDelayedMasker(const AdaptiveTest &) override;
-    void initializeWithEyeTracking(const AdaptiveTest &) override;
     void initializeWithCyclicTargets(const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;

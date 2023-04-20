@@ -141,11 +141,6 @@ class ModelStub : public RunningATestFacade {
         initializedWithDelayedMasker_ = true;
     }
 
-    void initializeWithEyeTracking(const AdaptiveTest &p) override {
-        adaptiveTest_ = p;
-        adaptiveTestInitializedWithEyeTracking_ = true;
-    }
-
     void initializeWithCyclicTargets(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithCyclicTargets_ = true;

@@ -405,11 +405,6 @@ void initializeWithSilentIntervalTargets(
     model.initializeWithSilentIntervalTargets(test);
 }
 
-void initializeWithEyeTracking(
-    RunningATestFacadeImpl &model, const AdaptiveTest &test) {
-    model.initializeWithEyeTracking(test);
-}
-
 class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
     AdaptiveTest test_;
     AdaptiveMethodStub *method;
@@ -441,7 +436,7 @@ class InitializingAdaptiveTestWithEyeTracking
     }
 
     void run(RunningATestFacadeImpl &model) override {
-        initializeWithEyeTracking(model, test_);
+        model.initialize(test_);
     }
 
     auto adaptiveTest() -> const AdaptiveTest & override { return test_; }

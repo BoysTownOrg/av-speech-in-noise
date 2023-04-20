@@ -138,13 +138,6 @@ void RunningATestFacadeImpl::initializeWithDelayedMasker(
         runningATest, adaptiveMethod, test);
 }
 
-void RunningATestFacadeImpl::initializeWithEyeTracking(
-    const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(
-        adaptiveMethod, test, targetsWithReplacementReader);
-    initializeTestWithPossiblePeripheral(adaptiveMethod, test);
-}
-
 void RunningATestFacadeImpl::initializeWithCyclicTargets(
     const AdaptiveTest &test) {
     av_speech_in_noise::initialize(adaptiveMethod, test, cyclicTargetsReader);
