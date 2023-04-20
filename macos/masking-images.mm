@@ -116,6 +116,7 @@ MaskedCoreGraphicsImage::MaskedCoreGraphicsImage(
               .imageSource}},
       window{window} {
     reset();
+    hide();
 }
 
 auto MaskedCoreGraphicsImage::width() -> double {
@@ -128,6 +129,7 @@ auto MaskedCoreGraphicsImage::height() -> double {
 
 void MaskedCoreGraphicsImage::reset() {
     context = std::make_unique<ScopedBitmapContext>(image.image);
+    addMaskedImageViewToWindow();
 }
 
 void MaskedCoreGraphicsImage::reveal(ImageRegion region) {
@@ -150,6 +152,10 @@ void MaskedCoreGraphicsImage::addMaskedImageViewToWindow() {
 
     [window.contentView addSubview:imageView];
 }
+
+void MaskedCoreGraphicsImage::show() { [lastImageView setHidden:NO]; }
+
+void MaskedCoreGraphicsImage::hide() { [lastImageView setHidden:YES]; }
 }
 
 @implementation ImageView {

@@ -30,12 +30,15 @@ class ScopedImage {
 };
 
 class MaskedCoreGraphicsImage : public NormallyMaskedImage {
+  public:
     MaskedCoreGraphicsImage(NSWindow *window, NSString *imageName);
     auto width() -> double override;
     auto height() -> double override;
     void reset();
     void reveal(ImageRegion region) override;
     void addMaskedImageViewToWindow();
+    void show() override;
+    void hide() override;
 
   private:
     ScopedImage image;

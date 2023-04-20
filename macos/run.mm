@@ -4,6 +4,7 @@
 #include "AppKitView.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
+#include "av-speech-in-noise/ui/RevealImage.hpp"
 #include "masking-images.h"
 
 #include <av-speech-in-noise/Model.hpp>
@@ -407,6 +408,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_consonant::PresenterImpl consonantPresenter{consonantUI};
     static submitting_free_response::Presenter freeResponsePresenter{
         testUI, freeResponseUI};
+    static MaskedCoreGraphicsImage maskedImage{subjectNSWindow, @"wally.jpg"};
+    static RevealImage revealImagePuzzle{maskedImage, randomizer, 12, 17};
+    static submitting_free_response::with_puzzle::Presenter
+        freeResponseWithPuzzlePresenter{
+            testUI, freeResponseUI, revealImagePuzzle};
     static submitting_keywords::PresenterImpl chooseKeywordsPresenter{model,
         testUI, chooseKeywordsUI,
         submitting_keywords::sentencesWithThreeKeywords(
@@ -455,6 +461,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             fixedLevelMethod, recognitionTestModel, outputFile};
     static submitting_free_response::Controller freeResponseController{
         testController, submittingFreeResponseInteractor, freeResponseUI};
+    static TimerImpl puzzleTimer;
+    static submitting_free_response::with_puzzle::Controller
+        freeResponseWithPuzzleController{testController,
+            submittingFreeResponseInteractor, freeResponseUI, revealImagePuzzle,
+            puzzleTimer};
     static submitting_pass_fail::InteractorImpl submittingPassFailInteractor{
         adaptiveMethod, recognitionTestModel, outputFile};
     static submitting_pass_fail::Controller passFailController{
@@ -494,7 +505,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                 freeResponsePresenter},
             {Method::
                     fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording,
-                freeResponsePresenter},
+                freeResponseWithPuzzlePresenter},
             {Method::
                     fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking,
                 freeResponsePresenter},
