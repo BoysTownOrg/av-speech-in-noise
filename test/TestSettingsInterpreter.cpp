@@ -638,6 +638,16 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTrackingInitializesFixedLevelTest) {
+    initialize(interpreter, model, sessionController,
+        Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
+        TestPeripheral::eyeTracking, model.fixedLevelTest().peripheral);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        model.fixedLevelTestWithPredeterminedTargetsInitialized());
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingInitializesFixedLevelTest) {
     initialize(interpreter, model, sessionController,
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);

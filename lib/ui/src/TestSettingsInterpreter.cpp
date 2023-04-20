@@ -383,7 +383,9 @@ static void initialize(RunningATestFacade &model, Method method,
     case Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {
-                model.initializeWithPredeterminedTargetsAndEyeTracking(test);
+                auto test_{test};
+                test_.peripheral = TestPeripheral::eyeTracking;
+                model.initializeWithPredeterminedTargets(test_);
             });
     case Method::
         fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking:
