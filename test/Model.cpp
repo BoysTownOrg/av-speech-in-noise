@@ -743,10 +743,12 @@ class InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording
   public:
     explicit InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording(
         FixedLevelMethodStub *method)
-        : method{method} {}
+        : method{method} {
+        test_.peripheral = TestPeripheral::audioRecording;
+    }
 
     void run(RunningATestFacadeImpl &model) override {
-        model.initializeWithPredeterminedTargetsAndAudioRecording(test_);
+        model.initializeWithPredeterminedTargets(test_);
     }
 
     auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }

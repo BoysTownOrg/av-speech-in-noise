@@ -8,6 +8,7 @@
 #include "IOutputFile.hpp"
 #include "IRecognitionTestModel.hpp"
 #include "TestMethod.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 namespace av_speech_in_noise {
 class RunningATestFacadeImpl : public RunningATestFacade {
@@ -33,6 +34,7 @@ class RunningATestFacadeImpl : public RunningATestFacade {
         const FixedLevelTest &) override;
     void initializeWithAllTargetsAndAudioRecording(
         const FixedLevelTest &) override;
+    void initializeWithPredeterminedTargets(const FixedLevelTest &) override;
     void initializeWithPredeterminedTargetsAndAudioRecording(
         const FixedLevelTest &) override;
     void initializeWithPredeterminedTargetsAndEyeTracking(
@@ -62,6 +64,7 @@ class RunningATestFacadeImpl : public RunningATestFacade {
 
   private:
     void initializeTest_(const AdaptiveTest &);
+    void initializeFixedLevelTestWithPossiblePeripheral(const FixedLevelTest &);
 
     RunningATest::Observer &audioRecording;
     RunningATest::Observer &eyeTracking;
