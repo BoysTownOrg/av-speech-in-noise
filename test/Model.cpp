@@ -362,8 +362,8 @@ class InitializingFixedLevelTest : public virtual InitializingTestUseCase {
 class InitializingFixedLevelFixedTrialsTest
     : public virtual InitializingTestUseCase {
   public:
-    virtual void run(RunningATestFacadeImpl &model,
-        const FixedLevelFixedTrialsTest &test) = 0;
+    virtual auto fixedLevelFixedTrialsTest()
+        -> const FixedLevelFixedTrialsTest & = 0;
 };
 
 class InitializingAdaptiveTest : public virtual InitializingTestUseCase {
@@ -570,9 +570,9 @@ class InitializingFixedLevelTestWithTargetReplacement
         initializeWithTargetReplacement(model, test_);
     }
 
-    void run(RunningATestFacadeImpl &model,
-        const FixedLevelFixedTrialsTest &test) override {
-        initializeWithTargetReplacement(model, test);
+    auto fixedLevelFixedTrialsTest()
+        -> const FixedLevelFixedTrialsTest & override {
+        return test_;
     }
 
     auto test() -> const Test & override { return test_; }
@@ -609,15 +609,17 @@ class InitializingFixedLevelTestWithTargetReplacementAndEyeTracking
   public:
     explicit InitializingFixedLevelTestWithTargetReplacementAndEyeTracking(
         FixedLevelMethodStub *method)
-        : method{method} {}
+        : method{method} {
+        test_.peripheral = TestPeripheral::eyeTracking;
+    }
 
     void run(RunningATestFacadeImpl &model) override {
         initializeWithTargetReplacementAndEyeTracking(model, test_);
     }
 
-    void run(RunningATestFacadeImpl &model,
-        const FixedLevelFixedTrialsTest &test) override {
-        initializeWithTargetReplacementAndEyeTracking(model, test);
+    auto fixedLevelFixedTrialsTest()
+        -> const FixedLevelFixedTrialsTest & override {
+        return test_;
     }
 
     auto test() -> const Test & override { return test_; }
@@ -675,7 +677,9 @@ class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
   public:
     explicit InitializingFixedLevelTestWithAllTargetsAndEyeTracking(
         FixedLevelMethodStub *method)
-        : method{method} {}
+        : method{method} {
+        test_.peripheral = TestPeripheral::eyeTracking;
+    }
 
     void run(RunningATestFacadeImpl &model) override {
         model.initializeWithAllTargetsAndEyeTracking(test_);
@@ -912,9 +916,9 @@ class ModelTests : public ::testing::Test {
 
     void assertInitializesFixedLevelMethod(
         InitializingFixedLevelFixedTrialsTest &useCase) {
-        useCase.run(model, fixedLevelFixedTrialsTest);
+        useCase.run(model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            &std::as_const(fixedLevelFixedTrialsTest),
+            &std::as_const(useCase.fixedLevelFixedTrialsTest()),
             fixedLevelMethod.fixedTrialsTest());
     }
 

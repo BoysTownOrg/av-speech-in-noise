@@ -90,12 +90,15 @@ void RunningATestFacadeImpl::initializeFixedLevelTestWithPossiblePeripheral(
     switch (test.peripheral) {
     case TestPeripheral::none:
         av_speech_in_noise::initialize(runningATest, fixedLevelMethod, test);
+        break;
     case TestPeripheral::eyeTracking:
         av_speech_in_noise::initialize(
             runningATest, fixedLevelMethod, test, &eyeTracking);
+        break;
     case TestPeripheral::audioRecording:
         av_speech_in_noise::initialize(
             runningATest, fixedLevelMethod, test, &audioRecording);
+        break;
     }
 }
 
@@ -154,8 +157,7 @@ void RunningATestFacadeImpl::initializeWithTargetReplacementAndEyeTracking(
     const FixedLevelFixedTrialsTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, targetsWithReplacement);
-    av_speech_in_noise::initialize(
-        runningATest, fixedLevelMethod, test, &eyeTracking);
+    initializeFixedLevelTestWithPossiblePeripheral(test);
 }
 
 void RunningATestFacadeImpl::initializeWithSilentIntervalTargetsAndEyeTracking(
