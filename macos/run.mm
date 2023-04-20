@@ -4,10 +4,11 @@
 #include "AppKitView.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
-#include "av-speech-in-noise/Model.hpp"
+#include "masking-images.h"
+
+#include <av-speech-in-noise/Model.hpp>
 #include "av-speech-in-noise/core/AudioRecording.hpp"
 #include "av-speech-in-noise/core/EyeTracking.hpp"
-
 #include <av-speech-in-noise/playlist/PredeterminedTargetPlaylist.hpp>
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/ui/PassFail.hpp>
