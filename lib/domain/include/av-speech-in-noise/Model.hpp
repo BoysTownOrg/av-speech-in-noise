@@ -87,6 +87,8 @@ struct RealLevel {
     int dB_SPL{};
 };
 
+enum class TestPeripheral { audioRecording, eyeTracking, none };
+
 struct Test {
     TestIdentity identity;
     LocalUrl targetsUrl;
@@ -94,6 +96,7 @@ struct Test {
     RealLevel maskerLevel;
     RealLevel fullScaleLevel;
     Condition condition{};
+    TestPeripheral peripheral;
     bool keepVideoShown{};
 };
 
