@@ -50,7 +50,7 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
         testController.notifyThatUserHasRespondedButTrialIsNotQuiteDone();
         puzzle.show();
         readyToAdvancePuzzle_ = true;
-        timer.scheduleCallbackAfterSeconds(1);
+        timer.scheduleCallbackAfterSeconds(1.5);
     }
 }
 
@@ -58,7 +58,7 @@ void Controller::callback() {
     if (readyToAdvancePuzzle_) {
         puzzle.advance();
         readyToAdvancePuzzle_ = false;
-        timer.scheduleCallbackAfterSeconds(1);
+        timer.scheduleCallbackAfterSeconds(1.5);
     } else {
         puzzle.hide();
         testController.notifyThatUserIsDoneResponding();
