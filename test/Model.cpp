@@ -4,6 +4,7 @@
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "AudioRecorderStub.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
@@ -355,8 +356,7 @@ class InitializingTestUseCase {
 
 class InitializingFixedLevelTest : public virtual InitializingTestUseCase {
   public:
-    virtual void run(
-        RunningATestFacadeImpl &model, const FixedLevelTest &test) = 0;
+    virtual auto fixedLevelTest() -> const FixedLevelTest & = 0;
 };
 
 class InitializingFixedLevelFixedTrialsTest
@@ -594,10 +594,7 @@ class InitializingFixedLevelTestWithSilentIntervalTargets
         initializeWithSilentIntervalTargets(model, test_);
     }
 
-    void run(
-        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
-        initializeWithSilentIntervalTargets(model, test);
-    }
+    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
 
     auto test() -> const Test & override { return test_; }
 
@@ -642,10 +639,7 @@ class InitializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking
         initializeWithSilentIntervalTargetsAndEyeTracking(model, test_);
     }
 
-    void run(
-        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
-        initializeWithSilentIntervalTargetsAndEyeTracking(model, test);
-    }
+    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
 
     auto test() -> const Test & override { return test_; }
 
@@ -666,10 +660,7 @@ class InitializingFixedLevelTestWithAllTargets
         model.initializeWithAllTargets(test_);
     }
 
-    void run(
-        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
-        model.initializeWithAllTargets(test);
-    }
+    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
 
     auto test() -> const Test & override { return test_; }
 
@@ -690,10 +681,7 @@ class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
         model.initializeWithAllTargetsAndEyeTracking(test_);
     }
 
-    void run(
-        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
-        model.initializeWithAllTargetsAndEyeTracking(test);
-    }
+    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
 
     auto test() -> const Test & override { return test_; }
 
@@ -732,16 +720,15 @@ class InitializingFixedLevelTestWithAllTargetsAndAudioRecording
   public:
     explicit InitializingFixedLevelTestWithAllTargetsAndAudioRecording(
         FixedLevelMethodStub *method)
-        : method{method} {}
+        : method{method} {
+        test_.peripheral = TestPeripheral::audioRecording;
+    }
 
     void run(RunningATestFacadeImpl &model) override {
-        model.initializeWithAllTargetsAndAudioRecording(test_);
+        model.initializeWithAllTargets(test_);
     }
 
-    void run(
-        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
-        model.initializeWithAllTargetsAndAudioRecording(test);
-    }
+    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
 
     auto test() -> const Test & override { return test_; }
 
@@ -762,10 +749,7 @@ class InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording
         model.initializeWithPredeterminedTargetsAndAudioRecording(test_);
     }
 
-    void run(
-        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
-        model.initializeWithPredeterminedTargetsAndAudioRecording(test);
-    }
+    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
 
     auto test() -> const Test & override { return test_; }
 
@@ -786,10 +770,7 @@ class InitializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking
         model.initializeWithPredeterminedTargetsAndEyeTracking(test_);
     }
 
-    void run(
-        RunningATestFacadeImpl &model, const FixedLevelTest &test) override {
-        model.initializeWithPredeterminedTargetsAndEyeTracking(test);
-    }
+    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
 
     auto test() -> const Test & override { return test_; }
 
@@ -922,9 +903,9 @@ class ModelTests : public ::testing::Test {
 
     void assertInitializesFixedLevelMethod(
         InitializingFixedLevelTest &useCase) {
-        useCase.run(model, fixedLevelTest);
+        useCase.run(model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            &std::as_const(fixedLevelTest), fixedLevelMethod.test());
+            &std::as_const(useCase.fixedLevelTest()), fixedLevelMethod.test());
     }
 
     void assertInitializesFixedLevelMethod(
