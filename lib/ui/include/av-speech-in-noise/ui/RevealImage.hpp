@@ -25,6 +25,7 @@ class NormallyMaskedImage {
     virtual void reveal(ImageRegion) = 0;
     virtual void show() = 0;
     virtual void hide() = 0;
+    virtual void reset() = 0;
 };
 
 class Shuffler {
