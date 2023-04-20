@@ -34,6 +34,12 @@ class ModelStub : public RunningATestFacade {
     fixedLevelTestWithPredeterminedTargetsInitialized() const {
         return fixedLevelTestWithPredeterminedTargetsInitialized_;
     }
+
+    [[nodiscard]] auto fixedLevelTestWithTargetReplacementInitialized() const
+        -> bool {
+        return fixedLevelTestWithTargetReplacementInitialized_;
+    }
+
     [[nodiscard]] auto
     fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized() const {
         return fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_;
@@ -154,7 +160,9 @@ class ModelStub : public RunningATestFacade {
     void initializeWithTargetReplacement(
         const FixedLevelFixedTrialsTest &p) override {
         fixedLevelFixedTrialsTest_ = p;
+        fixedLevelTest_ = p;
         defaultFixedLevelTestInitialized_ = true;
+        fixedLevelTestWithTargetReplacementInitialized_ = true;
     }
 
     void initializeWithTargetReplacementAndEyeTracking(
@@ -273,6 +281,7 @@ class ModelStub : public RunningATestFacade {
     bool fixedLevelTestWithSilentIntervalTargetsInitialized_{};
     bool fixedLevelTestWithAllTargetsInitialized_{};
     bool fixedLevelTestWithPredeterminedTargetsInitialized_{};
+    bool fixedLevelTestWithTargetReplacementInitialized_{};
     bool fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_{};
     bool fixedLevelTestWithAllTargetsAndEyeTrackingInitialized_{};
     bool initializedWithSingleSpeaker_{};

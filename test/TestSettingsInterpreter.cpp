@@ -612,8 +612,10 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initialize(interpreter, model, sessionController,
         Method::
             fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
+        TestPeripheral::eyeTracking, model.fixedLevelTest().peripheral);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        model.fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized());
+        model.fixedLevelTestWithTargetReplacementInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
