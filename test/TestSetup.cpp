@@ -376,14 +376,6 @@ class RequestFailingModel : public RunningATestFacade {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeWithSingleSpeaker(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithDelayedMasker(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
     void initializeWithCyclicTargets(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }

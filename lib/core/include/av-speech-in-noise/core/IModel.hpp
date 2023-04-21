@@ -77,13 +77,9 @@ class RunningATestFacade {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATestFacade);
     virtual void attach(Observer *) = 0;
     virtual void initialize(const AdaptiveTest &) = 0;
+    virtual void initializeWithCyclicTargets(const AdaptiveTest &) = 0;
     virtual void initializeWithTargetReplacement(
         const FixedLevelFixedTrialsTest &) = 0;
-    virtual void initializeWithSingleSpeaker(const AdaptiveTest &) = 0;
-    virtual void initializeWithDelayedMasker(const AdaptiveTest &) = 0;
-    virtual void initializeWithCyclicTargets(const AdaptiveTest &) = 0;
-    virtual void initializeWithCyclicTargetsAndEyeTracking(
-        const AdaptiveTest &) {}
     virtual void initializeWithSilentIntervalTargets(
         const FixedLevelTest &) = 0;
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;

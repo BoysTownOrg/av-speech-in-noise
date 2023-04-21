@@ -25,15 +25,13 @@ class RunningATestFacadeImpl : public RunningATestFacade {
         RunningATest::Observer &eyeTracking);
     void attach(RunningATestFacade::Observer *) override;
     void initialize(const AdaptiveTest &) override;
+    void initializeWithCyclicTargets(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(
         const FixedLevelFixedTrialsTest &) override;
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
     void initializeWithAllTargets(const FixedLevelTest &) override;
     void initialize(const FixedLevelTestWithEachTargetNTimes &) override;
     void initializeWithPredeterminedTargets(const FixedLevelTest &) override;
-    void initializeWithSingleSpeaker(const AdaptiveTest &) override {}
-    void initializeWithDelayedMasker(const AdaptiveTest &) override {}
-    void initializeWithCyclicTargets(const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
     void playLeftSpeakerCalibration(const Calibration &) override;

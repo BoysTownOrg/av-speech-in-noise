@@ -380,24 +380,9 @@ void initializeWithTargetReplacement(
     model.initializeWithTargetReplacement(test);
 }
 
-void initializeWithSingleSpeaker(
-    RunningATestFacadeImpl &model, const AdaptiveTest &test) {
-    model.initializeWithSingleSpeaker(test);
-}
-
-void initializeWithDelayedMasker(
-    RunningATestFacadeImpl &model, const AdaptiveTest &test) {
-    model.initializeWithDelayedMasker(test);
-}
-
 void initializeWithCyclicTargets(
     RunningATestFacadeImpl &model, const AdaptiveTest &test) {
     model.initializeWithCyclicTargets(test);
-}
-
-void initializeWithCyclicTargetsAndEyeTracking(
-    RunningATestFacadeImpl &model, const AdaptiveTest &test) {
-    model.initializeWithCyclicTargetsAndEyeTracking(test);
 }
 
 void initializeWithSilentIntervalTargets(
@@ -437,48 +422,6 @@ class InitializingAdaptiveTestWithEyeTracking
 
     void run(RunningATestFacadeImpl &model) override {
         model.initialize(test_);
-    }
-
-    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
-};
-
-class InitializingAdaptiveTestWithSingleSpeaker
-    : public InitializingAdaptiveTest {
-    AdaptiveTest test_;
-    AdaptiveMethodStub *method;
-
-  public:
-    explicit InitializingAdaptiveTestWithSingleSpeaker(
-        AdaptiveMethodStub *method)
-        : method{method} {}
-
-    void run(RunningATestFacadeImpl &model) override {
-        initializeWithSingleSpeaker(model, test_);
-    }
-
-    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
-};
-
-class InitializingAdaptiveTestWithDelayedMasker
-    : public InitializingAdaptiveTest {
-    AdaptiveTest test_;
-    AdaptiveMethodStub *method;
-
-  public:
-    explicit InitializingAdaptiveTestWithDelayedMasker(
-        AdaptiveMethodStub *method)
-        : method{method} {}
-
-    void run(RunningATestFacadeImpl &model) override {
-        initializeWithDelayedMasker(model, test_);
     }
 
     auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
@@ -840,10 +783,6 @@ class ModelTests : public ::testing::Test {
         &adaptiveMethod};
     InitializingAdaptiveTestWithEyeTracking
         initializingAdaptiveTestWithEyeTracking{&adaptiveMethod};
-    InitializingAdaptiveTestWithSingleSpeaker
-        initializingAdaptiveTestWithSingleSpeaker{&adaptiveMethod};
-    InitializingAdaptiveTestWithDelayedMasker
-        initializingAdaptiveTestWithDelayedMasker{&adaptiveMethod};
     InitializingAdaptiveTestWithCyclicTargets
         initializingAdaptiveTestWithCyclicTargets{&adaptiveMethod};
     InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking

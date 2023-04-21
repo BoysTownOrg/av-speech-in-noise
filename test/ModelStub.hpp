@@ -131,25 +131,9 @@ class ModelStub : public RunningATestFacade {
         defaultAdaptiveTestInitialized_ = true;
     }
 
-    void initializeWithSingleSpeaker(const AdaptiveTest &p) override {
-        adaptiveTest_ = p;
-        initializedWithSingleSpeaker_ = true;
-    }
-
-    void initializeWithDelayedMasker(const AdaptiveTest &p) override {
-        adaptiveTest_ = p;
-        initializedWithDelayedMasker_ = true;
-    }
-
     void initializeWithCyclicTargets(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithCyclicTargets_ = true;
-    }
-
-    void initializeWithCyclicTargetsAndEyeTracking(
-        const AdaptiveTest &p) override {
-        adaptiveTest_ = p;
-        adaptiveTestInitializedWithCyclicTargetsAndEyeTracking_ = true;
     }
 
     void initializeWithTargetReplacement(
