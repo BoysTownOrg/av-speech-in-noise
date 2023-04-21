@@ -25,8 +25,8 @@ class RunningATest {
     virtual void attach(RunningATestFacade::Observer *) = 0;
     virtual void initialize(
         TestMethod *, const Test &, Observer * = nullptr) = 0;
-    virtual void initializeWithSingleSpeaker(TestMethod *, const Test &) = 0;
-    virtual void initializeWithDelayedMasker(TestMethod *, const Test &) = 0;
+    virtual void initializeWithSingleSpeaker(TestMethod *, const Test &) {}
+    virtual void initializeWithDelayedMasker(TestMethod *, const Test &) {}
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playLeftSpeakerCalibration(const Calibration &) = 0;
