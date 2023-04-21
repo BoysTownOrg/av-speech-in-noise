@@ -31,8 +31,8 @@ class RunningATestFacadeImpl : public RunningATestFacade {
     void initializeWithAllTargets(const FixedLevelTest &) override;
     void initialize(const FixedLevelTestWithEachTargetNTimes &) override;
     void initializeWithPredeterminedTargets(const FixedLevelTest &) override;
-    void initializeWithSingleSpeaker(const AdaptiveTest &) override;
-    void initializeWithDelayedMasker(const AdaptiveTest &) override;
+    void initializeWithSingleSpeaker(const AdaptiveTest &) override {}
+    void initializeWithDelayedMasker(const AdaptiveTest &) override {}
     void initializeWithCyclicTargets(const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;

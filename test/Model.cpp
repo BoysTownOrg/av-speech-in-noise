@@ -1389,16 +1389,6 @@ MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesAdaptiveMethod) {
         initializingAdaptiveTestWithEyeTracking, targetsWithReplacementReader);
 }
 
-MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithSingleSpeaker,
-        targetsWithReplacementReader);
-}
-
-MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithDelayedMasker,
-        targetsWithReplacementReader);
-}
-
 MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(
         initializingAdaptiveTestWithCyclicTargets, cyclicTargetsReader);
@@ -1471,14 +1461,6 @@ MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTestWithEyeTracking);
 }
 
-MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesInternalModel) {
-    assertInitializesInternalModel(initializingAdaptiveTestWithSingleSpeaker);
-}
-
-MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesInternalModel) {
-    assertInitializesInternalModel(initializingAdaptiveTestWithDelayedMasker);
-}
-
 MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTestWithCyclicTargets);
 }
@@ -1487,18 +1469,6 @@ MODEL_TEST(
     initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesInternalModel) {
     assertInitializesInternalModel(
         initializingAdaptiveTestWithCyclicTargetsAndEyeTracking);
-}
-
-MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesSingleSpeaker) {
-    run(initializingAdaptiveTestWithSingleSpeaker);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        internalModel.initializedWithSingleSpeaker());
-}
-
-MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
-    run(initializingAdaptiveTestWithDelayedMasker);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        internalModel.initializedWithDelayedMasker());
 }
 
 MODEL_TEST(

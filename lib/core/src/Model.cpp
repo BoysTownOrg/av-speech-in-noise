@@ -28,16 +28,6 @@ static void initialize(AdaptiveMethod &method, const AdaptiveTest &test,
     method.initialize(test, &reader);
 }
 
-static void initializeWithSingleSpeaker(
-    RunningATest &model, AdaptiveMethod &method, const AdaptiveTest &test) {
-    model.initializeWithSingleSpeaker(&method, test);
-}
-
-static void initializeWithDelayedMasker(
-    RunningATest &model, TestMethod &method, const Test &test) {
-    model.initializeWithDelayedMasker(&method, test);
-}
-
 static void initialize(RunningATest &model, TestMethod &method,
     const Test &test, RunningATest::Observer *observer) {
     model.initialize(&method, test, observer);
@@ -120,22 +110,6 @@ void RunningATestFacadeImpl::initializeWithPredeterminedTargets(
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, predeterminedTargets);
     initializeTestWithPossiblePeripheral(fixedLevelMethod, test);
-}
-
-void RunningATestFacadeImpl::initializeWithSingleSpeaker(
-    const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(
-        adaptiveMethod, test, targetsWithReplacementReader);
-    av_speech_in_noise::initializeWithSingleSpeaker(
-        runningATest, adaptiveMethod, test);
-}
-
-void RunningATestFacadeImpl::initializeWithDelayedMasker(
-    const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(
-        adaptiveMethod, test, targetsWithReplacementReader);
-    av_speech_in_noise::initializeWithDelayedMasker(
-        runningATest, adaptiveMethod, test);
 }
 
 void RunningATestFacadeImpl::initializeWithCyclicTargets(
