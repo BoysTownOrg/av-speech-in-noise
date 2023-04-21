@@ -283,12 +283,6 @@ void RunningATestImpl::attach(RunningATestFacade::Observer *listener) {
 
 void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
     RunningATest::Observer *observer_) {
-    initialize_(
-        testMethod_, test, observer_ == nullptr ? &nullObserver : observer_);
-}
-
-void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test,
-    RunningATest::Observer *observer_) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     if (testMethod_->complete())
@@ -324,6 +318,9 @@ void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test,
         useFirstChannelOnly(targetPlayer);
         maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
     }
+
+    if (observer_ == nullptr)
+        observer_ = &nullObserver;
     observer = observer_;
     observer->notifyThatNewTestIsReady(test.identity.session);
 }

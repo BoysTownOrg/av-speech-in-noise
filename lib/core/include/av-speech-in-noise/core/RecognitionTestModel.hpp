@@ -51,10 +51,6 @@ class RunningATestImpl : public TargetPlayer::Observer,
     static constexpr Duration targetOffsetFringeDuration{
         targetOnsetFringeDuration};
 
-  private:
-    void initialize_(TestMethod *, const Test &, RunningATest::Observer *);
-    void seekRandomMaskerPosition();
-
     RunningATest::Observer *observer;
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
