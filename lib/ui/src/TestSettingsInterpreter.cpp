@@ -311,12 +311,16 @@ static void initialize(RunningATestFacade &model, Method method,
     case Method::adaptiveCoordinateResponseMeasureWithDelayedMasker:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const AdaptiveTest &test) {
-                model.initializeWithDelayedMasker(test);
+                auto test_{test};
+                test_.audioChannelOption = AudioChannelOption::delayedMasker;
+                model.initialize(test_);
             });
     case Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const AdaptiveTest &test) {
-                model.initializeWithSingleSpeaker(test);
+                auto test_{test};
+                test_.audioChannelOption = AudioChannelOption::singleSpeaker;
+                model.initialize(test_);
             });
     case Method::adaptiveCorrectKeywords:
         return av_speech_in_noise::initialize(method, contents, identity,

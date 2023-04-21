@@ -569,14 +569,16 @@ TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithDelayedMaskerInitializesAdaptiveTest) {
     initialize(interpreter, model, sessionController,
         Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.initializedWithDelayedMasker());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(AudioChannelOption::delayedMasker,
+        model.adaptiveTest().audioChannelOption);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithSingleSpeakerInitializesAdaptiveTest) {
     initialize(interpreter, model, sessionController,
         Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.initializedWithSingleSpeaker());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(AudioChannelOption::singleSpeaker,
+        model.adaptiveTest().audioChannelOption);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
