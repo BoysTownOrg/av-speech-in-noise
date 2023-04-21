@@ -6,6 +6,7 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 
@@ -99,7 +100,9 @@ class InitializingTestWithSingleSpeaker : public UseCase {
         : method{method} {}
 
     void run(RunningATestImpl &m) override {
-        m.initializeWithSingleSpeaker(method, {});
+        Test test;
+        test.audioChannelOption = AudioChannelOption::singleSpeaker;
+        m.initialize(method, test, nullptr);
     }
 
   private:
@@ -112,7 +115,9 @@ class InitializingTestWithDelayedMasker : public UseCase {
         : method{method} {}
 
     void run(RunningATestImpl &m) override {
-        m.initializeWithDelayedMasker(method, {});
+        Test test;
+        test.audioChannelOption = AudioChannelOption::delayedMasker;
+        m.initialize(method, test, nullptr);
     }
 
   private:

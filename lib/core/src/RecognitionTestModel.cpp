@@ -1,4 +1,5 @@
 #include "RecognitionTestModel.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <gsl/gsl>
 
@@ -316,22 +317,15 @@ void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test,
     useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
+    if (test.audioChannelOption == AudioChannelOption::singleSpeaker) {
+        useFirstChannelOnly(targetPlayer);
+        maskerPlayer.useFirstChannelOnly();
+    } else if (test.audioChannelOption == AudioChannelOption::delayedMasker) {
+        useFirstChannelOnly(targetPlayer);
+        maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
+    }
     observer = observer_;
     observer->notifyThatNewTestIsReady(test.identity.session);
-}
-
-void RunningATestImpl::initializeWithSingleSpeaker(
-    TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test, &nullObserver);
-    useFirstChannelOnly(targetPlayer);
-    maskerPlayer.useFirstChannelOnly();
-}
-
-void RunningATestImpl::initializeWithDelayedMasker(
-    TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test, &nullObserver);
-    useFirstChannelOnly(targetPlayer);
-    maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
 }
 
 void RunningATestImpl::playTrial(const AudioSettings &settings) {
