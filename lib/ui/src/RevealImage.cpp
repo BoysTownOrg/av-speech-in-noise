@@ -12,6 +12,8 @@ RevealImage::RevealImage(
     reset();
 }
 
+void RevealImage::initialize(const LocalUrl &url) { image.initialize(url); }
+
 void RevealImage::advance() {
     if (index >= order.size())
         return;

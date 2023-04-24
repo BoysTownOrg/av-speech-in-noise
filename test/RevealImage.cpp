@@ -1,5 +1,6 @@
 #include "assert-utility.hpp"
 #include "RandomizerStub.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/ui/RevealImage.hpp>
 
@@ -11,6 +12,10 @@ class NormallyMaskedImageStub : public NormallyMaskedImage {
   public:
     NormallyMaskedImageStub(double width, double height)
         : width_{width}, height_{height} {}
+
+    void initialize(const LocalUrl &p) { url_ = p; }
+
+    auto url() -> LocalUrl { return url_; }
 
     auto width() -> double override { return width_; }
 
@@ -34,6 +39,7 @@ class NormallyMaskedImageStub : public NormallyMaskedImage {
 
   private:
     ImageRegion lastRevealedRegion_{};
+    LocalUrl url_;
     double width_;
     double height_;
     bool shown_{};
@@ -179,6 +185,18 @@ TEST_F(RevealImageTests, hideHidesImage) {
     RevealImage reveal{image, randomizer, rows, columns};
     reveal.hide();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(image.hidden());
+}
+
+TEST_F(RevealImageTests, initializeInitializesImage) {
+    NormallyMaskedImageStub image{0, 0};
+    ShufflerStub randomizer;
+    const auto rows{0};
+    const auto columns{0};
+    RevealImage reveal{image, randomizer, rows, columns};
+    LocalUrl url;
+    url.path = "hi";
+    reveal.initialize(url);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("hi", image.url().path);
 }
 }
 }
