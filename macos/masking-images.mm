@@ -2,6 +2,7 @@
 // https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/drawingwithquartz2d/dq_images/dq_images.html#//apple_ref/doc/uid/TP30001066-CH212-TPXREF101
 
 #include "masking-images.h"
+#include "Foundation-utility.h"
 
 #include <AppKit/AppKit.h>
 #include <CoreFoundation/CoreFoundation.h>
@@ -101,34 +102,28 @@ ScopedBitmapContext::~ScopedBitmapContext() {
         CGContextRelease(context);
 }
 
-static auto imageResource(NSString *imageName) -> NSURL * {
-    NSURL *url = [[NSBundle mainBundle] URLForImageResource:imageName];
-    if (url == nil) {
-        throw std::runtime_error{"Cannot get URL for image."};
-    }
-    return url;
-}
-
-MaskedCoreGraphicsImage::MaskedCoreGraphicsImage(
-    NSWindow *window, NSString *imageName)
-    : image{ScopedImage{
-          ScopedImageSource{(__bridge CFURLRef)(imageResource(imageName))}
-              .imageSource}},
-      window{window} {
+MaskedCoreGraphicsImage::MaskedCoreGraphicsImage(NSWindow *window)
+    : window{window} {
     reset();
     hide();
 }
 
+void MaskedCoreGraphicsImage::initialize(const LocalUrl &url) {
+    NSURL *nsurl = [NSURL fileURLWithPath:nsString(url.path) isDirectory:NO];
+    image = std::make_unique<ScopedImage>(
+        ScopedImageSource{(__bridge CFURLRef)nsurl}.imageSource);
+}
+
 auto MaskedCoreGraphicsImage::width() -> double {
-    return CGImageGetWidth(image.image);
+    return CGImageGetWidth(image->image);
 }
 
 auto MaskedCoreGraphicsImage::height() -> double {
-    return CGImageGetHeight(image.image);
+    return CGImageGetHeight(image->image);
 }
 
 void MaskedCoreGraphicsImage::reset() {
-    context = std::make_unique<ScopedBitmapContext>(image.image);
+    context = std::make_unique<ScopedBitmapContext>(image->image);
     addMaskedImageViewToWindow();
 }
 
@@ -144,8 +139,7 @@ void MaskedCoreGraphicsImage::addMaskedImageViewToWindow() {
     const auto mask{ScopedBitmapImage{context->context}};
     const auto imageView =
         [[ImageView alloc] initWithImage:std::make_unique<ScopedMaskedImage>(
-                                             image.image, mask.image)];
-
+                                             image->image, mask.image)];
     if (lastImageView != nil)
         [lastImageView removeFromSuperview];
     lastImageView = imageView;

@@ -406,15 +406,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         coordinateResponseMeasureNSView};
     NSLog(@"Initializing presenters...");
     static submitting_consonant::PresenterImpl consonantPresenter{consonantUI};
-    static submitting_free_response::Presenter freeResponsePresenter{
-        testUI, freeResponseUI};
-    static MaskedCoreGraphicsImage maskedImage{subjectNSWindow, @"wally.jpg"};
-    static MaskedCoreGraphicsImage secondMaskedImage{
-        subjectNSWindow, @"wally-2.jpg"};
+    static MaskedCoreGraphicsImage maskedImage{subjectNSWindow};
     static RevealImage revealImagePuzzle{maskedImage, randomizer, 12, 17};
-    static submitting_free_response::with_puzzle::Presenter
-        freeResponseWithPuzzlePresenter{
-            testUI, freeResponseUI, revealImagePuzzle};
+    static submitting_free_response::Presenter freeResponsePresenter{
+        testUI, freeResponseUI, revealImagePuzzle};
     static submitting_keywords::PresenterImpl chooseKeywordsPresenter{model,
         testUI, chooseKeywordsUI,
         submitting_keywords::sentencesWithThreeKeywords(
@@ -461,13 +456,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_free_response::InteractorImpl
         submittingFreeResponseInteractor{
             fixedLevelMethod, recognitionTestModel, outputFile};
-    static submitting_free_response::Controller freeResponseController{
-        testController, submittingFreeResponseInteractor, freeResponseUI};
     static TimerImpl puzzleTimer;
-    static submitting_free_response::with_puzzle::Controller
-        freeResponseWithPuzzleController{testController,
-            submittingFreeResponseInteractor, freeResponseUI, revealImagePuzzle,
-            puzzleTimer};
+    static submitting_free_response::Controller freeResponseController{
+        testController, submittingFreeResponseInteractor, freeResponseUI,
+        revealImagePuzzle, puzzleTimer};
     static submitting_pass_fail::InteractorImpl submittingPassFailInteractor{
         adaptiveMethod, recognitionTestModel, outputFile};
     static submitting_pass_fail::Controller passFailController{
@@ -507,7 +499,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                 freeResponsePresenter},
             {Method::
                     fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording,
-                freeResponseWithPuzzlePresenter},
+                freeResponsePresenter},
             {Method::
                     fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking,
                 freeResponsePresenter},
@@ -523,7 +515,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                 correctKeywordsPresenter},
             {Method::fixedLevelConsonants, consonantPresenter},
             {Method::adaptivePassFail, passFailPresenter},
-            {Method::adaptivePassFailWithEyeTracking, passFailPresenter}}};
+            {Method::adaptivePassFailWithEyeTracking, passFailPresenter}},
+        revealImagePuzzle, freeResponseController};
     static TestSetupController testSetupController{*testSetupUI,
         sessionController, sessionUI, testSetupPresenter, model,
         testSettingsInterpreter, textFileReader};
