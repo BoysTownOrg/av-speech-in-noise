@@ -13,7 +13,7 @@ class NormallyMaskedImageStub : public NormallyMaskedImage {
     NormallyMaskedImageStub(double width, double height)
         : width_{width}, height_{height} {}
 
-    void initialize(const LocalUrl &p) { url_ = p; }
+    void initialize(const LocalUrl &p) override { url_ = p; }
 
     auto url() -> LocalUrl { return url_; }
 
@@ -33,10 +33,6 @@ class NormallyMaskedImageStub : public NormallyMaskedImage {
 
     [[nodiscard]] auto hidden() const -> bool { return hidden_; }
 
-    [[nodiscard]] auto hasBeenReset() const -> bool { return hasBeenReset_; }
-
-    void reset() override { hasBeenReset_ = true; }
-
   private:
     ImageRegion lastRevealedRegion_{};
     LocalUrl url_;
@@ -44,7 +40,6 @@ class NormallyMaskedImageStub : public NormallyMaskedImage {
     double height_;
     bool shown_{};
     bool hidden_{};
-    bool hasBeenReset_{};
 };
 
 class ShufflerStub : public Shuffler {

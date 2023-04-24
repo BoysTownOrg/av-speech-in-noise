@@ -35,7 +35,6 @@ class MaskedCoreGraphicsImage : public NormallyMaskedImage {
     explicit MaskedCoreGraphicsImage(NSWindow *window);
     auto width() -> double override;
     auto height() -> double override;
-    void reset() override;
     void initialize(const LocalUrl &) override;
     void reveal(ImageRegion region) override;
     void addMaskedImageViewToWindow();

@@ -108,10 +108,13 @@ MaskedCoreGraphicsImage::MaskedCoreGraphicsImage(NSWindow *window)
 }
 
 void MaskedCoreGraphicsImage::initialize(const LocalUrl &url) {
-    NSURL *nsurl = [NSURL fileURLWithPath:nsString(url.path) isDirectory:NO];
+    const auto *nsurl = [NSURL fileURLWithPath:nsString(url.path)
+                                   isDirectory:NO];
     image = std::make_unique<ScopedImage>(
         ScopedImageSource{(__bridge CFURLRef)nsurl}.imageSource);
-    reset();
+    context = std::make_unique<ScopedBitmapContext>(image->image);
+
+    addMaskedImageViewToWindow();
 }
 
 auto MaskedCoreGraphicsImage::width() -> double {
@@ -120,11 +123,6 @@ auto MaskedCoreGraphicsImage::width() -> double {
 
 auto MaskedCoreGraphicsImage::height() -> double {
     return CGImageGetHeight(image->image);
-}
-
-void MaskedCoreGraphicsImage::reset() {
-    context = std::make_unique<ScopedBitmapContext>(image->image);
-    addMaskedImageViewToWindow();
 }
 
 void MaskedCoreGraphicsImage::reveal(ImageRegion region) {
