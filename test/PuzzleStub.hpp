@@ -4,7 +4,7 @@
 #include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/ui/FreeResponse.hpp>
 
-namespace av_speech_in_noise::submitting_free_response::with_puzzle {
+namespace av_speech_in_noise::submitting_free_response {
 class PuzzleStub : public Puzzle {
   public:
     [[nodiscard]] auto advanced() const -> bool { return advanced_; }

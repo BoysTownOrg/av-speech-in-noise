@@ -445,6 +445,6 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
 
 TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     std::map<Method, TaskPresenter &> taskPresenters,
-    submitting_free_response::with_puzzle::Puzzle &puzzle)
+    submitting_free_response::Puzzle &puzzle)
     : taskPresenters{std::move(taskPresenters)}, puzzle{puzzle} {}
 }

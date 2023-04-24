@@ -159,8 +159,8 @@ constexpr auto name(TestSetting p) -> const char * {
 
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
-    TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>,
-        submitting_free_response::with_puzzle::Puzzle &);
+    TestSettingsInterpreterImpl(
+        std::map<Method, TaskPresenter &>, submitting_free_response::Puzzle &);
     void initialize(RunningATestFacade &, SessionController &,
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
@@ -168,7 +168,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
 
   private:
     std::map<Method, TaskPresenter &> taskPresenters;
-    submitting_free_response::with_puzzle::Puzzle &puzzle;
+    submitting_free_response::Puzzle &puzzle;
 };
 }
 

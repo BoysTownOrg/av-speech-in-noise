@@ -310,7 +310,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     SessionControllerStub sessionController;
     TaskPresenterStub consonantPresenter;
     TaskPresenterStub passFailPresenter;
-    submitting_free_response::with_puzzle::PuzzleStub puzzle;
+    submitting_free_response::PuzzleStub puzzle;
     TestSettingsInterpreterImpl interpreter{
         {
             {Method::fixedLevelConsonants, consonantPresenter},

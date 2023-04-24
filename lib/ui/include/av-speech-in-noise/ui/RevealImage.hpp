@@ -36,7 +36,7 @@ class Shuffler {
     virtual void shuffle(gsl::span<int>) = 0;
 };
 
-class RevealImage : public submitting_free_response::with_puzzle::Puzzle {
+class RevealImage : public submitting_free_response::Puzzle {
   public:
     RevealImage(
         NormallyMaskedImage &image, Shuffler &shuffler, int rows, int columns);

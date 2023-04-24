@@ -32,31 +32,6 @@ class View : public av_speech_in_noise::View {
     virtual void clearFlag() = 0;
 };
 
-class Controller : public TaskController, public Control::Observer {
-  public:
-    Controller(TestController &, Interactor &, Control &);
-    void notifyThatSubmitButtonHasBeenClicked() override;
-
-  private:
-    TestController &testController;
-    Interactor &interactor;
-    Control &control;
-};
-
-class Presenter : public TaskPresenter {
-  public:
-    Presenter(TestView &, View &);
-    void start() override;
-    void stop() override;
-    void hideResponseSubmission() override;
-    void showResponseSubmission() override;
-
-  private:
-    TestView &testView;
-    View &view;
-};
-
-namespace with_puzzle {
 class Puzzle {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Puzzle);
@@ -72,6 +47,7 @@ class Controller : public TaskController,
                    public Timer::Observer {
   public:
     Controller(TestController &, Interactor &, Control &, Puzzle &, Timer &);
+    void initialize(bool usingPuzzle);
     void notifyThatSubmitButtonHasBeenClicked() override;
     void callback() override;
 
@@ -82,6 +58,7 @@ class Controller : public TaskController,
     Puzzle &puzzle;
     Timer &timer;
     bool readyToAdvancePuzzle_{};
+    bool usingPuzzle{};
 };
 
 class Presenter : public TaskPresenter {
@@ -97,7 +74,6 @@ class Presenter : public TaskPresenter {
     View &view;
     Puzzle &puzzle;
 };
-}
 }
 
 #endif
