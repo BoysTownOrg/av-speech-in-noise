@@ -411,51 +411,11 @@ void TestSettingsInterpreterImpl::initialize(RunningATestFacade &model,
     SessionController &sessionController, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr) {
     std::stringstream stream{contents};
-    Test test;
-    AdaptiveTest adaptiveTest;
     for (std::string line; std::getline(stream, line);) {
         const auto key{entryName(line)};
         const auto value{entry(line)};
-        if (key == name(TestSetting::targets))
-            test.targetsUrl.path = value;
-        else if (key == name(TestSetting::masker))
-            test.maskerFileUrl.path = value;
-        else if (key == name(TestSetting::maskerLevel))
-            test.maskerLevel.dB_SPL = integer(value);
-        else if (key == name(TestSetting::subjectId))
-            test.identity.subjectId = value;
-        else if (key == name(TestSetting::testerId))
-            test.identity.testerId = value;
-        else if (key == name(TestSetting::session))
-            test.identity.session = value;
-        else if (key == name(TestSetting::rmeSetting))
-            test.identity.rmeSetting = value;
-        else if (key == name(TestSetting::transducer))
-            test.identity.transducer = value;
-        else if (key == name(TestSetting::meta))
-            test.identity.meta = value;
-        else if (key == name(TestSetting::relativeOutputPath))
-            test.identity.relativeOutputUrl.path = value;
-        else if (key == name(TestSetting::keepVideoShown))
-            test.keepVideoShown = value == "true";
-        else if (key == name(TestSetting::up))
-            applyToEachTrackingRule(adaptiveTest, applyToUp, value);
-        else if (key == name(TestSetting::down))
-            applyToEachTrackingRule(adaptiveTest, applyToDown, value);
-        else if (key == name(TestSetting::reversalsPerStepSize))
-            applyToEachTrackingRule(adaptiveTest, applyToRunCount, value);
-        else if (key == name(TestSetting::stepSizes))
-            applyToEachTrackingRule(adaptiveTest, applyToStepSize, value);
-        else if (key == name(TestSetting::thresholdReversals))
-            adaptiveTest.thresholdReversals = integer(value);
-        else if (key == name(TestSetting::startingSnr))
-            adaptiveTest.startingSnr.dB = integer(value);
-        else if (key == name(TestSetting::puzzle))
+        if (key == name(TestSetting::puzzle))
             puzzle.initialize(localUrlFromPath(value));
-        else if (key == name(TestSetting::condition))
-            for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
-                if (value == name(c))
-                    test.condition = c;
     }
     const auto method{av_speech_in_noise::method(contents)};
     av_speech_in_noise::initialize(
