@@ -94,6 +94,7 @@ void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
 
 void TestControllerImpl::notifyThatUserHasRespondedButTrialIsNotQuiteDone() {
     presenter.hideResponseSubmission();
+    presenter.hideExitTestButton();
 }
 
 TestPresenterImpl::TestPresenterImpl(RunningATestFacade &model, TestView &view,

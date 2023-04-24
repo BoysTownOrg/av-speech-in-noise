@@ -116,6 +116,12 @@ class TestPresenterStub : public TestPresenter {
         return responseSubmissionHidden_;
     }
 
+    [[nodiscard]] auto exitTestButtonHidden() const -> bool {
+        return exitTestButtonHidden_;
+    }
+
+    void hideExitTestButton() { exitTestButtonHidden_ = true; }
+
     void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
 
     [[nodiscard]] auto taskCompleted() const -> bool { return taskCompleted_; }
@@ -123,6 +129,7 @@ class TestPresenterStub : public TestPresenter {
     void completeTask() override { taskCompleted_ = true; }
 
   private:
+    bool exitTestButtonHidden_{};
     bool taskCompleted_{};
     bool trialInformationUpdated_{};
     bool responseSubmissionHidden_{};
@@ -520,6 +527,12 @@ TEST_CONTROLLER_TEST(
     updatesTrialInformationAfterNotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_UPDATES_TRIAL_INFORMATION(
         notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial, presenter);
+}
+
+TEST_CONTROLLER_TEST(
+    hidesExitTestButtonAfterUserHasRespondedButTrialIsNotQuiteDone) {
+    run(notifyingThatUserHasRespondedButTrialIsNotQuiteDone);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.exitTestButtonHidden());
 }
 
 TEST_CONTROLLER_TEST(
