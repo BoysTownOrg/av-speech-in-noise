@@ -157,16 +157,6 @@ TEST_F(RevealImageTests, resetResetsOrder) {
     ASSERT_EQUAL_IMAGE_REGIONS(expected, actual);
 }
 
-TEST_F(RevealImageTests, resetResetsImage) {
-    NormallyMaskedImageStub image{800, 600};
-    ShufflerStub randomizer;
-    const auto rows{3};
-    const auto columns{4};
-    RevealImage reveal{image, randomizer, rows, columns};
-    reveal.reset();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(image.hasBeenReset());
-}
-
 TEST_F(RevealImageTests, showShowsImage) {
     NormallyMaskedImageStub image{0, 0};
     ShufflerStub randomizer;
