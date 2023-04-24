@@ -10,6 +10,7 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <ImageIO/ImageIO.h>
 
+#include <cmath>
 #include <sstream>
 #include <stdexcept>
 #include <memory>
@@ -156,6 +157,15 @@ void MaskedCoreGraphicsImage::addMaskedImageViewToWindow() {
     lastImageView = imageView;
 
     [window.contentView addSubview:imageView];
+    // https://stackoverflow.com/a/4681677
+    [imageView
+        setFrameOrigin:NSMakePoint(
+                           std::round((NSWidth([window.contentView bounds]) -
+                                          NSWidth([imageView frame])) /
+                               2),
+                           std::round((NSHeight([window.contentView bounds]) -
+                                          NSHeight([imageView frame])) /
+                               2))];
 }
 
 void MaskedCoreGraphicsImage::show() { [lastImageView setHidden:NO]; }
