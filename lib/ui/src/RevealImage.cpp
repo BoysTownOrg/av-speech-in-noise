@@ -27,7 +27,6 @@ void RevealImage::advance() {
 }
 
 void RevealImage::reset() {
-    image.reset();
     std::iota(order.begin(), order.end(), 0);
     shuffler.shuffle(order);
     index = 0;

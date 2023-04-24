@@ -104,7 +104,6 @@ ScopedBitmapContext::~ScopedBitmapContext() {
 
 MaskedCoreGraphicsImage::MaskedCoreGraphicsImage(NSWindow *window)
     : window{window} {
-    reset();
     hide();
 }
 
@@ -112,6 +111,7 @@ void MaskedCoreGraphicsImage::initialize(const LocalUrl &url) {
     NSURL *nsurl = [NSURL fileURLWithPath:nsString(url.path) isDirectory:NO];
     image = std::make_unique<ScopedImage>(
         ScopedImageSource{(__bridge CFURLRef)nsurl}.imageSource);
+    reset();
 }
 
 auto MaskedCoreGraphicsImage::width() -> double {
