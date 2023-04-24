@@ -1,5 +1,6 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
+#include "PuzzleStub.hpp"
 
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/Model.hpp>
@@ -309,10 +310,13 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     SessionControllerStub sessionController;
     TaskPresenterStub consonantPresenter;
     TaskPresenterStub passFailPresenter;
-    TestSettingsInterpreterImpl interpreter{{
-        {Method::fixedLevelConsonants, consonantPresenter},
-        {Method::adaptivePassFail, passFailPresenter},
-    }};
+    submitting_free_response::with_puzzle::PuzzleStub puzzle;
+    TestSettingsInterpreterImpl interpreter{
+        {
+            {Method::fixedLevelConsonants, consonantPresenter},
+            {Method::adaptivePassFail, passFailPresenter},
+        },
+        puzzle};
     TestIdentity testIdentity;
 };
 
@@ -399,6 +403,16 @@ TEST_SETTINGS_INTERPRETER_TEST(
     model.setTestComplete();
     initialize(interpreter, model, sessionController, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(puzzleTBD) {
+    initialize(interpreter, model, sessionController,
+        {entryWithNewline(TestSetting::method,
+             Method::
+                 fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording),
+            entryWithNewline(TestSetting::puzzle, "/Users/user/puzzle.png")});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "/Users/user/puzzle.png", puzzle.url().path);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesMethod) {

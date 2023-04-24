@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETTINGSINTERPRETER_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETTINGSINTERPRETER_HPP_
 
+#include "FreeResponse.hpp"
 #include "TestSetupImpl.hpp"
 #include "SessionController.hpp"
 
@@ -105,7 +106,8 @@ enum class TestSetting {
     transducer,
     meta,
     relativeOutputPath,
-    keepVideoShown
+    keepVideoShown,
+    puzzle
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -150,12 +152,15 @@ constexpr auto name(TestSetting p) -> const char * {
         return "relative output path";
     case TestSetting::keepVideoShown:
         return "keep video shown";
+    case TestSetting::puzzle:
+        return "puzzle";
     }
 }
 
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
-    explicit TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>);
+    TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>,
+        submitting_free_response::with_puzzle::Puzzle &);
     void initialize(RunningATestFacade &, SessionController &,
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
@@ -163,6 +168,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
 
   private:
     std::map<Method, TaskPresenter &> taskPresenters;
+    submitting_free_response::with_puzzle::Puzzle &puzzle;
 };
 }
 

@@ -4,10 +4,12 @@
 #include "Task.hpp"
 #include "Test.hpp"
 #include "View.hpp"
+
 #include <av-speech-in-noise/core/ITimer.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
+
 #include <string>
 
 namespace av_speech_in_noise::submitting_free_response {
@@ -58,6 +60,7 @@ namespace with_puzzle {
 class Puzzle {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Puzzle);
+    virtual void initialize(const LocalUrl &) {}
     virtual void reset() = 0;
     virtual void advance() = 0;
     virtual void show() {}
