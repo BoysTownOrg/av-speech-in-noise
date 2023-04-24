@@ -12,6 +12,15 @@
 
 #include <string>
 
+namespace av_speech_in_noise {
+class FreeResponseController {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        FreeResponseController);
+    virtual void initialize(bool usingPuzzle) = 0;
+};
+}
+
 namespace av_speech_in_noise::submitting_free_response {
 class Control {
   public:
@@ -42,12 +51,13 @@ class Puzzle {
     virtual void hide() {}
 };
 
-class Controller : public TaskController,
+class Controller : public FreeResponseController,
+                   public TaskController,
                    public Control::Observer,
                    public Timer::Observer {
   public:
     Controller(TestController &, Interactor &, Control &, Puzzle &, Timer &);
-    void initialize(bool usingPuzzle);
+    void initialize(bool usingPuzzle) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
     void callback() override;
 
