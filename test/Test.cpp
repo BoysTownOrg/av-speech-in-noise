@@ -639,6 +639,11 @@ TEST_PRESENTER_TEST(showsTaskResponseSubmissionWhenTrialCompletes) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionShown());
 }
 
+TEST_PRESENTER_TEST(showsExitTestButtonAfterNextTrialIsReady) {
+    presenter.notifyThatNextTrialIsReady();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.exitTestButtonShown());
+}
+
 TEST_PRESENTER_TEST(hidesContinueTestingDialogAfterNextTrialIsReady) {
     presenter.notifyThatNextTrialIsReady();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.continueTestingDialogHidden());

@@ -125,6 +125,7 @@ void TestPresenterImpl::trialComplete() {
 void TestPresenterImpl::notifyThatNextTrialIsReady() {
     view.hideContinueTestingDialog();
     view.showNextTrialButton();
+    view.showExitTestButton();
 }
 
 void TestPresenterImpl::updateTrialInformation() {
