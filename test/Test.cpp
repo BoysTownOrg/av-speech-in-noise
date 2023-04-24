@@ -604,6 +604,11 @@ TEST_PRESENTER_TEST(stopsTaskAfterStopping) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.stopped());
 }
 
+TEST_PRESENTER_TEST(hidesExitTestButton) {
+    presenter.hideExitTestButton();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.exitTestButtonHidden());
+}
+
 TEST_PRESENTER_TEST(hidesExitTestButtonAfterTrialStarts) {
     presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.exitTestButtonHidden());

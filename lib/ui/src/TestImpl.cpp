@@ -150,6 +150,8 @@ void TestPresenterImpl::initialize(TaskPresenter &p) {
     taskPresenter->start();
 }
 
+void TestPresenterImpl::hideExitTestButton() { view.hideExitTestButton(); }
+
 void TestPresenterImpl::hideResponseSubmission() {
     taskPresenter->hideResponseSubmission();
 }

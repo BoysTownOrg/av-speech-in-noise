@@ -85,6 +85,7 @@ class TestPresenterImpl : public RunningATestFacade::Observer,
     void notifyThatTrialHasStarted() override;
     void notifyThatNextTrialIsReady() override;
     void hideResponseSubmission() override;
+    void hideExitTestButton() override;
     void updateTrialInformation() override;
     void updateAdaptiveTestResults() override;
     void completeTask() override;
