@@ -405,7 +405,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(puzzleTBD) {
+TEST_SETTINGS_INTERPRETER_TEST(initializesPuzzleWithPath) {
     initialize(interpreter, model, sessionController,
         {entryWithNewline(TestSetting::method,
              Method::
