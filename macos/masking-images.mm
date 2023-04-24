@@ -10,6 +10,7 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <ImageIO/ImageIO.h>
 
+#include <sstream>
 #include <stdexcept>
 #include <memory>
 
@@ -51,16 +52,18 @@ class ScopedBitmapImage {
 
 class ScopedImageSource {
   public:
+    class CreationError {};
     explicit ScopedImageSource(CFURLRef url)
         : imageSource{CGImageSourceCreateWithURL(url, nullptr)} {
         if (imageSource == nullptr)
-            throw std::runtime_error{"Unable to create image source."};
+            throw CreationError{};
     }
 
     ~ScopedImageSource() { CFRelease(imageSource); }
 
     CGImageSourceRef imageSource;
 };
+
 ScopedImage::ScopedImage(CGImageSourceRef imageSource)
     : image{CGImageSourceCreateImageAtIndex(imageSource, 0, nullptr)} {
     if (imageSource == nullptr)
@@ -107,11 +110,21 @@ MaskedCoreGraphicsImage::MaskedCoreGraphicsImage(NSWindow *window)
     hide();
 }
 
+auto createImage(const LocalUrl &url) -> std::unique_ptr<ScopedImage> {
+    try {
+        const auto *nsurl = [NSURL fileURLWithPath:nsString(url.path)
+                                       isDirectory:NO];
+        return std::make_unique<ScopedImage>(
+            ScopedImageSource{(__bridge CFURLRef)nsurl}.imageSource);
+    } catch (const ScopedImageSource::CreationError &) {
+        std::stringstream stream;
+        stream << "Unable to create image: " << url.path;
+        throw std::runtime_error{stream.str()};
+    }
+}
+
 void MaskedCoreGraphicsImage::initialize(const LocalUrl &url) {
-    const auto *nsurl = [NSURL fileURLWithPath:nsString(url.path)
-                                   isDirectory:NO];
-    image = std::make_unique<ScopedImage>(
-        ScopedImageSource{(__bridge CFURLRef)nsurl}.imageSource);
+    image = createImage(url);
     context = std::make_unique<ScopedBitmapContext>(image->image);
 
     addMaskedImageViewToWindow();
