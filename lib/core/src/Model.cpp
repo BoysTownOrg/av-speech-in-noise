@@ -94,9 +94,6 @@ void RunningATestFacadeImpl::initialize(
     initializeTestWithPossiblePeripheral(fixedLevelMethod, test);
 }
 
-void RunningATestFacadeImpl::initializeWithPredeterminedTargets(
-    const FixedLevelTest &test) {}
-
 void RunningATestFacadeImpl::initializeTestWithPossiblePeripheral(
     TestMethod &method, const Test &test) {
     switch (test.peripheral) {

@@ -372,10 +372,6 @@ class RequestFailingModel : public RunningATestFacade {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeWithPredeterminedTargets(const FixedLevelTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
     void initializeWithCyclicTargets(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }

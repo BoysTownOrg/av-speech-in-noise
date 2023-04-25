@@ -304,11 +304,6 @@ static void initializeFixedLevelTestWithEachTargetNTimes(Method method,
     f(test);
 }
 
-static void initialize(
-    RunningATest &model, TestMethod &method, const Test &test) {
-    model.initialize(&method, test);
-}
-
 static void initialize(RunningATest &model, TestMethod &method,
     const Test &test, RunningATest::Observer *observer) {
     model.initialize(&method, test, observer);

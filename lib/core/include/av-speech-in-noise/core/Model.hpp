@@ -31,7 +31,6 @@ class RunningATestFacadeImpl : public RunningATestFacade {
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
     void initializeWithAllTargets(const FixedLevelTest &) override;
     void initialize(const FixedLevelTestWithEachTargetNTimes &) override;
-    void initializeWithPredeterminedTargets(const FixedLevelTest &) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
     void playLeftSpeakerCalibration(const Calibration &) override;

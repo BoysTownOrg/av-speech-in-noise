@@ -159,11 +159,6 @@ class ModelStub : public RunningATestFacade {
         fixedLevelTestWithAllTargetsInitialized_ = true;
     }
 
-    void initializeWithPredeterminedTargets(const FixedLevelTest &p) override {
-        fixedLevelTest_ = p;
-        fixedLevelTestWithPredeterminedTargetsInitialized_ = true;
-    }
-
     void completeTrial() { listener_->trialComplete(); }
 
     void setAudioDevices(std::vector<std::string> v) {

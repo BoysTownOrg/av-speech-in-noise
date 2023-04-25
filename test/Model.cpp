@@ -636,52 +636,6 @@ class InitializingFixedLevelTestWithAllTargetsAndAudioRecording
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording
-    : public InitializingFixedLevelTest {
-    FixedLevelTest test_;
-    FixedLevelMethodStub *method;
-
-  public:
-    explicit InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording(
-        FixedLevelMethodStub *method)
-        : method{method} {
-        test_.peripheral = TestPeripheral::audioRecording;
-    }
-
-    void run(RunningATestFacadeImpl &model) override {
-        model.initializeWithPredeterminedTargets(test_);
-    }
-
-    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
-};
-
-class InitializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking
-    : public InitializingFixedLevelTest {
-    FixedLevelTest test_;
-    FixedLevelMethodStub *method;
-
-  public:
-    explicit InitializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking(
-        FixedLevelMethodStub *method)
-        : method{method} {
-        test_.peripheral = TestPeripheral::eyeTracking;
-    }
-
-    void run(RunningATestFacadeImpl &model) override {
-        model.initializeWithPredeterminedTargets(test_);
-    }
-
-    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
-};
-
 auto initializedWithEyeTracking(
     RunningATestStub &m, RunningATest::Observer *observer) -> bool {
     return m.observer == observer;
@@ -780,12 +734,6 @@ class ModelTests : public ::testing::Test {
         initializingFixedLevelTestWithEachTargetNTimes{&fixedLevelMethod};
     InitializingFixedLevelTestWithAllTargetsAndAudioRecording
         initializingFixedLevelTestWithAllTargetsAndAudioRecording{
-            &fixedLevelMethod};
-    InitializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording
-        initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording{
-            &fixedLevelMethod};
-    InitializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking
-        initializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking{
             &fixedLevelMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
