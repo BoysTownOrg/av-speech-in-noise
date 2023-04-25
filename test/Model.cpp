@@ -237,20 +237,6 @@ class RecognitionTestModelStub : public RunningATest {
         this->observer = observer;
     }
 
-    void initializeWithSingleSpeaker(
-        TestMethod *method, const Test &test) override {
-        testMethod_ = method;
-        test_ = &test;
-        initializedWithSingleSpeaker_ = true;
-    }
-
-    void initializeWithDelayedMasker(
-        TestMethod *method, const Test &test) override {
-        testMethod_ = method;
-        test_ = &test;
-        initializedWithDelayedMasker_ = true;
-    }
-
     auto trialNumber() -> int override { return trialNumber_; }
 
     void setTrialNumber(int n) { trialNumber_ = n; }
@@ -281,14 +267,6 @@ class RecognitionTestModelStub : public RunningATest {
 
     void playRightSpeakerCalibration(const Calibration &c) override {
         rightSpeakerCalibration_ = &c;
-    }
-
-    [[nodiscard]] auto initializedWithSingleSpeaker() const -> bool {
-        return initializedWithSingleSpeaker_;
-    }
-
-    [[nodiscard]] auto initializedWithDelayedMasker() const -> bool {
-        return initializedWithDelayedMasker_;
     }
 
     [[nodiscard]] auto coordinateResponse() const {
@@ -341,8 +319,6 @@ class RecognitionTestModelStub : public RunningATest {
     const coordinate_response_measure::Response *coordinateResponse_{};
     int trialNumber_{};
     bool complete_{};
-    bool initializedWithSingleSpeaker_{};
-    bool initializedWithDelayedMasker_{};
     bool nextTrialPreparedIfNeeded_{};
 };
 
