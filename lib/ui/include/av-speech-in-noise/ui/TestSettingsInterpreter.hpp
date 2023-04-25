@@ -4,6 +4,10 @@
 #include "TestSetupImpl.hpp"
 #include "SessionController.hpp"
 
+#include "av-speech-in-noise/core/IFixedLevelMethod.hpp"
+#include "av-speech-in-noise/core/IRecognitionTestModel.hpp"
+#include "av-speech-in-noise/core/TargetPlaylist.hpp"
+
 #include <map>
 
 namespace av_speech_in_noise {
@@ -153,16 +157,30 @@ constexpr auto name(TestSetting p) -> const char * {
     }
 }
 
+class ForEyeTracking : public RunningATest::Observer {};
+class ForAudioRecording : public RunningATest::Observer {};
+
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
-    explicit TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>);
+    TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>,
+        RunningATest &, FixedLevelMethod &, ForEyeTracking &,
+        ForAudioRecording &, FiniteTargetPlaylistWithRepeatables &);
     void initialize(RunningATestFacade &, SessionController &,
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
 
   private:
+    void initialize_(RunningATestFacade &model, Method method,
+        const std::string &contents, const TestIdentity &identity,
+        SNR startingSnr);
+
     std::map<Method, TaskPresenter &> taskPresenters;
+    RunningATest &runningATest;
+    FixedLevelMethod &fixedLevelMethod;
+    ForEyeTracking &eyeTracking;
+    ForAudioRecording &audioRecording;
+    FiniteTargetPlaylistWithRepeatables &predeterminedTargets;
 };
 }
 

@@ -7,6 +7,11 @@ static void initialize(
     model.initialize(&method, test);
 }
 
+static void initialize(RunningATest &model, TestMethod &method,
+    const Test &test, RunningATest::Observer *observer) {
+    model.initialize(&method, test, observer);
+}
+
 static void initialize(FixedLevelMethod &method,
     const FixedLevelFixedTrialsTest &test, TargetPlaylist &targets) {
     method.initialize(test, &targets);
@@ -26,11 +31,6 @@ static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
 static void initialize(AdaptiveMethod &method, const AdaptiveTest &test,
     TargetPlaylistReader &reader) {
     method.initialize(test, &reader);
-}
-
-static void initialize(RunningATest &model, TestMethod &method,
-    const Test &test, RunningATest::Observer *observer) {
-    model.initialize(&method, test, observer);
 }
 
 RunningATestFacadeImpl::RunningATestFacadeImpl(AdaptiveMethod &adaptiveMethod,
@@ -95,11 +95,7 @@ void RunningATestFacadeImpl::initialize(
 }
 
 void RunningATestFacadeImpl::initializeWithPredeterminedTargets(
-    const FixedLevelTest &test) {
-    av_speech_in_noise::initialize(
-        fixedLevelMethod, test, predeterminedTargets);
-    initializeTestWithPossiblePeripheral(fixedLevelMethod, test);
-}
+    const FixedLevelTest &test) {}
 
 void RunningATestFacadeImpl::initializeTestWithPossiblePeripheral(
     TestMethod &method, const Test &test) {

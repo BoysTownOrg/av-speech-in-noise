@@ -14,12 +14,11 @@ class RunningATest {
     class Observer {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
-        virtual void notifyThatNewTestIsReady(std::string_view session) = 0;
-        virtual void notifyThatTrialWillBegin(int trialNumber) = 0;
-        virtual void notifyThatTargetWillPlayAt(
-            const PlayerTimeWithDelay &) = 0;
-        virtual void notifyThatStimulusHasEnded() = 0;
-        virtual void notifyThatSubjectHasResponded() = 0;
+        virtual void notifyThatNewTestIsReady(std::string_view session) {}
+        virtual void notifyThatTrialWillBegin(int trialNumber) {}
+        virtual void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) {}
+        virtual void notifyThatStimulusHasEnded() {}
+        virtual void notifyThatSubjectHasResponded() {}
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATest);
     virtual void attach(RunningATestFacade::Observer *) = 0;

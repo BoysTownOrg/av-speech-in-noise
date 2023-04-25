@@ -1,3 +1,6 @@
+#include "FixedLevelMethodStub.hpp"
+#include "RunningATestStub.hpp"
+#include "TargetPlaylistStub.hpp"
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 
@@ -305,14 +308,22 @@ void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
 
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
+    RunningATestStub runningATest;
+    FixedLevelMethodStub fixedLevelMethod;
+    ForEyeTracking eyeTracking;
+    ForAudioRecording audioRecording;
+    FiniteTargetPlaylistWithRepeatablesStub predeterminedTargets;
     ModelStub model;
     SessionControllerStub sessionController;
     TaskPresenterStub consonantPresenter;
     TaskPresenterStub passFailPresenter;
-    TestSettingsInterpreterImpl interpreter{{
-        {Method::fixedLevelConsonants, consonantPresenter},
-        {Method::adaptivePassFail, passFailPresenter},
-    }};
+    TestSettingsInterpreterImpl interpreter{
+        {
+            {Method::fixedLevelConsonants, consonantPresenter},
+            {Method::adaptivePassFail, passFailPresenter},
+        },
+        runningATest, fixedLevelMethod, eyeTracking, audioRecording,
+        predeterminedTargets};
     TestIdentity testIdentity;
 };
 
@@ -460,9 +471,17 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecordingPassesMethod) {
-    assertPassesTestMethod(interpreter, model, sessionController,
-        Method::fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording,
-        fixedLevelTestIdentity);
+    initialize(interpreter, model, sessionController,
+        Method::
+            fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        name(Method::
+                fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording),
+        fixedLevelMethod.fixedLevelTest.identity.method);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        name(Method::
+                fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording),
+        runningATest.test.identity.method);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -470,17 +489,24 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initialize(interpreter, model, sessionController,
         Method::
             fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        model.fixedLevelTestWithPredeterminedTargetsInitialized());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &audioRecording);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.testMethod, &fixedLevelMethod);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        TestPeripheral::audioRecording, model.fixedLevelTest().peripheral);
+        fixedLevelMethod.targetList_, &predeterminedTargets);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTrackingPassesMethod) {
-    assertPassesTestMethod(interpreter, model, sessionController,
-        Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking,
-        fixedLevelTestIdentity);
+    initialize(interpreter, model, sessionController,
+        Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        name(Method::
+                fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking),
+        fixedLevelMethod.fixedLevelTest.identity.method);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        name(Method::
+                fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking),
+        runningATest.test.identity.method);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesTestIdentity) {
@@ -646,10 +672,10 @@ TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTrackingInitializesFixedLevelTest) {
     initialize(interpreter, model, sessionController,
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
-    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
-        TestPeripheral::eyeTracking, model.fixedLevelTest().peripheral);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        model.fixedLevelTestWithPredeterminedTargetsInitialized());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &eyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        fixedLevelMethod.targetList_, &predeterminedTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.testMethod, &fixedLevelMethod);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

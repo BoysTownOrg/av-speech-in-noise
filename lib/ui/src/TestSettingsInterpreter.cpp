@@ -304,8 +304,23 @@ static void initializeFixedLevelTestWithEachTargetNTimes(Method method,
     f(test);
 }
 
-static void initialize(RunningATestFacade &model, Method method,
-    const std::string &contents, const TestIdentity &identity,
+static void initialize(
+    RunningATest &model, TestMethod &method, const Test &test) {
+    model.initialize(&method, test);
+}
+
+static void initialize(RunningATest &model, TestMethod &method,
+    const Test &test, RunningATest::Observer *observer) {
+    model.initialize(&method, test, observer);
+}
+
+static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
+    FiniteTargetPlaylistWithRepeatables &targets) {
+    method.initialize(test, &targets);
+}
+
+void TestSettingsInterpreterImpl::initialize_(RunningATestFacade &model,
+    Method method, const std::string &contents, const TestIdentity &identity,
     SNR startingSnr) {
     switch (method) {
     case Method::adaptiveCoordinateResponseMeasureWithDelayedMasker:
@@ -384,16 +399,18 @@ static void initialize(RunningATestFacade &model, Method method,
         fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {
-                auto test_{test};
-                test_.peripheral = TestPeripheral::audioRecording;
-                model.initializeWithPredeterminedTargets(test_);
+                av_speech_in_noise::initialize(
+                    fixedLevelMethod, test, predeterminedTargets);
+                av_speech_in_noise::initialize(
+                    runningATest, fixedLevelMethod, test, &audioRecording);
             });
     case Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {
-                auto test_{test};
-                test_.peripheral = TestPeripheral::eyeTracking;
-                model.initializeWithPredeterminedTargets(test_);
+                av_speech_in_noise::initialize(
+                    fixedLevelMethod, test, predeterminedTargets);
+                av_speech_in_noise::initialize(
+                    runningATest, fixedLevelMethod, test, &eyeTracking);
             });
     case Method::
         fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking:
@@ -423,8 +440,7 @@ void TestSettingsInterpreterImpl::initialize(RunningATestFacade &model,
     SessionController &sessionController, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr) {
     const auto method{av_speech_in_noise::method(contents)};
-    av_speech_in_noise::initialize(
-        model, method, contents, identity, startingSnr);
+    initialize_(model, method, contents, identity, startingSnr);
     if (!model.testComplete() && taskPresenters.count(method) != 0)
         sessionController.prepare(taskPresenters.at(method));
 }
@@ -449,6 +465,12 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
 }
 
 TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
-    std::map<Method, TaskPresenter &> taskPresenters)
-    : taskPresenters{std::move(taskPresenters)} {}
+    std::map<Method, TaskPresenter &> taskPresenters,
+    RunningATest &runningATest, FixedLevelMethod &fixedLevelMethod,
+    ForEyeTracking &eyeTracking, ForAudioRecording &audioRecording,
+    FiniteTargetPlaylistWithRepeatables &predeterminedTargets)
+    : taskPresenters{std::move(taskPresenters)}, runningATest{runningATest},
+      fixedLevelMethod{fixedLevelMethod}, eyeTracking{eyeTracking},
+      audioRecording{audioRecording}, predeterminedTargets{
+                                          predeterminedTargets} {}
 }

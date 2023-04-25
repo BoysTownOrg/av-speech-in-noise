@@ -212,9 +212,9 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     bool submittedFreeResponse_{};
 };
 
-class RecognitionTestModelStub : public RunningATest {
+class RunningATestStub : public RunningATest {
   public:
-    explicit RecognitionTestModelStub(AdaptiveMethodStub &adaptiveMethod,
+    explicit RunningATestStub(AdaptiveMethodStub &adaptiveMethod,
         FixedLevelMethodStub &fixedLevelMethodStub)
         : adaptiveMethod{adaptiveMethod}, fixedLevelMethodStub{
                                               fixedLevelMethodStub} {}
@@ -683,7 +683,7 @@ class InitializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking
 };
 
 auto initializedWithEyeTracking(
-    RecognitionTestModelStub &m, RunningATest::Observer *observer) -> bool {
+    RunningATestStub &m, RunningATest::Observer *observer) -> bool {
     return m.observer == observer;
 }
 
@@ -691,7 +691,7 @@ class PlayingCalibrationUseCase {
   public:
     virtual ~PlayingCalibrationUseCase() = default;
     virtual void run(RunningATestFacade &model, const Calibration &c) = 0;
-    virtual auto calibration(RecognitionTestModelStub &model)
+    virtual auto calibration(RunningATestStub &model)
         -> const Calibration * = 0;
 };
 
@@ -701,8 +701,7 @@ class PlayingCalibration : public PlayingCalibrationUseCase {
         model.playCalibration(c);
     }
 
-    auto calibration(RecognitionTestModelStub &model)
-        -> const Calibration * override {
+    auto calibration(RunningATestStub &model) -> const Calibration * override {
         return model.calibration();
     }
 };
@@ -713,8 +712,7 @@ class PlayingLeftSpeakerCalibration : public PlayingCalibrationUseCase {
         model.playLeftSpeakerCalibration(c);
     }
 
-    auto calibration(RecognitionTestModelStub &model)
-        -> const Calibration * override {
+    auto calibration(RunningATestStub &model) -> const Calibration * override {
         return model.leftSpeakerCalibration();
     }
 };
@@ -725,8 +723,7 @@ class PlayingRightSpeakerCalibration : public PlayingCalibrationUseCase {
         model.playRightSpeakerCalibration(c);
     }
 
-    auto calibration(RecognitionTestModelStub &model)
-        -> const Calibration * override {
+    auto calibration(RunningATestStub &model) -> const Calibration * override {
         return model.rightSpeakerCalibration();
     }
 };
@@ -742,7 +739,7 @@ class ModelTests : public ::testing::Test {
     FiniteTargetPlaylistWithRepeatablesStub everyTargetOnce;
     FiniteTargetPlaylistWithRepeatablesStub predeterminedTargets;
     RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
-    RecognitionTestModelStub internalModel{adaptiveMethod, fixedLevelMethod};
+    RunningATestStub internalModel{adaptiveMethod, fixedLevelMethod};
     OutputFileStub outputFile;
     RunningATestObserverStub audioRecording;
     RunningATestObserverStub eyeTracking;
@@ -845,7 +842,7 @@ class SubmittingFreeResponseTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub adaptiveTestMethod;
     FixedLevelMethodStub testMethod;
-    RecognitionTestModelStub model{adaptiveTestMethod, testMethod};
+    RunningATestStub model{adaptiveTestMethod, testMethod};
     OutputFileStub outputFile;
     submitting_free_response::InteractorImpl interactor{
         testMethod, model, outputFile};
@@ -856,7 +853,7 @@ class SubmittingConsonantTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub adaptiveTestMethod;
     FixedLevelMethodStub testMethod;
-    RecognitionTestModelStub model{adaptiveTestMethod, testMethod};
+    RunningATestStub model{adaptiveTestMethod, testMethod};
     OutputFileStub outputFile;
     submitting_consonant::InteractorImpl interactor{
         testMethod, model, outputFile};
@@ -867,7 +864,7 @@ class SubmittingPassFailTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub testMethod;
     FixedLevelMethodStub fixedLevelMethod;
-    RecognitionTestModelStub model{testMethod, fixedLevelMethod};
+    RunningATestStub model{testMethod, fixedLevelMethod};
     OutputFileStub outputFile;
     submitting_pass_fail::InteractorImpl interactor{
         testMethod, model, outputFile};
@@ -877,7 +874,7 @@ class SubmittingKeywordsTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub testMethod;
     FixedLevelMethodStub fixedLevelMethod;
-    RecognitionTestModelStub model{testMethod, fixedLevelMethod};
+    RunningATestStub model{testMethod, fixedLevelMethod};
     OutputFileStub outputFile;
     submitting_keywords::InteractorImpl interactor{
         fixedLevelMethod, model, outputFile};
@@ -888,7 +885,7 @@ class SubmittingNumberKeywordsTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub testMethod;
     FixedLevelMethodStub fixedLevelMethod;
-    RecognitionTestModelStub model{testMethod, fixedLevelMethod};
+    RunningATestStub model{testMethod, fixedLevelMethod};
     OutputFileStub outputFile;
     submitting_number_keywords::InteractorImpl interactor{
         testMethod, model, outputFile};
@@ -899,7 +896,7 @@ class SubmittingSyllableTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub testMethod;
     FixedLevelMethodStub fixedLevelMethod;
-    RecognitionTestModelStub model{testMethod, fixedLevelMethod};
+    RunningATestStub model{testMethod, fixedLevelMethod};
     OutputFileStub outputFile;
     submitting_syllable::InteractorImpl interactor{
         fixedLevelMethod, model, outputFile};
@@ -1201,18 +1198,6 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
-    initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecordingInitializesFixedLevelMethod) {
-    assertInitializesFixedLevelMethod(
-        initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording);
-}
-
-MODEL_TEST(
-    initializingFixedLevelTestWithPredeterminedTargetsAndEyeTrackingInitializesFixedLevelMethod) {
-    assertInitializesFixedLevelMethod(
-        initializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking);
-}
-
-MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);
@@ -1265,20 +1250,6 @@ MODEL_TEST(
     assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithAllTargetsAndEyeTracking,
         everyTargetOnce);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithPredeterminedTargetsAndAudioRecordingInitializesWithPredeterminedTargets) {
-    assertInitializesFixedLevelTestWithTargetPlaylist(
-        initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording,
-        predeterminedTargets);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithPredeterminedTargetsAndEyeTrackingInitializesWithPredeterminedTargets) {
-    assertInitializesFixedLevelTestWithTargetPlaylist(
-        initializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking,
-        predeterminedTargets);
 }
 
 MODEL_TEST(
@@ -1362,12 +1333,6 @@ MODEL_TEST(
         initializingFixedLevelTestWithAllTargetsAndAudioRecording);
 }
 
-MODEL_TEST(
-    initializeFixedLevelTestWithPredeterminedTargetsAndAudioRecordingInitializesInternalModel) {
-    assertInitializesInternalModel(
-        initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording);
-}
-
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingDefaultAdaptiveTest);
 }
@@ -1393,12 +1358,6 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
-    initializeFixedLevelTestWithPredeterminedTargetsAndAudioRecordingInitializesWithAudioRecording) {
-    run(initializingFixedLevelTestWithPredeterminedTargetsAndAudioRecording);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(internalModel.observer, &audioRecording);
-}
-
-MODEL_TEST(
     initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithAllTargetsAndEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
@@ -1407,13 +1366,6 @@ MODEL_TEST(
 
 MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        initializedWithEyeTracking(internalModel, &eyeTracking));
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithPredertiminedTargetsAndEyeTrackingInitializesWithEyeTracking) {
-    run(initializingFixedLevelTestWithPredeterminedTargetsAndEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         initializedWithEyeTracking(internalModel, &eyeTracking));
 }
