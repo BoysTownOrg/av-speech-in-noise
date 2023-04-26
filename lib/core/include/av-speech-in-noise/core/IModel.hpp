@@ -83,7 +83,6 @@ class RunningATestFacade {
         const FixedLevelTest &) = 0;
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
     virtual void initialize(const FixedLevelTestWithEachTargetNTimes &) = 0;
-    virtual void playTrial(const AudioSettings &) = 0;
 };
 }
 

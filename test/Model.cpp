@@ -1275,12 +1275,5 @@ MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         initializedWithEyeTracking(internalModel, &eyeTracking));
 }
-
-MODEL_TEST(playTrialPassesAudioSettings) {
-    AudioSettings settings;
-    model.playTrial(settings);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &std::as_const(settings), internalModel.playTrialSettings());
-}
 }
 }

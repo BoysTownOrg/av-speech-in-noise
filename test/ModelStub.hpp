@@ -1,7 +1,6 @@
 #ifndef AV_SPEECH_IN_NOISE_TESTS_MODELSTUB_HPP_
 #define AV_SPEECH_IN_NOISE_TESTS_MODELSTUB_HPP_
 
-#include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 
 #include <utility>
@@ -72,8 +71,6 @@ class ModelStub : public RunningATestFacade {
         return defaultAdaptiveTestInitialized_;
     }
 
-    [[nodiscard]] auto trialPlayed() const { return trialPlayed_; }
-
     [[nodiscard]] auto adaptiveTest() const -> auto & { return adaptiveTest_; }
 
     [[nodiscard]] auto fixedLevelTest() const -> auto & {
@@ -90,10 +87,6 @@ class ModelStub : public RunningATestFacade {
     }
 
     auto consonantResponse() { return consonantResponse_; }
-
-    [[nodiscard]] auto trialParameters() const -> auto & {
-        return trialParameters_;
-    }
 
     void initialize(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
@@ -128,11 +121,6 @@ class ModelStub : public RunningATestFacade {
         fixedLevelTestWithAllTargetsInitialized_ = true;
     }
 
-    void playTrial(const AudioSettings &p) override {
-        trialParameters_ = p;
-        trialPlayed_ = true;
-    }
-
     auto threeKeywords() -> ThreeKeywordsResponse { return threeKeywords_; }
 
     void setKeywordTestResults(KeywordsTestResults k) {
@@ -144,11 +132,9 @@ class ModelStub : public RunningATestFacade {
     FixedLevelTest fixedLevelTest_{};
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest_{};
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes_{};
-    AudioSettings trialParameters_{};
     ConsonantResponse consonantResponse_{};
     ThreeKeywordsResponse threeKeywords_{};
     KeywordsTestResults keywordsTestResults_{};
-    bool trialPlayed_{};
     bool defaultFixedLevelTestInitialized_{};
     bool defaultAdaptiveTestInitialized_{};
     bool fixedLevelTestWithSilentIntervalTargetsInitialized_{};

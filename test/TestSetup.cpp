@@ -374,10 +374,6 @@ class RequestFailingModel : public RunningATestFacade {
     void initializeWithCyclicTargets(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
-
-    void playTrial(const AudioSettings &) override {
-        throw RequestFailure{errorMessage};
-    }
 };
 
 class TestSetupFailureTests : public ::testing::Test {

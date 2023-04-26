@@ -110,8 +110,4 @@ void RunningATestFacadeImpl::initializeTestWithPossiblePeripheral(
         break;
     }
 }
-
-void RunningATestFacadeImpl::playTrial(const AudioSettings &settings) {
-    runningATest.playTrial(settings);
-}
 }
