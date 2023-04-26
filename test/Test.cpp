@@ -1,11 +1,14 @@
 #include "RunningATestStub.hpp"
+#include "AdaptiveMethodStub.hpp"
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "TestViewStub.hpp"
 #include "SessionViewStub.hpp"
+
 #include <av-speech-in-noise/ui/TestImpl.hpp>
-#include <av-speech-in-noise/Model.hpp>
+
 #include <gtest/gtest.h>
+
 #include <algorithm>
 #include <utility>
 
@@ -321,9 +324,11 @@ class TestPresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
     RunningATestStub runningATest;
+    AdaptiveMethodStub adaptiveMethod;
     TestViewStub view;
     UninitializedTaskPresenterStub taskPresenter;
-    TestPresenterImpl presenter{model, runningATest, view, &taskPresenter};
+    TestPresenterImpl presenter{
+        model, runningATest, adaptiveMethod, view, &taskPresenter};
     UpdatingTrialInformation updatingTrialInformation;
     Initializing initializing;
 };
@@ -538,7 +543,7 @@ TEST_CONTROLLER_TEST(completesTaskWhenTestIsComplete) {
 }
 
 TEST_PRESENTER_TEST(showsAdaptiveTestResults) {
-    model.setAdaptiveTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
+    adaptiveMethod.testResults_ = {{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}};
     presenter.updateAdaptiveTestResults();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3"},

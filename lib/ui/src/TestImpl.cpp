@@ -93,10 +93,10 @@ void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
 }
 
 TestPresenterImpl::TestPresenterImpl(RunningATestFacade &model,
-    RunningATest &runningATest, TestView &view,
+    RunningATest &runningATest, AdaptiveMethod &adaptiveMethod, TestView &view,
     UninitializedTaskPresenter *taskPresenter)
-    : model{model}, runningATest{runningATest}, view{view}, taskPresenter{
-                                                                taskPresenter} {
+    : model{model}, runningATest{runningATest},
+      adaptiveMethod{adaptiveMethod}, view{view}, taskPresenter{taskPresenter} {
     runningATest.attach(this);
 }
 
@@ -135,7 +135,7 @@ void TestPresenterImpl::updateAdaptiveTestResults() {
     view.showContinueTestingDialog();
     std::stringstream thresholds;
     thresholds << "thresholds (targets: dB SNR)";
-    for (const auto &result : model.adaptiveTestResults())
+    for (const auto &result : adaptiveMethod.testResults())
         thresholds << '\n'
                    << result.targetsUrl.path << ": " << result.threshold;
     view.setContinueTestingDialogMessage(thresholds.str());

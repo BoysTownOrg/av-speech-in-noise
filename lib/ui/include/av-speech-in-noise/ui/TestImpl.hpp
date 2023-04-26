@@ -5,6 +5,7 @@
 #include "Session.hpp"
 #include "Task.hpp"
 
+#include <av-speech-in-noise/core/IAdaptiveMethod.hpp>
 #include <av-speech-in-noise/core/IRecognitionTestModel.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Model.hpp>
@@ -77,8 +78,8 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
 class TestPresenterImpl : public RunningATestFacade::Observer,
                           public TestPresenter {
   public:
-    TestPresenterImpl(RunningATestFacade &, RunningATest &, TestView &,
-        UninitializedTaskPresenter *);
+    TestPresenterImpl(RunningATestFacade &, RunningATest &, AdaptiveMethod &,
+        TestView &, UninitializedTaskPresenter *);
     void initialize(TaskPresenter &) override;
     void start() override;
     void stop() override;
@@ -93,6 +94,7 @@ class TestPresenterImpl : public RunningATestFacade::Observer,
   private:
     RunningATestFacade &model;
     RunningATest &runningATest;
+    AdaptiveMethod &adaptiveMethod;
     TestView &view;
     UninitializedTaskPresenter *taskPresenter;
 };
