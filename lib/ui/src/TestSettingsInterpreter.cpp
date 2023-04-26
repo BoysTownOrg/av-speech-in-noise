@@ -436,7 +436,7 @@ void TestSettingsInterpreterImpl::initialize(RunningATestFacade &model,
     const TestIdentity &identity, SNR startingSnr) {
     const auto method{av_speech_in_noise::method(contents)};
     initialize_(model, method, contents, identity, startingSnr);
-    if (!model.testComplete() && taskPresenters.count(method) != 0)
+    if (!runningATest.testComplete() && taskPresenters.count(method) != 0)
         sessionController.prepare(taskPresenters.at(method));
 }
 
