@@ -36,7 +36,6 @@ class RunningATestFacadeImpl : public RunningATestFacade {
     void playRightSpeakerCalibration(const Calibration &) override;
     void submit(const coordinate_response_measure::Response &) override;
     auto testComplete() -> bool override;
-    auto audioDevices() -> AudioDevices override;
     void restartAdaptiveTestWhilePreservingTargets() override;
 
   private:

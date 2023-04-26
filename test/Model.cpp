@@ -1372,10 +1372,5 @@ MODEL_TEST(testCompleteWhenComplete) {
     internalModel.setComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testComplete());
 }
-
-MODEL_TEST(returnsAudioDevices) {
-    internalModel.setAudioDevices({"a", "b", "c"});
-    assertEqual({"a", "b", "c"}, model.audioDevices());
-}
 }
 }

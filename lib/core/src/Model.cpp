@@ -140,8 +140,4 @@ void RunningATestFacadeImpl::playRightSpeakerCalibration(const Calibration &p) {
 auto RunningATestFacadeImpl::testComplete() -> bool {
     return runningATest.testComplete();
 }
-
-auto RunningATestFacadeImpl::audioDevices() -> std::vector<std::string> {
-    return runningATest.audioDevices();
-}
 }

@@ -147,10 +147,6 @@ class ModelStub : public RunningATestFacade {
         fixedLevelTestWithAllTargetsInitialized_ = true;
     }
 
-    void setAudioDevices(std::vector<std::string> v) {
-        audioDevices_ = std::move(v);
-    }
-
     void setTestComplete() { testComplete_ = true; }
 
     auto testComplete() -> bool override { return testComplete_; }
@@ -158,10 +154,6 @@ class ModelStub : public RunningATestFacade {
     void playTrial(const AudioSettings &p) override {
         trialParameters_ = p;
         trialPlayed_ = true;
-    }
-
-    auto audioDevices() -> std::vector<std::string> override {
-        return audioDevices_;
     }
 
     void submit(const coordinate_response_measure::Response &p) override {
@@ -198,7 +190,6 @@ class ModelStub : public RunningATestFacade {
     Calibration rightSpeakerCalibration_{};
     AudioSettings trialParameters_{};
     coordinate_response_measure::Response responseParameters_{};
-    std::vector<std::string> audioDevices_{};
     ConsonantResponse consonantResponse_{};
     ThreeKeywordsResponse threeKeywords_{};
     KeywordsTestResults keywordsTestResults_{};
