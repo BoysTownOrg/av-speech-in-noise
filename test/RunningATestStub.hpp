@@ -36,7 +36,9 @@ class RunningATestStub : public RunningATest {
     auto audioDevices() -> AudioDevices override { return audioDevices_; }
     auto trialNumber() -> int override { return trialNumber_; }
     auto targetFileName() -> std::string override { return targetFileName_; }
-    void prepareNextTrialIfNeeded() override {}
+    void prepareNextTrialIfNeeded() override {
+        nextTrialPreparedIfNeeded_ = true;
+    }
     auto playTrialTime() -> std::string override { return {}; }
 
     Calibration calibration_;
@@ -52,6 +54,7 @@ class RunningATestStub : public RunningATest {
     int trialNumber_{};
     bool testComplete_{};
     bool failOnRequest{};
+    bool nextTrialPreparedIfNeeded_{};
 };
 }
 

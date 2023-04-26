@@ -1,4 +1,5 @@
 #include "TestImpl.hpp"
+#include "av-speech-in-noise/core/IAdaptiveMethod.hpp"
 
 #include <sstream>
 #include <functional>
@@ -11,10 +12,10 @@ static void readyNextTrial(TestPresenter &presenter) {
 
 TestControllerImpl::TestControllerImpl(SessionController &sessionController,
     RunningATestFacade &model, RunningATest &runningATest,
-    SessionControl &sessionControl, TestControl &control,
-    TestPresenter &presenter)
+    AdaptiveMethod &adaptiveMethod, SessionControl &sessionControl,
+    TestControl &control, TestPresenter &presenter)
     : sessionController{sessionController}, model{model},
-      runningATest{runningATest},
+      runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
       sessionControl{sessionControl}, presenter{presenter} {
     control.attach(this);
 }
@@ -42,7 +43,8 @@ void TestControllerImpl::declineContinuingTesting() {
 }
 
 void TestControllerImpl::acceptContinuingTesting() {
-    model.restartAdaptiveTestWhilePreservingTargets();
+    adaptiveMethod.resetTracks();
+    runningATest.prepareNextTrialIfNeeded();
     readyNextTrial(presenter);
 }
 

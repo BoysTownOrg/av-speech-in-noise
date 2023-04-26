@@ -322,12 +322,13 @@ class TestControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
     RunningATestStub runningATest;
+    AdaptiveMethodStub adaptiveMethod;
     SessionControlStub sessionView;
     TestControlStub control;
     SessionControllerStub sessionController;
     TestPresenterStub presenter;
     TestControllerImpl controller{sessionController, model, runningATest,
-        sessionView, control, presenter};
+        adaptiveMethod, sessionView, control, presenter};
     DecliningContinuingTesting decliningContinuingTesting{control};
     AcceptingContinuingTesting acceptingContinuingTesting{control};
     ExitingTest exitingTest{control};
@@ -483,8 +484,8 @@ TEST_CONTROLLER_TEST(
 TEST_CONTROLLER_TEST(
     responderRestartsAdaptiveTestWhilePreservingTargetsAfterContinueTestingDialogIsAccepted) {
     acceptContinuingTesting(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        model.adaptiveTestRestartedWhilePreservingCyclicTargets());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(adaptiveMethod.tracksResetted_);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.nextTrialPreparedIfNeeded_);
 }
 
 TEST_CONTROLLER_TEST(
