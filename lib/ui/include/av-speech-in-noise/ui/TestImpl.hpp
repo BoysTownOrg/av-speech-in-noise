@@ -24,6 +24,7 @@ class TestControllerImpl : public TestControl::Observer, public TestController {
     void notifyThatUserIsDoneResponding() override;
     void notifyThatUserIsReadyForNextTrial() override;
     void notifyThatUserIsDoneRespondingAndIsReadyForNextTrial() override;
+    void notifyThatUserHasRespondedButTrialIsNotQuiteDone() override;
 
   private:
     SessionController &sessionController;
@@ -88,6 +89,7 @@ class TestPresenterImpl : public RunningATestFacade::Observer,
     void notifyThatTrialHasStarted() override;
     void notifyThatNextTrialIsReady() override;
     void hideResponseSubmission() override;
+    void hideExitTestButton() override;
     void updateTrialInformation() override;
     void updateAdaptiveTestResults() override;
     void completeTask() override;

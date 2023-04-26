@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETTINGSINTERPRETER_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETTINGSINTERPRETER_HPP_
 
+#include "FreeResponse.hpp"
 #include "TestSetupImpl.hpp"
 #include "SessionController.hpp"
 
@@ -109,7 +110,8 @@ enum class TestSetting {
     transducer,
     meta,
     relativeOutputPath,
-    keepVideoShown
+    keepVideoShown,
+    puzzle
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -154,6 +156,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "relative output path";
     case TestSetting::keepVideoShown:
         return "keep video shown";
+    case TestSetting::puzzle:
+        return "puzzle";
     }
 }
 
@@ -164,7 +168,8 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
     TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>,
         RunningATest &, FixedLevelMethod &, ForEyeTracking &,
-        ForAudioRecording &, FiniteTargetPlaylistWithRepeatables &);
+        ForAudioRecording &, FiniteTargetPlaylistWithRepeatables &,
+        submitting_free_response::Puzzle &, FreeResponseController &);
     void initialize(RunningATestFacade &, SessionController &,
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
@@ -181,6 +186,8 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     ForEyeTracking &eyeTracking;
     ForAudioRecording &audioRecording;
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets;
+    submitting_free_response::Puzzle &puzzle;
+    FreeResponseController &freeResponseController;
 };
 }
 

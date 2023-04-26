@@ -31,7 +31,8 @@ add_executable(
   Subject.cpp
   PredeterminedTargetPlaylist.cpp
   AudioRecording.cpp
-  EyeTracking.cpp)
+  EyeTracking.cpp
+  RevealImage.cpp)
 target_compile_features(av-speech-in-noise-test-exe PRIVATE cxx_std_17)
 set_target_properties(av-speech-in-noise-test-exe PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(av-speech-in-noise-test-exe

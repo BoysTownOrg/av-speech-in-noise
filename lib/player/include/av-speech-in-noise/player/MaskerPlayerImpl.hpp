@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_LIB_PLAYER_INCLUDE_AVSPEECHINNOISE_PLAYER_MASKERPLAYERIMPLHPP_
 
 #include "AudioReader.hpp"
+#include <av-speech-in-noise/core/ITimer.hpp>
 #include <av-speech-in-noise/core/IMaskerPlayer.hpp>
 #include <gsl/gsl>
 #include <string>
@@ -34,18 +35,6 @@ class AudioPlayer {
     virtual auto sampleRateHz() -> double = 0;
     virtual auto nanoseconds(PlayerTime) -> std::uintmax_t = 0;
     virtual auto currentSystemTime() -> PlayerTime = 0;
-};
-
-class Timer {
-  public:
-    class Observer {
-      public:
-        virtual ~Observer() = default;
-        virtual void callback() = 0;
-    };
-    virtual ~Timer() = default;
-    virtual void attach(Observer *) = 0;
-    virtual void scheduleCallbackAfterSeconds(double) = 0;
 };
 
 using cpp_core_guidelines_index_type = gsl::index;

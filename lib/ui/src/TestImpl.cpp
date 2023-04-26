@@ -95,6 +95,11 @@ void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
     });
 }
 
+void TestControllerImpl::notifyThatUserHasRespondedButTrialIsNotQuiteDone() {
+    presenter.hideResponseSubmission();
+    presenter.hideExitTestButton();
+}
+
 TestPresenterImpl::TestPresenterImpl(RunningATestFacade &model,
     RunningATest &runningATest, AdaptiveMethod &adaptiveMethod, TestView &view,
     UninitializedTaskPresenter *taskPresenter)
@@ -125,6 +130,7 @@ void TestPresenterImpl::trialComplete() {
 void TestPresenterImpl::notifyThatNextTrialIsReady() {
     view.hideContinueTestingDialog();
     view.showNextTrialButton();
+    view.showExitTestButton();
 }
 
 void TestPresenterImpl::updateTrialInformation() {
@@ -149,6 +155,8 @@ void TestPresenterImpl::initialize(TaskPresenter &p) {
     taskPresenter->initialize(&p);
     taskPresenter->start();
 }
+
+void TestPresenterImpl::hideExitTestButton() { view.hideExitTestButton(); }
 
 void TestPresenterImpl::hideResponseSubmission() {
     taskPresenter->hideResponseSubmission();

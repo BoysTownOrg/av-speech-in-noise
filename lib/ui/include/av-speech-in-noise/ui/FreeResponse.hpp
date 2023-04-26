@@ -4,10 +4,22 @@
 #include "Task.hpp"
 #include "Test.hpp"
 #include "View.hpp"
+
+#include <av-speech-in-noise/core/ITimer.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
+
 #include <string>
+
+namespace av_speech_in_noise {
+class FreeResponseController {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        FreeResponseController);
+    virtual void initialize(bool usingPuzzle) = 0;
+};
+}
 
 namespace av_speech_in_noise::submitting_free_response {
 class Control {
@@ -29,20 +41,39 @@ class View : public av_speech_in_noise::View {
     virtual void clearFlag() = 0;
 };
 
-class Controller : public TaskController, public Control::Observer {
+class Puzzle {
   public:
-    Controller(TestController &, Interactor &, Control &);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Puzzle);
+    virtual void initialize(const LocalUrl &) {}
+    virtual void reset() = 0;
+    virtual void advance() = 0;
+    virtual void show() {}
+    virtual void hide() {}
+};
+
+class Controller : public FreeResponseController,
+                   public TaskController,
+                   public Control::Observer,
+                   public Timer::Observer {
+  public:
+    Controller(TestController &, Interactor &, Control &, Puzzle &, Timer &);
+    void initialize(bool usingPuzzle) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
+    void callback() override;
 
   private:
     TestController &testController;
     Interactor &interactor;
     Control &control;
+    Puzzle &puzzle;
+    Timer &timer;
+    bool readyToAdvancePuzzle_{};
+    bool usingPuzzle{};
 };
 
 class Presenter : public TaskPresenter {
   public:
-    Presenter(TestView &, View &);
+    Presenter(TestView &, View &, Puzzle &);
     void start() override;
     void stop() override;
     void hideResponseSubmission() override;
@@ -51,6 +82,7 @@ class Presenter : public TaskPresenter {
   private:
     TestView &testView;
     View &view;
+    Puzzle &puzzle;
 };
 }
 
