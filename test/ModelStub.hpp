@@ -151,8 +151,6 @@ class ModelStub : public RunningATestFacade {
         fixedLevelTestWithAllTargetsInitialized_ = true;
     }
 
-    void completeTrial() { listener_->trialComplete(); }
-
     void setAudioDevices(std::vector<std::string> v) {
         audioDevices_ = std::move(v);
     }

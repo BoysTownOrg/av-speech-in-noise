@@ -6,7 +6,9 @@
 namespace av_speech_in_noise {
 class RunningATestStub : public RunningATest {
   public:
-    void attach(RunningATestFacade::Observer *) override {}
+    void attach(RunningATestFacade::Observer *a) override {
+        facadeObserver = a;
+    }
     void initialize(TestMethod *tm, const Test &t, Observer *p) override {
         test = t;
         testMethod = tm;
@@ -25,6 +27,7 @@ class RunningATestStub : public RunningATest {
     auto playTrialTime() -> std::string override { return {}; }
 
     Test test;
+    RunningATestFacade::Observer *facadeObserver;
     const TestMethod *testMethod{};
     const Observer *observer{};
     std::string targetFileName_;

@@ -97,7 +97,7 @@ TestPresenterImpl::TestPresenterImpl(RunningATestFacade &model,
     UninitializedTaskPresenter *taskPresenter)
     : model{model}, runningATest{runningATest}, view{view}, taskPresenter{
                                                                 taskPresenter} {
-    model.attach(this);
+    runningATest.attach(this);
 }
 
 void TestPresenterImpl::start() { view.show(); }

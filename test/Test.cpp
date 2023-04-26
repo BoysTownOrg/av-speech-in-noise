@@ -591,12 +591,12 @@ TEST_PRESENTER_TEST(hidesResponseSubmission) {
 }
 
 TEST_PRESENTER_TEST(showsExitTestButtonWhenTrialCompletes) {
-    model.completeTrial();
+    runningATest.facadeObserver->trialComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.exitTestButtonShown());
 }
 
 TEST_PRESENTER_TEST(showsTaskResponseSubmissionWhenTrialCompletes) {
-    model.completeTrial();
+    runningATest.facadeObserver->trialComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionShown());
 }
 
