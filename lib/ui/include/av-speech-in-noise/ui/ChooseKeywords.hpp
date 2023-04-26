@@ -4,9 +4,12 @@
 #include "View.hpp"
 #include "Task.hpp"
 #include "Test.hpp"
+
+#include <av-speech-in-noise/core/IFixedLevelMethod.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
+
 #include <string>
 #include <vector>
 #include <map>
@@ -99,7 +102,7 @@ static auto operator==(const SentenceWithThreeKeywords &a,
 
 class PresenterImpl : public Presenter, public TaskPresenter {
   public:
-    PresenterImpl(RunningATestFacade &, TestView &, View &,
+    PresenterImpl(RunningATestFacade &, FixedLevelMethod &, TestView &, View &,
         const std::vector<SentenceWithThreeKeywords> &);
     void start() override;
     void stop() override;
@@ -117,6 +120,7 @@ class PresenterImpl : public Presenter, public TaskPresenter {
     std::map<std::string, SentenceWithThreeKeywords>
         sentencesWithThreeKeywordsFromExpectedFileNameSentence;
     RunningATestFacade &model;
+    FixedLevelMethod &fixedLevelMethod;
     TestView &testView;
     View &view;
 };

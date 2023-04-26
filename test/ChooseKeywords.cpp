@@ -1,9 +1,11 @@
+#include "FixedLevelMethodStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
 #include "ModelStub.hpp"
-#include "av-speech-in-noise/Model.hpp"
+
 #include <av-speech-in-noise/ui/ChooseKeywords.hpp>
+
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::submitting_keywords {
@@ -287,9 +289,10 @@ class ChooseKeywordsControllerTests : public ::testing::Test {
 class ChooseKeywordsPresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
+    FixedLevelMethodStub fixedLevelMethod;
     TestViewStub testView;
     ViewStub view;
-    PresenterImpl presenter{model, testView, view,
+    PresenterImpl presenter{model, fixedLevelMethod, testView, view,
         {{"The visitors stretched before dinner.", "visitors", "stretched",
              "dinner"},
             {"Daddy's mouth is turning yellow.", "Daddy's", "mouth", "turning"},
@@ -430,7 +433,7 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(marksAllKeywordsIncorrect) {
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(completeShowsKeywordTestResults) {
-    model.setKeywordTestResults({12.34, 5});
+    fixedLevelMethod.keywordsTestResults_ = {12.34, 5};
     presenter.complete();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"5 (12.3%) keywords correct"}, testView.sheetMessage());
