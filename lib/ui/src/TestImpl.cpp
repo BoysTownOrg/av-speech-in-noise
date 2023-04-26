@@ -126,7 +126,7 @@ void TestPresenterImpl::notifyThatNextTrialIsReady() {
 
 void TestPresenterImpl::updateTrialInformation() {
     std::stringstream stream;
-    stream << "Trial " << model.trialNumber();
+    stream << "Trial " << runningATest.trialNumber();
     view.display(stream.str());
     view.secondaryDisplay(runningATest.targetFileName());
 }

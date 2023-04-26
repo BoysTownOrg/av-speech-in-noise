@@ -348,7 +348,7 @@ void run(PresenterUseCase &useCase, TestPresenter &presenter) {
 
 #define AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(                              \
     presenter, model, useCase, view)                                           \
-    model.setTrialNumber(1);                                                   \
+    model.trialNumber_ = 1;                                                    \
     run(useCase, presenter);                                                   \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"Trial 1"}, (view).displayed())
 
@@ -630,7 +630,7 @@ TEST_PRESENTER_TEST(initializingAdaptivePassFailMethodInitializesTask) {
 
 TEST_PRESENTER_TEST(displaysTrialNumberWhenUpdatingTrialInformation) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(
-        presenter, model, updatingTrialInformation, view);
+        presenter, runningATest, updatingTrialInformation, view);
 }
 
 TEST_PRESENTER_TEST(displaysTargetWhenUpdatingTrialInformation) {
@@ -640,7 +640,7 @@ TEST_PRESENTER_TEST(displaysTargetWhenUpdatingTrialInformation) {
 
 TEST_PRESENTER_TEST(displaysTrialNumberWhenInitializing) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(
-        presenter, model, initializing, view);
+        presenter, runningATest, initializing, view);
 }
 
 TEST_PRESENTER_TEST(displaysTargetWhenInitializing) {

@@ -19,7 +19,7 @@ class RunningATestStub : public RunningATest {
     void submit(const coordinate_response_measure::Response &) override {}
     auto testComplete() -> bool override { return false; }
     auto audioDevices() -> AudioDevices override { return {}; }
-    auto trialNumber() -> int override { return 0; }
+    auto trialNumber() -> int override { return trialNumber_; }
     auto targetFileName() -> std::string override { return targetFileName_; }
     void prepareNextTrialIfNeeded() override {}
     auto playTrialTime() -> std::string override { return {}; }
@@ -28,6 +28,7 @@ class RunningATestStub : public RunningATest {
     const TestMethod *testMethod{};
     const Observer *observer{};
     std::string targetFileName_;
+    int trialNumber_{};
 };
 }
 
