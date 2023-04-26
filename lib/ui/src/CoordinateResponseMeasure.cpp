@@ -22,9 +22,10 @@ static auto subjectResponse(CoordinateResponseMeasureControl &control)
 }
 
 CoordinateResponseMeasureController::CoordinateResponseMeasureController(
-    TestController &testController, RunningATestFacade &model,
+    TestController &testController, RunningATest &runningATest,
     CoordinateResponseMeasureControl &control)
-    : testController{testController}, model{model}, control{control} {
+    : testController{testController}, runningATest{runningATest}, control{
+                                                                      control} {
     control.attach(this);
 }
 
@@ -40,7 +41,7 @@ void CoordinateResponseMeasureController::
 
 void CoordinateResponseMeasureController::
     notifyThatResponseButtonHasBeenClicked() {
-    model.submit(subjectResponse(control));
+    runningATest.submit(subjectResponse(control));
     testController.notifyThatUserIsDoneRespondingAndIsReadyForNextTrial();
 }
 

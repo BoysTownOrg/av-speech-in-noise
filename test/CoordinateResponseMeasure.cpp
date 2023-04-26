@@ -1,9 +1,13 @@
+#include "RunningATestStub.hpp"
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
+
 #include <av-speech-in-noise/ui/CoordinateResponseMeasure.hpp>
+
 #include <gtest/gtest.h>
+
 #include <utility>
 
 namespace av_speech_in_noise {
@@ -105,11 +109,11 @@ void clickResponseButton(CoordinateResponseMeasureControlStub &view) {
 
 class CoordinateResponseMeasureControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
+    RunningATestStub runningATest;
     CoordinateResponseMeasureControlStub control;
     TestControllerStub testController;
     CoordinateResponseMeasureController controller{
-        testController, model, control};
+        testController, runningATest, control};
     TaskControllerObserverStub observer;
 
     CoordinateResponseMeasureControllerTests() { controller.attach(&observer); }
@@ -125,7 +129,7 @@ class CoordinateResponseMeasurePresenterTests : public ::testing::Test {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).responseButtonsHidden())
 
 #define AV_SPEECH_IN_NOISE_EXPECT_COLOR(model, c)                              \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(c, (model).responseParameters().color)
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(c, (model).coordinateResponse.color)
 
 #define COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(a)                         \
     TEST_F(CoordinateResponseMeasureControllerTests, a)
@@ -194,7 +198,7 @@ COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
     coordinateResponsePassesNumberResponse) {
     control.setNumberResponse("1");
     clickResponseButton(control);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.responseParameters().number);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, runningATest.coordinateResponse.number);
 }
 
 COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
@@ -202,21 +206,21 @@ COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
     control.setGreenResponse();
     clickResponseButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
-        model, coordinate_response_measure::Color::green);
+        runningATest, coordinate_response_measure::Color::green);
 }
 
 COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(coordinateResponsePassesRedColor) {
     control.setRedResponse();
     clickResponseButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
-        model, coordinate_response_measure::Color::red);
+        runningATest, coordinate_response_measure::Color::red);
 }
 
 COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(coordinateResponsePassesBlueColor) {
     control.setBlueResponse();
     clickResponseButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
-        model, coordinate_response_measure::Color::blue);
+        runningATest, coordinate_response_measure::Color::blue);
 }
 
 COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
@@ -224,7 +228,7 @@ COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
     control.setGrayResponse();
     clickResponseButton(control);
     AV_SPEECH_IN_NOISE_EXPECT_COLOR(
-        model, coordinate_response_measure::Color::white);
+        runningATest, coordinate_response_measure::Color::white);
 }
 }
 }

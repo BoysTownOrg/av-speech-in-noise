@@ -31,7 +31,9 @@ class RunningATestStub : public RunningATest {
         if (failOnRequest)
             throw RunningATestFacade::RequestFailure{errorMessage};
     }
-    void submit(const coordinate_response_measure::Response &) override {}
+    void submit(const coordinate_response_measure::Response &r) override {
+        coordinateResponse = r;
+    }
     auto testComplete() -> bool override { return testComplete_; }
     auto audioDevices() -> AudioDevices override { return audioDevices_; }
     auto trialNumber() -> int override { return trialNumber_; }
@@ -45,6 +47,7 @@ class RunningATestStub : public RunningATest {
     Calibration leftSpeakerCalibration_;
     Calibration rightSpeakerCalibration_;
     AudioDevices audioDevices_;
+    coordinate_response_measure::Response coordinateResponse;
     Test test;
     RunningATestFacade::Observer *facadeObserver;
     const TestMethod *testMethod{};
