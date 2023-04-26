@@ -67,7 +67,7 @@ static auto transformToSentencesWithThreeKeywordsFromExpectedFileNameSentence(
     return map;
 }
 
-PresenterImpl::PresenterImpl(RunningATestFacade &model,
+PresenterImpl::PresenterImpl(RunningATest &model,
     FixedLevelMethod &fixedLevelMethod, TestView &testView, View &view,
     const std::vector<SentenceWithThreeKeywords> &sentencesWithThreeKeywords)
     : sentencesWithThreeKeywordsFromExpectedFileNameSentence{transformToSentencesWithThreeKeywordsFromExpectedFileNameSentence(
@@ -85,7 +85,7 @@ void PresenterImpl::stop() {
     submitting_keywords::hideResponseSubmission(view);
 }
 
-static auto mlstFileNameSentence(RunningATestFacade &model) -> std::string {
+static auto mlstFileNameSentence(RunningATest &model) -> std::string {
     std::stringstream stream{model.targetFileName()};
     int ignore = 0;
     stream >> ignore >> std::ws;

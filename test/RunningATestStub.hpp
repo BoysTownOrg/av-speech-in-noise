@@ -20,13 +20,14 @@ class RunningATestStub : public RunningATest {
     auto testComplete() -> bool override { return false; }
     auto audioDevices() -> AudioDevices override { return {}; }
     auto trialNumber() -> int override { return 0; }
-    auto targetFileName() -> std::string override { return {}; }
+    auto targetFileName() -> std::string override { return targetFileName_; }
     void prepareNextTrialIfNeeded() override {}
     auto playTrialTime() -> std::string override { return {}; }
 
     Test test;
     const TestMethod *testMethod{};
     const Observer *observer{};
+    std::string targetFileName_;
 };
 }
 
