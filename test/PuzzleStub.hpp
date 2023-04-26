@@ -1,7 +1,6 @@
 #ifndef AV_SPEECH_IN_NOISE_TESTS_PUZZLESTUB_HPP_
 #define AV_SPEECH_IN_NOISE_TESTS_PUZZLESTUB_HPP_
 
-#include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/ui/FreeResponse.hpp>
 
 namespace av_speech_in_noise::submitting_free_response {
@@ -27,7 +26,7 @@ class PuzzleStub : public Puzzle {
 
     auto url() -> LocalUrl { return url_; }
 
-    void initialize(const LocalUrl &p) { url_ = p; }
+    void initialize(const LocalUrl &p) override { url_ = p; }
 
   private:
     LocalUrl url_;

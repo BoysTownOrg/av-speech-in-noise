@@ -1,7 +1,6 @@
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "PuzzleStub.hpp"
-#include "av-speech-in-noise/ui/FreeResponse.hpp"
 
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/Model.hpp>
