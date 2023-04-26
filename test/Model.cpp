@@ -737,8 +737,6 @@ class ModelTests : public ::testing::Test {
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
-    auto testComplete() -> bool { return model.testComplete(); }
-
     void assertInitializesInternalModel(InitializingTestUseCase &useCase) {
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -1365,12 +1363,6 @@ MODEL_TEST(playLeftSpeakerCalibrationPassesCalibration) {
 MODEL_TEST(playRightSpeakerCalibrationPassesCalibration) {
     PlayingRightSpeakerCalibration useCase;
     assertPassesCalibration(useCase);
-}
-
-MODEL_TEST(testCompleteWhenComplete) {
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(testComplete());
-    internalModel.setComplete();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testComplete());
 }
 }
 }

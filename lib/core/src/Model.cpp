@@ -136,8 +136,4 @@ void RunningATestFacadeImpl::playLeftSpeakerCalibration(const Calibration &p) {
 void RunningATestFacadeImpl::playRightSpeakerCalibration(const Calibration &p) {
     runningATest.playRightSpeakerCalibration(p);
 }
-
-auto RunningATestFacadeImpl::testComplete() -> bool {
-    return runningATest.testComplete();
-}
 }

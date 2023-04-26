@@ -147,10 +147,6 @@ class ModelStub : public RunningATestFacade {
         fixedLevelTestWithAllTargetsInitialized_ = true;
     }
 
-    void setTestComplete() { testComplete_ = true; }
-
-    auto testComplete() -> bool override { return testComplete_; }
-
     void playTrial(const AudioSettings &p) override {
         trialParameters_ = p;
         trialPlayed_ = true;
@@ -193,7 +189,6 @@ class ModelStub : public RunningATestFacade {
     ConsonantResponse consonantResponse_{};
     ThreeKeywordsResponse threeKeywords_{};
     KeywordsTestResults keywordsTestResults_{};
-    bool testComplete_{};
     bool trialPlayed_{};
     bool defaultFixedLevelTestInitialized_{};
     bool defaultAdaptiveTestInitialized_{};

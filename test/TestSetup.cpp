@@ -392,7 +392,6 @@ class RequestFailingModel : public RunningATestFacade {
         throw RequestFailure{errorMessage};
     }
 
-    auto testComplete() -> bool override { return {}; }
     void restartAdaptiveTestWhilePreservingTargets() override {}
 };
 
