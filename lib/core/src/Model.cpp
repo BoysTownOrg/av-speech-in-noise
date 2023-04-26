@@ -114,9 +114,4 @@ void RunningATestFacadeImpl::initializeTestWithPossiblePeripheral(
 void RunningATestFacadeImpl::playTrial(const AudioSettings &settings) {
     runningATest.playTrial(settings);
 }
-
-void RunningATestFacadeImpl::submit(
-    const coordinate_response_measure::Response &response) {
-    runningATest.submit(response);
-}
 }

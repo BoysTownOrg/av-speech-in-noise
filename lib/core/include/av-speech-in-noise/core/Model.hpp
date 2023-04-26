@@ -31,7 +31,6 @@ class RunningATestFacadeImpl : public RunningATestFacade {
     void initializeWithAllTargets(const FixedLevelTest &) override;
     void initialize(const FixedLevelTestWithEachTargetNTimes &) override;
     void playTrial(const AudioSettings &) override;
-    void submit(const coordinate_response_measure::Response &) override;
 
   private:
     void initializeTest_(const AdaptiveTest &);

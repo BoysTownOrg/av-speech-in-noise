@@ -91,10 +91,6 @@ class ModelStub : public RunningATestFacade {
 
     auto consonantResponse() { return consonantResponse_; }
 
-    [[nodiscard]] auto responseParameters() const -> auto & {
-        return responseParameters_;
-    }
-
     [[nodiscard]] auto trialParameters() const -> auto & {
         return trialParameters_;
     }
@@ -137,10 +133,6 @@ class ModelStub : public RunningATestFacade {
         trialPlayed_ = true;
     }
 
-    void submit(const coordinate_response_measure::Response &p) override {
-        responseParameters_ = p;
-    }
-
     auto threeKeywords() -> ThreeKeywordsResponse { return threeKeywords_; }
 
     void setKeywordTestResults(KeywordsTestResults k) {
@@ -153,7 +145,6 @@ class ModelStub : public RunningATestFacade {
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest_{};
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes_{};
     AudioSettings trialParameters_{};
-    coordinate_response_measure::Response responseParameters_{};
     ConsonantResponse consonantResponse_{};
     ThreeKeywordsResponse threeKeywords_{};
     KeywordsTestResults keywordsTestResults_{};

@@ -378,10 +378,6 @@ class RequestFailingModel : public RunningATestFacade {
     void playTrial(const AudioSettings &) override {
         throw RequestFailure{errorMessage};
     }
-
-    void submit(const coordinate_response_measure::Response &) override {
-        throw RequestFailure{errorMessage};
-    }
 };
 
 class TestSetupFailureTests : public ::testing::Test {

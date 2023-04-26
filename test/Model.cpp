@@ -1276,13 +1276,6 @@ MODEL_TEST(
         initializedWithEyeTracking(internalModel, &eyeTracking));
 }
 
-MODEL_TEST(submitResponsePassesCoordinateResponse) {
-    coordinate_response_measure::Response response;
-    model.submit(response);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &std::as_const(response), internalModel.coordinateResponse());
-}
-
 MODEL_TEST(playTrialPassesAudioSettings) {
     AudioSettings settings;
     model.playTrial(settings);
