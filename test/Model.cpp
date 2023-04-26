@@ -4,7 +4,6 @@
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "AudioRecorderStub.hpp"
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
@@ -1383,11 +1382,6 @@ MODEL_TEST(returnsAdaptiveTestResults) {
     adaptiveMethod.setTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
     assertEqual(
         {{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}}, model.adaptiveTestResults());
-}
-
-MODEL_TEST(returnsTrialNumber) {
-    internalModel.setTrialNumber(1);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.trialNumber());
 }
 
 MODEL_TEST(subscribesToListener) {

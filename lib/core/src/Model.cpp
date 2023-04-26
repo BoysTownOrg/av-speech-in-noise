@@ -152,8 +152,4 @@ auto RunningATestFacadeImpl::adaptiveTestResults() -> AdaptiveTestResults {
 void RunningATestFacadeImpl::attach(RunningATestFacade::Observer *e) {
     runningATest.attach(e);
 }
-
-auto RunningATestFacadeImpl::trialNumber() -> int {
-    return runningATest.trialNumber();
-}
 }

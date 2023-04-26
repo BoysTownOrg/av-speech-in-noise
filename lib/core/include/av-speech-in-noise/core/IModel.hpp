@@ -91,7 +91,6 @@ class RunningATestFacade {
     virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual auto testComplete() -> bool = 0;
     virtual auto audioDevices() -> AudioDevices = 0;
-    virtual auto trialNumber() -> int = 0;
     virtual void restartAdaptiveTestWhilePreservingTargets() = 0;
     virtual auto adaptiveTestResults() -> AdaptiveTestResults = 0;
 };

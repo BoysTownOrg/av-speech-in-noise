@@ -13,10 +13,6 @@ class ModelStub : public RunningATestFacade {
         adaptiveTestResults_ = std::move(v);
     }
 
-    auto trialNumber() -> int override { return trialNumber_; }
-
-    void setTrialNumber(int n) { trialNumber_ = n; }
-
     [[nodiscard]] auto
     fixedLevelTestWithSilentIntervalTargetsInitialized() const {
         return fixedLevelTestWithSilentIntervalTargetsInitialized_;
@@ -220,7 +216,6 @@ class ModelStub : public RunningATestFacade {
     ThreeKeywordsResponse threeKeywords_{};
     KeywordsTestResults keywordsTestResults_{};
     Observer *listener_{};
-    int trialNumber_{};
     bool testComplete_{};
     bool trialPlayed_{};
     bool defaultFixedLevelTestInitialized_{};
