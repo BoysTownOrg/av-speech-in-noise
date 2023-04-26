@@ -23,7 +23,6 @@ class RunningATestFacadeImpl : public RunningATestFacade {
         FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
         RunningATest &, OutputFile &, RunningATest::Observer &audioRecording,
         RunningATest::Observer &eyeTracking);
-    void attach(RunningATestFacade::Observer *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithCyclicTargets(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(

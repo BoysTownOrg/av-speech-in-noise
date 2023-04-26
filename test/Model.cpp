@@ -1383,13 +1383,5 @@ MODEL_TEST(returnsAdaptiveTestResults) {
     assertEqual(
         {{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}}, model.adaptiveTestResults());
 }
-
-MODEL_TEST(subscribesToListener) {
-    ModelObserverStub listener;
-    model.attach(&listener);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        static_cast<const RunningATestFacade::Observer *>(&listener),
-        internalModel.listener());
-}
 }
 }

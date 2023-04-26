@@ -148,8 +148,4 @@ auto RunningATestFacadeImpl::audioDevices() -> std::vector<std::string> {
 auto RunningATestFacadeImpl::adaptiveTestResults() -> AdaptiveTestResults {
     return adaptiveMethod.testResults();
 }
-
-void RunningATestFacadeImpl::attach(RunningATestFacade::Observer *e) {
-    runningATest.attach(e);
-}
 }

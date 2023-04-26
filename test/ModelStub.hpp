@@ -172,8 +172,6 @@ class ModelStub : public RunningATestFacade {
         responseParameters_ = p;
     }
 
-    void attach(Observer *listener) override { listener_ = listener; }
-
     void playCalibration(const Calibration &p) override { calibration_ = p; }
 
     void playLeftSpeakerCalibration(const Calibration &p) override {
@@ -213,7 +211,6 @@ class ModelStub : public RunningATestFacade {
     ConsonantResponse consonantResponse_{};
     ThreeKeywordsResponse threeKeywords_{};
     KeywordsTestResults keywordsTestResults_{};
-    Observer *listener_{};
     bool testComplete_{};
     bool trialPlayed_{};
     bool defaultFixedLevelTestInitialized_{};
