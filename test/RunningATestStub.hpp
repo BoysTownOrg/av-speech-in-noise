@@ -20,12 +20,13 @@ class RunningATestStub : public RunningATest {
     void playRightSpeakerCalibration(const Calibration &) override {}
     void submit(const coordinate_response_measure::Response &) override {}
     auto testComplete() -> bool override { return false; }
-    auto audioDevices() -> AudioDevices override { return {}; }
+    auto audioDevices() -> AudioDevices override { return audioDevices_; }
     auto trialNumber() -> int override { return trialNumber_; }
     auto targetFileName() -> std::string override { return targetFileName_; }
     void prepareNextTrialIfNeeded() override {}
     auto playTrialTime() -> std::string override { return {}; }
 
+    AudioDevices audioDevices_;
     Test test;
     RunningATestFacade::Observer *facadeObserver;
     const TestMethod *testMethod{};
