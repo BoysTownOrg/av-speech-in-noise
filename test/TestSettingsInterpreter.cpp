@@ -321,8 +321,8 @@ class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     RunningATestStub runningATest;
     FixedLevelMethodStub fixedLevelMethod;
-    ForEyeTracking eyeTracking;
-    ForAudioRecording audioRecording;
+    RunningATest::Observer eyeTracking;
+    RunningATest::Observer audioRecording;
     FiniteTargetPlaylistWithRepeatablesStub predeterminedTargets;
     ModelStub model;
     SessionControllerStub sessionController;

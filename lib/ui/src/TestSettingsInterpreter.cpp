@@ -480,7 +480,7 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
 TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     std::map<Method, TaskPresenter &> taskPresenters,
     RunningATest &runningATest, FixedLevelMethod &fixedLevelMethod,
-    ForEyeTracking &eyeTracking, ForAudioRecording &audioRecording,
+    RunningATest::Observer &eyeTracking, RunningATest::Observer &audioRecording,
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
     submitting_free_response::Puzzle &puzzle,
     FreeResponseController &freeResponseController)

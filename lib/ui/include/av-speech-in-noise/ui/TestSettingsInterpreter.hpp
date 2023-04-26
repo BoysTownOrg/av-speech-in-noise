@@ -161,14 +161,11 @@ constexpr auto name(TestSetting p) -> const char * {
     }
 }
 
-class ForEyeTracking : public RunningATest::Observer {};
-class ForAudioRecording : public RunningATest::Observer {};
-
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
     TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>,
-        RunningATest &, FixedLevelMethod &, ForEyeTracking &,
-        ForAudioRecording &, FiniteTargetPlaylistWithRepeatables &,
+        RunningATest &, FixedLevelMethod &, RunningATest::Observer &,
+        RunningATest::Observer &, FiniteTargetPlaylistWithRepeatables &,
         submitting_free_response::Puzzle &, FreeResponseController &);
     void initialize(RunningATestFacade &, SessionController &,
         const std::string &, const TestIdentity &, SNR) override;
@@ -183,8 +180,8 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     std::map<Method, TaskPresenter &> taskPresenters;
     RunningATest &runningATest;
     FixedLevelMethod &fixedLevelMethod;
-    ForEyeTracking &eyeTracking;
-    ForAudioRecording &audioRecording;
+    RunningATest::Observer &eyeTracking;
+    RunningATest::Observer &audioRecording;
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets;
     submitting_free_response::Puzzle &puzzle;
     FreeResponseController &freeResponseController;
