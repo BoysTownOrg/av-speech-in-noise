@@ -144,8 +144,4 @@ auto RunningATestFacadeImpl::testComplete() -> bool {
 auto RunningATestFacadeImpl::audioDevices() -> std::vector<std::string> {
     return runningATest.audioDevices();
 }
-
-auto RunningATestFacadeImpl::adaptiveTestResults() -> AdaptiveTestResults {
-    return adaptiveMethod.testResults();
-}
 }

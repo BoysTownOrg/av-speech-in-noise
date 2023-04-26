@@ -9,10 +9,6 @@
 namespace av_speech_in_noise {
 class ModelStub : public RunningATestFacade {
   public:
-    void setAdaptiveTestResults(AdaptiveTestResults v) {
-        adaptiveTestResults_ = std::move(v);
-    }
-
     [[nodiscard]] auto
     fixedLevelTestWithSilentIntervalTargetsInitialized() const {
         return fixedLevelTestWithSilentIntervalTargetsInitialized_;
@@ -186,10 +182,6 @@ class ModelStub : public RunningATestFacade {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
     }
 
-    auto adaptiveTestResults() -> AdaptiveTestResults override {
-        return adaptiveTestResults_;
-    }
-
     auto threeKeywords() -> ThreeKeywordsResponse { return threeKeywords_; }
 
     void setKeywordTestResults(KeywordsTestResults k) {
@@ -207,7 +199,6 @@ class ModelStub : public RunningATestFacade {
     AudioSettings trialParameters_{};
     coordinate_response_measure::Response responseParameters_{};
     std::vector<std::string> audioDevices_{};
-    AdaptiveTestResults adaptiveTestResults_{};
     ConsonantResponse consonantResponse_{};
     ThreeKeywordsResponse threeKeywords_{};
     KeywordsTestResults keywordsTestResults_{};

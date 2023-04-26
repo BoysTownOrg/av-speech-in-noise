@@ -1377,11 +1377,5 @@ MODEL_TEST(returnsAudioDevices) {
     internalModel.setAudioDevices({"a", "b", "c"});
     assertEqual({"a", "b", "c"}, model.audioDevices());
 }
-
-MODEL_TEST(returnsAdaptiveTestResults) {
-    adaptiveMethod.setTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
-    assertEqual(
-        {{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}}, model.adaptiveTestResults());
-}
 }
 }

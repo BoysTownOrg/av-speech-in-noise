@@ -37,7 +37,6 @@ class RunningATestFacadeImpl : public RunningATestFacade {
     void submit(const coordinate_response_measure::Response &) override;
     auto testComplete() -> bool override;
     auto audioDevices() -> AudioDevices override;
-    auto adaptiveTestResults() -> AdaptiveTestResults override;
     void restartAdaptiveTestWhilePreservingTargets() override;
 
   private:
