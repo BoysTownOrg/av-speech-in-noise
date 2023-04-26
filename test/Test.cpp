@@ -407,7 +407,7 @@ void run(PresenterUseCase &useCase, TestPresenter &presenter) {
     setAudioDevice(sessionView, "a");                                          \
     run(useCase);                                                              \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        std::string{"a"}, (model).trialParameters().audioDevice)
+        std::string{"a"}, (model).trialAudioSettings.audioDevice)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_TRIAL_HAS_STARTED(             \
     useCase, presenter)                                                        \
@@ -448,20 +448,21 @@ TEST_CONTROLLER_TEST(
 }
 
 TEST_CONTROLLER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
-    AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(playingTrial, sessionView, model);
+    AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(
+        playingTrial, sessionView, runningATest);
 }
 
 TEST_CONTROLLER_TEST(
     responderPlaysTrialAfterNotifyingThatUserIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(
-        notifyingThatUserIsReadyForNextTrial, sessionView, model);
+        notifyingThatUserIsReadyForNextTrial, sessionView, runningATest);
 }
 
 TEST_CONTROLLER_TEST(
     responderPlaysTrialAfterNotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(
         notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial, sessionView,
-        model);
+        runningATest);
 }
 
 TEST_CONTROLLER_TEST(notifiesThatTrialHasStartedAfterPlayTrialButtonClicked) {

@@ -15,7 +15,7 @@ class RunningATestStub : public RunningATest {
         testMethod = tm;
         observer = p;
     }
-    void playTrial(const AudioSettings &) override {}
+    void playTrial(const AudioSettings &t) override { trialAudioSettings = t; }
     void playCalibration(const Calibration &c) override {
         calibration_ = c;
         if (failOnRequest)
@@ -46,6 +46,7 @@ class RunningATestStub : public RunningATest {
     Calibration calibration_;
     Calibration leftSpeakerCalibration_;
     Calibration rightSpeakerCalibration_;
+    AudioSettings trialAudioSettings;
     AudioDevices audioDevices_;
     coordinate_response_measure::Response coordinateResponse;
     Test test;

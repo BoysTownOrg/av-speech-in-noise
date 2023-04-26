@@ -1,5 +1,4 @@
 #include "TestImpl.hpp"
-#include "av-speech-in-noise/core/IAdaptiveMethod.hpp"
 
 #include <sstream>
 #include <functional>
@@ -28,14 +27,14 @@ void TestControllerImpl::exitTest() {
     notifyThatTestIsComplete(sessionController);
 }
 
-static void playTrial(RunningATestFacade &model, SessionControl &control,
-    TestPresenter &presenter) {
+static void playTrial(
+    RunningATest &model, SessionControl &control, TestPresenter &presenter) {
     model.playTrial(AudioSettings{control.audioDevice()});
     presenter.notifyThatTrialHasStarted();
 }
 
 void TestControllerImpl::playTrial() {
-    av_speech_in_noise::playTrial(model, sessionControl, presenter);
+    av_speech_in_noise::playTrial(runningATest, sessionControl, presenter);
 }
 
 void TestControllerImpl::declineContinuingTesting() {
@@ -86,14 +85,14 @@ void TestControllerImpl::
     presenter.hideResponseSubmission();
     notifyIfTestIsCompleteElse(runningATest, sessionController, [&]() {
         presenter.updateTrialInformation();
-        av_speech_in_noise::playTrial(model, sessionControl, presenter);
+        av_speech_in_noise::playTrial(runningATest, sessionControl, presenter);
     });
 }
 
 void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
     notifyIfTestIsCompleteElse(runningATest, sessionController, [&]() {
         presenter.updateTrialInformation();
-        av_speech_in_noise::playTrial(model, sessionControl, presenter);
+        av_speech_in_noise::playTrial(runningATest, sessionControl, presenter);
     });
 }
 
