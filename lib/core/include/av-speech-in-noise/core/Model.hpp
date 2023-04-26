@@ -39,7 +39,6 @@ class RunningATestFacadeImpl : public RunningATestFacade {
     auto testComplete() -> bool override;
     auto audioDevices() -> AudioDevices override;
     auto trialNumber() -> int override;
-    auto targetFileName() -> std::string override;
     auto adaptiveTestResults() -> AdaptiveTestResults override;
     void restartAdaptiveTestWhilePreservingTargets() override;
 

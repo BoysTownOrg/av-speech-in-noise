@@ -347,8 +347,6 @@ class RequestFailingModel : public RunningATestFacade {
   public:
     auto trialNumber() -> int override { return 0; }
 
-    auto targetFileName() -> std::string override { return {}; }
-
     void setErrorMessage(std::string s) { errorMessage = std::move(s); }
 
     void initialize(const AdaptiveTest &) override {

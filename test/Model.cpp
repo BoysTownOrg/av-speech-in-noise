@@ -1390,11 +1390,6 @@ MODEL_TEST(returnsTrialNumber) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.trialNumber());
 }
 
-MODEL_TEST(returnsTargetFileName) {
-    internalModel.setTargetFileName("a");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, model.targetFileName());
-}
-
 MODEL_TEST(subscribesToListener) {
     ModelObserverStub listener;
     model.attach(&listener);

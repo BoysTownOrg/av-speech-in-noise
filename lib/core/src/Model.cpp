@@ -156,8 +156,4 @@ void RunningATestFacadeImpl::attach(RunningATestFacade::Observer *e) {
 auto RunningATestFacadeImpl::trialNumber() -> int {
     return runningATest.trialNumber();
 }
-
-auto RunningATestFacadeImpl::targetFileName() -> std::string {
-    return runningATest.targetFileName();
-}
 }

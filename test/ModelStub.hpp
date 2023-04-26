@@ -17,10 +17,6 @@ class ModelStub : public RunningATestFacade {
 
     void setTrialNumber(int n) { trialNumber_ = n; }
 
-    void setTargetFileName(std::string s) { targetFileName_ = std::move(s); }
-
-    auto targetFileName() -> std::string override { return targetFileName_; }
-
     [[nodiscard]] auto
     fixedLevelTestWithSilentIntervalTargetsInitialized() const {
         return fixedLevelTestWithSilentIntervalTargetsInitialized_;
@@ -223,7 +219,6 @@ class ModelStub : public RunningATestFacade {
     ConsonantResponse consonantResponse_{};
     ThreeKeywordsResponse threeKeywords_{};
     KeywordsTestResults keywordsTestResults_{};
-    std::string targetFileName_{};
     Observer *listener_{};
     int trialNumber_{};
     bool testComplete_{};
