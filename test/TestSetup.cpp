@@ -399,7 +399,6 @@ class RequestFailingModel : public RunningATestFacade {
     auto testComplete() -> bool override { return {}; }
     auto audioDevices() -> AudioDevices override { return {}; }
     auto adaptiveTestResults() -> AdaptiveTestResults override { return {}; }
-    auto keywordsTestResults() -> KeywordsTestResults override { return {}; }
     void attach(Observer *) override {}
     void restartAdaptiveTestWhilePreservingTargets() override {}
 };

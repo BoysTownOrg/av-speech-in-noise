@@ -41,7 +41,6 @@ class RunningATestFacadeImpl : public RunningATestFacade {
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
     auto adaptiveTestResults() -> AdaptiveTestResults override;
-    auto keywordsTestResults() -> KeywordsTestResults override;
     void restartAdaptiveTestWhilePreservingTargets() override;
 
   private:

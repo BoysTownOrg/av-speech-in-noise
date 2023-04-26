@@ -204,10 +204,6 @@ class ModelStub : public RunningATestFacade {
 
     auto threeKeywords() -> ThreeKeywordsResponse { return threeKeywords_; }
 
-    auto keywordsTestResults() -> KeywordsTestResults override {
-        return keywordsTestResults_;
-    }
-
     void setKeywordTestResults(KeywordsTestResults k) {
         keywordsTestResults_ = k;
     }

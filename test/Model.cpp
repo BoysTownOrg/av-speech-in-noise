@@ -1385,14 +1385,6 @@ MODEL_TEST(returnsAdaptiveTestResults) {
         {{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}}, model.adaptiveTestResults());
 }
 
-MODEL_TEST(returnsKeywordsTestResults) {
-    fixedLevelMethod.setKeywordsTestResults({1., 2});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        1., model.keywordsTestResults().percentCorrect);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        2, model.keywordsTestResults().totalCorrect);
-}
-
 MODEL_TEST(returnsTrialNumber) {
     internalModel.setTrialNumber(1);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, model.trialNumber());

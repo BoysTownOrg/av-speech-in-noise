@@ -160,8 +160,4 @@ auto RunningATestFacadeImpl::trialNumber() -> int {
 auto RunningATestFacadeImpl::targetFileName() -> std::string {
     return runningATest.targetFileName();
 }
-
-auto RunningATestFacadeImpl::keywordsTestResults() -> KeywordsTestResults {
-    return fixedLevelMethod.keywordsTestResults();
-}
 }

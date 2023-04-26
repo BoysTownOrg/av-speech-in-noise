@@ -95,7 +95,6 @@ class RunningATestFacade {
     virtual auto targetFileName() -> std::string = 0;
     virtual void restartAdaptiveTestWhilePreservingTargets() = 0;
     virtual auto adaptiveTestResults() -> AdaptiveTestResults = 0;
-    virtual auto keywordsTestResults() -> KeywordsTestResults = 0;
 };
 }
 
