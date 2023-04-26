@@ -92,9 +92,11 @@ void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
     });
 }
 
-TestPresenterImpl::TestPresenterImpl(RunningATestFacade &model, TestView &view,
+TestPresenterImpl::TestPresenterImpl(RunningATestFacade &model,
+    RunningATest &runningATest, TestView &view,
     UninitializedTaskPresenter *taskPresenter)
-    : model{model}, view{view}, taskPresenter{taskPresenter} {
+    : model{model}, runningATest{runningATest}, view{view}, taskPresenter{
+                                                                taskPresenter} {
     model.attach(this);
 }
 
@@ -126,7 +128,7 @@ void TestPresenterImpl::updateTrialInformation() {
     std::stringstream stream;
     stream << "Trial " << model.trialNumber();
     view.display(stream.str());
-    view.secondaryDisplay(model.targetFileName());
+    view.secondaryDisplay(runningATest.targetFileName());
 }
 
 void TestPresenterImpl::updateAdaptiveTestResults() {

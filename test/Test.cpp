@@ -1,3 +1,4 @@
+#include "RunningATestStub.hpp"
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "TestViewStub.hpp"
@@ -319,9 +320,10 @@ class TestControllerTests : public ::testing::Test {
 class TestPresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
+    RunningATestStub runningATest;
     TestViewStub view;
     UninitializedTaskPresenterStub taskPresenter;
-    TestPresenterImpl presenter{model, view, &taskPresenter};
+    TestPresenterImpl presenter{model, runningATest, view, &taskPresenter};
     UpdatingTrialInformation updatingTrialInformation;
     Initializing initializing;
 };
@@ -339,7 +341,7 @@ void run(PresenterUseCase &useCase, TestPresenter &presenter) {
 
 #define AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(                             \
     presenter, model, useCase, view)                                           \
-    model.setTargetFileName("a");                                              \
+    model.targetFileName_ = "a";                                               \
     run(useCase, presenter);                                                   \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         std::string{"a"}, (view).secondaryDisplayed())
@@ -633,7 +635,7 @@ TEST_PRESENTER_TEST(displaysTrialNumberWhenUpdatingTrialInformation) {
 
 TEST_PRESENTER_TEST(displaysTargetWhenUpdatingTrialInformation) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(
-        presenter, model, updatingTrialInformation, view);
+        presenter, runningATest, updatingTrialInformation, view);
 }
 
 TEST_PRESENTER_TEST(displaysTrialNumberWhenInitializing) {
@@ -643,7 +645,7 @@ TEST_PRESENTER_TEST(displaysTrialNumberWhenInitializing) {
 
 TEST_PRESENTER_TEST(displaysTargetWhenInitializing) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(
-        presenter, model, initializing, view);
+        presenter, runningATest, initializing, view);
 }
 
 TEST_PRESENTER_TEST(completeTaskCompletesTask) {
