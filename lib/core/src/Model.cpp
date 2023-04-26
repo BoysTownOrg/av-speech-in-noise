@@ -124,16 +124,4 @@ void RunningATestFacadeImpl::submit(
     const coordinate_response_measure::Response &response) {
     runningATest.submit(response);
 }
-
-void RunningATestFacadeImpl::playCalibration(const Calibration &p) {
-    runningATest.playCalibration(p);
-}
-
-void RunningATestFacadeImpl::playLeftSpeakerCalibration(const Calibration &p) {
-    runningATest.playLeftSpeakerCalibration(p);
-}
-
-void RunningATestFacadeImpl::playRightSpeakerCalibration(const Calibration &p) {
-    runningATest.playRightSpeakerCalibration(p);
-}
 }

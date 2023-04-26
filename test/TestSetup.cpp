@@ -383,18 +383,6 @@ class RequestFailingModel : public RunningATestFacade {
         throw RequestFailure{errorMessage};
     }
 
-    void playCalibration(const Calibration &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void playLeftSpeakerCalibration(const Calibration &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void playRightSpeakerCalibration(const Calibration &) override {
-        throw RequestFailure{errorMessage};
-    }
-
     void restartAdaptiveTestWhilePreservingTargets() override {}
 };
 

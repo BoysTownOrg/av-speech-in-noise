@@ -640,47 +640,6 @@ auto initializedWithEyeTracking(
     return m.observer == observer;
 }
 
-class PlayingCalibrationUseCase {
-  public:
-    virtual ~PlayingCalibrationUseCase() = default;
-    virtual void run(RunningATestFacade &model, const Calibration &c) = 0;
-    virtual auto calibration(RunningATestStub &model)
-        -> const Calibration * = 0;
-};
-
-class PlayingCalibration : public PlayingCalibrationUseCase {
-  public:
-    void run(RunningATestFacade &model, const Calibration &c) override {
-        model.playCalibration(c);
-    }
-
-    auto calibration(RunningATestStub &model) -> const Calibration * override {
-        return model.calibration();
-    }
-};
-
-class PlayingLeftSpeakerCalibration : public PlayingCalibrationUseCase {
-  public:
-    void run(RunningATestFacade &model, const Calibration &c) override {
-        model.playLeftSpeakerCalibration(c);
-    }
-
-    auto calibration(RunningATestStub &model) -> const Calibration * override {
-        return model.leftSpeakerCalibration();
-    }
-};
-
-class PlayingRightSpeakerCalibration : public PlayingCalibrationUseCase {
-  public:
-    void run(RunningATestFacade &model, const Calibration &c) override {
-        model.playRightSpeakerCalibration(c);
-    }
-
-    auto calibration(RunningATestStub &model) -> const Calibration * override {
-        return model.rightSpeakerCalibration();
-    }
-};
-
 class ModelTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub adaptiveMethod;
@@ -773,13 +732,6 @@ class ModelTests : public ::testing::Test {
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             &targetList, fixedLevelMethod.targetList());
-    }
-
-    void assertPassesCalibration(PlayingCalibrationUseCase &useCase) {
-        Calibration calibration;
-        useCase.run(model, calibration);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            &std::as_const(calibration), useCase.calibration(internalModel));
     }
 };
 
@@ -1348,21 +1300,6 @@ MODEL_TEST(playTrialPassesAudioSettings) {
     model.playTrial(settings);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(settings), internalModel.playTrialSettings());
-}
-
-MODEL_TEST(playCalibrationPassesCalibration) {
-    PlayingCalibration useCase;
-    assertPassesCalibration(useCase);
-}
-
-MODEL_TEST(playLeftSpeakerCalibrationPassesCalibration) {
-    PlayingLeftSpeakerCalibration useCase;
-    assertPassesCalibration(useCase);
-}
-
-MODEL_TEST(playRightSpeakerCalibrationPassesCalibration) {
-    PlayingRightSpeakerCalibration useCase;
-    assertPassesCalibration(useCase);
 }
 }
 }

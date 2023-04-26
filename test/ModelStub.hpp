@@ -89,16 +89,6 @@ class ModelStub : public RunningATestFacade {
         return fixedLevelFixedTrialsTest_;
     }
 
-    [[nodiscard]] auto calibration() const -> auto & { return calibration_; }
-
-    auto leftSpeakerCalibration() -> Calibration {
-        return leftSpeakerCalibration_;
-    }
-
-    auto rightSpeakerCalibration() -> Calibration {
-        return rightSpeakerCalibration_;
-    }
-
     auto consonantResponse() { return consonantResponse_; }
 
     [[nodiscard]] auto adaptiveTestRestartedWhilePreservingCyclicTargets() const
@@ -156,16 +146,6 @@ class ModelStub : public RunningATestFacade {
         responseParameters_ = p;
     }
 
-    void playCalibration(const Calibration &p) override { calibration_ = p; }
-
-    void playLeftSpeakerCalibration(const Calibration &p) override {
-        leftSpeakerCalibration_ = p;
-    }
-
-    void playRightSpeakerCalibration(const Calibration &p) override {
-        rightSpeakerCalibration_ = p;
-    }
-
     void restartAdaptiveTestWhilePreservingTargets() override {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
     }
@@ -181,9 +161,6 @@ class ModelStub : public RunningATestFacade {
     FixedLevelTest fixedLevelTest_{};
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest_{};
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes_{};
-    Calibration calibration_{};
-    Calibration leftSpeakerCalibration_{};
-    Calibration rightSpeakerCalibration_{};
     AudioSettings trialParameters_{};
     coordinate_response_measure::Response responseParameters_{};
     ConsonantResponse consonantResponse_{};
