@@ -111,11 +111,6 @@ void RunningATestFacadeImpl::initializeTestWithPossiblePeripheral(
     }
 }
 
-void RunningATestFacadeImpl::restartAdaptiveTestWhilePreservingTargets() {
-    adaptiveMethod.resetTracks();
-    runningATest.prepareNextTrialIfNeeded();
-}
-
 void RunningATestFacadeImpl::playTrial(const AudioSettings &settings) {
     runningATest.playTrial(settings);
 }

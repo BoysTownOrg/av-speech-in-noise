@@ -382,8 +382,6 @@ class RequestFailingModel : public RunningATestFacade {
     void submit(const coordinate_response_measure::Response &) override {
         throw RequestFailure{errorMessage};
     }
-
-    void restartAdaptiveTestWhilePreservingTargets() override {}
 };
 
 class TestSetupFailureTests : public ::testing::Test {

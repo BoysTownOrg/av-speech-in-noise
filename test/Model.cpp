@@ -1059,18 +1059,6 @@ SUBMITTING_CONSONANT_TEST(savesOutputFileAfterWritingTrial) {
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
 
 MODEL_TEST(
-    restartAdaptiveTestWhilePreservingCyclicTargetsPreparesNextTrialIfNeeded) {
-    model.restartAdaptiveTestWhilePreservingTargets();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(internalModel.nextTrialPreparedIfNeeded());
-}
-
-MODEL_TEST(
-    restartAdaptiveTestWhilePreservingCyclicTargetsResetsAdaptiveMethodTracks) {
-    model.restartAdaptiveTestWhilePreservingTargets();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(adaptiveMethod.tracksResetted());
-}
-
-MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelTestWithTargetReplacement);

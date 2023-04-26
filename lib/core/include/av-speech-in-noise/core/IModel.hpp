@@ -85,7 +85,6 @@ class RunningATestFacade {
     virtual void initialize(const FixedLevelTestWithEachTargetNTimes &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
-    virtual void restartAdaptiveTestWhilePreservingTargets() = 0;
 };
 }
 

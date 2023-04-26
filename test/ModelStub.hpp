@@ -91,11 +91,6 @@ class ModelStub : public RunningATestFacade {
 
     auto consonantResponse() { return consonantResponse_; }
 
-    [[nodiscard]] auto adaptiveTestRestartedWhilePreservingCyclicTargets() const
-        -> bool {
-        return adaptiveTestRestartedWhilePreservingCyclicTargets_;
-    }
-
     [[nodiscard]] auto responseParameters() const -> auto & {
         return responseParameters_;
     }
@@ -146,10 +141,6 @@ class ModelStub : public RunningATestFacade {
         responseParameters_ = p;
     }
 
-    void restartAdaptiveTestWhilePreservingTargets() override {
-        adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
-    }
-
     auto threeKeywords() -> ThreeKeywordsResponse { return threeKeywords_; }
 
     void setKeywordTestResults(KeywordsTestResults k) {
@@ -181,7 +172,6 @@ class ModelStub : public RunningATestFacade {
     bool adaptiveTestInitializedWithEyeTracking_{};
     bool initializedWithCyclicTargets_{};
     bool adaptiveTestInitializedWithCyclicTargetsAndEyeTracking_{};
-    bool adaptiveTestRestartedWhilePreservingCyclicTargets_{};
 };
 }
 
