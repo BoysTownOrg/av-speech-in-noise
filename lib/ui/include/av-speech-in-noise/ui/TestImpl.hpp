@@ -14,7 +14,7 @@ namespace av_speech_in_noise {
 class TestControllerImpl : public TestControl::Observer, public TestController {
   public:
     TestControllerImpl(SessionController &, RunningATestFacade &,
-        SessionControl &, TestControl &, TestPresenter &);
+        RunningATest &, SessionControl &, TestControl &, TestPresenter &);
     void exitTest() override;
     void playTrial() override;
     void declineContinuingTesting() override;
@@ -28,6 +28,7 @@ class TestControllerImpl : public TestControl::Observer, public TestController {
   private:
     SessionController &sessionController;
     RunningATestFacade &model;
+    RunningATest &runningATest;
     SessionControl &sessionControl;
     TestPresenter &presenter;
 };

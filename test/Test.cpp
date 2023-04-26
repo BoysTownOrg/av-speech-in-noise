@@ -63,7 +63,7 @@ void setAudioDevice(SessionControlStub &view, std::string s) {
     view.setAudioDevice(std::move(s));
 }
 
-void setTestComplete(ModelStub &model) { model.setTestComplete(); }
+void setTestComplete(RunningATestStub &model) { model.testComplete_ = true; }
 
 class SessionControllerStub : public SessionController {
   public:
@@ -299,12 +299,13 @@ class Initializing : public PresenterUseCase {
 class TestControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
+    RunningATestStub runningATest;
     SessionControlStub sessionView;
     TestControlStub control;
     SessionControllerStub sessionController;
     TestPresenterStub presenter;
-    TestControllerImpl controller{
-        sessionController, model, sessionView, control, presenter};
+    TestControllerImpl controller{sessionController, model, runningATest,
+        sessionView, control, presenter};
     DecliningContinuingTesting decliningContinuingTesting{control};
     AcceptingContinuingTesting acceptingContinuingTesting{control};
     ExitingTest exitingTest{control};
@@ -367,7 +368,7 @@ void run(PresenterUseCase &useCase, TestPresenter &presenter) {
 
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE_WHEN_COMPLETE( \
     useCase, sessionController)                                                 \
-    setTestComplete(model);                                                     \
+    setTestComplete(runningATest);                                              \
     run(useCase);                                                               \
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController)
 
@@ -530,14 +531,14 @@ TEST_CONTROLLER_TEST(
 }
 
 TEST_CONTROLLER_TEST(showsContinueTestingDialog) {
-    setTestComplete(model);
+    setTestComplete(runningATest);
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
         controller);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.adaptiveTestResultsUpdated());
 }
 
 TEST_CONTROLLER_TEST(completesTaskWhenTestIsComplete) {
-    setTestComplete(model);
+    setTestComplete(runningATest);
     run(notifyingThatUserIsDoneResponding);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.taskCompleted());
 }

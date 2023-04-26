@@ -1,4 +1,5 @@
 #include "TestImpl.hpp"
+
 #include <sstream>
 #include <functional>
 
@@ -9,9 +10,11 @@ static void readyNextTrial(TestPresenter &presenter) {
 }
 
 TestControllerImpl::TestControllerImpl(SessionController &sessionController,
-    RunningATestFacade &model, SessionControl &sessionControl,
-    TestControl &control, TestPresenter &presenter)
+    RunningATestFacade &model, RunningATest &runningATest,
+    SessionControl &sessionControl, TestControl &control,
+    TestPresenter &presenter)
     : sessionController{sessionController}, model{model},
+      runningATest{runningATest},
       sessionControl{sessionControl}, presenter{presenter} {
     control.attach(this);
 }
@@ -43,7 +46,7 @@ void TestControllerImpl::acceptContinuingTesting() {
     readyNextTrial(presenter);
 }
 
-static void ifTestCompleteElse(RunningATestFacade &model,
+static void ifTestCompleteElse(RunningATest &model,
     const std::function<void()> &f, const std::function<void()> &g) {
     if (model.testComplete())
         f();
@@ -51,20 +54,20 @@ static void ifTestCompleteElse(RunningATestFacade &model,
         g();
 }
 
-static void readyNextTrialIfTestIncompleteElse(RunningATestFacade &model,
+static void readyNextTrialIfTestIncompleteElse(RunningATest &model,
     TestPresenter &presenter, const std::function<void()> &f) {
     presenter.hideResponseSubmission();
     ifTestCompleteElse(model, f, [&]() { readyNextTrial(presenter); });
 }
 
-static void notifyIfTestIsCompleteElse(RunningATestFacade &model,
+static void notifyIfTestIsCompleteElse(RunningATest &model,
     SessionController &controller, const std::function<void()> &f) {
     ifTestCompleteElse(
         model, [&]() { notifyThatTestIsComplete(controller); }, f);
 }
 
 void TestControllerImpl::notifyThatUserIsDoneResponding() {
-    readyNextTrialIfTestIncompleteElse(model, presenter, [&]() {
+    readyNextTrialIfTestIncompleteElse(runningATest, presenter, [&]() {
         presenter.completeTask();
         notifyThatTestIsComplete(sessionController);
     });
@@ -72,21 +75,21 @@ void TestControllerImpl::notifyThatUserIsDoneResponding() {
 
 void TestControllerImpl::
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion() {
-    readyNextTrialIfTestIncompleteElse(
-        model, presenter, [&] { presenter.updateAdaptiveTestResults(); });
+    readyNextTrialIfTestIncompleteElse(runningATest, presenter,
+        [&] { presenter.updateAdaptiveTestResults(); });
 }
 
 void TestControllerImpl::
     notifyThatUserIsDoneRespondingAndIsReadyForNextTrial() {
     presenter.hideResponseSubmission();
-    notifyIfTestIsCompleteElse(model, sessionController, [&]() {
+    notifyIfTestIsCompleteElse(runningATest, sessionController, [&]() {
         presenter.updateTrialInformation();
         av_speech_in_noise::playTrial(model, sessionControl, presenter);
     });
 }
 
 void TestControllerImpl::notifyThatUserIsReadyForNextTrial() {
-    notifyIfTestIsCompleteElse(model, sessionController, [&]() {
+    notifyIfTestIsCompleteElse(runningATest, sessionController, [&]() {
         presenter.updateTrialInformation();
         av_speech_in_noise::playTrial(model, sessionControl, presenter);
     });

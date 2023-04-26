@@ -19,7 +19,7 @@ class RunningATestStub : public RunningATest {
     void playLeftSpeakerCalibration(const Calibration &) override {}
     void playRightSpeakerCalibration(const Calibration &) override {}
     void submit(const coordinate_response_measure::Response &) override {}
-    auto testComplete() -> bool override { return false; }
+    auto testComplete() -> bool override { return testComplete_; }
     auto audioDevices() -> AudioDevices override { return audioDevices_; }
     auto trialNumber() -> int override { return trialNumber_; }
     auto targetFileName() -> std::string override { return targetFileName_; }
@@ -33,6 +33,7 @@ class RunningATestStub : public RunningATest {
     const Observer *observer{};
     std::string targetFileName_;
     int trialNumber_{};
+    bool testComplete_{};
 };
 }
 
