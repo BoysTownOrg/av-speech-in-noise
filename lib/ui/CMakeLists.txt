@@ -11,7 +11,8 @@ add_library(
   src/TestSetupImpl.cpp
   src/ChooseKeywords.cpp
   src/Syllables.cpp
-  src/EyeTrackerCalibration.cpp)
+  src/EyeTrackerCalibration.cpp
+  src/RevealImage.cpp)
 target_include_directories(
   av-speech-in-noise-ui-lib
   PUBLIC include

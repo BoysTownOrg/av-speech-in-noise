@@ -3,11 +3,13 @@
 
 #include <av-speech-in-noise/playlist/RandomizedTargetPlaylists.hpp>
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+#include <av-speech-in-noise/ui/RevealImage.hpp>
 
 #include <random>
 
 namespace av_speech_in_noise {
-class MersenneTwisterRandomizer : public target_list::Randomizer,
+class MersenneTwisterRandomizer : public Shuffler,
+                                  public target_list::Randomizer,
                                   public Randomizer {
     std::mt19937 engine{std::random_device{}()};
 

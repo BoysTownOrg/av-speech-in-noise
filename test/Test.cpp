@@ -116,6 +116,12 @@ class TestPresenterStub : public TestPresenter {
         return responseSubmissionHidden_;
     }
 
+    [[nodiscard]] auto exitTestButtonHidden() const -> bool {
+        return exitTestButtonHidden_;
+    }
+
+    void hideExitTestButton() { exitTestButtonHidden_ = true; }
+
     void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
 
     [[nodiscard]] auto taskCompleted() const -> bool { return taskCompleted_; }
@@ -123,6 +129,7 @@ class TestPresenterStub : public TestPresenter {
     void completeTask() override { taskCompleted_ = true; }
 
   private:
+    bool exitTestButtonHidden_{};
     bool taskCompleted_{};
     bool trialInformationUpdated_{};
     bool responseSubmissionHidden_{};
@@ -201,6 +208,21 @@ class NotifyingThatUserIsDoneResponding : public ControllerUseCase {
         : controller{controller} {}
 
     void run() override { controller.notifyThatUserIsDoneResponding(); }
+
+  private:
+    TestControllerImpl &controller;
+};
+
+class NotifyingThatUserHasRespondedButTrialIsNotQuiteDone
+    : public ControllerUseCase {
+  public:
+    explicit NotifyingThatUserHasRespondedButTrialIsNotQuiteDone(
+        TestControllerImpl &controller)
+        : controller{controller} {}
+
+    void run() override {
+        controller.notifyThatUserHasRespondedButTrialIsNotQuiteDone();
+    }
 
   private:
     TestControllerImpl &controller;
@@ -310,6 +332,8 @@ class TestControllerTests : public ::testing::Test {
             controller};
     NotifyingThatUserIsDoneResponding notifyingThatUserIsDoneResponding{
         controller};
+    NotifyingThatUserHasRespondedButTrialIsNotQuiteDone
+        notifyingThatUserHasRespondedButTrialIsNotQuiteDone{controller};
     NotifyingThatUserIsReadyForNextTrial notifyingThatUserIsReadyForNextTrial{
         controller};
     NotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial
@@ -505,6 +529,18 @@ TEST_CONTROLLER_TEST(
         notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial, presenter);
 }
 
+TEST_CONTROLLER_TEST(
+    hidesExitTestButtonAfterUserHasRespondedButTrialIsNotQuiteDone) {
+    run(notifyingThatUserHasRespondedButTrialIsNotQuiteDone);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.exitTestButtonHidden());
+}
+
+TEST_CONTROLLER_TEST(
+    hidesResponseSubmissionAfterUserHasRespondedButTrialIsNotQuiteDone) {
+    run(notifyingThatUserHasRespondedButTrialIsNotQuiteDone);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.responseSubmissionHidden());
+}
+
 TEST_CONTROLLER_TEST(hidesResponseSubmissionAfterUserIsDoneResponding) {
     run(notifyingThatUserIsDoneResponding);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.responseSubmissionHidden());
@@ -568,6 +604,11 @@ TEST_PRESENTER_TEST(stopsTaskAfterStopping) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.stopped());
 }
 
+TEST_PRESENTER_TEST(hidesExitTestButton) {
+    presenter.hideExitTestButton();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.exitTestButtonHidden());
+}
+
 TEST_PRESENTER_TEST(hidesExitTestButtonAfterTrialStarts) {
     presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.exitTestButtonHidden());
@@ -596,6 +637,11 @@ TEST_PRESENTER_TEST(showsExitTestButtonWhenTrialCompletes) {
 TEST_PRESENTER_TEST(showsTaskResponseSubmissionWhenTrialCompletes) {
     model.completeTrial();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionShown());
+}
+
+TEST_PRESENTER_TEST(showsExitTestButtonAfterNextTrialIsReady) {
+    presenter.notifyThatNextTrialIsReady();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.exitTestButtonShown());
 }
 
 TEST_PRESENTER_TEST(hidesContinueTestingDialogAfterNextTrialIsReady) {

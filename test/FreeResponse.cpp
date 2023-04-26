@@ -2,8 +2,12 @@
 #include "ModelStub.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
+#include "PuzzleStub.hpp"
+
 #include <av-speech-in-noise/ui/FreeResponse.hpp>
+
 #include <gtest/gtest.h>
+
 #include <utility>
 
 namespace av_speech_in_noise::submitting_free_response {
@@ -79,24 +83,46 @@ class InteractorStub : public Interactor {
     FreeResponse freeResponse_;
 };
 
-class ControllerTests : public ::testing::Test {
+class TimerStub : public Timer {
+  public:
+    void scheduleCallbackAfterSeconds(double) override {
+        callbackScheduled_ = true;
+    }
+
+    [[nodiscard]] auto callbackScheduled() const { return callbackScheduled_; }
+
+    void clearCallbackCount() { callbackScheduled_ = false; }
+
+    void callback() { observer->callback(); }
+
+    void attach(Observer *a) override { observer = a; }
+
+  private:
+    Observer *observer{};
+    bool callbackScheduled_{};
+};
+
+class FreeResponseControllerTests : public ::testing::Test {
   protected:
     InteractorStub model;
     ControlStub control;
+    PuzzleStub puzzle;
+    TimerStub timer;
     TestControllerStub testController;
-    Controller controller{testController, model, control};
+    Controller controller{testController, model, control, puzzle, timer};
 };
 
-class PresenterTests : public ::testing::Test {
+class FreeResponsePresenterTests : public ::testing::Test {
   protected:
     TestViewStub testView;
     ViewStub view;
-    Presenter presenter{testView, view};
+    PuzzleStub puzzle;
+    Presenter presenter{testView, view, puzzle};
 };
 
-#define FREE_RESPONSE_CONTROLLER_TEST(a) TEST_F(ControllerTests, a)
+#define FREE_RESPONSE_CONTROLLER_TEST(a) TEST_F(FreeResponseControllerTests, a)
 
-#define FREE_RESPONSE_PRESENTER_TEST(a) TEST_F(PresenterTests, a)
+#define FREE_RESPONSE_PRESENTER_TEST(a) TEST_F(FreeResponsePresenterTests, a)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).freeResponseSubmissionHidden())
@@ -134,7 +160,7 @@ FREE_RESPONSE_PRESENTER_TEST(presenterClearsFlagWhenShowingResponseSubmission) {
 }
 
 FREE_RESPONSE_CONTROLLER_TEST(
-    responderSubmitsFreeResponseAfterResponseButtonIsClicked) {
+    controllerSubmitsFreeResponseAfterResponseButtonIsClicked) {
     control.setFreeResponse("a");
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -142,15 +168,96 @@ FREE_RESPONSE_CONTROLLER_TEST(
 }
 
 FREE_RESPONSE_CONTROLLER_TEST(
-    responderSubmitsFlaggedFreeResponseAfterResponseButtonIsClicked) {
+    controllerSubmitsFlaggedFreeResponseAfterResponseButtonIsClicked) {
     control.setFlagged();
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.response().flagged);
 }
 
 FREE_RESPONSE_CONTROLLER_TEST(
-    responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
+    controllerNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        testController.notifiedThatUserIsDoneResponding());
+}
+
+FREE_RESPONSE_PRESENTER_TEST(presenterResetsPuzzleOnStart) {
+    presenter.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.hasBeenReset());
+}
+
+FREE_RESPONSE_CONTROLLER_TEST(
+    controllerNotifiesThatUserHasRespondedButTrialIsNotQuiteDoneAfterResponseButtonIsClickedWhenUsingPuzzle) {
+    controller.initialize(true);
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
+}
+
+FREE_RESPONSE_CONTROLLER_TEST(
+    controllerNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClickedIfFlaggedAndUsingPuzzle) {
+    controller.initialize(true);
+    control.setFlagged();
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        testController.notifiedThatUserIsDoneResponding());
+}
+
+FREE_RESPONSE_CONTROLLER_TEST(
+    controllerShowsPuzzleAfterResponseButtonIsClickedWhenUsingPuzzle) {
+    controller.initialize(true);
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.shown());
+}
+
+FREE_RESPONSE_CONTROLLER_TEST(
+    controllerSchedulesCallbackAfterResponseButtonIsClickedWhenUsingPuzzle) {
+    controller.initialize(true);
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
+}
+
+FREE_RESPONSE_CONTROLLER_TEST(
+    controllerAdvancesPuzzleAfterFirstCallbackWhenUsingPuzzle) {
+    controller.initialize(true);
+    notifyThatSubmitButtonHasBeenClicked(control);
+    timer.callback();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.advanced());
+}
+
+FREE_RESPONSE_CONTROLLER_TEST(
+    controllerHidesPuzzleAfterSecondCallbackWhenUsingPuzzle) {
+    controller.initialize(true);
+    notifyThatSubmitButtonHasBeenClicked(control);
+    timer.callback();
+    timer.callback();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.hidden());
+}
+
+FREE_RESPONSE_CONTROLLER_TEST(controllerOnlyAdvancesPuzzleOnceWhenUsingPuzzle) {
+    controller.initialize(true);
+    notifyThatSubmitButtonHasBeenClicked(control);
+    timer.callback();
+    puzzle.clearAdvanced();
+    timer.callback();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(puzzle.advanced());
+}
+
+FREE_RESPONSE_CONTROLLER_TEST(
+    controllerSchedulesCallbackAfterPuzzleAdvancedWhenUsingPuzzle) {
+    controller.initialize(true);
+    notifyThatSubmitButtonHasBeenClicked(control);
+    timer.clearCallbackCount();
+    timer.callback();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
+}
+
+FREE_RESPONSE_CONTROLLER_TEST(
+    controllerNotifiesThatUserIsDoneRespondingAfterPuzzleHiddenWhenUsingPuzzle) {
+    controller.initialize(true);
+    notifyThatSubmitButtonHasBeenClicked(control);
+    timer.callback();
+    timer.callback();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
 }

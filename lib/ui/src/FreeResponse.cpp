@@ -1,10 +1,16 @@
 #include "FreeResponse.hpp"
 
 namespace av_speech_in_noise::submitting_free_response {
-Controller::Controller(
-    TestController &testController, Interactor &interactor, Control &control)
-    : testController{testController}, interactor{interactor}, control{control} {
+Controller::Controller(TestController &testController, Interactor &interactor,
+    Control &control, Puzzle &puzzle, Timer &timer)
+    : testController{testController},
+      interactor{interactor}, control{control}, puzzle{puzzle}, timer{timer} {
     control.attach(this);
+    timer.attach(this);
+}
+
+void Controller::initialize(bool usingPuzzle) {
+    this->usingPuzzle = usingPuzzle;
 }
 
 void Controller::notifyThatSubmitButtonHasBeenClicked() {
@@ -12,13 +18,34 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
     freeResponse.flagged = control.flagged();
     freeResponse.response = control.response();
     interactor.submit(freeResponse);
-    testController.notifyThatUserIsDoneResponding();
+    if (usingPuzzle && !freeResponse.flagged) {
+        testController.notifyThatUserHasRespondedButTrialIsNotQuiteDone();
+        puzzle.show();
+        readyToAdvancePuzzle_ = true;
+        timer.scheduleCallbackAfterSeconds(1.5);
+    } else {
+        testController.notifyThatUserIsDoneResponding();
+    }
 }
 
-Presenter::Presenter(TestView &testView, View &view)
-    : testView{testView}, view{view} {}
+void Controller::callback() {
+    if (readyToAdvancePuzzle_) {
+        puzzle.advance();
+        readyToAdvancePuzzle_ = false;
+        timer.scheduleCallbackAfterSeconds(1.5);
+    } else {
+        puzzle.hide();
+        testController.notifyThatUserIsDoneResponding();
+    }
+}
 
-void Presenter::start() { testView.showNextTrialButton(); }
+Presenter::Presenter(TestView &testView, View &view, Puzzle &puzzle)
+    : testView{testView}, view{view}, puzzle{puzzle} {}
+
+void Presenter::start() {
+    puzzle.reset();
+    testView.showNextTrialButton();
+}
 
 void Presenter::stop() { view.hide(); }
 

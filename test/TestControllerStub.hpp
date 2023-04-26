@@ -43,7 +43,17 @@ class TestControllerStub : public TestController {
         notifiedThatUserIsDoneRespondingAndIsReadyForNextTrial_ = true;
     }
 
+    [[nodiscard]] auto
+    notifiedThatUserHasRespondedButTrialIsNotQuiteDone() const -> bool {
+        return notifiedThatUserHasRespondedButTrialIsNotQuiteDone_;
+    }
+
+    void notifyThatUserHasRespondedButTrialIsNotQuiteDone() override {
+        notifiedThatUserHasRespondedButTrialIsNotQuiteDone_ = true;
+    }
+
   private:
+    bool notifiedThatUserHasRespondedButTrialIsNotQuiteDone_{};
     bool notifiedThatUserIsDoneRespondingAndIsReadyForNextTrial_{};
     bool notifiedThatUserIsReadyForNextTrial_{};
     bool

@@ -4,10 +4,12 @@
 #include "AppKitView.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
-#include "av-speech-in-noise/Model.hpp"
+#include "av-speech-in-noise/ui/RevealImage.hpp"
+#include "masking-images.h"
+
+#include <av-speech-in-noise/Model.hpp>
 #include "av-speech-in-noise/core/AudioRecording.hpp"
 #include "av-speech-in-noise/core/EyeTracking.hpp"
-
 #include <av-speech-in-noise/playlist/PredeterminedTargetPlaylist.hpp>
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/ui/PassFail.hpp>
@@ -404,8 +406,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         coordinateResponseMeasureNSView};
     NSLog(@"Initializing presenters...");
     static submitting_consonant::PresenterImpl consonantPresenter{consonantUI};
+    static MaskedCoreGraphicsImage maskedImage{subjectNSWindow};
+    static RevealImage revealImagePuzzle{maskedImage, randomizer, 12, 17};
     static submitting_free_response::Presenter freeResponsePresenter{
-        testUI, freeResponseUI};
+        testUI, freeResponseUI, revealImagePuzzle};
     static submitting_keywords::PresenterImpl chooseKeywordsPresenter{model,
         testUI, chooseKeywordsUI,
         submitting_keywords::sentencesWithThreeKeywords(
@@ -452,8 +456,10 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_free_response::InteractorImpl
         submittingFreeResponseInteractor{
             fixedLevelMethod, recognitionTestModel, outputFile};
+    static TimerImpl puzzleTimer;
     static submitting_free_response::Controller freeResponseController{
-        testController, submittingFreeResponseInteractor, freeResponseUI};
+        testController, submittingFreeResponseInteractor, freeResponseUI,
+        revealImagePuzzle, puzzleTimer};
     static submitting_pass_fail::InteractorImpl submittingPassFailInteractor{
         adaptiveMethod, recognitionTestModel, outputFile};
     static submitting_pass_fail::Controller passFailController{
@@ -509,7 +515,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
                 correctKeywordsPresenter},
             {Method::fixedLevelConsonants, consonantPresenter},
             {Method::adaptivePassFail, passFailPresenter},
-            {Method::adaptivePassFailWithEyeTracking, passFailPresenter}}};
+            {Method::adaptivePassFailWithEyeTracking, passFailPresenter}},
+        revealImagePuzzle, freeResponseController};
     static TestSetupController testSetupController{*testSetupUI,
         sessionController, sessionUI, testSetupPresenter, model,
         testSettingsInterpreter, textFileReader};

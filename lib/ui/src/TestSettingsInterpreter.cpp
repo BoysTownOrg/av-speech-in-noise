@@ -1,4 +1,5 @@
 #include "TestSettingsInterpreter.hpp"
+#include "FreeResponse.hpp"
 #include <av-speech-in-noise/Model.hpp>
 
 #include <gsl/gsl>
@@ -401,9 +402,26 @@ static void initialize(RunningATestFacade &model, Method method,
     }
 }
 
+static auto localUrlFromPath(const std::string &path) -> LocalUrl {
+    LocalUrl url;
+    url.path = path;
+    return url;
+}
+
 void TestSettingsInterpreterImpl::initialize(RunningATestFacade &model,
     SessionController &sessionController, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr) {
+    std::stringstream stream{contents};
+    auto usingPuzzle = false;
+    for (std::string line; std::getline(stream, line);) {
+        const auto key{entryName(line)};
+        const auto value{entry(line)};
+        if (key == name(TestSetting::puzzle)) {
+            puzzle.initialize(localUrlFromPath(value));
+            usingPuzzle = true;
+        }
+    }
+    freeResponseController.initialize(usingPuzzle);
     const auto method{av_speech_in_noise::method(contents)};
     av_speech_in_noise::initialize(
         model, method, contents, identity, startingSnr);
@@ -431,6 +449,9 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
 }
 
 TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
-    std::map<Method, TaskPresenter &> taskPresenters)
-    : taskPresenters{std::move(taskPresenters)} {}
+    std::map<Method, TaskPresenter &> taskPresenters,
+    submitting_free_response::Puzzle &puzzle,
+    FreeResponseController &freeResponseController)
+    : taskPresenters{std::move(taskPresenters)}, puzzle{puzzle},
+      freeResponseController{freeResponseController} {}
 }

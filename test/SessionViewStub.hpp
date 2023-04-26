@@ -25,7 +25,7 @@ class SessionViewStub : public SessionView {
 
     void setSubject(Screen s) { subjectScreen_ = std::move(s); }
 
-    auto subjectScreen() -> Screen { return subjectScreen_; }
+    auto subjectScreen() -> Screen override { return subjectScreen_; }
 
     auto screens() -> std::vector<Screen> override { return screens_; }
 
