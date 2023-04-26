@@ -4,6 +4,7 @@
 #include "TestSetup.hpp"
 #include "Session.hpp"
 #include "Input.hpp"
+#include "av-speech-in-noise/core/IRecognitionTestModel.hpp"
 
 #include <av-speech-in-noise/core/TextFileReader.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
@@ -41,7 +42,7 @@ class TestSetupController : public TestSetupControl::Observer {
   public:
     TestSetupController(TestSetupControl &, SessionController &,
         SessionControl &, TestSetupPresenter &, RunningATestFacade &,
-        TestSettingsInterpreter &, TextFileReader &);
+        RunningATest &, TestSettingsInterpreter &, TextFileReader &);
     void notifyThatConfirmButtonHasBeenClicked() override;
     void notifyThatPlayCalibrationButtonHasBeenClicked() override;
     void notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() override;
@@ -53,6 +54,7 @@ class TestSetupController : public TestSetupControl::Observer {
     SessionControl &sessionControl;
     TestSetupPresenter &presenter;
     RunningATestFacade &model;
+    RunningATest &runningATest;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
 };

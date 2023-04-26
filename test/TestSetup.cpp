@@ -1,3 +1,4 @@
+#include "RunningATestStub.hpp"
 #include "assert-utility.hpp"
 #include "ModelStub.hpp"
 #include "SessionViewStub.hpp"
@@ -193,7 +194,7 @@ void run(UseCase &useCase) { useCase.run(); }
 
 class CalibrationUseCase : public virtual UseCase {
   public:
-    virtual auto calibration(ModelStub &) -> Calibration = 0;
+    virtual auto calibration(RunningATestStub &) -> Calibration = 0;
 };
 
 class PlayingCalibration : public CalibrationUseCase {
@@ -203,8 +204,8 @@ class PlayingCalibration : public CalibrationUseCase {
 
     void run() override { control.playCalibration(); }
 
-    auto calibration(ModelStub &m) -> Calibration override {
-        return m.calibration();
+    auto calibration(RunningATestStub &m) -> Calibration override {
+        return m.calibration_;
     }
 
   private:
@@ -218,8 +219,8 @@ class PlayingLeftSpeakerCalibration : public CalibrationUseCase {
 
     void run() override { control.playLeftSpeakerCalibration(); }
 
-    auto calibration(ModelStub &m) -> Calibration override {
-        return m.leftSpeakerCalibration();
+    auto calibration(RunningATestStub &m) -> Calibration override {
+        return m.leftSpeakerCalibration_;
     }
 
   private:
@@ -233,8 +234,8 @@ class PlayingRightSpeakerCalibration : public CalibrationUseCase {
 
     void run() override { control.playRightSpeakerCalibration(); }
 
-    auto calibration(ModelStub &m) -> Calibration override {
-        return m.rightSpeakerCalibration();
+    auto calibration(RunningATestStub &m) -> Calibration override {
+        return m.rightSpeakerCalibration_;
     }
 
   private:
@@ -276,6 +277,7 @@ class SessionControllerStub : public SessionController {
 class TestSetupControllerTests : public ::testing::Test {
   protected:
     ModelStub model;
+    RunningATestStub runningATest;
     SessionControlStub sessionView;
     TestSetupControlStub control;
     Calibration calibration;
@@ -284,7 +286,8 @@ class TestSetupControllerTests : public ::testing::Test {
     SessionControllerStub sessionController;
     TestSetupPresenterStub presenter;
     TestSetupController controller{control, sessionController, sessionView,
-        presenter, model, testSettingsInterpreter, textFileReader};
+        presenter, model, runningATest, testSettingsInterpreter,
+        textFileReader};
     PlayingCalibration playingCalibration{control};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{control};
@@ -309,28 +312,28 @@ class TestSetupControllerTests : public ::testing::Test {
         calibration.level.dB_SPL = 1;
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            1, useCase.calibration(model).level.dB_SPL);
+            1, useCase.calibration(runningATest).level.dB_SPL);
     }
 
     void assertPassesAudioFileUrl(CalibrationUseCase &useCase) {
         calibration.fileUrl.path = "a";
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"a"}, useCase.calibration(model).fileUrl.path);
+            std::string{"a"}, useCase.calibration(runningATest).fileUrl.path);
     }
 
     void assertPassesAudioDevice(CalibrationUseCase &useCase) {
         setAudioDevice(sessionView, "b");
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"b"}, useCase.calibration(model).audioDevice);
+            std::string{"b"}, useCase.calibration(runningATest).audioDevice);
     }
 
     void assertPassesFullScaleLevel(CalibrationUseCase &useCase) {
         calibration.fullScaleLevel.dB_SPL = 1;
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            1, useCase.calibration(model).fullScaleLevel.dB_SPL);
+            1, useCase.calibration(runningATest).fullScaleLevel.dB_SPL);
     }
 };
 
@@ -398,6 +401,7 @@ class RequestFailingModel : public RunningATestFacade {
 class TestSetupFailureTests : public ::testing::Test {
   protected:
     RequestFailingModel failingModel;
+    RunningATestStub runningATest;
     SessionControlStub sessionControl;
     SessionViewStub sessionView;
     TestSetupViewStub view;
@@ -413,6 +417,7 @@ class TestSetupFailureTests : public ::testing::Test {
         sessionControl,
         testSetupPresenter,
         failingModel,
+        runningATest,
         testSettingsInterpreter,
         textFileReader,
     };
@@ -629,21 +634,24 @@ TEST_SETUP_FAILURE_TEST(
 
 TEST_SETUP_FAILURE_TEST(
     playingCalibrationShowsErrorMessageWhenModelFailsRequest) {
-    failingModel.setErrorMessage("a");
+    runningATest.errorMessage = "a";
+    runningATest.failOnRequest = true;
     control.playCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
 
 TEST_SETUP_FAILURE_TEST(
     playingLeftSpeakerCalibrationShowsErrorMessageWhenModelFailsRequest) {
-    failingModel.setErrorMessage("a");
+    runningATest.errorMessage = "a";
+    runningATest.failOnRequest = true;
     control.playLeftSpeakerCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
 
 TEST_SETUP_FAILURE_TEST(
     playingRightSpeakerCalibrationShowsErrorMessageWhenModelFailsRequest) {
-    failingModel.setErrorMessage("a");
+    runningATest.errorMessage = "a";
+    runningATest.failOnRequest = true;
     control.playRightSpeakerCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }

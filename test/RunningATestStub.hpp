@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_TEST_RUNNINGATESTSTUB_HPP_
 #define AV_SPEECH_IN_NOISE_TEST_RUNNINGATESTSTUB_HPP_
 
+#include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/core/IRecognitionTestModel.hpp>
 
 namespace av_speech_in_noise {
@@ -15,9 +16,21 @@ class RunningATestStub : public RunningATest {
         observer = p;
     }
     void playTrial(const AudioSettings &) override {}
-    void playCalibration(const Calibration &) override {}
-    void playLeftSpeakerCalibration(const Calibration &) override {}
-    void playRightSpeakerCalibration(const Calibration &) override {}
+    void playCalibration(const Calibration &c) override {
+        calibration_ = c;
+        if (failOnRequest)
+            throw RunningATestFacade::RequestFailure{errorMessage};
+    }
+    void playLeftSpeakerCalibration(const Calibration &c) override {
+        leftSpeakerCalibration_ = c;
+        if (failOnRequest)
+            throw RunningATestFacade::RequestFailure{errorMessage};
+    }
+    void playRightSpeakerCalibration(const Calibration &c) override {
+        rightSpeakerCalibration_ = c;
+        if (failOnRequest)
+            throw RunningATestFacade::RequestFailure{errorMessage};
+    }
     void submit(const coordinate_response_measure::Response &) override {}
     auto testComplete() -> bool override { return testComplete_; }
     auto audioDevices() -> AudioDevices override { return audioDevices_; }
@@ -26,14 +39,19 @@ class RunningATestStub : public RunningATest {
     void prepareNextTrialIfNeeded() override {}
     auto playTrialTime() -> std::string override { return {}; }
 
+    Calibration calibration_;
+    Calibration leftSpeakerCalibration_;
+    Calibration rightSpeakerCalibration_;
     AudioDevices audioDevices_;
     Test test;
     RunningATestFacade::Observer *facadeObserver;
     const TestMethod *testMethod{};
     const Observer *observer{};
     std::string targetFileName_;
+    std::string errorMessage;
     int trialNumber_{};
     bool testComplete_{};
+    bool failOnRequest{};
 };
 }
 
