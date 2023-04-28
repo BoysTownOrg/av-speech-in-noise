@@ -1,7 +1,6 @@
 #ifndef AV_SPEECH_IN_NOISE_TEST_RUNNINGATESTSTUB_HPP_
 #define AV_SPEECH_IN_NOISE_TEST_RUNNINGATESTSTUB_HPP_
 
-#include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/core/IRecognitionTestModel.hpp>
 
 namespace av_speech_in_noise {
