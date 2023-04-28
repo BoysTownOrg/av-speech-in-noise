@@ -82,7 +82,6 @@ class RunningATestFacade {
     virtual void initializeWithSilentIntervalTargets(
         const FixedLevelTest &) = 0;
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
-    virtual void initialize(const FixedLevelTestWithEachTargetNTimes &) = 0;
 };
 }
 

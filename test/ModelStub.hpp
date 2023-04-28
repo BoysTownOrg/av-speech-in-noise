@@ -111,11 +111,6 @@ class ModelStub : public RunningATestFacade {
         fixedLevelTestWithSilentIntervalTargetsInitialized_ = true;
     }
 
-    void initialize(const FixedLevelTestWithEachTargetNTimes &p) override {
-        fixedLevelTestWithEachTargetNTimes_ = p;
-        fixedLevelTestWithEachTargetNTimesInitialized_ = true;
-    }
-
     void initializeWithAllTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithAllTargetsInitialized_ = true;

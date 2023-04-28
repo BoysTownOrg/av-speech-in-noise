@@ -87,13 +87,6 @@ void RunningATestFacadeImpl::initializeWithSilentIntervalTargets(
     initializeTestWithPossiblePeripheral(fixedLevelMethod, test);
 }
 
-void RunningATestFacadeImpl::initialize(
-    const FixedLevelTestWithEachTargetNTimes &test) {
-    eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
-    av_speech_in_noise::initialize(fixedLevelMethod, test, eachTargetNTimes);
-    initializeTestWithPossiblePeripheral(fixedLevelMethod, test);
-}
-
 void RunningATestFacadeImpl::initializeTestWithPossiblePeripheral(
     TestMethod &method, const Test &test) {
     switch (test.peripheral) {

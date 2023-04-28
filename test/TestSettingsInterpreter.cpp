@@ -78,10 +78,6 @@ auto fixedLevelTest(ModelStub &m) -> FixedLevelTest {
     return m.fixedLevelTest();
 }
 
-auto fixedLevelFixedTrialsTest(ModelStub &m) -> FixedLevelFixedTrialsTest {
-    return m.fixedLevelFixedTrialsTest();
-}
-
 auto fixedLevelTestWithEachTargetNTimes(ModelStub &m)
     -> const FixedLevelTestWithEachTargetNTimes & {
     return m.fixedLevelTestWithEachTargetNTimes();
@@ -180,27 +176,8 @@ void assertDefaultAdaptiveTestInitialized(ModelStub &model) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.defaultAdaptiveTestInitialized());
 }
 
-void assertFixedLevelTestWithSilentIntervalTargetsInitialized(
-    ModelStub &model) {
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        model.fixedLevelTestWithSilentIntervalTargetsInitialized());
-}
-
-void assertDefaultFixedLevelTestInitialized(ModelStub &model) {
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.defaultFixedLevelTestInitialized());
-}
-
 auto adaptiveTestIdentity(ModelStub &model) -> TestIdentity {
     return adaptiveTest(model).identity;
-}
-
-auto fixedLevelTestIdentity(ModelStub &model) -> TestIdentity {
-    return fixedLevelTest(model).identity;
-}
-
-auto fixedLevelTestWithEachTargetNTimesIdentity(ModelStub &model)
-    -> TestIdentity {
-    return model.fixedLevelTestWithEachTargetNTimes().identity;
 }
 
 void setSubjectId(TestIdentity &identity, std::string s) {

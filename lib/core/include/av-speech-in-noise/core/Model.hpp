@@ -29,7 +29,6 @@ class RunningATestFacadeImpl : public RunningATestFacade {
         const FixedLevelFixedTrialsTest &) override;
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
     void initializeWithAllTargets(const FixedLevelTest &) override;
-    void initialize(const FixedLevelTestWithEachTargetNTimes &) override;
 
   private:
     void initializeTest_(const AdaptiveTest &);

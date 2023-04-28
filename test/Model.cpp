@@ -588,30 +588,6 @@ class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingFixedLevelTestWithEachTargetNTimes
-    : public InitializingTestUseCase {
-    FixedLevelTestWithEachTargetNTimes test_;
-    FixedLevelMethodStub *method;
-
-  public:
-    explicit InitializingFixedLevelTestWithEachTargetNTimes(
-        FixedLevelMethodStub *method)
-        : method{method} {}
-
-    void run(RunningATestFacadeImpl &model) override {
-        model.initialize(test_);
-    }
-
-    void run(RunningATestFacadeImpl &model,
-        const FixedLevelTestWithEachTargetNTimes &test) {
-        model.initialize(test);
-    }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
-};
-
 class InitializingFixedLevelTestWithAllTargetsAndAudioRecording
     : public InitializingFixedLevelTest {
     FixedLevelTest test_;
@@ -688,8 +664,6 @@ class ModelTests : public ::testing::Test {
     InitializingFixedLevelTestWithAllTargetsAndEyeTracking
         initializingFixedLevelTestWithAllTargetsAndEyeTracking{
             &fixedLevelMethod};
-    InitializingFixedLevelTestWithEachTargetNTimes
-        initializingFixedLevelTestWithEachTargetNTimes{&fixedLevelMethod};
     InitializingFixedLevelTestWithAllTargetsAndAudioRecording
         initializingFixedLevelTestWithAllTargetsAndAudioRecording{
             &fixedLevelMethod};
@@ -1089,16 +1063,6 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
-    initializingFixedLevelTestWithEachTargetNTimesInitializesFixedLevelMethod) {
-    initializingFixedLevelTestWithEachTargetNTimes.run(
-        model, fixedLevelTestWithEachTargetNTimes);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &static_cast<const FixedLevelTest &>(
-            std::as_const(fixedLevelTestWithEachTargetNTimes)),
-        fixedLevelMethod.test());
-}
-
-MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementInitializesWithTargetsWithReplacement) {
     assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithTargetReplacement,
@@ -1137,19 +1101,6 @@ MODEL_TEST(
         everyTargetOnce);
 }
 
-MODEL_TEST(
-    initializeFixedLevelTestWithEachTargetNTimesInitializesWithEachTargetNTimes) {
-    assertInitializesFixedLevelTestWithTargetPlaylist(
-        initializingFixedLevelTestWithEachTargetNTimes, eachTargetNTimes);
-}
-
-MODEL_TEST(initializeFixedLevelTestWithEachTargetNTimesSetsTargetRepeats) {
-    fixedLevelTestWithEachTargetNTimes.timesEachTargetIsPlayed = 2;
-    initializingFixedLevelTestWithEachTargetNTimes.run(
-        model, fixedLevelTestWithEachTargetNTimes);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(gsl::index{1}, eachTargetNTimes.repeats());
-}
-
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(
         initializingDefaultAdaptiveTest, targetsWithReplacementReader);
@@ -1170,12 +1121,6 @@ MODEL_TEST(
     assertInitializesAdaptiveMethod(
         initializingAdaptiveTestWithCyclicTargetsAndEyeTracking,
         cyclicTargetsReader);
-}
-
-MODEL_TEST(
-    initializingFixedLevelTestWithEachTargetNTimesInitializesInternalModel) {
-    assertInitializesInternalModel(
-        initializingFixedLevelTestWithEachTargetNTimes);
 }
 
 MODEL_TEST(
