@@ -5,6 +5,7 @@
 #include "TestSetupImpl.hpp"
 #include "SessionController.hpp"
 
+#include "av-speech-in-noise/core/IAdaptiveMethod.hpp"
 #include "av-speech-in-noise/core/IFixedLevelMethod.hpp"
 #include "av-speech-in-noise/core/IRecognitionTestModel.hpp"
 #include "av-speech-in-noise/core/TargetPlaylist.hpp"
@@ -164,8 +165,10 @@ constexpr auto name(TestSetting p) -> const char * {
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
     TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>,
-        RunningATest &, FixedLevelMethod &, RunningATest::Observer &,
-        RunningATest::Observer &, FiniteTargetPlaylistWithRepeatables &,
+        RunningATest &, AdaptiveMethod &, FixedLevelMethod &,
+        RunningATest::Observer &, RunningATest::Observer &,
+        TargetPlaylistReader &, TargetPlaylistReader &,
+        FiniteTargetPlaylistWithRepeatables &,
         FiniteTargetPlaylistWithRepeatables &,
         FiniteTargetPlaylistWithRepeatables &, RepeatableFiniteTargetPlaylist &,
         TargetPlaylist &, submitting_free_response::Puzzle &,
@@ -182,9 +185,12 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
 
     std::map<Method, TaskPresenter &> taskPresenters;
     RunningATest &runningATest;
+    AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
     RunningATest::Observer &eyeTracking;
     RunningATest::Observer &audioRecording;
+    TargetPlaylistReader &cyclicTargetsReader;
+    TargetPlaylistReader &targetsWithReplacementReader;
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets;
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce;
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets;

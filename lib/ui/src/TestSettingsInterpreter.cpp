@@ -1,6 +1,4 @@
 #include "TestSettingsInterpreter.hpp"
-#include "FreeResponse.hpp"
-#include <av-speech-in-noise/Model.hpp>
 
 #include <gsl/gsl>
 
@@ -305,6 +303,11 @@ static void initializeFixedLevelTestWithEachTargetNTimes(Method method,
     f(test);
 }
 
+static void initialize(AdaptiveMethod &method, const AdaptiveTest &test,
+    TargetPlaylistReader &reader) {
+    method.initialize(test, &reader);
+}
+
 static void initialize(RunningATest &model, TestMethod &method,
     const Test &test, RunningATest::Observer *observer) {
     model.initialize(&method, test, observer);
@@ -329,40 +332,55 @@ void TestSettingsInterpreterImpl::initialize_(RunningATestFacade &model,
             startingSnr, [&](const AdaptiveTest &test) {
                 auto test_{test};
                 test_.audioChannelOption = AudioChannelOption::delayedMasker;
-                model.initialize(test_);
+                av_speech_in_noise::initialize(
+                    adaptiveMethod, test_, targetsWithReplacementReader);
+                av_speech_in_noise::initialize(
+                    runningATest, adaptiveMethod, test_, nullptr);
             });
     case Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const AdaptiveTest &test) {
                 auto test_{test};
                 test_.audioChannelOption = AudioChannelOption::singleSpeaker;
-                model.initialize(test_);
+                av_speech_in_noise::initialize(
+                    adaptiveMethod, test_, targetsWithReplacementReader);
+                av_speech_in_noise::initialize(
+                    runningATest, adaptiveMethod, test_, nullptr);
             });
     case Method::adaptiveCorrectKeywords:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const AdaptiveTest &test) {
-                model.initializeWithCyclicTargets(test);
+                av_speech_in_noise::initialize(
+                    adaptiveMethod, test, cyclicTargetsReader);
+                av_speech_in_noise::initialize(
+                    runningATest, adaptiveMethod, test, nullptr);
             });
     case Method::adaptiveCorrectKeywordsWithEyeTracking:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const AdaptiveTest &test) {
-                auto test_{test};
-                test_.peripheral = TestPeripheral::eyeTracking;
-                model.initializeWithCyclicTargets(test_);
+                av_speech_in_noise::initialize(
+                    adaptiveMethod, test, cyclicTargetsReader);
+                av_speech_in_noise::initialize(
+                    runningATest, adaptiveMethod, test, &eyeTracking);
             });
     case Method::adaptiveCoordinateResponseMeasureWithEyeTracking:
     case Method::adaptivePassFailWithEyeTracking:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const AdaptiveTest &test) {
-                auto test_{test};
-                test_.peripheral = TestPeripheral::eyeTracking;
-                model.initialize(test_);
+                av_speech_in_noise::initialize(
+                    adaptiveMethod, test, targetsWithReplacementReader);
+                av_speech_in_noise::initialize(
+                    runningATest, adaptiveMethod, test, &eyeTracking);
             });
     case Method::adaptiveCoordinateResponseMeasure:
     case Method::adaptivePassFail:
         return av_speech_in_noise::initialize(method, contents, identity,
-            startingSnr,
-            [&](const AdaptiveTest &test) { model.initialize(test); });
+            startingSnr, [&](const AdaptiveTest &test) {
+                av_speech_in_noise::initialize(
+                    adaptiveMethod, test, targetsWithReplacementReader);
+                av_speech_in_noise::initialize(
+                    runningATest, adaptiveMethod, test, nullptr);
+            });
     case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
     case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
         return av_speech_in_noise::initialize(method, contents, identity,
@@ -499,8 +517,11 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
 
 TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     std::map<Method, TaskPresenter &> taskPresenters,
-    RunningATest &runningATest, FixedLevelMethod &fixedLevelMethod,
-    RunningATest::Observer &eyeTracking, RunningATest::Observer &audioRecording,
+    RunningATest &runningATest, AdaptiveMethod &adaptiveMethod,
+    FixedLevelMethod &fixedLevelMethod, RunningATest::Observer &eyeTracking,
+    RunningATest::Observer &audioRecording,
+    TargetPlaylistReader &cyclicTargetsReader,
+    TargetPlaylistReader &targetsWithReplacementReader,
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
@@ -509,8 +530,10 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     submitting_free_response::Puzzle &puzzle,
     FreeResponseController &freeResponseController)
     : taskPresenters{std::move(taskPresenters)}, runningATest{runningATest},
-      fixedLevelMethod{fixedLevelMethod}, eyeTracking{eyeTracking},
-      audioRecording{audioRecording},
+      adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
+      eyeTracking{eyeTracking}, audioRecording{audioRecording},
+      cyclicTargetsReader{cyclicTargetsReader},
+      targetsWithReplacementReader{targetsWithReplacementReader},
       predeterminedTargets{predeterminedTargets},
       everyTargetOnce{everyTargetOnce},
       silentIntervalTargets{silentIntervalTargets},

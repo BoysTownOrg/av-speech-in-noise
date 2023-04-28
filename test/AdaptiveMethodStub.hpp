@@ -8,7 +8,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
   public:
     void initialize(
         const AdaptiveTest &t, TargetPlaylistReader *reader) override {
-        test_ = &t;
+        test_ = t;
         targetListReader_ = reader;
     }
     auto testResults() -> AdaptiveTestResults override { return testResults_; }
@@ -29,7 +29,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void submit(const coordinate_response_measure::Response &) override {}
 
     AdaptiveTestResults testResults_;
-    const AdaptiveTest *test_{};
+    AdaptiveTest test_{};
     TargetPlaylistReader *targetListReader_{};
     bool tracksResetted_{};
 };
