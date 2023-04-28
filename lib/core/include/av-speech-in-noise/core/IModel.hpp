@@ -60,15 +60,6 @@ class Interactor {
     virtual void submit(const ConsonantResponse &) = 0;
 };
 }
-
-class RunningATestFacade {
-  public:
-    class Observer {
-      public:
-        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
-        virtual void trialComplete() = 0;
-    };
-};
 }
 
 #endif
