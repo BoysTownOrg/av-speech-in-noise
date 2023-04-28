@@ -80,8 +80,8 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
 class TestPresenterImpl : public RunningATestFacade::Observer,
                           public TestPresenter {
   public:
-    TestPresenterImpl(RunningATestFacade &, RunningATest &, AdaptiveMethod &,
-        TestView &, UninitializedTaskPresenter *);
+    TestPresenterImpl(RunningATest &, AdaptiveMethod &, TestView &,
+        UninitializedTaskPresenter *);
     void initialize(TaskPresenter &) override;
     void start() override;
     void stop() override;
@@ -95,7 +95,6 @@ class TestPresenterImpl : public RunningATestFacade::Observer,
     void completeTask() override;
 
   private:
-    RunningATestFacade &model;
     RunningATest &runningATest;
     AdaptiveMethod &adaptiveMethod;
     TestView &view;

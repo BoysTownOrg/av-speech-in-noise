@@ -101,11 +101,11 @@ void TestControllerImpl::notifyThatUserHasRespondedButTrialIsNotQuiteDone() {
     presenter.hideExitTestButton();
 }
 
-TestPresenterImpl::TestPresenterImpl(RunningATestFacade &model,
-    RunningATest &runningATest, AdaptiveMethod &adaptiveMethod, TestView &view,
+TestPresenterImpl::TestPresenterImpl(RunningATest &runningATest,
+    AdaptiveMethod &adaptiveMethod, TestView &view,
     UninitializedTaskPresenter *taskPresenter)
-    : model{model}, runningATest{runningATest},
-      adaptiveMethod{adaptiveMethod}, view{view}, taskPresenter{taskPresenter} {
+    : runningATest{runningATest}, adaptiveMethod{adaptiveMethod}, view{view},
+      taskPresenter{taskPresenter} {
     runningATest.attach(this);
 }
 

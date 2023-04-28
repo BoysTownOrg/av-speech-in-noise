@@ -347,13 +347,12 @@ class TestControllerTests : public ::testing::Test {
 
 class TestPresenterTests : public ::testing::Test {
   protected:
-    ModelStub model;
     RunningATestStub runningATest;
     AdaptiveMethodStub adaptiveMethod;
     TestViewStub view;
     UninitializedTaskPresenterStub taskPresenter;
     TestPresenterImpl presenter{
-        model, runningATest, adaptiveMethod, view, &taskPresenter};
+        runningATest, adaptiveMethod, view, &taskPresenter};
     UpdatingTrialInformation updatingTrialInformation;
     Initializing initializing;
 };
