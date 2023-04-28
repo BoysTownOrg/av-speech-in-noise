@@ -11,7 +11,6 @@
 #include <av-speech-in-noise/core/SubmittingKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingNumberKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingSyllable.hpp>
-#include <av-speech-in-noise/core/Model.hpp>
 
 #include <gtest/gtest.h>
 
