@@ -4,7 +4,6 @@
 #include "SessionViewStub.hpp"
 
 #include <av-speech-in-noise/ui/TestSetupImpl.hpp>
-#include <av-speech-in-noise/Model.hpp>
 
 #include <gtest/gtest.h>
 
@@ -102,8 +101,9 @@ class TestSetupControlStub : public TestSetupControl {
 
 class TestSettingsInterpreterStub : public TestSettingsInterpreter {
   public:
-    explicit TestSettingsInterpreterStub(const Calibration &calibration_)
-        : calibration_{calibration_} {}
+    explicit TestSettingsInterpreterStub(
+        RunningATest &runningATest, const Calibration &calibration_)
+        : runningATest{runningATest}, calibration_{calibration_} {}
 
     auto calibration(const std::string &t) -> Calibration override {
         text_ = t;
@@ -117,7 +117,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         text_ = t;
         identity_ = id;
         if (initializeAnyTestOnApply_)
-            m.initializeWithCyclicTargets({});
+            runningATest.initialize(nullptr, {});
     }
 
     [[nodiscard]] auto text() const -> std::string { return text_; }
@@ -133,6 +133,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     }
 
   private:
+    RunningATest &runningATest;
     std::string text_;
     std::string textForMethodQuery_;
     TestIdentity identity_{};
@@ -281,7 +282,8 @@ class TestSetupControllerTests : public ::testing::Test {
     SessionControlStub sessionView;
     TestSetupControlStub control;
     Calibration calibration;
-    TestSettingsInterpreterStub testSettingsInterpreter{calibration};
+    TestSettingsInterpreterStub testSettingsInterpreter{
+        runningATest, calibration};
     TextFileReaderStub textFileReader;
     SessionControllerStub sessionController;
     TestSetupPresenterStub presenter;
@@ -349,10 +351,6 @@ class RequestFailingModel : public RunningATestFacade {
 
   public:
     void setErrorMessage(std::string s) { errorMessage = std::move(s); }
-
-    void initializeWithCyclicTargets(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
 };
 
 class TestSetupFailureTests : public ::testing::Test {
@@ -364,7 +362,8 @@ class TestSetupFailureTests : public ::testing::Test {
     TestSetupViewStub view;
     TestSetupControlStub control;
     Calibration calibration;
-    TestSettingsInterpreterStub testSettingsInterpreter{calibration};
+    TestSettingsInterpreterStub testSettingsInterpreter{
+        runningATest, calibration};
     TestSetupPresenterImpl testSetupPresenter{view, sessionView};
     TextFileReaderStub textFileReader;
     SessionControllerStub sessionController;
@@ -577,7 +576,8 @@ TEST_SETUP_PRESENTER_TEST(presenterPopulatesTransducerMenu) {
 
 TEST_SETUP_FAILURE_TEST(initializeTestShowsErrorMessageWhenModelFailsRequest) {
     testSettingsInterpreter.initializeAnyTestOnApply();
-    failingModel.setErrorMessage("a");
+    runningATest.errorMessage = "a";
+    runningATest.failOnRequest = true;
     confirmTestSetup(control);
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }

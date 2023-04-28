@@ -14,6 +14,8 @@ class RunningATestStub : public RunningATest {
         test = t;
         testMethod = tm;
         observer = p;
+        if (failOnRequest)
+            throw RunningATestFacade::RequestFailure{errorMessage};
     }
     void playTrial(const AudioSettings &t) override { trialAudioSettings = t; }
     void playCalibration(const Calibration &c) override {

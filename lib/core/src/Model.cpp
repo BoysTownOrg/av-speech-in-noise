@@ -39,12 +39,6 @@ RunningATestFacadeImpl::RunningATestFacadeImpl(AdaptiveMethod &adaptiveMethod,
       eachTargetNTimes{eachTargetNTimes}, runningATest{model},
       outputFile{outputFile} {}
 
-void RunningATestFacadeImpl::initializeWithCyclicTargets(
-    const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(adaptiveMethod, test, cyclicTargetsReader);
-    initializeTestWithPossiblePeripheral(adaptiveMethod, test);
-}
-
 void RunningATestFacadeImpl::initializeTestWithPossiblePeripheral(
     TestMethod &method, const Test &test) {
     switch (test.peripheral) {

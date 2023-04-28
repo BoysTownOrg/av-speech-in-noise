@@ -346,55 +346,6 @@ class InitializingAdaptiveTest : public virtual InitializingTestUseCase {
     virtual auto adaptiveTest() -> const AdaptiveTest & = 0;
 };
 
-void initializeWithCyclicTargets(
-    RunningATestFacadeImpl &model, const AdaptiveTest &test) {
-    model.initializeWithCyclicTargets(test);
-}
-
-class InitializingAdaptiveTestWithCyclicTargets
-    : public InitializingAdaptiveTest {
-    AdaptiveTest test_;
-    AdaptiveMethodStub *method;
-
-  public:
-    explicit InitializingAdaptiveTestWithCyclicTargets(
-        AdaptiveMethodStub *method)
-        : method{method} {}
-
-    void run(RunningATestFacadeImpl &model) override {
-        initializeWithCyclicTargets(model, test_);
-    }
-
-    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
-};
-
-class InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking
-    : public InitializingAdaptiveTest {
-    AdaptiveTest test_;
-    AdaptiveMethodStub *method;
-
-  public:
-    explicit InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking(
-        AdaptiveMethodStub *method)
-        : method{method} {
-        test_.peripheral = TestPeripheral::eyeTracking;
-    }
-
-    void run(RunningATestFacadeImpl &model) override {
-        model.initializeWithCyclicTargets(test_);
-    }
-
-    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
-};
-
 auto initializedWithEyeTracking(
     RunningATestStub &m, RunningATest::Observer *observer) -> bool {
     return m.observer == observer;
@@ -424,11 +375,6 @@ class ModelTests : public ::testing::Test {
     FixedLevelTest fixedLevelTest;
     FixedLevelTestWithEachTargetNTimes fixedLevelTestWithEachTargetNTimes;
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest;
-    InitializingAdaptiveTestWithCyclicTargets
-        initializingAdaptiveTestWithCyclicTargets{&adaptiveMethod};
-    InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking
-        initializingAdaptiveTestWithCyclicTargetsAndEyeTracking{
-            &adaptiveMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
@@ -790,37 +736,6 @@ SUBMITTING_CONSONANT_TEST(preparesNextTrialIfNeeded) {
 SUBMITTING_CONSONANT_TEST(savesOutputFileAfterWritingTrial) {
     interactor.submit({});
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
-}
-
-#define MODEL_TEST(a) TEST_F(ModelTests, a)
-
-MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(
-        initializingAdaptiveTestWithCyclicTargets, cyclicTargetsReader);
-}
-
-MODEL_TEST(
-    initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(
-        initializingAdaptiveTestWithCyclicTargetsAndEyeTracking,
-        cyclicTargetsReader);
-}
-
-MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesInternalModel) {
-    assertInitializesInternalModel(initializingAdaptiveTestWithCyclicTargets);
-}
-
-MODEL_TEST(
-    initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesInternalModel) {
-    assertInitializesInternalModel(
-        initializingAdaptiveTestWithCyclicTargetsAndEyeTracking);
-}
-
-MODEL_TEST(
-    initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesWithEyeTracking) {
-    run(initializingAdaptiveTestWithCyclicTargetsAndEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        initializedWithEyeTracking(internalModel, &eyeTracking));
 }
 }
 }
