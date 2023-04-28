@@ -166,7 +166,10 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>,
         RunningATest &, FixedLevelMethod &, RunningATest::Observer &,
         RunningATest::Observer &, FiniteTargetPlaylistWithRepeatables &,
-        submitting_free_response::Puzzle &, FreeResponseController &);
+        FiniteTargetPlaylistWithRepeatables &,
+        FiniteTargetPlaylistWithRepeatables &, RepeatableFiniteTargetPlaylist &,
+        TargetPlaylist &, submitting_free_response::Puzzle &,
+        FreeResponseController &);
     void initialize(RunningATestFacade &, SessionController &,
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
@@ -183,6 +186,10 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     RunningATest::Observer &eyeTracking;
     RunningATest::Observer &audioRecording;
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets;
+    FiniteTargetPlaylistWithRepeatables &everyTargetOnce;
+    FiniteTargetPlaylistWithRepeatables &silentIntervalTargets;
+    RepeatableFiniteTargetPlaylist &eachTargetNTimes;
+    TargetPlaylist &targetsWithReplacement;
     submitting_free_response::Puzzle &puzzle;
     FreeResponseController &freeResponseController;
 };

@@ -315,6 +315,11 @@ static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
     method.initialize(test, &targets);
 }
 
+static void initialize(FixedLevelMethod &method,
+    const FixedLevelFixedTrialsTest &test, TargetPlaylist &targets) {
+    method.initialize(test, &targets);
+}
+
 void TestSettingsInterpreterImpl::initialize_(RunningATestFacade &model,
     Method method, const std::string &contents, const TestIdentity &identity,
     SNR startingSnr) {
@@ -362,34 +367,45 @@ void TestSettingsInterpreterImpl::initialize_(RunningATestFacade &model,
     case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {
-                model.initializeWithSilentIntervalTargets(test);
+                av_speech_in_noise::initialize(
+                    fixedLevelMethod, test, silentIntervalTargets);
+                av_speech_in_noise::initialize(
+                    runningATest, fixedLevelMethod, test, nullptr);
             });
     case Method::fixedLevelFreeResponseWithAllTargets:
     case Method::fixedLevelChooseKeywordsWithAllTargets:
     case Method::fixedLevelSyllablesWithAllTargets:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {
-                model.initializeWithAllTargets(test);
+                av_speech_in_noise::initialize(
+                    fixedLevelMethod, test, everyTargetOnce);
+                av_speech_in_noise::initialize(
+                    runningATest, fixedLevelMethod, test, nullptr);
             });
     case Method::fixedLevelConsonants:
         return av_speech_in_noise::initializeFixedLevelTestWithEachTargetNTimes(
             method, contents, identity, startingSnr,
             [&](const FixedLevelTestWithEachTargetNTimes &test) {
-                model.initialize(test);
+                eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
+                fixedLevelMethod.initialize(test, &eachTargetNTimes);
+                av_speech_in_noise::initialize(
+                    runningATest, fixedLevelMethod, test, nullptr);
             });
     case Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {
-                auto test_{test};
-                test_.peripheral = TestPeripheral::eyeTracking;
-                model.initializeWithAllTargets(test_);
+                av_speech_in_noise::initialize(
+                    fixedLevelMethod, test, everyTargetOnce);
+                av_speech_in_noise::initialize(
+                    runningATest, fixedLevelMethod, test, &eyeTracking);
             });
     case Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording:
         return av_speech_in_noise::initialize(method, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {
-                auto test_{test};
-                test_.peripheral = TestPeripheral::audioRecording;
-                model.initializeWithAllTargets(test_);
+                av_speech_in_noise::initialize(
+                    fixedLevelMethod, test, everyTargetOnce);
+                av_speech_in_noise::initialize(
+                    runningATest, fixedLevelMethod, test, &audioRecording);
             });
     case Method::
         fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording:
@@ -413,16 +429,20 @@ void TestSettingsInterpreterImpl::initialize_(RunningATestFacade &model,
         return av_speech_in_noise::initializeFixedLevelFixedTrialsTest(method,
             contents, identity, startingSnr,
             [&](const FixedLevelFixedTrialsTest &test) {
-                auto test_{test};
-                test_.peripheral = TestPeripheral::eyeTracking;
-                model.initializeWithTargetReplacement(test_);
+                av_speech_in_noise::initialize(
+                    fixedLevelMethod, test, targetsWithReplacement);
+                av_speech_in_noise::initialize(
+                    runningATest, fixedLevelMethod, test, &eyeTracking);
             });
     case Method::fixedLevelFreeResponseWithTargetReplacement:
     case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
         return av_speech_in_noise::initializeFixedLevelFixedTrialsTest(method,
             contents, identity, startingSnr,
             [&](const FixedLevelFixedTrialsTest &test) {
-                model.initializeWithTargetReplacement(test);
+                av_speech_in_noise::initialize(
+                    fixedLevelMethod, test, targetsWithReplacement);
+                av_speech_in_noise::initialize(
+                    runningATest, fixedLevelMethod, test, nullptr);
             });
     case Method::unknown: {
         std::stringstream stream;
@@ -482,11 +502,19 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     RunningATest &runningATest, FixedLevelMethod &fixedLevelMethod,
     RunningATest::Observer &eyeTracking, RunningATest::Observer &audioRecording,
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
+    FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
+    FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
+    RepeatableFiniteTargetPlaylist &eachTargetNTimes,
+    TargetPlaylist &targetsWithReplacement,
     submitting_free_response::Puzzle &puzzle,
     FreeResponseController &freeResponseController)
     : taskPresenters{std::move(taskPresenters)}, runningATest{runningATest},
       fixedLevelMethod{fixedLevelMethod}, eyeTracking{eyeTracking},
       audioRecording{audioRecording},
-      predeterminedTargets{predeterminedTargets}, puzzle{puzzle},
+      predeterminedTargets{predeterminedTargets},
+      everyTargetOnce{everyTargetOnce},
+      silentIntervalTargets{silentIntervalTargets},
+      eachTargetNTimes{eachTargetNTimes},
+      targetsWithReplacement{targetsWithReplacement}, puzzle{puzzle},
       freeResponseController{freeResponseController} {}
 }
