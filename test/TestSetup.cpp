@@ -354,11 +354,6 @@ class RequestFailingModel : public RunningATestFacade {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeWithTargetReplacement(
-        const FixedLevelFixedTrialsTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }

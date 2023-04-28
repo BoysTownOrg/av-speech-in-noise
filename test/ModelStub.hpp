@@ -98,14 +98,6 @@ class ModelStub : public RunningATestFacade {
         initializedWithCyclicTargets_ = true;
     }
 
-    void initializeWithTargetReplacement(
-        const FixedLevelFixedTrialsTest &p) override {
-        fixedLevelFixedTrialsTest_ = p;
-        fixedLevelTest_ = p;
-        defaultFixedLevelTestInitialized_ = true;
-        fixedLevelTestWithTargetReplacementInitialized_ = true;
-    }
-
     void initializeWithSilentIntervalTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithSilentIntervalTargetsInitialized_ = true;
