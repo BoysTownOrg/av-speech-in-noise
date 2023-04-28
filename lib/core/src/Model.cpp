@@ -12,22 +12,6 @@ static void initialize(RunningATest &model, TestMethod &method,
     model.initialize(&method, test, observer);
 }
 
-static void initialize(FixedLevelMethod &method,
-    const FixedLevelFixedTrialsTest &test, TargetPlaylist &targets) {
-    method.initialize(test, &targets);
-}
-
-static void initialize(FixedLevelMethod &method,
-    const FixedLevelTestWithEachTargetNTimes &test,
-    FiniteTargetPlaylist &targets) {
-    method.initialize(test, &targets);
-}
-
-static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
-    FiniteTargetPlaylistWithRepeatables &targets) {
-    method.initialize(test, &targets);
-}
-
 static void initialize(AdaptiveMethod &method, const AdaptiveTest &test,
     TargetPlaylistReader &reader) {
     method.initialize(test, &reader);
