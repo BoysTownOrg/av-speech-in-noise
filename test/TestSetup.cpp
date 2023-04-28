@@ -277,7 +277,6 @@ class SessionControllerStub : public SessionController {
 
 class TestSetupControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
     RunningATestStub runningATest;
     SessionControlStub sessionView;
     TestSetupControlStub control;
@@ -288,8 +287,7 @@ class TestSetupControllerTests : public ::testing::Test {
     SessionControllerStub sessionController;
     TestSetupPresenterStub presenter;
     TestSetupController controller{control, sessionController, sessionView,
-        presenter, model, runningATest, testSettingsInterpreter,
-        textFileReader};
+        presenter, runningATest, testSettingsInterpreter, textFileReader};
     PlayingCalibration playingCalibration{control};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{control};
@@ -346,16 +344,8 @@ class TestSetupPresenterTests : public ::testing::Test {
     TestSetupPresenterImpl presenter{view, sessionView};
 };
 
-class RequestFailingModel : public RunningATestFacade {
-    std::string errorMessage{};
-
-  public:
-    void setErrorMessage(std::string s) { errorMessage = std::move(s); }
-};
-
 class TestSetupFailureTests : public ::testing::Test {
   protected:
-    RequestFailingModel failingModel;
     RunningATestStub runningATest;
     SessionControlStub sessionControl;
     SessionViewStub sessionView;
@@ -372,7 +362,6 @@ class TestSetupFailureTests : public ::testing::Test {
         sessionController,
         sessionControl,
         testSetupPresenter,
-        failingModel,
         runningATest,
         testSettingsInterpreter,
         textFileReader,
