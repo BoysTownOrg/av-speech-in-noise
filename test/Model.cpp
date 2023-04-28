@@ -255,7 +255,7 @@ class RunningATestStub : public RunningATest {
         return audioDevices_;
     }
 
-    void attach(RunningATestFacade::Observer *e) override { listener_ = e; }
+    void attach(RunningATest::Observer *e) override { listener_ = e; }
 
     void playCalibration(const Calibration &c) override { calibration_ = &c; }
 
@@ -307,7 +307,7 @@ class RunningATestStub : public RunningATest {
     std::string playTrialTime_;
     AdaptiveMethodStub &adaptiveMethod;
     FixedLevelMethodStub &fixedLevelMethodStub;
-    const RunningATestFacade::Observer *listener_{};
+    const RunningATest::Observer *listener_{};
     const Calibration *calibration_{};
     const Calibration *leftSpeakerCalibration_{};
     const Calibration *rightSpeakerCalibration_{};

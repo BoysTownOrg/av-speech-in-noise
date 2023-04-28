@@ -77,8 +77,7 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
     TaskPresenter *presenter{};
 };
 
-class TestPresenterImpl : public RunningATestFacade::Observer,
-                          public TestPresenter {
+class TestPresenterImpl : public RunningATest::Observer, public TestPresenter {
   public:
     TestPresenterImpl(RunningATest &, AdaptiveMethod &, TestView &,
         UninitializedTaskPresenter *);

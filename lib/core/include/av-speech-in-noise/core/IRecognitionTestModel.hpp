@@ -17,6 +17,12 @@ class RunningATest {
         explicit RequestFailure(const std::string &s) : std::runtime_error{s} {}
     };
 
+    class Observer {
+      public:
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
+        virtual void trialComplete() = 0;
+    };
+
     class TestObserver {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestObserver);
@@ -28,7 +34,7 @@ class RunningATest {
     };
 
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATest);
-    virtual void attach(RunningATestFacade::Observer *) = 0;
+    virtual void attach(Observer *) = 0;
     virtual void initialize(
         TestMethod *, const Test &, TestObserver * = nullptr) = 0;
     virtual void playTrial(const AudioSettings &) = 0;

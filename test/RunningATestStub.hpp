@@ -6,9 +6,7 @@
 namespace av_speech_in_noise {
 class RunningATestStub : public RunningATest {
   public:
-    void attach(RunningATestFacade::Observer *a) override {
-        facadeObserver = a;
-    }
+    void attach(RunningATest::Observer *a) override { facadeObserver = a; }
     void initialize(TestMethod *tm, const Test &t, TestObserver *p) override {
         test = t;
         testMethod = tm;
@@ -51,7 +49,7 @@ class RunningATestStub : public RunningATest {
     AudioDevices audioDevices_;
     coordinate_response_measure::Response coordinateResponse;
     Test test;
-    RunningATestFacade::Observer *facadeObserver;
+    RunningATest::Observer *facadeObserver;
     const TestMethod *testMethod{};
     const TestObserver *observer{};
     std::string targetFileName_;

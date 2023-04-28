@@ -270,14 +270,14 @@ static void saveOutputFileAndPrepareNextTrialAfter(
 RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer, Clock &clock)
-    : observer{&nullObserver}, maskerPlayer{maskerPlayer},
-      targetPlayer{targetPlayer}, evaluator{evaluator}, outputFile{outputFile},
-      randomizer{randomizer}, clock{clock}, testMethod{&nullTestMethod} {
+    : maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
+      evaluator{evaluator}, outputFile{outputFile}, randomizer{randomizer},
+      clock{clock}, observer{&nullObserver}, testMethod{&nullTestMethod} {
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
 }
 
-void RunningATestImpl::attach(RunningATestFacade::Observer *listener) {
+void RunningATestImpl::attach(RunningATest::Observer *listener) {
     listener_ = listener;
 }
 
