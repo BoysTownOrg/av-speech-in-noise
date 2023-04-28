@@ -269,7 +269,7 @@ static void initialize(FixedLevelTestWithEachTargetNTimes &test,
 
 static void initialize(Method method, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr,
-    const std::function<void(const AdaptiveTest &)> &f) {
+    const std::function<void(AdaptiveTest &)> &f) {
     AdaptiveTest test;
     av_speech_in_noise::initialize(
         test, contents, method, identity, startingSnr);
@@ -347,25 +347,23 @@ void TestSettingsInterpreterImpl::initialize(
 
     switch (method) {
     case Method::adaptiveCoordinateResponseMeasureWithDelayedMasker:
-        av_speech_in_noise::initialize(method, contents, identity, startingSnr,
-            [&](const AdaptiveTest &test) {
-                auto test_{test};
-                test_.audioChannelOption = AudioChannelOption::delayedMasker;
+        av_speech_in_noise::initialize(
+            method, contents, identity, startingSnr, [&](AdaptiveTest &test) {
+                test.audioChannelOption = AudioChannelOption::delayedMasker;
                 av_speech_in_noise::initialize(
-                    adaptiveMethod, test_, targetsWithReplacementReader);
+                    adaptiveMethod, test, targetsWithReplacementReader);
                 av_speech_in_noise::initialize(
-                    runningATest, adaptiveMethod, test_, nullptr);
+                    runningATest, adaptiveMethod, test, nullptr);
             });
         break;
     case Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker:
-        av_speech_in_noise::initialize(method, contents, identity, startingSnr,
-            [&](const AdaptiveTest &test) {
-                auto test_{test};
-                test_.audioChannelOption = AudioChannelOption::singleSpeaker;
+        av_speech_in_noise::initialize(
+            method, contents, identity, startingSnr, [&](AdaptiveTest &test) {
+                test.audioChannelOption = AudioChannelOption::singleSpeaker;
                 av_speech_in_noise::initialize(
-                    adaptiveMethod, test_, targetsWithReplacementReader);
+                    adaptiveMethod, test, targetsWithReplacementReader);
                 av_speech_in_noise::initialize(
-                    runningATest, adaptiveMethod, test_, nullptr);
+                    runningATest, adaptiveMethod, test, nullptr);
             });
         break;
     case Method::adaptiveCorrectKeywords:
