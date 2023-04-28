@@ -110,8 +110,8 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return calibration_;
     }
 
-    void initialize(RunningATestFacade &m, SessionController &sc,
-        const std::string &t, const TestIdentity &id, SNR snr) override {
+    void initialize(SessionController &sc, const std::string &t,
+        const TestIdentity &id, SNR snr) override {
         startingSnr_ = snr.dB;
         sessionController_ = &sc;
         text_ = t;

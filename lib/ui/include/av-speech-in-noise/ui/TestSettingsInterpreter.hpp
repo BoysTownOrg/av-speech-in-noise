@@ -173,16 +173,12 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
         FiniteTargetPlaylistWithRepeatables &, RepeatableFiniteTargetPlaylist &,
         TargetPlaylist &, submitting_free_response::Puzzle &,
         FreeResponseController &);
-    void initialize(RunningATestFacade &, SessionController &,
-        const std::string &, const TestIdentity &, SNR) override;
+    void initialize(SessionController &, const std::string &,
+        const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
 
   private:
-    void initialize_(RunningATestFacade &model, Method method,
-        const std::string &contents, const TestIdentity &identity,
-        SNR startingSnr);
-
     std::map<Method, TaskPresenter &> taskPresenters;
     RunningATest &runningATest;
     AdaptiveMethod &adaptiveMethod;

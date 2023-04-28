@@ -4,8 +4,8 @@
 #include "TestSetup.hpp"
 #include "Session.hpp"
 #include "Input.hpp"
-#include "av-speech-in-noise/core/IRecognitionTestModel.hpp"
 
+#include <av-speech-in-noise/core/IRecognitionTestModel.hpp>
 #include <av-speech-in-noise/core/TextFileReader.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Model.hpp>
@@ -18,8 +18,8 @@ class TestSettingsInterpreter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
         TestSettingsInterpreter);
-    virtual void initialize(RunningATestFacade &, SessionController &,
-        const std::string &, const TestIdentity &, SNR) = 0;
+    virtual void initialize(SessionController &, const std::string &,
+        const TestIdentity &, SNR) = 0;
     virtual auto calibration(const std::string &) -> Calibration = 0;
 };
 

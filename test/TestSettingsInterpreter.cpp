@@ -83,17 +83,16 @@ auto fixedLevelTestWithEachTargetNTimes(ModelStub &m)
 }
 
 void initialize(TestSettingsInterpreterImpl &interpreter,
-    RunningATestFacade &model, SessionController &sessionController,
-    const std::vector<std::string> &v, int startingSnr = {},
-    const TestIdentity &identity = {}) {
+    SessionController &sessionController, const std::vector<std::string> &v,
+    int startingSnr = {}, const TestIdentity &identity = {}) {
     interpreter.initialize(
-        model, sessionController, concatenate(v), identity, SNR{startingSnr});
+        sessionController, concatenate(v), identity, SNR{startingSnr});
 }
 
 void assertPassesSimpleAdaptiveSettings(
-    TestSettingsInterpreterImpl &interpreter, ModelStub &model,
+    TestSettingsInterpreterImpl &interpreter,
     SessionController &sessionController, Method m, const AdaptiveTest &test) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::targets, "a"),
             entryWithNewline(TestSetting::masker, "b"),
@@ -120,10 +119,10 @@ void assertPassesSimpleAdaptiveSettings(
 }
 
 void assertPassesSimpleFixedLevelSettings(
-    TestSettingsInterpreterImpl &interpreter, ModelStub &model,
+    TestSettingsInterpreterImpl &interpreter,
     SessionController &sessionController, Method m,
     const FixedLevelTest &fixedLevelTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::targets, "a"),
             entryWithNewline(TestSetting::masker, "b"),
@@ -141,10 +140,10 @@ void assertPassesSimpleFixedLevelSettings(
 }
 
 void assertPassesSettingsWithExtraneousWhitespace(
-    TestSettingsInterpreterImpl &interpreter, ModelStub &model,
+    TestSettingsInterpreterImpl &interpreter,
     SessionController &sessionController, Method m,
     const FixedLevelTest &fixedLevelTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {withNewLine(std::string{"  "} + name(TestSetting::method) +
              std::string{" :  "} + name(m) + "  "),
             withNewLine(name(TestSetting::targets) + std::string{" :a "}),
@@ -163,9 +162,9 @@ void assertPassesSettingsWithExtraneousWhitespace(
 }
 
 void initialize(TestSettingsInterpreterImpl &interpreter,
-    RunningATestFacade &model, SessionController &sessionController, Method m,
+    SessionController &sessionController, Method m,
     const TestIdentity &identity = {}, int startingSnr = {}) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, m)}, startingSnr, identity);
 }
 
@@ -211,21 +210,19 @@ void assertTestMethodEquals(
 }
 
 void assertPassesTestIdentity(TestSettingsInterpreterImpl &interpreter,
-    ModelStub &model, SessionController &sessionController, Method m,
-    const TestIdentity &f) {
+    SessionController &sessionController, Method m, const TestIdentity &f) {
     TestIdentity testIdentity;
     setSubjectId(testIdentity, "a");
     setTesterId(testIdentity, "b");
     setSession(testIdentity, "c");
-    initialize(interpreter, model, sessionController, m, testIdentity);
+    initialize(interpreter, sessionController, m, testIdentity);
     assertSubjectIdEquals("a", f);
     assertTesterIdEquals("b", f);
     assertSessionIdEquals("c", f);
 }
 
 void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
-    ModelStub &model, SessionController &sessionController, Method m,
-    const TestIdentity &f) {
+    SessionController &sessionController, Method m, const TestIdentity &f) {
     TestIdentity testIdentity;
     setSubjectId(testIdentity, "a");
     setTesterId(testIdentity, "b");
@@ -234,7 +231,7 @@ void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     testIdentity.transducer = "h";
     testIdentity.meta = "k";
     testIdentity.relativeOutputUrl.path = "n";
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::subjectId, "d"),
             entryWithNewline(TestSetting::testerId, "e"),
@@ -254,9 +251,8 @@ void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
 }
 
 void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter,
-    ModelStub &model, SessionController &sessionController, Method m,
-    const FixedLevelTest &f) {
-    initialize(interpreter, model, sessionController,
+    SessionController &sessionController, Method m, const FixedLevelTest &f) {
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::startingSnr, "6")},
         5);
@@ -264,9 +260,8 @@ void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter,
 }
 
 void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
-    ModelStub &model, SessionController &sessionController, Method m,
-    const TestIdentity &f) {
-    initialize(interpreter, model, sessionController, m);
+    SessionController &sessionController, Method m, const TestIdentity &f) {
+    initialize(interpreter, sessionController, m);
     assertTestMethodEquals(name(m), f);
 }
 
@@ -317,8 +312,8 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TEST_F(TestSettingsInterpreterTests, a)
 
 #define TEST_SETTINGS_INTREPRETER_TEST_EXPECT_INITIALIZES_FIXED_LEVEL_TEST_WITH_ALL_TARGETS( \
-    interpreter, model, sessionController, method)                                           \
-    initialize(interpreter, model, sessionController, method);                               \
+    interpreter, sessionController, method)                                                  \
+    initialize(interpreter, sessionController, method);                                      \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                                         \
         fixedLevelMethod.targetList_, &everyTargetOnce)
 
@@ -335,7 +330,7 @@ TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
 
 TEST_SETTINGS_INTERPRETER_TEST(throwsRuntimeErrorIfMethodUnknown) {
     try {
-        initialize(interpreter, model, sessionController,
+        initialize(interpreter, sessionController,
             {
                 entryWithNewline(
                     TestSetting::method, "this is not a real test method"),
@@ -350,7 +345,7 @@ TEST_SETTINGS_INTERPRETER_TEST(throwsRuntimeErrorIfMethodUnknown) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             "f:\n", entryWithNewline(TestSetting::targets, "a")});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -358,7 +353,7 @@ TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine2) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail), "\n",
             entryWithNewline(TestSetting::targets, "a")});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -366,7 +361,7 @@ TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine2) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {"\n", entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             "\n", entryWithNewline(TestSetting::targets, "a")});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -374,7 +369,7 @@ TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(badMaskerLevelResolvesToZero) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::maskerLevel, "a")});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0, adaptiveMethod.test_.maskerLevel.dB_SPL);
@@ -386,7 +381,8 @@ TEST_SETTINGS_INTERPRETER_TEST(meta) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(preparesTestAfterConfirmButtonIsClicked) {
-    initialize(interpreter, model, sessionController, Method::adaptivePassFail);
+    runningATest.testComplete_ = false;
+    initialize(interpreter, sessionController, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &passFailPresenter, sessionController.taskPresenter());
 }
@@ -394,12 +390,12 @@ TEST_SETTINGS_INTERPRETER_TEST(preparesTestAfterConfirmButtonIsClicked) {
 TEST_SETTINGS_INTERPRETER_TEST(
     doesNotPrepareTestAfterConfirmButtonIsClickedWhenTestWouldAlreadyBeComplete) {
     runningATest.testComplete_ = true;
-    initialize(interpreter, model, sessionController, Method::adaptivePassFail);
+    initialize(interpreter, sessionController, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(initializesPuzzleWithPath) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method,
              Method::
                  fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording),
@@ -409,7 +405,7 @@ TEST_SETTINGS_INTERPRETER_TEST(initializesPuzzleWithPath) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(initializesFreeResponseControllerWithPuzzle) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method,
              Method::
                  fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording),
@@ -418,7 +414,7 @@ TEST_SETTINGS_INTERPRETER_TEST(initializesFreeResponseControllerWithPuzzle) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(initializesFreeResponseControllerWithoutPuzzle) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method,
             Method::
                 fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording)});
@@ -426,56 +422,56 @@ TEST_SETTINGS_INTERPRETER_TEST(initializesFreeResponseControllerWithoutPuzzle) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesMethod) {
-    assertPassesTestMethod(interpreter, model, sessionController,
+    assertPassesTestMethod(interpreter, sessionController,
         Method::adaptivePassFail, runningATest.test.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailWithEyeTrackingPassesMethod) {
-    assertPassesTestMethod(interpreter, model, sessionController,
+    assertPassesTestMethod(interpreter, sessionController,
         Method::adaptivePassFailWithEyeTracking, runningATest.test.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelSyllablesWithAllTargetsPassesMethod) {
-    assertPassesTestMethod(interpreter, model, sessionController,
+    assertPassesTestMethod(interpreter, sessionController,
         Method::fixedLevelSyllablesWithAllTargets, runningATest.test.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelChooseKeywordsWithAllTargetsPassesMethod) {
-    assertPassesTestMethod(interpreter, model, sessionController,
+    assertPassesTestMethod(interpreter, sessionController,
         Method::fixedLevelChooseKeywordsWithAllTargets,
         runningATest.test.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesMethod) {
-    assertPassesTestMethod(interpreter, model, sessionController,
+    assertPassesTestMethod(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithAllTargets,
         runningATest.test.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsPassesMethod) {
-    assertPassesTestMethod(interpreter, model, sessionController,
+    assertPassesTestMethod(interpreter, sessionController,
         Method::fixedLevelConsonants, runningATest.test.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingPassesMethod) {
-    assertPassesTestMethod(interpreter, model, sessionController,
+    assertPassesTestMethod(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
         runningATest.test.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndAudioRecordingPassesMethod) {
-    assertPassesTestMethod(interpreter, model, sessionController,
+    assertPassesTestMethod(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording,
         runningATest.test.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndAudioRecordingSelectsAudioRecordingPeripheral) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &audioRecording);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.testMethod, &fixedLevelMethod);
@@ -485,7 +481,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecordingPassesMethod) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::
             fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -500,7 +496,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecordingSelectsAudioRecordingPeripheral) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::
             fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &audioRecording);
@@ -511,7 +507,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTrackingPassesMethod) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         name(Method::
@@ -524,72 +520,71 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesTestIdentity) {
-    assertOverridesTestIdentity(interpreter, model, sessionController,
+    assertOverridesTestIdentity(interpreter, sessionController,
         Method::adaptivePassFail, adaptiveMethod.test_.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsOverridesTestIdentity) {
-    assertOverridesTestIdentity(interpreter, model, sessionController,
+    assertOverridesTestIdentity(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithAllTargets,
         runningATest.test.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelChooseKeywordsWithAllTargetsOverridesTestIdentity) {
-    assertOverridesTestIdentity(interpreter, model, sessionController,
+    assertOverridesTestIdentity(interpreter, sessionController,
         Method::fixedLevelChooseKeywordsWithAllTargets,
         runningATest.test.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
-    assertPassesTestIdentity(interpreter, model, sessionController,
+    assertPassesTestIdentity(interpreter, sessionController,
         Method::adaptivePassFail, adaptiveMethod.test_.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptivePassFailWithEyeTrackingPassesTestIdentity) {
-    assertPassesTestIdentity(interpreter, model, sessionController,
+    assertPassesTestIdentity(interpreter, sessionController,
         Method::adaptivePassFailWithEyeTracking, adaptiveMethod.test_.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesTestIdentity) {
-    assertPassesTestIdentity(interpreter, model, sessionController,
+    assertPassesTestIdentity(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithAllTargets,
         runningATest.test.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelChooseKeywordsWithAllTargetsPassesTestIdentity) {
-    assertPassesTestIdentity(interpreter, model, sessionController,
+    assertPassesTestIdentity(interpreter, sessionController,
         Method::fixedLevelChooseKeywordsWithAllTargets,
         runningATest.test.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingPassesTestIdentity) {
-    assertPassesTestIdentity(interpreter, model, sessionController,
+    assertPassesTestIdentity(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
         runningATest.test.identity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
-    initialize(interpreter, model, sessionController, Method::adaptivePassFail);
+    initialize(interpreter, sessionController, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.testMethod, &adaptiveMethod);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptivePassFailWithEyeTrackingInitializesAdaptiveTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::adaptivePassFailWithEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.testMethod, &adaptiveMethod);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &eyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
-    initialize(
-        interpreter, model, sessionController, Method::adaptiveCorrectKeywords);
+    initialize(interpreter, sessionController, Method::adaptiveCorrectKeywords);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         adaptiveMethod.targetListReader_, &cyclicTargetsReader);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.testMethod, &adaptiveMethod);
@@ -597,7 +592,7 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCorrectKeywordsWithEyeTrackingInitializesAdaptiveTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::adaptiveCorrectKeywordsWithEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         adaptiveMethod.targetListReader_, &cyclicTargetsReader);
@@ -607,14 +602,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureInitializesAdaptiveTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::adaptiveCoordinateResponseMeasure);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.testMethod, &adaptiveMethod);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithDelayedMaskerInitializesAdaptiveTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(AudioChannelOption::delayedMasker,
         runningATest.test.audioChannelOption);
@@ -622,14 +617,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithSingleSpeakerInitializesAdaptiveTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(AudioChannelOption::singleSpeaker,
         runningATest.test.audioChannelOption);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
             entryWithNewline(TestSetting::targetRepetitions, "5")});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4, eachTargetNTimes.repeats());
@@ -640,7 +635,7 @@ TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithEyeTrackingInitializesAdaptiveTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &eyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.testMethod, &adaptiveMethod);
@@ -648,7 +643,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsInitializesFixedLevelTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList_, &silentIntervalTargets);
@@ -657,7 +652,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementInitializesFixedLevelTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList_, &targetsWithReplacement);
@@ -666,7 +661,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingInitializesFixedLevelTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::
             fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &eyeTracking);
@@ -678,27 +673,27 @@ TEST_SETTINGS_INTERPRETER_TEST(
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsInitializesFixedLevelTest) {
     TEST_SETTINGS_INTREPRETER_TEST_EXPECT_INITIALIZES_FIXED_LEVEL_TEST_WITH_ALL_TARGETS(
-        interpreter, model, sessionController,
+        interpreter, sessionController,
         Method::fixedLevelFreeResponseWithAllTargets);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelChooseKeywordsWithAllTargetsInitializesFixedLevelTest) {
     TEST_SETTINGS_INTREPRETER_TEST_EXPECT_INITIALIZES_FIXED_LEVEL_TEST_WITH_ALL_TARGETS(
-        interpreter, model, sessionController,
+        interpreter, sessionController,
         Method::fixedLevelChooseKeywordsWithAllTargets);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelSyllablesWithAllTargetsInitializesFixedLevelTest) {
     TEST_SETTINGS_INTREPRETER_TEST_EXPECT_INITIALIZES_FIXED_LEVEL_TEST_WITH_ALL_TARGETS(
-        interpreter, model, sessionController,
+        interpreter, sessionController,
         Method::fixedLevelSyllablesWithAllTargets);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTrackingInitializesFixedLevelTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &eyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -708,7 +703,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingInitializesFixedLevelTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &eyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -718,7 +713,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithSilentIntervalTargetsInitializesFixedLevelTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method,
              Method::fixedLevelFreeResponseWithSilentIntervalTargets),
             entryWithNewline(TestSetting::subjectId, "abc")});
@@ -728,7 +723,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithTargetReplacementInitializesFixedLevelTest) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method,
              Method::fixedLevelFreeResponseWithTargetReplacement),
             entryWithNewline(TestSetting::maskerLevel, "5")});
@@ -736,7 +731,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesStartingSnr) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::startingSnr, "6")},
         5);
@@ -744,69 +739,69 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesStartingSnr) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsOverridesStartingSnr) {
-    assertOverridesStartingSnr(interpreter, model, sessionController,
+    assertOverridesStartingSnr(interpreter, sessionController,
         Method::fixedLevelConsonants, fixedLevelMethod.fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementOverridesStartingSnr) {
-    assertOverridesStartingSnr(interpreter, model, sessionController,
+    assertOverridesStartingSnr(interpreter, sessionController,
         Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
         fixedLevelMethod.fixedLevelFixedTrialsTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
-    assertPassesSimpleAdaptiveSettings(interpreter, model, sessionController,
+    assertPassesSimpleAdaptiveSettings(interpreter, sessionController,
         Method::adaptivePassFail, adaptiveMethod.test_);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptivePassFailWithEyeTrackingPassesSimpleAdaptiveSettings) {
-    assertPassesSimpleAdaptiveSettings(interpreter, model, sessionController,
+    assertPassesSimpleAdaptiveSettings(interpreter, sessionController,
         Method::adaptivePassFailWithEyeTracking, adaptiveMethod.test_);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCorrectKeywordsPassesSimpleAdaptiveSettings) {
-    assertPassesSimpleAdaptiveSettings(interpreter, model, sessionController,
+    assertPassesSimpleAdaptiveSettings(interpreter, sessionController,
         Method::adaptiveCorrectKeywords, adaptiveMethod.test_);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCorrectKeywordsWithEyeTrackingPassesSimpleAdaptiveSettings) {
-    assertPassesSimpleAdaptiveSettings(interpreter, model, sessionController,
+    assertPassesSimpleAdaptiveSettings(interpreter, sessionController,
         Method::adaptiveCorrectKeywordsWithEyeTracking, adaptiveMethod.test_);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithDelayedMaskerPassesSimpleAdaptiveSettings) {
-    assertPassesSimpleAdaptiveSettings(interpreter, model, sessionController,
+    assertPassesSimpleAdaptiveSettings(interpreter, sessionController,
         Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
         adaptiveMethod.test_);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithSingleSpeakerPassesSimpleAdaptiveSettings) {
-    assertPassesSimpleAdaptiveSettings(interpreter, model, sessionController,
+    assertPassesSimpleAdaptiveSettings(interpreter, sessionController,
         Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
         adaptiveMethod.test_);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithEyeTrackingPassesSimpleAdaptiveSettings) {
-    assertPassesSimpleAdaptiveSettings(interpreter, model, sessionController,
+    assertPassesSimpleAdaptiveSettings(interpreter, sessionController,
         Method::adaptiveCoordinateResponseMeasureWithEyeTracking,
         adaptiveMethod.test_);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasurePassesSimpleAdaptiveSettings) {
-    assertPassesSimpleAdaptiveSettings(interpreter, model, sessionController,
+    assertPassesSimpleAdaptiveSettings(interpreter, sessionController,
         Method::adaptiveCoordinateResponseMeasure, adaptiveMethod.test_);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveAudioVisual) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -814,7 +809,7 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptiveAudioVisual) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveAuditoryOnly) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::condition, Condition::auditoryOnly)});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -822,7 +817,7 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptiveAuditoryOnly) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAudioVisual) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(
              TestSetting::method, Method::fixedLevelFreeResponseWithAllTargets),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
@@ -831,7 +826,7 @@ TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAudioVisual) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelFixedTargetsAudioVisual) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method,
              Method::fixedLevelFreeResponseWithTargetReplacement),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
@@ -840,38 +835,38 @@ TEST_SETTINGS_INTERPRETER_TEST(fixedLevelFixedTargetsAudioVisual) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAuditoryOnly) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method,
              Method::fixedLevelFreeResponseWithTargetReplacement),
             entryWithNewline(TestSetting::condition, Condition::auditoryOnly)});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Condition::auditoryOnly, fixedLevelTest(model).condition);
+        Condition::auditoryOnly, runningATest.test.condition);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesSettingsWithExtraneousWhitespace) {
-    assertPassesSettingsWithExtraneousWhitespace(interpreter, model,
-        sessionController, Method::fixedLevelFreeResponseWithAllTargets,
+    assertPassesSettingsWithExtraneousWhitespace(interpreter, sessionController,
+        Method::fixedLevelFreeResponseWithAllTargets,
         fixedLevelMethod.fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelSettings(interpreter, model, sessionController,
+    assertPassesSimpleFixedLevelSettings(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithAllTargets,
         fixedLevelMethod.fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelChooseKeywordsWithAllTargetsPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelSettings(interpreter, model, sessionController,
+    assertPassesSimpleFixedLevelSettings(interpreter, sessionController,
         Method::fixedLevelChooseKeywordsWithAllTargets,
         fixedLevelMethod.fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelConsonantsPassesSimpleFixedLevelSettings) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
             entryWithNewline(TestSetting::targets, "a"),
             entryWithNewline(TestSetting::masker, "b"),
@@ -890,28 +885,28 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelSettings(interpreter, model, sessionController,
+    assertPassesSimpleFixedLevelSettings(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
         fixedLevelMethod.fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelSettings(interpreter, model, sessionController,
+    assertPassesSimpleFixedLevelSettings(interpreter, sessionController,
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
         fixedLevelMethod.fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelSettings(interpreter, model, sessionController,
+    assertPassesSimpleFixedLevelSettings(interpreter, sessionController,
         Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
         fixedLevelMethod.fixedLevelFixedTrialsTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelSettings(interpreter, model, sessionController,
+    assertPassesSimpleFixedLevelSettings(interpreter, sessionController,
         Method::
             fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
         fixedLevelMethod.fixedLevelFixedTrialsTest);
@@ -919,14 +914,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithSilentIntervalTargetsPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelSettings(interpreter, model, sessionController,
+    assertPassesSimpleFixedLevelSettings(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithSilentIntervalTargets,
         fixedLevelMethod.fixedLevelTest);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithTargetReplacementPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelSettings(interpreter, model, sessionController,
+    assertPassesSimpleFixedLevelSettings(interpreter, sessionController,
         Method::fixedLevelFreeResponseWithTargetReplacement,
         fixedLevelMethod.fixedLevelFixedTrialsTest);
 }
@@ -937,7 +932,7 @@ TEST_SETTINGS_INTERPRETER_TEST(oneSequence) {
     sequence.down = 2;
     sequence.runCount = 3;
     sequence.stepSize = 4;
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::up, "1"),
             entryWithNewline(TestSetting::down, "2"),
@@ -957,7 +952,7 @@ TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
     second.down = 4;
     second.runCount = 6;
     second.stepSize = 8;
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::up, "1 2"),
             entryWithNewline(TestSetting::down, "3 4"),
@@ -967,7 +962,7 @@ TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(consonantTestWithTargetRepetitions) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {"\n",
             entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
             "\n", entryWithNewline(TestSetting::targetRepetitions, "2")});
@@ -976,12 +971,11 @@ TEST_SETTINGS_INTERPRETER_TEST(consonantTestWithTargetRepetitions) {
 
 TEST_SETTINGS_INTERPRETER_TEST(
     consonantTestWithTargetRepetitionsDefaultsToOne) {
-    initialize(interpreter, model, sessionController,
+    initialize(interpreter, sessionController,
         {"\n",
             entryWithNewline(
                 TestSetting::method, Method::fixedLevelConsonants)});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        1, fixedLevelTestWithEachTargetNTimes(model).timesEachTargetIsPlayed);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0, eachTargetNTimes.repeats());
 }
 }
 }
