@@ -88,11 +88,6 @@ class ModelStub : public RunningATestFacade {
 
     auto consonantResponse() { return consonantResponse_; }
 
-    void initialize(const AdaptiveTest &p) override {
-        adaptiveTest_ = p;
-        defaultAdaptiveTestInitialized_ = true;
-    }
-
     void initializeWithCyclicTargets(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithCyclicTargets_ = true;

@@ -117,7 +117,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         text_ = t;
         identity_ = id;
         if (initializeAnyTestOnApply_)
-            m.initialize(AdaptiveTest{});
+            m.initializeWithCyclicTargets({});
     }
 
     [[nodiscard]] auto text() const -> std::string { return text_; }
@@ -349,10 +349,6 @@ class RequestFailingModel : public RunningATestFacade {
 
   public:
     void setErrorMessage(std::string s) { errorMessage = std::move(s); }
-
-    void initialize(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
 
     void initializeWithCyclicTargets(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};

@@ -75,7 +75,6 @@ class RunningATestFacade {
     };
 
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATestFacade);
-    virtual void initialize(const AdaptiveTest &) = 0;
     virtual void initializeWithCyclicTargets(const AdaptiveTest &) = 0;
 };
 }
