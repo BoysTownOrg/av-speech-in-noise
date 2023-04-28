@@ -68,13 +68,6 @@ class RunningATestFacade {
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void trialComplete() = 0;
     };
-
-    class RequestFailure : public std::runtime_error {
-      public:
-        explicit RequestFailure(const std::string &s) : std::runtime_error{s} {}
-    };
-
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATestFacade);
 };
 }
 

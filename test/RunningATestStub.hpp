@@ -14,23 +14,23 @@ class RunningATestStub : public RunningATest {
         testMethod = tm;
         observer = p;
         if (failOnRequest)
-            throw RunningATestFacade::RequestFailure{errorMessage};
+            throw RequestFailure{errorMessage};
     }
     void playTrial(const AudioSettings &t) override { trialAudioSettings = t; }
     void playCalibration(const Calibration &c) override {
         calibration_ = c;
         if (failOnRequest)
-            throw RunningATestFacade::RequestFailure{errorMessage};
+            throw RequestFailure{errorMessage};
     }
     void playLeftSpeakerCalibration(const Calibration &c) override {
         leftSpeakerCalibration_ = c;
         if (failOnRequest)
-            throw RunningATestFacade::RequestFailure{errorMessage};
+            throw RequestFailure{errorMessage};
     }
     void playRightSpeakerCalibration(const Calibration &c) override {
         rightSpeakerCalibration_ = c;
         if (failOnRequest)
-            throw RunningATestFacade::RequestFailure{errorMessage};
+            throw RequestFailure{errorMessage};
     }
     void submit(const coordinate_response_measure::Response &r) override {
         coordinateResponse = r;

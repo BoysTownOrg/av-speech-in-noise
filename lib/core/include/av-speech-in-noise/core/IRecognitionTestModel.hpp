@@ -11,6 +11,11 @@
 namespace av_speech_in_noise {
 class RunningATest {
   public:
+    class RequestFailure : public std::runtime_error {
+      public:
+        explicit RequestFailure(const std::string &s) : std::runtime_error{s} {}
+    };
+
     class Observer {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
@@ -20,6 +25,7 @@ class RunningATest {
         virtual void notifyThatStimulusHasEnded() {}
         virtual void notifyThatSubjectHasResponded() {}
     };
+
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATest);
     virtual void attach(RunningATestFacade::Observer *) = 0;
     virtual void initialize(

@@ -6,7 +6,6 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/core/RecognitionTestModel.hpp>
 
@@ -414,7 +413,7 @@ auto maskerPlayerObserver(const RunningATestImpl &model)
 void runIgnoringFailure(UseCase &useCase, RunningATestImpl &model) {
     try {
         run(useCase, model);
-    } catch (const RunningATestFacade::RequestFailure &) {
+    } catch (const RunningATest::RequestFailure &) {
     }
 }
 
@@ -536,7 +535,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         try {
             run(useCase, model);
             FAIL() << "Expected Model::RequestFailure";
-        } catch (const RunningATestFacade::RequestFailure &e) {
+        } catch (const RunningATest::RequestFailure &e) {
             AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, e.what());
         }
     }

@@ -84,14 +84,14 @@ static void throwRequestFailureOnInvalidAudioDevice(
     try {
         f(device);
     } catch (const InvalidAudioDevice &) {
-        throw RunningATestFacade::RequestFailure{
+        throw RunningATest::RequestFailure{
             "'" + device + "' is not a valid audio device."};
     }
 }
 
 static void throwRequestFailureIfTrialInProgress(bool f) {
     if (f)
-        throw RunningATestFacade::RequestFailure{"Trial in progress."};
+        throw RunningATest::RequestFailure{"Trial in progress."};
 }
 
 static void apply(TargetPlayer &player, LevelAmplification x) {
@@ -130,7 +130,7 @@ static void tryOpening(OutputFile &file, const TestIdentity &p) {
     try {
         file.openNewFile(p);
     } catch (const OutputFile::OpenFailure &) {
-        throw RunningATestFacade::RequestFailure{"Unable to open output file."};
+        throw RunningATest::RequestFailure{"Unable to open output file."};
     }
 }
 
@@ -169,7 +169,7 @@ static void throwRequestFailureOnInvalidAudioFile(
     try {
         f(s);
     } catch (const InvalidAudioFile &) {
-        throw RunningATestFacade::RequestFailure{"unable to read " + s.path};
+        throw RunningATest::RequestFailure{"unable to read " + s.path};
     }
 }
 
