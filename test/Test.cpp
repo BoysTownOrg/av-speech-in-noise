@@ -124,7 +124,7 @@ class TestPresenterStub : public TestPresenter {
         return exitTestButtonHidden_;
     }
 
-    void hideExitTestButton() { exitTestButtonHidden_ = true; }
+    void hideExitTestButton() override { exitTestButtonHidden_ = true; }
 
     void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
 
@@ -320,14 +320,13 @@ class Initializing : public PresenterUseCase {
 
 class TestControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
     RunningATestStub runningATest;
     AdaptiveMethodStub adaptiveMethod;
     SessionControlStub sessionView;
     TestControlStub control;
     SessionControllerStub sessionController;
     TestPresenterStub presenter;
-    TestControllerImpl controller{sessionController, model, runningATest,
+    TestControllerImpl controller{sessionController, runningATest,
         adaptiveMethod, sessionView, control, presenter};
     DecliningContinuingTesting decliningContinuingTesting{control};
     AcceptingContinuingTesting acceptingContinuingTesting{control};

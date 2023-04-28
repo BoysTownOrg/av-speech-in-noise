@@ -10,11 +10,11 @@ static void readyNextTrial(TestPresenter &presenter) {
 }
 
 TestControllerImpl::TestControllerImpl(SessionController &sessionController,
-    RunningATestFacade &model, RunningATest &runningATest,
-    AdaptiveMethod &adaptiveMethod, SessionControl &sessionControl,
-    TestControl &control, TestPresenter &presenter)
-    : sessionController{sessionController}, model{model},
-      runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
+    RunningATest &runningATest, AdaptiveMethod &adaptiveMethod,
+    SessionControl &sessionControl, TestControl &control,
+    TestPresenter &presenter)
+    : sessionController{sessionController}, runningATest{runningATest},
+      adaptiveMethod{adaptiveMethod},
       sessionControl{sessionControl}, presenter{presenter} {
     control.attach(this);
 }
