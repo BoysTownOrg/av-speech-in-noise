@@ -67,13 +67,6 @@ void RunningATestFacadeImpl::initializeWithCyclicTargets(
     initializeTestWithPossiblePeripheral(adaptiveMethod, test);
 }
 
-void RunningATestFacadeImpl::initializeWithSilentIntervalTargets(
-    const FixedLevelTest &test) {
-    av_speech_in_noise::initialize(
-        fixedLevelMethod, test, silentIntervalTargets);
-    initializeTestWithPossiblePeripheral(fixedLevelMethod, test);
-}
-
 void RunningATestFacadeImpl::initializeTestWithPossiblePeripheral(
     TestMethod &method, const Test &test) {
     switch (test.peripheral) {

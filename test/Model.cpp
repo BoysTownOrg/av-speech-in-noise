@@ -355,11 +355,6 @@ void initializeWithCyclicTargets(
     model.initializeWithCyclicTargets(test);
 }
 
-void initializeWithSilentIntervalTargets(
-    RunningATestFacadeImpl &model, const FixedLevelTest &test) {
-    model.initializeWithSilentIntervalTargets(test);
-}
-
 class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
     AdaptiveTest test_;
     AdaptiveMethodStub *method;
@@ -445,50 +440,6 @@ class InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingFixedLevelTestWithSilentIntervalTargets
-    : public InitializingFixedLevelTest {
-    FixedLevelTest test_;
-    FixedLevelMethodStub *method;
-
-  public:
-    explicit InitializingFixedLevelTestWithSilentIntervalTargets(
-        FixedLevelMethodStub *method)
-        : method{method} {}
-
-    void run(RunningATestFacadeImpl &model) override {
-        initializeWithSilentIntervalTargets(model, test_);
-    }
-
-    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
-};
-
-class InitializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking
-    : public InitializingFixedLevelTest {
-    FixedLevelTest test_;
-    FixedLevelMethodStub *method;
-
-  public:
-    explicit InitializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking(
-        FixedLevelMethodStub *method)
-        : method{method} {
-        test_.peripheral = TestPeripheral::eyeTracking;
-    }
-
-    void run(RunningATestFacadeImpl &model) override {
-        model.initializeWithSilentIntervalTargets(test_);
-    }
-
-    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
-};
-
 auto initializedWithEyeTracking(
     RunningATestStub &m, RunningATest::Observer *observer) -> bool {
     return m.observer == observer;
@@ -527,11 +478,6 @@ class ModelTests : public ::testing::Test {
     InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking
         initializingAdaptiveTestWithCyclicTargetsAndEyeTracking{
             &adaptiveMethod};
-    InitializingFixedLevelTestWithSilentIntervalTargets
-        initializingFixedLevelTestWithSilentIntervalTargets{&fixedLevelMethod};
-    InitializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking
-        initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking{
-            &fixedLevelMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
@@ -897,31 +843,6 @@ SUBMITTING_CONSONANT_TEST(savesOutputFileAfterWritingTrial) {
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
 
-MODEL_TEST(
-    initializeFixedLevelTestWithSilentIntervalTargetsInitializesFixedLevelMethod) {
-    assertInitializesFixedLevelMethod(
-        initializingFixedLevelTestWithSilentIntervalTargets);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesFixedLevelMethod) {
-    assertInitializesFixedLevelMethod(
-        initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);
-}
-
-MODEL_TEST(
-    initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesWithSilentIntervalTargets) {
-    assertInitializesFixedLevelTestWithTargetPlaylist(
-        initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking,
-        silentIntervals);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithSilentIntervalTargetsInitializesWithSilentIntervals) {
-    assertInitializesFixedLevelTestWithTargetPlaylist(
-        initializingFixedLevelTestWithSilentIntervalTargets, silentIntervals);
-}
-
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(
         initializingDefaultAdaptiveTest, targetsWithReplacementReader);
@@ -942,18 +863,6 @@ MODEL_TEST(
     assertInitializesAdaptiveMethod(
         initializingAdaptiveTestWithCyclicTargetsAndEyeTracking,
         cyclicTargetsReader);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesInternalModel) {
-    assertInitializesInternalModel(
-        initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithSilentIntervalTargetsInitializesInternalModel) {
-    assertInitializesInternalModel(
-        initializingFixedLevelTestWithSilentIntervalTargets);
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesInternalModel) {
@@ -983,13 +892,6 @@ MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {
 MODEL_TEST(
     initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithCyclicTargetsAndEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        initializedWithEyeTracking(internalModel, &eyeTracking));
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesWithEyeTracking) {
-    run(initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         initializedWithEyeTracking(internalModel, &eyeTracking));
 }

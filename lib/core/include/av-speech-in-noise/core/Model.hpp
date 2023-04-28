@@ -25,7 +25,6 @@ class RunningATestFacadeImpl : public RunningATestFacade {
         RunningATest::Observer &eyeTracking);
     void initialize(const AdaptiveTest &) override;
     void initializeWithCyclicTargets(const AdaptiveTest &) override;
-    void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
 
   private:
     void initializeTest_(const AdaptiveTest &);
