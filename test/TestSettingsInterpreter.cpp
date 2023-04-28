@@ -8,7 +8,6 @@
 #include "PuzzleStub.hpp"
 
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
-#include <av-speech-in-noise/Model.hpp>
 
 #include <gtest/gtest.h>
 
@@ -73,8 +72,6 @@ auto entryWithNewline(TestSetting p, Method m) -> std::string {
 auto entryWithNewline(TestSetting p, Condition c) -> std::string {
     return entryWithNewline(p, name(c));
 }
-
-auto adaptiveTest(ModelStub &m) -> AdaptiveTest { return m.adaptiveTest(); }
 
 auto fixedLevelTest(ModelStub &m) -> FixedLevelTest {
     return m.fixedLevelTest();
@@ -172,14 +169,6 @@ void initialize(TestSettingsInterpreterImpl &interpreter,
         {entryWithNewline(TestSetting::method, m)}, startingSnr, identity);
 }
 
-void assertDefaultAdaptiveTestInitialized(ModelStub &model) {
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.defaultAdaptiveTestInitialized());
-}
-
-auto adaptiveTestIdentity(ModelStub &model) -> TestIdentity {
-    return adaptiveTest(model).identity;
-}
-
 void setSubjectId(TestIdentity &identity, std::string s) {
     identity.subjectId = std::move(s);
 }
@@ -223,19 +212,6 @@ void assertTestMethodEquals(
 
 void assertPassesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     ModelStub &model, SessionController &sessionController, Method m,
-    const std::function<TestIdentity(ModelStub &)> &f) {
-    TestIdentity testIdentity;
-    setSubjectId(testIdentity, "a");
-    setTesterId(testIdentity, "b");
-    setSession(testIdentity, "c");
-    initialize(interpreter, model, sessionController, m, testIdentity);
-    assertSubjectIdEquals("a", f(model));
-    assertTesterIdEquals("b", f(model));
-    assertSessionIdEquals("c", f(model));
-}
-
-void assertPassesTestIdentity(TestSettingsInterpreterImpl &interpreter,
-    ModelStub &model, SessionController &sessionController, Method m,
     const TestIdentity &f) {
     TestIdentity testIdentity;
     setSubjectId(testIdentity, "a");
@@ -245,37 +221,6 @@ void assertPassesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     assertSubjectIdEquals("a", f);
     assertTesterIdEquals("b", f);
     assertSessionIdEquals("c", f);
-}
-
-void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
-    ModelStub &model, SessionController &sessionController, Method m,
-    const std::function<TestIdentity(ModelStub &)> &f) {
-    TestIdentity testIdentity;
-    setSubjectId(testIdentity, "a");
-    setTesterId(testIdentity, "b");
-    setSession(testIdentity, "c");
-    testIdentity.rmeSetting = "g";
-    testIdentity.transducer = "h";
-    testIdentity.meta = "k";
-    testIdentity.relativeOutputUrl.path = "n";
-    initialize(interpreter, model, sessionController,
-        {entryWithNewline(TestSetting::method, m),
-            entryWithNewline(TestSetting::subjectId, "d"),
-            entryWithNewline(TestSetting::testerId, "e"),
-            entryWithNewline(TestSetting::session, "f"),
-            entryWithNewline(TestSetting::rmeSetting, "i"),
-            entryWithNewline(TestSetting::transducer, "j"),
-            entryWithNewline(TestSetting::meta, "m"),
-            entryWithNewline(TestSetting::relativeOutputPath, "p")},
-        0, testIdentity);
-    assertSubjectIdEquals("d", f(model));
-    assertTesterIdEquals("e", f(model));
-    assertSessionIdEquals("f", f(model));
-    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"i"}, f(model).rmeSetting);
-    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"j"}, f(model).transducer);
-    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"m"}, f(model).meta);
-    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
-        std::string{"p"}, f(model).relativeOutputUrl.path);
 }
 
 void assertOverridesTestIdentity(TestSettingsInterpreterImpl &interpreter,
@@ -316,13 +261,6 @@ void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter,
             entryWithNewline(TestSetting::startingSnr, "6")},
         5);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6, f.snr.dB);
-}
-
-void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
-    ModelStub &model, SessionController &sessionController, Method m,
-    const std::function<TestIdentity(ModelStub &)> &f) {
-    initialize(interpreter, model, sessionController, m);
-    assertTestMethodEquals(name(m), f(model));
 }
 
 void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
