@@ -489,73 +489,6 @@ class InitializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingFixedLevelTestWithAllTargets
-    : public InitializingFixedLevelTest {
-    FixedLevelTest test_;
-    FixedLevelMethodStub *method;
-
-  public:
-    explicit InitializingFixedLevelTestWithAllTargets(
-        FixedLevelMethodStub *method)
-        : method{method} {}
-
-    void run(RunningATestFacadeImpl &model) override {
-        model.initializeWithAllTargets(test_);
-    }
-
-    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
-};
-
-class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
-    : public InitializingFixedLevelTest {
-    FixedLevelTest test_;
-    FixedLevelMethodStub *method;
-
-  public:
-    explicit InitializingFixedLevelTestWithAllTargetsAndEyeTracking(
-        FixedLevelMethodStub *method)
-        : method{method} {
-        test_.peripheral = TestPeripheral::eyeTracking;
-    }
-
-    void run(RunningATestFacadeImpl &model) override {
-        model.initializeWithAllTargets(test_);
-    }
-
-    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
-};
-
-class InitializingFixedLevelTestWithAllTargetsAndAudioRecording
-    : public InitializingFixedLevelTest {
-    FixedLevelTest test_;
-    FixedLevelMethodStub *method;
-
-  public:
-    explicit InitializingFixedLevelTestWithAllTargetsAndAudioRecording(
-        FixedLevelMethodStub *method)
-        : method{method} {
-        test_.peripheral = TestPeripheral::audioRecording;
-    }
-
-    void run(RunningATestFacadeImpl &model) override {
-        model.initializeWithAllTargets(test_);
-    }
-
-    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
-
-    auto test() -> const Test & override { return test_; }
-
-    auto testMethod() -> const TestMethod * override { return method; }
-};
-
 auto initializedWithEyeTracking(
     RunningATestStub &m, RunningATest::Observer *observer) -> bool {
     return m.observer == observer;
@@ -598,14 +531,6 @@ class ModelTests : public ::testing::Test {
         initializingFixedLevelTestWithSilentIntervalTargets{&fixedLevelMethod};
     InitializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking
         initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking{
-            &fixedLevelMethod};
-    InitializingFixedLevelTestWithAllTargets
-        initializingFixedLevelTestWithAllTargets{&fixedLevelMethod};
-    InitializingFixedLevelTestWithAllTargetsAndEyeTracking
-        initializingFixedLevelTestWithAllTargetsAndEyeTracking{
-            &fixedLevelMethod};
-    InitializingFixedLevelTestWithAllTargetsAndAudioRecording
-        initializingFixedLevelTestWithAllTargetsAndAudioRecording{
             &fixedLevelMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
@@ -979,12 +904,6 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
-    initializingFixedLevelTestWithAllTargetsAndAudioRecordingInitializesFixedLevelMethod) {
-    assertInitializesFixedLevelMethod(
-        initializingFixedLevelTestWithAllTargetsAndAudioRecording);
-}
-
-MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);
@@ -1001,18 +920,6 @@ MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsInitializesWithSilentIntervals) {
     assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithSilentIntervalTargets, silentIntervals);
-}
-
-MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesWithAllTargets) {
-    assertInitializesFixedLevelTestWithTargetPlaylist(
-        initializingFixedLevelTestWithAllTargets, everyTargetOnce);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesWithAllTargets) {
-    assertInitializesFixedLevelTestWithTargetPlaylist(
-        initializingFixedLevelTestWithAllTargetsAndEyeTracking,
-        everyTargetOnce);
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
@@ -1049,22 +956,6 @@ MODEL_TEST(
         initializingFixedLevelTestWithSilentIntervalTargets);
 }
 
-MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesInternalModel) {
-    assertInitializesInternalModel(initializingFixedLevelTestWithAllTargets);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesInternalModel) {
-    assertInitializesInternalModel(
-        initializingFixedLevelTestWithAllTargetsAndEyeTracking);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithAllTargetsAndAudioRecordingInitializesInternalModel) {
-    assertInitializesInternalModel(
-        initializingFixedLevelTestWithAllTargetsAndAudioRecording);
-}
-
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingDefaultAdaptiveTest);
 }
@@ -1081,19 +972,6 @@ MODEL_TEST(
     initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesInternalModel) {
     assertInitializesInternalModel(
         initializingAdaptiveTestWithCyclicTargetsAndEyeTracking);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithAllTargetsAndAudioRecordingInitializesWithAudioRecording) {
-    run(initializingFixedLevelTestWithAllTargetsAndAudioRecording);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(internalModel.observer, &audioRecording);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesWithEyeTracking) {
-    run(initializingFixedLevelTestWithAllTargetsAndEyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        initializedWithEyeTracking(internalModel, &eyeTracking));
 }
 
 MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {

@@ -103,11 +103,6 @@ class ModelStub : public RunningATestFacade {
         fixedLevelTestWithSilentIntervalTargetsInitialized_ = true;
     }
 
-    void initializeWithAllTargets(const FixedLevelTest &p) override {
-        fixedLevelTest_ = p;
-        fixedLevelTestWithAllTargetsInitialized_ = true;
-    }
-
     auto threeKeywords() -> ThreeKeywordsResponse { return threeKeywords_; }
 
     void setKeywordTestResults(KeywordsTestResults k) {
