@@ -309,7 +309,7 @@ static void initialize(AdaptiveMethod &method, const AdaptiveTest &test,
 }
 
 static void initialize(RunningATest &model, TestMethod &method,
-    const Test &test, RunningATest::Observer *observer) {
+    const Test &test, RunningATest::TestObserver *observer) {
     model.initialize(&method, test, observer);
 }
 
@@ -529,8 +529,8 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
 TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     std::map<Method, TaskPresenter &> taskPresenters,
     RunningATest &runningATest, AdaptiveMethod &adaptiveMethod,
-    FixedLevelMethod &fixedLevelMethod, RunningATest::Observer &eyeTracking,
-    RunningATest::Observer &audioRecording,
+    FixedLevelMethod &fixedLevelMethod, RunningATest::TestObserver &eyeTracking,
+    RunningATest::TestObserver &audioRecording,
     TargetPlaylistReader &cyclicTargetsReader,
     TargetPlaylistReader &targetsWithReplacementReader,
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets,

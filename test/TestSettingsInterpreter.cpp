@@ -270,8 +270,8 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     RunningATestStub runningATest;
     AdaptiveMethodStub adaptiveMethod;
     FixedLevelMethodStub fixedLevelMethod;
-    RunningATest::Observer eyeTracking;
-    RunningATest::Observer audioRecording;
+    RunningATest::TestObserver eyeTracking;
+    RunningATest::TestObserver audioRecording;
     TargetPlaylistSetReaderStub cyclicTargetsReader;
     TargetPlaylistSetReaderStub targetsWithReplacementReader;
     FiniteTargetPlaylistWithRepeatablesStub predeterminedTargets;

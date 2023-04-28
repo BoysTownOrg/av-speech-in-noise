@@ -9,7 +9,7 @@ class RunningATestStub : public RunningATest {
     void attach(RunningATestFacade::Observer *a) override {
         facadeObserver = a;
     }
-    void initialize(TestMethod *tm, const Test &t, Observer *p) override {
+    void initialize(TestMethod *tm, const Test &t, TestObserver *p) override {
         test = t;
         testMethod = tm;
         observer = p;
@@ -53,7 +53,7 @@ class RunningATestStub : public RunningATest {
     Test test;
     RunningATestFacade::Observer *facadeObserver;
     const TestMethod *testMethod{};
-    const Observer *observer{};
+    const TestObserver *observer{};
     std::string targetFileName_;
     std::string errorMessage;
     int trialNumber_{};

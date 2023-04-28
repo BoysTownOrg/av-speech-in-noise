@@ -31,7 +31,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
         OutputFile &, Randomizer &, Clock &);
     void attach(RunningATestFacade::Observer *) override;
     void initialize(
-        TestMethod *, const Test &, RunningATest::Observer *) override;
+        TestMethod *, const Test &, RunningATest::TestObserver *) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
     void playLeftSpeakerCalibration(const Calibration &) override;
@@ -51,7 +51,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     static constexpr Duration targetOffsetFringeDuration{
         targetOnsetFringeDuration};
 
-    RunningATest::Observer *observer;
+    RunningATest::TestObserver *observer;
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
     ResponseEvaluator &evaluator;

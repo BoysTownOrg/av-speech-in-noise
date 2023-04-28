@@ -79,8 +79,8 @@ class UseCase {
 
 class InitializingTest : public UseCase {
   public:
-    explicit InitializingTest(
-        TestMethod *method, const Test &test, RunningATest::Observer *observer)
+    explicit InitializingTest(TestMethod *method, const Test &test,
+        RunningATest::TestObserver *observer)
         : test{test}, method{method}, observer{observer} {}
 
     void run(RunningATestImpl &m) override {
@@ -90,7 +90,7 @@ class InitializingTest : public UseCase {
   private:
     const Test &test{};
     TestMethod *method;
-    RunningATest::Observer *observer;
+    RunningATest::TestObserver *observer;
 };
 
 class InitializingTestWithSingleSpeaker : public UseCase {
@@ -250,7 +250,7 @@ class ClockStub : public Clock {
     bool timeQueried_{};
 };
 
-class RunningATestObserverStub : public RunningATest::Observer {
+class RunningATestObserverStub : public RunningATest::TestObserver {
   public:
     void notifyThatNewTestIsReady(std::string_view session) override {
         this->session = session;
@@ -842,11 +842,6 @@ RECOGNITION_TEST_MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds,
         observer.playerTimeWithDelay.delay.seconds);
-}
-
-auto eyeTrackerTargetPlayerSynchronization(OutputFileStub &file)
-    -> EyeTrackerTargetPlayerSynchronization {
-    return file.eyeTrackerTargetPlayerSynchronization();
 }
 
 RECOGNITION_TEST_MODEL_TEST(

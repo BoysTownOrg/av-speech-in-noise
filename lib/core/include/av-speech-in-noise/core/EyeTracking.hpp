@@ -19,7 +19,7 @@ class EyeTracker : public Writable {
     virtual auto currentSystemTime() -> EyeTrackerSystemTime = 0;
 };
 
-class EyeTracking : public RunningATest::Observer {
+class EyeTracking : public RunningATest::TestObserver {
   public:
     EyeTracking(EyeTracker &, MaskerPlayer &, TargetPlayer &, OutputFile &);
     void notifyThatNewTestIsReady(std::string_view session) override;

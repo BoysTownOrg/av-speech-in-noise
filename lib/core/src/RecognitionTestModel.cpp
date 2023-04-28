@@ -21,7 +21,7 @@ class NullTestMethod : public TestMethod {
     void writeTestResult(OutputFile &) override {}
 };
 
-class NullObserver : public RunningATest::Observer {
+class NullObserver : public RunningATest::TestObserver {
     void notifyThatNewTestIsReady(std::string_view session) override {}
     void notifyThatTrialWillBegin(int trialNumber) override {}
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
@@ -243,7 +243,7 @@ static void preparePlayersForNextTrial(TestMethod *testMethod,
 
 static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, RunningATest::Observer *observer,
+    MaskerPlayer &maskerPlayer, RunningATest::TestObserver *observer,
     RealLevel maskerLevel, RealLevel fullScaleLevel) {
     observer->notifyThatSubjectHasResponded();
     if (!testMethod->complete()) {
@@ -259,7 +259,7 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
 static void saveOutputFileAndPrepareNextTrialAfter(
     const std::function<void()> &f, TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, RunningATest::Observer *observer,
+    MaskerPlayer &maskerPlayer, RunningATest::TestObserver *observer,
     RealLevel maskerLevel, RealLevel fullScaleLevel) {
     f();
     save(outputFile);
@@ -282,7 +282,7 @@ void RunningATestImpl::attach(RunningATestFacade::Observer *listener) {
 }
 
 void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
-    RunningATest::Observer *observer_) {
+    RunningATest::TestObserver *observer_) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     if (testMethod_->complete())

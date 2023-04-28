@@ -166,7 +166,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
     TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>,
         RunningATest &, AdaptiveMethod &, FixedLevelMethod &,
-        RunningATest::Observer &, RunningATest::Observer &,
+        RunningATest::TestObserver &, RunningATest::TestObserver &,
         TargetPlaylistReader &, TargetPlaylistReader &,
         FiniteTargetPlaylistWithRepeatables &,
         FiniteTargetPlaylistWithRepeatables &,
@@ -183,8 +183,8 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     RunningATest &runningATest;
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
-    RunningATest::Observer &eyeTracking;
-    RunningATest::Observer &audioRecording;
+    RunningATest::TestObserver &eyeTracking;
+    RunningATest::TestObserver &audioRecording;
     TargetPlaylistReader &cyclicTargetsReader;
     TargetPlaylistReader &targetsWithReplacementReader;
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets;

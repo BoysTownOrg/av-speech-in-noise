@@ -5,6 +5,7 @@
 #include "IModel.hpp"
 #include "TestMethod.hpp"
 
+#include <stdexcept>
 #include <string>
 #include <string_view>
 
@@ -16,9 +17,9 @@ class RunningATest {
         explicit RequestFailure(const std::string &s) : std::runtime_error{s} {}
     };
 
-    class Observer {
+    class TestObserver {
       public:
-        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestObserver);
         virtual void notifyThatNewTestIsReady(std::string_view session) {}
         virtual void notifyThatTrialWillBegin(int trialNumber) {}
         virtual void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) {}
@@ -29,7 +30,7 @@ class RunningATest {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATest);
     virtual void attach(RunningATestFacade::Observer *) = 0;
     virtual void initialize(
-        TestMethod *, const Test &, Observer * = nullptr) = 0;
+        TestMethod *, const Test &, TestObserver * = nullptr) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playLeftSpeakerCalibration(const Calibration &) = 0;

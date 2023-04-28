@@ -23,7 +23,7 @@ static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
     return a.targetsUrl.path == b.targetsUrl.path && a.threshold == b.threshold;
 }
 
-class RunningATestObserverStub : public RunningATest::Observer {
+class RunningATestObserverStub : public RunningATest::TestObserver {
   public:
     void notifyThatNewTestIsReady(std::string_view session) override {}
 
@@ -229,7 +229,7 @@ class RunningATestStub : public RunningATest {
     }
 
     void initialize(
-        TestMethod *method, const Test &test, Observer *observer) override {
+        TestMethod *method, const Test &test, TestObserver *observer) override {
         testMethod_ = method;
         test_ = &test;
         this->observer = observer;
@@ -299,7 +299,7 @@ class RunningATestStub : public RunningATest {
 
     void setPlayTrialTime(std::string s) { playTrialTime_ = std::move(s); }
 
-    const Observer *observer{};
+    const TestObserver *observer{};
 
   private:
     std::vector<std::string> audioDevices_{};

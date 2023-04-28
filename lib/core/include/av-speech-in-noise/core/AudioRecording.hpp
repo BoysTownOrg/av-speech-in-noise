@@ -18,7 +18,7 @@ class AudioRecorder {
     virtual void stop() = 0;
 };
 
-class AudioRecording : public RunningATest::Observer {
+class AudioRecording : public RunningATest::TestObserver {
   public:
     AudioRecording(AudioRecorder &, OutputFile &, TimeStamp &);
     void notifyThatNewTestIsReady(std::string_view session) override;
