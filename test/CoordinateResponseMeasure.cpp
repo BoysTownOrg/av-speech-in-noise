@@ -1,6 +1,5 @@
 #include "RunningATestStub.hpp"
 #include "assert-utility.hpp"
-#include "ModelStub.hpp"
 #include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
 

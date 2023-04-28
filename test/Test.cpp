@@ -1,7 +1,6 @@
 #include "RunningATestStub.hpp"
 #include "AdaptiveMethodStub.hpp"
 #include "assert-utility.hpp"
-#include "ModelStub.hpp"
 #include "TestViewStub.hpp"
 #include "SessionViewStub.hpp"
 

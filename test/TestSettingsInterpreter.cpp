@@ -4,7 +4,6 @@
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "assert-utility.hpp"
-#include "ModelStub.hpp"
 #include "PuzzleStub.hpp"
 
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
@@ -71,15 +70,6 @@ auto entryWithNewline(TestSetting p, Method m) -> std::string {
 
 auto entryWithNewline(TestSetting p, Condition c) -> std::string {
     return entryWithNewline(p, name(c));
-}
-
-auto fixedLevelTest(ModelStub &m) -> FixedLevelTest {
-    return m.fixedLevelTest();
-}
-
-auto fixedLevelTestWithEachTargetNTimes(ModelStub &m)
-    -> const FixedLevelTestWithEachTargetNTimes & {
-    return m.fixedLevelTestWithEachTargetNTimes();
 }
 
 void initialize(TestSettingsInterpreterImpl &interpreter,
@@ -289,7 +279,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     FiniteTargetPlaylistWithRepeatablesStub silentIntervalTargets;
     RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
     TargetPlaylistStub targetsWithReplacement;
-    ModelStub model;
     SessionControllerStub sessionController;
     TaskPresenterStub consonantPresenter;
     TaskPresenterStub passFailPresenter;

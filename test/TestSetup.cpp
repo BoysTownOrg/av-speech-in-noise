@@ -1,6 +1,5 @@
 #include "RunningATestStub.hpp"
 #include "assert-utility.hpp"
-#include "ModelStub.hpp"
 #include "SessionViewStub.hpp"
 
 #include <av-speech-in-noise/ui/TestSetupImpl.hpp>
