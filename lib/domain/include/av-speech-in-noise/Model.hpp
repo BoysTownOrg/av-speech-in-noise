@@ -87,13 +87,7 @@ struct RealLevel {
     int dB_SPL{};
 };
 
-enum class TestPeripheral { audioRecording, eyeTracking, none };
-
-enum class AudioChannelOption {
-    all,
-    singleSpeaker,
-    delayedMasker
-};
+enum class AudioChannelOption { all, singleSpeaker, delayedMasker };
 
 struct Test {
     TestIdentity identity;
@@ -102,7 +96,6 @@ struct Test {
     RealLevel maskerLevel;
     RealLevel fullScaleLevel;
     Condition condition{};
-    TestPeripheral peripheral{TestPeripheral::none};
     AudioChannelOption audioChannelOption{AudioChannelOption::all};
     bool keepVideoShown{};
 };

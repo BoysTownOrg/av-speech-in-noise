@@ -2,7 +2,6 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_IRECOGNITIONTESTMODELHPP_
 
 #include "Player.hpp"
-#include "IModel.hpp"
 #include "TestMethod.hpp"
 
 #include <stdexcept>
