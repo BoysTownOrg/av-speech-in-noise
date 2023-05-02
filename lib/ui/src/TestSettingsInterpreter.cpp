@@ -329,8 +329,7 @@ static auto localUrlFromPath(const std::string &path) -> LocalUrl {
     return url;
 }
 
-void TestSettingsInterpreterImpl::initialize(
-    SessionController &sessionController, const std::string &contents,
+void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     const TestIdentity &identity, SNR startingSnr) {
     std::stringstream stream{contents};
     auto usingPuzzle = false;
@@ -537,7 +536,8 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     RepeatableFiniteTargetPlaylist &eachTargetNTimes,
     TargetPlaylist &targetsWithReplacement,
     submitting_free_response::Puzzle &puzzle,
-    FreeResponseController &freeResponseController)
+    FreeResponseController &freeResponseController,
+    SessionController &sessionController)
     : taskPresenters{std::move(taskPresenters)}, runningATest{runningATest},
       adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       eyeTracking{eyeTracking}, audioRecording{audioRecording},
@@ -548,5 +548,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       silentIntervalTargets{silentIntervalTargets},
       eachTargetNTimes{eachTargetNTimes},
       targetsWithReplacement{targetsWithReplacement}, puzzle{puzzle},
-      freeResponseController{freeResponseController} {}
+      freeResponseController{freeResponseController}, sessionController{
+                                                          sessionController} {}
 }

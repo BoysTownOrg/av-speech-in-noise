@@ -109,10 +109,9 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return calibration_;
     }
 
-    void initialize(SessionController &sc, const std::string &t,
-        const TestIdentity &id, SNR snr) override {
+    void initializeTest(
+        const std::string &t, const TestIdentity &id, SNR snr) override {
         startingSnr_ = snr.dB;
-        sessionController_ = &sc;
         text_ = t;
         identity_ = id;
         if (initializeAnyTestOnApply_)
@@ -372,13 +371,6 @@ class TestSetupFailureTests : public ::testing::Test {
 #define TEST_SETUP_PRESENTER_TEST(a) TEST_F(TestSetupPresenterTests, a)
 
 #define TEST_SETUP_FAILURE_TEST(a) TEST_F(TestSetupFailureTests, a)
-
-TEST_SETUP_CONTROLLER_TEST(
-    passesSessionControllerToTestSettingsInterpreterAfterConfirmButtonIsClicked) {
-    run(confirmingTestSetup);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &sessionController, testSettingsInterpreter.sessionController());
-}
 
 TEST_SETUP_CONTROLLER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {

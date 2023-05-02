@@ -164,17 +164,24 @@ constexpr auto name(TestSetting p) -> const char * {
 
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
-    TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>,
-        RunningATest &, AdaptiveMethod &, FixedLevelMethod &,
-        RunningATest::TestObserver &, RunningATest::TestObserver &,
-        TargetPlaylistReader &, TargetPlaylistReader &,
-        FiniteTargetPlaylistWithRepeatables &,
-        FiniteTargetPlaylistWithRepeatables &,
-        FiniteTargetPlaylistWithRepeatables &, RepeatableFiniteTargetPlaylist &,
-        TargetPlaylist &, submitting_free_response::Puzzle &,
-        FreeResponseController &);
-    void initialize(SessionController &, const std::string &,
-        const TestIdentity &, SNR) override;
+    TestSettingsInterpreterImpl(
+        std::map<Method, TaskPresenter &> taskPresenters,
+        RunningATest &runningATest, AdaptiveMethod &adaptiveMethod,
+        FixedLevelMethod &fixedLevelMethod,
+        RunningATest::TestObserver &eyeTracking,
+        RunningATest::TestObserver &audioRecording,
+        TargetPlaylistReader &cyclicTargetsReader,
+        TargetPlaylistReader &targetsWithReplacementReader,
+        FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
+        FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
+        FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
+        RepeatableFiniteTargetPlaylist &eachTargetNTimes,
+        TargetPlaylist &targetsWithReplacement,
+        submitting_free_response::Puzzle &puzzle,
+        FreeResponseController &freeResponseController,
+        SessionController &sessionController);
+    void initializeTest(
+        const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
 
@@ -194,6 +201,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     TargetPlaylist &targetsWithReplacement;
     submitting_free_response::Puzzle &puzzle;
     FreeResponseController &freeResponseController;
+    SessionController &sessionController;
 };
 }
 

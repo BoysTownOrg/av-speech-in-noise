@@ -48,7 +48,7 @@ void TestSetupController::notifyThatConfirmButtonHasBeenClicked() {
         testIdentity.rmeSetting = control.rmeSetting();
         testIdentity.transducer = control.transducer();
         testIdentity.relativeOutputUrl.path = "Documents/AvSpeechInNoise Data";
-        testSettingsInterpreter.initialize(sessionController,
+        testSettingsInterpreter.initializeTest(
             readTestSettingsFile(textFileReader, control), testIdentity,
             SNR{readInteger(control.startingSnr(), "starting SNR")});
     });
