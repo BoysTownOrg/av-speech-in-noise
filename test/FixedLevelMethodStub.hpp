@@ -8,20 +8,20 @@ class FixedLevelMethodStub : public FixedLevelMethod {
   public:
     void initialize(
         const FixedLevelFixedTrialsTest &t, TargetPlaylist *list) override {
-        targetList_ = list;
+        targetList = list;
         fixedLevelFixedTrialsTest = t;
     }
 
     void initialize(const FixedLevelTest &t,
         FiniteTargetPlaylistWithRepeatables *list) override {
-        targetList_ = list;
-        fixedLevelTest = t;
+        targetList = list;
+        test = t;
     }
 
     void initialize(
         const FixedLevelTest &t, FiniteTargetPlaylist *list) override {
-        targetList_ = list;
-        fixedLevelTest = t;
+        targetList = list;
+        test = t;
     }
 
     auto complete() -> bool override { return {}; }
@@ -64,9 +64,9 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     LocalUrl currentTarget_;
     const ThreeKeywordsResponse *threeKeywords_{};
     const SyllableResponse *syllableResponse_{};
-    FixedLevelTest fixedLevelTest{};
+    FixedLevelTest test{};
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest{};
-    TargetPlaylist *targetList_{};
+    TargetPlaylist *targetList{};
     bool submittedConsonant_{};
     bool submittedFreeResponse_{};
 };
