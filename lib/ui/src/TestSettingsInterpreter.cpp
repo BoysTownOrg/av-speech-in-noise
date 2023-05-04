@@ -291,7 +291,62 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         }
     }
     freeResponseController.initialize(usingPuzzle);
+
     const auto methodName{av_speech_in_noise::methodName(contents)};
+
+    TaskPresenter *taskPresenter{};
+    if (methodName == name(Method::adaptiveCoordinateResponseMeasure) ||
+        methodName ==
+            name(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker) ||
+        methodName ==
+            name(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker) ||
+        methodName ==
+            name(Method::adaptiveCoordinateResponseMeasureWithEyeTracking) ||
+        methodName ==
+            name(Method::
+                    fixedLevelCoordinateResponseMeasureWithTargetReplacement) ||
+        methodName ==
+            name(Method::
+                    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking) ||
+        methodName ==
+            name(Method::
+                    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets)) {
+        taskPresenter = &coordinateResponseMeasurePresenter;
+    } else if (methodName ==
+            name(Method::fixedLevelFreeResponseWithTargetReplacement) ||
+        methodName ==
+            name(Method::fixedLevelFreeResponseWithSilentIntervalTargets) ||
+        methodName == name(Method::fixedLevelFreeResponseWithAllTargets) ||
+        methodName ==
+            name(Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking) ||
+        methodName ==
+            name(Method::
+                    fixedLevelFreeResponseWithAllTargetsAndAudioRecording) ||
+        methodName ==
+            name(Method::
+                    fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording) ||
+        methodName ==
+            name(Method::
+                    fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking)) {
+        taskPresenter = &freeResponsePresenter;
+    } else if (methodName == name(Method::adaptivePassFail) ||
+        methodName == name(Method::adaptivePassFailWithEyeTracking)) {
+        taskPresenter = &passFailPresenter;
+    } else if (methodName == name(Method::adaptiveCorrectKeywords) ||
+        methodName == name(Method::adaptiveCorrectKeywordsWithEyeTracking)) {
+        taskPresenter = &correctKeywordsPresenter;
+    } else if (methodName == name(Method::fixedLevelConsonants)) {
+        taskPresenter = &consonantPresenter;
+    } else if (methodName ==
+        name(Method::fixedLevelChooseKeywordsWithAllTargets)) {
+        taskPresenter = &chooseKeywordsPresenter;
+    } else if (methodName == name(Method::fixedLevelSyllablesWithAllTargets)) {
+        taskPresenter = &syllablesPresenter;
+    } else {
+        std::stringstream stream;
+        stream << "Test method not recognized: " << methodName;
+        throw std::runtime_error{stream.str()};
+    }
 
     if (methodName ==
         name(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker)) {
@@ -443,75 +498,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     runningATest, fixedLevelMethod, test, nullptr);
             });
-    } else {
-        std::stringstream stream;
-        stream << "Test method not recognized: " << methodName;
-        throw std::runtime_error{stream.str()};
-    }
-
-    TaskPresenter *taskPresenter{};
-    if (methodName == name(Method::adaptiveCoordinateResponseMeasure)) {
-        taskPresenter = &coordinateResponseMeasurePresenter;
-    } else if (methodName ==
-        name(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker)) {
-        taskPresenter = &coordinateResponseMeasurePresenter;
-    } else if (methodName ==
-        name(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker)) {
-        taskPresenter = &coordinateResponseMeasurePresenter;
-    } else if (methodName ==
-        name(Method::adaptiveCoordinateResponseMeasureWithEyeTracking)) {
-        taskPresenter = &coordinateResponseMeasurePresenter;
-    } else if (methodName ==
-        name(
-            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement)) {
-        taskPresenter = &coordinateResponseMeasurePresenter;
-    } else if (methodName ==
-        name(Method::
-                fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking)) {
-        taskPresenter = &coordinateResponseMeasurePresenter;
-    } else if (methodName ==
-        name(Method::
-                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets)) {
-        taskPresenter = &coordinateResponseMeasurePresenter;
-    } else if (methodName ==
-        name(Method::fixedLevelFreeResponseWithTargetReplacement)) {
-        taskPresenter = &freeResponsePresenter;
-    } else if (methodName ==
-        name(Method::fixedLevelFreeResponseWithSilentIntervalTargets)) {
-        taskPresenter = &freeResponsePresenter;
-    } else if (methodName ==
-        name(Method::fixedLevelFreeResponseWithAllTargets)) {
-        taskPresenter = &freeResponsePresenter;
-    } else if (methodName ==
-        name(Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking)) {
-        taskPresenter = &freeResponsePresenter;
-    } else if (methodName ==
-        name(Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording)) {
-        taskPresenter = &freeResponsePresenter;
-    } else if (methodName ==
-        name(Method::
-                fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording)) {
-        taskPresenter = &freeResponsePresenter;
-    } else if (methodName ==
-        name(Method::
-                fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking)) {
-        taskPresenter = &freeResponsePresenter;
-    } else if (methodName == name(Method::adaptivePassFail)) {
-        taskPresenter = &passFailPresenter;
-    } else if (methodName == name(Method::adaptivePassFailWithEyeTracking)) {
-        taskPresenter = &passFailPresenter;
-    } else if (methodName == name(Method::adaptiveCorrectKeywords)) {
-        taskPresenter = &correctKeywordsPresenter;
-    } else if (methodName ==
-        name(Method::adaptiveCorrectKeywordsWithEyeTracking)) {
-        taskPresenter = &correctKeywordsPresenter;
-    } else if (methodName == name(Method::fixedLevelConsonants)) {
-        taskPresenter = &consonantPresenter;
-    } else if (methodName ==
-        name(Method::fixedLevelChooseKeywordsWithAllTargets)) {
-        taskPresenter = &chooseKeywordsPresenter;
-    } else if (methodName == name(Method::fixedLevelSyllablesWithAllTargets)) {
-        taskPresenter = &syllablesPresenter;
     }
 
     if (!runningATest.testComplete())
