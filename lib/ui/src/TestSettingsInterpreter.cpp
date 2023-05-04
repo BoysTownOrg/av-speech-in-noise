@@ -541,7 +541,12 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     TargetPlaylist &targetsWithReplacement,
     submitting_free_response::Puzzle &puzzle,
     FreeResponseController &freeResponseController,
-    SessionController &sessionController)
+    SessionController &sessionController,
+    TaskPresenter &coordinateResponseMeasurePresenter,
+    TaskPresenter &freeResponsePresenter,
+    TaskPresenter &chooseKeywordsPresenter, TaskPresenter &syllablesPresenter,
+    TaskPresenter &correctKeywordsPresenter, TaskPresenter &consonantPresenter,
+    TaskPresenter &passFailPresenter)
     : taskPresenters{std::move(taskPresenters)}, runningATest{runningATest},
       adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       eyeTracking{eyeTracking}, audioRecording{audioRecording},
@@ -552,6 +557,13 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       silentIntervalTargets{silentIntervalTargets},
       eachTargetNTimes{eachTargetNTimes},
       targetsWithReplacement{targetsWithReplacement}, puzzle{puzzle},
-      freeResponseController{freeResponseController}, sessionController{
-                                                          sessionController} {}
+      freeResponseController{freeResponseController},
+      sessionController{sessionController},
+      coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
+      freeResponsePresenter{freeResponsePresenter},
+      chooseKeywordsPresenter{chooseKeywordsPresenter},
+      syllablesPresenter{syllablesPresenter},
+      correctKeywordsPresenter{correctKeywordsPresenter},
+      consonantPresenter{consonantPresenter}, passFailPresenter{
+                                                  passFailPresenter} {}
 }

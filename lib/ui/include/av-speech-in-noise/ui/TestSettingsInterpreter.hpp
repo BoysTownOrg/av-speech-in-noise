@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETTINGSINTERPRETER_HPP_
 
 #include "FreeResponse.hpp"
+#include "Task.hpp"
 #include "TestSetupImpl.hpp"
 #include "SessionController.hpp"
 
@@ -179,7 +180,13 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
         TargetPlaylist &targetsWithReplacement,
         submitting_free_response::Puzzle &puzzle,
         FreeResponseController &freeResponseController,
-        SessionController &sessionController);
+        SessionController &sessionController,
+        TaskPresenter &coordinateResponseMeasurePresenter,
+        TaskPresenter &freeResponsePresenter,
+        TaskPresenter &chooseKeywordsPresenter,
+        TaskPresenter &syllablesPresenter,
+        TaskPresenter &correctKeywordsPresenter,
+        TaskPresenter &consonantPresenter, TaskPresenter &passFailPresenter);
     void initializeTest(
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
@@ -202,6 +209,13 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     submitting_free_response::Puzzle &puzzle;
     FreeResponseController &freeResponseController;
     SessionController &sessionController;
+    TaskPresenter &coordinateResponseMeasurePresenter;
+    TaskPresenter &freeResponsePresenter;
+    TaskPresenter &chooseKeywordsPresenter;
+    TaskPresenter &syllablesPresenter;
+    TaskPresenter &correctKeywordsPresenter;
+    TaskPresenter &consonantPresenter;
+    TaskPresenter &passFailPresenter;
 };
 }
 

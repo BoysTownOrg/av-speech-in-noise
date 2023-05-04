@@ -45,6 +45,8 @@ class TaskPresenterStub : public TaskPresenter {
     void hideResponseSubmission() override {}
     void start() override {}
     void stop() override {}
+    void complete() override {}
+    void notifyThatTrialHasStarted() override {}
 };
 
 auto concatenate(const std::vector<std::string> &v) -> std::string {
@@ -221,10 +223,15 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
-    TaskPresenterStub consonantPresenter;
-    TaskPresenterStub passFailPresenter;
     submitting_free_response::PuzzleStub puzzle;
     FreeResponseControllerStub freeResponseController;
+    TaskPresenterStub coordinateResponseMeasurePresenter;
+    TaskPresenterStub freeResponsePresenter;
+    TaskPresenterStub chooseKeywordsPresenter;
+    TaskPresenterStub syllablesPresenter;
+    TaskPresenterStub correctKeywordsPresenter;
+    TaskPresenterStub consonantPresenter;
+    TaskPresenterStub passFailPresenter;
     TestSettingsInterpreterImpl interpreter{
         {
             {Method::fixedLevelConsonants, consonantPresenter},
@@ -234,7 +241,10 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         audioRecording, cyclicTargetsReader, targetsWithReplacementReader,
         predeterminedTargets, everyTargetOnce, silentIntervalTargets,
         eachTargetNTimes, targetsWithReplacement, puzzle,
-        freeResponseController, sessionController};
+        freeResponseController, sessionController,
+        coordinateResponseMeasurePresenter, freeResponsePresenter,
+        chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
+        consonantPresenter, passFailPresenter};
     TestIdentity testIdentity;
 };
 
