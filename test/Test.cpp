@@ -482,7 +482,7 @@ TEST_CONTROLLER_TEST(
 TEST_CONTROLLER_TEST(
     responderRestartsAdaptiveTestWhilePreservingTargetsAfterContinueTestingDialogIsAccepted) {
     acceptContinuingTesting(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(adaptiveMethod.tracksResetted_);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(adaptiveMethod.tracksResetted);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.nextTrialPreparedIfNeeded_);
 }
 

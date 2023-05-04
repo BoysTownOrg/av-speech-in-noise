@@ -8,11 +8,11 @@ class AdaptiveMethodStub : public AdaptiveMethod {
   public:
     void initialize(
         const AdaptiveTest &t, TargetPlaylistReader *reader) override {
-        test_ = t;
-        targetListReader_ = reader;
+        test = t;
+        targetListReader = reader;
     }
     auto testResults() -> AdaptiveTestResults override { return testResults_; }
-    void resetTracks() override { tracksResetted_ = true; }
+    void resetTracks() override { tracksResetted = true; }
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> LocalUrl override { return {}; }
     auto currentTarget() -> LocalUrl override { return {}; }
@@ -29,9 +29,9 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void submit(const coordinate_response_measure::Response &) override {}
 
     AdaptiveTestResults testResults_;
-    AdaptiveTest test_{};
-    TargetPlaylistReader *targetListReader_{};
-    bool tracksResetted_{};
+    AdaptiveTest test{};
+    TargetPlaylistReader *targetListReader{};
+    bool tracksResetted{};
 };
 }
 
