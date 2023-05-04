@@ -11,8 +11,6 @@
 #include "av-speech-in-noise/core/IRunningATest.hpp"
 #include "av-speech-in-noise/core/TargetPlaylist.hpp"
 
-#include <map>
-
 namespace av_speech_in_noise {
 enum class Method {
     adaptivePassFail,
@@ -165,10 +163,8 @@ constexpr auto name(TestSetting p) -> const char * {
 
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
-    TestSettingsInterpreterImpl(
-        std::map<Method, TaskPresenter &> taskPresenters,
-        RunningATest &runningATest, AdaptiveMethod &adaptiveMethod,
-        FixedLevelMethod &fixedLevelMethod,
+    TestSettingsInterpreterImpl(RunningATest &runningATest,
+        AdaptiveMethod &adaptiveMethod, FixedLevelMethod &fixedLevelMethod,
         RunningATest::TestObserver &eyeTracking,
         RunningATest::TestObserver &audioRecording,
         TargetPlaylistReader &cyclicTargetsReader,
@@ -193,7 +189,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     auto calibration(const std::string &) -> Calibration override;
 
   private:
-    std::map<Method, TaskPresenter &> taskPresenters;
     RunningATest &runningATest;
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;

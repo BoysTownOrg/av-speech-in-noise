@@ -176,60 +176,6 @@ static auto methodName(const std::string &contents) -> std::string {
     return name(Method::unknown);
 }
 
-static auto method(const std::string &contents) -> Method {
-    static std::map<std::string, Method> methods{
-        {name(Method::adaptivePassFail), Method::adaptivePassFail},
-        {name(Method::adaptivePassFailWithEyeTracking),
-            Method::adaptivePassFailWithEyeTracking},
-        {name(Method::adaptiveCorrectKeywords),
-            Method::adaptiveCorrectKeywords},
-        {name(Method::adaptiveCorrectKeywordsWithEyeTracking),
-            Method::adaptiveCorrectKeywordsWithEyeTracking},
-        {name(Method::adaptiveCoordinateResponseMeasure),
-            Method::adaptiveCoordinateResponseMeasure},
-        {name(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker),
-            Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker},
-        {name(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker),
-            Method::adaptiveCoordinateResponseMeasureWithDelayedMasker},
-        {name(Method::fixedLevelFreeResponseWithTargetReplacement),
-            Method::fixedLevelFreeResponseWithTargetReplacement},
-        {name(Method::fixedLevelFreeResponseWithSilentIntervalTargets),
-            Method::fixedLevelFreeResponseWithSilentIntervalTargets},
-        {name(Method::fixedLevelFreeResponseWithAllTargets),
-            Method::fixedLevelFreeResponseWithAllTargets},
-        {name(Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking),
-            Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking},
-        {name(Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording),
-            Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording},
-        {name(Method::
-                 fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording),
-            Method::
-                fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording},
-        {name(Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement),
-            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement},
-        {name(Method::
-                 fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking),
-            Method::
-                fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking},
-        {name(Method::
-                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets),
-            Method::
-                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets},
-        {name(Method::
-                 fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking),
-            Method::
-                fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking},
-        {name(Method::fixedLevelConsonants), Method::fixedLevelConsonants},
-        {name(Method::fixedLevelChooseKeywordsWithAllTargets),
-            Method::fixedLevelChooseKeywordsWithAllTargets},
-        {name(Method::fixedLevelSyllablesWithAllTargets),
-            Method::fixedLevelSyllablesWithAllTargets},
-        {name(Method::adaptiveCoordinateResponseMeasureWithEyeTracking),
-            Method::adaptiveCoordinateResponseMeasureWithEyeTracking}};
-    const auto name{methodName(contents)};
-    return methods.count(name) != 0 ? methods.at(name) : Method::unknown;
-}
-
 static void initialize(AdaptiveTest &test, const std::string &contents,
     const std::string &methodName, const TestIdentity &identity,
     SNR startingSnr) {
@@ -503,9 +449,73 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         throw std::runtime_error{stream.str()};
     }
 
-    const auto method{av_speech_in_noise::method(contents)};
-    if (!runningATest.testComplete() && taskPresenters.count(method) != 0)
-        sessionController.prepare(taskPresenters.at(method));
+    TaskPresenter *taskPresenter{};
+    if (methodName == name(Method::adaptiveCoordinateResponseMeasure)) {
+        taskPresenter = &coordinateResponseMeasurePresenter;
+    } else if (methodName ==
+        name(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker)) {
+        taskPresenter = &coordinateResponseMeasurePresenter;
+    } else if (methodName ==
+        name(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker)) {
+        taskPresenter = &coordinateResponseMeasurePresenter;
+    } else if (methodName ==
+        name(Method::adaptiveCoordinateResponseMeasureWithEyeTracking)) {
+        taskPresenter = &coordinateResponseMeasurePresenter;
+    } else if (methodName ==
+        name(
+            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement)) {
+        taskPresenter = &coordinateResponseMeasurePresenter;
+    } else if (methodName ==
+        name(Method::
+                fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking)) {
+        taskPresenter = &coordinateResponseMeasurePresenter;
+    } else if (methodName ==
+        name(Method::
+                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets)) {
+        taskPresenter = &coordinateResponseMeasurePresenter;
+    } else if (methodName ==
+        name(Method::fixedLevelFreeResponseWithTargetReplacement)) {
+        taskPresenter = &freeResponsePresenter;
+    } else if (methodName ==
+        name(Method::fixedLevelFreeResponseWithSilentIntervalTargets)) {
+        taskPresenter = &freeResponsePresenter;
+    } else if (methodName ==
+        name(Method::fixedLevelFreeResponseWithAllTargets)) {
+        taskPresenter = &freeResponsePresenter;
+    } else if (methodName ==
+        name(Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking)) {
+        taskPresenter = &freeResponsePresenter;
+    } else if (methodName ==
+        name(Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording)) {
+        taskPresenter = &freeResponsePresenter;
+    } else if (methodName ==
+        name(Method::
+                fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording)) {
+        taskPresenter = &freeResponsePresenter;
+    } else if (methodName ==
+        name(Method::
+                fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking)) {
+        taskPresenter = &freeResponsePresenter;
+    } else if (methodName == name(Method::adaptivePassFail)) {
+        taskPresenter = &passFailPresenter;
+    } else if (methodName == name(Method::adaptivePassFailWithEyeTracking)) {
+        taskPresenter = &passFailPresenter;
+    } else if (methodName == name(Method::adaptiveCorrectKeywords)) {
+        taskPresenter = &correctKeywordsPresenter;
+    } else if (methodName ==
+        name(Method::adaptiveCorrectKeywordsWithEyeTracking)) {
+        taskPresenter = &correctKeywordsPresenter;
+    } else if (methodName == name(Method::fixedLevelConsonants)) {
+        taskPresenter = &consonantPresenter;
+    } else if (methodName ==
+        name(Method::fixedLevelChooseKeywordsWithAllTargets)) {
+        taskPresenter = &chooseKeywordsPresenter;
+    } else if (methodName == name(Method::fixedLevelSyllablesWithAllTargets)) {
+        taskPresenter = &syllablesPresenter;
+    }
+
+    if (!runningATest.testComplete())
+        sessionController.prepare(*taskPresenter);
 }
 
 auto TestSettingsInterpreterImpl::calibration(const std::string &contents)
@@ -528,7 +538,6 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
 }
 
 TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
-    std::map<Method, TaskPresenter &> taskPresenters,
     RunningATest &runningATest, AdaptiveMethod &adaptiveMethod,
     FixedLevelMethod &fixedLevelMethod, RunningATest::TestObserver &eyeTracking,
     RunningATest::TestObserver &audioRecording,
@@ -547,10 +556,9 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     TaskPresenter &chooseKeywordsPresenter, TaskPresenter &syllablesPresenter,
     TaskPresenter &correctKeywordsPresenter, TaskPresenter &consonantPresenter,
     TaskPresenter &passFailPresenter)
-    : taskPresenters{std::move(taskPresenters)}, runningATest{runningATest},
-      adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
-      eyeTracking{eyeTracking}, audioRecording{audioRecording},
-      cyclicTargetsReader{cyclicTargetsReader},
+    : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
+      fixedLevelMethod{fixedLevelMethod}, eyeTracking{eyeTracking},
+      audioRecording{audioRecording}, cyclicTargetsReader{cyclicTargetsReader},
       targetsWithReplacementReader{targetsWithReplacementReader},
       predeterminedTargets{predeterminedTargets},
       everyTargetOnce{everyTargetOnce},

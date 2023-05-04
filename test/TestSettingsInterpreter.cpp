@@ -232,15 +232,10 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub consonantPresenter;
     TaskPresenterStub passFailPresenter;
-    TestSettingsInterpreterImpl interpreter{
-        {
-            {Method::fixedLevelConsonants, consonantPresenter},
-            {Method::adaptivePassFail, passFailPresenter},
-        },
-        runningATest, adaptiveMethod, fixedLevelMethod, eyeTracking,
-        audioRecording, cyclicTargetsReader, targetsWithReplacementReader,
-        predeterminedTargets, everyTargetOnce, silentIntervalTargets,
-        eachTargetNTimes, targetsWithReplacement, puzzle,
+    TestSettingsInterpreterImpl interpreter{runningATest, adaptiveMethod,
+        fixedLevelMethod, eyeTracking, audioRecording, cyclicTargetsReader,
+        targetsWithReplacementReader, predeterminedTargets, everyTargetOnce,
+        silentIntervalTargets, eachTargetNTimes, targetsWithReplacement, puzzle,
         freeResponseController, sessionController,
         coordinateResponseMeasurePresenter, freeResponsePresenter,
         chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
@@ -648,6 +643,147 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelSyllablesWithAllTargets_PassesTestMethod) {
     initializeTest(interpreter, Method::fixedLevelSyllablesWithAllTargets);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.testMethod, &fixedLevelMethod);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_adaptivePassFail_PassesTaskPresenter) {
+    initializeTest(interpreter, Method::adaptivePassFail);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &passFailPresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_adaptivePassFailWithEyeTracking_PassesTaskPresenter) {
+    initializeTest(interpreter, Method::adaptivePassFailWithEyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &passFailPresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_adaptiveCorrectKeywords_PassesTaskPresenter) {
+    initializeTest(interpreter, Method::adaptiveCorrectKeywords);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &correctKeywordsPresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_adaptiveCorrectKeywordsWithEyeTracking_PassesTaskPresenter) {
+    initializeTest(interpreter, Method::adaptiveCorrectKeywordsWithEyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &correctKeywordsPresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_adaptiveCoordinateResponseMeasure_PassesTaskPresenter) {
+    initializeTest(interpreter, Method::adaptiveCoordinateResponseMeasure);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &coordinateResponseMeasurePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_adaptiveCoordinateResponseMeasureWithSingleSpeaker_PassesTaskPresenter) {
+    initializeTest(interpreter,
+        Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &coordinateResponseMeasurePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_adaptiveCoordinateResponseMeasureWithDelayedMasker_PassesTaskPresenter) {
+    initializeTest(interpreter,
+        Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &coordinateResponseMeasurePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_adaptiveCoordinateResponseMeasureWithEyeTracking_PassesTaskPresenter) {
+    initializeTest(
+        interpreter, Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &coordinateResponseMeasurePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelFreeResponseWithTargetReplacement_PassesTaskPresenter) {
+    initializeTest(
+        interpreter, Method::fixedLevelFreeResponseWithTargetReplacement);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &freeResponsePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelFreeResponseWithSilentIntervalTargets_PassesTaskPresenter) {
+    initializeTest(
+        interpreter, Method::fixedLevelFreeResponseWithSilentIntervalTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &freeResponsePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelFreeResponseWithAllTargets_PassesTaskPresenter) {
+    initializeTest(interpreter, Method::fixedLevelFreeResponseWithAllTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &freeResponsePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelFreeResponseWithAllTargetsAndEyeTracking_PassesTaskPresenter) {
+    initializeTest(interpreter,
+        Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &freeResponsePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelFreeResponseWithAllTargetsAndAudioRecording_PassesTaskPresenter) {
+    initializeTest(interpreter,
+        Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &freeResponsePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording_PassesTaskPresenter) {
+    initializeTest(interpreter,
+        Method::
+            fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &freeResponsePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking_PassesTaskPresenter) {
+    initializeTest(interpreter,
+        Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &freeResponsePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelCoordinateResponseMeasureWithTargetReplacement_PassesTaskPresenter) {
+    initializeTest(interpreter,
+        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &coordinateResponseMeasurePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking_PassesTaskPresenter) {
+    initializeTest(interpreter,
+        Method::
+            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &coordinateResponseMeasurePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets_PassesTaskPresenter) {
+    initializeTest(interpreter,
+        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &coordinateResponseMeasurePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelConsonants_PassesTaskPresenter) {
+    initializeTest(interpreter, Method::fixedLevelConsonants);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &consonantPresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelChooseKeywordsWithAllTargets_PassesTaskPresenter) {
+    initializeTest(interpreter, Method::fixedLevelChooseKeywordsWithAllTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &chooseKeywordsPresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelSyllablesWithAllTargets_PassesTaskPresenter) {
+    initializeTest(interpreter, Method::fixedLevelSyllablesWithAllTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &syllablesPresenter, sessionController.taskPresenter());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
