@@ -23,19 +23,6 @@ static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
     return a.targetsUrl.path == b.targetsUrl.path && a.threshold == b.threshold;
 }
 
-class RunningATestObserverStub : public RunningATest::TestObserver {
-  public:
-    void notifyThatNewTestIsReady(std::string_view session) override {}
-
-    void notifyThatTrialWillBegin(int trialNumber) override {}
-
-    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
-
-    void notifyThatStimulusHasEnded() override {}
-
-    void notifyThatSubjectHasResponded() override {}
-};
-
 namespace {
 class AdaptiveMethodStub : public AdaptiveMethod {
   public:

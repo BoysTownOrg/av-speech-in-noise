@@ -19,6 +19,7 @@ class AdaptiveMethod : public virtual TestMethod {
     virtual void initialize(const AdaptiveTest &, TargetPlaylistReader *) = 0;
     virtual void resetTracks() = 0;
     virtual auto testResults() -> AdaptiveTestResults = 0;
+    using TestMethod::submit;
     virtual void submit(const CorrectKeywords &) = 0;
     virtual void writeLastCorrectKeywords(OutputFile &) = 0;
     virtual void submitCorrectResponse() = 0;
