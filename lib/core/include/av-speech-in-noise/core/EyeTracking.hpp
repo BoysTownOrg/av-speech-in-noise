@@ -3,7 +3,7 @@
 
 #include "IMaskerPlayer.hpp"
 #include "IOutputFile.hpp"
-#include "IRecognitionTestModel.hpp"
+#include "IRunningATest.hpp"
 #include "ITargetPlayer.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>

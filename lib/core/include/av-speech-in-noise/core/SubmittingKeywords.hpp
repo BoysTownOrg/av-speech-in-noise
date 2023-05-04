@@ -3,7 +3,7 @@
 
 #include "IModel.hpp"
 #include "IOutputFile.hpp"
-#include "IRecognitionTestModel.hpp"
+#include "IRunningATest.hpp"
 #include "IFixedLevelMethod.hpp"
 
 namespace av_speech_in_noise::submitting_keywords {

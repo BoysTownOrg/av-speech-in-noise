@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_AUDIORECORDINGHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_AUDIORECORDINGHPP_
 
-#include "IRecognitionTestModel.hpp"
+#include "IRunningATest.hpp"
 #include "IOutputFile.hpp"
 #include "FileSystemPath.hpp"
 

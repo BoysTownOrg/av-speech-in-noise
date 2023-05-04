@@ -4,7 +4,7 @@
 #include "Randomizer.hpp"
 #include "IMaskerPlayer.hpp"
 #include "IOutputFile.hpp"
-#include "IRecognitionTestModel.hpp"
+#include "IRunningATest.hpp"
 #include "IResponseEvaluator.hpp"
 #include "ITargetPlayer.hpp"
 

@@ -7,7 +7,7 @@ add_executable(
   MaskerPlayer.cpp
   OutputFilePath.cpp
   OutputFile.cpp
-  RecognitionTestModel.cpp
+  RunningATest.cpp
   Model.cpp
   ResponseEvaluator.cpp
   SubdirectoryTargetListReader.cpp

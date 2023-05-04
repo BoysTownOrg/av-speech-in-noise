@@ -5,7 +5,7 @@
 #include "Session.hpp"
 #include "Input.hpp"
 
-#include <av-speech-in-noise/core/IRecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/IRunningATest.hpp>
 #include <av-speech-in-noise/core/TextFileReader.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Model.hpp>

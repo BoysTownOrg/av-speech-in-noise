@@ -5,7 +5,7 @@
 #include "Task.hpp"
 #include "Test.hpp"
 
-#include <av-speech-in-noise/core/IRecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/IRunningATest.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 

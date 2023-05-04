@@ -18,7 +18,7 @@
 #include <av-speech-in-noise/ui/TestImpl.hpp>
 #include <av-speech-in-noise/ui/SubjectImpl.hpp>
 #include <av-speech-in-noise/core/Model.hpp>
-#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/RunningATest.hpp>
 #include <av-speech-in-noise/core/AdaptiveMethod.hpp>
 #include <av-speech-in-noise/core/FixedLevelMethod.hpp>
 #include <av-speech-in-noise/core/OutputFile.hpp>

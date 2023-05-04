@@ -1,4 +1,4 @@
-#include "RecognitionTestModel.hpp"
+#include "RunningATest.hpp"
 #include "av-speech-in-noise/Model.hpp"
 
 #include <gsl/gsl>

@@ -3,7 +3,7 @@
 
 #include "IModel.hpp"
 #include "FixedLevelMethod.hpp"
-#include "IRecognitionTestModel.hpp"
+#include "IRunningATest.hpp"
 #include "IOutputFile.hpp"
 
 #include <av-speech-in-noise/Model.hpp>

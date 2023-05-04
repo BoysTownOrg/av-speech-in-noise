@@ -1,6 +1,6 @@
 #include "EyeTracking.hpp"
 
-#include "RecognitionTestModel.hpp"
+#include "RunningATest.hpp"
 
 namespace av_speech_in_noise {
 static auto nanoseconds(Delay x) -> std::uintmax_t {

@@ -3,7 +3,7 @@
 
 #include "IModel.hpp"
 #include "FixedLevelMethod.hpp"
-#include "IRecognitionTestModel.hpp"
+#include "IRunningATest.hpp"
 #include "IOutputFile.hpp"
 
 namespace av_speech_in_noise::submitting_free_response {

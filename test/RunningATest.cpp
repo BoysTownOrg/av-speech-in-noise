@@ -7,7 +7,7 @@
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
 
-#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/RunningATest.hpp>
 
 #include <gtest/gtest.h>
 
@@ -442,7 +442,7 @@ void fadeInComplete(
     player.fadeInComplete(t);
 }
 
-class RecognitionTestModelTests : public ::testing::Test {
+class RunningATestTests : public ::testing::Test {
   protected:
     ModelObserverStub listener;
     TargetPlayerStub targetPlayer;
@@ -475,7 +475,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     AudioSampleTimeWithOffset fadeInCompleteTime{};
     PreparingNextTrialIfNeeded preparingNextTrialIfNeeded;
 
-    RecognitionTestModelTests() { model.attach(&listener); }
+    RunningATestTests() { model.attach(&listener); }
 
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase, model);
@@ -631,7 +631,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 };
 
-#define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
+#define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RunningATestTests, a)
 
 RECOGNITION_TEST_MODEL_TEST(subscribesToPlayerEvents) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
