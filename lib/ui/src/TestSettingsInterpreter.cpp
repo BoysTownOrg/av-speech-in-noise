@@ -231,7 +231,8 @@ static auto method(const std::string &contents) -> Method {
 }
 
 static void initialize(AdaptiveTest &test, const std::string &contents,
-    Method method, const TestIdentity &identity, SNR startingSnr) {
+    const std::string &methodName, const TestIdentity &identity,
+    SNR startingSnr) {
     test.identity = identity;
     test.startingSnr = startingSnr;
     applyToEachEntry(
@@ -241,33 +242,34 @@ static void initialize(AdaptiveTest &test, const std::string &contents,
     test.floorSnr = SessionControllerImpl::floorSnr;
     test.trackBumpLimit = SessionControllerImpl::trackBumpLimit;
     test.fullScaleLevel = SessionControllerImpl::fullScaleLevel;
-    test.identity.method = name(method);
+    test.identity.method = methodName;
 }
 
 static void initialize(FixedLevelTest &test, const std::string &contents,
-    Method method, const TestIdentity &identity, SNR startingSnr,
+    const std::string &methodName, const TestIdentity &identity,
+    SNR startingSnr,
     const std::function<void(const std::string &, const std::string &)> &f) {
     test.snr = startingSnr;
     test.fullScaleLevel = SessionControllerImpl::fullScaleLevel;
     test.identity = identity;
-    test.identity.method = name(method);
+    test.identity.method = methodName;
     applyToEachEntry(f, contents);
 }
 
 static void initialize(FixedLevelTest &test, const std::string &contents,
-    Method method, const TestIdentity &identity, SNR startingSnr) {
+    const std::string &method, const TestIdentity &identity, SNR startingSnr) {
     initialize(test, contents, method, identity, startingSnr,
         [&](auto entryName, auto entry) { assign(test, entryName, entry); });
 }
 
 static void initialize(FixedLevelTestWithEachTargetNTimes &test,
-    const std::string &contents, Method method, const TestIdentity &identity,
-    SNR startingSnr) {
+    const std::string &contents, const std::string &method,
+    const TestIdentity &identity, SNR startingSnr) {
     initialize(test, contents, method, identity, startingSnr,
         [&](auto entryName, auto entry) { assign(test, entryName, entry); });
 }
 
-static void initialize(Method method, const std::string &contents,
+static void initialize(const std::string &method, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr,
     const std::function<void(AdaptiveTest &)> &f) {
     AdaptiveTest test;
@@ -276,7 +278,7 @@ static void initialize(Method method, const std::string &contents,
     f(test);
 }
 
-static void initialize(Method method, const std::string &contents,
+static void initialize(const std::string &method, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr,
     const std::function<void(const FixedLevelTest &)> &f) {
     FixedLevelTest test;
@@ -285,7 +287,7 @@ static void initialize(Method method, const std::string &contents,
     f(test);
 }
 
-static void initializeFixedLevelFixedTrialsTest(Method method,
+static void initializeFixedLevelFixedTrialsTest(const std::string &method,
     const std::string &contents, const TestIdentity &identity, SNR startingSnr,
     const std::function<void(const FixedLevelFixedTrialsTest &)> &f) {
     FixedLevelFixedTrialsTest test;
@@ -294,8 +296,9 @@ static void initializeFixedLevelFixedTrialsTest(Method method,
     f(test);
 }
 
-static void initializeFixedLevelTestWithEachTargetNTimes(Method method,
-    const std::string &contents, const TestIdentity &identity, SNR startingSnr,
+static void initializeFixedLevelTestWithEachTargetNTimes(
+    const std::string &method, const std::string &contents,
+    const TestIdentity &identity, SNR startingSnr,
     const std::function<void(const FixedLevelTestWithEachTargetNTimes &)> &f) {
     FixedLevelTestWithEachTargetNTimes test;
     av_speech_in_noise::initialize(
@@ -342,138 +345,138 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         }
     }
     freeResponseController.initialize(usingPuzzle);
-    const auto method{av_speech_in_noise::method(contents)};
+    const auto methodName{av_speech_in_noise::methodName(contents)};
 
-    switch (method) {
-    case Method::adaptiveCoordinateResponseMeasureWithDelayedMasker:
-        av_speech_in_noise::initialize(
-            method, contents, identity, startingSnr, [&](AdaptiveTest &test) {
+    if (methodName ==
+        name(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker)) {
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](AdaptiveTest &test) {
                 test.audioChannelOption = AudioChannelOption::delayedMasker;
                 av_speech_in_noise::initialize(
                     adaptiveMethod, test, targetsWithReplacementReader);
                 av_speech_in_noise::initialize(
                     runningATest, adaptiveMethod, test, nullptr);
             });
-        break;
-    case Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker:
-        av_speech_in_noise::initialize(
-            method, contents, identity, startingSnr, [&](AdaptiveTest &test) {
+    } else if (methodName ==
+        name(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker)) {
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](AdaptiveTest &test) {
                 test.audioChannelOption = AudioChannelOption::singleSpeaker;
                 av_speech_in_noise::initialize(
                     adaptiveMethod, test, targetsWithReplacementReader);
                 av_speech_in_noise::initialize(
                     runningATest, adaptiveMethod, test, nullptr);
             });
-        break;
-    case Method::adaptiveCorrectKeywords:
-        av_speech_in_noise::initialize(method, contents, identity, startingSnr,
-            [&](const AdaptiveTest &test) {
+    } else if (methodName == name(Method::adaptiveCorrectKeywords)) {
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](const AdaptiveTest &test) {
                 av_speech_in_noise::initialize(
                     adaptiveMethod, test, cyclicTargetsReader);
                 av_speech_in_noise::initialize(
                     runningATest, adaptiveMethod, test, nullptr);
             });
-        break;
-    case Method::adaptiveCorrectKeywordsWithEyeTracking:
-        av_speech_in_noise::initialize(method, contents, identity, startingSnr,
-            [&](const AdaptiveTest &test) {
+    } else if (methodName ==
+        name(Method::adaptiveCorrectKeywordsWithEyeTracking)) {
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](const AdaptiveTest &test) {
                 av_speech_in_noise::initialize(
                     adaptiveMethod, test, cyclicTargetsReader);
                 av_speech_in_noise::initialize(
                     runningATest, adaptiveMethod, test, &eyeTracking);
             });
-        break;
-    case Method::adaptiveCoordinateResponseMeasureWithEyeTracking:
-    case Method::adaptivePassFailWithEyeTracking:
-        av_speech_in_noise::initialize(method, contents, identity, startingSnr,
-            [&](const AdaptiveTest &test) {
+    } else if (methodName ==
+            name(Method::adaptiveCoordinateResponseMeasureWithEyeTracking) ||
+        methodName == name(Method::adaptivePassFailWithEyeTracking)) {
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](const AdaptiveTest &test) {
                 av_speech_in_noise::initialize(
                     adaptiveMethod, test, targetsWithReplacementReader);
                 av_speech_in_noise::initialize(
                     runningATest, adaptiveMethod, test, &eyeTracking);
             });
-        break;
-    case Method::adaptiveCoordinateResponseMeasure:
-    case Method::adaptivePassFail:
-        av_speech_in_noise::initialize(method, contents, identity, startingSnr,
-            [&](const AdaptiveTest &test) {
+    } else if (methodName == name(Method::adaptiveCoordinateResponseMeasure) ||
+        methodName == name(Method::adaptivePassFail)) {
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](const AdaptiveTest &test) {
                 av_speech_in_noise::initialize(
                     adaptiveMethod, test, targetsWithReplacementReader);
                 av_speech_in_noise::initialize(
                     runningATest, adaptiveMethod, test, nullptr);
             });
-        break;
-    case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
-    case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
-        av_speech_in_noise::initialize(method, contents, identity, startingSnr,
-            [&](const FixedLevelTest &test) {
+    } else if (methodName ==
+            name(Method::
+                    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets) ||
+        methodName ==
+            name(Method::fixedLevelFreeResponseWithSilentIntervalTargets)) {
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, silentIntervalTargets);
                 av_speech_in_noise::initialize(
                     runningATest, fixedLevelMethod, test, nullptr);
             });
-        break;
-    case Method::fixedLevelFreeResponseWithAllTargets:
-    case Method::fixedLevelChooseKeywordsWithAllTargets:
-    case Method::fixedLevelSyllablesWithAllTargets:
-        av_speech_in_noise::initialize(method, contents, identity, startingSnr,
-            [&](const FixedLevelTest &test) {
+    } else if (methodName ==
+            name(Method::fixedLevelFreeResponseWithAllTargets) ||
+        methodName == name(Method::fixedLevelChooseKeywordsWithAllTargets) ||
+        methodName == name(Method::fixedLevelSyllablesWithAllTargets)) {
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, everyTargetOnce);
                 av_speech_in_noise::initialize(
                     runningATest, fixedLevelMethod, test, nullptr);
             });
-        break;
-    case Method::fixedLevelConsonants:
-        av_speech_in_noise::initializeFixedLevelTestWithEachTargetNTimes(method,
-            contents, identity, startingSnr,
+    } else if (methodName == name(Method::fixedLevelConsonants)) {
+        av_speech_in_noise::initializeFixedLevelTestWithEachTargetNTimes(
+            methodName, contents, identity, startingSnr,
             [&](const FixedLevelTestWithEachTargetNTimes &test) {
                 eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
                 fixedLevelMethod.initialize(test, &eachTargetNTimes);
                 av_speech_in_noise::initialize(
                     runningATest, fixedLevelMethod, test, nullptr);
             });
-        break;
-    case Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking:
-        av_speech_in_noise::initialize(method, contents, identity, startingSnr,
-            [&](const FixedLevelTest &test) {
+    } else if (methodName ==
+        name(Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking)) {
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, everyTargetOnce);
                 av_speech_in_noise::initialize(
                     runningATest, fixedLevelMethod, test, &eyeTracking);
             });
-        break;
-    case Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording:
-        av_speech_in_noise::initialize(method, contents, identity, startingSnr,
-            [&](const FixedLevelTest &test) {
+    } else if (methodName ==
+        name(Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording)) {
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, everyTargetOnce);
                 av_speech_in_noise::initialize(
                     runningATest, fixedLevelMethod, test, &audioRecording);
             });
-        break;
-    case Method::
-        fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording:
-        av_speech_in_noise::initialize(method, contents, identity, startingSnr,
-            [&](const FixedLevelTest &test) {
+    } else if (methodName ==
+        name(Method::
+                fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording)) {
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, predeterminedTargets);
                 av_speech_in_noise::initialize(
                     runningATest, fixedLevelMethod, test, &audioRecording);
             });
-        break;
-    case Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking:
-        av_speech_in_noise::initialize(method, contents, identity, startingSnr,
-            [&](const FixedLevelTest &test) {
+    } else if (methodName ==
+        name(Method::
+                fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking)) {
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, predeterminedTargets);
                 av_speech_in_noise::initialize(
                     runningATest, fixedLevelMethod, test, &eyeTracking);
             });
-        break;
-    case Method::
-        fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking:
-        av_speech_in_noise::initializeFixedLevelFixedTrialsTest(method,
+    } else if (methodName ==
+        name(Method::
+                fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking)) {
+        av_speech_in_noise::initializeFixedLevelFixedTrialsTest(methodName,
             contents, identity, startingSnr,
             [&](const FixedLevelFixedTrialsTest &test) {
                 av_speech_in_noise::initialize(
@@ -481,10 +484,12 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     runningATest, fixedLevelMethod, test, &eyeTracking);
             });
-        break;
-    case Method::fixedLevelFreeResponseWithTargetReplacement:
-    case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
-        av_speech_in_noise::initializeFixedLevelFixedTrialsTest(method,
+    } else if (methodName ==
+            name(Method::fixedLevelFreeResponseWithTargetReplacement) ||
+        methodName ==
+            name(Method::
+                    fixedLevelCoordinateResponseMeasureWithTargetReplacement)) {
+        av_speech_in_noise::initializeFixedLevelFixedTrialsTest(methodName,
             contents, identity, startingSnr,
             [&](const FixedLevelFixedTrialsTest &test) {
                 av_speech_in_noise::initialize(
@@ -492,14 +497,13 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     runningATest, fixedLevelMethod, test, nullptr);
             });
-        break;
-    case Method::unknown: {
+    } else {
         std::stringstream stream;
-        stream << "Test method not recognized: " << methodName(contents);
+        stream << "Test method not recognized: " << methodName;
         throw std::runtime_error{stream.str()};
     }
-    }
 
+    const auto method{av_speech_in_noise::method(contents)};
     if (!runningATest.testComplete() && taskPresenters.count(method) != 0)
         sessionController.prepare(taskPresenters.at(method));
 }
