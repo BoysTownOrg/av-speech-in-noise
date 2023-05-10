@@ -17,7 +17,6 @@
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/ui/TestImpl.hpp>
 #include <av-speech-in-noise/ui/SubjectImpl.hpp>
-#include <av-speech-in-noise/core/Model.hpp>
 #include <av-speech-in-noise/core/RunningATest.hpp>
 #include <av-speech-in-noise/core/AdaptiveMethod.hpp>
 #include <av-speech-in-noise/core/FixedLevelMethod.hpp>
@@ -340,7 +339,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static LocalTimeClock localTimeClock;
     NSLog(@"Initializing audio recorder...");
     static AvFoundationAudioRecorder audioRecorder;
-    static RunningATestImpl recognitionTestModel{targetPlayer, maskerPlayer,
+    static RunningATestImpl runningATest{targetPlayer, maskerPlayer,
         responseEvaluator, outputFile, randomizer, localTimeClock};
     static RandomizedTargetPlaylistWithReplacement::Factory
         targetsWithReplacementFactory{
@@ -359,11 +358,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     NSLog(@"Initializing eye tracking...");
     static EyeTracking eyeTracking{
         eyeTracker, maskerPlayer, targetPlayer, outputFile};
-    static RunningATestFacadeImpl model{adaptiveMethod, fixedLevelMethod,
-        targetsWithReplacementReader, cyclicTargetsReader,
-        targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
-        allTargetsNTimes, predeterminedTargetPlaylist, recognitionTestModel,
-        outputFile, audioRecording, eyeTracking};
     NSLog(@"Initializing test setup UI...");
     static const auto testSetupUI{testSetupUIFactory.make(nil)};
     NSLog(@"Initializing consonant UI...");
@@ -410,8 +404,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static RevealImage revealImagePuzzle{maskedImage, randomizer, 12, 17};
     static submitting_free_response::Presenter freeResponsePresenter{
         testUI, freeResponseUI, revealImagePuzzle};
-    static submitting_keywords::PresenterImpl chooseKeywordsPresenter{model,
-        testUI, chooseKeywordsUI,
+    static submitting_keywords::PresenterImpl chooseKeywordsPresenter{
+        runningATest, fixedLevelMethod, testUI, chooseKeywordsUI,
         submitting_keywords::sentencesWithThreeKeywords(
             read_file(resourceUrl("mlst-c", "txt").path))};
     static submitting_syllable::PresenterImpl syllablesPresenter{
@@ -424,20 +418,21 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         coordinateResponseMeasurePresenter{coordinateResponseMeasureView};
     static TestSetupPresenterImpl testSetupPresenter{*testSetupUI, sessionUI};
     static UninitializedTaskPresenterImpl taskPresenter;
-    static TestPresenterImpl testPresenter{model, testUI, &taskPresenter};
-    static SessionPresenterImpl sessionPresenter{sessionUI, model};
+    static TestPresenterImpl testPresenter{
+        runningATest, adaptiveMethod, testUI, &taskPresenter};
+    static SessionPresenterImpl sessionPresenter{sessionUI, runningATest};
     NSLog(@"Initializing controllers...");
     static SessionControllerImpl sessionController{
         testSetupPresenter, testPresenter, subjectPresenter};
-    static TestControllerImpl testController{
-        sessionController, model, sessionUI, testUI, testPresenter};
+    static TestControllerImpl testController{sessionController, runningATest,
+        adaptiveMethod, sessionUI, testUI, testPresenter};
     static submitting_keywords::InteractorImpl submittingKeywordsInteractor{
-        fixedLevelMethod, recognitionTestModel, outputFile};
+        fixedLevelMethod, runningATest, outputFile};
     static submitting_keywords::Controller chooseKeywordsController{
         testController, submittingKeywordsInteractor, chooseKeywordsUI,
         chooseKeywordsPresenter};
     static submitting_syllable::InteractorImpl submittingSyllableInteractor{
-        fixedLevelMethod, recognitionTestModel, outputFile};
+        fixedLevelMethod, runningATest, outputFile};
     static submitting_syllable::Controller syllablesController{syllablesUI,
         testController, submittingSyllableInteractor,
         {{"B", Syllable::bi}, {"D", Syllable::di}, {"G", Syllable::dji},
@@ -449,76 +444,42 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             {"V", Syllable::vi}, {"W", Syllable::wi}, {"Z", Syllable::zi}}};
     static submitting_number_keywords::InteractorImpl
         submittingNumberKeywordsInteractor{
-            adaptiveMethod, recognitionTestModel, outputFile};
+            adaptiveMethod, runningATest, outputFile};
     static submitting_number_keywords::Controller correctKeywordsController{
         testController, submittingNumberKeywordsInteractor, sessionUI,
         correctKeywordsUI};
     static submitting_free_response::InteractorImpl
         submittingFreeResponseInteractor{
-            fixedLevelMethod, recognitionTestModel, outputFile};
+            fixedLevelMethod, runningATest, outputFile};
     static TimerImpl puzzleTimer;
     static submitting_free_response::Controller freeResponseController{
         testController, submittingFreeResponseInteractor, freeResponseUI,
         revealImagePuzzle, puzzleTimer};
     static submitting_pass_fail::InteractorImpl submittingPassFailInteractor{
-        adaptiveMethod, recognitionTestModel, outputFile};
+        adaptiveMethod, runningATest, outputFile};
     static submitting_pass_fail::Controller passFailController{
         testController, submittingPassFailInteractor, passFailUI};
     static submitting_consonant::InteractorImpl submittingConsonantInteractor{
-        fixedLevelMethod, recognitionTestModel, outputFile};
+        fixedLevelMethod, runningATest, outputFile};
     static submitting_consonant::Controller consonantTaskController{
         testController, submittingConsonantInteractor, consonantUI,
         consonantPresenter};
     static CoordinateResponseMeasureController
         coordinateResponseMeasureController{
-            testController, model, coordinateResponseMeasureView};
+            testController, runningATest, coordinateResponseMeasureView};
     coordinateResponseMeasureController.attach(
         &coordinateResponseMeasurePresenter);
-    static TestSettingsInterpreterImpl testSettingsInterpreter{
-        {{Method::adaptiveCoordinateResponseMeasure,
-             coordinateResponseMeasurePresenter},
-            {Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
-                coordinateResponseMeasurePresenter},
-            {Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
-                coordinateResponseMeasurePresenter},
-            {Method::adaptiveCoordinateResponseMeasureWithEyeTracking,
-                coordinateResponseMeasurePresenter},
-            {Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-                coordinateResponseMeasurePresenter},
-            {Method::
-                    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
-                coordinateResponseMeasurePresenter},
-            {Method::
-                    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-                coordinateResponseMeasurePresenter},
-            {Method::fixedLevelFreeResponseWithAllTargets,
-                freeResponsePresenter},
-            {Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
-                freeResponsePresenter},
-            {Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording,
-                freeResponsePresenter},
-            {Method::
-                    fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording,
-                freeResponsePresenter},
-            {Method::
-                    fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking,
-                freeResponsePresenter},
-            {Method::fixedLevelFreeResponseWithSilentIntervalTargets,
-                freeResponsePresenter},
-            {Method::fixedLevelFreeResponseWithTargetReplacement,
-                freeResponsePresenter},
-            {Method::fixedLevelChooseKeywordsWithAllTargets,
-                chooseKeywordsPresenter},
-            {Method::fixedLevelSyllablesWithAllTargets, syllablesPresenter},
-            {Method::adaptiveCorrectKeywords, correctKeywordsPresenter},
-            {Method::adaptiveCorrectKeywordsWithEyeTracking,
-                correctKeywordsPresenter},
-            {Method::fixedLevelConsonants, consonantPresenter},
-            {Method::adaptivePassFail, passFailPresenter},
-            {Method::adaptivePassFailWithEyeTracking, passFailPresenter}},
-        revealImagePuzzle, freeResponseController};
+    static TestSettingsInterpreterImpl testSettingsInterpreter{runningATest,
+        adaptiveMethod, fixedLevelMethod, eyeTracking, audioRecording,
+        cyclicTargetsReader, targetsWithReplacementReader,
+        predeterminedTargetPlaylist, everyTargetOnce, silentIntervalTargets,
+        allTargetsNTimes, targetsWithReplacement, revealImagePuzzle,
+        freeResponseController, sessionController,
+        coordinateResponseMeasurePresenter, freeResponsePresenter,
+        chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
+        consonantPresenter, passFailPresenter};
     static TestSetupController testSetupController{*testSetupUI,
-        sessionController, sessionUI, testSetupPresenter, model,
+        sessionController, sessionUI, testSetupPresenter, runningATest,
         testSettingsInterpreter, textFileReader};
     sessionController.attach(sessionControllerObserver);
     NSLog(@"Finished main initialization.");
