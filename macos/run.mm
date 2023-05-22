@@ -4,18 +4,18 @@
 #include "AppKitView.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
-#include "av-speech-in-noise/ui/RevealImage.hpp"
 #include "masking-images.h"
 
 #include <av-speech-in-noise/Model.hpp>
-#include "av-speech-in-noise/core/AudioRecording.hpp"
-#include "av-speech-in-noise/core/EyeTracking.hpp"
+#include <av-speech-in-noise/core/AudioRecording.hpp>
+#include <av-speech-in-noise/core/EyeTracking.hpp>
 #include <av-speech-in-noise/playlist/PredeterminedTargetPlaylist.hpp>
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/ui/PassFail.hpp>
 #include <av-speech-in-noise/ui/SessionController.hpp>
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/ui/TestImpl.hpp>
+#include <av-speech-in-noise/ui/RevealImage.hpp>
 #include <av-speech-in-noise/ui/SubjectImpl.hpp>
 #include <av-speech-in-noise/core/RunningATest.hpp>
 #include <av-speech-in-noise/core/AdaptiveMethod.hpp>
@@ -401,7 +401,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     NSLog(@"Initializing presenters...");
     static submitting_consonant::PresenterImpl consonantPresenter{consonantUI};
     static MaskedCoreGraphicsImage maskedImage{subjectNSWindow};
-    static RevealImage revealImagePuzzle{maskedImage, randomizer, 12, 17};
+    static RevealImage revealImagePuzzle{maskedImage, randomizer, 6, 7};
     static submitting_free_response::Presenter freeResponsePresenter{
         testUI, freeResponseUI, revealImagePuzzle};
     static submitting_keywords::PresenterImpl chooseKeywordsPresenter{
@@ -455,6 +455,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_free_response::Controller freeResponseController{
         testController, submittingFreeResponseInteractor, freeResponseUI,
         revealImagePuzzle, puzzleTimer};
+    freeResponseController.setNTrialsPerNewPuzzlePiece(5);
     static submitting_pass_fail::InteractorImpl submittingPassFailInteractor{
         adaptiveMethod, runningATest, outputFile};
     static submitting_pass_fail::Controller passFailController{

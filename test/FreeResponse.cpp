@@ -187,7 +187,37 @@ FREE_RESPONSE_PRESENTER_TEST(presenterResetsPuzzleOnStart) {
 
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerNotifiesThatUserHasRespondedButTrialIsNotQuiteDoneAfterResponseButtonIsClickedWhenUsingPuzzle) {
+    controller.setNTrialsPerNewPuzzlePiece(1);
     controller.initialize(true);
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
+}
+
+FREE_RESPONSE_CONTROLLER_TEST(
+    controllerNotifiesThatUserHasRespondedButTrialIsNotQuiteDoneAfterResponseButtonIsClickedWhenUsingPuzzleEveryNTrials) {
+    controller.setNTrialsPerNewPuzzlePiece(3);
+    controller.initialize(true);
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        testController.notifiedThatUserIsDoneResponding());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
+        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
+        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
+    testController.clearNotifications();
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        testController.notifiedThatUserIsDoneResponding());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
+        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
+        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
@@ -204,6 +234,7 @@ FREE_RESPONSE_CONTROLLER_TEST(
 
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerShowsPuzzleAfterResponseButtonIsClickedWhenUsingPuzzle) {
+    controller.setNTrialsPerNewPuzzlePiece(1);
     controller.initialize(true);
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.shown());
@@ -211,6 +242,7 @@ FREE_RESPONSE_CONTROLLER_TEST(
 
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerSchedulesCallbackAfterResponseButtonIsClickedWhenUsingPuzzle) {
+    controller.setNTrialsPerNewPuzzlePiece(1);
     controller.initialize(true);
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
@@ -218,6 +250,7 @@ FREE_RESPONSE_CONTROLLER_TEST(
 
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerAdvancesPuzzleAfterFirstCallbackWhenUsingPuzzle) {
+    controller.setNTrialsPerNewPuzzlePiece(1);
     controller.initialize(true);
     notifyThatSubmitButtonHasBeenClicked(control);
     timer.callback();
@@ -244,6 +277,7 @@ FREE_RESPONSE_CONTROLLER_TEST(controllerOnlyAdvancesPuzzleOnceWhenUsingPuzzle) {
 
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerSchedulesCallbackAfterPuzzleAdvancedWhenUsingPuzzle) {
+    controller.setNTrialsPerNewPuzzlePiece(1);
     controller.initialize(true);
     notifyThatSubmitButtonHasBeenClicked(control);
     timer.clearCallbackCount();
