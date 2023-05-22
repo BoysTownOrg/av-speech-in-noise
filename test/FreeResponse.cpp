@@ -209,6 +209,18 @@ FREE_RESPONSE_CONTROLLER_TEST(
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
+    testController.clearNotifications();
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        testController.notifiedThatUserIsDoneResponding());
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
+        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
+        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
+    notifyThatSubmitButtonHasBeenClicked(control);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
 }
 
 FREE_RESPONSE_CONTROLLER_TEST(

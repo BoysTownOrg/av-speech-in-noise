@@ -52,6 +52,15 @@ class TestControllerStub : public TestController {
         notifiedThatUserHasRespondedButTrialIsNotQuiteDone_ = true;
     }
 
+    void clearNotifications() {
+        notifiedThatUserHasRespondedButTrialIsNotQuiteDone_ = false;
+        notifiedThatUserIsDoneRespondingAndIsReadyForNextTrial_ = false;
+        notifiedThatUserIsReadyForNextTrial_ = false;
+        notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion_ =
+            false;
+        notifiedThatUserIsDoneResponding_ = false;
+    }
+
   private:
     bool notifiedThatUserHasRespondedButTrialIsNotQuiteDone_{};
     bool notifiedThatUserIsDoneRespondingAndIsReadyForNextTrial_{};

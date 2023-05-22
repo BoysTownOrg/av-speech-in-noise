@@ -25,6 +25,7 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
     interactor.submit(freeResponse);
     if (usingPuzzle && !freeResponse.flagged &&
         ++trialsTowardNewPuzzlePiece == trialsPerNewPuzzlePiece) {
+        trialsTowardNewPuzzlePiece = 0;
         testController.notifyThatUserHasRespondedButTrialIsNotQuiteDone();
         puzzle.show();
         readyToAdvancePuzzle_ = true;
