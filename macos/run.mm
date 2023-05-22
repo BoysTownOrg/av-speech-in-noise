@@ -455,6 +455,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_free_response::Controller freeResponseController{
         testController, submittingFreeResponseInteractor, freeResponseUI,
         revealImagePuzzle, puzzleTimer};
+    freeResponseController.setNTrialsPerNewPuzzlePiece(5);
     static submitting_pass_fail::InteractorImpl submittingPassFailInteractor{
         adaptiveMethod, runningATest, outputFile};
     static submitting_pass_fail::Controller passFailController{
