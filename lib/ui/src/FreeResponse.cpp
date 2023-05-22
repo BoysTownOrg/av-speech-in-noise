@@ -11,6 +11,11 @@ Controller::Controller(TestController &testController, Interactor &interactor,
 
 void Controller::initialize(bool usingPuzzle) {
     this->usingPuzzle = usingPuzzle;
+    trialsTowardNewPuzzlePiece = 0;
+}
+
+void Controller::setNTrialsPerNewPuzzlePiece(int n) {
+    trialsPerNewPuzzlePiece = n;
 }
 
 void Controller::notifyThatSubmitButtonHasBeenClicked() {
@@ -18,7 +23,8 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
     freeResponse.flagged = control.flagged();
     freeResponse.response = control.response();
     interactor.submit(freeResponse);
-    if (usingPuzzle && !freeResponse.flagged) {
+    if (usingPuzzle && !freeResponse.flagged &&
+        ++trialsTowardNewPuzzlePiece == trialsPerNewPuzzlePiece) {
         testController.notifyThatUserHasRespondedButTrialIsNotQuiteDone();
         puzzle.show();
         readyToAdvancePuzzle_ = true;

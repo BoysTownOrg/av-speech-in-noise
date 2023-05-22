@@ -60,6 +60,7 @@ class Controller : public FreeResponseController,
     void initialize(bool usingPuzzle) override;
     void notifyThatSubmitButtonHasBeenClicked() override;
     void callback() override;
+    void setNTrialsPerNewPuzzlePiece(int n);
 
   private:
     TestController &testController;
@@ -67,6 +68,8 @@ class Controller : public FreeResponseController,
     Control &control;
     Puzzle &puzzle;
     Timer &timer;
+    int trialsPerNewPuzzlePiece{5};
+    int trialsTowardNewPuzzlePiece{};
     bool readyToAdvancePuzzle_{};
     bool usingPuzzle{};
 };
