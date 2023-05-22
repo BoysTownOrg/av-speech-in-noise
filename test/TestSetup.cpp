@@ -1,9 +1,8 @@
+#include "RunningATestStub.hpp"
 #include "assert-utility.hpp"
-#include "ModelStub.hpp"
 #include "SessionViewStub.hpp"
 
 #include <av-speech-in-noise/ui/TestSetupImpl.hpp>
-#include <av-speech-in-noise/Model.hpp>
 
 #include <gtest/gtest.h>
 
@@ -101,22 +100,22 @@ class TestSetupControlStub : public TestSetupControl {
 
 class TestSettingsInterpreterStub : public TestSettingsInterpreter {
   public:
-    explicit TestSettingsInterpreterStub(const Calibration &calibration_)
-        : calibration_{calibration_} {}
+    explicit TestSettingsInterpreterStub(
+        RunningATest &runningATest, const Calibration &calibration_)
+        : runningATest{runningATest}, calibration_{calibration_} {}
 
     auto calibration(const std::string &t) -> Calibration override {
         text_ = t;
         return calibration_;
     }
 
-    void initialize(RunningATestFacade &m, SessionController &sc,
+    void initializeTest(
         const std::string &t, const TestIdentity &id, SNR snr) override {
         startingSnr_ = snr.dB;
-        sessionController_ = &sc;
         text_ = t;
         identity_ = id;
         if (initializeAnyTestOnApply_)
-            m.initialize(AdaptiveTest{});
+            runningATest.initialize(nullptr, {});
     }
 
     [[nodiscard]] auto text() const -> std::string { return text_; }
@@ -132,6 +131,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     }
 
   private:
+    RunningATest &runningATest;
     std::string text_;
     std::string textForMethodQuery_;
     TestIdentity identity_{};
@@ -193,7 +193,7 @@ void run(UseCase &useCase) { useCase.run(); }
 
 class CalibrationUseCase : public virtual UseCase {
   public:
-    virtual auto calibration(ModelStub &) -> Calibration = 0;
+    virtual auto calibration(RunningATestStub &) -> Calibration = 0;
 };
 
 class PlayingCalibration : public CalibrationUseCase {
@@ -203,8 +203,8 @@ class PlayingCalibration : public CalibrationUseCase {
 
     void run() override { control.playCalibration(); }
 
-    auto calibration(ModelStub &m) -> Calibration override {
-        return m.calibration();
+    auto calibration(RunningATestStub &m) -> Calibration override {
+        return m.calibration_;
     }
 
   private:
@@ -218,8 +218,8 @@ class PlayingLeftSpeakerCalibration : public CalibrationUseCase {
 
     void run() override { control.playLeftSpeakerCalibration(); }
 
-    auto calibration(ModelStub &m) -> Calibration override {
-        return m.leftSpeakerCalibration();
+    auto calibration(RunningATestStub &m) -> Calibration override {
+        return m.leftSpeakerCalibration_;
     }
 
   private:
@@ -233,8 +233,8 @@ class PlayingRightSpeakerCalibration : public CalibrationUseCase {
 
     void run() override { control.playRightSpeakerCalibration(); }
 
-    auto calibration(ModelStub &m) -> Calibration override {
-        return m.rightSpeakerCalibration();
+    auto calibration(RunningATestStub &m) -> Calibration override {
+        return m.rightSpeakerCalibration_;
     }
 
   private:
@@ -275,16 +275,17 @@ class SessionControllerStub : public SessionController {
 
 class TestSetupControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
+    RunningATestStub runningATest;
     SessionControlStub sessionView;
     TestSetupControlStub control;
     Calibration calibration;
-    TestSettingsInterpreterStub testSettingsInterpreter{calibration};
+    TestSettingsInterpreterStub testSettingsInterpreter{
+        runningATest, calibration};
     TextFileReaderStub textFileReader;
     SessionControllerStub sessionController;
     TestSetupPresenterStub presenter;
     TestSetupController controller{control, sessionController, sessionView,
-        presenter, model, testSettingsInterpreter, textFileReader};
+        presenter, runningATest, testSettingsInterpreter, textFileReader};
     PlayingCalibration playingCalibration{control};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{control};
@@ -309,28 +310,28 @@ class TestSetupControllerTests : public ::testing::Test {
         calibration.level.dB_SPL = 1;
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            1, useCase.calibration(model).level.dB_SPL);
+            1, useCase.calibration(runningATest).level.dB_SPL);
     }
 
     void assertPassesAudioFileUrl(CalibrationUseCase &useCase) {
         calibration.fileUrl.path = "a";
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"a"}, useCase.calibration(model).fileUrl.path);
+            std::string{"a"}, useCase.calibration(runningATest).fileUrl.path);
     }
 
     void assertPassesAudioDevice(CalibrationUseCase &useCase) {
         setAudioDevice(sessionView, "b");
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"b"}, useCase.calibration(model).audioDevice);
+            std::string{"b"}, useCase.calibration(runningATest).audioDevice);
     }
 
     void assertPassesFullScaleLevel(CalibrationUseCase &useCase) {
         calibration.fullScaleLevel.dB_SPL = 1;
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            1, useCase.calibration(model).fullScaleLevel.dB_SPL);
+            1, useCase.calibration(runningATest).fullScaleLevel.dB_SPL);
     }
 };
 
@@ -341,120 +342,16 @@ class TestSetupPresenterTests : public ::testing::Test {
     TestSetupPresenterImpl presenter{view, sessionView};
 };
 
-class RequestFailingModel : public RunningATestFacade {
-    std::string errorMessage{};
-
-  public:
-    auto trialNumber() -> int override { return 0; }
-
-    auto targetFileName() -> std::string override { return {}; }
-
-    void setErrorMessage(std::string s) { errorMessage = std::move(s); }
-
-    void initialize(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initialize(const FixedLevelTestWithEachTargetNTimes &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithTargetReplacement(
-        const FixedLevelFixedTrialsTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelFixedTrialsTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithSilentIntervalTargets(const FixedLevelTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithAllTargets(const FixedLevelTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithAllTargetsAndEyeTracking(
-        const FixedLevelTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithAllTargetsAndAudioRecording(
-        const FixedLevelTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithPredeterminedTargetsAndAudioRecording(
-        const FixedLevelTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithPredeterminedTargetsAndEyeTracking(
-        const FixedLevelTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithSingleSpeaker(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithDelayedMasker(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithCyclicTargets(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithCyclicTargetsAndEyeTracking(
-        const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void initializeWithEyeTracking(const AdaptiveTest &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void playTrial(const AudioSettings &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void submit(const coordinate_response_measure::Response &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void playCalibration(const Calibration &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void playLeftSpeakerCalibration(const Calibration &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    void playRightSpeakerCalibration(const Calibration &) override {
-        throw RequestFailure{errorMessage};
-    }
-
-    auto testComplete() -> bool override { return {}; }
-    auto audioDevices() -> AudioDevices override { return {}; }
-    auto adaptiveTestResults() -> AdaptiveTestResults override { return {}; }
-    auto keywordsTestResults() -> KeywordsTestResults override { return {}; }
-    void attach(Observer *) override {}
-    void restartAdaptiveTestWhilePreservingTargets() override {}
-};
-
 class TestSetupFailureTests : public ::testing::Test {
   protected:
-    RequestFailingModel failingModel;
+    RunningATestStub runningATest;
     SessionControlStub sessionControl;
     SessionViewStub sessionView;
     TestSetupViewStub view;
     TestSetupControlStub control;
     Calibration calibration;
-    TestSettingsInterpreterStub testSettingsInterpreter{calibration};
+    TestSettingsInterpreterStub testSettingsInterpreter{
+        runningATest, calibration};
     TestSetupPresenterImpl testSetupPresenter{view, sessionView};
     TextFileReaderStub textFileReader;
     SessionControllerStub sessionController;
@@ -463,7 +360,7 @@ class TestSetupFailureTests : public ::testing::Test {
         sessionController,
         sessionControl,
         testSetupPresenter,
-        failingModel,
+        runningATest,
         testSettingsInterpreter,
         textFileReader,
     };
@@ -474,13 +371,6 @@ class TestSetupFailureTests : public ::testing::Test {
 #define TEST_SETUP_PRESENTER_TEST(a) TEST_F(TestSetupPresenterTests, a)
 
 #define TEST_SETUP_FAILURE_TEST(a) TEST_F(TestSetupFailureTests, a)
-
-TEST_SETUP_CONTROLLER_TEST(
-    passesSessionControllerToTestSettingsInterpreterAfterConfirmButtonIsClicked) {
-    run(confirmingTestSetup);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &sessionController, testSettingsInterpreter.sessionController());
-}
 
 TEST_SETUP_CONTROLLER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {
@@ -666,7 +556,8 @@ TEST_SETUP_PRESENTER_TEST(presenterPopulatesTransducerMenu) {
 
 TEST_SETUP_FAILURE_TEST(initializeTestShowsErrorMessageWhenModelFailsRequest) {
     testSettingsInterpreter.initializeAnyTestOnApply();
-    failingModel.setErrorMessage("a");
+    runningATest.errorMessage = "a";
+    runningATest.failOnRequest = true;
     confirmTestSetup(control);
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
@@ -680,21 +571,24 @@ TEST_SETUP_FAILURE_TEST(
 
 TEST_SETUP_FAILURE_TEST(
     playingCalibrationShowsErrorMessageWhenModelFailsRequest) {
-    failingModel.setErrorMessage("a");
+    runningATest.errorMessage = "a";
+    runningATest.failOnRequest = true;
     control.playCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
 
 TEST_SETUP_FAILURE_TEST(
     playingLeftSpeakerCalibrationShowsErrorMessageWhenModelFailsRequest) {
-    failingModel.setErrorMessage("a");
+    runningATest.errorMessage = "a";
+    runningATest.failOnRequest = true;
     control.playLeftSpeakerCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }
 
 TEST_SETUP_FAILURE_TEST(
     playingRightSpeakerCalibrationShowsErrorMessageWhenModelFailsRequest) {
-    failingModel.setErrorMessage("a");
+    runningATest.errorMessage = "a";
+    runningATest.failOnRequest = true;
     control.playRightSpeakerCalibration();
     AV_SPEECH_IN_NOISE_EXPECT_ERROR_MESSAGE(sessionView, "a");
 }

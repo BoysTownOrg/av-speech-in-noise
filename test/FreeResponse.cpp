@@ -1,5 +1,4 @@
 #include "assert-utility.hpp"
-#include "ModelStub.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
 #include "PuzzleStub.hpp"

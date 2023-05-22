@@ -7,7 +7,7 @@
 #include "av-speech-in-noise/core/Player.hpp"
 
 #include <av-speech-in-noise/core/EyeTracking.hpp>
-#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/RunningATest.hpp>
 
 #include <gtest/gtest.h>
 

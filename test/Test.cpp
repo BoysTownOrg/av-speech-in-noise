@@ -1,10 +1,13 @@
+#include "RunningATestStub.hpp"
+#include "AdaptiveMethodStub.hpp"
 #include "assert-utility.hpp"
-#include "ModelStub.hpp"
 #include "TestViewStub.hpp"
 #include "SessionViewStub.hpp"
+
 #include <av-speech-in-noise/ui/TestImpl.hpp>
-#include <av-speech-in-noise/Model.hpp>
+
 #include <gtest/gtest.h>
+
 #include <algorithm>
 #include <utility>
 
@@ -59,7 +62,7 @@ void setAudioDevice(SessionControlStub &view, std::string s) {
     view.setAudioDevice(std::move(s));
 }
 
-void setTestComplete(ModelStub &model) { model.setTestComplete(); }
+void setTestComplete(RunningATestStub &model) { model.testComplete_ = true; }
 
 class SessionControllerStub : public SessionController {
   public:
@@ -120,7 +123,7 @@ class TestPresenterStub : public TestPresenter {
         return exitTestButtonHidden_;
     }
 
-    void hideExitTestButton() { exitTestButtonHidden_ = true; }
+    void hideExitTestButton() override { exitTestButtonHidden_ = true; }
 
     void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
 
@@ -316,13 +319,14 @@ class Initializing : public PresenterUseCase {
 
 class TestControllerTests : public ::testing::Test {
   protected:
-    ModelStub model;
+    RunningATestStub runningATest;
+    AdaptiveMethodStub adaptiveMethod;
     SessionControlStub sessionView;
     TestControlStub control;
     SessionControllerStub sessionController;
     TestPresenterStub presenter;
-    TestControllerImpl controller{
-        sessionController, model, sessionView, control, presenter};
+    TestControllerImpl controller{sessionController, runningATest,
+        adaptiveMethod, sessionView, control, presenter};
     DecliningContinuingTesting decliningContinuingTesting{control};
     AcceptingContinuingTesting acceptingContinuingTesting{control};
     ExitingTest exitingTest{control};
@@ -342,10 +346,12 @@ class TestControllerTests : public ::testing::Test {
 
 class TestPresenterTests : public ::testing::Test {
   protected:
-    ModelStub model;
+    RunningATestStub runningATest;
+    AdaptiveMethodStub adaptiveMethod;
     TestViewStub view;
     UninitializedTaskPresenterStub taskPresenter;
-    TestPresenterImpl presenter{model, view, &taskPresenter};
+    TestPresenterImpl presenter{
+        runningATest, adaptiveMethod, view, &taskPresenter};
     UpdatingTrialInformation updatingTrialInformation;
     Initializing initializing;
 };
@@ -363,14 +369,14 @@ void run(PresenterUseCase &useCase, TestPresenter &presenter) {
 
 #define AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(                             \
     presenter, model, useCase, view)                                           \
-    model.setTargetFileName("a");                                              \
+    model.targetFileName_ = "a";                                               \
     run(useCase, presenter);                                                   \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         std::string{"a"}, (view).secondaryDisplayed())
 
 #define AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(                              \
     presenter, model, useCase, view)                                           \
-    model.setTrialNumber(1);                                                   \
+    model.trialNumber_ = 1;                                                    \
     run(useCase, presenter);                                                   \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"Trial 1"}, (view).displayed())
 
@@ -384,7 +390,7 @@ void run(PresenterUseCase &useCase, TestPresenter &presenter) {
 
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE_WHEN_COMPLETE( \
     useCase, sessionController)                                                 \
-    setTestComplete(model);                                                     \
+    setTestComplete(runningATest);                                              \
     run(useCase);                                                               \
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController)
 
@@ -398,7 +404,7 @@ void run(PresenterUseCase &useCase, TestPresenter &presenter) {
     setAudioDevice(sessionView, "a");                                          \
     run(useCase);                                                              \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        std::string{"a"}, (model).trialParameters().audioDevice)
+        std::string{"a"}, (model).trialAudioSettings.audioDevice)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_NOTIFIES_THAT_TRIAL_HAS_STARTED(             \
     useCase, presenter)                                                        \
@@ -439,20 +445,21 @@ TEST_CONTROLLER_TEST(
 }
 
 TEST_CONTROLLER_TEST(responderPlaysTrialAfterPlayTrialButtonClicked) {
-    AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(playingTrial, sessionView, model);
+    AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(
+        playingTrial, sessionView, runningATest);
 }
 
 TEST_CONTROLLER_TEST(
     responderPlaysTrialAfterNotifyingThatUserIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(
-        notifyingThatUserIsReadyForNextTrial, sessionView, model);
+        notifyingThatUserIsReadyForNextTrial, sessionView, runningATest);
 }
 
 TEST_CONTROLLER_TEST(
     responderPlaysTrialAfterNotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(
         notifyingThatUserIsDoneRespondingAndIsReadyForNextTrial, sessionView,
-        model);
+        runningATest);
 }
 
 TEST_CONTROLLER_TEST(notifiesThatTrialHasStartedAfterPlayTrialButtonClicked) {
@@ -475,8 +482,8 @@ TEST_CONTROLLER_TEST(
 TEST_CONTROLLER_TEST(
     responderRestartsAdaptiveTestWhilePreservingTargetsAfterContinueTestingDialogIsAccepted) {
     acceptContinuingTesting(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        model.adaptiveTestRestartedWhilePreservingCyclicTargets());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(adaptiveMethod.tracksResetted);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.nextTrialPreparedIfNeeded_);
 }
 
 TEST_CONTROLLER_TEST(
@@ -559,20 +566,20 @@ TEST_CONTROLLER_TEST(
 }
 
 TEST_CONTROLLER_TEST(showsContinueTestingDialog) {
-    setTestComplete(model);
+    setTestComplete(runningATest);
     notifyThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion(
         controller);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.adaptiveTestResultsUpdated());
 }
 
 TEST_CONTROLLER_TEST(completesTaskWhenTestIsComplete) {
-    setTestComplete(model);
+    setTestComplete(runningATest);
     run(notifyingThatUserIsDoneResponding);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(presenter.taskCompleted());
 }
 
 TEST_PRESENTER_TEST(showsAdaptiveTestResults) {
-    model.setAdaptiveTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
+    adaptiveMethod.testResults_ = {{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}};
     presenter.updateAdaptiveTestResults();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3"},
@@ -630,12 +637,12 @@ TEST_PRESENTER_TEST(hidesResponseSubmission) {
 }
 
 TEST_PRESENTER_TEST(showsExitTestButtonWhenTrialCompletes) {
-    model.completeTrial();
+    runningATest.facadeObserver->trialComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.exitTestButtonShown());
 }
 
 TEST_PRESENTER_TEST(showsTaskResponseSubmissionWhenTrialCompletes) {
-    model.completeTrial();
+    runningATest.facadeObserver->trialComplete();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionShown());
 }
 
@@ -674,22 +681,22 @@ TEST_PRESENTER_TEST(initializingAdaptivePassFailMethodInitializesTask) {
 
 TEST_PRESENTER_TEST(displaysTrialNumberWhenUpdatingTrialInformation) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(
-        presenter, model, updatingTrialInformation, view);
+        presenter, runningATest, updatingTrialInformation, view);
 }
 
 TEST_PRESENTER_TEST(displaysTargetWhenUpdatingTrialInformation) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(
-        presenter, model, updatingTrialInformation, view);
+        presenter, runningATest, updatingTrialInformation, view);
 }
 
 TEST_PRESENTER_TEST(displaysTrialNumberWhenInitializing) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(
-        presenter, model, initializing, view);
+        presenter, runningATest, initializing, view);
 }
 
 TEST_PRESENTER_TEST(displaysTargetWhenInitializing) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(
-        presenter, model, initializing, view);
+        presenter, runningATest, initializing, view);
 }
 
 TEST_PRESENTER_TEST(completeTaskCompletesTask) {

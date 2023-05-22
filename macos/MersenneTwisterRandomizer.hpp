@@ -2,7 +2,7 @@
 #define MACOS_MAIN_MERSENNETWISTERRANDOMIZER_HPP_
 
 #include <av-speech-in-noise/playlist/RandomizedTargetPlaylists.hpp>
-#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/RunningATest.hpp>
 #include <av-speech-in-noise/ui/RevealImage.hpp>
 
 #include <random>

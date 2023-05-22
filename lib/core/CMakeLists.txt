@@ -4,8 +4,7 @@ add_library(
   src/FixedLevelMethod.cpp
   src/OutputFile.cpp
   src/OutputFilePath.cpp
-  src/Model.cpp
-  src/RecognitionTestModel.cpp
+  src/RunningATest.cpp
   src/ResponseEvaluator.cpp
   src/EyeTrackerCalibration.cpp
   src/AdaptiveTrack.cpp

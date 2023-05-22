@@ -4,9 +4,11 @@
 #include "View.hpp"
 #include "Task.hpp"
 #include "Test.hpp"
-#include <av-speech-in-noise/core/IModel.hpp>
+
+#include <av-speech-in-noise/core/IRunningATest.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
+
 #include <string>
 
 namespace av_speech_in_noise {
@@ -39,15 +41,15 @@ class CoordinateResponseMeasureController
     : public TaskController,
       public CoordinateResponseMeasureControl::Observer {
   public:
-    CoordinateResponseMeasureController(TestController &, RunningATestFacade &,
-        CoordinateResponseMeasureControl &);
+    CoordinateResponseMeasureController(
+        TestController &, RunningATest &, CoordinateResponseMeasureControl &);
     void attach(TaskController::Observer *);
     void notifyThatReadyButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
 
   private:
     TestController &testController;
-    RunningATestFacade &model;
+    RunningATest &runningATest;
     CoordinateResponseMeasureControl &control;
     TaskController::Observer *observer{};
 };

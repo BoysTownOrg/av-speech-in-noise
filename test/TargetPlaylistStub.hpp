@@ -2,7 +2,9 @@
 #define TESTS_TARGETLISTSTUB_HPP_
 
 #include "LogString.hpp"
-#include <av-speech-in-noise/core/Model.hpp>
+
+#include <av-speech-in-noise/core/TargetPlaylist.hpp>
+
 #include <utility>
 
 namespace av_speech_in_noise {

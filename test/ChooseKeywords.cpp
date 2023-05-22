@@ -1,9 +1,11 @@
+#include "FixedLevelMethodStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
-#include "ModelStub.hpp"
-#include "av-speech-in-noise/Model.hpp"
+#include "RunningATestStub.hpp"
+
 #include <av-speech-in-noise/ui/ChooseKeywords.hpp>
+
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::submitting_keywords {
@@ -286,10 +288,11 @@ class ChooseKeywordsControllerTests : public ::testing::Test {
 
 class ChooseKeywordsPresenterTests : public ::testing::Test {
   protected:
-    ModelStub model;
+    RunningATestStub model;
+    FixedLevelMethodStub fixedLevelMethod;
     TestViewStub testView;
     ViewStub view;
-    PresenterImpl presenter{model, testView, view,
+    PresenterImpl presenter{model, fixedLevelMethod, testView, view,
         {{"The visitors stretched before dinner.", "visitors", "stretched",
              "dinner"},
             {"Daddy's mouth is turning yellow.", "Daddy's", "mouth", "turning"},
@@ -336,7 +339,7 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(clearsViewWhenShown) {
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText) {
-    model.setTargetFileName("11 The visitors stretched before dinner.mov");
+    model.targetFileName_ = "11 The visitors stretched before dinner.mov";
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "The", view.textPrecedingFirstKeywordButton());
@@ -352,7 +355,7 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText) {
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText2) {
-    model.setTargetFileName("3 Daddys mouth is turning yellow.mov");
+    model.targetFileName_ = "3 Daddys mouth is turning yellow.mov";
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("", view.textPrecedingFirstKeywordButton());
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("Daddy's", view.firstKeywordButtonText());
@@ -366,7 +369,7 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText2) {
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText3) {
-    model.setTargetFileName("5 Tom wont pull the oar.mov");
+    model.targetFileName_ = "5 Tom wont pull the oar.mov";
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "Tom", view.textPrecedingFirstKeywordButton());
@@ -381,7 +384,7 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText3) {
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText4) {
-    model.setTargetFileName("5 Tom won't pull the oar.mov");
+    model.targetFileName_ = "5 Tom won't pull the oar.mov";
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "Tom", view.textPrecedingFirstKeywordButton());
@@ -396,7 +399,7 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(setsEachKeywordButtonText4) {
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(badMatchDoesNotThrow) {
-    model.setTargetFileName("2 This is an example of a bad match.mov");
+    model.targetFileName_ = "2 This is an example of a bad match.mov";
     presenter.showResponseSubmission();
 }
 
@@ -430,7 +433,7 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(marksAllKeywordsIncorrect) {
 }
 
 CHOOSE_KEYWORDS_PRESENTER_TEST(completeShowsKeywordTestResults) {
-    model.setKeywordTestResults({12.34, 5});
+    fixedLevelMethod.keywordsTestResults_ = {12.34, 5};
     presenter.complete();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"5 (12.3%) keywords correct"}, testView.sheetMessage());

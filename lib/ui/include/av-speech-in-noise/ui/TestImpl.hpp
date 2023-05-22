@@ -4,13 +4,16 @@
 #include "Test.hpp"
 #include "Session.hpp"
 #include "Task.hpp"
+
+#include <av-speech-in-noise/core/IAdaptiveMethod.hpp>
+#include <av-speech-in-noise/core/IRunningATest.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
 class TestControllerImpl : public TestControl::Observer, public TestController {
   public:
-    TestControllerImpl(SessionController &, RunningATestFacade &,
+    TestControllerImpl(SessionController &, RunningATest &, AdaptiveMethod &,
         SessionControl &, TestControl &, TestPresenter &);
     void exitTest() override;
     void playTrial() override;
@@ -25,7 +28,8 @@ class TestControllerImpl : public TestControl::Observer, public TestController {
 
   private:
     SessionController &sessionController;
-    RunningATestFacade &model;
+    RunningATest &runningATest;
+    AdaptiveMethod &adaptiveMethod;
     SessionControl &sessionControl;
     TestPresenter &presenter;
 };
@@ -73,11 +77,10 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
     TaskPresenter *presenter{};
 };
 
-class TestPresenterImpl : public RunningATestFacade::Observer,
-                          public TestPresenter {
+class TestPresenterImpl : public RunningATest::Observer, public TestPresenter {
   public:
-    explicit TestPresenterImpl(
-        RunningATestFacade &, TestView &, UninitializedTaskPresenter *);
+    TestPresenterImpl(RunningATest &, AdaptiveMethod &, TestView &,
+        UninitializedTaskPresenter *);
     void initialize(TaskPresenter &) override;
     void start() override;
     void stop() override;
@@ -91,7 +94,8 @@ class TestPresenterImpl : public RunningATestFacade::Observer,
     void completeTask() override;
 
   private:
-    RunningATestFacade &model;
+    RunningATest &runningATest;
+    AdaptiveMethod &adaptiveMethod;
     TestView &view;
     UninitializedTaskPresenter *taskPresenter;
 };

@@ -1,4 +1,5 @@
-#include "RecognitionTestModel.hpp"
+#include "RunningATest.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <gsl/gsl>
 
@@ -20,7 +21,7 @@ class NullTestMethod : public TestMethod {
     void writeTestResult(OutputFile &) override {}
 };
 
-class NullObserver : public RunningATest::Observer {
+class NullObserver : public RunningATest::TestObserver {
     void notifyThatNewTestIsReady(std::string_view session) override {}
     void notifyThatTrialWillBegin(int trialNumber) override {}
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
@@ -83,14 +84,14 @@ static void throwRequestFailureOnInvalidAudioDevice(
     try {
         f(device);
     } catch (const InvalidAudioDevice &) {
-        throw RunningATestFacade::RequestFailure{
+        throw RunningATest::RequestFailure{
             "'" + device + "' is not a valid audio device."};
     }
 }
 
 static void throwRequestFailureIfTrialInProgress(bool f) {
     if (f)
-        throw RunningATestFacade::RequestFailure{"Trial in progress."};
+        throw RunningATest::RequestFailure{"Trial in progress."};
 }
 
 static void apply(TargetPlayer &player, LevelAmplification x) {
@@ -129,7 +130,7 @@ static void tryOpening(OutputFile &file, const TestIdentity &p) {
     try {
         file.openNewFile(p);
     } catch (const OutputFile::OpenFailure &) {
-        throw RunningATestFacade::RequestFailure{"Unable to open output file."};
+        throw RunningATest::RequestFailure{"Unable to open output file."};
     }
 }
 
@@ -168,7 +169,7 @@ static void throwRequestFailureOnInvalidAudioFile(
     try {
         f(s);
     } catch (const InvalidAudioFile &) {
-        throw RunningATestFacade::RequestFailure{"unable to read " + s.path};
+        throw RunningATest::RequestFailure{"unable to read " + s.path};
     }
 }
 
@@ -242,7 +243,7 @@ static void preparePlayersForNextTrial(TestMethod *testMethod,
 
 static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, RunningATest::Observer *observer,
+    MaskerPlayer &maskerPlayer, RunningATest::TestObserver *observer,
     RealLevel maskerLevel, RealLevel fullScaleLevel) {
     observer->notifyThatSubjectHasResponded();
     if (!testMethod->complete()) {
@@ -258,7 +259,7 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
 static void saveOutputFileAndPrepareNextTrialAfter(
     const std::function<void()> &f, TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, RunningATest::Observer *observer,
+    MaskerPlayer &maskerPlayer, RunningATest::TestObserver *observer,
     RealLevel maskerLevel, RealLevel fullScaleLevel) {
     f();
     save(outputFile);
@@ -269,25 +270,19 @@ static void saveOutputFileAndPrepareNextTrialAfter(
 RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer, Clock &clock)
-    : observer{&nullObserver}, maskerPlayer{maskerPlayer},
-      targetPlayer{targetPlayer}, evaluator{evaluator}, outputFile{outputFile},
-      randomizer{randomizer}, clock{clock}, testMethod{&nullTestMethod} {
+    : maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
+      evaluator{evaluator}, outputFile{outputFile}, randomizer{randomizer},
+      clock{clock}, observer{&nullObserver}, testMethod{&nullTestMethod} {
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
 }
 
-void RunningATestImpl::attach(RunningATestFacade::Observer *listener) {
+void RunningATestImpl::attach(RunningATest::Observer *listener) {
     listener_ = listener;
 }
 
 void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
-    RunningATest::Observer *observer_) {
-    initialize_(
-        testMethod_, test, observer_ == nullptr ? &nullObserver : observer_);
-}
-
-void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test,
-    RunningATest::Observer *observer_) {
+    RunningATest::TestObserver *observer_) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     if (testMethod_->complete())
@@ -316,22 +311,18 @@ void RunningATestImpl::initialize_(TestMethod *testMethod_, const Test &test,
     useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
+    if (test.audioChannelOption == AudioChannelOption::singleSpeaker) {
+        useFirstChannelOnly(targetPlayer);
+        maskerPlayer.useFirstChannelOnly();
+    } else if (test.audioChannelOption == AudioChannelOption::delayedMasker) {
+        useFirstChannelOnly(targetPlayer);
+        maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
+    }
+
+    if (observer_ == nullptr)
+        observer_ = &nullObserver;
     observer = observer_;
     observer->notifyThatNewTestIsReady(test.identity.session);
-}
-
-void RunningATestImpl::initializeWithSingleSpeaker(
-    TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test, &nullObserver);
-    useFirstChannelOnly(targetPlayer);
-    maskerPlayer.useFirstChannelOnly();
-}
-
-void RunningATestImpl::initializeWithDelayedMasker(
-    TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test, &nullObserver);
-    useFirstChannelOnly(targetPlayer);
-    maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
 }
 
 void RunningATestImpl::playTrial(const AudioSettings &settings) {

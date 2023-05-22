@@ -6,7 +6,7 @@
 #include "Session.hpp"
 #include "Subject.hpp"
 
-#include <av-speech-in-noise/core/IModel.hpp>
+#include <av-speech-in-noise/core/IRunningATest.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 
@@ -33,7 +33,7 @@ class SessionControllerImpl : public SessionController {
 
 class SessionPresenterImpl : public SessionPresenter {
   public:
-    SessionPresenterImpl(SessionView &view, RunningATestFacade &model) {
+    SessionPresenterImpl(SessionView &view, RunningATest &model) {
         view.populateAudioDeviceMenu(model.audioDevices());
         view.populateSubjectScreenMenu(view.screens());
     }

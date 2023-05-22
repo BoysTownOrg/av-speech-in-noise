@@ -1,5 +1,5 @@
+#include "RunningATestStub.hpp"
 #include "assert-utility.hpp"
-#include "ModelStub.hpp"
 #include "SessionViewStub.hpp"
 
 #include <av-speech-in-noise/ui/SessionController.hpp>
@@ -142,10 +142,10 @@ class SessionPresenterTests : public ::testing::Test {};
 #define SESSION_PRESENTER_TEST(a) TEST_F(SessionPresenterTests, a)
 
 SESSION_PRESENTER_TEST(constructorPopulatesAudioDeviceMenu) {
-    ModelStub model;
+    RunningATestStub runningATest;
     SessionViewStub view;
-    model.setAudioDevices({"a", "b", "c"});
-    SessionPresenterImpl presenter{view, model};
+    runningATest.audioDevices_ = {"a", "b", "c"};
+    SessionPresenterImpl presenter{view, runningATest};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.audioDevices().at(0));
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -155,10 +155,10 @@ SESSION_PRESENTER_TEST(constructorPopulatesAudioDeviceMenu) {
 }
 
 SESSION_PRESENTER_TEST(constructorPopulatesSubjectScreenMenu) {
-    ModelStub model;
+    RunningATestStub runningATest;
     SessionViewStub view;
     view.setScreens({{"a"}, {"b"}, {"c"}});
-    SessionPresenterImpl presenter{view, model};
+    SessionPresenterImpl presenter{view, runningATest};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, view.subjectScreens().at(0).name);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(

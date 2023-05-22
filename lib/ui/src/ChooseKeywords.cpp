@@ -67,12 +67,13 @@ static auto transformToSentencesWithThreeKeywordsFromExpectedFileNameSentence(
     return map;
 }
 
-PresenterImpl::PresenterImpl(RunningATestFacade &model, TestView &testView,
-    View &view,
+PresenterImpl::PresenterImpl(RunningATest &model,
+    FixedLevelMethod &fixedLevelMethod, TestView &testView, View &view,
     const std::vector<SentenceWithThreeKeywords> &sentencesWithThreeKeywords)
     : sentencesWithThreeKeywordsFromExpectedFileNameSentence{transformToSentencesWithThreeKeywordsFromExpectedFileNameSentence(
           sentencesWithThreeKeywords)},
-      model{model}, testView{testView}, view{view} {}
+      model{model},
+      fixedLevelMethod{fixedLevelMethod}, testView{testView}, view{view} {}
 
 void PresenterImpl::start() { testView.showNextTrialButton(); }
 
@@ -84,7 +85,7 @@ void PresenterImpl::stop() {
     submitting_keywords::hideResponseSubmission(view);
 }
 
-static auto mlstFileNameSentence(RunningATestFacade &model) -> std::string {
+static auto mlstFileNameSentence(RunningATest &model) -> std::string {
     std::stringstream stream{model.targetFileName()};
     int ignore = 0;
     stream >> ignore >> std::ws;
@@ -108,7 +109,9 @@ void PresenterImpl::showResponseSubmission() {
 // https://stackoverflow.com/a/65440575
 
 // we cannot return a char array from a function, therefore we need a wrapper
-template <unsigned N> struct String { char c[N]; };
+template <unsigned N> struct String {
+    char c[N];
+};
 
 template <unsigned... Len>
 constexpr auto concatenate(const char (&...strings)[Len]) {
@@ -194,7 +197,7 @@ auto sentencesWithThreeKeywords(std::string_view s)
 }
 
 void PresenterImpl::complete() {
-    const auto results{model.keywordsTestResults()};
+    const auto results{fixedLevelMethod.keywordsTestResults()};
     std::stringstream stream;
     stream << results.totalCorrect << " (" << std::setprecision(3)
            << results.percentCorrect << "%) keywords correct";

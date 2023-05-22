@@ -7,7 +7,7 @@
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
 
-#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/RunningATest.hpp>
 
 #include <gtest/gtest.h>
 
@@ -79,8 +79,8 @@ class UseCase {
 
 class InitializingTest : public UseCase {
   public:
-    explicit InitializingTest(
-        TestMethod *method, const Test &test, RunningATest::Observer *observer)
+    explicit InitializingTest(TestMethod *method, const Test &test,
+        RunningATest::TestObserver *observer)
         : test{test}, method{method}, observer{observer} {}
 
     void run(RunningATestImpl &m) override {
@@ -90,7 +90,7 @@ class InitializingTest : public UseCase {
   private:
     const Test &test{};
     TestMethod *method;
-    RunningATest::Observer *observer;
+    RunningATest::TestObserver *observer;
 };
 
 class InitializingTestWithSingleSpeaker : public UseCase {
@@ -99,7 +99,9 @@ class InitializingTestWithSingleSpeaker : public UseCase {
         : method{method} {}
 
     void run(RunningATestImpl &m) override {
-        m.initializeWithSingleSpeaker(method, {});
+        Test test;
+        test.audioChannelOption = AudioChannelOption::singleSpeaker;
+        m.initialize(method, test, nullptr);
     }
 
   private:
@@ -112,7 +114,9 @@ class InitializingTestWithDelayedMasker : public UseCase {
         : method{method} {}
 
     void run(RunningATestImpl &m) override {
-        m.initializeWithDelayedMasker(method, {});
+        Test test;
+        test.audioChannelOption = AudioChannelOption::delayedMasker;
+        m.initialize(method, test, nullptr);
     }
 
   private:
@@ -246,7 +250,7 @@ class ClockStub : public Clock {
     bool timeQueried_{};
 };
 
-class RunningATestObserverStub : public RunningATest::Observer {
+class RunningATestObserverStub : public RunningATest::TestObserver {
   public:
     void notifyThatNewTestIsReady(std::string_view session) override {
         this->session = session;
@@ -409,7 +413,7 @@ auto maskerPlayerObserver(const RunningATestImpl &model)
 void runIgnoringFailure(UseCase &useCase, RunningATestImpl &model) {
     try {
         run(useCase, model);
-    } catch (const RunningATestFacade::RequestFailure &) {
+    } catch (const RunningATest::RequestFailure &) {
     }
 }
 
@@ -438,7 +442,7 @@ void fadeInComplete(
     player.fadeInComplete(t);
 }
 
-class RecognitionTestModelTests : public ::testing::Test {
+class RunningATestTests : public ::testing::Test {
   protected:
     ModelObserverStub listener;
     TargetPlayerStub targetPlayer;
@@ -471,7 +475,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     AudioSampleTimeWithOffset fadeInCompleteTime{};
     PreparingNextTrialIfNeeded preparingNextTrialIfNeeded;
 
-    RecognitionTestModelTests() { model.attach(&listener); }
+    RunningATestTests() { model.attach(&listener); }
 
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase, model);
@@ -531,7 +535,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         try {
             run(useCase, model);
             FAIL() << "Expected Model::RequestFailure";
-        } catch (const RunningATestFacade::RequestFailure &e) {
+        } catch (const RunningATest::RequestFailure &e) {
             AV_SPEECH_IN_NOISE_EXPECT_EQUAL(what, e.what());
         }
     }
@@ -627,7 +631,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 };
 
-#define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
+#define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RunningATestTests, a)
 
 RECOGNITION_TEST_MODEL_TEST(subscribesToPlayerEvents) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -838,11 +842,6 @@ RECOGNITION_TEST_MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds,
         observer.playerTimeWithDelay.delay.seconds);
-}
-
-auto eyeTrackerTargetPlayerSynchronization(OutputFileStub &file)
-    -> EyeTrackerTargetPlayerSynchronization {
-    return file.eyeTrackerTargetPlayerSynchronization();
 }
 
 RECOGNITION_TEST_MODEL_TEST(

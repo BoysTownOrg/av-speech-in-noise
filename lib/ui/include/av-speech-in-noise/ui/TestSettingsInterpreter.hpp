@@ -2,10 +2,14 @@
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETTINGSINTERPRETER_HPP_
 
 #include "FreeResponse.hpp"
+#include "Task.hpp"
 #include "TestSetupImpl.hpp"
 #include "SessionController.hpp"
 
-#include <map>
+#include "av-speech-in-noise/core/IAdaptiveMethod.hpp"
+#include "av-speech-in-noise/core/IFixedLevelMethod.hpp"
+#include "av-speech-in-noise/core/IRunningATest.hpp"
+#include "av-speech-in-noise/core/TargetPlaylist.hpp"
 
 namespace av_speech_in_noise {
 enum class Method {
@@ -159,17 +163,54 @@ constexpr auto name(TestSetting p) -> const char * {
 
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
-    TestSettingsInterpreterImpl(std::map<Method, TaskPresenter &>,
-        submitting_free_response::Puzzle &, FreeResponseController &);
-    void initialize(RunningATestFacade &, SessionController &,
+    TestSettingsInterpreterImpl(RunningATest &runningATest,
+        AdaptiveMethod &adaptiveMethod, FixedLevelMethod &fixedLevelMethod,
+        RunningATest::TestObserver &eyeTracking,
+        RunningATest::TestObserver &audioRecording,
+        TargetPlaylistReader &cyclicTargetsReader,
+        TargetPlaylistReader &targetsWithReplacementReader,
+        FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
+        FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
+        FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
+        RepeatableFiniteTargetPlaylist &eachTargetNTimes,
+        TargetPlaylist &targetsWithReplacement,
+        submitting_free_response::Puzzle &puzzle,
+        FreeResponseController &freeResponseController,
+        SessionController &sessionController,
+        TaskPresenter &coordinateResponseMeasurePresenter,
+        TaskPresenter &freeResponsePresenter,
+        TaskPresenter &chooseKeywordsPresenter,
+        TaskPresenter &syllablesPresenter,
+        TaskPresenter &correctKeywordsPresenter,
+        TaskPresenter &consonantPresenter, TaskPresenter &passFailPresenter);
+    void initializeTest(
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
 
   private:
-    std::map<Method, TaskPresenter &> taskPresenters;
+    RunningATest &runningATest;
+    AdaptiveMethod &adaptiveMethod;
+    FixedLevelMethod &fixedLevelMethod;
+    RunningATest::TestObserver &eyeTracking;
+    RunningATest::TestObserver &audioRecording;
+    TargetPlaylistReader &cyclicTargetsReader;
+    TargetPlaylistReader &targetsWithReplacementReader;
+    FiniteTargetPlaylistWithRepeatables &predeterminedTargets;
+    FiniteTargetPlaylistWithRepeatables &everyTargetOnce;
+    FiniteTargetPlaylistWithRepeatables &silentIntervalTargets;
+    RepeatableFiniteTargetPlaylist &eachTargetNTimes;
+    TargetPlaylist &targetsWithReplacement;
     submitting_free_response::Puzzle &puzzle;
     FreeResponseController &freeResponseController;
+    SessionController &sessionController;
+    TaskPresenter &coordinateResponseMeasurePresenter;
+    TaskPresenter &freeResponsePresenter;
+    TaskPresenter &chooseKeywordsPresenter;
+    TaskPresenter &syllablesPresenter;
+    TaskPresenter &correctKeywordsPresenter;
+    TaskPresenter &consonantPresenter;
+    TaskPresenter &passFailPresenter;
 };
 }
 

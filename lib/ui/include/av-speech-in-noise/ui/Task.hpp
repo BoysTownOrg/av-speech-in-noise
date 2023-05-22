@@ -1,8 +1,9 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TASK_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TASK_HPP_
 
-#include <av-speech-in-noise/Interface.hpp>
 #include "Presenter.hpp"
+
+#include <av-speech-in-noise/Interface.hpp>
 
 namespace av_speech_in_noise {
 class TaskController {

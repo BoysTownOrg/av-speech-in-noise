@@ -10,7 +10,7 @@
 #include <av-speech-in-noise/ui/SessionController.hpp>
 #include <av-speech-in-noise/ui/FreeResponse.hpp>
 #include <av-speech-in-noise/ui/ChooseKeywords.hpp>
-#include <av-speech-in-noise/core/RecognitionTestModel.hpp>
+#include <av-speech-in-noise/core/RunningATest.hpp>
 #include <av-speech-in-noise/core/OutputFilePath.hpp>
 #include <av-speech-in-noise/core/EyeTracking.hpp>
 #include <av-speech-in-noise/Interface.hpp>

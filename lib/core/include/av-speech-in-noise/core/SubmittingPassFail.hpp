@@ -4,7 +4,7 @@
 #include "IModel.hpp"
 #include "IAdaptiveMethod.hpp"
 #include "IOutputFile.hpp"
-#include "IRecognitionTestModel.hpp"
+#include "IRunningATest.hpp"
 
 namespace av_speech_in_noise::submitting_pass_fail {
 class InteractorImpl : public Interactor {

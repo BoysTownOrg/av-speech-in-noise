@@ -4,7 +4,7 @@
 #include "IModel.hpp"
 #include "IFixedLevelMethod.hpp"
 #include "IOutputFile.hpp"
-#include "IRecognitionTestModel.hpp"
+#include "IRunningATest.hpp"
 #include <filesystem>
 #include <regex>
 
