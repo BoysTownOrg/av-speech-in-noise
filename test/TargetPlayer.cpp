@@ -48,9 +48,14 @@ class VideoPlayerStub : public VideoPlayer {
 
     [[nodiscard]] auto played() const { return played_; }
 
-    void loadFile(std::string f) override { filePath_ = std::move(f); }
+    void loadFile(std::string f, RationalNumber scale) override {
+        filePath_ = std::move(f);
+        videoScale_ = scale;
+    }
 
     [[nodiscard]] auto filePath() const { return filePath_; }
+
+    auto videoScale() { return videoScale_; }
 
     void hide() override { hidden_ = true; }
 
@@ -92,6 +97,7 @@ class VideoPlayerStub : public VideoPlayer {
     double secondsDelayedPlayedAt_{};
     player_system_time_type baseSystemTimePlayedAt_{};
     int deviceIndex_{};
+    RationalNumber videoScale_{};
     Observer *listener_{};
     bool shown_{};
     bool hidden_{};
@@ -221,8 +227,10 @@ TARGET_PLAYER_TEST(hideVideoHidesVideo) {
 }
 
 TARGET_PLAYER_TEST(loadFileLoadsFile) {
-    player.loadFile({"a"});
+    player.loadFile({"a"}, RationalNumber{2, 3});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, videoPlayer.filePath());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2, videoPlayer.videoScale().numerator);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3, videoPlayer.videoScale().denominator);
 }
 
 TARGET_PLAYER_TEST(videoPlaybackCompleteNotifiesSubscriber) {
@@ -301,7 +309,7 @@ TARGET_PLAYER_TEST(digitalLevelComputesFirstChannel) {
 }
 
 TARGET_PLAYER_TEST(digitalLevelPassesLoadedFileToVideoPlayer) {
-    player.loadFile({"a"});
+    player.loadFile({"a"}, {});
     player.digitalLevel();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, audioReader.filePath());
 }

@@ -74,7 +74,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     void attach(Observer *listener) override { listener_ = listener; }
 
-    void loadFile(const LocalUrl &filePath) override {
+    void loadFile(const LocalUrl &filePath, RationalNumber scale) override {
         addToLog("loadFile ");
         filePath_ = filePath.path;
     }
