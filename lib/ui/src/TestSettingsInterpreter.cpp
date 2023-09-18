@@ -62,10 +62,14 @@ static auto trim(std::string s) -> std::string {
 static void applyToEachTrackingRule(AdaptiveTest &test,
     const std::function<void(TrackingSequence &, int)> &f,
     const std::string &entry) {
-    auto v{vectorOfInts(entry)};
-    resizeTrackingRuleEnough(test, v);
-    for (gsl::index i{0}; i < v.size(); ++i)
-        f(trackingRule(test).at(i), v.at(i));
+    auto integers{vectorOfInts(entry)};
+    resizeTrackingRuleEnough(test, integers);
+    std::vector<int>::const_iterator integerIterator{integers.begin()};
+    TrackingRule::iterator trackingRuleIterator{trackingRule(test).begin()};
+    for (; integerIterator != integers.end() &&
+         trackingRuleIterator != trackingRule(test).end();
+         ++integerIterator, ++trackingRuleIterator)
+        f(*trackingRuleIterator, *integerIterator);
 }
 
 static auto entryName(const std::string &line) -> std::string {
