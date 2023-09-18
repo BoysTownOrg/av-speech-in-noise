@@ -48,9 +48,9 @@ class VideoPlayerStub : public VideoPlayer {
 
     [[nodiscard]] auto played() const { return played_; }
 
-    void loadFile(std::string f, RationalNumber scale) override {
+    void loadFile(std::string f, RationalNumber videoScale) override {
         filePath_ = std::move(f);
-        videoScale_ = scale;
+        videoScale_ = videoScale;
     }
 
     [[nodiscard]] auto filePath() const { return filePath_; }

@@ -23,7 +23,7 @@ class TargetPlayer {
     virtual void play() = 0;
     virtual void playAt(const PlayerTimeWithDelay &) = 0;
     virtual auto playing() -> bool = 0;
-    virtual void loadFile(const LocalUrl &, RationalNumber scale = {}) = 0;
+    virtual void loadFile(const LocalUrl &, RationalNumber videoScale) = 0;
     virtual void hideVideo() = 0;
     virtual void showVideo() = 0;
     virtual auto digitalLevel() -> DigitalLevel = 0;

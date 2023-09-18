@@ -74,10 +74,14 @@ class TargetPlayerStub : public TargetPlayer {
 
     void attach(Observer *listener) override { listener_ = listener; }
 
-    void loadFile(const LocalUrl &filePath, RationalNumber scale) override {
+    void loadFile(
+        const LocalUrl &filePath, RationalNumber videoScale) override {
         addToLog("loadFile ");
         filePath_ = filePath.path;
+        videoScale_ = videoScale;
     }
+
+    auto videoScale() -> RationalNumber { return videoScale_; }
 
     void addToLog(const std::string &s) { insert(log_, s); }
 
@@ -123,6 +127,7 @@ class TargetPlayerStub : public TargetPlayer {
     double level_dB_{};
     double durationSeconds_{};
     Observer *listener_{};
+    RationalNumber videoScale_{};
     int timesSetDeviceCalled_{};
     int timesPreRolled_{};
     bool played_{};

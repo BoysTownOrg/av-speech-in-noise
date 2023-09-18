@@ -849,6 +849,14 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesNextTargetToPlayer(initializingTest);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    initializeDefaultTestPassesVideoScaleToTargetPlayer) {
+    test.videoScale = RationalNumber{3, 4};
+    run(initializingTest, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3, targetPlayer.videoScale().numerator);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4, targetPlayer.videoScale().denominator);
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestResetsTrialNumber) {
     assertYieldsTrialNumber(initializingTest, 1);
 }
