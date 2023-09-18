@@ -278,7 +278,7 @@ void AvFoundationVideoPlayer::playAt(const PlayerTimeWithDelay &t) {
                             t.delay.seconds, hostTime.timescale))];
 }
 
-void AvFoundationVideoPlayer::loadFile(std::string filePath) {
+void AvFoundationVideoPlayer::loadFile(std::string filePath, RationalNumber videoScale) {
     const auto asset{makeAvAsset(filePath)};
     // It seems if AVPlayer's replaceCurrentItemWithPlayerItem is called with an
     // unplayable asset the player does not recover even when a subsequent call
@@ -296,20 +296,16 @@ void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     playerItem.audioMix = audioMix;
     [player pause];
     [player replaceCurrentItemWithPlayerItem:playerItem];
-    prepareVideo();
+    resizeVideo(videoScale);
 }
 
-void AvFoundationVideoPlayer::prepareVideo() { resizeVideo(); }
-
-void AvFoundationVideoPlayer::resizeVideo() {
+void AvFoundationVideoPlayer::resizeVideo(RationalNumber videoScale) {
     const auto asset{currentAsset(player)};
     auto size{videoTrack(asset).naturalSize};
-    // Kaylah requested that the video be reduced in size.
-    // We landed on 2/3 scale.
-    size.height *= 2;
-    size.height /= 3;
-    size.width *= 2;
-    size.width /= 3;
+    size.height *= videoScale.numerator;
+    size.height /= videoScale.denominator;
+    size.width *= videoScale.numerator;
+    size.width /= videoScale.denominator;
     widthConstraint.constant = size.width;
     heightConstraint.constant = size.height;
     const auto nsSize{NSSizeFromCGSize(size)};
@@ -540,10 +536,11 @@ auto AvFoundationAudioPlayer::currentSystemTime() -> PlayerTime {
 void AvFoundationVideoPlayer::preRoll() {
     [player prerollAtRate:1.
         completionHandler:^(BOOL finished) {
-          if (finished == NO)
-              NSLog(@"prerollAtRate failed.");
-          listener_->notifyThatPreRollHasCompleted();
-        }];
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            if (finished == NO)
+                NSLog(@"prerollAtRate failed.");
+            listener_->notifyThatPreRollHasCompleted();
+        });}];
 }
 
 AvFoundationBufferedAudioReader::AvFoundationBufferedAudioReader(

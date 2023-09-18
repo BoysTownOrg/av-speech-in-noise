@@ -110,6 +110,8 @@ enum class TestSetting {
     transducer,
     meta,
     relativeOutputPath,
+    videoScaleNumerator,
+    videoScaleDenominator,
     keepVideoShown,
     puzzle
 };
@@ -158,6 +160,10 @@ constexpr auto name(TestSetting p) -> const char * {
         return "keep video shown";
     case TestSetting::puzzle:
         return "puzzle";
+    case TestSetting::videoScaleNumerator:
+        return "video scale numerator";
+    case TestSetting::videoScaleDenominator:
+        return "video scale denominator";
     }
 }
 

@@ -25,7 +25,7 @@ class VideoPlayer {
     virtual void subscribeToPlaybackCompletion() = 0;
     virtual void show() = 0;
     virtual void hide() = 0;
-    virtual void loadFile(std::string) = 0;
+    virtual void loadFile(std::string, RationalNumber scale) = 0;
     virtual void play() = 0;
     virtual void playAt(const PlayerTimeWithDelay &) = 0;
     virtual auto playing() -> bool = 0;
@@ -42,7 +42,7 @@ class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
     void attach(TargetPlayer::Observer *) override;
     void play() override;
     void playAt(const PlayerTimeWithDelay &) override;
-    void loadFile(const LocalUrl &) override;
+    void loadFile(const LocalUrl &, RationalNumber scale) override;
     void hideVideo() override;
     void showVideo() override;
     auto digitalLevel() -> DigitalLevel override;

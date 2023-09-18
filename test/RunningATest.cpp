@@ -849,6 +849,14 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesNextTargetToPlayer(initializingTest);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    initializeDefaultTestPassesVideoScaleToTargetPlayer) {
+    test.videoScale = RationalNumber{3, 4};
+    run(initializingTest, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3, targetPlayer.videoScale().numerator);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4, targetPlayer.videoScale().denominator);
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestResetsTrialNumber) {
     assertYieldsTrialNumber(initializingTest, 1);
 }
@@ -888,15 +896,39 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submittingCoordinateResponsePassesVideoScaleToTargetPlayer) {
+    test.videoScale = RationalNumber{3, 4};
+    run(initializingTest, model);
+    run(submittingCoordinateResponse, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3, targetPlayer.videoScale().numerator);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4, targetPlayer.videoScale().denominator);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     preparingNextTrialIfNeededPassesNextTargetToTargetPlayer) {
     run(initializingTest, model);
     assertPassesNextTargetToPlayer(preparingNextTrialIfNeeded);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    preparingNextTrialIfNeededPassesVideoScaleToTargetPlayer) {
+    test.videoScale = RationalNumber{3, 4};
+    run(initializingTest, model);
+    run(preparingNextTrialIfNeeded, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3, targetPlayer.videoScale().numerator);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4, targetPlayer.videoScale().denominator);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
     calibration.fileUrl.path = "a";
     run(playingCalibration, model);
     assertFilePathEquals(targetPlayer, "a");
+}
+
+RECOGNITION_TEST_MODEL_TEST(playCalibrationKeepsOriginalVideoScaling) {
+    run(playingCalibration, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, targetPlayer.videoScale().numerator);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, targetPlayer.videoScale().denominator);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

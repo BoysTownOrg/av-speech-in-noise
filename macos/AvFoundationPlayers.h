@@ -54,7 +54,7 @@ class AvFoundationVideoPlayer : public VideoPlayer {
     void playbackComplete();
     void play() override;
     void playAt(const PlayerTimeWithDelay &) override;
-    void loadFile(std::string filePath) override;
+    void loadFile(std::string filePath, RationalNumber videoScale) override;
     void setDevice(int index) override;
     void hide() override;
     void show() override;
@@ -72,7 +72,7 @@ class AvFoundationVideoPlayer : public VideoPlayer {
     void prepareWindow();
     void schedulePlaybackCompletion();
     void centerVideo();
-    void resizeVideo();
+    void resizeVideo(RationalNumber scale);
     void prepareVideo();
     static void prepareTap(MTAudioProcessingTapRef tap, CMItemCount maxFrames,
         const AudioStreamBasicDescription *processingFormat);

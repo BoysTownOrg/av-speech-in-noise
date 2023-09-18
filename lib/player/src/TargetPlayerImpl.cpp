@@ -18,8 +18,8 @@ void TargetPlayerImpl::playAt(const PlayerTimeWithDelay &t) {
     player->playAt(t);
 }
 
-void TargetPlayerImpl::loadFile(const LocalUrl &file) {
-    player->loadFile(filePath_ = file.path);
+void TargetPlayerImpl::loadFile(const LocalUrl &file, RationalNumber scale) {
+    player->loadFile(filePath_ = file.path, scale);
 }
 
 void TargetPlayerImpl::hideVideo() { player->hide(); }
