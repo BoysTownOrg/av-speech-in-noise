@@ -64,6 +64,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     TestMethod *testMethod{};
     RealLevel maskerLevel_{};
     RealLevel fullScaleLevel_{};
+    RationalNumber videoScale{};
     int trialNumber_{};
     Condition condition{};
     bool keepVideoShown{};

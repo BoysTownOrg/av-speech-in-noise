@@ -304,6 +304,7 @@ void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
     maskerLevel_ = test.maskerLevel;
     condition = test.condition;
     keepVideoShown = test.keepVideoShown;
+    videoScale = test.videoScale;
 
     hide(targetPlayer);
     maskerPlayer.apply(
@@ -377,7 +378,7 @@ void RunningATestImpl::submit(
             testMethod->writeLastCoordinateResponse(outputFile);
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, observer, maskerLevel_, fullScaleLevel_, {});
+        maskerPlayer, observer, maskerLevel_, fullScaleLevel_, videoScale);
 }
 
 void RunningATestImpl::prepareNextTrialIfNeeded() {

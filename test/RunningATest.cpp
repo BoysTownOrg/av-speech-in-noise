@@ -896,6 +896,15 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submittingCoordinateResponsePassesVideoScaleToTargetPlayer) {
+    test.videoScale = RationalNumber{3, 4};
+    run(initializingTest, model);
+    run(submittingCoordinateResponse, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3, targetPlayer.videoScale().numerator);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4, targetPlayer.videoScale().denominator);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     preparingNextTrialIfNeededPassesNextTargetToTargetPlayer) {
     run(initializingTest, model);
     assertPassesNextTargetToPlayer(preparingNextTrialIfNeeded);
