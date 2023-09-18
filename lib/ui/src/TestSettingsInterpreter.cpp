@@ -118,6 +118,10 @@ static void assign(
         test.identity.meta = entry;
     else if (entryName == name(TestSetting::relativeOutputPath))
         test.identity.relativeOutputUrl.path = entry;
+    else if (entryName == name(TestSetting::videoScaleNumerator))
+        test.videoScaleNumerator = integer(entry);
+    else if (entryName == name(TestSetting::videoScaleDenominator))
+        test.videoScaleDenominator = integer(entry);
     else if (entryName == name(TestSetting::keepVideoShown))
         test.keepVideoShown = entry == "true";
     else if (entryName == name(TestSetting::condition))
@@ -558,6 +562,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       chooseKeywordsPresenter{chooseKeywordsPresenter},
       syllablesPresenter{syllablesPresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
-      consonantPresenter{consonantPresenter}, passFailPresenter{
-                                                  passFailPresenter} {}
+      consonantPresenter{consonantPresenter},
+      passFailPresenter{passFailPresenter} {}
 }

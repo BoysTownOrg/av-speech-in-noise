@@ -98,6 +98,8 @@ struct Test {
     Condition condition{};
     AudioChannelOption audioChannelOption{AudioChannelOption::all};
     bool keepVideoShown{};
+    int videoScaleNumerator{2};
+    int videoScaleDenominator{3};
 };
 
 struct TrackingSequence {

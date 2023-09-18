@@ -263,6 +263,8 @@ class TestSettingsInterpreterTests : public ::testing::Test {
             entryWithNewline(TestSetting::maskerLevel, "65"),                  \
             entryWithNewline(TestSetting::thresholdReversals, "4"),            \
             entryWithNewline(TestSetting::condition, Condition::audioVisual),  \
+            entryWithNewline(TestSetting::videoScaleNumerator, "7"),           \
+            entryWithNewline(TestSetting::videoScaleDenominator, "9"),         \
             entryWithNewline(TestSetting::keepVideoShown, "true")},            \
         5);                                                                    \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
@@ -283,6 +285,10 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         SessionControllerImpl::fullScaleLevel.dB_SPL,                          \
         adaptiveMethod.test.fullScaleLevel.dB_SPL);                            \
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
+        7, adaptiveMethod.test.videoScaleNumerator);                           \
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(                                           \
+        9, adaptiveMethod.test.videoScaleDenominator);                         \
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(true, adaptiveMethod.test.keepVideoShown)
 
 #define AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS( \
