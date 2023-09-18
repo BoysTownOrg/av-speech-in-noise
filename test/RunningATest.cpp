@@ -925,6 +925,12 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
     assertFilePathEquals(targetPlayer, "a");
 }
 
+RECOGNITION_TEST_MODEL_TEST(playCalibrationKeepsOriginalVideoScaling) {
+    run(playingCalibration, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, targetPlayer.videoScale().numerator);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, targetPlayer.videoScale().denominator);
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     playLeftSpeakerCalibrationPassesAudioFileToMaskerPlayer) {
     calibration.fileUrl.path = "a";

@@ -390,7 +390,7 @@ void RunningATestImpl::prepareNextTrialIfNeeded() {
 void RunningATestImpl::playCalibration(const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
     targetPlayer.useAllChannels();
-    play(targetPlayer, calibration, {});
+    play(targetPlayer, calibration, RationalNumber{1, 1});
 }
 
 void RunningATestImpl::playLeftSpeakerCalibration(
