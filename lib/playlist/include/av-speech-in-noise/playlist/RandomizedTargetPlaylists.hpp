@@ -134,7 +134,7 @@ class EachTargetPlayedOnceThenShuffleAndRepeat
     LocalUrl currentFile{};
     DirectoryReader *reader;
     target_list::Randomizer *randomizer;
-    gsl::index currentIndex{};
+    LocalUrls::const_iterator currentIterator;
     gsl::index repeats{};
     gsl::index endOfPlaylistCount{};
 };
