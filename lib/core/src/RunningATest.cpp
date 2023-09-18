@@ -22,8 +22,8 @@ class NullTestMethod : public TestMethod {
 };
 
 class NullObserver : public RunningATest::TestObserver {
-    void notifyThatNewTestIsReady(std::string_view session) override {}
-    void notifyThatTrialWillBegin(int trialNumber) override {}
+    void notifyThatNewTestIsReady(std::string_view) override {}
+    void notifyThatTrialWillBegin(int) override {}
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
     void notifyThatStimulusHasEnded() override {}
     void notifyThatSubjectHasResponded() override {}
