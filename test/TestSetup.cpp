@@ -284,8 +284,8 @@ class TestSetupControllerTests : public ::testing::Test {
     TextFileReaderStub textFileReader;
     SessionControllerStub sessionController;
     TestSetupPresenterStub presenter;
-    TestSetupController controller{control, sessionController, sessionView,
-        presenter, runningATest, testSettingsInterpreter, textFileReader};
+    TestSetupController controller{control, sessionView, presenter,
+        runningATest, testSettingsInterpreter, textFileReader};
     PlayingCalibration playingCalibration{control};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{control};
@@ -357,7 +357,6 @@ class TestSetupFailureTests : public ::testing::Test {
     SessionControllerStub sessionController;
     TestSetupController controller{
         control,
-        sessionController,
         sessionControl,
         testSetupPresenter,
         runningATest,

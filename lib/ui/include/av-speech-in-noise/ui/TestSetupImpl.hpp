@@ -40,9 +40,9 @@ constexpr auto name(Transducer c) -> const char * {
 
 class TestSetupController : public TestSetupControl::Observer {
   public:
-    TestSetupController(TestSetupControl &, SessionController &,
-        SessionControl &, TestSetupPresenter &, RunningATest &,
-        TestSettingsInterpreter &, TextFileReader &);
+    TestSetupController(TestSetupControl &, SessionControl &,
+        TestSetupPresenter &, RunningATest &, TestSettingsInterpreter &,
+        TextFileReader &);
     void notifyThatConfirmButtonHasBeenClicked() override;
     void notifyThatPlayCalibrationButtonHasBeenClicked() override;
     void notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() override;
@@ -50,7 +50,6 @@ class TestSetupController : public TestSetupControl::Observer {
 
   private:
     TestSetupControl &control;
-    SessionController &sessionController;
     SessionControl &sessionControl;
     TestSetupPresenter &presenter;
     RunningATest &runningATest;
