@@ -1015,7 +1015,7 @@ MASKER_PLAYER_TEST(steadyLevelFollowingFadeInAmplified) {
 }
 
 void assertOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
-    AudioPlayerStub &audioPlayer, TimerStub &timer, gsl::index halfWindowLength,
+    AudioPlayerStub &audioPlayer, TimerStub &, gsl::index halfWindowLength,
     const std::function<std::vector<std::vector<float>>(
         AudioPlayer::Observer *)> &afterFadeOut,
     const std::function<void(const std::vector<std::vector<float>> &)>

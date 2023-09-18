@@ -86,7 +86,7 @@ class OutputFileStub : public OutputFile {
         adaptiveTestResult_ = result;
     }
 
-    void write(Writable &writable) override { addToLog("writeWritable "); }
+    void write(Writable &) override { addToLog("writeWritable "); }
 
     void write(const EyeTrackerTargetPlayerSynchronization &e) override {
         eyeTrackerTargetPlayerSynchronization_ = e;
