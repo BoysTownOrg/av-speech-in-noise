@@ -89,6 +89,11 @@ struct RealLevel {
 
 enum class AudioChannelOption { all, singleSpeaker, delayedMasker };
 
+struct RationalNumber {
+    int numerator;
+    int denominator;
+};
+
 struct Test {
     TestIdentity identity;
     LocalUrl targetsUrl;
@@ -98,8 +103,7 @@ struct Test {
     Condition condition{};
     AudioChannelOption audioChannelOption{AudioChannelOption::all};
     bool keepVideoShown{};
-    int videoScaleNumerator{2};
-    int videoScaleDenominator{3};
+    RationalNumber videoScale{2, 3};
 };
 
 struct TrackingSequence {

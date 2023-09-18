@@ -119,9 +119,9 @@ static void assign(
     else if (entryName == name(TestSetting::relativeOutputPath))
         test.identity.relativeOutputUrl.path = entry;
     else if (entryName == name(TestSetting::videoScaleNumerator))
-        test.videoScaleNumerator = integer(entry);
+        test.videoScale.numerator = integer(entry);
     else if (entryName == name(TestSetting::videoScaleDenominator))
-        test.videoScaleDenominator = integer(entry);
+        test.videoScale.denominator = integer(entry);
     else if (entryName == name(TestSetting::keepVideoShown))
         test.keepVideoShown = entry == "true";
     else if (entryName == name(TestSetting::condition))

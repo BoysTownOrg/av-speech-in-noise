@@ -286,9 +286,9 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         SessionControllerImpl::fullScaleLevel.dB_SPL,                          \
         adaptiveMethod.test.fullScaleLevel.dB_SPL);                            \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        7, adaptiveMethod.test.videoScaleNumerator);                           \
+        7, adaptiveMethod.test.videoScale.numerator);                          \
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(                                           \
-        9, adaptiveMethod.test.videoScaleDenominator);                         \
+        9, adaptiveMethod.test.videoScale.denominator);                        \
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(true, adaptiveMethod.test.keepVideoShown)
 
 #define AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS( \
