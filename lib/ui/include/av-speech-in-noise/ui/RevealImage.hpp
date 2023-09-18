@@ -47,7 +47,7 @@ class RevealImage : public submitting_free_response::Puzzle {
 
   private:
     std::vector<int> order;
-    gsl::index index{};
+    std::vector<int>::const_iterator orderIterator;
     int rows;
     int columns;
     NormallyMaskedImage &image;

@@ -15,10 +15,12 @@ RevealImage::RevealImage(
 void RevealImage::initialize(const LocalUrl &url) { image.initialize(url); }
 
 void RevealImage::advance() {
-    if (index >= order.size())
+    if (orderIterator == order.end())
         return;
+    const auto regionIndex = *orderIterator;
+    ++orderIterator;
+
     ImageRegion region{};
-    const auto regionIndex = order.at(index++);
     region.x = (regionIndex % columns) * image.width() / columns;
     region.y = (regionIndex / columns) * image.height() / rows;
     region.width = image.width() / columns;
@@ -29,7 +31,7 @@ void RevealImage::advance() {
 void RevealImage::reset() {
     std::iota(order.begin(), order.end(), 0);
     shuffler.shuffle(order);
-    index = 0;
+    orderIterator = order.begin();
 }
 
 void RevealImage::show() { image.show(); }
