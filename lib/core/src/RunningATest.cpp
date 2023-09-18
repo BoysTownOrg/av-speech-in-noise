@@ -384,7 +384,7 @@ void RunningATestImpl::submit(
 void RunningATestImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
         outputFile, randomizer, targetPlayer, maskerPlayer, observer,
-        maskerLevel_, fullScaleLevel_, {});
+        maskerLevel_, fullScaleLevel_, videoScale);
 }
 
 void RunningATestImpl::playCalibration(const Calibration &calibration) {

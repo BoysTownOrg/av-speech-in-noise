@@ -910,6 +910,15 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesNextTargetToPlayer(preparingNextTrialIfNeeded);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    preparingNextTrialIfNeededPassesVideoScaleToTargetPlayer) {
+    test.videoScale = RationalNumber{3, 4};
+    run(initializingTest, model);
+    run(preparingNextTrialIfNeeded, model);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3, targetPlayer.videoScale().numerator);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4, targetPlayer.videoScale().denominator);
+}
+
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
     calibration.fileUrl.path = "a";
     run(playingCalibration, model);
