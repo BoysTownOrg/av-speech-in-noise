@@ -57,6 +57,12 @@ class Calibrator {
     virtual auto results() -> std::vector<Result> = 0;
 };
 
+class ResultsWriter {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ResultsWriter);
+    virtual void write(const std::vector<Result> &) = 0;
+};
+
 namespace validation {
 struct Angle {
     float degrees;
@@ -116,7 +122,7 @@ class InteractorImpl : public Interactor, public SubjectPresenter::Observer {
 class InteractorImpl : public SubjectPresenter::Observer, public Interactor {
   public:
     InteractorImpl(SubjectPresenter &, TesterPresenter &, Calibrator &,
-        std::vector<Point>);
+        ResultsWriter &, std::vector<Point>);
     void start() override;
     void finish() override;
     void notifyThatPointIsReady() override;
@@ -128,6 +134,7 @@ class InteractorImpl : public SubjectPresenter::Observer, public Interactor {
     SubjectPresenter &subjectPresenter;
     TesterPresenter &testerPresenter;
     Calibrator &calibrator;
+    ResultsWriter &writer;
 };
 }
 

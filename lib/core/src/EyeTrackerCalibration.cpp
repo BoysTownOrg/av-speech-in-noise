@@ -14,18 +14,20 @@ static void present(
 
 InteractorImpl::InteractorImpl(SubjectPresenter &subjectPresenter,
     TesterPresenter &testerPresenter, Calibrator &calibrator,
-    std::vector<Point> points)
+    ResultsWriter &writer, std::vector<Point> points)
     : points{std::move(points)}, subjectPresenter{subjectPresenter},
-      testerPresenter{testerPresenter}, calibrator{calibrator} {
+      testerPresenter{testerPresenter}, calibrator{calibrator}, writer{writer} {
     subjectPresenter.attach(this);
 }
 
 void InteractorImpl::notifyThatPointIsReady() {
     calibrator.collect(pointsToCalibrate.front());
     pointsToCalibrate.erase(pointsToCalibrate.begin());
-    if (pointsToCalibrate.empty())
-        testerPresenter.present(calibrator.results());
-    else
+    if (pointsToCalibrate.empty()) {
+        const auto results{calibrator.results()};
+        testerPresenter.present(results);
+        writer.write(results);
+    } else
         present(subjectPresenter, pointsToCalibrate);
 }
 
