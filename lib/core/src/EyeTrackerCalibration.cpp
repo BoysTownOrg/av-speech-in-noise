@@ -23,7 +23,7 @@ static void write(std::ostream &stream, const std::vector<Point> &v) {
     stream << ']';
 }
 
-void write(std::ostream &stream, std::vector<Result> &v) {
+void write(std::ostream &stream, const std::vector<Result> &v) {
     stream << "Point|Left|Right\n";
     for (const auto &result : v) {
         stream << '[';

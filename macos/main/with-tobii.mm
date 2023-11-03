@@ -424,8 +424,9 @@ static void initialize(TobiiProTracker &tracker,
         validationSubjectPresenter, validationTesterPresenter, validator,
         {{0.5, 0.5}, {0.3F, 0.3F}, {0.3F, 0.7F}, {0.7F, 0.3F}, {0.7F, 0.7F}}};
     static auto calibrator{tracker.calibrator()};
+    static NaiveResultsWriter resultsWriter;
     static InteractorImpl interactor{subjectPresenter, testerPresenter,
-        calibrator,
+        calibrator, resultsWriter,
         {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
     static Controller controller{testerUI, interactor};
     static validation::Controller validationController{

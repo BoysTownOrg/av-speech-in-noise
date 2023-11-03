@@ -19,7 +19,7 @@ struct Result {
     Point point{};
 };
 
-void write(std::ostream &, std::vector<Result> &);
+void write(std::ostream &, const std::vector<Result> &);
 
 class Interactor {
   public:
