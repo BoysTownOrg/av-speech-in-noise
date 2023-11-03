@@ -2,8 +2,10 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_EYETRACKERCALIBRATIONHPP_
 
 #include <av-speech-in-noise/Interface.hpp>
+
 #include <utility>
 #include <vector>
+#include <ostream>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
 struct Point {
@@ -16,6 +18,8 @@ struct Result {
     std::vector<Point> rightEyeMappedPoints;
     Point point{};
 };
+
+void write(std::ostream &, const std::vector<Result> &);
 
 class Interactor {
   public:
@@ -55,6 +59,12 @@ class Calibrator {
     virtual void collect(Point) = 0;
     virtual void discard(Point) = 0;
     virtual auto results() -> std::vector<Result> = 0;
+};
+
+class ResultsWriter {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ResultsWriter);
+    virtual void write(const std::vector<Result> &) = 0;
 };
 
 namespace validation {
@@ -116,7 +126,7 @@ class InteractorImpl : public Interactor, public SubjectPresenter::Observer {
 class InteractorImpl : public SubjectPresenter::Observer, public Interactor {
   public:
     InteractorImpl(SubjectPresenter &, TesterPresenter &, Calibrator &,
-        std::vector<Point>);
+        ResultsWriter &, std::vector<Point>);
     void start() override;
     void finish() override;
     void notifyThatPointIsReady() override;
@@ -128,6 +138,7 @@ class InteractorImpl : public SubjectPresenter::Observer, public Interactor {
     SubjectPresenter &subjectPresenter;
     TesterPresenter &testerPresenter;
     Calibrator &calibrator;
+    ResultsWriter &writer;
 };
 }
 

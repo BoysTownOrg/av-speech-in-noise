@@ -15,6 +15,12 @@
 
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include <filesystem>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
+#include <string>
 
 @interface AvSpeechInNoiseEyeTrackerCalibrationControlObserverProxy : NSObject
 @end
@@ -316,6 +322,28 @@ class AppKitTesterUI : public TesterView, public Control {
     AvSpeechInNoiseEyeTrackerCalibrationControlObserverProxy *observerProxy;
     NSWindow *window;
 };
+
+class NaiveResultsWriter : public ResultsWriter {
+  public:
+    void write(const std::vector<Result> &results) {
+        std::filesystem::path homeDirectory{
+            [NSURL fileURLWithPath:@"~".stringByExpandingTildeInPath]
+                .fileSystemRepresentation};
+        std::filesystem::path directory{homeDirectory / "Documents" /
+            "av-speech-eye-tracker-calibration-results"};
+        std::filesystem::create_directories(directory);
+
+        const auto now{std::chrono::system_clock::to_time_t(
+            std::chrono::system_clock::now())};
+        std::stringstream fileName;
+        fileName << std::put_time(std::localtime(&now), "%F_%H-%M-%S")
+                 << ".txt";
+
+        std::string filePath{directory / fileName.str()};
+        std::ofstream file{filePath};
+        eye_tracker_calibration::write(file, results);
+    }
+};
 }
 
 namespace validation {
@@ -396,8 +424,9 @@ static void initialize(TobiiProTracker &tracker,
         validationSubjectPresenter, validationTesterPresenter, validator,
         {{0.5, 0.5}, {0.3F, 0.3F}, {0.3F, 0.7F}, {0.7F, 0.3F}, {0.7F, 0.7F}}};
     static auto calibrator{tracker.calibrator()};
+    static NaiveResultsWriter resultsWriter;
     static InteractorImpl interactor{subjectPresenter, testerPresenter,
-        calibrator,
+        calibrator, resultsWriter,
         {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
     static Controller controller{testerUI, interactor};
     static validation::Controller validationController{

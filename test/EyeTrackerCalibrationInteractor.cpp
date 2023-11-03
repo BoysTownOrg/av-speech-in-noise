@@ -96,13 +96,24 @@ class CalibratorStub : public Calibrator {
     bool released_{};
 };
 
+class ResultsWriterStub : public ResultsWriter {
+  public:
+    void write(const std::vector<Result> &v) override { results_ = v; };
+
+    auto results() -> std::vector<Result> { return results_; }
+
+  private:
+    std::vector<Result> results_;
+};
+
 class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
   protected:
     SubjectPresenterStub subjectPresenter;
     TesterPresenterStub testerPresenter;
     CalibratorStub calibrator;
+    ResultsWriterStub writer;
     InteractorImpl interactor{subjectPresenter, testerPresenter, calibrator,
-        {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
+        writer, {{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5, 0.6F}}};
 };
 }
 
@@ -216,6 +227,30 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(stopsPresenterOnFinish) {
     interactor.finish();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(subjectPresenter.stopped());
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testerPresenter.stopped());
+}
+
+EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
+    writesResultsAfterFinalPointCalibrated) {
+    calibrator.set({{{{0.11F, 0.22F}, {0.33F, 0.44F}},
+                        {{0.55F, 0.66F}, {0.77F, 0.88F}}, {0.1F, 0.2F}},
+        {{{0.99F, 0.111F}, {0.222F, 0.333F}},
+            {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
+        {{{0.888F, 0.999F}, {0.01F, 0.02F}}, {{0.03F, 0.04F}, {0.05F, 0.06F}},
+            {0.5F, 0.6F}}});
+    interactor.start();
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+    notifyThatPointIsReady(subjectPresenter);
+
+    ::assertEqual<Result>(
+        {{{{0.11F, 0.22F}, {0.33F, 0.44F}}, {{0.55F, 0.66F}, {0.77F, 0.88F}},
+             {0.1F, 0.2F}},
+            {{{0.99F, 0.111F}, {0.222F, 0.333F}},
+                {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
+            {{{0.888F, 0.999F}, {0.01F, 0.02F}},
+                {{0.03F, 0.04F}, {0.05F, 0.06F}}, {0.5F, 0.6F}}},
+        writer.results(),
+        [](const Result &a, const Result &b) { assertEqual(a, b); });
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(startsPresenter) {
