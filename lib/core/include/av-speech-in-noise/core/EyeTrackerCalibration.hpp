@@ -2,8 +2,10 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_EYETRACKERCALIBRATIONHPP_
 
 #include <av-speech-in-noise/Interface.hpp>
+
 #include <utility>
 #include <vector>
+#include <ostream>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
 struct Point {
@@ -16,6 +18,8 @@ struct Result {
     std::vector<Point> rightEyeMappedPoints;
     Point point{};
 };
+
+void write(std::ostream &, std::vector<Result> &);
 
 class Interactor {
   public:

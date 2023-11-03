@@ -1,60 +1,18 @@
-#include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
-
-#include <ostream>
-#include <vector>
-
-namespace av_speech_in_noise {
-void write(std::ostream &stream, const eye_tracker_calibration::Point &p) {
-    stream << p.x;
-    stream << ", ";
-    stream << p.y;
-}
-
-void write(std::ostream &stream,
-    const std::vector<eye_tracker_calibration::Point> &v) {
-    stream << '[';
-    auto first{true};
-    for (const auto p : v) {
-        if (!first) {
-            stream << "; ";
-        }
-        write(stream, p);
-        first = false;
-    }
-    stream << ']';
-}
-
-void write(
-    std::ostream &stream, std::vector<eye_tracker_calibration::Result> &v) {
-    stream << "Point|Left|Right\n";
-    for (const auto &result : v) {
-        stream << '[';
-        write(stream, result.point);
-        stream << ']';
-
-        stream << '|';
-        write(stream, result.leftEyeMappedPoints);
-        stream << '|';
-        write(stream, result.rightEyeMappedPoints);
-        stream << '\n';
-    }
-}
-}
-
 #include "assert-utility.hpp"
+
+#include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
 
 #include <gtest/gtest.h>
 
 #include <sstream>
 
 namespace av_speech_in_noise {
-class TbdTests : public ::testing::Test {
-  protected:
-};
+class EyeTrackerCalibrationSerializationTests : public ::testing::Test {};
 
-#define TBD_TEST(a) TEST_F(TbdTests, a)
+#define EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(a)                          \
+    TEST_F(EyeTrackerCalibrationSerializationTests, a)
 
-TBD_TEST(tbd) {
+EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(writesResults) {
     std::stringstream stream;
     std::vector<eye_tracker_calibration::Result> results = {
         {{{0.49, 0.51}, {0.48, 0.5}, {0.5, 0.49}},

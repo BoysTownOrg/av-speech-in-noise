@@ -1,8 +1,43 @@
 #include "EyeTrackerCalibration.hpp"
+
 #include <algorithm>
 #include <cmath>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
+static void write(std::ostream &stream, const Point &p) {
+    stream << p.x;
+    stream << ", ";
+    stream << p.y;
+}
+
+static void write(std::ostream &stream, const std::vector<Point> &v) {
+    stream << '[';
+    auto first{true};
+    for (const auto p : v) {
+        if (!first) {
+            stream << "; ";
+        }
+        write(stream, p);
+        first = false;
+    }
+    stream << ']';
+}
+
+void write(std::ostream &stream, std::vector<Result> &v) {
+    stream << "Point|Left|Right\n";
+    for (const auto &result : v) {
+        stream << '[';
+        write(stream, result.point);
+        stream << ']';
+
+        stream << '|';
+        write(stream, result.leftEyeMappedPoints);
+        stream << '|';
+        write(stream, result.rightEyeMappedPoints);
+        stream << '\n';
+    }
+}
+
 static auto distance(Point a, Point b) -> float {
     return std::hypot(a.x - b.x, a.y - b.y);
 }
