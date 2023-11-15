@@ -925,6 +925,15 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithPredeterminedTargetsInitializesFixedLevelTest) {
+    initializeTest(
+        interpreter, Method::fixedLevelFreeResponseWithPredeterminedTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        fixedLevelMethod.targetList, &predeterminedTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, nullptr);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingInitializesFixedLevelTest) {
     initializeTest(interpreter,
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
