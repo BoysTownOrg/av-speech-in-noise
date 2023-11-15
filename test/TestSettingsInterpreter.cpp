@@ -387,6 +387,11 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
 }
 TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestPasses_fixedLevelFreeResponseWithPredeterminedTargets_Method) {
+    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_TEST_METHOD(
+        Method::fixedLevelFreeResponseWithPredeterminedTargets);
+}
+TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestPasses_fixedLevelCoordinateResponseMeasureWithTargetReplacement_Method) {
     AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_TEST_METHOD(
         Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
@@ -491,6 +496,12 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking_PassesFixedLevelSettings) {
     AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking,
+        fixedLevelMethod.test);
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargets_PassesFixedLevelSettings) {
+    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
+        Method::fixedLevelFreeResponseWithPredeterminedTargets,
         fixedLevelMethod.test);
 }
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -607,6 +618,11 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking_PassesTestMethod) {
     ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_METHOD(
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargets_PassesTestMethod) {
+    ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_METHOD(
+        Method::fixedLevelFreeResponseWithPredeterminedTargets);
 }
 TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelCoordinateResponseMeasureWithTargetReplacement_PassesTestMethod) {
@@ -736,6 +752,13 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking_PassesTaskPresenter) {
     initializeTest(interpreter,
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &freeResponsePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargets_PassesTaskPresenter) {
+    initializeTest(
+        interpreter, Method::fixedLevelFreeResponseWithPredeterminedTargets);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &freeResponsePresenter, sessionController.taskPresenter());
 }
@@ -902,6 +925,15 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithPredeterminedTargetsInitializesFixedLevelTest) {
+    initializeTest(
+        interpreter, Method::fixedLevelFreeResponseWithPredeterminedTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        fixedLevelMethod.targetList, &predeterminedTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, nullptr);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsAndEyeTrackingInitializesFixedLevelTest) {
     initializeTest(interpreter,
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
@@ -1032,6 +1064,15 @@ TEST_SETTINGS_INTERPRETER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         name(Method::
                 fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking),
+        fixedLevelMethod.test.identity.method);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithPredeterminedTargetsPassesMethod) {
+    initializeTest(
+        interpreter, Method::fixedLevelFreeResponseWithPredeterminedTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        name(Method::fixedLevelFreeResponseWithPredeterminedTargets),
         fixedLevelMethod.test.identity.method);
 }
 
