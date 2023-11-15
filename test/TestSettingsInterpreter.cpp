@@ -756,6 +756,13 @@ TEST_SETTINGS_INTERPRETER_TEST(
         &freeResponsePresenter, sessionController.taskPresenter());
 }
 TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargets_PassesTaskPresenter) {
+    initializeTest(
+        interpreter, Method::fixedLevelFreeResponseWithPredeterminedTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &freeResponsePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelCoordinateResponseMeasureWithTargetReplacement_PassesTaskPresenter) {
     initializeTest(interpreter,
         Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
