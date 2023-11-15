@@ -327,6 +327,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             name(Method::
                     fixedLevelFreeResponseWithAllTargetsAndAudioRecording) ||
         methodName ==
+            name(Method::fixedLevelFreeResponseWithPredeterminedTargets) ||
+        methodName ==
             name(Method::
                     fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording) ||
         methodName ==
@@ -457,6 +459,15 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                     fixedLevelMethod, test, everyTargetOnce);
                 av_speech_in_noise::initialize(
                     runningATest, fixedLevelMethod, test, &audioRecording);
+            });
+    } else if (methodName ==
+        name(Method::fixedLevelFreeResponseWithPredeterminedTargets)) {
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](const FixedLevelTest &test) {
+                av_speech_in_noise::initialize(
+                    fixedLevelMethod, test, predeterminedTargets);
+                av_speech_in_noise::initialize(
+                    runningATest, fixedLevelMethod, test, nullptr);
             });
     } else if (methodName ==
         name(Method::

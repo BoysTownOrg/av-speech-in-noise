@@ -387,6 +387,11 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
 }
 TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestPasses_fixedLevelFreeResponseWithPredeterminedTargets_Method) {
+    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_TEST_METHOD(
+        Method::fixedLevelFreeResponseWithPredeterminedTargets);
+}
+TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestPasses_fixedLevelCoordinateResponseMeasureWithTargetReplacement_Method) {
     AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_TEST_METHOD(
         Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
