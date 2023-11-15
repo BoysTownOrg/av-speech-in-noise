@@ -1067,6 +1067,15 @@ TEST_SETTINGS_INTERPRETER_TEST(
         fixedLevelMethod.test.identity.method);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithPredeterminedTargetsPassesMethod) {
+    initializeTest(
+        interpreter, Method::fixedLevelFreeResponseWithPredeterminedTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        name(Method::fixedLevelFreeResponseWithPredeterminedTargets),
+        fixedLevelMethod.test.identity.method);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesTestIdentity) {
     assertOverridesTestIdentity(
         interpreter, Method::adaptivePassFail, adaptiveMethod.test.identity);
