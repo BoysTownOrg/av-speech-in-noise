@@ -8,7 +8,7 @@ jobs:
     name: build apps using cmake/Xcode for macOS 10.15 and ctest library
     runs-on: macOS-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: generate build system
         run: cmake -S . -B build -GXcode -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 -DAV_SPEECH_IN_NOISE_ENABLE_TESTS=1 -DCMAKE_Swift_LANGUAGE_VERSION=5
       - name: build tests
