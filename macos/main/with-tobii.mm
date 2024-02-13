@@ -72,10 +72,19 @@
 
 @implementation AvSpeechInNoiseCircleNSView
 - (void)drawRect:(NSRect)rect {
-    NSBezierPath *thePath = [NSBezierPath bezierPath];
-    [thePath appendBezierPathWithOvalInRect:rect];
+    NSBezierPath *outer = [NSBezierPath bezierPathWithOvalInRect:rect];
     [[NSColor whiteColor] set];
-    [thePath fill];
+    [outer fill];
+    const auto innerWidth{rect.size.width / 5};
+    const auto innerHeight{rect.size.height / 5};
+    NSBezierPath *inner = [NSBezierPath
+        bezierPathWithOvalInRect:NSMakeRect(rect.origin.x +
+                                         rect.size.width / 2 - innerWidth / 2,
+                                     rect.origin.y + rect.size.height / 2 -
+                                         innerHeight / 2,
+                                     innerWidth, innerHeight)];
+    [[NSColor blackColor] set];
+    [inner fill];
 }
 @end
 
@@ -185,7 +194,7 @@ namespace {
 class AppKitSubjectView : public SubjectView {
   public:
     static constexpr auto normalDotDiameterPoints{100};
-    static constexpr auto shrunkenDotDiameterPoints{25};
+    static constexpr auto shrunkenDotDiameterPoints{35};
 
     explicit AppKitSubjectView(NSView *view)
         : dot{[[AvSpeechInNoiseCircleNSView alloc]
