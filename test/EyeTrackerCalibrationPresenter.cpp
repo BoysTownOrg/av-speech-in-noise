@@ -59,25 +59,11 @@ class ObserverStub : public SubjectPresenter::Observer {
 
 class SubjectViewStub : public SubjectView {
   public:
-    void attach(Observer *a) override { observer = a; }
-
     [[nodiscard]] auto pointDotMovedTo() const -> WindowPoint {
         return pointDotMovedTo_;
     }
 
     void moveDotTo(WindowPoint x) override { pointDotMovedTo_ = x; }
-
-    [[nodiscard]] auto dotShrinked() const -> bool { return dotShrinked_; }
-
-    void shrinkDot() override { dotShrinked_ = true; }
-
-    void notifyObserverThatAnimationHasFinished() const {
-        observer->notifyThatAnimationHasFinished();
-    }
-
-    [[nodiscard]] auto dotGrew() const -> bool { return dotGrew_; }
-
-    void growDot() override { dotGrew_ = true; }
 
     [[nodiscard]] auto shown() const -> bool { return shown_; }
 
@@ -88,14 +74,8 @@ class SubjectViewStub : public SubjectView {
     void hide() override { hidden_ = true; }
 
   private:
-    std::vector<Line> redLinesDrawn_;
-    std::vector<Line> greenLinesDrawn_;
-    std::vector<WindowPoint> whiteCircleCenters_;
-    Observer *observer{};
     WindowPoint pointDotMovedTo_{};
     bool shown_{};
-    bool dotShrinked_{};
-    bool dotGrew_{};
     bool hidden_{};
 };
 
@@ -192,10 +172,6 @@ class TesterViewStub : public TesterView {
     bool hidden_{};
 };
 }
-}
-
-static void notifyObserverThatAnimationHasFinished(SubjectViewStub &view) {
-    view.notifyObserverThatAnimationHasFinished();
 }
 
 namespace {

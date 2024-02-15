@@ -23,15 +23,7 @@ struct Line {
 
 class SubjectView : public View {
   public:
-    class Observer {
-      public:
-        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
-        virtual void notifyThatAnimationHasFinished() = 0;
-    };
-    virtual void attach(Observer *) = 0;
     virtual void moveDotTo(WindowPoint) = 0;
-    virtual void shrinkDot() = 0;
-    virtual void growDot() = 0;
 };
 
 class TesterView : public View {
