@@ -36,7 +36,6 @@ class TesterView : public View {
 
 class SubjectPresenterImpl : public SubjectPresenter, public Timer::Observer {
   public:
-    enum class DotState { idle, moving, shrinking, shrunk, growing };
     SubjectPresenterImpl(
         SubjectView &, av_speech_in_noise::SubjectPresenter &, Timer &);
     void attach(SubjectPresenter::Observer *a) override;
@@ -46,12 +45,10 @@ class SubjectPresenterImpl : public SubjectPresenter, public Timer::Observer {
     void callback() override;
 
   private:
-    Point pointPresenting{};
     SubjectView &view;
     av_speech_in_noise::SubjectPresenter &parentPresenter;
     Timer &timer;
     SubjectPresenter::Observer *observer{};
-    DotState dotState{DotState::idle};
 };
 
 class TesterPresenterImpl : public TesterPresenter {
