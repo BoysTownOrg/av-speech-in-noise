@@ -5,6 +5,7 @@
 #include "Subject.hpp"
 
 #include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
+#include <av-speech-in-noise/core/ITimer.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 
 #include <string>
@@ -22,15 +23,7 @@ struct Line {
 
 class SubjectView : public View {
   public:
-    class Observer {
-      public:
-        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
-        virtual void notifyThatAnimationHasFinished() = 0;
-    };
-    virtual void attach(Observer *) = 0;
     virtual void moveDotTo(WindowPoint) = 0;
-    virtual void shrinkDot() = 0;
-    virtual void growDot() = 0;
 };
 
 class TesterView : public View {
@@ -41,23 +34,21 @@ class TesterView : public View {
     virtual void clear() = 0;
 };
 
-class SubjectPresenterImpl : public SubjectView::Observer,
-                             public SubjectPresenter {
+class SubjectPresenterImpl : public SubjectPresenter, public Timer::Observer {
   public:
-    enum class DotState { idle, moving, shrinking, shrunk, growing };
-    SubjectPresenterImpl(SubjectView &, av_speech_in_noise::SubjectPresenter &);
+    SubjectPresenterImpl(
+        SubjectView &, av_speech_in_noise::SubjectPresenter &, Timer &);
     void attach(SubjectPresenter::Observer *a) override;
     void start() override;
     void stop() override;
-    void notifyThatAnimationHasFinished() override;
-    void present(Point x) override;
+    void present(Point) override;
+    void callback() override;
 
   private:
-    Point pointPresenting{};
     SubjectView &view;
     av_speech_in_noise::SubjectPresenter &parentPresenter;
+    Timer &timer;
     SubjectPresenter::Observer *observer{};
-    DotState dotState{DotState::idle};
 };
 
 class TesterPresenterImpl : public TesterPresenter {

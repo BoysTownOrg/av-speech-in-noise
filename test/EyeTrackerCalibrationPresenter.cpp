@@ -1,5 +1,6 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
+#include "TimerStub.hpp"
 
 #include <av-speech-in-noise/ui/EyeTrackerCalibration.hpp>
 
@@ -58,25 +59,11 @@ class ObserverStub : public SubjectPresenter::Observer {
 
 class SubjectViewStub : public SubjectView {
   public:
-    void attach(Observer *a) override { observer = a; }
-
     [[nodiscard]] auto pointDotMovedTo() const -> WindowPoint {
         return pointDotMovedTo_;
     }
 
     void moveDotTo(WindowPoint x) override { pointDotMovedTo_ = x; }
-
-    [[nodiscard]] auto dotShrinked() const -> bool { return dotShrinked_; }
-
-    void shrinkDot() override { dotShrinked_ = true; }
-
-    void notifyObserverThatAnimationHasFinished() const {
-        observer->notifyThatAnimationHasFinished();
-    }
-
-    [[nodiscard]] auto dotGrew() const -> bool { return dotGrew_; }
-
-    void growDot() override { dotGrew_ = true; }
 
     [[nodiscard]] auto shown() const -> bool { return shown_; }
 
@@ -87,14 +74,8 @@ class SubjectViewStub : public SubjectView {
     void hide() override { hidden_ = true; }
 
   private:
-    std::vector<Line> redLinesDrawn_;
-    std::vector<Line> greenLinesDrawn_;
-    std::vector<WindowPoint> whiteCircleCenters_;
-    Observer *observer{};
     WindowPoint pointDotMovedTo_{};
     bool shown_{};
-    bool dotShrinked_{};
-    bool dotGrew_{};
     bool hidden_{};
 };
 
@@ -193,16 +174,13 @@ class TesterViewStub : public TesterView {
 }
 }
 
-static void notifyObserverThatAnimationHasFinished(SubjectViewStub &view) {
-    view.notifyObserverThatAnimationHasFinished();
-}
-
 namespace {
 class EyeTrackerCalibrationSubjectPresenterTests : public ::testing::Test {
   protected:
     SubjectViewStub view;
     av_speech_in_noise::SubjectPresenterStub parentPresenter;
-    SubjectPresenterImpl presenter{view, parentPresenter};
+    TimerStub timer;
+    SubjectPresenterImpl presenter{view, parentPresenter, timer};
 };
 
 class EyeTrackerCalibrationTesterPresenterTests : public ::testing::Test {
@@ -261,41 +239,20 @@ EYE_TRACKER_CALIBRATION_TESTER_PRESENTER_TEST(stopHidesView) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
+EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(
+    schedulesCallbackAfterDoneMoving) {
     present(presenter);
-    notifyObserverThatAnimationHasFinished(view);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotShrinked());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
 }
 
 EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(
-    notifiesObserverThatPointIsReadyAfterDotShrinks) {
+    notifiesObserverThatPointIsReadyAfterTimerCallback) {
     ObserverStub observer;
     presenter.attach(&observer);
     present(presenter);
-    notifyObserverThatAnimationHasFinished(view);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(observer.notifiedThatPointIsReady());
-    notifyObserverThatAnimationHasFinished(view);
+    timer.callback();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatPointIsReady());
-}
-
-EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(growsDotIfShrunk) {
-    ObserverStub observer;
-    presenter.attach(&observer);
-    present(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.dotGrew());
-    notifyObserverThatAnimationHasFinished(view);
-    observer.callWhenNotifiedThatPointIsReady([&]() { present(presenter); });
-    notifyObserverThatAnimationHasFinished(view);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotGrew());
-}
-
-EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(movesDotAfterItGrows) {
-    present(presenter);
-    notifyObserverThatAnimationHasFinished(view);
-    notifyObserverThatAnimationHasFinished(view);
-    present(presenter, {0.1F, 0.2F});
-    notifyObserverThatAnimationHasFinished(view);
-    assertEqual(WindowPoint{0.1F, 1 - 0.2F}, view.pointDotMovedTo());
 }
 
 EYE_TRACKER_CALIBRATION_TESTER_PRESENTER_TEST(results) {

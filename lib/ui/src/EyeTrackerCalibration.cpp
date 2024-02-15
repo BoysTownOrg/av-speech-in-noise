@@ -1,4 +1,5 @@
 #include "EyeTrackerCalibration.hpp"
+
 #include <sstream>
 #include <algorithm>
 #include <cmath>
@@ -6,22 +7,16 @@
 namespace av_speech_in_noise::eye_tracker_calibration {
 static auto windowPoint(Point p) -> WindowPoint { return {p.x, 1 - p.y}; }
 
-static void moveDotTo(
-    SubjectView &view, Point p, SubjectPresenterImpl::DotState &dotState) {
-    view.moveDotTo(windowPoint(p));
-    dotState = SubjectPresenterImpl::DotState::moving;
-}
-
 TesterPresenterImpl::TesterPresenterImpl(TesterView &view) : view{view} {}
 
 void TesterPresenterImpl::start() { view.show(); }
 
 void TesterPresenterImpl::stop() { view.hide(); }
 
-SubjectPresenterImpl::SubjectPresenterImpl(
-    SubjectView &view, av_speech_in_noise::SubjectPresenter &parentPresenter)
-    : view{view}, parentPresenter{parentPresenter} {
-    view.attach(this);
+SubjectPresenterImpl::SubjectPresenterImpl(SubjectView &view,
+    av_speech_in_noise::SubjectPresenter &parentPresenter, Timer &timer)
+    : view{view}, parentPresenter{parentPresenter}, timer{timer} {
+    timer.attach(this);
 }
 
 void SubjectPresenterImpl::attach(SubjectPresenter::Observer *a) {
@@ -38,27 +33,12 @@ void SubjectPresenterImpl::stop() {
     parentPresenter.stop();
 }
 
-void SubjectPresenterImpl::present(Point x) {
-    pointPresenting = x;
-    if (dotState == DotState::shrunk) {
-        view.growDot();
-        dotState = DotState::growing;
-    } else
-        moveDotTo(view, pointPresenting, dotState);
+void SubjectPresenterImpl::present(Point p) {
+    view.moveDotTo(windowPoint(p));
+    timer.scheduleCallbackAfterSeconds(1);
 }
 
-void SubjectPresenterImpl::notifyThatAnimationHasFinished() {
-    if (dotState == DotState::growing)
-        moveDotTo(view, pointPresenting, dotState);
-    else if (dotState == DotState::shrinking) {
-        dotState = DotState::shrunk;
-        if (observer != nullptr)
-            observer->notifyThatPointIsReady();
-    } else {
-        view.shrinkDot();
-        dotState = DotState::shrinking;
-    }
-}
+void SubjectPresenterImpl::callback() { observer->notifyThatPointIsReady(); }
 
 void TesterPresenterImpl::present(const std::vector<Result> &results) {
     view.clear();
