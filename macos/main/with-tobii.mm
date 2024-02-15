@@ -344,14 +344,13 @@ static void initialize(TobiiProTracker &tracker,
     static validation::AppKitTesterUI validationTesterViewAdapter{
         validationTesterUI};
     static AppKitSubjectView subjectView{subjectWindow.contentView};
-    static AppKitSubjectView validationSubjectView{subjectWindow.contentView};
     static AppKitTesterUI testerUI{testerWindow, menuObserver};
     static TimerImpl timer;
     static SubjectPresenterImpl subjectPresenter{
         subjectView, parentSubjectPresenter, timer};
     static TimerImpl validationTimer;
     static SubjectPresenterImpl validationSubjectPresenter{
-        validationSubjectView, parentSubjectPresenter, validationTimer};
+        subjectView, parentSubjectPresenter, validationTimer};
     static TesterPresenterImpl testerPresenter{testerUI};
     static validation::TesterPresenterImpl validationTesterPresenter{
         validationTesterViewAdapter};
