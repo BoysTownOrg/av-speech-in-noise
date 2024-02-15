@@ -42,9 +42,7 @@ class TesterView : public View {
     virtual void clear() = 0;
 };
 
-class SubjectPresenterImpl : public SubjectView::Observer,
-                             public SubjectPresenter,
-                             public Timer::Observer {
+class SubjectPresenterImpl : public SubjectPresenter, public Timer::Observer {
   public:
     enum class DotState { idle, moving, shrinking, shrunk, growing };
     SubjectPresenterImpl(
@@ -52,8 +50,7 @@ class SubjectPresenterImpl : public SubjectView::Observer,
     void attach(SubjectPresenter::Observer *a) override;
     void start() override;
     void stop() override;
-    void notifyThatAnimationHasFinished() override;
-    void present(Point x) override;
+    void present(Point) override;
     void callback() override;
 
   private:

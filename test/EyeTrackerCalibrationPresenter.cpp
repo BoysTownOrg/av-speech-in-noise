@@ -274,28 +274,9 @@ EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(
     ObserverStub observer;
     presenter.attach(&observer);
     present(presenter);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(observer.notifiedThatPointIsReady());
     timer.callback();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatPointIsReady());
-}
-
-EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(growsDotIfShrunk) {
-    ObserverStub observer;
-    presenter.attach(&observer);
-    present(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(view.dotGrew());
-    notifyObserverThatAnimationHasFinished(view);
-    observer.callWhenNotifiedThatPointIsReady([&]() { present(presenter); });
-    notifyObserverThatAnimationHasFinished(view);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotGrew());
-}
-
-EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(movesDotAfterItGrows) {
-    present(presenter);
-    notifyObserverThatAnimationHasFinished(view);
-    notifyObserverThatAnimationHasFinished(view);
-    present(presenter, {0.1F, 0.2F});
-    notifyObserverThatAnimationHasFinished(view);
-    assertEqual(WindowPoint{0.1F, 1 - 0.2F}, view.pointDotMovedTo());
 }
 
 EYE_TRACKER_CALIBRATION_TESTER_PRESENTER_TEST(results) {
