@@ -5,6 +5,7 @@
 #include "../objective-c-bridge.h"
 #include "../objective-c-adapters.h"
 #include "../TobiiProEyeTracker.hpp"
+#include "../Timer.h"
 
 #include <av-speech-in-noise/ui/EyeTrackerCalibration.hpp>
 #include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
@@ -349,10 +350,12 @@ static void initialize(TobiiProTracker &tracker,
     static AppKitSubjectView subjectView{subjectWindow.contentView};
     static AppKitSubjectView validationSubjectView{subjectWindow.contentView};
     static AppKitTesterUI testerUI{testerWindow, menuObserver};
+    static TimerImpl timer;
     static SubjectPresenterImpl subjectPresenter{
-        subjectView, parentSubjectPresenter};
+        subjectView, parentSubjectPresenter, timer};
+    static TimerImpl validationTimer;
     static SubjectPresenterImpl validationSubjectPresenter{
-        validationSubjectView, parentSubjectPresenter};
+        validationSubjectView, parentSubjectPresenter, validationTimer};
     static TesterPresenterImpl testerPresenter{testerUI};
     static validation::TesterPresenterImpl validationTesterPresenter{
         validationTesterViewAdapter};

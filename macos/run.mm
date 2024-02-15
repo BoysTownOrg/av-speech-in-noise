@@ -2,6 +2,7 @@
 #include "MersenneTwisterRandomizer.hpp"
 #include "AvFoundationPlayers.h"
 #include "AppKitView.h"
+#include "Timer.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
 #include "masking-images.h"
@@ -44,9 +45,6 @@
 
 #include <Foundation/Foundation.h>
 
-@interface CallbackScheduler : NSObject
-@end
-
 // https://stackoverflow.com/a/116220
 namespace {
 class FileCannotBeOpened {};
@@ -67,40 +65,6 @@ static auto read_file(std::string_view path) -> std::string {
     out.append(buf, 0, stream.gcount());
     return out;
 }
-
-namespace av_speech_in_noise {
-namespace {
-class TimerImpl : public Timer {
-  public:
-    TimerImpl();
-    void attach(Observer *e) override;
-    void scheduleCallbackAfterSeconds(double x) override;
-    void timerCallback();
-
-  private:
-    Observer *listener{};
-    CallbackScheduler *scheduler{[[CallbackScheduler alloc] init]};
-};
-}
-}
-
-@implementation CallbackScheduler {
-  @public
-    av_speech_in_noise::TimerImpl *controller;
-}
-
-- (void)scheduleCallbackAfterSeconds:(double)x {
-    [NSTimer scheduledTimerWithTimeInterval:x
-                                     target:self
-                                   selector:@selector(timerCallback)
-                                   userInfo:nil
-                                    repeats:NO];
-}
-
-- (void)timerCallback {
-    controller->timerCallback();
-}
-@end
 
 namespace av_speech_in_noise {
 static auto contents(NSString *parent) -> NSArray<NSString *> * {
@@ -231,15 +195,6 @@ class TextFileReaderImpl : public TextFileReader {
     }
 };
 
-TimerImpl::TimerImpl() { scheduler->controller = this; }
-
-void TimerImpl::attach(Observer *e) { listener = e; }
-
-void TimerImpl::scheduleCallbackAfterSeconds(double x) {
-    [scheduler scheduleCallbackAfterSeconds:x];
-}
-
-void TimerImpl::timerCallback() { listener->callback(); }
 }
 
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
