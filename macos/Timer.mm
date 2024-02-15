@@ -1,5 +1,7 @@
 #include "Timer.h"
 
+#import <Foundation/Foundation.h>
+
 @interface CallbackScheduler : NSObject
 @end
 
@@ -22,7 +24,9 @@
 @end
 
 namespace av_speech_in_noise {
-TimerImpl::TimerImpl() { scheduler->controller = this; }
+TimerImpl::TimerImpl() : scheduler{[[CallbackScheduler alloc] init]} {
+    scheduler->controller = this;
+}
 
 void TimerImpl::attach(Observer *e) { listener = e; }
 
@@ -32,4 +36,3 @@ void TimerImpl::scheduleCallbackAfterSeconds(double x) {
 
 void TimerImpl::timerCallback() { listener->callback(); }
 }
-

@@ -79,7 +79,8 @@
     constexpr auto innerDiameter{8};
     NSBezierPath *inner = [NSBezierPath
         bezierPathWithOvalInRect:NSMakeRect(rect.origin.x +
-                                         rect.size.width / 2 - innerDiameter / 2,
+                                         rect.size.width / 2 -
+                                         innerDiameter / 2,
                                      rect.origin.y + rect.size.height / 2 -
                                          innerDiameter / 2,
                                      innerDiameter, innerDiameter)];
@@ -158,13 +159,8 @@ class AppKitSubjectView : public SubjectView {
     explicit AppKitSubjectView(NSView *view)
         : dot{[[AvSpeechInNoiseCircleNSView alloc]
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
-                                normalDotDiameterPoints)]}
-    {
+                                normalDotDiameterPoints)]} {
         [view addSubview:dot];
-    }
-
-    void attach(SubjectView::Observer *a) override {
-        animationDelegate->observer = a;
     }
 
     void moveDotTo(WindowPoint point) override {

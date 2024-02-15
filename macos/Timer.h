@@ -15,7 +15,7 @@ class TimerImpl : public Timer {
 
   private:
     Observer *listener{};
-    CallbackScheduler *scheduler{[[CallbackScheduler alloc] init]};
+    CallbackScheduler *scheduler;
 };
 }
 

@@ -9,6 +9,7 @@ function(add_macos_bundle target identifier output_name)
     utility.mm
     objective-c-adapters.mm
     masking-images.mm
+    Timer.mm
     SwiftUI.swift
     ${ARGN}
     ${AV_SPEECH_IN_NOISE_MACOS_RESOURCES})
@@ -87,6 +88,7 @@ set_source_files_properties(
   utility.mm
   objective-c-adapters.mm
   masking-images.mm
+  Timer.mm
   main/default.mm
   main/facemask-study.mm
   main/with-tobii.mm
