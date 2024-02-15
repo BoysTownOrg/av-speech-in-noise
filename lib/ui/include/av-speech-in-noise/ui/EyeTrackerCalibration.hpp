@@ -5,6 +5,7 @@
 #include "Subject.hpp"
 
 #include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
+#include <av-speech-in-noise/core/ITimer.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 
 #include <string>
@@ -45,7 +46,8 @@ class SubjectPresenterImpl : public SubjectView::Observer,
                              public SubjectPresenter {
   public:
     enum class DotState { idle, moving, shrinking, shrunk, growing };
-    SubjectPresenterImpl(SubjectView &, av_speech_in_noise::SubjectPresenter &);
+    SubjectPresenterImpl(
+        SubjectView &, av_speech_in_noise::SubjectPresenter &, Timer &);
     void attach(SubjectPresenter::Observer *a) override;
     void start() override;
     void stop() override;
@@ -56,6 +58,7 @@ class SubjectPresenterImpl : public SubjectView::Observer,
     Point pointPresenting{};
     SubjectView &view;
     av_speech_in_noise::SubjectPresenter &parentPresenter;
+    Timer &timer;
     SubjectPresenter::Observer *observer{};
     DotState dotState{DotState::idle};
 };

@@ -18,9 +18,9 @@ void TesterPresenterImpl::start() { view.show(); }
 
 void TesterPresenterImpl::stop() { view.hide(); }
 
-SubjectPresenterImpl::SubjectPresenterImpl(
-    SubjectView &view, av_speech_in_noise::SubjectPresenter &parentPresenter)
-    : view{view}, parentPresenter{parentPresenter} {
+SubjectPresenterImpl::SubjectPresenterImpl(SubjectView &view,
+    av_speech_in_noise::SubjectPresenter &parentPresenter, Timer &timer)
+    : view{view}, parentPresenter{parentPresenter}, timer{timer} {
     view.attach(this);
 }
 
@@ -43,8 +43,10 @@ void SubjectPresenterImpl::present(Point x) {
     if (dotState == DotState::shrunk) {
         view.growDot();
         dotState = DotState::growing;
-    } else
+    } else {
         moveDotTo(view, pointPresenting, dotState);
+        timer.scheduleCallbackAfterSeconds(1);
+    }
 }
 
 void SubjectPresenterImpl::notifyThatAnimationHasFinished() {

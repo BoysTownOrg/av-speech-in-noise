@@ -1,5 +1,6 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
+#include "TimerStub.hpp"
 
 #include <av-speech-in-noise/ui/EyeTrackerCalibration.hpp>
 
@@ -202,7 +203,8 @@ class EyeTrackerCalibrationSubjectPresenterTests : public ::testing::Test {
   protected:
     SubjectViewStub view;
     av_speech_in_noise::SubjectPresenterStub parentPresenter;
-    SubjectPresenterImpl presenter{view, parentPresenter};
+    TimerStub timer;
+    SubjectPresenterImpl presenter{view, parentPresenter, timer};
 };
 
 class EyeTrackerCalibrationTesterPresenterTests : public ::testing::Test {
@@ -261,10 +263,10 @@ EYE_TRACKER_CALIBRATION_TESTER_PRESENTER_TEST(stopHidesView) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(shrinksDotAfterDoneMoving) {
+EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(
+    schedulesCallbackAfterDoneMoving) {
     present(presenter);
-    notifyObserverThatAnimationHasFinished(view);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.dotShrinked());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
 }
 
 EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(

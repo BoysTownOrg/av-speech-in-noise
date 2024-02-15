@@ -2,6 +2,7 @@
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
 #include "PuzzleStub.hpp"
+#include "TimerStub.hpp"
 
 #include <av-speech-in-noise/ui/FreeResponse.hpp>
 
@@ -80,25 +81,6 @@ class InteractorStub : public Interactor {
 
   private:
     FreeResponse freeResponse_;
-};
-
-class TimerStub : public Timer {
-  public:
-    void scheduleCallbackAfterSeconds(double) override {
-        callbackScheduled_ = true;
-    }
-
-    [[nodiscard]] auto callbackScheduled() const { return callbackScheduled_; }
-
-    void clearCallbackCount() { callbackScheduled_ = false; }
-
-    void callback() { observer->callback(); }
-
-    void attach(Observer *a) override { observer = a; }
-
-  private:
-    Observer *observer{};
-    bool callbackScheduled_{};
 };
 
 class FreeResponseControllerTests : public ::testing::Test {
