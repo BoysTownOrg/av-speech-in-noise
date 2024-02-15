@@ -534,6 +534,12 @@ auto AvFoundationAudioPlayer::currentSystemTime() -> PlayerTime {
 }
 
 void AvFoundationVideoPlayer::preRoll() {
+    // https://developer.apple.com/documentation/avfoundation/avplayer/1389712-prerollatrate?language=objc
+    // "If the player object is not ready to play (its status property is not AVPlayerStatusReadyToPlay), [preRollAtRate] throws an exception."
+    if (player.status != AVPlayerStatusReadyToPlay) {
+        NSLog(@"Player is not ready to play.");
+        return;
+    }
     [player prerollAtRate:1.
         completionHandler:^(BOOL finished) {
         dispatch_async(dispatch_get_main_queue(), ^(void){
