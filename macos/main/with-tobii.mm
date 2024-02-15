@@ -75,14 +75,13 @@
     NSBezierPath *outer = [NSBezierPath bezierPathWithOvalInRect:rect];
     [[NSColor whiteColor] set];
     [outer fill];
-    const auto innerWidth{rect.size.width / 5};
-    const auto innerHeight{rect.size.height / 5};
+    constexpr auto innerDiameter{8};
     NSBezierPath *inner = [NSBezierPath
         bezierPathWithOvalInRect:NSMakeRect(rect.origin.x +
-                                         rect.size.width / 2 - innerWidth / 2,
+                                         rect.size.width / 2 - innerDiameter / 2,
                                      rect.origin.y + rect.size.height / 2 -
-                                         innerHeight / 2,
-                                     innerWidth, innerHeight)];
+                                         innerDiameter / 2,
+                                     innerDiameter, innerDiameter)];
     [[NSColor blackColor] set];
     [inner fill];
 }
@@ -149,62 +148,18 @@ static void draw(NSRect rect, const std::vector<Line> &lines, NSColor *color) {
 }
 @end
 
-@interface AvSpeechInNoiseEyeTrackerCalibrationSubjectViewNSAnimationDelegate
-    : NSObject <NSAnimationDelegate>
-@end
-
-@implementation
-    AvSpeechInNoiseEyeTrackerCalibrationSubjectViewNSAnimationDelegate {
-  @public
-    av_speech_in_noise::eye_tracker_calibration::SubjectView::Observer
-        *observer;
-}
-
-- (void)animationDidEnd:(NSAnimation *)animation {
-    observer->notifyThatAnimationHasFinished();
-}
-@end
-
 namespace av_speech_in_noise::eye_tracker_calibration {
-static void animate(NSView *view, NSRect endFrame, double durationSeconds,
-    id<NSAnimationDelegate> delegate) {
-    const auto mutableDictionary {
-        [NSMutableDictionary
-            dictionaryWithSharedKeySet:[NSDictionary sharedKeySetForKeys:@[
-                NSViewAnimationTargetKey, NSViewAnimationStartFrameKey,
-                NSViewAnimationEndFrameKey
-            ]]]
-    };
-    [mutableDictionary setObject:view forKey:NSViewAnimationTargetKey];
-    [mutableDictionary setObject:[NSValue valueWithRect:view.frame]
-                          forKey:NSViewAnimationStartFrameKey];
-    [mutableDictionary setObject:[NSValue valueWithRect:endFrame]
-                          forKey:NSViewAnimationEndFrameKey];
-    const auto viewAnimation{[[NSViewAnimation alloc]
-        initWithViewAnimations:[NSArray
-                                   arrayWithObjects:mutableDictionary, nil]]};
-    [viewAnimation setDelegate:delegate];
-    [viewAnimation setAnimationCurve:NSAnimationEaseInOut];
-    viewAnimation.animationBlockingMode = NSAnimationNonblocking;
-    [viewAnimation setDuration:durationSeconds];
-    [viewAnimation startAnimation];
-}
-
 namespace {
 class AppKitSubjectView : public SubjectView {
   public:
-    static constexpr auto normalDotDiameterPoints{100};
-    static constexpr auto shrunkenDotDiameterPoints{35};
+    static constexpr auto normalDotDiameterPoints{16};
 
     explicit AppKitSubjectView(NSView *view)
         : dot{[[AvSpeechInNoiseCircleNSView alloc]
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
-                                normalDotDiameterPoints)]},
-          animationDelegate{[
-              [AvSpeechInNoiseEyeTrackerCalibrationSubjectViewNSAnimationDelegate
-                  alloc] init]} {
+                                normalDotDiameterPoints)]}
+    {
         [view addSubview:dot];
-        [dot setHidden:YES];
     }
 
     void attach(SubjectView::Observer *a) override {
@@ -212,36 +167,11 @@ class AppKitSubjectView : public SubjectView {
     }
 
     void moveDotTo(WindowPoint point) override {
-        dot.hidden = YES;
-        animate(dot,
-            NSMakeRect(point.x * dot.superview.frame.size.width -
-                    dot.frame.size.width / 2,
-                point.y * dot.superview.frame.size.height -
-                    dot.frame.size.height / 2,
-                dot.frame.size.width, dot.frame.size.height),
-            0.5, animationDelegate);
-    }
-
-    void shrinkDot() override {
-        dot.hidden = NO;
-        animate(dot,
-            NSMakeRect(dot.frame.origin.x +
-                    (dot.frame.size.width - shrunkenDotDiameterPoints) / 2,
-                dot.frame.origin.y +
-                    (dot.frame.size.height - shrunkenDotDiameterPoints) / 2,
-                shrunkenDotDiameterPoints, shrunkenDotDiameterPoints),
-            2.0, animationDelegate);
-    }
-
-    void growDot() override {
-        dot.hidden = NO;
-        animate(dot,
-            NSMakeRect(dot.frame.origin.x +
-                    (dot.frame.size.width - normalDotDiameterPoints) / 2,
-                dot.frame.origin.y +
-                    (dot.frame.size.height - normalDotDiameterPoints) / 2,
-                normalDotDiameterPoints, normalDotDiameterPoints),
-            2.0, animationDelegate);
+        dot.frame = NSMakeRect(
+            point.x * dot.superview.frame.size.width - dot.frame.size.width / 2,
+            point.y * dot.superview.frame.size.height -
+                dot.frame.size.height / 2,
+            dot.frame.size.width, dot.frame.size.height);
     }
 
     void show() override { [dot setHidden:NO]; }
@@ -250,8 +180,6 @@ class AppKitSubjectView : public SubjectView {
 
   private:
     AvSpeechInNoiseCircleNSView *dot;
-    AvSpeechInNoiseEyeTrackerCalibrationSubjectViewNSAnimationDelegate
-        *animationDelegate;
 };
 
 class AppKitTesterUI : public TesterView, public Control {
