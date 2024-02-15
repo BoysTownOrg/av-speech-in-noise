@@ -270,13 +270,11 @@ EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(
 }
 
 EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(
-    notifiesObserverThatPointIsReadyAfterDotShrinks) {
+    notifiesObserverThatPointIsReadyAfterTimerCallback) {
     ObserverStub observer;
     presenter.attach(&observer);
     present(presenter);
-    notifyObserverThatAnimationHasFinished(view);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(observer.notifiedThatPointIsReady());
-    notifyObserverThatAnimationHasFinished(view);
+    timer.callback();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatPointIsReady());
 }
 

@@ -21,6 +21,7 @@ void TesterPresenterImpl::stop() { view.hide(); }
 SubjectPresenterImpl::SubjectPresenterImpl(SubjectView &view,
     av_speech_in_noise::SubjectPresenter &parentPresenter, Timer &timer)
     : view{view}, parentPresenter{parentPresenter}, timer{timer} {
+    timer.attach(this);
     view.attach(this);
 }
 
@@ -48,6 +49,8 @@ void SubjectPresenterImpl::present(Point x) {
         timer.scheduleCallbackAfterSeconds(1);
     }
 }
+
+void SubjectPresenterImpl::callback() { observer->notifyThatPointIsReady(); }
 
 void SubjectPresenterImpl::notifyThatAnimationHasFinished() {
     if (dotState == DotState::growing)
