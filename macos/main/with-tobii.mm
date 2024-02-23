@@ -76,16 +76,6 @@
     NSBezierPath *outer = [NSBezierPath bezierPathWithOvalInRect:rect];
     [[NSColor whiteColor] set];
     [outer fill];
-    constexpr auto innerDiameter{8};
-    NSBezierPath *inner = [NSBezierPath
-        bezierPathWithOvalInRect:NSMakeRect(rect.origin.x +
-                                         rect.size.width / 2 -
-                                         innerDiameter / 2,
-                                     rect.origin.y + rect.size.height / 2 -
-                                         innerDiameter / 2,
-                                     innerDiameter, innerDiameter)];
-    [[NSColor blackColor] set];
-    [inner fill];
 }
 @end
 
@@ -161,6 +151,7 @@ class AppKitSubjectView : public SubjectView {
               initWithFrame:NSMakeRect(0, 0, normalDotDiameterPoints,
                                 normalDotDiameterPoints)]} {
         [view addSubview:dot];
+        [dot setHidden:YES];
     }
 
     void moveDotTo(WindowPoint point) override {
