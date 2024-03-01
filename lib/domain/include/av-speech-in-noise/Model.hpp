@@ -185,12 +185,14 @@ struct Point3D {
 };
 
 struct GazeOrigin {
-    Point3D relativeTrackbox;
+    Point3D relativeTrackbox{};
+    bool valid{true};
 };
 
 struct GazePosition {
-    Point3D relativeTrackbox;
-    Point2D relativeScreen;
+    Point3D relativeTrackbox{};
+    Point2D relativeScreen{};
+    bool valid{true};
 };
 
 struct Gaze {
@@ -212,7 +214,7 @@ struct EyeTrackerTargetPlayerSynchronization {
 };
 
 struct BinocularGazeSample {
-    EyeTrackerSystemTime systemTime;
+    EyeTrackerSystemTime systemTime{};
     Gaze left;
     Gaze right;
 };

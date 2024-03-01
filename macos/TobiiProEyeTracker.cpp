@@ -104,16 +104,19 @@ auto TobiiProTracker::gazeSamples() -> BinocularGazeSamples {
             gazePositionOnDisplayArea(at(gazeData, i).left_eye));
         assign(at(gazeSamples, i).right.position.relativeScreen,
             gazePositionOnDisplayArea(at(gazeData, i).right_eye));
-
         assign(at(gazeSamples, i).left.position.relativeTrackbox,
             at(gazeData, i).left_eye.gaze_point.position_in_user_coordinates);
         assign(at(gazeSamples, i).right.position.relativeTrackbox,
             at(gazeData, i).right_eye.gaze_point.position_in_user_coordinates);
+        at(gazeSamples, i).left.position.valid = at(gazeData, i).left_eye.gaze_point.validity == TOBII_RESEARCH_VALIDITY_VALID;
+        at(gazeSamples, i).right.position.valid = at(gazeData, i).right_eye.gaze_point.validity == TOBII_RESEARCH_VALIDITY_VALID;
 
         assign(at(gazeSamples, i).left.origin.relativeTrackbox,
             at(gazeData, i).left_eye.gaze_origin.position_in_user_coordinates);
         assign(at(gazeSamples, i).right.origin.relativeTrackbox,
             at(gazeData, i).right_eye.gaze_origin.position_in_user_coordinates);
+        at(gazeSamples, i).left.origin.valid = at(gazeData, i).left_eye.gaze_origin.validity == TOBII_RESEARCH_VALIDITY_VALID;
+        at(gazeSamples, i).right.origin.valid = at(gazeData, i).right_eye.gaze_origin.validity == TOBII_RESEARCH_VALIDITY_VALID;
     }
     return gazeSamples;
 }
