@@ -1,11 +1,15 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
+
 #include <av-speech-in-noise/core/OutputFile.hpp>
 #include <av-speech-in-noise/Model.hpp>
+
 #include <gtest/gtest.h>
 #include <gsl/gsl>
+
 #include <vector>
 #include <map>
+#include <iostream>
 
 namespace av_speech_in_noise {
 namespace {
@@ -1068,6 +1072,34 @@ OUTPUT_FILE_TEST(writeGazeOrigins) {
     assertNthCommaDelimitedEntryOfLine(writer, "0.8 0.88 0.888", 7, 3);
     assertNthCommaDelimitedEntryOfLine(writer, "0.6 0.66 0.666", 6, 4);
     assertNthCommaDelimitedEntryOfLine(writer, "0.9 0.99 0.999", 7, 4);
+}
+
+OUTPUT_FILE_TEST(writeGazeValidities) {
+    BinocularGazeSample a;
+    a.left.origin.valid = true;
+    a.left.position.valid = false;
+    a.right.origin.valid = false;
+    a.right.position.valid = true;
+    BinocularGazeSamples samples = {a};
+    write(file, samples);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::leftGazePositionRelativeScreenIsValid, 8, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::rightGazePositionRelativeScreenIsValid, 9, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::leftGazePositionRelativeTrackerIsValid, 10, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::rightGazePositionRelativeTrackerIsValid, 11, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::leftGazeOriginRelativeTrackerIsValid, 12, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::rightGazeOriginRelativeTrackerIsValid, 13, 1);
+    assertNthCommaDelimitedEntryOfLine(writer, "n", 8, 2);
+    assertNthCommaDelimitedEntryOfLine(writer, "y", 9, 2);
+    assertNthCommaDelimitedEntryOfLine(writer, "n", 10, 2);
+    assertNthCommaDelimitedEntryOfLine(writer, "y", 11, 2);
+    assertNthCommaDelimitedEntryOfLine(writer, "y", 12, 2);
+    assertNthCommaDelimitedEntryOfLine(writer, "n", 13, 2);
 }
 
 OUTPUT_FILE_TEST(writeTargetStartTime) {

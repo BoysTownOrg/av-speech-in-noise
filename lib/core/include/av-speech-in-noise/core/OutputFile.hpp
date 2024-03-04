@@ -20,10 +20,16 @@ enum class HeadingItem {
     freeResponse,
     leftGazePositionRelativeScreen,
     rightGazePositionRelativeScreen,
+    leftGazePositionRelativeScreenIsValid,
+    rightGazePositionRelativeScreenIsValid,
     leftGazePositionRelativeTracker,
     rightGazePositionRelativeTracker,
+    leftGazePositionRelativeTrackerIsValid,
+    rightGazePositionRelativeTrackerIsValid,
     leftGazeOriginRelativeTracker,
     rightGazeOriginRelativeTracker,
+    leftGazeOriginRelativeTrackerIsValid,
+    rightGazeOriginRelativeTrackerIsValid,
     eyeTrackerTime,
     targetPlayerTime,
     correctConsonant,
@@ -90,6 +96,18 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "correct syllable";
     case HeadingItem::time:
         return "time";
+    case HeadingItem::leftGazePositionRelativeScreenIsValid:
+        return "valid left gaze position relative screen";
+    case HeadingItem::rightGazePositionRelativeScreenIsValid:
+        return "valid right gaze position relative screen";
+    case HeadingItem::leftGazePositionRelativeTrackerIsValid:
+        return "valid left gaze position relative tracker";
+    case HeadingItem::rightGazePositionRelativeTrackerIsValid:
+        return "valid right gaze position relative tracker";
+    case HeadingItem::leftGazeOriginRelativeTrackerIsValid:
+        return "valid left gaze origin relative tracker";
+    case HeadingItem::rightGazeOriginRelativeTrackerIsValid:
+        return "valid right gaze origin relative tracker";
     }
 }
 
