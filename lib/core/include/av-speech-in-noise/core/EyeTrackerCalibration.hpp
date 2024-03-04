@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 #include <ostream>
+#include <optional>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
 struct Point {
@@ -13,9 +14,23 @@ struct Point {
     float y;
 };
 
+struct SampleInfo {
+    bool valid;
+    bool used;
+};
+
+struct Sample {
+    Point point;
+    std::optional<SampleInfo> info;
+};
+
+struct BinocularSample {
+    Sample left;
+    Sample right;
+};
+
 struct Result {
-    std::vector<Point> leftEyeMappedPoints;
-    std::vector<Point> rightEyeMappedPoints;
+    std::vector<BinocularSample> samples;
     Point point{};
 };
 

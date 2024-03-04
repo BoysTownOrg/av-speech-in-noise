@@ -256,12 +256,41 @@ EYE_TRACKER_CALIBRATION_SUBJECT_PRESENTER_TEST(
 }
 
 EYE_TRACKER_CALIBRATION_TESTER_PRESENTER_TEST(results) {
-    presenter.present({{{{0.11F, 0.22F}, {0.33F, 0.44F}},
-                           {{0.55F, 0.66F}, {0.77F, 0.88F}}, {0.1F, 0.2F}},
-        {{{0.99F, 0.111F}, {0.222F, 0.333F}},
-            {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
-        {{{0.888F, 0.999F}, {0.01F, 0.02F}}, {{0.03F, 0.04F}, {0.05F, 0.06F}},
-            {0.5F, 0.6F}}});
+    std::vector<Result> results;
+    BinocularSample s1;
+    s1.left.point = {0.11, 0.22};
+    s1.right.point = {0.55, 0.66};
+    BinocularSample s2;
+    s2.left.point = {0.33, 0.44};
+    s2.right.point = {0.77, 0.88};
+    Result r1;
+    r1.samples = {s1, s2};
+    r1.point = {0.1, 0.2};
+    results.push_back(r1);
+
+    BinocularSample s4;
+    s4.left.point = {0.99, 0.111};
+    s4.right.point = {0.444, 0.555};
+    BinocularSample s5;
+    s5.left.point = {0.222, 0.333};
+    s5.right.point = {0.666, 0.777};
+    Result r2;
+    r2.samples = {s4, s5};
+    r2.point = {0.3, 0.4};
+    results.push_back(r2);
+
+    BinocularSample s7;
+    s7.left.point = {0.888, 0.999};
+    s7.right.point = {0.03, 0.04};
+    BinocularSample s8;
+    s8.left.point = {0.01, 0.02};
+    s8.right.point = {0.05, 0.06};
+    Result r3;
+    r3.samples = {s7, s8};
+    r3.point = {0.5, 0.6};
+    results.push_back(r3);
+
+    presenter.present(results);
     ::assertEqual<Line>({{{0.1F, 1 - 0.2F}, {0.11F, 1 - 0.22F}},
                             {{0.1F, 1 - 0.2F}, {0.33F, 1 - 0.44F}},
                             {{0.3F, 1 - 0.4F}, {0.99F, 1 - 0.111F}},

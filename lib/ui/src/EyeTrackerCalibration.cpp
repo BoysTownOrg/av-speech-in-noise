@@ -44,15 +44,12 @@ void TesterPresenterImpl::present(const std::vector<Result> &results) {
     view.clear();
     for_each(results.begin(), results.end(), [&](const Result &result) {
         view.drawWhiteCircleWithCenter(windowPoint(result.point));
-        for_each(result.leftEyeMappedPoints.begin(),
-            result.leftEyeMappedPoints.end(), [&](const Point &point) {
-                view.drawRed(
-                    Line{windowPoint(result.point), windowPoint(point)});
-            });
-        for_each(result.rightEyeMappedPoints.begin(),
-            result.rightEyeMappedPoints.end(), [&](const Point &point) {
-                view.drawGreen(
-                    Line{windowPoint(result.point), windowPoint(point)});
+        for_each(result.samples.begin(), result.samples.end(),
+            [&](const BinocularSample &sample) {
+                view.drawRed(Line{
+                    windowPoint(result.point), windowPoint(sample.left.point)});
+                view.drawGreen(Line{windowPoint(result.point),
+                    windowPoint(sample.right.point)});
             });
     });
 }

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <functional>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
 static void write(std::ostream &stream, const Point &p) {
@@ -10,14 +11,16 @@ static void write(std::ostream &stream, const Point &p) {
     stream << p.y;
 }
 
-static void write(std::ostream &stream, const std::vector<Point> &v) {
+static void write(std::ostream &stream,
+    const std::vector<BinocularSample> &samples,
+    const std::function<const Point(const BinocularSample &)> &f) {
     stream << '[';
     auto first{true};
-    for (const auto p : v) {
+    for (const auto &s : samples) {
         if (!first) {
             stream << "; ";
         }
-        write(stream, p);
+        write(stream, f(s));
         first = false;
     }
     stream << ']';
@@ -31,9 +34,11 @@ void write(std::ostream &stream, const std::vector<Result> &v) {
         stream << ']';
 
         stream << '|';
-        write(stream, result.leftEyeMappedPoints);
+        write(stream, result.samples,
+            [](const BinocularSample &s) { return s.left.point; });
         stream << '|';
-        write(stream, result.rightEyeMappedPoints);
+        write(stream, result.samples,
+            [](const BinocularSample &s) { return s.right.point; });
         stream << '\n';
     }
 }
