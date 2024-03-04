@@ -79,7 +79,7 @@ EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(writesResults) {
     r3.point = {0.8F, 0.8F};
     results.pointResults.push_back(r3);
     write(stream, results);
-    assertEqual(R"(successful
+    assertEqual(R"(status: successful
 [0.5, 0.5]
   Left
     [0.49, 0.51] - used and valid
@@ -110,11 +110,32 @@ EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(writesResults) {
 )",
         stream.str());
 }
+
 EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(writesFailedResults) {
     std::stringstream stream;
     Results results;
     results.success = false;
     write(stream, results);
-    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(stream.str().rfind("failed", 0), 0);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(stream.str().rfind("status: failed", 0), 0);
+}
+
+EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(writesFailedButOneEyeIsGoodResults) {
+    Results results;
+    results.success = false;
+    results.successfulEye = std::make_optional(Eye::Left);
+    {
+        std::stringstream stream;
+        write(stream, results);
+        AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
+            stream.str().rfind("status: failed, but left eye succeeded", 0), 0);
+    }
+    results.successfulEye = std::make_optional(Eye::Right);
+    {
+        std::stringstream stream;
+        write(stream, results);
+        AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
+            stream.str().rfind("status: failed, but right eye succeeded", 0),
+            0);
+    }
 }
 }

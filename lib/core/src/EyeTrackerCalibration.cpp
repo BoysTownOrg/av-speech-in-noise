@@ -39,11 +39,23 @@ static void write(std::ostream &stream,
 }
 
 void write(std::ostream &stream, const Results &v) {
+    stream << "status: ";
     if (v.success) {
-        stream << "successful\n";
+        stream << "successful";
     } else {
-        stream << "failed\n";
+        stream << "failed";
+        if (v.successfulEye) {
+            switch (v.successfulEye.value()) {
+            case Eye::Left:
+                stream << ", but left eye succeeded";
+                break;
+            case Eye::Right:
+                stream << ", but right eye succeeded";
+                break;
+            }
+        }
     }
+    stream << '\n';
     for (const auto &pointResult : v.pointResults) {
         stream << '[';
         write(stream, pointResult.point);
