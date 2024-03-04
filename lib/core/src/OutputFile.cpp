@@ -216,6 +216,18 @@ static auto operator<<(std::ostream &stream,
     insert(stream, name(HeadingItem::leftGazeOriginRelativeTracker));
     insertCommaAndSpace(stream);
     insert(stream, name(HeadingItem::rightGazeOriginRelativeTracker));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::leftGazePositionRelativeScreenIsValid));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::rightGazePositionRelativeScreenIsValid));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::leftGazePositionRelativeTrackerIsValid));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::rightGazePositionRelativeTrackerIsValid));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::leftGazeOriginRelativeTrackerIsValid));
+    insertCommaAndSpace(stream);
+    insert(stream, name(HeadingItem::rightGazeOriginRelativeTrackerIsValid));
     std::for_each(gazeSamples.begin(), gazeSamples.end(),
         [&](const BinocularGazeSample &g) {
             insertNewLine(stream);
@@ -232,6 +244,18 @@ static auto operator<<(std::ostream &stream,
             insert(stream, g.left.origin.relativeTrackbox);
             insertCommaAndSpace(stream);
             insert(stream, g.right.origin.relativeTrackbox);
+            insertCommaAndSpace(stream);
+            stream << (g.left.position.valid ? 'y' : 'n');
+            insertCommaAndSpace(stream);
+            stream << (g.right.position.valid ? 'y' : 'n');
+            insertCommaAndSpace(stream);
+            stream << (g.left.position.valid ? 'y' : 'n');
+            insertCommaAndSpace(stream);
+            stream << (g.right.position.valid ? 'y' : 'n');
+            insertCommaAndSpace(stream);
+            stream << (g.left.origin.valid ? 'y' : 'n');
+            insertCommaAndSpace(stream);
+            stream << (g.right.origin.valid ? 'y' : 'n');
         });
     return insertNewLine(stream);
 }

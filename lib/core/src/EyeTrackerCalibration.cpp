@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <functional>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
 static void write(std::ostream &stream, const Point &p) {
@@ -10,31 +11,63 @@ static void write(std::ostream &stream, const Point &p) {
     stream << p.y;
 }
 
-static void write(std::ostream &stream, const std::vector<Point> &v) {
-    stream << '[';
-    auto first{true};
-    for (const auto p : v) {
-        if (!first) {
-            stream << "; ";
+static void write(std::ostream &stream,
+    const std::vector<BinocularSample> &samples,
+    const std::function<const Sample(const BinocularSample &)> &f) {
+    for (const auto &s : samples) {
+        const auto mono{f(s)};
+        stream << "    ";
+        stream << '[';
+        write(stream, mono.point);
+        stream << ']';
+        stream << " - ";
+        if (mono.info) {
+            const auto info{*mono.info};
+            if (info.used && info.valid)
+                stream << "used and valid";
+            if (info.used && !info.valid)
+                stream << "used but invalid";
+            if (!info.used && info.valid)
+                stream << "not used but valid";
+            if (!info.used && !info.valid)
+                stream << "not used and invalid";
+        } else {
+            stream << "???";
         }
-        write(stream, p);
-        first = false;
+        stream << '\n';
     }
-    stream << ']';
 }
 
-void write(std::ostream &stream, const std::vector<Result> &v) {
-    stream << "Point|Left|Right\n";
-    for (const auto &result : v) {
+void write(std::ostream &stream, const Results &v) {
+    stream << "status: ";
+    if (v.success) {
+        stream << "successful";
+    } else {
+        stream << "failed";
+        if (v.successfulEye) {
+            switch (v.successfulEye.value()) {
+            case Eye::Left:
+                stream << ", but left eye succeeded";
+                break;
+            case Eye::Right:
+                stream << ", but right eye succeeded";
+                break;
+            }
+        }
+    }
+    stream << '\n';
+    for (const auto &pointResult : v.pointResults) {
         stream << '[';
-        write(stream, result.point);
+        write(stream, pointResult.point);
         stream << ']';
-
-        stream << '|';
-        write(stream, result.leftEyeMappedPoints);
-        stream << '|';
-        write(stream, result.rightEyeMappedPoints);
         stream << '\n';
+
+        stream << "  Left\n";
+        write(stream, pointResult.samples,
+            [](const BinocularSample &s) { return s.left; });
+        stream << "  Right\n";
+        write(stream, pointResult.samples,
+            [](const BinocularSample &s) { return s.right; });
     }
 }
 

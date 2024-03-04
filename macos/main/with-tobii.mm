@@ -250,7 +250,7 @@ class AppKitTesterUI : public TesterView, public Control {
 
 class NaiveResultsWriter : public ResultsWriter {
   public:
-    void write(const std::vector<Result> &results) {
+    void write(const Results &results) override {
         std::filesystem::path homeDirectory{
             [NSURL fileURLWithPath:@"~".stringByExpandingTildeInPath]
                 .fileSystemRepresentation};
@@ -351,9 +351,13 @@ static void initialize(TobiiProTracker &tracker,
         {{0.5, 0.5}, {0.3F, 0.3F}, {0.3F, 0.7F}, {0.7F, 0.3F}, {0.7F, 0.7F}}};
     static auto calibrator{tracker.calibrator()};
     static NaiveResultsWriter resultsWriter;
+    // clang-format off
     static InteractorImpl interactor{subjectPresenter, testerPresenter,
-        calibrator, resultsWriter,
-        {{0.5, 0.5}, {0.1F, 0.1F}, {0.1F, 0.9F}, {0.9F, 0.1F}, {0.9F, 0.9F}}};
+        calibrator, resultsWriter, {
+        {0.1F, 0.1F}, {0.1F, 0.5F}, {0.1F, 0.9F}, 
+        {0.5F, 0.1F}, {0.5F, 0.5F}, {0.5F, 0.9F}, 
+        {0.9F, 0.1F}, {0.9F, 0.5F}, {0.9F, 0.9F}}};
+    // clang-format on
     static Controller controller{testerUI, interactor};
     static validation::Controller validationController{
         validationTesterViewAdapter, validationInteractor};

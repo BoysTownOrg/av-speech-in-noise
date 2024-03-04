@@ -9,13 +9,27 @@ static void assertEqual(const Point &expected, const Point &actual) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.y, actual.y);
 }
 
-static void assertEqual(const Result &expected, const Result &actual) {
-    ::assertEqual<Point>(expected.leftEyeMappedPoints,
-        actual.leftEyeMappedPoints,
-        [](const Point &a, const Point &b) { assertEqual(a, b); });
-    ::assertEqual<Point>(expected.rightEyeMappedPoints,
-        actual.rightEyeMappedPoints,
-        [](const Point &a, const Point &b) { assertEqual(a, b); });
+static auto operator==(const SampleInfo &a, const SampleInfo &b) -> bool {
+    a.used == b.used &&a.valid == b.valid;
+}
+
+static void assertEqual(const Sample &expected, const Sample &actual) {
+    assertEqual(expected.point, actual.point);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected.info, actual.info);
+}
+
+static void assertEqual(
+    const BinocularSample &expected, const BinocularSample &actual) {
+    assertEqual(expected.left, actual.left);
+    assertEqual(expected.right, actual.right);
+}
+
+static void assertEqual(
+    const PointResult &expected, const PointResult &actual) {
+    ::assertEqual<BinocularSample>(expected.samples, actual.samples,
+        [](const BinocularSample &a, const BinocularSample &b) {
+            assertEqual(a, b);
+        });
     assertEqual(expected.point, actual.point);
 }
 
@@ -40,7 +54,7 @@ class SubjectPresenterStub : public SubjectPresenter {
 
   private:
     Point presentedPoint_{};
-    std::vector<Result> results_{};
+    Results results_{};
     Observer *observer{};
     bool stopped_{};
     bool started_{};
@@ -48,9 +62,9 @@ class SubjectPresenterStub : public SubjectPresenter {
 
 class TesterPresenterStub : public TesterPresenter {
   public:
-    void present(const std::vector<Result> &r) override { results_ = r; }
+    void present(const Results &r) override { results_ = r; }
 
-    auto results() -> std::vector<Result> { return results_; }
+    auto results() -> Results { return results_; }
 
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
 
@@ -61,7 +75,7 @@ class TesterPresenterStub : public TesterPresenter {
     void start() override { started_ = true; }
 
   private:
-    std::vector<Result> results_{};
+    Results results_{};
     bool stopped_{};
     bool started_{};
 };
@@ -72,9 +86,9 @@ class CalibratorStub : public Calibrator {
 
     auto calibratedPoint() -> Point { return calibratedPoint_; }
 
-    void set(std::vector<Result> r) { results_ = std::move(r); }
+    void set(Results r) { results_ = std::move(r); }
 
-    auto results() -> std::vector<Result> override { return results_; }
+    auto results() -> Results override { return results_; }
 
     auto discardedPoint() -> Point { return discardedPoint_; }
 
@@ -89,7 +103,7 @@ class CalibratorStub : public Calibrator {
     [[nodiscard]] auto released() const -> bool { return released_; }
 
   private:
-    std::vector<Result> results_{};
+    Results results_{};
     Point discardedPoint_{};
     Point calibratedPoint_{};
     bool acquired_{};
@@ -98,12 +112,12 @@ class CalibratorStub : public Calibrator {
 
 class ResultsWriterStub : public ResultsWriter {
   public:
-    void write(const std::vector<Result> &v) override { results_ = v; };
+    void write(const Results &v) override { results_ = v; };
 
-    auto results() -> std::vector<Result> { return results_; }
+    auto results() -> Results { return results_; }
 
   private:
-    std::vector<Result> results_;
+    Results results_;
 };
 
 class EyeTrackerCalibrationInteractorTests : public ::testing::Test {
@@ -231,26 +245,49 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(stopsPresenterOnFinish) {
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     writesResultsAfterFinalPointCalibrated) {
-    calibrator.set({{{{0.11F, 0.22F}, {0.33F, 0.44F}},
-                        {{0.55F, 0.66F}, {0.77F, 0.88F}}, {0.1F, 0.2F}},
-        {{{0.99F, 0.111F}, {0.222F, 0.333F}},
-            {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
-        {{{0.888F, 0.999F}, {0.01F, 0.02F}}, {{0.03F, 0.04F}, {0.05F, 0.06F}},
-            {0.5F, 0.6F}}});
+    Results results;
+    BinocularSample s1;
+    s1.left.point = {0.11, 0.22};
+    s1.right.point = {0.55, 0.66};
+    BinocularSample s2;
+    s2.left.point = {0.33, 0.44};
+    s2.right.point = {0.77, 0.88};
+    PointResult r1;
+    r1.samples = {s1, s2};
+    r1.point = {0.1, 0.2};
+    results.pointResults.push_back(r1);
+
+    BinocularSample s4;
+    s4.left.point = {0.99, 0.111};
+    s4.right.point = {0.444, 0.555};
+    BinocularSample s5;
+    s5.left.point = {0.222, 0.333};
+    s5.right.point = {0.666, 0.777};
+    PointResult r2;
+    r2.samples = {s4, s5};
+    r2.point = {0.3, 0.4};
+    results.pointResults.push_back(r2);
+
+    BinocularSample s7;
+    s7.left.point = {0.888, 0.999};
+    s7.right.point = {0.03, 0.04};
+    BinocularSample s8;
+    s8.left.point = {0.01, 0.02};
+    s8.right.point = {0.05, 0.06};
+    PointResult r3;
+    r3.samples = {s7, s8};
+    r3.point = {0.5, 0.6};
+    results.pointResults.push_back(r3);
+
+    calibrator.set(results);
     interactor.start();
     notifyThatPointIsReady(subjectPresenter);
     notifyThatPointIsReady(subjectPresenter);
     notifyThatPointIsReady(subjectPresenter);
 
-    ::assertEqual<Result>(
-        {{{{0.11F, 0.22F}, {0.33F, 0.44F}}, {{0.55F, 0.66F}, {0.77F, 0.88F}},
-             {0.1F, 0.2F}},
-            {{{0.99F, 0.111F}, {0.222F, 0.333F}},
-                {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
-            {{{0.888F, 0.999F}, {0.01F, 0.02F}},
-                {{0.03F, 0.04F}, {0.05F, 0.06F}}, {0.5F, 0.6F}}},
-        writer.results(),
-        [](const Result &a, const Result &b) { assertEqual(a, b); });
+    ::assertEqual<PointResult>(results.pointResults,
+        writer.results().pointResults,
+        [](const PointResult &a, const PointResult &b) { assertEqual(a, b); });
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(startsPresenter) {
@@ -297,25 +334,48 @@ EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(restarts) {
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(
     presentsResultsAfterFinalPointCalibrated) {
-    calibrator.set({{{{0.11F, 0.22F}, {0.33F, 0.44F}},
-                        {{0.55F, 0.66F}, {0.77F, 0.88F}}, {0.1F, 0.2F}},
-        {{{0.99F, 0.111F}, {0.222F, 0.333F}},
-            {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
-        {{{0.888F, 0.999F}, {0.01F, 0.02F}}, {{0.03F, 0.04F}, {0.05F, 0.06F}},
-            {0.5F, 0.6F}}});
+    Results results;
+    BinocularSample s1;
+    s1.left.point = {0.11, 0.22};
+    s1.right.point = {0.55, 0.66};
+    BinocularSample s2;
+    s2.left.point = {0.33, 0.44};
+    s2.right.point = {0.77, 0.88};
+    PointResult r1;
+    r1.samples = {s1, s2};
+    r1.point = {0.1, 0.2};
+    results.pointResults.push_back(r1);
+
+    BinocularSample s4;
+    s4.left.point = {0.99, 0.111};
+    s4.right.point = {0.444, 0.555};
+    BinocularSample s5;
+    s5.left.point = {0.222, 0.333};
+    s5.right.point = {0.666, 0.777};
+    PointResult r2;
+    r2.samples = {s4, s5};
+    r2.point = {0.3, 0.4};
+    results.pointResults.push_back(r2);
+
+    BinocularSample s7;
+    s7.left.point = {0.888, 0.999};
+    s7.right.point = {0.03, 0.04};
+    BinocularSample s8;
+    s8.left.point = {0.01, 0.02};
+    s8.right.point = {0.05, 0.06};
+    PointResult r3;
+    r3.samples = {s7, s8};
+    r3.point = {0.5, 0.6};
+    results.pointResults.push_back(r3);
+
+    calibrator.set(results);
     interactor.start();
     notifyThatPointIsReady(subjectPresenter);
     notifyThatPointIsReady(subjectPresenter);
     notifyThatPointIsReady(subjectPresenter);
-    ::assertEqual<Result>(
-        {{{{0.11F, 0.22F}, {0.33F, 0.44F}}, {{0.55F, 0.66F}, {0.77F, 0.88F}},
-             {0.1F, 0.2F}},
-            {{{0.99F, 0.111F}, {0.222F, 0.333F}},
-                {{0.444F, 0.555F}, {0.666F, 0.777F}}, {0.3F, 0.4F}},
-            {{{0.888F, 0.999F}, {0.01F, 0.02F}},
-                {{0.03F, 0.04F}, {0.05F, 0.06F}}, {0.5F, 0.6F}}},
-        testerPresenter.results(),
-        [](const Result &a, const Result &b) { assertEqual(a, b); });
+    ::assertEqual<PointResult>(results.pointResults,
+        testerPresenter.results().pointResults,
+        [](const PointResult &a, const PointResult &b) { assertEqual(a, b); });
 }
 
 EYE_TRACKER_CALIBRATION_INTERACTOR_TEST(presentsPointForRedo) {

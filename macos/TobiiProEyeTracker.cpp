@@ -1,4 +1,3 @@
-
 #include "TobiiProEyeTracker.hpp"
 
 #include <tobii_research.h>
@@ -9,6 +8,7 @@
 
 #include <thread>
 #include <functional>
+#include <optional>
 
 namespace av_speech_in_noise {
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
@@ -104,16 +104,27 @@ auto TobiiProTracker::gazeSamples() -> BinocularGazeSamples {
             gazePositionOnDisplayArea(at(gazeData, i).left_eye));
         assign(at(gazeSamples, i).right.position.relativeScreen,
             gazePositionOnDisplayArea(at(gazeData, i).right_eye));
-
         assign(at(gazeSamples, i).left.position.relativeTrackbox,
             at(gazeData, i).left_eye.gaze_point.position_in_user_coordinates);
         assign(at(gazeSamples, i).right.position.relativeTrackbox,
             at(gazeData, i).right_eye.gaze_point.position_in_user_coordinates);
+        at(gazeSamples, i).left.position.valid =
+            at(gazeData, i).left_eye.gaze_point.validity ==
+            TOBII_RESEARCH_VALIDITY_VALID;
+        at(gazeSamples, i).right.position.valid =
+            at(gazeData, i).right_eye.gaze_point.validity ==
+            TOBII_RESEARCH_VALIDITY_VALID;
 
         assign(at(gazeSamples, i).left.origin.relativeTrackbox,
             at(gazeData, i).left_eye.gaze_origin.position_in_user_coordinates);
         assign(at(gazeSamples, i).right.origin.relativeTrackbox,
             at(gazeData, i).right_eye.gaze_origin.position_in_user_coordinates);
+        at(gazeSamples, i).left.origin.valid =
+            at(gazeData, i).left_eye.gaze_origin.validity ==
+            TOBII_RESEARCH_VALIDITY_VALID;
+        at(gazeSamples, i).right.origin.valid =
+            at(gazeData, i).right_eye.gaze_origin.validity ==
+            TOBII_RESEARCH_VALIDITY_VALID;
     }
     return gazeSamples;
 }
@@ -152,7 +163,7 @@ void TobiiProCalibrator::collect(Point p) {
     tobii_research_screen_based_calibration_collect_data(eyetracker, p.x, p.y);
 }
 
-auto TobiiProCalibrator::results() -> std::vector<Result> {
+auto TobiiProCalibrator::results() -> Results {
     ComputeAndApply computeAndApply{eyetracker};
     return computeAndApply.results();
 }
@@ -176,40 +187,84 @@ static auto point(const TobiiResearchNormalizedPoint2D &tobiiPoint2D) -> Point {
     return {tobiiPoint2D.x, tobiiPoint2D.y};
 }
 
+static auto convertValidity(TobiiResearchCalibrationEyeValidity validity)
+    -> std::optional<SampleInfo> {
+    switch (validity) {
+    case TOBII_RESEARCH_CALIBRATION_EYE_VALIDITY_INVALID_AND_NOT_USED: {
+        SampleInfo info{};
+        info.used = false;
+        info.valid = false;
+        return std::make_optional(info);
+    }
+    case TOBII_RESEARCH_CALIBRATION_EYE_VALIDITY_VALID_BUT_NOT_USED: {
+        SampleInfo info{};
+        info.used = false;
+        info.valid = true;
+        return std::make_optional(info);
+    }
+    case TOBII_RESEARCH_CALIBRATION_EYE_VALIDITY_VALID_AND_USED: {
+        SampleInfo info{};
+        info.used = true;
+        info.valid = true;
+        return std::make_optional(info);
+    }
+    case TOBII_RESEARCH_CALIBRATION_EYE_VALIDITY_UNKNOWN: {
+        return std::nullopt;
+    }
+    }
+}
+
 static void transform(
     gsl::span<const TobiiResearchCalibrationSample> tobiiSamples,
-    std::vector<Point> &points,
-    const std::function<TobiiResearchCalibrationEyeData(
-        const TobiiResearchCalibrationSample &)> &f) {
+    std::vector<BinocularSample> &samples) {
     transform(tobiiSamples.begin(), tobiiSamples.end(),
-        std::back_inserter(points),
-        [&f](const TobiiResearchCalibrationSample &tobiiSample) {
-            return point(f(tobiiSample).position_on_display_area);
+        std::back_inserter(samples),
+        [](const TobiiResearchCalibrationSample &tobiiSample) {
+            BinocularSample s;
+            s.left.point = point(tobiiSample.left_eye.position_on_display_area);
+            s.right.point =
+                point(tobiiSample.right_eye.position_on_display_area);
+            s.left.info = convertValidity(tobiiSample.left_eye.validity);
+            s.right.info = convertValidity(tobiiSample.right_eye.validity);
+            return s;
         });
 }
 
-auto TobiiProCalibrator::ComputeAndApply::results() -> std::vector<Result> {
+auto TobiiProCalibrator::ComputeAndApply::results() -> Results {
     if (tobiiResult == nullptr)
         return {};
-    std::vector<Result> results{tobiiResult->calibration_point_count};
+    Results results;
+    switch (tobiiResult->status) {
+    case TOBII_RESEARCH_CALIBRATION_FAILURE:
+        results.success = false;
+        results.successfulEye = std::nullopt;
+        break;
+    case TOBII_RESEARCH_CALIBRATION_SUCCESS:
+        results.success = true;
+        results.successfulEye = std::nullopt;
+        break;
+    case TOBII_RESEARCH_CALIBRATION_SUCCESS_LEFT_EYE:
+        results.success = false;
+        results.successfulEye = std::make_optional(Eye::Left);
+        break;
+    case TOBII_RESEARCH_CALIBRATION_SUCCESS_RIGHT_EYE:
+        results.success = false;
+        results.successfulEye = std::make_optional(Eye::Right);
+        break;
+    }
+    results.pointResults.resize(tobiiResult->calibration_point_count);
     const gsl::span<const TobiiResearchCalibrationPoint> tobiiPoints{
         tobiiResult->calibration_points, tobiiResult->calibration_point_count};
-    transform(tobiiPoints.begin(), tobiiPoints.end(), results.begin(),
+    transform(tobiiPoints.begin(), tobiiPoints.end(),
+        results.pointResults.begin(),
         [](const TobiiResearchCalibrationPoint &tobiiPoint) {
-            Result result;
+            PointResult pointResult;
             const gsl::span<const TobiiResearchCalibrationSample> tobiiSamples{
                 tobiiPoint.calibration_samples,
                 tobiiPoint.calibration_sample_count};
-            transform(tobiiSamples, result.leftEyeMappedPoints,
-                [](const TobiiResearchCalibrationSample &tobiiSample) {
-                    return tobiiSample.left_eye;
-                });
-            transform(tobiiSamples, result.rightEyeMappedPoints,
-                [](const TobiiResearchCalibrationSample &tobiiSample) {
-                    return tobiiSample.right_eye;
-                });
-            result.point = point(tobiiPoint.position_on_display_area);
-            return result;
+            transform(tobiiSamples, pointResult.samples);
+            pointResult.point = point(tobiiPoint.position_on_display_area);
+            return pointResult;
         });
 
     return results;
