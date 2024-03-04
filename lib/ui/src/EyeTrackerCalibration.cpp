@@ -40,18 +40,19 @@ void SubjectPresenterImpl::present(Point p) {
 
 void SubjectPresenterImpl::callback() { observer->notifyThatPointIsReady(); }
 
-void TesterPresenterImpl::present(const std::vector<Result> &results) {
+void TesterPresenterImpl::present(const Results &results) {
     view.clear();
-    for_each(results.begin(), results.end(), [&](const Result &result) {
-        view.drawWhiteCircleWithCenter(windowPoint(result.point));
-        for_each(result.samples.begin(), result.samples.end(),
-            [&](const BinocularSample &sample) {
-                view.drawRed(Line{
-                    windowPoint(result.point), windowPoint(sample.left.point)});
-                view.drawGreen(Line{windowPoint(result.point),
-                    windowPoint(sample.right.point)});
-            });
-    });
+    for_each(results.pointResults.begin(), results.pointResults.end(),
+        [&](const PointResult &result) {
+            view.drawWhiteCircleWithCenter(windowPoint(result.point));
+            for_each(result.samples.begin(), result.samples.end(),
+                [&](const BinocularSample &sample) {
+                    view.drawRed(Line{windowPoint(result.point),
+                        windowPoint(sample.left.point)});
+                    view.drawGreen(Line{windowPoint(result.point),
+                        windowPoint(sample.right.point)});
+                });
+        });
 }
 
 Controller::Controller(Control &control, Interactor &interactor)

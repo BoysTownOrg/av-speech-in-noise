@@ -20,7 +20,7 @@ struct SampleInfo {
 };
 
 struct Sample {
-    Point point;
+    Point point{};
     std::optional<SampleInfo> info;
 };
 
@@ -29,12 +29,20 @@ struct BinocularSample {
     Sample right;
 };
 
-struct Result {
+enum class Eye { Left, Right };
+
+struct PointResult {
     std::vector<BinocularSample> samples;
     Point point{};
 };
 
-void write(std::ostream &, const std::vector<Result> &);
+struct Results {
+    std::vector<PointResult> pointResults;
+    bool success;
+    std::optional<Eye> successfulEye;
+};
+
+void write(std::ostream &, const Results &);
 
 class Interactor {
   public:
@@ -63,7 +71,7 @@ class TesterPresenter {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TesterPresenter);
     virtual void start() = 0;
     virtual void stop() = 0;
-    virtual void present(const std::vector<Result> &) = 0;
+    virtual void present(const Results &) = 0;
 };
 
 class Calibrator {
@@ -73,13 +81,13 @@ class Calibrator {
     virtual void release() = 0;
     virtual void collect(Point) = 0;
     virtual void discard(Point) = 0;
-    virtual auto results() -> std::vector<Result> = 0;
+    virtual auto results() -> Results = 0;
 };
 
 class ResultsWriter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ResultsWriter);
-    virtual void write(const std::vector<Result> &) = 0;
+    virtual void write(const Results &) = 0;
 };
 
 namespace validation {

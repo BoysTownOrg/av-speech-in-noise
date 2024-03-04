@@ -25,7 +25,7 @@ class TobiiProCalibrator : public Calibrator {
     void release() override;
     void discard(Point) override;
     void collect(Point) override;
-    auto results() -> std::vector<Result> override;
+    auto results() -> Results override;
 
     class ComputeAndApply;
 
@@ -35,7 +35,7 @@ class TobiiProCalibrator : public Calibrator {
       public:
         explicit ComputeAndApply(TobiiResearchEyeTracker *);
         auto success() -> bool;
-        auto results() -> std::vector<Result>;
+        auto results() -> Results;
         ~ComputeAndApply();
         ComputeAndApply(const ComputeAndApply &) = delete;
         ComputeAndApply(ComputeAndApply &&) = delete;

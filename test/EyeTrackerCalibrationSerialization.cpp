@@ -15,7 +15,7 @@ class EyeTrackerCalibrationSerializationTests : public ::testing::Test {};
 EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(writesResults) {
     std::stringstream stream;
 
-    std::vector<Result> results;
+    Results results;
     BinocularSample s1{};
     s1.left.point = {0.49F, 0.51F};
     s1.right.point = {0.39F, 0.61F};
@@ -25,10 +25,10 @@ EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(writesResults) {
     BinocularSample s3{};
     s3.left.point = {0.5F, 0.49F};
     s3.right.point = {0.6F, 0.39F};
-    Result r1{};
+    PointResult r1{};
     r1.samples = {s1, s2, s3};
     r1.point = {0.5F, 0.5F};
-    results.push_back(r1);
+    results.pointResults.push_back(r1);
 
     BinocularSample s4{};
     s4.left.point = {0.29F, 0.31F};
@@ -39,10 +39,10 @@ EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(writesResults) {
     BinocularSample s6{};
     s6.left.point = {0.3F, 0.29F};
     s6.right.point = {0.4F, 0.19F};
-    Result r2{};
+    PointResult r2{};
     r2.samples = {s4, s5, s6};
     r2.point = {0.3F, 0.3F};
-    results.push_back(r2);
+    results.pointResults.push_back(r2);
 
     BinocularSample s7{};
     s7.left.point = {0.79F, 0.81F};
@@ -53,10 +53,10 @@ EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(writesResults) {
     BinocularSample s9{};
     s9.left.point = {0.8F, 0.79F};
     s9.right.point = {0.9F, 0.69F};
-    Result r3{};
+    PointResult r3{};
     r3.samples = {s7, s8, s9};
     r3.point = {0.8F, 0.8F};
-    results.push_back(r3);
+    results.pointResults.push_back(r3);
     write(stream, results);
     assertEqual(R"(Point|Left|Right
 [0.5, 0.5]|[0.49, 0.51; 0.48, 0.5; 0.5, 0.49]|[0.39, 0.61; 0.38, 0.6; 0.6, 0.39]

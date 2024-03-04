@@ -1,4 +1,3 @@
-
 #include "TobiiProEyeTracker.hpp"
 
 #include <tobii_research.h>
@@ -164,7 +163,7 @@ void TobiiProCalibrator::collect(Point p) {
     tobii_research_screen_based_calibration_collect_data(eyetracker, p.x, p.y);
 }
 
-auto TobiiProCalibrator::results() -> std::vector<Result> {
+auto TobiiProCalibrator::results() -> Results {
     ComputeAndApply computeAndApply{eyetracker};
     return computeAndApply.results();
 }
@@ -234,21 +233,41 @@ static void transform(
         });
 }
 
-auto TobiiProCalibrator::ComputeAndApply::results() -> std::vector<Result> {
+auto TobiiProCalibrator::ComputeAndApply::results() -> Results {
     if (tobiiResult == nullptr)
         return {};
-    std::vector<Result> results{tobiiResult->calibration_point_count};
+    Results results;
+    results.pointResults.resize(tobiiResult->calibration_point_count);
+    switch (tobiiResult->status) {
+    case TOBII_RESEARCH_CALIBRATION_FAILURE:
+        results.success = false;
+        results.successfulEye = std::nullopt;
+        break;
+    case TOBII_RESEARCH_CALIBRATION_SUCCESS:
+        results.success = true;
+        results.successfulEye = std::nullopt;
+        break;
+    case TOBII_RESEARCH_CALIBRATION_SUCCESS_LEFT_EYE:
+        results.success = false;
+        results.successfulEye = std::make_optional(Eye::Left);
+        break;
+    case TOBII_RESEARCH_CALIBRATION_SUCCESS_RIGHT_EYE:
+        results.success = false;
+        results.successfulEye = std::make_optional(Eye::Right);
+        break;
+    }
     const gsl::span<const TobiiResearchCalibrationPoint> tobiiPoints{
         tobiiResult->calibration_points, tobiiResult->calibration_point_count};
-    transform(tobiiPoints.begin(), tobiiPoints.end(), results.begin(),
+    transform(tobiiPoints.begin(), tobiiPoints.end(),
+        results.pointResults.begin(),
         [](const TobiiResearchCalibrationPoint &tobiiPoint) {
-            Result result;
+            PointResult pointResult;
             const gsl::span<const TobiiResearchCalibrationSample> tobiiSamples{
                 tobiiPoint.calibration_samples,
                 tobiiPoint.calibration_sample_count};
-            transform(tobiiSamples, result.samples);
-            result.point = point(tobiiPoint.position_on_display_area);
-            return result;
+            transform(tobiiSamples, pointResult.samples);
+            pointResult.point = point(tobiiPoint.position_on_display_area);
+            return pointResult;
         });
 
     return results;

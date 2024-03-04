@@ -56,7 +56,7 @@ class TesterPresenterImpl : public TesterPresenter {
     explicit TesterPresenterImpl(TesterView &);
     void start() override;
     void stop() override;
-    void present(const std::vector<Result> &) override;
+    void present(const Results &) override;
 
   private:
     TesterView &view;
