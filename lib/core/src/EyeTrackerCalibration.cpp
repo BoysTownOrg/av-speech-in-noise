@@ -13,33 +13,44 @@ static void write(std::ostream &stream, const Point &p) {
 
 static void write(std::ostream &stream,
     const std::vector<BinocularSample> &samples,
-    const std::function<const Point(const BinocularSample &)> &f) {
-    stream << '[';
-    auto first{true};
+    const std::function<const Sample(const BinocularSample &)> &f) {
     for (const auto &s : samples) {
-        if (!first) {
-            stream << "; ";
+        const auto mono{f(s)};
+        stream << "    ";
+        stream << '[';
+        write(stream, mono.point);
+        stream << ']';
+        stream << " - ";
+        if (mono.info) {
+            const auto info{*mono.info};
+            if (info.used && info.valid)
+                stream << "used and valid";
+            if (info.used && !info.valid)
+                stream << "used but invalid";
+            if (!info.used && info.valid)
+                stream << "not used but valid";
+            if (!info.used && !info.valid)
+                stream << "not used and invalid";
+        } else {
+            stream << "???";
         }
-        write(stream, f(s));
-        first = false;
+        stream << '\n';
     }
-    stream << ']';
 }
 
 void write(std::ostream &stream, const Results &v) {
-    stream << "Point|Left|Right\n";
-    for (const auto &result : v.pointResults) {
+    for (const auto &pointResult : v.pointResults) {
         stream << '[';
-        write(stream, result.point);
+        write(stream, pointResult.point);
         stream << ']';
-
-        stream << '|';
-        write(stream, result.samples,
-            [](const BinocularSample &s) { return s.left.point; });
-        stream << '|';
-        write(stream, result.samples,
-            [](const BinocularSample &s) { return s.right.point; });
         stream << '\n';
+
+        stream << "  Left\n";
+        write(stream, pointResult.samples,
+            [](const BinocularSample &s) { return s.left; });
+        stream << "  Right\n";
+        write(stream, pointResult.samples,
+            [](const BinocularSample &s) { return s.right; });
     }
 }
 
