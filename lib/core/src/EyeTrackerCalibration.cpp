@@ -41,6 +41,8 @@ static void write(std::ostream &stream,
 void write(std::ostream &stream, const Results &v) {
     if (v.success) {
         stream << "successful\n";
+    } else {
+        stream << "failed\n";
     }
     for (const auto &pointResult : v.pointResults) {
         stream << '[';

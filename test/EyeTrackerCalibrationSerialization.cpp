@@ -110,4 +110,11 @@ EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(writesResults) {
 )",
         stream.str());
 }
+EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(writesFailedResults) {
+    std::stringstream stream;
+    Results results;
+    results.success = false;
+    write(stream, results);
+    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(stream.str().rfind("failed", 0), 0);
+}
 }
