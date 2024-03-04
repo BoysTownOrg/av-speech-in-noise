@@ -201,18 +201,15 @@ static auto convertValidity(TobiiResearchCalibrationEyeValidity validity)
         info.used = false;
         info.valid = true;
         return std::make_optional(info);
-        break;
     }
     case TOBII_RESEARCH_CALIBRATION_EYE_VALIDITY_VALID_AND_USED: {
         SampleInfo info{};
         info.used = true;
         info.valid = true;
         return std::make_optional(info);
-        break;
     }
     case TOBII_RESEARCH_CALIBRATION_EYE_VALIDITY_UNKNOWN: {
         return std::nullopt;
-        break;
     }
     }
 }
@@ -237,7 +234,6 @@ auto TobiiProCalibrator::ComputeAndApply::results() -> Results {
     if (tobiiResult == nullptr)
         return {};
     Results results;
-    results.pointResults.resize(tobiiResult->calibration_point_count);
     switch (tobiiResult->status) {
     case TOBII_RESEARCH_CALIBRATION_FAILURE:
         results.success = false;
@@ -256,6 +252,7 @@ auto TobiiProCalibrator::ComputeAndApply::results() -> Results {
         results.successfulEye = std::make_optional(Eye::Right);
         break;
     }
+    results.pointResults.resize(tobiiResult->calibration_point_count);
     const gsl::span<const TobiiResearchCalibrationPoint> tobiiPoints{
         tobiiResult->calibration_points, tobiiResult->calibration_point_count};
     transform(tobiiPoints.begin(), tobiiPoints.end(),
