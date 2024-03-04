@@ -18,6 +18,7 @@ EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(writesResults) {
 
     SampleInfo info{};
     Results results;
+    results.success = true;
     BinocularSample s1{};
     s1.left.point = {0.49F, 0.51F};
     info.used = true;
@@ -78,7 +79,8 @@ EYE_TRACKER_CALIBRATION_SERIALIZATION_TEST(writesResults) {
     r3.point = {0.8F, 0.8F};
     results.pointResults.push_back(r3);
     write(stream, results);
-    assertEqual(R"([0.5, 0.5]
+    assertEqual(R"(successful
+[0.5, 0.5]
   Left
     [0.49, 0.51] - used and valid
     [0.48, 0.5] - not used but valid
