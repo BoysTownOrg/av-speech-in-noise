@@ -250,7 +250,7 @@ class AppKitTesterUI : public TesterView, public Control {
 
 class NaiveResultsWriter : public ResultsWriter {
   public:
-    void write(const std::vector<Result> &results) {
+    void write(const Results &results) override {
         std::filesystem::path homeDirectory{
             [NSURL fileURLWithPath:@"~".stringByExpandingTildeInPath]
                 .fileSystemRepresentation};
