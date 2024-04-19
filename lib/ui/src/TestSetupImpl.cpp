@@ -1,20 +1,19 @@
 #include "TestSetupImpl.hpp"
+#include "Input.hpp"
 
 #include <functional>
 #include <sstream>
-#include <utility>
 
 namespace av_speech_in_noise {
 TestSetupController::TestSetupController(TestSetupControl &control,
-    SessionController &sessionController, SessionControl &sessionControl,
-    TestSetupPresenter &presenter, RunningATest &runningATest,
+    SessionControl &sessionControl, TestSetupPresenter &presenter,
+    RunningATest &runningATest,
     TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader)
-    : control{control}, sessionController{sessionController},
-      sessionControl{sessionControl}, presenter{presenter},
+    : control{control}, sessionControl{sessionControl}, presenter{presenter},
       runningATest{runningATest},
-      testSettingsInterpreter{testSettingsInterpreter}, textFileReader{
-                                                            textFileReader} {
+      testSettingsInterpreter{testSettingsInterpreter},
+      textFileReader{textFileReader} {
     control.attach(this);
 }
 
