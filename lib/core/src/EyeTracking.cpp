@@ -22,7 +22,7 @@ EyeTracking::EyeTracking(EyeTracker &eyeTracker, MaskerPlayer &maskerPlayer,
     : eyeTracker{eyeTracker}, maskerPlayer{maskerPlayer},
       targetPlayer{targetPlayer}, outputFile{outputFile} {}
 
-void EyeTracking::notifyThatTrialWillBegin(int trialNumber) {
+void EyeTracking::notifyThatTrialWillBegin(int /*trialNumber*/) {
     eyeTracker.allocateRecordingTimeSeconds(
         Duration{trialDuration(targetPlayer, maskerPlayer)}.seconds);
     eyeTracker.start();
@@ -49,5 +49,5 @@ void EyeTracking::notifyThatSubjectHasResponded() {
     outputFile.save();
 }
 
-void EyeTracking::notifyThatNewTestIsReady(std::string_view session) {}
+void EyeTracking::notifyThatNewTestIsReady(std::string_view /*session*/) {}
 }
