@@ -137,18 +137,18 @@ EachTargetPlayedOnceThenShuffleAndRepeat::
 void EachTargetPlayedOnceThenShuffleAndRepeat::load(const LocalUrl &d) {
     shuffle(randomizer, files = filesIn(reader, directory_ = d));
     endOfPlaylistCount = 0;
-    currentIndex = 0;
+    currentFileIt = files.begin();
 }
 
 auto EachTargetPlayedOnceThenShuffleAndRepeat::next() -> LocalUrl {
     if (av_speech_in_noise::empty(files))
         return {""};
 
-    currentFile = files.at(currentIndex);
-    if (++currentIndex == files.size()) {
-        currentIndex = 0;
+    currentFile = *currentFileIt;
+    if (++currentFileIt == files.end()) {
         ++endOfPlaylistCount;
         shuffle(randomizer, files);
+        currentFileIt = files.begin();
     }
     return joinPaths(directory_, currentFile);
 }
