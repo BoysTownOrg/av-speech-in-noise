@@ -1,9 +1,13 @@
 #include "assert-utility.hpp"
 #include "AudioReaderStub.hpp"
+
 #include <av-speech-in-noise/player/AudioReader.hpp>
 #include <av-speech-in-noise/player/MaskerPlayerImpl.hpp>
+
 #include <gtest/gtest.h>
+
 #include <gsl/gsl>
+
 #include <cmath>
 #include <algorithm>
 #include <utility>
@@ -921,12 +925,12 @@ MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionStereoMultipleFills) {
     // but must be divisible by framesPerBuffer.
     setRampSeconds(player, 3);
     setSampleRateHz(audioPlayer, 5);
-    auto halfWindowLength = 3 * 5 + 1;
-    auto framesPerBuffer = 4;
+    const auto halfWindowLength = 3 * 5 + 1;
+    const auto framesPerBuffer = 4;
 
     loadStereoAudio(player, audioReader, oneToN(halfWindowLength),
         NtoOne(halfWindowLength));
-    auto buffers = halfWindowLength / framesPerBuffer;
+    const auto buffers = halfWindowLength / framesPerBuffer;
     auto future{
         setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
             std::vector<std::vector<float>> result;
@@ -942,7 +946,7 @@ MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionStereoMultipleFills) {
     const auto audioBuffers{future.get()};
     for (int i = 0; i < buffers; ++i) {
         const auto offset = i * framesPerBuffer;
-        assertChannelEqual(audioBuffers.at(2 * i),
+        assertChannelEqual(audioBuffers.at(2L * i),
             elementWiseProduct(subvector(halfHannWindow(halfWindowLength),
                                    offset, framesPerBuffer),
                 subvector(oneToN(halfWindowLength), offset, framesPerBuffer)));
@@ -1015,7 +1019,7 @@ MASKER_PLAYER_TEST(steadyLevelFollowingFadeInAmplified) {
 }
 
 void assertOnPlayTaskAfterFadeOut(MaskerPlayerImpl &player,
-    AudioPlayerStub &audioPlayer, TimerStub &timer, gsl::index halfWindowLength,
+    AudioPlayerStub &audioPlayer, gsl::index halfWindowLength,
     const std::function<std::vector<std::vector<float>>(
         AudioPlayer::Observer *)> &afterFadeOut,
     const std::function<void(const std::vector<std::vector<float>> &)>
@@ -1046,7 +1050,7 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
     loadMonoAudio(player, audioReader,
         concatenate(oneToN(halfWindowLength), zeros(steadyLevelLength)));
     assertOnPlayTaskAfterFadeOut(
-        player, audioPlayer, timer, halfWindowLength,
+        player, audioPlayer, halfWindowLength,
         [=](AudioPlayer::Observer *observer) {
             std::vector<std::vector<float>> result(
                 halfWindowLength / framesPerBuffer);
@@ -1080,7 +1084,7 @@ MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionOneFill) {
     loadMonoAudio(player, audioReader,
         concatenate(oneToN(halfWindowLength), zeros(steadyLevelLength)));
     assertOnPlayTaskAfterFadeOut(
-        player, audioPlayer, timer, halfWindowLength,
+        player, audioPlayer, halfWindowLength,
         [=](AudioPlayer::Observer *observer) {
             return av_speech_in_noise::fillAudioBuffer(
                 observer, 1, halfWindowLength);
@@ -1102,7 +1106,7 @@ MASKER_PLAYER_TEST(steadyLevelFollowingFadeOut) {
 
     loadMonoAudio(player, audioReader, {4, 5, 6});
     assertOnPlayTaskAfterFadeOut(
-        player, audioPlayer, timer, halfWindowLength,
+        player, audioPlayer, halfWindowLength,
         [=](AudioPlayer::Observer *observer) {
             av_speech_in_noise::fillAudioBuffer(observer, 1, halfWindowLength);
             return av_speech_in_noise::fillAudioBuffer(observer, 1, 3);
@@ -1299,11 +1303,11 @@ MASKER_PLAYER_TEST(fadeInWhileFadingOutDoesNotScheduleAdditionalCallback) {
     auto steadyLevelLength = 3 * 5 + 1;
     loadMonoAudio(player, audioReader, {0});
     assertOnPlayTaskAfterFadeOut(
-        player, audioPlayer, timer, 2 * 3 + 1,
-        [=](AudioPlayer::Observer *observer) {
+        player, audioPlayer, 2 * 3 + 1,
+        [](AudioPlayer::Observer *observer) {
             return av_speech_in_noise::fillAudioBuffer(observer, 1, 2 * 3 + 1);
         },
-        [=](const std::vector<std::vector<float>> &) {
+        [this](const std::vector<std::vector<float>> &) {
             assertFadeInDoesNotScheduleAdditionalCallback();
         },
         steadyLevelLength);
