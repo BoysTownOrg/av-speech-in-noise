@@ -8,6 +8,8 @@
 #include <array>
 #include <algorithm>
 #include <functional>
+#include <map>
+#include <string>
 
 @interface CoordinateResponseMeasureUIActions : NSObject
 @end
@@ -52,8 +54,38 @@ constexpr auto width(const NSRect &r) -> CGFloat { return r.size.width; }
 
 constexpr auto height(const NSRect &r) -> CGFloat { return r.size.height; }
 
+static auto consonantTextButton(
+    ConsonantUIActions *actions, const std::string &text) -> NSButton * {
+    const auto title{nsString(text)};
+    const auto button {
+        [NSButton
+            buttonWithTitle:title
+                     target:actions
+                     action:@selector(notifyThatResponseButtonHasBeenClicked:)]
+    };
+    [button setBezelStyle:NSBezelStyleTexturedSquare];
+    const auto style{[[NSMutableParagraphStyle alloc] init]};
+    [style setAlignment:NSTextAlignmentCenter];
+    [button setAttributedTitle:
+                [[NSAttributedString alloc]
+                    initWithString:title
+                        attributes:[NSDictionary
+                                       dictionaryWithObjectsAndKeys:
+                                           [NSNumber numberWithFloat:-4.0],
+                                       NSStrokeWidthAttributeName,
+                                       NSColor.blackColor,
+                                       NSStrokeColorAttributeName, style,
+                                       NSParagraphStyleAttributeName,
+                                       [NSFont fontWithName:@"Arial-Black"
+                                                       size:48],
+                                       NSFontAttributeName, nil]]];
+    [NSLayoutConstraint activateConstraints:@[
+        [button.widthAnchor constraintEqualToAnchor:button.heightAnchor],
+    ]];
+    return button;
+}
+
 static auto consonantImageButton(
-    std::unordered_map<void *, std::string> &consonants,
     ConsonantUIActions *actions, const std::string &consonant) -> NSButton * {
     const auto image{[NSImage imageNamed:nsString(consonant + ".bmp")]};
     const auto button {
@@ -64,7 +96,6 @@ static auto consonantImageButton(
                      target:actions
                      action:@selector(notifyThatResponseButtonHasBeenClicked:)]
     };
-    consonants[(__bridge void *)button] = consonant;
     button.bordered = NO;
     button.imageScaling = NSImageScaleProportionallyUpOrDown;
     return button;
@@ -74,7 +105,11 @@ static auto nsArray(const std::vector<NSView *> &v) -> NSArray * {
     return [NSArray arrayWithObjects:&v.front() count:v.size()];
 }
 
+using ConsonantButtonCreators = typename std::map<std::string,
+    std::function<NSButton *(ConsonantUIActions *, const std::string &)>>;
+
 static auto equallyDistributedConsonantImageButtonGrid(
+    const ConsonantButtonCreators &creators,
     std::unordered_map<void *, std::string> &consonants,
     ConsonantUIActions *actions,
     const std::vector<std::vector<std::string>> &consonantRows)
@@ -85,7 +120,10 @@ static auto equallyDistributedConsonantImageButtonGrid(
             std::vector<NSView *> buttons(consonantRow.size());
             std::transform(consonantRow.begin(), consonantRow.end(),
                 buttons.begin(), [&](const std::string &consonant) {
-                    return consonantImageButton(consonants, actions, consonant);
+                    const auto button{
+                        creators.at(consonant)(actions, consonant)};
+                    consonants[(__bridge void *)button] = consonant;
+                    return button;
                 });
             const auto row{[NSStackView stackViewWithViews:nsArray(buttons)]};
             return row;
@@ -96,12 +134,18 @@ static auto equallyDistributedConsonantImageButtonGrid(
 
 namespace submitting_consonant {
 AppKitUI::AppKitUI(NSView *view)
-    : // Defer may be critical here...
-      view{view}, actions{[[ConsonantUIActions alloc] init]} {
+    : view{view}, actions{[[ConsonantUIActions alloc] init]} {
     actions->controller = this;
-    responseButtons =
-        equallyDistributedConsonantImageButtonGrid(consonants, actions,
-            {{"b", "c", "d", "h"}, {"k", "m", "n", "p"}, {"s", "t", "v", "z"}});
+    const ConsonantButtonCreators creators;
+    for (const std::string &consonant : std::vector<std::string>{
+             "b", "c", "d", "h", "k", "m", "n", "p", "s", "t", "v", "z"})
+        creators[consonant] = consonantImageButton;
+    for (const std::string &consonant : std::vector<std::string>{"fee", "thee"})
+        creators[consonant] = consonantTextButton;
+    responseButtons = equallyDistributedConsonantImageButtonGrid(creators,
+        consonants, actions,
+        {{"b", "c", "d", "h", "fee"}, {"thee", "k", "m", "n", "p"},
+            {"s", "t", "v", "z"}});
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
 
     readyButton =
