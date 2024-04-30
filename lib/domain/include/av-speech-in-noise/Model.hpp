@@ -48,8 +48,24 @@ struct TestIdentity {
     LocalUrl relativeOutputUrl;
 };
 
+enum class Consonant {
+    bi,
+    si,
+    di,
+    hi,
+    ki,
+    mi,
+    ni,
+    pi,
+    shi,
+    ti,
+    vi,
+    zi,
+    unknown
+};
+
 struct ConsonantResponse {
-    char consonant{};
+    Consonant consonant{};
 };
 
 enum class Syllable {

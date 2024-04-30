@@ -101,7 +101,7 @@ class SubmittingConsonant : public UseCase {
   public:
     void run(FixedLevelMethodImpl &m) override { m.submit(response); }
 
-    void setConsonant(char c) { response.consonant = c; }
+    void setConsonant(Consonant c) { response.consonant = c; }
 };
 
 auto blueColor() { return coordinate_response_measure::Color::blue; }
@@ -397,11 +397,11 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeConsonantPassesConsonant) {
-    submittingConsonant.setConsonant('b');
+    submittingConsonant.setConsonant(Consonant::bi);
     run(submittingConsonant, method);
     writeLastConsonant(method, outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        'b', outputFile.consonantTrial().subjectConsonant);
+        Consonant::bi, outputFile.consonantTrial().subjectConsonant);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeConsonantPassesTarget) {
@@ -414,11 +414,11 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeConsonantPassesTarget) {
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     writeConsonantPassesCorrectConsonant) {
-    evaluator.setCorrectConsonant('b');
+    evaluator.setCorrectConsonant(Consonant::bi);
     run(submittingConsonant, method);
     writeLastConsonant(method, outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        'b', outputFile.consonantTrial().correctConsonant);
+        Consonant::bi, outputFile.consonantTrial().correctConsonant);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(

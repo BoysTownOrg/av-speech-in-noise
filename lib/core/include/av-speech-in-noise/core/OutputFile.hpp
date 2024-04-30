@@ -2,7 +2,9 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_OUTPUTFILEHPP_
 
 #include "IOutputFile.hpp"
+
 #include <av-speech-in-noise/Interface.hpp>
+
 #include <filesystem>
 #include <string>
 
@@ -110,6 +112,37 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "valid right gaze origin relative tracker";
     }
 }
+
+constexpr auto name(Consonant c) -> const char * {
+    switch (c) {
+    case Consonant::bi:
+        return "bi";
+    case Consonant::si:
+        return "si";
+    case Consonant::di:
+        return "di";
+    case Consonant::hi:
+        return "hi";
+    case Consonant::ki:
+        return "ki";
+    case Consonant::mi:
+        return "mi";
+    case Consonant::ni:
+        return "ni";
+    case Consonant::pi:
+        return "pi";
+    case Consonant::shi:
+        return "shi";
+    case Consonant::ti:
+        return "ti";
+    case Consonant::vi:
+        return "vi";
+    case Consonant::zi:
+        return "zi";
+    case Consonant::unknown:
+        return "?";
+    }
+};
 
 constexpr auto name(Syllable i) -> const char * {
     switch (i) {

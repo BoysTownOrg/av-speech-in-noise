@@ -3,6 +3,7 @@
 
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
+
 #include <string>
 
 namespace av_speech_in_noise {
@@ -16,7 +17,7 @@ class ResponseEvaluator {
     virtual auto correctColor(const LocalUrl &)
         -> coordinate_response_measure::Color = 0;
     virtual auto correctNumber(const LocalUrl &) -> int = 0;
-    virtual auto correctConsonant(const LocalUrl &) -> char = 0;
+    virtual auto correctConsonant(const LocalUrl &) -> Consonant = 0;
     virtual auto fileName(const LocalUrl &) -> std::string = 0;
 };
 }

@@ -3,6 +3,7 @@
 
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
+
 #include <exception>
 #include <filesystem>
 #include <ostream>
@@ -44,8 +45,8 @@ struct FixedLevelTrial : Trial {};
 struct CorrectKeywordsTrial : CorrectKeywords, open_set::AdaptiveTrial {};
 
 struct ConsonantTrial : Target, Evaluative {
-    char subjectConsonant{};
-    char correctConsonant{};
+    Consonant subjectConsonant{};
+    Consonant correctConsonant{};
 };
 
 struct ThreeKeywordsTrial : ThreeKeywordsResponse, open_set::Trial {};

@@ -3,8 +3,8 @@
 namespace av_speech_in_noise::submitting_consonant {
 Controller::Controller(TestController &testController, Interactor &interactor,
     Control &control, Presenter &presenter)
-    : testController{testController},
-      interactor{interactor}, control{control}, presenter{presenter} {
+    : testController{testController}, interactor{interactor}, control{control},
+      presenter{presenter} {
     control.attach(this);
 }
 
@@ -14,7 +14,7 @@ void Controller::notifyThatReadyButtonHasBeenClicked() {
 }
 
 void Controller::notifyThatResponseButtonHasBeenClicked() {
-    interactor.submit(ConsonantResponse{control.consonant().front()});
+    interactor.submit(ConsonantResponse{control.consonant()});
     testController.notifyThatUserIsDoneRespondingAndIsReadyForNextTrial();
 }
 

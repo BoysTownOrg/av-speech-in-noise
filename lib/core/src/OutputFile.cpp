@@ -39,6 +39,10 @@ static auto operator<<(std::ostream &os, HeadingItem item) -> std::ostream & {
     return os << name(item);
 }
 
+static auto operator<<(std::ostream &os, Consonant item) -> std::ostream & {
+    return os << name(item);
+}
+
 static auto operator<<(std::ostream &os, Syllable item) -> std::ostream & {
     return os << name(item);
 }

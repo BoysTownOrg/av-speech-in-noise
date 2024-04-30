@@ -2,6 +2,7 @@
 #define TESTS_RESPONSEEVALUATORSTUB_HPP_
 
 #include <av-speech-in-noise/core/IResponseEvaluator.hpp>
+
 #include <utility>
 
 namespace av_speech_in_noise {
@@ -15,7 +16,7 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
         correctColor_ = c;
     }
 
-    void setCorrectConsonant(char c) { correctConsonant_ = c; }
+    void setCorrectConsonant(Consonant c) { correctConsonant_ = c; }
 
     [[nodiscard]] auto correctNumberFilePath() const {
         return correctNumberFilePath_;
@@ -60,7 +61,7 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
         return filePathForFileName_;
     }
 
-    auto correctConsonant(const LocalUrl &url) -> char override {
+    auto correctConsonant(const LocalUrl &url) -> Consonant override {
         correctConsonantUrl_ = url;
         return correctConsonant_;
     }
@@ -87,7 +88,7 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
     LocalUrl correctUrlForConsonantResponse_;
     const coordinate_response_measure::Response *response_{};
     int correctNumber_{};
-    char correctConsonant_{};
+    Consonant correctConsonant_{};
     coordinate_response_measure::Color correctColor_{};
     bool correct_{};
 };
