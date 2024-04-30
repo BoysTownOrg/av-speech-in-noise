@@ -38,7 +38,7 @@ struct SwiftFacemaskStudyTestSetupView<Content: View>: View {
             .yellow)
           Picker("Condition:", selection: $testSettingsShortName.string) {
             ForEach(testSettingsShortNames.items) {
-              Text($0.string)
+              Text($0.string).tag($0.string)
             }
           }.font(.largeTitle).foregroundColor(.yellow)
           snrView
@@ -160,7 +160,7 @@ struct SnrSwitch: View {
   var body: some View {
     Picker("Starting SNR (dB):", selection: $startingSnr.string) {
       ForEach(startingSnrs.items) {
-        Text($0.string)
+        Text($0.string).tag($0.string)
       }
     }.font(.largeTitle).foregroundColor(.yellow)
   }
