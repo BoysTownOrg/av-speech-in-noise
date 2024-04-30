@@ -59,8 +59,7 @@ static void main(NSObject<TestSetupUIFactory> *testSetupUIFactory,
         testSetupViewFactory, sessionUIAdapted, testUIAdapted,
         freeResponseUIAdapted, syllablesUIAdapted, chooseKeywordsUIAdapted,
         correctKeywordsUIAdapted, passFailUIAdapted, subjectPresenter,
-        subjectWindow, &congratulatesUserWhenTestCompletes,
-        "Desktop/check your data here");
+        subjectWindow, &congratulatesUserWhenTestCompletes);
 }
 }
 

@@ -2,17 +2,20 @@
 #define AV_SPEECH_IN_NOISE_LIB_PLAYLIST_INCLUDE_AVSPEECHINNOISE_PLAYLIST_RANDOMIZEDTARGETPLAYLISTSHPP_
 
 #include "SubdirectoryTargetPlaylistReader.hpp"
+
+#include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/TargetPlaylist.hpp>
+
 #include <gsl/gsl>
+
 #include <vector>
-#include <string>
 #include <memory>
 
 namespace av_speech_in_noise {
 namespace target_list {
 class Randomizer {
   public:
-    virtual ~Randomizer() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Randomizer);
     virtual void shuffle(gsl::span<LocalUrl>) = 0;
     virtual void shuffle(gsl::span<int>) = 0;
 };
@@ -134,7 +137,7 @@ class EachTargetPlayedOnceThenShuffleAndRepeat
     LocalUrl currentFile{};
     DirectoryReader *reader;
     target_list::Randomizer *randomizer;
-    gsl::index currentIndex{};
+    LocalUrls::const_iterator currentFileIt{};
     gsl::index repeats{};
     gsl::index endOfPlaylistCount{};
 };

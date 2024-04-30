@@ -206,8 +206,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     submitting_number_keywords::UI &correctKeywordsUI,
     submitting_pass_fail::UI &passFailUI, SubjectPresenter &subjectPresenter,
     NSWindow *subjectNSWindow,
-    SessionController::Observer *sessionControllerObserver,
-    std::filesystem::path relativeOutputDirectory) {
+    SessionController::Observer *sessionControllerObserver) {
     const auto videoNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
     addAutolayoutEnabledSubview(subjectNSWindow.contentView, videoNSView);
@@ -434,9 +433,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         coordinateResponseMeasurePresenter, freeResponsePresenter,
         chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
         consonantPresenter, passFailPresenter};
-    static TestSetupController testSetupController{*testSetupUI,
-        sessionController, sessionUI, testSetupPresenter, runningATest,
-        testSettingsInterpreter, textFileReader};
+    static TestSetupController testSetupController{*testSetupUI, sessionUI,
+        testSetupPresenter, runningATest, testSettingsInterpreter,
+        textFileReader};
     sessionController.attach(sessionControllerObserver);
     NSLog(@"Finished main initialization.");
 }

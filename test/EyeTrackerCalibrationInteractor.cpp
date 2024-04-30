@@ -1,7 +1,10 @@
 #include "assert-utility.hpp"
+
 #include <av-speech-in-noise/core/EyeTrackerCalibration.hpp>
-#include <utility>
+
 #include <gtest/gtest.h>
+
+#include <utility>
 
 namespace av_speech_in_noise::eye_tracker_calibration {
 static void assertEqual(const Point &expected, const Point &actual) {
@@ -10,7 +13,7 @@ static void assertEqual(const Point &expected, const Point &actual) {
 }
 
 static auto operator==(const SampleInfo &a, const SampleInfo &b) -> bool {
-    a.used == b.used &&a.valid == b.valid;
+    return a.used == b.used && a.valid == b.valid;
 }
 
 static void assertEqual(const Sample &expected, const Sample &actual) {

@@ -413,16 +413,16 @@ class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
 class WritingConsonantTrial : public WritingEvaluatedTrial {
   public:
     WritingConsonantTrial() {
-        trial.correctConsonant = 'a';
-        trial.subjectConsonant = 'b';
+        trial.correctConsonant = Consonant::bi;
+        trial.subjectConsonant = Consonant::si;
         trial.target = "c";
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
         WriterStub &writer, gsl::index line) override {
-        assertNthCommaDelimitedEntryOfLine(writer, "a",
+        assertNthCommaDelimitedEntryOfLine(writer, "bi",
             at(headingLabels_, HeadingItem::correctConsonant), line);
-        assertNthCommaDelimitedEntryOfLine(writer, "b",
+        assertNthCommaDelimitedEntryOfLine(writer, "si",
             at(headingLabels_, HeadingItem::subjectConsonant), line);
         assertNthCommaDelimitedEntryOfLine(
             writer, "c", at(headingLabels_, HeadingItem::target), line);

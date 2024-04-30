@@ -7,8 +7,6 @@
 
 #include <gtest/gtest.h>
 
-#include <utility>
-
 namespace av_speech_in_noise::submitting_consonant {
 namespace {
 class ConsonantControlStub : public Control {
@@ -23,12 +21,12 @@ class ConsonantControlStub : public Control {
         listener_->notifyThatResponseButtonHasBeenClicked();
     }
 
-    void setConsonant(std::string c) { consonant_ = std::move(c); }
+    void setConsonant(Consonant c) { consonant_ = c; }
 
-    auto consonant() -> std::string override { return consonant_; }
+    auto consonant() -> Consonant override { return consonant_; }
 
   private:
-    std::string consonant_{"a"};
+    Consonant consonant_{Consonant::unknown};
     Observer *listener_{};
 };
 
@@ -209,9 +207,9 @@ CONSONANT_TASK_CONTROLLER_TEST(hidesReadyButtonAfterClicked) {
 }
 
 CONSONANT_TASK_CONTROLLER_TEST(submitsConsonantAfterResponseButtonIsClicked) {
-    control.setConsonant("b");
+    control.setConsonant(Consonant::bi);
     notifyThatResponseButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL('b', model.response().consonant);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(Consonant::bi, model.response().consonant);
 }
 
 CONSONANT_TASK_CONTROLLER_TEST(

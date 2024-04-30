@@ -3,9 +3,7 @@
 
 #include <gsl/gsl>
 
-#include <cmath>
 #include <functional>
-#include <sstream>
 #include <string_view>
 
 namespace av_speech_in_noise {
@@ -22,8 +20,8 @@ class NullTestMethod : public TestMethod {
 };
 
 class NullObserver : public RunningATest::TestObserver {
-    void notifyThatNewTestIsReady(std::string_view session) override {}
-    void notifyThatTrialWillBegin(int trialNumber) override {}
+    void notifyThatNewTestIsReady(std::string_view /*session*/) override {}
+    void notifyThatTrialWillBegin(int /*trialNumber*/) override {}
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
     void notifyThatStimulusHasEnded() override {}
     void notifyThatSubjectHasResponded() override {}

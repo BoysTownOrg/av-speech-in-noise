@@ -2,12 +2,11 @@
 
 #include <gsl/gsl>
 
-#include <map>
 #include <sstream>
 #include <functional>
 #include <stdexcept>
 #include <string>
-#include <utility>
+#include <cstddef>
 
 namespace av_speech_in_noise {
 static auto entryDelimiter(const std::string &s) -> gsl::index {
@@ -33,22 +32,20 @@ static void resizeTrackingRuleEnough(
         trackingRule(test).resize(v.size());
 }
 
-static void applyToUp(TrackingSequence &sequence, int x) { sequence.up = x; }
+static auto up(TrackingSequence &sequence) -> int & { return sequence.up; }
 
-static void applyToDown(TrackingSequence &sequence, int x) {
-    sequence.down = x;
+static auto down(TrackingSequence &sequence) -> int & { return sequence.down; }
+
+static auto runCount(TrackingSequence &sequence) -> int & {
+    return sequence.runCount;
 }
 
-static void applyToRunCount(TrackingSequence &sequence, int x) {
-    sequence.runCount = x;
+static auto stepSize(TrackingSequence &sequence) -> int & {
+    return sequence.stepSize;
 }
 
-static void applyToStepSize(TrackingSequence &sequence, int x) {
-    sequence.stepSize = x;
-}
-
+// https://stackoverflow.com/a/217605
 static auto trim(std::string s) -> std::string {
-
     s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
         return std::isspace(ch) == 0;
     }));
@@ -59,13 +56,13 @@ static auto trim(std::string s) -> std::string {
     return s;
 }
 
-static void applyToEachTrackingRule(AdaptiveTest &test,
-    const std::function<void(TrackingSequence &, int)> &f,
+static void assignToEachElementOfTrackingRule(AdaptiveTest &test,
+    const std::function<int &(TrackingSequence &)> &elementRef,
     const std::string &entry) {
     auto v{vectorOfInts(entry)};
     resizeTrackingRuleEnough(test, v);
-    for (gsl::index i{0}; i < v.size(); ++i)
-        f(trackingRule(test).at(i), v.at(i));
+    for (std::size_t i{0}; i < v.size(); ++i)
+        elementRef(trackingRule(test).at(i)) = v.at(i);
 }
 
 static auto entryName(const std::string &line) -> std::string {
@@ -157,13 +154,13 @@ static void assign(Calibration &calibration, const std::string &entryName,
 static void assign(AdaptiveTest &test, const std::string &entryName,
     const std::string &entry) {
     if (entryName == name(TestSetting::up))
-        applyToEachTrackingRule(test, applyToUp, entry);
+        assignToEachElementOfTrackingRule(test, up, entry);
     else if (entryName == name(TestSetting::down))
-        applyToEachTrackingRule(test, applyToDown, entry);
+        assignToEachElementOfTrackingRule(test, down, entry);
     else if (entryName == name(TestSetting::reversalsPerStepSize))
-        applyToEachTrackingRule(test, applyToRunCount, entry);
+        assignToEachElementOfTrackingRule(test, runCount, entry);
     else if (entryName == name(TestSetting::stepSizes))
-        applyToEachTrackingRule(test, applyToStepSize, entry);
+        assignToEachElementOfTrackingRule(test, stepSize, entry);
     else if (entryName == name(TestSetting::thresholdReversals))
         test.thresholdReversals = integer(entry);
     else if (entryName == name(TestSetting::startingSnr))

@@ -1,37 +1,37 @@
 #include "ResponseEvaluator.hpp"
+
 #include <gsl/gsl>
-#include <algorithm>
-#include <cctype>
+
 #include <regex>
 #include <filesystem>
 
 namespace av_speech_in_noise {
-static auto consonant(const std::string &match) -> char {
+static auto consonant(const std::string &match) -> Consonant {
     if (match == "bi")
-        return 'b';
+        return Consonant::bi;
     if (match == "si")
-        return 'c';
+        return Consonant::si;
     if (match == "di")
-        return 'd';
+        return Consonant::di;
     if (match == "hi")
-        return 'h';
+        return Consonant::hi;
     if (match == "ki")
-        return 'k';
+        return Consonant::ki;
     if (match == "mi")
-        return 'm';
+        return Consonant::mi;
     if (match == "ni")
-        return 'n';
+        return Consonant::ni;
     if (match == "pi")
-        return 'p';
+        return Consonant::pi;
     if (match == "shi")
-        return 's';
+        return Consonant::shi;
     if (match == "ti")
-        return 't';
+        return Consonant::ti;
     if (match == "vi")
-        return 'v';
+        return Consonant::vi;
     if (match == "zi")
-        return 'z';
-    return '\0';
+        return Consonant::zi;
+    return Consonant::unknown;
 }
 
 static auto color(const std::string &colorName)
@@ -57,12 +57,12 @@ static auto stem(const LocalUrl &url) -> std::string {
     return std::filesystem::path{url.path}.stem();
 }
 
-static auto correctConsonant(const LocalUrl &url) -> char {
+static auto correctConsonant(const LocalUrl &url) -> Consonant {
     const auto stem{av_speech_in_noise::stem(url)};
     std::regex pattern{"choose_(.*?)_.*"};
     std::smatch match;
     std::regex_search(stem, match, pattern);
-    return match.size() > 1 ? consonant(match[1]) : '\0';
+    return match.size() > 1 ? consonant(match[1]) : Consonant::unknown;
 }
 
 static auto correctNumber(const LocalUrl &url) -> int {
@@ -91,7 +91,7 @@ auto ResponseEvaluatorImpl::correctColor(const LocalUrl &url)
     return av_speech_in_noise::correctColor(url);
 }
 
-auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &url) -> char {
+auto ResponseEvaluatorImpl::correctConsonant(const LocalUrl &url) -> Consonant {
     return av_speech_in_noise::correctConsonant(url);
 }
 

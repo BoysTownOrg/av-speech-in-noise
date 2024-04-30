@@ -1,6 +1,7 @@
 #include "RunningATestStub.hpp"
 #include "assert-utility.hpp"
 #include "SessionViewStub.hpp"
+#include "av-speech-in-noise/Interface.hpp"
 
 #include <av-speech-in-noise/ui/TestSetupImpl.hpp>
 
@@ -185,7 +186,7 @@ class TestSetupPresenterStub : public TestSetupPresenter {
 
 class UseCase {
   public:
-    virtual ~UseCase() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(UseCase);
     virtual void run() = 0;
 };
 
@@ -282,10 +283,9 @@ class TestSetupControllerTests : public ::testing::Test {
     TestSettingsInterpreterStub testSettingsInterpreter{
         runningATest, calibration};
     TextFileReaderStub textFileReader;
-    SessionControllerStub sessionController;
     TestSetupPresenterStub presenter;
-    TestSetupController controller{control, sessionController, sessionView,
-        presenter, runningATest, testSettingsInterpreter, textFileReader};
+    TestSetupController controller{control, sessionView, presenter,
+        runningATest, testSettingsInterpreter, textFileReader};
     PlayingCalibration playingCalibration{control};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{control};
@@ -354,10 +354,8 @@ class TestSetupFailureTests : public ::testing::Test {
         runningATest, calibration};
     TestSetupPresenterImpl testSetupPresenter{view, sessionView};
     TextFileReaderStub textFileReader;
-    SessionControllerStub sessionController;
     TestSetupController controller{
         control,
-        sessionController,
         sessionControl,
         testSetupPresenter,
         runningATest,

@@ -1,5 +1,5 @@
-#ifndef TESTS_OUTPUTFILESTUB_HPP_
-#define TESTS_OUTPUTFILESTUB_HPP_
+#ifndef AV_SPEECH_IN_NOISE_TEST_OUTPUTFILESTUB_HPP_
+#define AV_SPEECH_IN_NOISE_TEST_OUTPUTFILESTUB_HPP_
 
 #include "LogString.hpp"
 
@@ -86,7 +86,7 @@ class OutputFileStub : public OutputFile {
         adaptiveTestResult_ = result;
     }
 
-    void write(Writable &writable) override { addToLog("writeWritable "); }
+    void write(Writable &) override { addToLog("writeWritable "); }
 
     void write(const EyeTrackerTargetPlayerSynchronization &e) override {
         eyeTrackerTargetPlayerSynchronization_ = e;

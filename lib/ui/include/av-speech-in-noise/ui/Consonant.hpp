@@ -4,10 +4,10 @@
 #include "View.hpp"
 #include "Task.hpp"
 #include "Test.hpp"
+
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
-#include <string>
 
 namespace av_speech_in_noise::submitting_consonant {
 class Control {
@@ -20,7 +20,7 @@ class Control {
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
     virtual void attach(Observer *) = 0;
-    virtual auto consonant() -> std::string = 0;
+    virtual auto consonant() -> Consonant = 0;
 };
 
 class View : public virtual av_speech_in_noise::View {
