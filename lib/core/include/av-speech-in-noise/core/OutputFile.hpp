@@ -139,6 +139,10 @@ constexpr auto name(Consonant c) -> const char * {
         return "vi";
     case Consonant::zi:
         return "zi";
+    case Consonant::thee:
+        return "thee";
+    case Consonant::fee:
+        return "fee";
     case Consonant::unknown:
         return "?";
     }
