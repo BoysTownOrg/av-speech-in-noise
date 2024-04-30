@@ -65,23 +65,25 @@ static auto consonantTextButton(
                      action:@selector(notifyThatResponseButtonHasBeenClicked:)]
     };
     [button setBezelStyle:NSBezelStyleTexturedSquare];
+    [button setBordered:NO];
+    [button setWantsLayer:YES];
+    [button.layer setBackgroundColor:NSColor.whiteColor.CGColor];
     const auto style{[[NSMutableParagraphStyle alloc] init]};
     [style setAlignment:NSTextAlignmentCenter];
-    [button setAttributedTitle:
-                [[NSAttributedString alloc]
-                    initWithString:title
-                        attributes:[NSDictionary
-                                       dictionaryWithObjectsAndKeys:
-                                           [NSNumber numberWithFloat:-4.0],
-                                       NSStrokeWidthAttributeName,
-                                       NSColor.blackColor,
-                                       NSStrokeColorAttributeName, style,
-                                       NSParagraphStyleAttributeName,
-                                       [NSFont fontWithName:@"Arial-Black"
-                                                       size:48],
-                                       NSFontAttributeName, nil]]];
+    [button
+        setAttributedTitle:
+            [[NSAttributedString alloc]
+                initWithString:title
+                    attributes:[NSDictionary
+                                   dictionaryWithObjectsAndKeys:NSColor
+                                                                    .blackColor,
+                                   NSForegroundColorAttributeName, style,
+                                   NSParagraphStyleAttributeName,
+                                   [NSFont fontWithName:@"Arial-Black" size:48],
+                                   NSFontAttributeName, nil]]];
     [NSLayoutConstraint activateConstraints:@[
         [button.widthAnchor constraintEqualToAnchor:button.heightAnchor],
+        [button.widthAnchor constraintEqualToConstant:150]
     ]];
     return button;
 }
@@ -165,6 +167,7 @@ AppKitUI::AppKitUI(NSView *view)
                 {Consonant::pi, "p"}},
             {{Consonant::shi, "s"}, {Consonant::ti, "t"}, {Consonant::vi, "v"},
                 {Consonant::zi, "z"}}});
+
     responseButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
 
     readyButton =
