@@ -48,7 +48,7 @@ class AppKitUI : public View, public Control {
     void showCursor() override;
 
   private:
-    std::unordered_map<void *, std::string> consonants;
+    std::unordered_map<void *, Consonant> consonants;
     NSView *view;
     NSStackView *responseButtons;
     NSButton *readyButton{};
