@@ -31,6 +31,10 @@ static auto consonant(const std::string &match) -> Consonant {
         return Consonant::vi;
     if (match == "zi")
         return Consonant::zi;
+    if (match == "thi")
+        return Consonant::thi;
+    if (match == "fi")
+        return Consonant::fi;
     return Consonant::unknown;
 }
 

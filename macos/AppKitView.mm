@@ -156,13 +156,13 @@ AppKitUI::AppKitUI(NSView *view)
              Consonant::zi,
          })
         creators[consonant] = consonantImageButton;
-    for (const auto consonant : {Consonant::fee, Consonant::thee})
+    for (const auto consonant : {Consonant::fi, Consonant::thi})
         creators[consonant] = consonantTextButton;
     responseButtons = equallyDistributedConsonantImageButtonGrid(creators,
         consonants, actions,
         {{{Consonant::bi, "b"}, {Consonant::si, "c"}, {Consonant::di, "d"},
-             {Consonant::hi, "h"}, {Consonant::fee, "fee"}},
-            {{Consonant::thee, "thee"}, {Consonant::ki, "k"},
+             {Consonant::hi, "h"}, {Consonant::fi, "fee"}},
+            {{Consonant::thi, "thee"}, {Consonant::ki, "k"},
                 {Consonant::mi, "m"}, {Consonant::ni, "n"},
                 {Consonant::pi, "p"}},
             {{Consonant::shi, "s"}, {Consonant::ti, "t"}, {Consonant::vi, "v"},

@@ -174,6 +174,14 @@ CONSONANT_RESPONSE_EVALUATOR_TEST(z) {
     assertCorrect(evaluator, "choose_zi_3-25_NoMask.mp4", Consonant::zi);
 }
 
+CONSONANT_RESPONSE_EVALUATOR_TEST(thi) {
+    assertCorrect(evaluator, "choose_thi_1-25.mov", Consonant::thi);
+}
+
+CONSONANT_RESPONSE_EVALUATOR_TEST(fi) {
+    assertCorrect(evaluator, "choose_fi_1-25.wav", Consonant::fi);
+}
+
 CONSONANT_RESPONSE_EVALUATOR_TEST(notB) {
     assertIncorrect(evaluator, "choose_zi_3-25_NoMask.mp4", Consonant::bi);
 }

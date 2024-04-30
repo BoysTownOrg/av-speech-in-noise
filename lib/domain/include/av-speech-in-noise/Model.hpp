@@ -61,8 +61,8 @@ enum class Consonant {
     ti,
     vi,
     zi,
-    fee,
-    thee,
+    fi,
+    thi,
     unknown
 };
 
