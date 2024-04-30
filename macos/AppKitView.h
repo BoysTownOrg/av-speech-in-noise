@@ -1,5 +1,5 @@
-#ifndef MACOS_MAIN_COCOAVIEW_H_
-#define MACOS_MAIN_COCOAVIEW_H_
+#ifndef AV_SPEECH_IN_NOISE_MACOS_APPKITVIEW_H_
+#define AV_SPEECH_IN_NOISE_MACOS_APPKITVIEW_H_
 
 #include <av-speech-in-noise/ui/Consonant.hpp>
 #include <av-speech-in-noise/ui/CoordinateResponseMeasure.hpp>
@@ -41,7 +41,7 @@ class AppKitUI : public View, public Control {
     void hideResponseButtons() override;
     void showReadyButton() override;
     void hideReadyButton() override;
-    auto consonant() -> std::string override;
+    auto consonant() -> Consonant override;
     void hideCursor() override;
     void notifyThatResponseButtonHasBeenClicked(id sender);
     void notifyThatReadyButtonHasBeenClicked();

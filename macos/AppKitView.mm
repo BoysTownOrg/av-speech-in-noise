@@ -117,7 +117,7 @@ static auto equallyDistributedConsonantImageButtonGrid(
         &consonantRows) -> NSStackView * {
     std::vector<NSView *> rows(consonantRows.size());
     std::transform(consonantRows.begin(), consonantRows.end(), rows.begin(),
-        [&](const std::vector<std::string> &consonantRow) {
+        [&](const auto &consonantRow) {
             std::vector<NSView *> buttons(consonantRow.size());
             std::transform(consonantRow.begin(), consonantRow.end(),
                 buttons.begin(), [&](const auto &cell) {
@@ -138,7 +138,7 @@ namespace submitting_consonant {
 AppKitUI::AppKitUI(NSView *view)
     : view{view}, actions{[[ConsonantUIActions alloc] init]} {
     actions->controller = this;
-    const ConsonantButtonCreators creators;
+    ConsonantButtonCreators creators;
     for (const auto consonant : {
              Consonant::bi,
              Consonant::si,
