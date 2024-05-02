@@ -437,6 +437,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::
         fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording:
     case Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking:
+    case Method::
+        fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking:
         taskPresenter = &freeResponsePresenter;
         break;
     case Method::adaptivePassFail:

@@ -766,6 +766,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
         &freeResponsePresenter, sessionController.taskPresenter());
 }
 TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking_PassesTaskPresenter) {
+    initializeTest(interpreter,
+        Method::
+            fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &freeResponsePresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking_PassesTaskPresenter) {
     initializeTest(interpreter,
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
