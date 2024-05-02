@@ -605,7 +605,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, predeterminedTargets);
                 av_speech_in_noise::initialize(runningATest, fixedLevelMethod,
-                    test, {std::ref(eyeTracking)});
+                    test, {std::ref(eyeTracking), std::ref(audioRecording)});
             });
         break;
     case Method::
