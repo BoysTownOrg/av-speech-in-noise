@@ -1114,6 +1114,17 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTrackingPassesMethod) {
+    initializeTest(interpreter,
+        Method::
+            fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        name(Method::
+                fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking),
+        fixedLevelMethod.test.identity.method);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithPredeterminedTargetsPassesMethod) {
     initializeTest(
         interpreter, Method::fixedLevelFreeResponseWithPredeterminedTargets);
