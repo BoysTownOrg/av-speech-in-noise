@@ -28,6 +28,7 @@ enum class Method {
     fixedLevelFreeResponseWithPredeterminedTargets,
     fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording,
     fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking,
+    fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking,
     fixedLevelCoordinateResponseMeasureWithTargetReplacement,
     fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
@@ -83,6 +84,10 @@ constexpr auto name(Method c) -> const char * {
     case Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking:
         return "fixed-level free response predetermined stimuli eye "
                "tracking";
+    case Method::
+        fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking:
+        return "fixed-level free response predetermined stimuli audio "
+               "recording eye tracking";
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
         return "fixed-level free response predetermined stimuli";
     case Method::fixedLevelSyllablesWithAllTargets:
