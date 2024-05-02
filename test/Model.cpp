@@ -1,8 +1,4 @@
 #include "OutputFileStub.hpp"
-#include "ModelObserverStub.hpp"
-#include "TargetPlaylistStub.hpp"
-#include "TargetPlaylistSetReaderStub.hpp"
-#include "AudioRecorderStub.hpp"
 #include "assert-utility.hpp"
 
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
@@ -201,8 +197,8 @@ class RunningATestStub : public RunningATest {
   public:
     explicit RunningATestStub(AdaptiveMethodStub &adaptiveMethod,
         FixedLevelMethodStub &fixedLevelMethodStub)
-        : adaptiveMethod{adaptiveMethod}, fixedLevelMethodStub{
-                                              fixedLevelMethodStub} {}
+        : adaptiveMethod{adaptiveMethod},
+          fixedLevelMethodStub{fixedLevelMethodStub} {}
 
     [[nodiscard]] auto nextTrialPreparedIfNeeded() const -> bool {
         return nextTrialPreparedIfNeeded_;
@@ -215,8 +211,8 @@ class RunningATestStub : public RunningATest {
         fixedLevelMethodStub.log("TOOLATE ");
     }
 
-    void initialize(
-        TestMethod *method, const Test &test, TestObserver *observer) override {
+    void initialize(TestMethod *method, const Test &test,
+        std::vector<std::reference_wrapper<TestObserver>> observer) override {
         testMethod_ = method;
         test_ = &test;
         this->observer = observer;
@@ -286,7 +282,7 @@ class RunningATestStub : public RunningATest {
 
     void setPlayTrialTime(std::string s) { playTrialTime_ = std::move(s); }
 
-    const TestObserver *observer{};
+    std::vector<std::reference_wrapper<TestObserver>> observer{};
 
   private:
     std::vector<std::string> audioDevices_{};

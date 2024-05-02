@@ -827,7 +827,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &everyTargetOnce);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &audioRecording);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer.front().get(), &audioRecording);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -837,14 +838,15 @@ TEST_SETTINGS_INTERPRETER_TEST(
             fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &predeterminedTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &audioRecording);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer.front().get(), &audioRecording);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
     initializeTest(interpreter, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         adaptiveMethod.targetListReader, &targetsWithReplacementReader);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, nullptr);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.observer.empty());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -852,14 +854,15 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initializeTest(interpreter, Method::adaptivePassFailWithEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         adaptiveMethod.targetListReader, &targetsWithReplacementReader);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &eyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer.front().get(), &eyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
     initializeTest(interpreter, Method::adaptiveCorrectKeywords);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         adaptiveMethod.targetListReader, &cyclicTargetsReader);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, nullptr);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.observer.empty());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -867,7 +870,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initializeTest(interpreter, Method::adaptiveCorrectKeywordsWithEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         adaptiveMethod.targetListReader, &cyclicTargetsReader);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &eyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer.front().get(), &eyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -875,7 +879,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initializeTest(interpreter, Method::adaptiveCoordinateResponseMeasure);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         adaptiveMethod.targetListReader, &targetsWithReplacementReader);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, nullptr);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.observer.empty());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -884,7 +888,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
         interpreter, Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         adaptiveMethod.targetListReader, &targetsWithReplacementReader);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &eyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer.front().get(), &eyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -893,7 +898,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &silentIntervalTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, nullptr);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.observer.empty());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -902,7 +907,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &targetsWithReplacement);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, nullptr);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.observer.empty());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -912,7 +917,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
             fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &targetsWithReplacement);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &eyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer.front().get(), &eyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -921,7 +927,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &predeterminedTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &eyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer.front().get(), &eyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -930,7 +937,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
         interpreter, Method::fixedLevelFreeResponseWithPredeterminedTargets);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &predeterminedTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, nullptr);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.observer.empty());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -939,7 +946,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &everyTargetOnce);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.observer, &eyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer.front().get(), &eyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {

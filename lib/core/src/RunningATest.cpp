@@ -1,10 +1,8 @@
 #include "RunningATest.hpp"
-#include "av-speech-in-noise/Model.hpp"
 
 #include <gsl/gsl>
 
 #include <functional>
-#include <string_view>
 
 namespace av_speech_in_noise {
 namespace {
@@ -18,19 +16,9 @@ class NullTestMethod : public TestMethod {
     void writeTestingParameters(OutputFile &) override {}
     void writeTestResult(OutputFile &) override {}
 };
-
-class NullObserver : public RunningATest::TestObserver {
-    void notifyThatNewTestIsReady(std::string_view /*session*/) override {}
-    void notifyThatTrialWillBegin(int /*trialNumber*/) override {}
-    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override {}
-    void notifyThatStimulusHasEnded() override {}
-    void notifyThatSubjectHasResponded() override {}
-};
 }
 
 static NullTestMethod nullTestMethod;
-
-static NullObserver nullObserver;
 
 static void useAllChannels(MaskerPlayer &player) { player.useAllChannels(); }
 
@@ -243,10 +231,13 @@ static void preparePlayersForNextTrial(TestMethod *testMethod,
 
 static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, RunningATest::TestObserver *observer,
+    MaskerPlayer &maskerPlayer,
+    const std::vector<std::reference_wrapper<RunningATest::TestObserver>>
+        &observers,
     RealLevel maskerLevel, RealLevel fullScaleLevel,
     RationalNumber videoScale) {
-    observer->notifyThatSubjectHasResponded();
+    for (auto observer : observers)
+        observer.get().notifyThatSubjectHasResponded();
     if (!testMethod->complete()) {
         ++trialNumber_;
         preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
@@ -260,7 +251,9 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
 static void saveOutputFileAndPrepareNextTrialAfter(
     const std::function<void()> &f, TestMethod *testMethod, int &trialNumber_,
     OutputFile &outputFile, Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, RunningATest::TestObserver *observer,
+    MaskerPlayer &maskerPlayer,
+    const std::vector<std::reference_wrapper<RunningATest::TestObserver>>
+        &observer,
     RealLevel maskerLevel, RealLevel fullScaleLevel,
     RationalNumber videoScale) {
     f();
@@ -275,7 +268,7 @@ RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     OutputFile &outputFile, Randomizer &randomizer, Clock &clock)
     : maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
       evaluator{evaluator}, outputFile{outputFile}, randomizer{randomizer},
-      clock{clock}, observer{&nullObserver}, testMethod{&nullTestMethod} {
+      clock{clock}, testMethod{&nullTestMethod} {
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
 }
@@ -285,7 +278,7 @@ void RunningATestImpl::attach(RunningATest::Observer *listener) {
 }
 
 void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
-    RunningATest::TestObserver *observer_) {
+    std::vector<std::reference_wrapper<TestObserver>> observers_) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     if (testMethod_->complete())
@@ -323,10 +316,9 @@ void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
         maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
     }
 
-    if (observer_ == nullptr)
-        observer_ = &nullObserver;
-    observer = observer_;
-    observer->notifyThatNewTestIsReady(test.identity.session);
+    observers = observers_;
+    for (auto observer : observers)
+        observer.get().notifyThatNewTestIsReady(test.identity.session);
 }
 
 void RunningATestImpl::playTrial(const AudioSettings &settings) {
@@ -339,7 +331,8 @@ void RunningATestImpl::playTrial(const AudioSettings &settings) {
         settings.audioDevice);
 
     playTrialTime_ = clock.time();
-    observer->notifyThatTrialWillBegin(trialNumber_);
+    for (auto observer : observers)
+        observer.get().notifyThatTrialWillBegin(trialNumber_);
     if (condition == Condition::audioVisual)
         show(targetPlayer);
     targetPlayer.preRoll();
@@ -357,13 +350,15 @@ void RunningATestImpl::fadeInComplete(const AudioSampleTimeWithOffset &t) {
         Duration{offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
             .seconds};
     targetPlayer.playAt(timeToPlayWithDelay);
-    observer->notifyThatTargetWillPlayAt(timeToPlayWithDelay);
+    for (auto observer : observers)
+        observer.get().notifyThatTargetWillPlayAt(timeToPlayWithDelay);
 }
 
 void RunningATestImpl::fadeOutComplete() {
     if (!keepVideoShown)
         hide(targetPlayer);
-    observer->notifyThatStimulusHasEnded();
+    for (auto observer : observers)
+        observer.get().notifyThatStimulusHasEnded();
     listener_->trialComplete();
     trialInProgress_ = false;
 }
@@ -376,12 +371,12 @@ void RunningATestImpl::submit(
             testMethod->writeLastCoordinateResponse(outputFile);
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, observer, maskerLevel_, fullScaleLevel_, videoScale);
+        maskerPlayer, observers, maskerLevel_, fullScaleLevel_, videoScale);
 }
 
 void RunningATestImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, observer,
+        outputFile, randomizer, targetPlayer, maskerPlayer, observers,
         maskerLevel_, fullScaleLevel_, videoScale);
 }
 

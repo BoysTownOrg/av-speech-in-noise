@@ -80,17 +80,17 @@ class UseCase {
 class InitializingTest : public UseCase {
   public:
     explicit InitializingTest(TestMethod *method, const Test &test,
-        RunningATest::TestObserver *observer)
+        RunningATest::TestObserver &observer)
         : test{test}, method{method}, observer{observer} {}
 
     void run(RunningATestImpl &m) override {
-        m.initialize(method, test, observer);
+        m.initialize(method, test, {std::ref(observer)});
     }
 
   private:
     const Test &test{};
     TestMethod *method;
-    RunningATest::TestObserver *observer;
+    RunningATest::TestObserver &observer;
 };
 
 class InitializingTestWithSingleSpeaker : public UseCase {
@@ -101,7 +101,7 @@ class InitializingTestWithSingleSpeaker : public UseCase {
     void run(RunningATestImpl &m) override {
         Test test;
         test.audioChannelOption = AudioChannelOption::singleSpeaker;
-        m.initialize(method, test, nullptr);
+        m.initialize(method, test, {});
     }
 
   private:
@@ -116,7 +116,7 @@ class InitializingTestWithDelayedMasker : public UseCase {
     void run(RunningATestImpl &m) override {
         Test test;
         test.audioChannelOption = AudioChannelOption::delayedMasker;
-        m.initialize(method, test, nullptr);
+        m.initialize(method, test, {});
     }
 
   private:
@@ -462,7 +462,7 @@ class RunningATestTests : public ::testing::Test {
         calibration, maskerPlayer};
     av_speech_in_noise::Test test{};
     RunningATestObserverStub observer;
-    InitializingTest initializingTest{&testMethod, test, &observer};
+    InitializingTest initializingTest{&testMethod, test, observer};
     InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
         &testMethod};
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{

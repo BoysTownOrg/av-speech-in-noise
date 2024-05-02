@@ -9,6 +9,7 @@
 #include <string>
 #include <cstddef>
 #include <tuple>
+#include <utility>
 
 namespace av_speech_in_noise {
 static auto entryDelimiter(const std::string &s) -> gsl::index {
@@ -370,8 +371,10 @@ static void initialize(AdaptiveMethod &method, const AdaptiveTest &test,
 }
 
 static void initialize(RunningATest &model, TestMethod &method,
-    const Test &test, RunningATest::TestObserver *observer) {
-    model.initialize(&method, test, observer);
+    const Test &test,
+    std::vector<std::reference_wrapper<RunningATest::TestObserver>> observer =
+        {}) {
+    model.initialize(&method, test, std::move(observer));
 }
 
 static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
@@ -458,7 +461,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     adaptiveMethod, test, targetsWithReplacementReader);
                 av_speech_in_noise::initialize(
-                    runningATest, adaptiveMethod, test, nullptr);
+                    runningATest, adaptiveMethod, test);
             });
         break;
     case Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker:
@@ -468,7 +471,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     adaptiveMethod, test, targetsWithReplacementReader);
                 av_speech_in_noise::initialize(
-                    runningATest, adaptiveMethod, test, nullptr);
+                    runningATest, adaptiveMethod, test);
             });
         break;
     case Method::adaptiveCorrectKeywords:
@@ -477,7 +480,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     adaptiveMethod, test, cyclicTargetsReader);
                 av_speech_in_noise::initialize(
-                    runningATest, adaptiveMethod, test, nullptr);
+                    runningATest, adaptiveMethod, test);
             });
         break;
     case Method::adaptiveCorrectKeywordsWithEyeTracking:
@@ -485,8 +488,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             startingSnr, [&](const AdaptiveTest &test) {
                 av_speech_in_noise::initialize(
                     adaptiveMethod, test, cyclicTargetsReader);
-                av_speech_in_noise::initialize(
-                    runningATest, adaptiveMethod, test, &eyeTracking);
+                av_speech_in_noise::initialize(runningATest, adaptiveMethod,
+                    test, {std::ref(eyeTracking)});
             });
         break;
     case Method::adaptiveCoordinateResponseMeasureWithEyeTracking:
@@ -495,8 +498,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             startingSnr, [&](const AdaptiveTest &test) {
                 av_speech_in_noise::initialize(
                     adaptiveMethod, test, targetsWithReplacementReader);
-                av_speech_in_noise::initialize(
-                    runningATest, adaptiveMethod, test, &eyeTracking);
+                av_speech_in_noise::initialize(runningATest, adaptiveMethod,
+                    test, {std::ref(eyeTracking)});
             });
         break;
     case Method::adaptiveCoordinateResponseMeasure:
@@ -506,7 +509,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     adaptiveMethod, test, targetsWithReplacementReader);
                 av_speech_in_noise::initialize(
-                    runningATest, adaptiveMethod, test, nullptr);
+                    runningATest, adaptiveMethod, test);
             });
         break;
     case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
@@ -516,7 +519,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, silentIntervalTargets);
                 av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, nullptr);
+                    runningATest, fixedLevelMethod, test);
             });
         break;
     case Method::fixedLevelFreeResponseWithAllTargets:
@@ -527,7 +530,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, everyTargetOnce);
                 av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, nullptr);
+                    runningATest, fixedLevelMethod, test);
             });
         break;
     case Method::fixedLevelConsonants:
@@ -537,7 +540,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
                 fixedLevelMethod.initialize(test, &eachTargetNTimes);
                 av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, nullptr);
+                    runningATest, fixedLevelMethod, test);
             });
         break;
     case Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking:
@@ -545,8 +548,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, everyTargetOnce);
-                av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, &eyeTracking);
+                av_speech_in_noise::initialize(runningATest, fixedLevelMethod,
+                    test, {std::ref(eyeTracking)});
             });
         break;
     case Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording:
@@ -554,8 +557,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, everyTargetOnce);
-                av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, &audioRecording);
+                av_speech_in_noise::initialize(runningATest, fixedLevelMethod,
+                    test, {std::ref(audioRecording)});
             });
         break;
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
@@ -564,7 +567,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, predeterminedTargets);
                 av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, nullptr);
+                    runningATest, fixedLevelMethod, test);
             });
         break;
     case Method::
@@ -573,8 +576,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, predeterminedTargets);
-                av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, &audioRecording);
+                av_speech_in_noise::initialize(runningATest, fixedLevelMethod,
+                    test, {std::ref(audioRecording)});
             });
         break;
     case Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking:
@@ -582,8 +585,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, predeterminedTargets);
-                av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, &eyeTracking);
+                av_speech_in_noise::initialize(runningATest, fixedLevelMethod,
+                    test, {std::ref(eyeTracking)});
             });
         break;
     case Method::
@@ -593,8 +596,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             [&](const FixedLevelFixedTrialsTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, targetsWithReplacement);
-                av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, &eyeTracking);
+                av_speech_in_noise::initialize(runningATest, fixedLevelMethod,
+                    test, {std::ref(eyeTracking)});
             });
         break;
     case Method::fixedLevelFreeResponseWithTargetReplacement:
@@ -605,7 +608,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, targetsWithReplacement);
                 av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, nullptr);
+                    runningATest, fixedLevelMethod, test);
             });
         break;
     case Method::unknown:
