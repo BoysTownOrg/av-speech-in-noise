@@ -4,12 +4,11 @@
 #include "FreeResponse.hpp"
 #include "Task.hpp"
 #include "TestSetupImpl.hpp"
-#include "SessionController.hpp"
 
-#include "av-speech-in-noise/core/IAdaptiveMethod.hpp"
-#include "av-speech-in-noise/core/IFixedLevelMethod.hpp"
-#include "av-speech-in-noise/core/IRunningATest.hpp"
-#include "av-speech-in-noise/core/TargetPlaylist.hpp"
+#include <av-speech-in-noise/core/IAdaptiveMethod.hpp>
+#include <av-speech-in-noise/core/IFixedLevelMethod.hpp>
+#include <av-speech-in-noise/core/IRunningATest.hpp>
+#include <av-speech-in-noise/core/TargetPlaylist.hpp>
 
 namespace av_speech_in_noise {
 enum class Method {

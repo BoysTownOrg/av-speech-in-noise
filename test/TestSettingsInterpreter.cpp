@@ -7,10 +7,10 @@
 #include "PuzzleStub.hpp"
 
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
+#include <av-speech-in-noise/ui/SessionController.hpp>
 
 #include <gtest/gtest.h>
 
-#include <functional>
 #include <stdexcept>
 
 namespace av_speech_in_noise {
