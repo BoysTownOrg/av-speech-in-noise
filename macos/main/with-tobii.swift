@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 
 // https://stackoverflow.com/a/66200850
 struct AboutView: View {
@@ -246,6 +247,32 @@ class AppMenuReceiver: NSObject {
 @main
 enum SwiftMain {
     static func main() {
+        let terminatingAlert = NSAlert()
+        terminatingAlert.messageText = ""
+        switch AVCaptureDevice.authorizationStatus(for: .audio) {
+            case .authorized:
+                break
+            case .notDetermined: // The user has not yet been asked for camera access.
+                AVCaptureDevice.requestAccess(for: .audio) { granted in
+                    if granted {
+                    }
+                    else {                       
+                        terminatingAlert.informativeText = "User does not grant microphone access. Terminating."
+                        terminatingAlert.runModal()
+                        NSApp.terminate(nil)
+                    }
+                }
+
+            case .denied: // The user has previously denied access.
+                terminatingAlert.informativeText = "User has denied microphone access. Check system privacy settings. Terminating."
+                terminatingAlert.runModal()
+                return
+
+            case .restricted: // The user can't grant access due to restrictions.
+                terminatingAlert.informativeText = "User is restricted from granting microphone access. Terminating."
+                terminatingAlert.runModal()
+                return
+        }
         let eyeTrackerRunMenu = SwiftEyeTrackerRunMenu()
         let eyeTrackerCalibrationValidationTesterUI = EyeTrackerCalibrationValidationTesterUI()
         let appMenuReceiver = AppMenuReceiver(eyeTrackerRunMenu: eyeTrackerRunMenu, eyeTrackerCalibrationValidationTesterUI: eyeTrackerCalibrationValidationTesterUI)
