@@ -37,8 +37,8 @@ AUDIO_RECORDING_TEST(generateFileNameCapturesTimePriorToQueries) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(beginsWith(timeStamp.log(), "capture"));
 }
 
-AUDIO_RECORDING_TEST(startsRecordingWhenStimulusEnds) {
-    audioRecording.notifyThatStimulusHasEnded();
+AUDIO_RECORDING_TEST(startsRecordingWhenTargetAboutToStart) {
+    audioRecording.notifyThatTargetWillPlayAt({});
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(audioRecorder.started());
 }
 

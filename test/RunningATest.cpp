@@ -7,13 +7,15 @@
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
 
+#include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/RunningATest.hpp>
 
+#include <functional>
 #include <gtest/gtest.h>
 
-#include <cmath>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace av_speech_in_noise {
 constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
@@ -73,15 +75,16 @@ class TestMethodStub : public TestMethod {
 
 class UseCase {
   public:
-    virtual ~UseCase() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(UseCase);
     virtual void run(RunningATestImpl &) = 0;
 };
 
 class InitializingTest : public UseCase {
   public:
     explicit InitializingTest(TestMethod *method, const Test &test,
-        RunningATest::TestObserver *observer)
-        : test{test}, method{method}, observer{observer} {}
+        std::vector<std::reference_wrapper<RunningATest::TestObserver>>
+            observer)
+        : test{test}, method{method}, observer{std::move(observer)} {}
 
     void run(RunningATestImpl &m) override {
         m.initialize(method, test, observer);
@@ -90,7 +93,7 @@ class InitializingTest : public UseCase {
   private:
     const Test &test{};
     TestMethod *method;
-    RunningATest::TestObserver *observer;
+    std::vector<std::reference_wrapper<RunningATest::TestObserver>> observer;
 };
 
 class InitializingTestWithSingleSpeaker : public UseCase {
@@ -101,7 +104,7 @@ class InitializingTestWithSingleSpeaker : public UseCase {
     void run(RunningATestImpl &m) override {
         Test test;
         test.audioChannelOption = AudioChannelOption::singleSpeaker;
-        m.initialize(method, test, nullptr);
+        m.initialize(method, test, {});
     }
 
   private:
@@ -116,7 +119,7 @@ class InitializingTestWithDelayedMasker : public UseCase {
     void run(RunningATestImpl &m) override {
         Test test;
         test.audioChannelOption = AudioChannelOption::delayedMasker;
-        m.initialize(method, test, nullptr);
+        m.initialize(method, test, {});
     }
 
   private:
@@ -414,6 +417,8 @@ void runIgnoringFailure(UseCase &useCase, RunningATestImpl &model) {
     try {
         run(useCase, model);
     } catch (const RunningATest::RequestFailure &) {
+        // ignoring
+        0;
     }
 }
 
@@ -462,7 +467,9 @@ class RunningATestTests : public ::testing::Test {
         calibration, maskerPlayer};
     av_speech_in_noise::Test test{};
     RunningATestObserverStub observer;
-    InitializingTest initializingTest{&testMethod, test, &observer};
+    RunningATestObserverStub secondObserver;
+    InitializingTest initializingTest{
+        &testMethod, test, {std::ref(observer), std::ref(secondObserver)}};
     InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
         &testMethod};
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
@@ -743,18 +750,21 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestNotifiesObserverOfNewTest) {
     test.identity.session = "smile";
     run(initializingTest, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("smile", observer.session);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("smile", secondObserver.session);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialNotifiesObserverOfTrialAboutToBegin) {
     run(initializingTest, model);
     run(playingTrial, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, observer.trialNumber);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, secondObserver.trialNumber);
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteNotifiesThatStimulusHasEnded) {
     run(initializingTest, model);
     fadeOutComplete(maskerPlayer);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatStimulusHasEnded);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(secondObserver.notifiedThatStimulusHasEnded);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialCapturesTimeStampForEventualReporting) {
@@ -1095,6 +1105,8 @@ RECOGNITION_TEST_MODEL_TEST(
     run(initializingTest, model);
     model.prepareNextTrialIfNeeded();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(observer.notifiedThatSubjectHasResponded);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        secondObserver.notifiedThatSubjectHasResponded);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

@@ -6,8 +6,8 @@
 namespace av_speech_in_noise {
 AudioRecording::AudioRecording(
     AudioRecorder &audioRecorder, OutputFile &outputFile, TimeStamp &timeStamp)
-    : audioRecorder{audioRecorder}, outputFile{outputFile}, timeStamp{
-                                                                timeStamp} {}
+    : audioRecorder{audioRecorder}, outputFile{outputFile},
+      timeStamp{timeStamp} {}
 
 void AudioRecording::notifyThatTrialWillBegin(int trialNumber) {
     timeStamp.capture();
@@ -24,9 +24,11 @@ void AudioRecording::notifyThatTrialWillBegin(int trialNumber) {
         LocalUrl{outputFile.parentPath() / filename.str()});
 }
 
-void AudioRecording::notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) {}
+void AudioRecording::notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) {
+    audioRecorder.start();
+}
 
-void AudioRecording::notifyThatStimulusHasEnded() { audioRecorder.start(); }
+void AudioRecording::notifyThatStimulusHasEnded() {}
 
 void AudioRecording::notifyThatSubjectHasResponded() { audioRecorder.stop(); }
 

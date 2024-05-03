@@ -12,7 +12,6 @@
 #include <av-speech-in-noise/Model.hpp>
 
 #include <string>
-#include <string_view>
 
 namespace av_speech_in_noise {
 class Clock {
@@ -30,8 +29,8 @@ class RunningATestImpl : public TargetPlayer::Observer,
     RunningATestImpl(TargetPlayer &, MaskerPlayer &, ResponseEvaluator &,
         OutputFile &, Randomizer &, Clock &);
     void attach(RunningATest::Observer *) override;
-    void initialize(
-        TestMethod *, const Test &, RunningATest::TestObserver *) override;
+    void initialize(TestMethod *, const Test &,
+        std::vector<std::reference_wrapper<TestObserver>>) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
     void playLeftSpeakerCalibration(const Calibration &) override;
@@ -59,7 +58,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     Randomizer &randomizer;
     Clock &clock;
     std::string playTrialTime_;
-    RunningATest::TestObserver *observer;
+    std::vector<std::reference_wrapper<TestObserver>> observers;
     RunningATest::Observer *listener_{};
     TestMethod *testMethod{};
     RealLevel maskerLevel_{};

@@ -3,14 +3,17 @@
 
 #include <av-speech-in-noise/core/IRunningATest.hpp>
 
+#include <utility>
+
 namespace av_speech_in_noise {
 class RunningATestStub : public RunningATest {
   public:
     void attach(RunningATest::Observer *a) override { facadeObserver = a; }
-    void initialize(TestMethod *tm, const Test &t, TestObserver *p) override {
+    void initialize(TestMethod *tm, const Test &t,
+        std::vector<std::reference_wrapper<TestObserver>> p) override {
         test = t;
         testMethod = tm;
-        observer = p;
+        observer = std::move(p);
         if (failOnRequest)
             throw RequestFailure{errorMessage};
     }
@@ -51,7 +54,7 @@ class RunningATestStub : public RunningATest {
     Test test;
     RunningATest::Observer *facadeObserver;
     const TestMethod *testMethod{};
-    const TestObserver *observer{};
+    std::vector<std::reference_wrapper<TestObserver>> observer{};
     std::string targetFileName_;
     std::string errorMessage;
     int trialNumber_{};

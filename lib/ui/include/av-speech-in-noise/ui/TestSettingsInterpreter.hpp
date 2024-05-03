@@ -4,12 +4,11 @@
 #include "FreeResponse.hpp"
 #include "Task.hpp"
 #include "TestSetupImpl.hpp"
-#include "SessionController.hpp"
 
-#include "av-speech-in-noise/core/IAdaptiveMethod.hpp"
-#include "av-speech-in-noise/core/IFixedLevelMethod.hpp"
-#include "av-speech-in-noise/core/IRunningATest.hpp"
-#include "av-speech-in-noise/core/TargetPlaylist.hpp"
+#include <av-speech-in-noise/core/IAdaptiveMethod.hpp>
+#include <av-speech-in-noise/core/IFixedLevelMethod.hpp>
+#include <av-speech-in-noise/core/IRunningATest.hpp>
+#include <av-speech-in-noise/core/TargetPlaylist.hpp>
 
 namespace av_speech_in_noise {
 enum class Method {
@@ -29,6 +28,7 @@ enum class Method {
     fixedLevelFreeResponseWithPredeterminedTargets,
     fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording,
     fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking,
+    fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking,
     fixedLevelCoordinateResponseMeasureWithTargetReplacement,
     fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
@@ -84,6 +84,10 @@ constexpr auto name(Method c) -> const char * {
     case Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking:
         return "fixed-level free response predetermined stimuli eye "
                "tracking";
+    case Method::
+        fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking:
+        return "fixed-level free response predetermined stimuli audio "
+               "recording eye tracking";
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
         return "fixed-level free response predetermined stimuli";
     case Method::fixedLevelSyllablesWithAllTargets:
