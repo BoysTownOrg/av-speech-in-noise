@@ -257,9 +257,7 @@ enum SwiftMain {
                     if granted {
                     }
                     else {                       
-                        terminatingAlert.informativeText = "User does not grant microphone access. Terminating."
-                        terminatingAlert.runModal()
-                        NSApp.terminate(nil)
+                        NSLog("WARNING: User does not grant microphone access...")
                     }
                 }
 
