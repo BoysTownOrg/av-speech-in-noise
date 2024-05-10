@@ -70,6 +70,8 @@ struct ConsonantResponse {
     Consonant consonant{};
 };
 
+struct KeyPressResponse {};
+
 enum class Syllable {
     bi,
     di,

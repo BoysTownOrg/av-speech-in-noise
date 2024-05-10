@@ -4,7 +4,6 @@
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 
-#include <stdexcept>
 #include <string>
 
 namespace av_speech_in_noise {
@@ -58,6 +57,14 @@ class Interactor {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
     virtual void submit(const ConsonantResponse &) = 0;
+};
+}
+
+namespace submitting_keypress {
+class Interactor {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
+    virtual void submit(const KeyPressResponse &) = 0;
 };
 }
 }
