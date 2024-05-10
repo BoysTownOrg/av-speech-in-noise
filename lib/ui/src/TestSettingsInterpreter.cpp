@@ -675,7 +675,7 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     TaskPresenter &freeResponsePresenter,
     TaskPresenter &chooseKeywordsPresenter, TaskPresenter &syllablesPresenter,
     TaskPresenter &correctKeywordsPresenter, TaskPresenter &consonantPresenter,
-    TaskPresenter &passFailPresenter)
+    TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
       fixedLevelMethod{fixedLevelMethod}, eyeTracking{eyeTracking},
       audioRecording{audioRecording}, cyclicTargetsReader{cyclicTargetsReader},
@@ -693,5 +693,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       syllablesPresenter{syllablesPresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
       consonantPresenter{consonantPresenter},
-      passFailPresenter{passFailPresenter} {}
+      passFailPresenter{passFailPresenter},
+      keypressPresenter{keypressPresenter} {}
 }
