@@ -1,16 +1,16 @@
-#ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_SUBMITTINGFREERESPONSEHPP_
-#define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_SUBMITTINGFREERESPONSEHPP_
+#ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_SUBMITTINGKEYPRESSHPP_
+#define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_SUBMITTINGKEYPRESSHPP_
 
 #include "IFixedLevelMethod.hpp"
 #include "IModel.hpp"
 #include "IRunningATest.hpp"
 #include "IOutputFile.hpp"
 
-namespace av_speech_in_noise::submitting_free_response {
+namespace av_speech_in_noise::submitting_keypress {
 class InteractorImpl : public Interactor {
   public:
     InteractorImpl(FixedLevelMethod &, RunningATest &, OutputFile &);
-    void submit(const FreeResponse &) override;
+    void submit(const KeyPressResponse &) override;
 
   private:
     FixedLevelMethod &method;

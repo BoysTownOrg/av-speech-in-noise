@@ -9,6 +9,7 @@ add_library(
   src/EyeTrackerCalibration.cpp
   src/AdaptiveTrack.cpp
   src/SubmittingFreeResponse.cpp
+  src/SubmittingKeyPress.cpp
   src/SubmittingPassFail.cpp
   src/SubmittingKeywords.cpp
   src/SubmittingConsonant.cpp
