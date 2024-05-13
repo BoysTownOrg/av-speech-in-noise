@@ -18,6 +18,7 @@ add_executable(
   CoordinateResponseMeasure.cpp
   CorrectKeywords.cpp
   FreeResponse.cpp
+  KeyPress.cpp
   PassFail.cpp
   Test.cpp
   TestSetup.cpp

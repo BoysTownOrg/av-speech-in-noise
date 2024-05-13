@@ -20,28 +20,21 @@ class Control {
     virtual void attach(Observer *) = 0;
 };
 
-class Controller : public Control::Observer {
+class Presenter : public TaskPresenter, public Control::Observer {
   public:
-    Controller(TestController &, Interactor &, Control &);
+    Presenter(TestView &testView, TestController &testController,
+        Interactor &interactor, Control &control);
     void notifyThatKeyHasBeenPressed() override;
-
-  private:
-    TestController &testController;
-    Interactor &interactor;
-    Control &control;
-};
-
-class Presenter : public TaskPresenter {
-  public:
-    explicit Presenter(TestView &);
     void start() override;
     void stop() override;
     void showResponseSubmission() override;
     void hideResponseSubmission() override;
-    void notifyThatTrialHasStarted() override;
 
   private:
     TestView &testView;
+    TestController &testController;
+    Interactor &interactor;
+    Control &control;
 };
 }
 
