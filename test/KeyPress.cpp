@@ -63,12 +63,14 @@ KEY_PRESS_UI_TEST(waitsUntilResponseSubmissionShownToSubmitKeyPress) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(KeyPressed::first, model.response.key);
 }
 
-/*
-KEY_PRESS_UI_TEST(presenterHidesResponseSubmission) {
+KEY_PRESS_UI_TEST(doesntSubmitResponseAfterSubmissionHidden) {
+    presenter.showResponseSubmission();
     presenter.hideResponseSubmission();
-    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
+    control.listener_->notifyThatKeyHasBeenPressed();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.submitted);
 }
 
+/*
 KEY_PRESS_UI_TEST(presenterHidesResponseButtonsWhenStopped) {
     stop(presenter);
     AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);

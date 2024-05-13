@@ -28,9 +28,7 @@ void Presenter::start() { testView.showNextTrialButton(); }
 
 void Presenter::stop() {}
 
-void Presenter::hideResponseSubmission() {
-    // ready = false;
-}
+void Presenter::hideResponseSubmission() { ready = false; }
 
 void Presenter::showResponseSubmission() { ready = true; }
 }
