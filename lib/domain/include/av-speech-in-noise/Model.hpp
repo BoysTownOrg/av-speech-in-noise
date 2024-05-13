@@ -70,7 +70,11 @@ struct ConsonantResponse {
     Consonant consonant{};
 };
 
-struct KeyPressResponse {};
+enum class KeyPressed { first, second, unknown };
+
+struct KeyPressResponse {
+    KeyPressed key;
+};
 
 enum class Syllable {
     bi,

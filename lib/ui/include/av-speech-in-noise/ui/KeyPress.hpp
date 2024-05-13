@@ -18,6 +18,7 @@ class Control {
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
     virtual void attach(Observer *) = 0;
+    virtual auto keyPressed() -> std::string = 0;
 };
 
 class Presenter : public TaskPresenter, public Control::Observer {

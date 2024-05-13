@@ -14,12 +14,17 @@ class ControlStub : public Control {
   public:
     void attach(Observer *e) override { listener_ = e; }
 
+    auto keyPressed() -> std::string override { return keyPressed_; }
+
     Observer *listener_{};
+    std::string keyPressed_{};
 };
 
 class InteractorStub : public Interactor {
   public:
-    void submit(const KeyPressResponse &s) override {}
+    void submit(const KeyPressResponse &s) override { response = s; }
+
+    KeyPressResponse response{};
 };
 
 class KeyPressUITests : public ::testing::Test {
@@ -36,6 +41,13 @@ class KeyPressUITests : public ::testing::Test {
 KEY_PRESS_UI_TEST(presenterShowsReadyButtonWhenStarted) {
     presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testView.nextTrialButtonShown());
+}
+
+KEY_PRESS_UI_TEST(submitsKeyPressResponseOnKeyPress) {
+    control.keyPressed_ = "2";
+    presenter.showResponseSubmission();
+    control.listener_->notifyThatKeyHasBeenPressed();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(KeyPressed::second, model.response.key);
 }
 
 /*
@@ -67,14 +79,6 @@ KEY_PRESS_UI_TEST(presenterClearsFlagWhenShowingResponseSubmission) {
 }
 
 KEY_PRESS_UI_TEST(
-    controllerSubmitsFreeResponseAfterResponseButtonIsClicked) {
-    control.setFreeResponse("a");
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, model.response().response);
-}
-
-KEY_PRESS_UI_TEST(
     controllerSubmitsFlaggedFreeResponseAfterResponseButtonIsClicked) {
     control.setFlagged();
     notifyThatSubmitButtonHasBeenClicked(control);
@@ -94,18 +98,16 @@ KEY_PRESS_UI_TEST(presenterResetsPuzzleOnStart) {
 }
 
 KEY_PRESS_UI_TEST(
-    controllerNotifiesThatUserHasRespondedButTrialIsNotQuiteDoneAfterResponseButtonIsClickedWhenUsingPuzzle) {
-    controller.setNTrialsPerNewPuzzlePiece(1);
-    controller.initialize(true);
+    controllerNotifiesThatUserHasRespondedButTrialIsNotQuiteDoneAfterResponseButtonIsClickedWhenUsingPuzzle)
+{ controller.setNTrialsPerNewPuzzlePiece(1); controller.initialize(true);
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
 }
 
 KEY_PRESS_UI_TEST(
-    controllerNotifiesThatUserHasRespondedButTrialIsNotQuiteDoneAfterResponseButtonIsClickedWhenUsingPuzzleEveryNTrials) {
-    controller.setNTrialsPerNewPuzzlePiece(3);
-    controller.initialize(true);
+    controllerNotifiesThatUserHasRespondedButTrialIsNotQuiteDoneAfterResponseButtonIsClickedWhenUsingPuzzleEveryNTrials)
+{ controller.setNTrialsPerNewPuzzlePiece(3); controller.initialize(true);
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
@@ -132,9 +134,8 @@ KEY_PRESS_UI_TEST(
 }
 
 KEY_PRESS_UI_TEST(
-    controllerNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClickedIfFlaggedAndUsingPuzzle) {
-    controller.initialize(true);
-    control.setFlagged();
+    controllerNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClickedIfFlaggedAndUsingPuzzle)
+{ controller.initialize(true); control.setFlagged();
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
@@ -194,9 +195,8 @@ KEY_PRESS_UI_TEST(
 }
 
 KEY_PRESS_UI_TEST(
-    controllerNotifiesThatUserIsDoneRespondingAfterPuzzleHiddenWhenUsingPuzzle) {
-    controller.initialize(true);
-    notifyThatSubmitButtonHasBeenClicked(control);
+    controllerNotifiesThatUserIsDoneRespondingAfterPuzzleHiddenWhenUsingPuzzle)
+{ controller.initialize(true); notifyThatSubmitButtonHasBeenClicked(control);
     timer.callback();
     timer.callback();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
