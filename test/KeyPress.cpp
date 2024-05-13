@@ -70,42 +70,24 @@ KEY_PRESS_UI_TEST(doesntSubmitResponseAfterSubmissionHidden) {
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.submitted);
 }
 
-/*
-KEY_PRESS_UI_TEST(presenterHidesResponseButtonsWhenStopped) {
-    stop(presenter);
-    AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(view);
-}
-
-KEY_PRESS_UI_TEST(
-    presenterShowsResponseButtonWhenShowingResponseSubmission) {
+KEY_PRESS_UI_TEST(doesntSubmitResponseAfterStopped) {
     presenter.showResponseSubmission();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.freeResponseSubmissionShown());
+    presenter.stop();
+    control.listener_->notifyThatKeyHasBeenPressed();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.submitted);
 }
 
 KEY_PRESS_UI_TEST(
-    presenterClearsFreeResponseWhenShowingResponseSubmission) {
+    notifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
+    control.listener_->notifyThatKeyHasBeenPressed();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
+        testController.notifiedThatUserIsDoneResponding());
     presenter.showResponseSubmission();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.freeResponseCleared());
-}
-
-KEY_PRESS_UI_TEST(presenterClearsFlagWhenShowingResponseSubmission) {
-    presenter.showResponseSubmission();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.flagCleared());
-}
-
-KEY_PRESS_UI_TEST(
-    controllerSubmitsFlaggedFreeResponseAfterResponseButtonIsClicked) {
-    control.setFlagged();
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.response().flagged);
-}
-
-KEY_PRESS_UI_TEST(
-    controllerNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
-    notifyThatSubmitButtonHasBeenClicked(control);
+    control.listener_->notifyThatKeyHasBeenPressed();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
 }
+/*
 
 KEY_PRESS_UI_TEST(presenterResetsPuzzleOnStart) {
     presenter.start();

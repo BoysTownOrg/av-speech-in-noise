@@ -20,13 +20,13 @@ void Presenter::notifyThatKeyHasBeenPressed() {
         else
             response.key = KeyPressed::unknown;
         interactor.submit(response);
-        // testController.notifyThatUserIsDoneResponding();
+        testController.notifyThatUserIsDoneResponding();
     }
 }
 
 void Presenter::start() { testView.showNextTrialButton(); }
 
-void Presenter::stop() {}
+void Presenter::stop() { ready = false; }
 
 void Presenter::hideResponseSubmission() { ready = false; }
 
