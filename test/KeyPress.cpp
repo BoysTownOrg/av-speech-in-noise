@@ -6,8 +6,6 @@
 
 #include <gtest/gtest.h>
 
-#include <utility>
-
 namespace av_speech_in_noise::submitting_keypress {
 namespace {
 class ControlStub : public Control {
@@ -87,118 +85,5 @@ KEY_PRESS_UI_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
 }
-/*
-
-KEY_PRESS_UI_TEST(presenterResetsPuzzleOnStart) {
-    presenter.start();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.hasBeenReset());
-}
-
-KEY_PRESS_UI_TEST(
-    controllerNotifiesThatUserHasRespondedButTrialIsNotQuiteDoneAfterResponseButtonIsClickedWhenUsingPuzzle)
-{ controller.setNTrialsPerNewPuzzlePiece(1); controller.initialize(true);
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
-}
-
-KEY_PRESS_UI_TEST(
-    controllerNotifiesThatUserHasRespondedButTrialIsNotQuiteDoneAfterResponseButtonIsClickedWhenUsingPuzzleEveryNTrials)
-{ controller.setNTrialsPerNewPuzzlePiece(3); controller.initialize(true);
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController.notifiedThatUserIsDoneResponding());
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
-        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
-        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
-    testController.clearNotifications();
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController.notifiedThatUserIsDoneResponding());
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
-        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
-        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
-}
-
-KEY_PRESS_UI_TEST(
-    controllerNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClickedIfFlaggedAndUsingPuzzle)
-{ controller.initialize(true); control.setFlagged();
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController.notifiedThatUserIsDoneResponding());
-}
-
-KEY_PRESS_UI_TEST(
-    controllerShowsPuzzleAfterResponseButtonIsClickedWhenUsingPuzzle) {
-    controller.setNTrialsPerNewPuzzlePiece(1);
-    controller.initialize(true);
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.shown());
-}
-
-KEY_PRESS_UI_TEST(
-    controllerSchedulesCallbackAfterResponseButtonIsClickedWhenUsingPuzzle) {
-    controller.setNTrialsPerNewPuzzlePiece(1);
-    controller.initialize(true);
-    notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
-}
-
-KEY_PRESS_UI_TEST(
-    controllerAdvancesPuzzleAfterFirstCallbackWhenUsingPuzzle) {
-    controller.setNTrialsPerNewPuzzlePiece(1);
-    controller.initialize(true);
-    notifyThatSubmitButtonHasBeenClicked(control);
-    timer.callback();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.advanced());
-}
-
-KEY_PRESS_UI_TEST(
-    controllerHidesPuzzleAfterSecondCallbackWhenUsingPuzzle) {
-    controller.initialize(true);
-    notifyThatSubmitButtonHasBeenClicked(control);
-    timer.callback();
-    timer.callback();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.hidden());
-}
-
-KEY_PRESS_UI_TEST(controllerOnlyAdvancesPuzzleOnceWhenUsingPuzzle) {
-    controller.initialize(true);
-    notifyThatSubmitButtonHasBeenClicked(control);
-    timer.callback();
-    puzzle.clearAdvanced();
-    timer.callback();
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(puzzle.advanced());
-}
-
-KEY_PRESS_UI_TEST(
-    controllerSchedulesCallbackAfterPuzzleAdvancedWhenUsingPuzzle) {
-    controller.setNTrialsPerNewPuzzlePiece(1);
-    controller.initialize(true);
-    notifyThatSubmitButtonHasBeenClicked(control);
-    timer.clearCallbackCount();
-    timer.callback();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
-}
-
-KEY_PRESS_UI_TEST(
-    controllerNotifiesThatUserIsDoneRespondingAfterPuzzleHiddenWhenUsingPuzzle)
-{ controller.initialize(true); notifyThatSubmitButtonHasBeenClicked(control);
-    timer.callback();
-    timer.callback();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController.notifiedThatUserIsDoneResponding());
-}
-*/
 }
 }

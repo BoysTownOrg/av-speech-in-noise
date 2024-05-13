@@ -4,6 +4,7 @@
 #include "Task.hpp"
 #include "Test.hpp"
 
+#include <av-speech-in-noise/core/Player.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
@@ -30,6 +31,7 @@ class Presenter : public TaskPresenter, public Control::Observer {
     void stop() override;
     void showResponseSubmission() override;
     void hideResponseSubmission() override;
+    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &);
 
   private:
     TestView &testView;
