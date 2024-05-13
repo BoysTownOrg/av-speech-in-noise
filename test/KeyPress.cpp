@@ -22,9 +22,13 @@ class ControlStub : public Control {
 
 class InteractorStub : public Interactor {
   public:
-    void submit(const KeyPressResponse &s) override { response = s; }
+    void submit(const KeyPressResponse &s) override {
+        submitted = true;
+        response = s;
+    }
 
     KeyPressResponse response{};
+    bool submitted{false};
 };
 
 class KeyPressUITests : public ::testing::Test {
@@ -48,6 +52,15 @@ KEY_PRESS_UI_TEST(submitsKeyPressResponseOnKeyPress) {
     presenter.showResponseSubmission();
     control.listener_->notifyThatKeyHasBeenPressed();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(KeyPressed::second, model.response.key);
+}
+
+KEY_PRESS_UI_TEST(waitsUntilResponseSubmissionShownToSubmitKeyPress) {
+    control.keyPressed_ = "1";
+    control.listener_->notifyThatKeyHasBeenPressed();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.submitted);
+    presenter.showResponseSubmission();
+    control.listener_->notifyThatKeyHasBeenPressed();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(KeyPressed::first, model.response.key);
 }
 
 /*
