@@ -25,7 +25,7 @@ void InteractorImpl::submit(const KeyPressResponse &response) {
     //     std::filesystem::path{method.currentTarget().path}.filename();
     // trial.time = model.playTrialTime();
     outputFile.write(trial);
-    // outputFile.save();
-    // model.prepareNextTrialIfNeeded();
+    outputFile.save();
+    model.prepareNextTrialIfNeeded();
 }
 }

@@ -653,5 +653,52 @@ SUBMITTING_KEYPRESS_TEST(savesReactionTime) {
         end - start, outputFile.keypressTrial.rt.milliseconds);
 
 }
+
+SUBMITTING_KEYPRESS_TEST(preparesNextTrialIfNeeded) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_KEYPRESS_TEST(
+    savesOutputFileAfterWritingTrial) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+/*
+SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesResponse) {
+    freeResponse.response = "a";
+    interactor.submit(freeResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"a"}, outputFile.freeResponseTrial().response);
+}
+
+SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesFlagged) {
+    freeResponse.flagged = true;
+    interactor.submit(freeResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.freeResponseTrial().flagged);
+}
+
+SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesWithoutFlag) {
+    interactor.submit(freeResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.freeResponseTrial().flagged);
+}
+
+SUBMITTING_KEYPRESS_TEST(submitWritesTime) {
+    model.setPlayTrialTime("a");
+    interactor.submit(freeResponse);
+    assertEqual("a", outputFile.freeResponseTrial().time);
+}
+
+SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesTarget) {
+    testMethod.setCurrentTargetPath("a/b/c.txt");
+    interactor.submit(freeResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c.txt"}, outputFile.freeResponseTrial().target);
+}
+
+SUBMITTING_KEYPRESS_TEST(submitFreeResponseSubmitsResponse) {
+    interactor.submit(freeResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFreeResponse());
+}*/
 }
 }
