@@ -651,7 +651,6 @@ SUBMITTING_KEYPRESS_TEST(savesReactionTime) {
     const auto end{900};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         end - start, outputFile.keypressTrial.rt.milliseconds);
-
 }
 
 SUBMITTING_KEYPRESS_TEST(preparesNextTrialIfNeeded) {
@@ -659,19 +658,18 @@ SUBMITTING_KEYPRESS_TEST(preparesNextTrialIfNeeded) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
 }
 
-SUBMITTING_KEYPRESS_TEST(
-    savesOutputFileAfterWritingTrial) {
+SUBMITTING_KEYPRESS_TEST(savesOutputFileAfterWritingTrial) {
     interactor.submit({});
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
 }
-/*
-SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesResponse) {
-    freeResponse.response = "a";
-    interactor.submit(freeResponse);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, outputFile.freeResponseTrial().response);
-}
 
+SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesResponse) {
+    response.key = KeyPressed::second;
+    interactor.submit(response);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        KeyPressed::second, outputFile.keypressTrial.key);
+}
+/*
 SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesFlagged) {
     freeResponse.flagged = true;
     interactor.submit(freeResponse);
