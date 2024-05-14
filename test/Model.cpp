@@ -680,5 +680,12 @@ SUBMITTING_KEYPRESS_TEST(submitsResponseToTestMethod) {
     interactor.submit(response);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedKeyPressResponse);
 }
+
+SUBMITTING_KEYPRESS_TEST(writesTarget) {
+    testMethod.setCurrentTargetPath("a/b/c.txt");
+    interactor.submit(response);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c.txt"}, outputFile.keypressTrial.target);
+}
 }
 }

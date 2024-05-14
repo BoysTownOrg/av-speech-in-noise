@@ -16,15 +16,13 @@ void InteractorImpl::notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &t) {
 }
 
 void InteractorImpl::submit(const KeyPressResponse &response) {
-    // TODO
     method.submit(response);
     KeyPressTrial trial;
     static_cast<KeyPressResponse &>(trial) = response;
     trial.rt.milliseconds =
         response.seconds * 1000 - targetStartTimeMilliseconds;
-    // trial.target =
-    //     std::filesystem::path{method.currentTarget().path}.filename();
-    // trial.time = model.playTrialTime();
+    trial.target =
+        std::filesystem::path{method.currentTarget().path}.filename();
     outputFile.write(trial);
     outputFile.save();
     model.prepareNextTrialIfNeeded();

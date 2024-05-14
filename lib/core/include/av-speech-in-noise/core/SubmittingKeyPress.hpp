@@ -8,12 +8,12 @@
 #include "IOutputFile.hpp"
 
 namespace av_speech_in_noise::submitting_keypress {
-class InteractorImpl : public Interactor {
+class InteractorImpl : public Interactor, RunningATest::TestObserver {
   public:
     InteractorImpl(
         FixedLevelMethod &, RunningATest &, OutputFile &, MaskerPlayer &);
     void submit(const KeyPressResponse &) override;
-    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &);
+    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
 
   private:
     FixedLevelMethod &method;
