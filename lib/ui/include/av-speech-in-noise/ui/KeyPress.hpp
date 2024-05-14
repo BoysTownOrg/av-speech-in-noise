@@ -4,7 +4,6 @@
 #include "Task.hpp"
 #include "Test.hpp"
 
-#include <av-speech-in-noise/core/IMaskerPlayer.hpp>
 #include <av-speech-in-noise/core/Player.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
@@ -27,21 +26,18 @@ class Control {
 class Presenter : public TaskPresenter, public Control::Observer {
   public:
     Presenter(TestView &testView, TestController &testController,
-        Interactor &interactor, Control &control, MaskerPlayer &);
+        Interactor &interactor, Control &control);
     void notifyThatKeyHasBeenPressed() override;
     void start() override;
     void stop() override;
     void showResponseSubmission() override;
     void hideResponseSubmission() override;
-    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &);
 
   private:
     TestView &testView;
     TestController &testController;
     Interactor &interactor;
     Control &control;
-    MaskerPlayer &maskerPlayer;
-    double targetStartTimeMilliseconds{};
     bool ready{};
 };
 }

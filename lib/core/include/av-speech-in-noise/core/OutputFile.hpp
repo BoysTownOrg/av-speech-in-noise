@@ -251,6 +251,7 @@ class OutputFileImpl : public OutputFile {
     void write(TargetStartTime) override;
     void write(const EyeTrackerTargetPlayerSynchronization &) override;
     void write(const SyllableTrial &) override;
+    void write(const KeyPressTrial &) override { /* TODO */ }
     void write(Writable &) override;
     auto parentPath() -> std::filesystem::path override;
 

@@ -1,6 +1,8 @@
+#include "MaskerPlayerStub.hpp"
 #include "OutputFileStub.hpp"
 #include "assert-utility.hpp"
 
+#include <av-speech-in-noise/core/SubmittingKeyPress.hpp>
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
@@ -197,8 +199,8 @@ class RunningATestStub : public RunningATest {
   public:
     explicit RunningATestStub(AdaptiveMethodStub &adaptiveMethod,
         FixedLevelMethodStub &fixedLevelMethodStub)
-        : adaptiveMethod{adaptiveMethod},
-          fixedLevelMethodStub{fixedLevelMethodStub} {}
+        : adaptiveMethod{adaptiveMethod}, fixedLevelMethodStub{
+                                              fixedLevelMethodStub} {}
 
     [[nodiscard]] auto nextTrialPreparedIfNeeded() const -> bool {
         return nextTrialPreparedIfNeeded_;
@@ -368,6 +370,18 @@ class SubmittingSyllableTests : public ::testing::Test {
     SyllableResponse syllableResponse;
 };
 
+class SubmittingKeypressTests : public ::testing::Test {
+  protected:
+    AdaptiveMethodStub adaptiveTestMethod;
+    FixedLevelMethodStub testMethod;
+    RunningATestStub model{adaptiveTestMethod, testMethod};
+    OutputFileStub outputFile;
+    MaskerPlayerStub maskerPlayer;
+    submitting_keypress::InteractorImpl interactor{
+        testMethod, model, outputFile, maskerPlayer};
+    KeyPressResponse response;
+};
+
 #define SUBMITTING_FREE_RESPONSE_TEST(a) TEST_F(SubmittingFreeResponseTests, a)
 
 #define SUBMITTING_PASS_FAIL_TEST(a) TEST_F(SubmittingPassFailTests, a)
@@ -375,6 +389,8 @@ class SubmittingSyllableTests : public ::testing::Test {
 #define SUBMITTING_KEYWORDS_TEST(a) TEST_F(SubmittingKeywordsTests, a)
 
 #define SUBMITTING_CONSONANT_TEST(a) TEST_F(SubmittingConsonantTests, a)
+
+#define SUBMITTING_KEYPRESS_TEST(a) TEST_F(SubmittingKeypressTests, a)
 
 #define SUBMITTING_NUMBER_KEYWORDS_TEST(a)                                     \
     TEST_F(SubmittingNumberKeywordsTests, a)
@@ -622,6 +638,20 @@ SUBMITTING_CONSONANT_TEST(preparesNextTrialIfNeeded) {
 SUBMITTING_CONSONANT_TEST(savesOutputFileAfterWritingTrial) {
     interactor.submit({});
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+SUBMITTING_KEYPRESS_TEST(savesReactionTime) {
+    maskerPlayer.setNanosecondsFromPlayerTime(123456789);
+    PlayerTimeWithDelay playerTime;
+    playerTime.delay.seconds = .4;
+    interactor.notifyThatTargetWillPlayAt(playerTime);
+    response.seconds = .9;
+    interactor.submit(response);
+    const auto start{(123456789 + 400000000 + 500000) / 1000000};
+    const auto end{900};
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        end - start, outputFile.keypressTrial.rt.milliseconds);
+
 }
 }
 }

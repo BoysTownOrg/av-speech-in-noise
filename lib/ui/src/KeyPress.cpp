@@ -2,24 +2,17 @@
 
 namespace av_speech_in_noise::submitting_keypress {
 Presenter::Presenter(TestView &testView, TestController &testController,
-    Interactor &interactor, Control &control, MaskerPlayer &maskerPlayer)
+    Interactor &interactor, Control &control)
     : testView{testView}, testController{testController},
-      interactor{interactor}, control{control}, maskerPlayer{maskerPlayer} {
+      interactor{interactor}, control{control} {
     control.attach(this);
-}
-
-void Presenter::notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &t) {
-    targetStartTimeMilliseconds =
-        static_cast<double>(
-            (maskerPlayer.nanoseconds(t.playerTime) + 500000) / 1000000) +
-        t.delay.seconds * 1000;
 }
 
 void Presenter::notifyThatKeyHasBeenPressed() {
     if (ready) {
         auto response{KeyPressResponse{}};
         const auto seconds{control.keyPressedSeconds()};
-        response.rt.milliseconds = seconds * 1000 - targetStartTimeMilliseconds;
+        response.seconds = seconds;
         const auto keyPressed{control.keyPressed()};
         if (keyPressed == "1")
             response.key = KeyPressed::first;
