@@ -17,7 +17,7 @@ void InteractorImpl::notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &t) {
 
 void InteractorImpl::submit(const KeyPressResponse &response) {
     // TODO
-    // method.submit(response);
+    method.submit(response);
     KeyPressTrial trial;
     static_cast<KeyPressResponse &>(trial) = response;
     trial.rt.milliseconds =

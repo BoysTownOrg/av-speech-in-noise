@@ -16,6 +16,8 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
         const FixedLevelTest &, FiniteTargetPlaylistWithRepeatables *) override;
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const FreeResponse &) override;
+    void submit(const KeyPressResponse &) override { /* TODO */
+    }
     void submit(const ConsonantResponse &) override;
     void submit(const ThreeKeywordsResponse &) override;
     void submit(const SyllableResponse &) override;

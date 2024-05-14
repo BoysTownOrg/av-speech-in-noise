@@ -60,6 +60,8 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     void submit(const SyllableResponse &r) override { syllableResponse_ = &r; }
 
+    void submit(const KeyPressResponse &) override { /* TODO */ }
+
     KeywordsTestResults keywordsTestResults_{};
     LocalUrl currentTarget_;
     const ThreeKeywordsResponse *threeKeywords_{};

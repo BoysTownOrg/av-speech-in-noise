@@ -139,6 +139,10 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         submittedFreeResponse_ = true;
     }
 
+    void submit(const KeyPressResponse &) override {
+        submittedKeyPressResponse = true;
+    }
+
     auto submittedFreeResponse() const -> bool {
         return submittedFreeResponse_;
     }
@@ -181,6 +185,8 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     }
 
     void submit(const SyllableResponse &r) override { syllableResponse_ = &r; }
+
+    bool submittedKeyPressResponse{};
 
   private:
     KeywordsTestResults keywordsTestResults_{};
@@ -669,34 +675,10 @@ SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesResponse) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         KeyPressed::second, outputFile.keypressTrial.key);
 }
-/*
-SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesFlagged) {
-    freeResponse.flagged = true;
-    interactor.submit(freeResponse);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.freeResponseTrial().flagged);
-}
 
-SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesWithoutFlag) {
-    interactor.submit(freeResponse);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.freeResponseTrial().flagged);
+SUBMITTING_KEYPRESS_TEST(submitsResponseToTestMethod) {
+    interactor.submit(response);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedKeyPressResponse);
 }
-
-SUBMITTING_KEYPRESS_TEST(submitWritesTime) {
-    model.setPlayTrialTime("a");
-    interactor.submit(freeResponse);
-    assertEqual("a", outputFile.freeResponseTrial().time);
-}
-
-SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesTarget) {
-    testMethod.setCurrentTargetPath("a/b/c.txt");
-    interactor.submit(freeResponse);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"c.txt"}, outputFile.freeResponseTrial().target);
-}
-
-SUBMITTING_KEYPRESS_TEST(submitFreeResponseSubmitsResponse) {
-    interactor.submit(freeResponse);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFreeResponse());
-}*/
 }
 }
