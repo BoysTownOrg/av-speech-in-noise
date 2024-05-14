@@ -2,40 +2,24 @@
 
 namespace av_speech_in_noise::submitting_keypress {
 Presenter::Presenter(TestView &testView, TestController &testController,
-    Interactor &interactor, Control &control)
+    Interactor &interactor, Control &control, MaskerPlayer &maskerPlayer)
     : testView{testView}, testController{testController},
-      interactor{interactor}, control{control} {
+      interactor{interactor}, control{control}, maskerPlayer{maskerPlayer} {
     control.attach(this);
 }
 
-/*
-static auto nanoseconds(Delay x) -> std::uintmax_t {
-    return gsl::narrow_cast<std::uintmax_t>(x.seconds * 1e9);
-}
-
-static auto nanoseconds(MaskerPlayer &player, const PlayerTime &t)
-    -> std::uintmax_t {
-    return player.nanoseconds(t);
-}
-
-static auto nanoseconds(MaskerPlayer &player, const PlayerTimeWithDelay &t)
-    -> std::uintmax_t {
-    return nanoseconds(player, t.playerTime) + nanoseconds(t.delay);
-}
-*/
-
 void Presenter::notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &t) {
-    // targetStartTimeMilliseconds =
-    // static_cast<double>((nanoseconds(maskerPlayer, t) + 500_000) /
-    // 1000_000);
+    targetStartTimeMilliseconds =
+        static_cast<double>(
+            (maskerPlayer.nanoseconds(t.playerTime) + 500000) / 1000000) +
+        t.delay.seconds * 1000;
 }
 
 void Presenter::notifyThatKeyHasBeenPressed() {
     if (ready) {
         auto response{KeyPressResponse{}};
-        // auto seconds{control.keyPressedSeconds()};
-        // response.reactionTimeMilliseconds = seconds * 1000 -
-        // targetStartTimeMilliseconds;
+        const auto seconds{control.keyPressedSeconds()};
+        response.rt.milliseconds = seconds * 1000 - targetStartTimeMilliseconds;
         const auto keyPressed{control.keyPressed()};
         if (keyPressed == "1")
             response.key = KeyPressed::first;

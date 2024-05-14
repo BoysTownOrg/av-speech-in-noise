@@ -4,6 +4,7 @@
 #include "Task.hpp"
 #include "Test.hpp"
 
+#include <av-speech-in-noise/core/IMaskerPlayer.hpp>
 #include <av-speech-in-noise/core/Player.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
@@ -20,12 +21,13 @@ class Control {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
     virtual void attach(Observer *) = 0;
     virtual auto keyPressed() -> std::string = 0;
+    virtual auto keyPressedSeconds() -> double = 0;
 };
 
 class Presenter : public TaskPresenter, public Control::Observer {
   public:
     Presenter(TestView &testView, TestController &testController,
-        Interactor &interactor, Control &control);
+        Interactor &interactor, Control &control, MaskerPlayer &);
     void notifyThatKeyHasBeenPressed() override;
     void start() override;
     void stop() override;
@@ -38,6 +40,8 @@ class Presenter : public TaskPresenter, public Control::Observer {
     TestController &testController;
     Interactor &interactor;
     Control &control;
+    MaskerPlayer &maskerPlayer;
+    double targetStartTimeMilliseconds{};
     bool ready{};
 };
 }

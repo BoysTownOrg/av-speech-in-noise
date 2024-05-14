@@ -1,3 +1,4 @@
+#include "MaskerPlayerStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
@@ -14,8 +15,11 @@ class ControlStub : public Control {
 
     auto keyPressed() -> std::string override { return keyPressed_; }
 
+    auto keyPressedSeconds() -> double override { return keyPressedSeconds_; }
+
     Observer *listener_{};
     std::string keyPressed_{};
+    double keyPressedSeconds_{};
 };
 
 class InteractorStub : public Interactor {
@@ -35,7 +39,8 @@ class KeyPressUITests : public ::testing::Test {
     InteractorStub model;
     ControlStub control;
     TestControllerStub testController;
-    Presenter presenter{testView, testController, model, control};
+    MaskerPlayerStub maskerPlayer;
+    Presenter presenter{testView, testController, model, control, maskerPlayer};
 };
 
 #define KEY_PRESS_UI_TEST(a) TEST_F(KeyPressUITests, a)
@@ -84,6 +89,20 @@ KEY_PRESS_UI_TEST(
     control.listener_->notifyThatKeyHasBeenPressed();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
+}
+
+KEY_PRESS_UI_TEST(tbd) {
+    maskerPlayer.setNanosecondsFromPlayerTime(123456789);
+    PlayerTimeWithDelay playerTime;
+    playerTime.delay.seconds = .4;
+    presenter.notifyThatTargetWillPlayAt(playerTime);
+    presenter.showResponseSubmission();
+    control.keyPressedSeconds_ = .9;
+    control.listener_->notifyThatKeyHasBeenPressed();
+    const auto start{(123456789 + 400000000 + 500000) / 1000000};
+    const auto end{900};
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        end - start, model.response.rt.milliseconds);
 }
 }
 }

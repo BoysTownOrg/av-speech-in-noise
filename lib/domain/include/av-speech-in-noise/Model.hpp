@@ -70,10 +70,15 @@ struct ConsonantResponse {
     Consonant consonant{};
 };
 
+struct ReactionTime {
+    double milliseconds;
+};
+
 enum class KeyPressed { first, second, unknown };
 
 struct KeyPressResponse {
     KeyPressed key;
+    ReactionTime rt;
 };
 
 enum class Syllable {
