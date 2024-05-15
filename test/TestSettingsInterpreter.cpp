@@ -792,6 +792,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
         &freeResponsePresenter, sessionController.taskPresenter());
 }
 TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactile_PassesTaskPresenter) {
+    initializeTest(interpreter,
+        Method::
+            fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &keypressPresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking_PassesTaskPresenter) {
     initializeTest(interpreter,
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);

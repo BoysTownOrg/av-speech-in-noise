@@ -448,6 +448,10 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking:
         taskPresenter = &freeResponsePresenter;
         break;
+    case Method::
+        fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation:
+        taskPresenter = &keypressPresenter;
+        break;
     case Method::adaptivePassFail:
     case Method::adaptivePassFailWithEyeTracking:
         taskPresenter = &passFailPresenter;
