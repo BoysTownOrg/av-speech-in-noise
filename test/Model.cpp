@@ -170,12 +170,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         return threeKeywords_;
     }
 
-    auto syllableResponse() -> const SyllableResponse * {
-        return syllableResponse_;
-    }
-
-    void submit(const SyllableResponse &r) override { syllableResponse_ = &r; }
-
     bool submittedFlaggable{};
 
   private:
@@ -183,7 +177,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     std::stringstream log_{};
     LocalUrl currentTarget_;
     const ThreeKeywordsResponse *threeKeywords_{};
-    const SyllableResponse *syllableResponse_{};
     const FixedLevelTest *test_{};
     const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
     TargetPlaylist *targetList_{};
@@ -595,8 +588,7 @@ SUBMITTING_SYLLABLE(writesTarget) {
 
 SUBMITTING_SYLLABLE(submitsToTestMethod) {
     interactor.submit(syllableResponse);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &syllableResponse, fixedLevelMethod.syllableResponse());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(fixedLevelMethod.submittedFlaggable);
 }
 
 SUBMITTING_SYLLABLE(submitCorrectSyllable) {

@@ -56,12 +56,9 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         threeKeywords_ = &r;
     }
 
-    void submit(const SyllableResponse &r) override { syllableResponse_ = &r; }
-
     KeywordsTestResults keywordsTestResults_{};
     LocalUrl currentTarget_;
     const ThreeKeywordsResponse *threeKeywords_{};
-    const SyllableResponse *syllableResponse_{};
     FixedLevelTest test{};
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest{};
     TargetPlaylist *targetList{};
