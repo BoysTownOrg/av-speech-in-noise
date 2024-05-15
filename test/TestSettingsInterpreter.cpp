@@ -645,6 +645,11 @@ TEST_SETTINGS_INTERPRETER_TEST(
             fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking);
 }
 TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactile_PassesTestMethod) {
+    ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_METHOD(Method::
+            fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation);
+}
+TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking_PassesTestMethod) {
     ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_METHOD(
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
