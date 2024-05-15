@@ -124,7 +124,7 @@ static void update(
     finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
 }
 
-void FixedLevelMethodImpl::submit(const FreeResponse &response) {
+void FixedLevelMethodImpl::submit(const Flaggable &response) {
     if (usingFiniteTargetPlaylist_)
         update(finiteTargetPlaylistWithRepeatables, finiteTargetPlaylist,
             response.flagged, finiteTargetsExhausted_);

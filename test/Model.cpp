@@ -135,17 +135,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     auto snr() -> SNR override { return SNR{}; }
 
-    void submit(const FreeResponse &) override {
-        submittedFreeResponse_ = true;
-    }
-
-    void submit(const KeyPressResponse &) override {
-        submittedKeyPressResponse = true;
-    }
-
-    auto submittedFreeResponse() const -> bool {
-        return submittedFreeResponse_;
-    }
+    void submit(const Flaggable &) override { submittedFlaggable = true; }
 
     void submit(const ConsonantResponse &) override {
         submittedConsonant_ = true;
@@ -186,7 +176,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     void submit(const SyllableResponse &r) override { syllableResponse_ = &r; }
 
-    bool submittedKeyPressResponse{};
+    bool submittedFlaggable{};
 
   private:
     KeywordsTestResults keywordsTestResults_{};
@@ -198,15 +188,14 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
     TargetPlaylist *targetList_{};
     bool submittedConsonant_{};
-    bool submittedFreeResponse_{};
 };
 
 class RunningATestStub : public RunningATest {
   public:
     explicit RunningATestStub(AdaptiveMethodStub &adaptiveMethod,
         FixedLevelMethodStub &fixedLevelMethodStub)
-        : adaptiveMethod{adaptiveMethod}, fixedLevelMethodStub{
-                                              fixedLevelMethodStub} {}
+        : adaptiveMethod{adaptiveMethod},
+          fixedLevelMethodStub{fixedLevelMethodStub} {}
 
     [[nodiscard]] auto nextTrialPreparedIfNeeded() const -> bool {
         return nextTrialPreparedIfNeeded_;
@@ -447,7 +436,7 @@ SUBMITTING_FREE_RESPONSE_TEST(submitFreeResponseWritesTarget) {
 
 SUBMITTING_FREE_RESPONSE_TEST(submitFreeResponseSubmitsResponse) {
     interactor.submit(freeResponse);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFreeResponse());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFlaggable);
 }
 
 SUBMITTING_PASS_FAIL_TEST(
@@ -678,7 +667,7 @@ SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesResponse) {
 
 SUBMITTING_KEYPRESS_TEST(submitsResponseToTestMethod) {
     interactor.submit(response);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedKeyPressResponse);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFlaggable);
 }
 
 SUBMITTING_KEYPRESS_TEST(writesTarget) {

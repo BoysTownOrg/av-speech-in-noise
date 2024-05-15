@@ -72,7 +72,7 @@ struct ConsonantResponse {
 
 enum class KeyPressed { first, second, unknown };
 
-struct KeyPressResponse {
+struct KeyPressResponse : Flaggable {
     KeyPressed key{};
     double seconds{};
 };
