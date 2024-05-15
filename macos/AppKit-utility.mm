@@ -15,6 +15,17 @@
 }
 @end
 
+@implementation KeyableSubjectWindow
+- (void)keyDown:(NSEvent *)event {
+    if (listener != nullptr)
+        listener->onPress(event);
+}
+
+- (BOOL)canBecomeKeyWindow {
+    return YES;
+}
+@end
+
 namespace av_speech_in_noise {
 auto nsTabViewControllerWithoutTabControl() -> NSTabViewController * {
     const auto controller{[[NSTabViewController alloc] init]};
@@ -31,13 +42,13 @@ void addAutolayoutEnabledSubview(NSView *parent, NSView *child) {
     [parent addSubview:child];
 }
 
-auto subjectWindow() -> NSWindow * {
+auto subjectWindow() -> KeyableSubjectWindow * {
     const auto screen{[[NSScreen screens] lastObject]};
     const auto screenFrame{screen.frame};
     const auto nsViewController{nsTabViewControllerWithoutTabControl()};
     nsViewController.view.frame = screenFrame;
-    const auto window{
-        [NSWindow windowWithContentViewController:nsViewController]};
+    const auto window{[KeyableSubjectWindow
+        windowWithContentViewController:nsViewController]};
     [window setStyleMask:NSWindowStyleMaskBorderless];
     [window setFrame:screenFrame display:YES];
     window.level = NSScreenSaverWindowLevel;

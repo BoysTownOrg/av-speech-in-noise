@@ -8,7 +8,7 @@
 #include "IOutputFile.hpp"
 
 namespace av_speech_in_noise::submitting_keypress {
-class InteractorImpl : public Interactor, RunningATest::TestObserver {
+class InteractorImpl : public Interactor, public RunningATest::TestObserver {
   public:
     InteractorImpl(
         FixedLevelMethod &, RunningATest &, OutputFile &, MaskerPlayer &);
