@@ -11,15 +11,15 @@ Presenter::Presenter(TestView &testView, TestController &testController,
 void Presenter::notifyThatKeyHasBeenPressed() {
     if (ready) {
         auto response{KeyPressResponse{}};
-        const auto seconds{control.keyPressedSeconds()};
-        response.seconds = seconds;
         const auto keyPressed{control.keyPressed()};
         if (keyPressed == "1")
             response.key = KeyPressed::first;
         else if (keyPressed == "2")
             response.key = KeyPressed::second;
         else
-            response.key = KeyPressed::unknown;
+            return;
+        const auto seconds{control.keyPressedSeconds()};
+        response.seconds = seconds;
         interactor.submit(response);
         testController.notifyThatUserIsDoneResponding();
     }

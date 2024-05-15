@@ -17,7 +17,7 @@ class ControlStub : public Control {
     auto keyPressedSeconds() -> double override { return keyPressedSeconds_; }
 
     Observer *listener_{};
-    std::string keyPressed_{};
+    std::string keyPressed_{"1"};
     double keyPressedSeconds_{};
 };
 
@@ -62,6 +62,13 @@ KEY_PRESS_UI_TEST(waitsUntilResponseSubmissionShownToSubmitKeyPress) {
     presenter.showResponseSubmission();
     control.listener_->notifyThatKeyHasBeenPressed();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(KeyPressed::first, model.response.key);
+}
+
+KEY_PRESS_UI_TEST(doesntSubmitResponseFromUnknownKey) {
+    presenter.showResponseSubmission();
+    control.keyPressed_ = "?";
+    control.listener_->notifyThatKeyHasBeenPressed();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.submitted);
 }
 
 KEY_PRESS_UI_TEST(doesntSubmitResponseAfterSubmissionHidden) {
