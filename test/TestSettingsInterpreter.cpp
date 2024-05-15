@@ -906,6 +906,19 @@ TEST_SETTINGS_INTERPRETER_TEST(
         &runningATest.observer[1].get(), &audioRecording);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileSelectsAudioRecordingAndEyeTracking) {
+    initializeTest(interpreter,
+        Method::
+            fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        fixedLevelMethod.targetList, &predeterminedTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer[0].get(), &eyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer[1].get(), &audioRecording);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
     initializeTest(interpreter, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
