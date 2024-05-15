@@ -5,6 +5,7 @@
 #include <av-speech-in-noise/Model.hpp>
 
 #include <gtest/gtest.h>
+
 #include <gsl/gsl>
 
 #include <vector>
@@ -449,6 +450,35 @@ class WritingConsonantTrial : public WritingEvaluatedTrial {
         {HeadingItem::evaluation, 3}, {HeadingItem::target, 4}};
 };
 
+class WritingKeyPressTrial : public WritingTrial {
+  public:
+    WritingKeyPressTrial() {
+        trial.target = "a";
+        trial.key = KeyPressed::second;
+        trial.rt.milliseconds = 3.4;
+    }
+
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return headingLabels_;
+    }
+
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "a", at(headingLabels_, HeadingItem::target), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "second",
+            at(headingLabels_, HeadingItem::keyPressed), line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "3.4", at(headingLabels_, HeadingItem::reactionTime), line);
+    }
+
+    void run(OutputFileImpl &file) override { file.write(trial); }
+
+    KeyPressTrial trial;
+    std::map<HeadingItem, gsl::index> headingLabels_{{HeadingItem::target, 1},
+        {HeadingItem::keyPressed, 2}, {HeadingItem::reactionTime, 3}};
+};
+
 class WritingFreeResponseTrial : public WritingFlaggableTrial {
   public:
     WritingFreeResponseTrial() {
@@ -602,6 +632,7 @@ class OutputFileTests : public ::testing::Test {
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
     WritingConsonantTrial writingConsonantTrial;
     WritingFreeResponseTrial writingFreeResponseTrial;
+    WritingKeyPressTrial writingKeyPressTrial;
     WritingThreeKeywordsTrial writingThreeKeywordsTrial;
     WritingSyllableTrial writingSyllableTrial;
     WritingFixedLevelTest writingFixedLevelTest;
@@ -720,6 +751,10 @@ OUTPUT_FILE_TEST(
 
 OUTPUT_FILE_TEST(writingFreeResponseTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingFreeResponseTrial);
+}
+
+OUTPUT_FILE_TEST(writingKeyPressTrialWritesHeadingOnFirstLine) {
+    assertWritesHeadingOnFirstLine(writingKeyPressTrial);
 }
 
 OUTPUT_FILE_TEST(writingThreeKeywordsTrialWritesHeadingOnFirstLine) {

@@ -41,7 +41,9 @@ enum class HeadingItem {
     thirdKeywordEvaluation,
     subjectSyllable,
     correctSyllable,
-    time
+    time,
+    keyPressed,
+    reactionTime
 };
 
 constexpr auto name(HeadingItem i) -> const char * {
@@ -98,6 +100,10 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "correct syllable";
     case HeadingItem::time:
         return "time";
+    case HeadingItem::keyPressed:
+        return "key pressed";
+    case HeadingItem::reactionTime:
+        return "reaction time (ms)";
     case HeadingItem::leftGazePositionRelativeScreenIsValid:
         return "valid left gaze position relative screen";
     case HeadingItem::rightGazePositionRelativeScreenIsValid:
@@ -251,7 +257,7 @@ class OutputFileImpl : public OutputFile {
     void write(TargetStartTime) override;
     void write(const EyeTrackerTargetPlayerSynchronization &) override;
     void write(const SyllableTrial &) override;
-    void write(const KeyPressTrial &) override { /* TODO */ }
+    void write(const KeyPressTrial &) override;
     void write(Writable &) override;
     auto parentPath() -> std::filesystem::path override;
 

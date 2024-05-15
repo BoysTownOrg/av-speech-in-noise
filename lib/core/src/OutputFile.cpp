@@ -15,6 +15,7 @@ enum class OutputFileImpl::Trial {
     Consonant,
     ThreeKeywords,
     Syllable,
+    KeyPress,
     none
 };
 
@@ -577,6 +578,28 @@ class SyllableTrialFormatter : public TrialFormatter {
   private:
     const SyllableTrial &trial_;
 };
+
+class KeyPressTrialFormatter : public TrialFormatter {
+  public:
+    explicit KeyPressTrialFormatter(const KeyPressTrial &trial_)
+        : trial_{trial_} {}
+
+    auto insertHeading(std::ostream &stream) -> std::ostream & override {
+        insert(stream, HeadingItem::target);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::keyPressed);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::reactionTime);
+        return insertNewLine(stream);
+    }
+
+    auto insertTrial(std::ostream &stream) -> std::ostream & override {
+        return stream;
+    }
+
+  private:
+    const KeyPressTrial &trial_;
+};
 }
 
 static void write(Writer &writer, const std::string &s) { writer.write(s); }
@@ -643,6 +666,11 @@ void OutputFileImpl::write(const ThreeKeywordsTrial &trial) {
 void OutputFileImpl::write(const SyllableTrial &trial) {
     SyllableTrialFormatter formatter{trial};
     av_speech_in_noise::write(writer, formatter, currentTrial, Trial::Syllable);
+}
+
+void OutputFileImpl::write(const KeyPressTrial &trial) {
+    KeyPressTrialFormatter formatter{trial};
+    av_speech_in_noise::write(writer, formatter, currentTrial, Trial::KeyPress);
 }
 
 void OutputFileImpl::write(const AdaptiveTest &test) {
