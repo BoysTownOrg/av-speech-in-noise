@@ -1,8 +1,8 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
 
+#include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/OutputFile.hpp>
-#include <av-speech-in-noise/Model.hpp>
 
 #include <gtest/gtest.h>
 
@@ -85,7 +85,7 @@ class OutputFilePathStub : public OutputFilePath {
 
 class UseCase {
   public:
-    virtual ~UseCase() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(UseCase);
     virtual void run(OutputFileImpl &) = 0;
 };
 
@@ -596,7 +596,7 @@ class WritingSyllableTrial : public WritingEvaluatedTrial,
         {HeadingItem::evaluation, 3}, {HeadingItem::target, 4}};
 };
 
-static void assertWritesFlaggedTrial(
+void assertWritesFlaggedTrial(
     OutputFileImpl &file, WriterStub &writer, WritingFlaggableTrial &useCase) {
     useCase.flag();
     run(useCase, file);
@@ -604,7 +604,7 @@ static void assertWritesFlaggedTrial(
         writer, "FLAGGED", useCase.headingLabels().size() + 1);
 }
 
-static void assertNonFlaggedTrialDoesNotWriteExtraEntry(
+void assertNonFlaggedTrialDoesNotWriteExtraEntry(
     OutputFileImpl &file, WriterStub &writer, WritingFlaggableTrial &useCase) {
     useCase.clearFlag();
     run(useCase, file);
@@ -775,6 +775,10 @@ OUTPUT_FILE_TEST(writingConsonantTrialWritesHeadingOnFirstLine) {
 
 OUTPUT_FILE_TEST(writingOpenSetAdaptiveTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingOpenSetAdaptiveTrial);
+}
+
+OUTPUT_FILE_TEST(writeKeyPressTrialWritesTrialOnSecondLine) {
+    assertWritesTrialOnLine(writingKeyPressTrial, 2);
 }
 
 OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrialWritesTrialOnSecondLine) {

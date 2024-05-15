@@ -1,6 +1,7 @@
 #include "OutputFile.hpp"
-#include <av-speech-in-noise/Model.hpp>
+
 #include <av-speech-in-noise/Interface.hpp>
+
 #include <sstream>
 #include <ostream>
 #include <algorithm>
@@ -45,6 +46,10 @@ static auto operator<<(std::ostream &os, Consonant item) -> std::ostream & {
 }
 
 static auto operator<<(std::ostream &os, Syllable item) -> std::ostream & {
+    return os << name(item);
+}
+
+static auto operator<<(std::ostream &os, KeyPressed item) -> std::ostream & {
     return os << name(item);
 }
 
@@ -594,7 +599,12 @@ class KeyPressTrialFormatter : public TrialFormatter {
     }
 
     auto insertTrial(std::ostream &stream) -> std::ostream & override {
-        return stream;
+        insert(stream, trial_.target);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.key);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.rt.milliseconds);
+        return insertNewLine(stream);
     }
 
   private:

@@ -218,6 +218,17 @@ constexpr auto name(coordinate_response_measure::Color c) -> const char * {
     }
 }
 
+constexpr auto name(KeyPressed k) -> const char * {
+    switch (k) {
+    case KeyPressed::first:
+        return "first";
+    case KeyPressed::second:
+        return "second";
+    case KeyPressed::unknown:
+        return "unknown";
+    }
+}
+
 class Writer {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Writer);
