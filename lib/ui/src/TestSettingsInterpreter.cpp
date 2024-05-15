@@ -262,6 +262,13 @@ static auto methodWithName(const std::string &contents)
                     actual);
             if (actual ==
                 name(Method::
+                        fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation))
+                return std::make_tuple(
+                    Method::
+                        fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation,
+                    actual);
+            if (actual ==
+                name(Method::
                         fixedLevelCoordinateResponseMeasureWithTargetReplacement))
                 return std::make_tuple(
                     Method::
@@ -606,6 +613,16 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                     fixedLevelMethod, test, predeterminedTargets);
                 av_speech_in_noise::initialize(runningATest, fixedLevelMethod,
                     test, {std::ref(eyeTracking), std::ref(audioRecording)});
+            });
+        break;
+    case Method::
+        fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation:
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](const FixedLevelTest &test) {
+                av_speech_in_noise::initialize(
+                    fixedLevelMethod, test, predeterminedTargets);
+                av_speech_in_noise::initialize(
+                    runningATest, fixedLevelMethod, test);
             });
         break;
     case Method::
