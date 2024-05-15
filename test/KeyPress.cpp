@@ -16,9 +16,12 @@ class ControlStub : public Control {
 
     auto keyPressedSeconds() -> double override { return keyPressedSeconds_; }
 
+    void giveKeyFocus() override { keyFocusGiven = true; }
+
     Observer *listener_{};
     std::string keyPressed_{"1"};
     double keyPressedSeconds_{};
+    bool keyFocusGiven{};
 };
 
 class InteractorStub : public Interactor {
@@ -101,6 +104,11 @@ KEY_PRESS_UI_TEST(passesKeyPressedSeconds) {
     control.keyPressedSeconds_ = .9;
     control.listener_->notifyThatKeyHasBeenPressed();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0.9, model.response.seconds);
+}
+
+KEY_PRESS_UI_TEST(givesKeyFocusWhenShowingResponseSubmission) {
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.keyFocusGiven);
 }
 }
 }

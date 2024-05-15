@@ -31,5 +31,8 @@ void Presenter::stop() { ready = false; }
 
 void Presenter::hideResponseSubmission() { ready = false; }
 
-void Presenter::showResponseSubmission() { ready = true; }
+void Presenter::showResponseSubmission() {
+    control.giveKeyFocus();
+    ready = true;
+}
 }

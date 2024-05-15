@@ -21,6 +21,7 @@ class Control {
     virtual void attach(Observer *) = 0;
     virtual auto keyPressed() -> std::string = 0;
     virtual auto keyPressedSeconds() -> double = 0;
+    virtual void giveKeyFocus() = 0;
 };
 
 class Presenter : public TaskPresenter, public Control::Observer {
