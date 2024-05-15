@@ -626,7 +626,9 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, predeterminedTargets);
                 av_speech_in_noise::initialize(runningATest, fixedLevelMethod,
-                    test, {std::ref(eyeTracking), std::ref(audioRecording)});
+                    test,
+                    {std::ref(eyeTracking), std::ref(audioRecording),
+                        std::ref(submittingKeyPressResponse)});
             });
         break;
     case Method::
@@ -696,7 +698,8 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     TaskPresenter &freeResponsePresenter,
     TaskPresenter &chooseKeywordsPresenter, TaskPresenter &syllablesPresenter,
     TaskPresenter &correctKeywordsPresenter, TaskPresenter &consonantPresenter,
-    TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter)
+    TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter,
+    RunningATest::TestObserver &submittingKeyPressResponse)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
       fixedLevelMethod{fixedLevelMethod}, eyeTracking{eyeTracking},
       audioRecording{audioRecording}, cyclicTargetsReader{cyclicTargetsReader},
@@ -715,5 +718,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       correctKeywordsPresenter{correctKeywordsPresenter},
       consonantPresenter{consonantPresenter},
       passFailPresenter{passFailPresenter},
-      keypressPresenter{keypressPresenter} {}
+      keypressPresenter{keypressPresenter},
+      submittingKeyPressResponse{submittingKeyPressResponse} {}
 }

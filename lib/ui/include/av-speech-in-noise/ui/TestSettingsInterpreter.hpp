@@ -201,7 +201,8 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
         TaskPresenter &syllablesPresenter,
         TaskPresenter &correctKeywordsPresenter,
         TaskPresenter &consonantPresenter, TaskPresenter &passFailPresenter,
-        TaskPresenter &keypressPresenter);
+        TaskPresenter &keypressPresenter,
+        RunningATest::TestObserver &submittingKeyPressResponse);
     void initializeTest(
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
@@ -231,6 +232,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     TaskPresenter &consonantPresenter;
     TaskPresenter &passFailPresenter;
     TaskPresenter &keypressPresenter;
+    RunningATest::TestObserver &submittingKeyPressResponse;
 };
 }
 

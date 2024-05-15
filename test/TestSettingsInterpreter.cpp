@@ -228,6 +228,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TaskPresenterStub consonantPresenter;
     TaskPresenterStub passFailPresenter;
     TaskPresenterStub keypressPresenter;
+    RunningATest::TestObserver submittingKeyPressResponse;
     TestSettingsInterpreterImpl interpreter{runningATest, adaptiveMethod,
         fixedLevelMethod, eyeTracking, audioRecording, cyclicTargetsReader,
         targetsWithReplacementReader, predeterminedTargets, everyTargetOnce,
@@ -235,7 +236,8 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         freeResponseController, sessionController,
         coordinateResponseMeasurePresenter, freeResponsePresenter,
         chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
-        consonantPresenter, passFailPresenter, keypressPresenter};
+        consonantPresenter, passFailPresenter, keypressPresenter,
+        submittingKeyPressResponse};
     TestIdentity testIdentity;
 };
 
@@ -917,6 +919,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
         &runningATest.observer[0].get(), &eyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &runningATest.observer[1].get(), &audioRecording);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer[2].get(), &submittingKeyPressResponse);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
