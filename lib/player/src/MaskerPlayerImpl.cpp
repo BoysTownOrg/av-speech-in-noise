@@ -209,7 +209,14 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     if (audioEnabled)
         return;
 
+    const auto vibrotactileHz{250.};
+    const auto vibrotactileSeconds{0.5};
+
     player->loadFile(file.path);
+    const auto sampleRateHz{av_speech_in_noise::sampleRateHz(player)};
+    sharedState.vibrotactileSamples.store(
+        gsl::narrow_cast<gsl::index>(vibrotactileSeconds * sampleRateHz));
+    sharedState.vibrotactileTimeScalar.store(vibrotactileHz / sampleRateHz);
     recalculateSamplesToWaitPerChannel(
         sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
     write(sharedState.rampSamples,
@@ -366,7 +373,8 @@ static void copySourceAudio(const std::vector<channel_buffer_type> &audioBuffer,
     MaskerPlayerImpl::SharedState &sharedState) {
     const auto usingFirstChannelOnly{sharedState.firstChannelOnly.load()};
     const auto usingSecondChannelOnly{sharedState.secondChannelOnly.load()};
-    for (channel_index_type i{0}; i < std::min(2L, channels(audioBuffer)); ++i) {
+    for (channel_index_type i{0}; i < std::min(2L, channels(audioBuffer));
+         ++i) {
         const auto samplesToWait{at(sharedState.samplesToWaitPerChannel, i)};
         const auto framesToMute =
             std::min(samplesToWait, framesToFill(audioBuffer));
@@ -415,6 +423,8 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
     if (thisCallConsumesExecutionMessage(sharedState.fadeInMessage)) {
         assignFadeSamples(rampSamples, sharedState);
         steadyLevelSamples = read(sharedState.steadyLevelSamples);
+        vibrotactileSamples = read(sharedState.vibrotactileSamples);
+        vibrotactileTimeScalar = read(sharedState.vibrotactileTimeScalar);
         rampCounter = 0;
         set(fadingIn);
     }
@@ -427,6 +437,11 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
                                         (2 * rampSamples)))
                                   : 1) *
                 levelScalar_);
+        if (channels(audioBuffer) > 2)
+            at(channel(audioBuffer, 2), i) = playingVibrotactile
+                ? gsl::narrow_cast<sample_type>(std::sin(
+                      2 * pi() * vibrotactileTimeScalar * vibrotactileCounter))
+                : sample_type{0.};
         bool stateTransition{};
         if (fadingIn && rampCounter == rampSamples) {
             sharedState.fadeInCompleteSystemTime.store(time);
@@ -434,8 +449,13 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
             postCompletion(sharedState.fadeInMessage);
             clear(fadingIn);
             steadyLevelCounter = 0;
+            vibrotactileCounter = 0;
             set(steadyingLevel);
+            set(playingVibrotactile);
             stateTransition = true;
+        }
+        if (playingVibrotactile && vibrotactileCounter == vibrotactileSamples) {
+            clear(playingVibrotactile);
         }
         if (steadyingLevel && steadyLevelCounter == steadyLevelSamples) {
             clear(steadyingLevel);
@@ -445,11 +465,14 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
         if (fadingOut && rampCounter == 2 * rampSamples) {
             postCompletion(sharedState.fadeOutMessage);
             clear(fadingOut);
+            clear(playingVibrotactile);
         }
         if (!stateTransition && (fadingIn || fadingOut))
             ++rampCounter;
         if (!stateTransition && steadyingLevel)
             ++steadyLevelCounter;
+        if (!stateTransition && playingVibrotactile)
+            ++vibrotactileCounter;
     }
     if (thisCallConsumesExecutionMessage(sharedState.disableAudioMessage)) {
         enabled = false;

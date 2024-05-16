@@ -85,10 +85,12 @@ class MaskerPlayerImpl : public MaskerPlayer,
         std::vector<sample_index_type> samplesToWaitPerChannel;
         std::vector<sample_index_type> audioFrameHeadsPerChannel;
         std::atomic<double> levelScalar{1};
+        std::atomic<double> vibrotactileTimeScalar{};
         std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
         std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
         std::atomic<gsl::index> rampSamples{};
         std::atomic<gsl::index> steadyLevelSamples{};
+        std::atomic<gsl::index> vibrotactileSamples{};
         std::atomic<bool> firstChannelOnly{};
         std::atomic<bool> secondChannelOnly{};
         LockFreeMessage fadeInMessage{};
@@ -113,13 +115,17 @@ class MaskerPlayerImpl : public MaskerPlayer,
         auto doneFadingOut() -> bool;
 
         SharedState &sharedState;
+        double vibrotactileTimeScalar;
         gsl::index rampCounter{};
         gsl::index rampSamples{};
         gsl::index steadyLevelCounter{};
         gsl::index steadyLevelSamples{};
+        gsl::index vibrotactileSamples{};
+        gsl::index vibrotactileCounter{};
         bool fadingOut{};
         bool fadingIn{};
         bool steadyingLevel{};
+        bool playingVibrotactile{};
         bool enabled{};
     };
 
