@@ -278,7 +278,8 @@ void AvFoundationVideoPlayer::playAt(const PlayerTimeWithDelay &t) {
                             t.delay.seconds, hostTime.timescale))];
 }
 
-void AvFoundationVideoPlayer::loadFile(std::string filePath, RationalNumber videoScale) {
+void AvFoundationVideoPlayer::loadFile(
+    std::string filePath, RationalNumber videoScale) {
     const auto asset{makeAvAsset(filePath)};
     // It seems if AVPlayer's replaceCurrentItemWithPlayerItem is called with an
     // unplayable asset the player does not recover even when a subsequent call
@@ -365,6 +366,24 @@ static auto durationSeconds_(AVPlayer *player) -> Float64 {
 
 auto AvFoundationVideoPlayer::durationSeconds() -> double {
     return durationSeconds_(player);
+}
+
+void AvFoundationVideoPlayer::preRoll() {
+    // https://developer.apple.com/documentation/avfoundation/avplayer/1389712-prerollatrate?language=objc
+    // "If the player object is not ready to play (its status property is not
+    // AVPlayerStatusReadyToPlay), [preRollAtRate] throws an exception."
+    if (player.status != AVPlayerStatusReadyToPlay) {
+        NSLog(@"Player is not ready to play.");
+        return;
+    }
+    [player prerollAtRate:1.
+        completionHandler:^(BOOL finished) {
+          dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (finished == NO)
+                NSLog(@"prerollAtRate failed.");
+            listener_->notifyThatPreRollHasCompleted();
+          });
+        }];
 }
 
 AvFoundationAudioPlayer::AvFoundationAudioPlayer(
@@ -454,7 +473,7 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     streamFormat.mFramesPerPacket = 1;
     streamFormat.mBytesPerPacket = 4;
     streamFormat.mBytesPerFrame = sizeof(float);
-    streamFormat.mChannelsPerFrame = 2;
+    streamFormat.mChannelsPerFrame = 3;
     streamFormat.mBitsPerChannel = 8 * sizeof(float);
     streamFormat.mFormatFlags =
         kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved;
@@ -463,7 +482,7 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
             sizeof(AudioStreamBasicDescription)) != 0)
         NSLog(@"AudioUnitSetProperty failed to set stream format.");
 
-    audio.resize(2);
+    audio.resize(3);
 }
 
 auto AvFoundationAudioPlayer::deviceCount() -> int {
@@ -490,7 +509,10 @@ auto AvFoundationAudioPlayer::playing() -> bool {
     return auhalRunning != 0U;
 }
 
-void AvFoundationAudioPlayer::play() { AudioOutputUnitStart(audioUnit); }
+void AvFoundationAudioPlayer::play() {
+    if (AudioOutputUnitStart(audioUnit) != 0)
+        NSLog(@"Failed to start audio unit");
+}
 
 auto AvFoundationAudioPlayer::sampleRateHz() -> double {
     AudioStreamBasicDescription streamFormat{};
@@ -531,22 +553,6 @@ auto AvFoundationAudioPlayer::nanoseconds(PlayerTime t) -> std::uintmax_t {
 
 auto AvFoundationAudioPlayer::currentSystemTime() -> PlayerTime {
     return PlayerTime{mach_absolute_time()};
-}
-
-void AvFoundationVideoPlayer::preRoll() {
-    // https://developer.apple.com/documentation/avfoundation/avplayer/1389712-prerollatrate?language=objc
-    // "If the player object is not ready to play (its status property is not AVPlayerStatusReadyToPlay), [preRollAtRate] throws an exception."
-    if (player.status != AVPlayerStatusReadyToPlay) {
-        NSLog(@"Player is not ready to play.");
-        return;
-    }
-    [player prerollAtRate:1.
-        completionHandler:^(BOOL finished) {
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            if (finished == NO)
-                NSLog(@"prerollAtRate failed.");
-            listener_->notifyThatPreRollHasCompleted();
-        });}];
 }
 
 AvFoundationBufferedAudioReader::AvFoundationBufferedAudioReader(

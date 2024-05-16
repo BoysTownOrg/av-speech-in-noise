@@ -366,7 +366,7 @@ static void copySourceAudio(const std::vector<channel_buffer_type> &audioBuffer,
     MaskerPlayerImpl::SharedState &sharedState) {
     const auto usingFirstChannelOnly{sharedState.firstChannelOnly.load()};
     const auto usingSecondChannelOnly{sharedState.secondChannelOnly.load()};
-    for (channel_index_type i{0}; i < channels(audioBuffer); ++i) {
+    for (channel_index_type i{0}; i < std::min(2L, channels(audioBuffer)); ++i) {
         const auto samplesToWait{at(sharedState.samplesToWaitPerChannel, i)};
         const auto framesToMute =
             std::min(samplesToWait, framesToFill(audioBuffer));
@@ -406,10 +406,11 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
         else
             return;
     }
-    if (noChannels(sharedState.sourceAudio))
-        for (auto channel : audioBuffer)
-            mute(channel);
-    else
+    if (noChannels(sharedState.sourceAudio)) {
+        for (channel_index_type i{0}; i < std::min(2L, channels(audioBuffer));
+             ++i)
+            mute(channel(audioBuffer, i));
+    } else
         copySourceAudio(audioBuffer, sharedState);
     if (thisCallConsumesExecutionMessage(sharedState.fadeInMessage)) {
         assignFadeSamples(rampSamples, sharedState);
@@ -419,8 +420,9 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
     }
     const auto levelScalar_{read(sharedState.levelScalar)};
     for (auto i{sample_index_type{0}}; i < framesToFill(audioBuffer); ++i) {
-        for (auto channel : audioBuffer)
-            at(channel, i) *= gsl::narrow_cast<sample_type>(
+        for (channel_index_type j{0}; j < std::min(2L, channels(audioBuffer));
+             ++j)
+            at(channel(audioBuffer, j), i) *= gsl::narrow_cast<sample_type>(
                 (rampSamples != 0 ? squared(std::sin((pi() * rampCounter) /
                                         (2 * rampSamples)))
                                   : 1) *
