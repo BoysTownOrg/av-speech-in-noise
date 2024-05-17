@@ -2,9 +2,13 @@
 #define AV_SPEECH_IN_NOISE_LIB_PLAYER_INCLUDE_AVSPEECHINNOISE_PLAYER_MASKERPLAYERIMPLHPP_
 
 #include "AudioReader.hpp"
+
+#include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/ITimer.hpp>
 #include <av-speech-in-noise/core/IMaskerPlayer.hpp>
+
 #include <gsl/gsl>
+
 #include <string>
 #include <vector>
 #include <atomic>
@@ -16,13 +20,13 @@ class AudioPlayer {
   public:
     class Observer {
       public:
-        virtual ~Observer() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void fillAudioBuffer(
             const std::vector<channel_buffer_type> &audio,
             player_system_time_type) = 0;
     };
 
-    virtual ~AudioPlayer() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(AudioPlayer);
     virtual void attach(Observer *) = 0;
     virtual void play() = 0;
     virtual void stop() = 0;
@@ -78,6 +82,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     void useAllChannels() override;
     auto nanoseconds(PlayerTime) -> std::uintmax_t override;
     auto currentSystemTime() -> PlayerTime override;
+    void prepareVibrotactileStimulus(VibrotactileStimulus);
     static constexpr Delay callbackDelay{1. / 30};
 
     struct SharedState {
@@ -91,6 +96,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         std::atomic<gsl::index> rampSamples{};
         std::atomic<gsl::index> steadyLevelSamples{};
         std::atomic<gsl::index> vibrotactileSamples{};
+        std::atomic<gsl::index> vibrotactileSamplesToWait{};
         std::atomic<bool> firstChannelOnly{};
         std::atomic<bool> secondChannelOnly{};
         LockFreeMessage fadeInMessage{};
@@ -115,13 +121,14 @@ class MaskerPlayerImpl : public MaskerPlayer,
         auto doneFadingOut() -> bool;
 
         SharedState &sharedState;
-        double vibrotactileTimeScalar;
+        double vibrotactileTimeScalar{};
         gsl::index rampCounter{};
         gsl::index rampSamples{};
         gsl::index steadyLevelCounter{};
         gsl::index steadyLevelSamples{};
         gsl::index vibrotactileSamples{};
         gsl::index vibrotactileCounter{};
+        gsl::index vibrotactileSamplesToWait{};
         bool fadingOut{};
         bool fadingIn{};
         bool steadyingLevel{};

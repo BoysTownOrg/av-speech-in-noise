@@ -43,6 +43,16 @@ struct AudioSampleTimeWithOffset {
     PlayerTime playerTime;
     gsl::index sampleOffset{};
 };
+
+struct Frequency {
+    double Hz;
+};
+
+struct VibrotactileStimulus {
+    Duration duration{};
+    Delay delay;
+    Frequency frequency{};
+};
 }
 
 #endif

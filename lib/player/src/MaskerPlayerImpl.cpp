@@ -209,14 +209,7 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     if (audioEnabled)
         return;
 
-    const auto vibrotactileHz{250.};
-    const auto vibrotactileSeconds{0.5};
-
     player->loadFile(file.path);
-    const auto sampleRateHz{av_speech_in_noise::sampleRateHz(player)};
-    sharedState.vibrotactileSamples.store(
-        gsl::narrow_cast<gsl::index>(vibrotactileSeconds * sampleRateHz));
-    sharedState.vibrotactileTimeScalar.store(vibrotactileHz / sampleRateHz);
     recalculateSamplesToWaitPerChannel(
         sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
     write(sharedState.rampSamples,
@@ -225,6 +218,17 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     sharedState.sourceAudio = readAudio(file.path);
     std::fill(sharedState.audioFrameHeadsPerChannel.begin(),
         sharedState.audioFrameHeadsPerChannel.end(), 0);
+}
+
+void MaskerPlayerImpl::prepareVibrotactileStimulus(
+    VibrotactileStimulus stimulus) {
+    const auto sampleRateHz{av_speech_in_noise::sampleRateHz(player)};
+    sharedState.vibrotactileSamples.store(
+        gsl::narrow_cast<gsl::index>(stimulus.duration.seconds * sampleRateHz));
+    sharedState.vibrotactileTimeScalar.store(
+        stimulus.frequency.Hz / sampleRateHz);
+    sharedState.vibrotactileSamplesToWait.store(
+        gsl::narrow_cast<gsl::index>(stimulus.delay.seconds * sampleRateHz));
 }
 
 static_assert(std::numeric_limits<double>::is_iec559, "IEEE 754 required");
@@ -425,6 +429,7 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
         steadyLevelSamples = read(sharedState.steadyLevelSamples);
         vibrotactileSamples = read(sharedState.vibrotactileSamples);
         vibrotactileTimeScalar = read(sharedState.vibrotactileTimeScalar);
+        vibrotactileSamplesToWait = read(sharedState.vibrotactileSamplesToWait);
         rampCounter = 0;
         set(fadingIn);
     }
@@ -438,9 +443,11 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
                                   : 1) *
                 levelScalar_);
         if (channels(audioBuffer) > 2)
-            at(channel(audioBuffer, 2), i) = playingVibrotactile
-                ? gsl::narrow_cast<sample_type>(std::sin(
-                      2 * pi() * vibrotactileTimeScalar * vibrotactileCounter))
+            at(channel(audioBuffer, 2), i) = playingVibrotactile &&
+                    vibrotactileCounter >= vibrotactileSamplesToWait
+                ? gsl::narrow_cast<sample_type>(
+                      std::sin(2 * pi() * vibrotactileTimeScalar *
+                          (vibrotactileCounter - vibrotactileSamplesToWait)))
                 : sample_type{0.};
         bool stateTransition{};
         if (fadingIn && rampCounter == rampSamples) {
@@ -454,7 +461,9 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
             set(playingVibrotactile);
             stateTransition = true;
         }
-        if (playingVibrotactile && vibrotactileCounter == vibrotactileSamples) {
+        if (playingVibrotactile &&
+            vibrotactileCounter ==
+                vibrotactileSamples + vibrotactileSamplesToWait) {
             clear(playingVibrotactile);
         }
         if (steadyingLevel && steadyLevelCounter == steadyLevelSamples) {

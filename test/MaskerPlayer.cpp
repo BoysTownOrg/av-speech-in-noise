@@ -143,6 +143,8 @@ class AudioPlayerStub : public AudioPlayer {
             audioThread.join();
     }
 
+    Observer *observer{};
+
   private:
     std::packaged_task<std::vector<std::vector<float>>(Observer *)> onPlayTask;
     std::thread audioThread;
@@ -155,7 +157,6 @@ class AudioPlayerStub : public AudioPlayer {
     std::uintmax_t nanoseconds_{};
     player_system_time_type systemTimeForNanoseconds_{};
     player_system_time_type currentSystemTime_{};
-    Observer *observer{};
     double sampleRateHz_{};
     int deviceIndex_{};
     int deviceDescriptionDeviceIndex_{};
@@ -997,6 +998,28 @@ MASKER_PLAYER_TEST(steadyLevelFollowingFadeIn) {
         })};
     fadeIn(player);
     assertChannelEqual(future.get().at(1), {8, 9, 10});
+}
+
+MASKER_PLAYER_TEST(vibrotactile) {
+    setRampSeconds(player, 3);
+    setSampleRateHz(audioPlayer, 8);
+    setSteadyLevelSeconds(player, 1);
+
+    player.loadFile({});
+    VibrotactileStimulus stimulus;
+    stimulus.duration.seconds = 0.5;
+    stimulus.delay.seconds = 0.25;
+    stimulus.frequency.Hz = 2;
+    player.prepareVibrotactileStimulus(stimulus);
+
+    auto halfWindowLength = 3 * 8 + 1;
+    auto future{
+        setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
+            av_speech_in_noise::fillAudioBuffer(observer, 3, halfWindowLength);
+            return av_speech_in_noise::fillAudioBuffer(observer, 3, 6);
+        })};
+    fadeIn(player);
+    assertEqual(future.get().at(2), {0, 0, 0, 1, 0, -1}, 1e-15F);
 }
 
 MASKER_PLAYER_TEST(steadyLevelFollowingFadeInAmplified) {
