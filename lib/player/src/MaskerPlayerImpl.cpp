@@ -431,7 +431,7 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
         vibrotactileTimeScalar = read(sharedState.vibrotactileTimeScalar);
         vibrotactileSamplesToWait = read(sharedState.vibrotactileSamplesToWait);
         rampCounter = 0;
-        set(fadingIn);
+        state = State::fadingIn;
     }
     const auto levelScalar_{read(sharedState.levelScalar)};
     for (auto i{sample_index_type{0}}; i < framesToFill(audioBuffer); ++i) {
@@ -450,14 +450,13 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
                           (vibrotactileCounter - vibrotactileSamplesToWait)))
                 : sample_type{0.};
         bool stateTransition{};
-        if (fadingIn && rampCounter == rampSamples) {
+        if (state == State::fadingIn && rampCounter == rampSamples) {
             sharedState.fadeInCompleteSystemTime.store(time);
             sharedState.fadeInCompleteSystemTimeSampleOffset.store(i + 1);
             postCompletion(sharedState.fadeInMessage);
-            clear(fadingIn);
+            state = State::steadyLevel;
             steadyLevelCounter = 0;
             vibrotactileCounter = 0;
-            set(steadyingLevel);
             set(playingVibrotactile);
             stateTransition = true;
         }
@@ -466,19 +465,20 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
                 vibrotactileSamples + vibrotactileSamplesToWait) {
             clear(playingVibrotactile);
         }
-        if (steadyingLevel && steadyLevelCounter == steadyLevelSamples) {
-            clear(steadyingLevel);
-            set(fadingOut);
+        if (state == State::steadyLevel &&
+            steadyLevelCounter == steadyLevelSamples) {
+            state = State::fadingOut;
             stateTransition = true;
         }
-        if (fadingOut && rampCounter == 2 * rampSamples) {
+        if (state == State::fadingOut && rampCounter == 2 * rampSamples) {
             postCompletion(sharedState.fadeOutMessage);
-            clear(fadingOut);
+            state = State::idle;
             clear(playingVibrotactile);
         }
-        if (!stateTransition && (fadingIn || fadingOut))
+        if (!stateTransition &&
+            (state == State::fadingIn || state == State::fadingOut))
             ++rampCounter;
-        if (!stateTransition && steadyingLevel)
+        if (!stateTransition && state == State::steadyLevel)
             ++steadyLevelCounter;
         if (!stateTransition && playingVibrotactile)
             ++vibrotactileCounter;

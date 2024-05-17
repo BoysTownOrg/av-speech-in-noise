@@ -117,6 +117,8 @@ class MaskerPlayerImpl : public MaskerPlayer,
             player_system_time_type);
 
       private:
+        enum class State { fadingIn, steadyLevel, fadingOut, idle };
+
         auto doneFadingIn() -> bool;
         auto doneFadingOut() -> bool;
 
@@ -129,9 +131,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         gsl::index vibrotactileSamples{};
         gsl::index vibrotactileCounter{};
         gsl::index vibrotactileSamplesToWait{};
-        bool fadingOut{};
-        bool fadingIn{};
-        bool steadyingLevel{};
+        State state{State::idle};
         bool playingVibrotactile{};
         bool enabled{};
     };
