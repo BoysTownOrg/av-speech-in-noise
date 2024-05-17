@@ -5,8 +5,17 @@
 namespace av_speech_in_noise::submitting_keypress {
 InteractorImpl::InteractorImpl(FixedLevelMethod &method, RunningATest &model,
     OutputFile &outputFile, MaskerPlayer &maskerPlayer)
-    : method{method}, model{model}, outputFile{outputFile}, maskerPlayer{
-                                                                maskerPlayer} {}
+    : method{method}, model{model}, outputFile{outputFile},
+      maskerPlayer{maskerPlayer} {}
+
+void InteractorImpl::notifyThatTrialWillBegin(int) {
+    // TODO
+    VibrotactileStimulus stimulus;
+    stimulus.delay.seconds = 0.19;
+    stimulus.duration.seconds = 0.25;
+    stimulus.frequency.Hz = 250;
+    maskerPlayer.prepareVibrotactileStimulus(stimulus);
+}
 
 void InteractorImpl::notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &t) {
     targetStartTimeMilliseconds =

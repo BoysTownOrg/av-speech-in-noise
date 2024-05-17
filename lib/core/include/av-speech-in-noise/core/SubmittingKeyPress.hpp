@@ -14,6 +14,7 @@ class InteractorImpl : public Interactor, public RunningATest::TestObserver {
         FixedLevelMethod &, RunningATest &, OutputFile &, MaskerPlayer &);
     void submit(const KeyPressResponse &) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
+    void notifyThatTrialWillBegin(int) override;
 
   private:
     FixedLevelMethod &method;
