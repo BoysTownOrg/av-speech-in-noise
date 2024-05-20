@@ -46,7 +46,6 @@ class RunningATestImpl : public TargetPlayer::Observer,
     void notifyThatPreRollHasCompleted() override;
     auto playTrialTime() -> std::string override;
     static constexpr Delay maskerChannelDelay{0.004};
-    static constexpr Duration targetOnsetFringeDuration{0.166};
     static constexpr Duration targetOffsetFringeDuration{
         targetOnsetFringeDuration};
 

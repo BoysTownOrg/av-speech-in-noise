@@ -49,6 +49,7 @@ class RunningATest {
     virtual auto targetFileName() -> std::string = 0;
     virtual void prepareNextTrialIfNeeded() = 0;
     virtual auto playTrialTime() -> std::string = 0;
+    static constexpr Duration targetOnsetFringeDuration{0.166};
 };
 }
 

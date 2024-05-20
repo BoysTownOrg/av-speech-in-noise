@@ -676,7 +676,8 @@ SUBMITTING_KEYPRESS_TEST(selectsRandomVibrotactileStimulus) {
     randomizer.randomInts.push(1); // 100, 250
     interactor.notifyThatTrialWillBegin({});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        0.190, maskerPlayer.vibrotactileStimulus.delay.seconds);
+        0.190 + RunningATest::targetOnsetFringeDuration.seconds,
+        maskerPlayer.vibrotactileStimulus.delay.seconds);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         0.250, maskerPlayer.vibrotactileStimulus.duration.seconds);
 }

@@ -14,8 +14,10 @@ void InteractorImpl::notifyThatTrialWillBegin(int) {
     const std::array<double, 2> durationsSeconds = {.100, .250};
 
     VibrotactileStimulus stimulus;
-    stimulus.delay.seconds = delaysSeconds.at(
-        randomizer.betweenInclusive(0, delaysSeconds.size() - 1));
+    // delay is relative to when masker has faded in completely
+    stimulus.delay.seconds = RunningATest::targetOnsetFringeDuration.seconds +
+        delaysSeconds.at(
+            randomizer.betweenInclusive(0, delaysSeconds.size() - 1));
     stimulus.duration.seconds = durationsSeconds.at(
         randomizer.betweenInclusive(0, durationsSeconds.size() - 1));
     stimulus.frequency.Hz = 250;

@@ -9,6 +9,7 @@ Presenter::Presenter(TestView &testView, TestController &testController,
 }
 
 void Presenter::notifyThatKeyHasBeenPressed() {
+    // TODO
     if (ready) {
         auto response{KeyPressResponse{}};
         const auto keyPressed{control.keyPressed()};
