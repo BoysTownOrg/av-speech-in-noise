@@ -37,6 +37,8 @@ class Presenter : public TaskPresenter, public Control::Observer {
     void notifyThatTrialHasStarted() override;
 
   private:
+    void attemptToSubmitResponse();
+
     std::vector<KeyPressResponse> keyPressResponses;
     TestView &testView;
     TestController &testController;

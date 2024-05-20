@@ -54,37 +54,35 @@ KEY_PRESS_UI_TEST(presenterShowsReadyButtonWhenStarted) {
 }
 
 KEY_PRESS_UI_TEST(submitsKeyPressResponseOnKeyPress) {
-    control.keyPressed_ = "2";
     presenter.notifyThatTrialHasStarted();
+    control.keyPressed_ = "2";
     control.listener_->notifyThatKeyHasBeenPressed();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(KeyPressed::second, model.responses[0].key);
 }
 
-KEY_PRESS_UI_TEST(waitsUntilResponseSubmissionShownToSubmitKeyPress) {
+KEY_PRESS_UI_TEST(attemptsToSubmitWhenResponseSubmissionShown) {
+    presenter.notifyThatTrialHasStarted();
     control.keyPressed_ = "1";
     control.listener_->notifyThatKeyHasBeenPressed();
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.submitted);
-    presenter.notifyThatTrialHasStarted();
-    control.listener_->notifyThatKeyHasBeenPressed();
+    model.responses.clear();
+    presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(KeyPressed::first, model.responses[0].key);
 }
 
 KEY_PRESS_UI_TEST(doesntSubmitResponseFromUnknownKey) {
-    presenter.showResponseSubmission();
+    presenter.notifyThatTrialHasStarted();
     control.keyPressed_ = "?";
     control.listener_->notifyThatKeyHasBeenPressed();
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.submitted);
 }
 
-KEY_PRESS_UI_TEST(doesntSubmitResponseAfterSubmissionHidden) {
-    presenter.showResponseSubmission();
-    presenter.hideResponseSubmission();
+KEY_PRESS_UI_TEST(doesntSubmitResponseBeforeTrialHasStarted) {
     control.listener_->notifyThatKeyHasBeenPressed();
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.submitted);
 }
 
 KEY_PRESS_UI_TEST(doesntSubmitResponseAfterStopped) {
-    presenter.showResponseSubmission();
+    presenter.notifyThatTrialHasStarted();
     presenter.stop();
     control.listener_->notifyThatKeyHasBeenPressed();
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.submitted);

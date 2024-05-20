@@ -22,10 +22,7 @@ void Presenter::notifyThatKeyHasBeenPressed() {
     const auto seconds{control.keyPressedSeconds()};
     response.seconds = seconds;
     keyPressResponses.push_back(response);
-    if (interactor.submits(keyPressResponses)) {
-        testController.notifyThatUserIsDoneResponding();
-        acceptingKeyPresses = false;
-    }
+    attemptToSubmitResponse();
 }
 
 void Presenter::start() { testView.showNextTrialButton(); }
@@ -40,5 +37,12 @@ void Presenter::notifyThatTrialHasStarted() {
     control.giveKeyFocus();
 }
 
-void Presenter::showResponseSubmission() {}
+void Presenter::showResponseSubmission() { attemptToSubmitResponse(); }
+
+void Presenter::attemptToSubmitResponse() {
+    if (interactor.submits(keyPressResponses)) {
+        testController.notifyThatUserIsDoneResponding();
+        acceptingKeyPresses = false;
+    }
+}
 }
