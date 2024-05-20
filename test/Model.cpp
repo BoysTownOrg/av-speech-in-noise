@@ -1,5 +1,6 @@
 #include "MaskerPlayerStub.hpp"
 #include "OutputFileStub.hpp"
+#include "RandomizerStub.hpp"
 #include "assert-utility.hpp"
 
 #include <av-speech-in-noise/core/SubmittingKeyPress.hpp>
@@ -365,8 +366,9 @@ class SubmittingKeypressTests : public ::testing::Test {
     RunningATestStub model{adaptiveTestMethod, testMethod};
     OutputFileStub outputFile;
     MaskerPlayerStub maskerPlayer;
+    RandomizerStub randomizer;
     submitting_keypress::InteractorImpl interactor{
-        testMethod, model, outputFile, maskerPlayer};
+        testMethod, model, outputFile, maskerPlayer, randomizer};
     KeyPressResponse response;
 };
 
@@ -667,6 +669,16 @@ SUBMITTING_KEYPRESS_TEST(writesTarget) {
     interactor.submit(response);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"c.txt"}, outputFile.keypressTrial.target);
+}
+
+SUBMITTING_KEYPRESS_TEST(selectsRandomVibrotactileStimulus) {
+    randomizer.randomInts.push(3); // 60, 110, 160, 190
+    randomizer.randomInts.push(1); // 100, 250
+    interactor.notifyThatTrialWillBegin({});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        0.190, maskerPlayer.vibrotactileStimulus.delay.seconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        0.250, maskerPlayer.vibrotactileStimulus.duration.seconds);
 }
 }
 }

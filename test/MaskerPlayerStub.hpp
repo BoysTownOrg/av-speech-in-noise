@@ -1,8 +1,6 @@
 #ifndef TESTS_MASKERPLAYERSTUB_HPP_
 #define TESTS_MASKERPLAYERSTUB_HPP_
 
-#include "LogString.hpp"
-
 #include <av-speech-in-noise/core/IMaskerPlayer.hpp>
 
 #include <utility>
@@ -164,6 +162,12 @@ class MaskerPlayerStub : public MaskerPlayer {
     void setNanosecondsFromPlayerTime(std::uintmax_t t) { nanoseconds_ = t; }
 
     void setCurrentSystemTime(PlayerTime t) { currentSystemTime_ = t; }
+
+    void prepareVibrotactileStimulus(VibrotactileStimulus s) override {
+        vibrotactileStimulus = s;
+    }
+
+    VibrotactileStimulus vibrotactileStimulus;
 
   private:
     std::vector<std::string> outputAudioDeviceDescriptions_;
