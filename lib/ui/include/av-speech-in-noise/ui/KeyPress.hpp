@@ -42,7 +42,7 @@ class Presenter : public TaskPresenter, public Control::Observer {
     TestController &testController;
     Interactor &interactor;
     Control &control;
-    bool readyForResponse{};
+    bool acceptingKeyPresses{};
 };
 }
 

@@ -65,7 +65,7 @@ namespace submitting_keypress {
 class Interactor {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
-    virtual void submit(const std::vector<KeyPressResponse> &) = 0;
+    virtual auto submits(const std::vector<KeyPressResponse> &) -> bool = 0;
 };
 }
 }

@@ -32,8 +32,10 @@ void InteractorImpl::notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &t) {
         t.delay.seconds * 1000;
 }
 
-void InteractorImpl::submit(const std::vector<KeyPressResponse> &responses) {
-    KeyPressResponse response;
+auto InteractorImpl::submits(const std::vector<KeyPressResponse> &responses)
+    -> bool {
+    if (!readyForResponse)
+        return false;
     auto min{responses.end()};
     auto minReactionTimeMilliseconds{std::numeric_limits<double>::max()};
     for (auto it{responses.begin()}; it != responses.end(); ++it) {
@@ -43,8 +45,9 @@ void InteractorImpl::submit(const std::vector<KeyPressResponse> &responses) {
             minReactionTimeMilliseconds = rt;
         }
     }
-    if (min != responses.end())
-        response = *min;
+    if (min == responses.end())
+        return false;
+    KeyPressResponse response = *min;
     method.submit(response);
     KeyPressTrial trial;
     static_cast<KeyPressResponse &>(trial) = response;
@@ -54,5 +57,9 @@ void InteractorImpl::submit(const std::vector<KeyPressResponse> &responses) {
     outputFile.write(trial);
     outputFile.save();
     model.prepareNextTrialIfNeeded();
+    readyForResponse = false;
+    return true;
 }
+
+void InteractorImpl::notifyThatStimulusHasEnded() { readyForResponse = true; }
 }

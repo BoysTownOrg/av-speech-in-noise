@@ -13,9 +13,10 @@ class InteractorImpl : public Interactor, public RunningATest::TestObserver {
   public:
     InteractorImpl(FixedLevelMethod &, RunningATest &, OutputFile &,
         MaskerPlayer &, Randomizer &);
-    void submit(const std::vector<KeyPressResponse> &) override;
+    auto submits(const std::vector<KeyPressResponse> &) -> bool override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
     void notifyThatTrialWillBegin(int) override;
+    void notifyThatStimulusHasEnded() override;
 
   private:
     FixedLevelMethod &method;
@@ -24,6 +25,7 @@ class InteractorImpl : public Interactor, public RunningATest::TestObserver {
     MaskerPlayer &maskerPlayer;
     Randomizer &randomizer;
     double targetStartTimeMilliseconds{};
+    bool readyForResponse{};
 };
 }
 

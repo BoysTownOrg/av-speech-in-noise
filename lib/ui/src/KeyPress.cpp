@@ -9,6 +9,8 @@ Presenter::Presenter(TestView &testView, TestController &testController,
 }
 
 void Presenter::notifyThatKeyHasBeenPressed() {
+    if (!acceptingKeyPresses)
+        return;
     auto response{KeyPressResponse{}};
     const auto keyPressed{control.keyPressed()};
     if (keyPressed == "1")
@@ -20,30 +22,23 @@ void Presenter::notifyThatKeyHasBeenPressed() {
     const auto seconds{control.keyPressedSeconds()};
     response.seconds = seconds;
     keyPressResponses.push_back(response);
-    if (readyForResponse) {
-        interactor.submit(keyPressResponses);
+    if (interactor.submits(keyPressResponses)) {
         testController.notifyThatUserIsDoneResponding();
-        readyForResponse = false;
+        acceptingKeyPresses = false;
     }
 }
 
 void Presenter::start() { testView.showNextTrialButton(); }
 
-void Presenter::stop() { readyForResponse = false; }
+void Presenter::stop() { acceptingKeyPresses = false; }
 
-void Presenter::hideResponseSubmission() { readyForResponse = false; }
+void Presenter::hideResponseSubmission() {}
 
 void Presenter::notifyThatTrialHasStarted() {
     keyPressResponses.clear();
+    acceptingKeyPresses = true;
     control.giveKeyFocus();
 }
 
-void Presenter::showResponseSubmission() {
-    readyForResponse = true;
-    if (!keyPressResponses.empty()) {
-        interactor.submit(keyPressResponses);
-        testController.notifyThatUserIsDoneResponding();
-        readyForResponse = false;
-    }
-}
+void Presenter::showResponseSubmission() {}
 }

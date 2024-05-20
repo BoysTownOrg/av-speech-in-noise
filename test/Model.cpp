@@ -629,25 +629,39 @@ SUBMITTING_CONSONANT_TEST(savesOutputFileAfterWritingTrial) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
 }
 
-SUBMITTING_KEYPRESS_TEST(savesReactionTime) {
-    maskerPlayer.setNanosecondsFromPlayerTime(123456789);
+void submitValidResponse(submitting_keypress::InteractorImpl &interactor,
+    MaskerPlayerStub &maskerPlayer, KeyPressed key = {}) {
+    maskerPlayer.setNanosecondsFromPlayerTime(1e9);
     PlayerTimeWithDelay playerTime;
-    playerTime.delay.seconds = .4;
+    playerTime.delay.seconds = .5;
+    interactor.notifyThatTargetWillPlayAt(playerTime);
+    interactor.notifyThatStimulusHasEnded();
+    KeyPressResponse response;
+    response.seconds = 1.5;
+    response.key = key;
+    interactor.submits({response});
+}
+
+SUBMITTING_KEYPRESS_TEST(savesReactionTime) {
+    maskerPlayer.setNanosecondsFromPlayerTime(1e9);
+    PlayerTimeWithDelay playerTime;
+    playerTime.delay.seconds = .5;
     interactor.notifyThatTargetWillPlayAt(playerTime);
     responses.resize(5);
     responses[0].seconds = 1.1;
     responses[0].key = KeyPressed::first;
     responses[1].seconds = -.2;
     responses[1].key = KeyPressed::first;
-    responses[2].seconds = 1.3;
+    responses[2].seconds = 1.4;
     responses[2].key = KeyPressed::first;
-    responses[3].seconds = .9;
+    responses[3].seconds = 1.6;
     responses[3].key = KeyPressed::second;
-    responses[4].seconds = -1.3;
+    responses[4].seconds = 2.3;
     responses[4].key = KeyPressed::first;
-    interactor.submit(responses);
-    const auto start{(123456789 + 400000000 + 500000) / 1000000};
-    const auto end{900};
+    interactor.notifyThatStimulusHasEnded();
+    interactor.submits(responses);
+    const auto start{(1000000000 + 500000000 + 500000) / 1000000};
+    const auto end{1600};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         end - start, outputFile.keypressTrial.rt.milliseconds);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -655,31 +669,29 @@ SUBMITTING_KEYPRESS_TEST(savesReactionTime) {
 }
 
 SUBMITTING_KEYPRESS_TEST(preparesNextTrialIfNeeded) {
-    interactor.submit({});
+    submitValidResponse(interactor, maskerPlayer);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
 }
 
 SUBMITTING_KEYPRESS_TEST(savesOutputFileAfterWritingTrial) {
-    interactor.submit({});
+    submitValidResponse(interactor, maskerPlayer);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
 }
 
 SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesResponse) {
-    responses.resize(1);
-    responses[0].key = KeyPressed::second;
-    interactor.submit(responses);
+    submitValidResponse(interactor, maskerPlayer, KeyPressed::second);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         KeyPressed::second, outputFile.keypressTrial.key);
 }
 
 SUBMITTING_KEYPRESS_TEST(submitsResponseToTestMethod) {
-    interactor.submit(responses);
+    submitValidResponse(interactor, maskerPlayer);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFlaggable);
 }
 
 SUBMITTING_KEYPRESS_TEST(writesTarget) {
     testMethod.setCurrentTargetPath("a/b/c.txt");
-    interactor.submit(responses);
+    submitValidResponse(interactor, maskerPlayer);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"c.txt"}, outputFile.keypressTrial.target);
 }
