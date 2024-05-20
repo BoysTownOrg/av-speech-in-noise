@@ -8,6 +8,7 @@
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
+#include <vector>
 
 namespace av_speech_in_noise::submitting_keypress {
 class Control {
@@ -33,13 +34,15 @@ class Presenter : public TaskPresenter, public Control::Observer {
     void stop() override;
     void showResponseSubmission() override;
     void hideResponseSubmission() override;
+    void notifyThatTrialHasStarted() override;
 
   private:
+    std::vector<KeyPressResponse> keyPressResponses;
     TestView &testView;
     TestController &testController;
     Interactor &interactor;
     Control &control;
-    bool ready{};
+    bool readyForResponse{};
 };
 }
 

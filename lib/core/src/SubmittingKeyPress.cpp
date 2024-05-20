@@ -2,6 +2,7 @@
 
 #include <array>
 #include <filesystem>
+#include <limits>
 
 namespace av_speech_in_noise::submitting_keypress {
 InteractorImpl::InteractorImpl(FixedLevelMethod &method, RunningATest &model,
@@ -31,12 +32,23 @@ void InteractorImpl::notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &t) {
         t.delay.seconds * 1000;
 }
 
-void InteractorImpl::submit(const KeyPressResponse &response) {
+void InteractorImpl::submit(const std::vector<KeyPressResponse> &responses) {
+    KeyPressResponse response;
+    auto min{responses.end()};
+    auto minReactionTimeMilliseconds{std::numeric_limits<double>::max()};
+    for (auto it{responses.begin()}; it != responses.end(); ++it) {
+        const auto rt{it->seconds * 1000 - targetStartTimeMilliseconds};
+        if (rt >= 0 && rt < minReactionTimeMilliseconds) {
+            min = it;
+            minReactionTimeMilliseconds = rt;
+        }
+    }
+    if (min != responses.end())
+        response = *min;
     method.submit(response);
     KeyPressTrial trial;
     static_cast<KeyPressResponse &>(trial) = response;
-    trial.rt.milliseconds =
-        response.seconds * 1000 - targetStartTimeMilliseconds;
+    trial.rt.milliseconds = minReactionTimeMilliseconds;
     trial.target =
         std::filesystem::path{method.currentTarget().path}.filename();
     outputFile.write(trial);

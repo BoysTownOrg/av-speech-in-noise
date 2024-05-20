@@ -13,7 +13,7 @@ class InteractorImpl : public Interactor, public RunningATest::TestObserver {
   public:
     InteractorImpl(FixedLevelMethod &, RunningATest &, OutputFile &,
         MaskerPlayer &, Randomizer &);
-    void submit(const KeyPressResponse &) override;
+    void submit(const std::vector<KeyPressResponse> &) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
     void notifyThatTrialWillBegin(int) override;
 

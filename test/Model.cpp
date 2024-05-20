@@ -369,7 +369,7 @@ class SubmittingKeypressTests : public ::testing::Test {
     RandomizerStub randomizer;
     submitting_keypress::InteractorImpl interactor{
         testMethod, model, outputFile, maskerPlayer, randomizer};
-    KeyPressResponse response;
+    std::vector<KeyPressResponse> responses;
 };
 
 #define SUBMITTING_FREE_RESPONSE_TEST(a) TEST_F(SubmittingFreeResponseTests, a)
@@ -634,12 +634,24 @@ SUBMITTING_KEYPRESS_TEST(savesReactionTime) {
     PlayerTimeWithDelay playerTime;
     playerTime.delay.seconds = .4;
     interactor.notifyThatTargetWillPlayAt(playerTime);
-    response.seconds = .9;
-    interactor.submit(response);
+    responses.resize(5);
+    responses[0].seconds = 1.1;
+    responses[0].key = KeyPressed::first;
+    responses[1].seconds = -.2;
+    responses[1].key = KeyPressed::first;
+    responses[2].seconds = 1.3;
+    responses[2].key = KeyPressed::first;
+    responses[3].seconds = .9;
+    responses[3].key = KeyPressed::second;
+    responses[4].seconds = -1.3;
+    responses[4].key = KeyPressed::first;
+    interactor.submit(responses);
     const auto start{(123456789 + 400000000 + 500000) / 1000000};
     const auto end{900};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         end - start, outputFile.keypressTrial.rt.milliseconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        KeyPressed::second, outputFile.keypressTrial.key);
 }
 
 SUBMITTING_KEYPRESS_TEST(preparesNextTrialIfNeeded) {
@@ -653,20 +665,21 @@ SUBMITTING_KEYPRESS_TEST(savesOutputFileAfterWritingTrial) {
 }
 
 SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesResponse) {
-    response.key = KeyPressed::second;
-    interactor.submit(response);
+    responses.resize(1);
+    responses[0].key = KeyPressed::second;
+    interactor.submit(responses);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         KeyPressed::second, outputFile.keypressTrial.key);
 }
 
 SUBMITTING_KEYPRESS_TEST(submitsResponseToTestMethod) {
-    interactor.submit(response);
+    interactor.submit(responses);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFlaggable);
 }
 
 SUBMITTING_KEYPRESS_TEST(writesTarget) {
     testMethod.setCurrentTargetPath("a/b/c.txt");
-    interactor.submit(response);
+    interactor.submit(responses);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"c.txt"}, outputFile.keypressTrial.target);
 }

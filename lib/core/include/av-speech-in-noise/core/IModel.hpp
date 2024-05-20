@@ -5,6 +5,7 @@
 #include <av-speech-in-noise/Model.hpp>
 
 #include <string>
+#include <vector>
 
 namespace av_speech_in_noise {
 namespace submitting_free_response {
@@ -64,7 +65,7 @@ namespace submitting_keypress {
 class Interactor {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
-    virtual void submit(const KeyPressResponse &) = 0;
+    virtual void submit(const std::vector<KeyPressResponse> &) = 0;
 };
 }
 }

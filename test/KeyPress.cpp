@@ -26,12 +26,12 @@ class ControlStub : public Control {
 
 class InteractorStub : public Interactor {
   public:
-    void submit(const KeyPressResponse &s) override {
+    void submit(const std::vector<KeyPressResponse> &s) override {
         submitted = true;
-        response = s;
+        responses = s;
     }
 
-    KeyPressResponse response{};
+    std::vector<KeyPressResponse> responses{};
     bool submitted{false};
 };
 
@@ -53,9 +53,9 @@ KEY_PRESS_UI_TEST(presenterShowsReadyButtonWhenStarted) {
 
 KEY_PRESS_UI_TEST(submitsKeyPressResponseOnKeyPress) {
     control.keyPressed_ = "2";
-    presenter.showResponseSubmission();
     control.listener_->notifyThatKeyHasBeenPressed();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(KeyPressed::second, model.response.key);
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(KeyPressed::second, model.responses[0].key);
 }
 
 KEY_PRESS_UI_TEST(waitsUntilResponseSubmissionShownToSubmitKeyPress) {
@@ -63,8 +63,7 @@ KEY_PRESS_UI_TEST(waitsUntilResponseSubmissionShownToSubmitKeyPress) {
     control.listener_->notifyThatKeyHasBeenPressed();
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.submitted);
     presenter.showResponseSubmission();
-    control.listener_->notifyThatKeyHasBeenPressed();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(KeyPressed::first, model.response.key);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(KeyPressed::first, model.responses[0].key);
 }
 
 KEY_PRESS_UI_TEST(doesntSubmitResponseFromUnknownKey) {
@@ -103,11 +102,11 @@ KEY_PRESS_UI_TEST(passesKeyPressedSeconds) {
     presenter.showResponseSubmission();
     control.keyPressedSeconds_ = .9;
     control.listener_->notifyThatKeyHasBeenPressed();
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0.9, model.response.seconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0.9, model.responses[0].seconds);
 }
 
-KEY_PRESS_UI_TEST(givesKeyFocusWhenShowingResponseSubmission) {
-    presenter.showResponseSubmission();
+KEY_PRESS_UI_TEST(givesKeyFocusAfterTrialStarts) {
+    presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.keyFocusGiven);
 }
 }
