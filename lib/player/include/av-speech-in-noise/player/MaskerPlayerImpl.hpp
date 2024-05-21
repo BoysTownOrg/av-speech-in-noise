@@ -123,14 +123,9 @@ class MaskerPlayerImpl : public MaskerPlayer,
         auto doneFadingOut() -> bool;
 
         SharedState &sharedState;
-        double vibrotactileTimeScalar{};
         gsl::index rampCounter{};
-        gsl::index rampSamples{};
         gsl::index steadyLevelCounter{};
-        gsl::index steadyLevelSamples{};
-        gsl::index vibrotactileSamples{};
         gsl::index vibrotactileCounter{};
-        gsl::index vibrotactileSamplesToWait{};
         State state{State::idle};
         bool playingVibrotactile{};
         bool enabled{};

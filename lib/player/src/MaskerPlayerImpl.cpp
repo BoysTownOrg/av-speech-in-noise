@@ -68,23 +68,11 @@ static auto sampleRateHz(AudioPlayer *player) -> double {
     return player->sampleRateHz();
 }
 
-static void write(std::atomic<double> &to, double value) { to.store(value); }
-
-static void write(std::atomic<gsl::index> &to, gsl::index value) {
-    to.store(value);
-}
-
-static auto read(std::atomic<double> &x) -> double { return x.load(); }
-
-static auto read(std::atomic<gsl::index> &x) -> gsl::index { return x.load(); }
-
 static void set(std::atomic<bool> &x) { x.store(true); }
 
 static void postForExecution(LockFreeMessage &x) { set(x.execute); }
 
 static void postCompletion(LockFreeMessage &x) { set(x.complete); }
-
-static void clear(std::atomic<bool> &x) { x.store(false); }
 
 static void set(bool &x) { x = true; }
 
@@ -176,7 +164,8 @@ void MaskerPlayerImpl::attach(MaskerPlayer::Observer *e) { listener = e; }
 
 auto MaskerPlayerImpl::duration() -> Duration {
     if (audioEnabled)
-        throw std::runtime_error{"Audio is currently enabled. Can't safely determine duration"};
+        throw std::runtime_error{
+            "Audio is currently enabled. Can't safely determine duration."};
 
     return Duration{samples(sharedState.sourceAudio) /
         av_speech_in_noise::sampleRateHz(player)};
@@ -184,7 +173,8 @@ auto MaskerPlayerImpl::duration() -> Duration {
 
 void MaskerPlayerImpl::seekSeconds(double x) {
     if (audioEnabled)
-        return;
+        throw std::runtime_error{
+            "Audio is currently enabled. Can't safely seek."};
 
     recalculateSamplesToWaitPerChannel(
         sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
@@ -211,7 +201,8 @@ auto MaskerPlayerImpl::currentSystemTime() -> PlayerTime {
 
 void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     if (audioEnabled)
-        return;
+        throw std::runtime_error{
+            "Audio is currently enabled. Can't safely load file."};
 
     player->loadFile(file.path);
     recalculateSamplesToWaitPerChannel(
@@ -226,7 +217,8 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
 void MaskerPlayerImpl::prepareVibrotactileStimulus(
     VibrotactileStimulus stimulus) {
     if (audioEnabled)
-        return;
+        throw std::runtime_error{"Audio is currently enabled. Can't safely "
+                                 "prepare vibrotactile stimulus."};
 
     const auto sampleRateHz{av_speech_in_noise::sampleRateHz(player)};
     sharedState.vibrotactileSamples =
@@ -242,7 +234,8 @@ static_assert(std::numeric_limits<double>::is_iec559, "IEEE 754 required");
 
 auto MaskerPlayerImpl::digitalLevel() -> DigitalLevel {
     if (audioEnabled)
-        throw std::runtime_error{"Audio is currently enabled. Can't safely determine level."};
+        throw std::runtime_error{
+            "Audio is currently enabled. Can't safely determine level."};
 
     return noChannels(sharedState.sourceAudio)
         ? DigitalLevel{-std::numeric_limits<double>::infinity()}
@@ -254,7 +247,8 @@ auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }
 
 void MaskerPlayerImpl::apply(LevelAmplification x) {
     if (audioEnabled)
-        return;
+        throw std::runtime_error{
+            "Audio is currently enabled. Can't safely change level."};
 
     sharedState.levelScalar = std::pow(10, x.dB / 20);
 }
@@ -263,7 +257,8 @@ void MaskerPlayerImpl::setRampFor(Duration x) { rampDuration_ = x; }
 
 void MaskerPlayerImpl::setSteadyLevelFor(Duration x) {
     if (audioEnabled)
-        return;
+        throw std::runtime_error{"Audio is currently enabled. Can't safely "
+                                 "change steady level duration."};
 
     sharedState.steadyLevelSamples = gsl::narrow_cast<gsl::index>(
         x.seconds * av_speech_in_noise::sampleRateHz(player));
@@ -293,7 +288,8 @@ auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
 void MaskerPlayerImpl::setChannelDelaySeconds(
     channel_index_type channel, double seconds) {
     if (audioEnabled)
-        return;
+        throw std::runtime_error{
+            "Audio is currently enabled. Can't safely set channel delay."};
 
     at(channelDelaySeconds, channel) = seconds;
     recalculateSamplesToWaitPerChannel(
@@ -302,7 +298,8 @@ void MaskerPlayerImpl::setChannelDelaySeconds(
 
 void MaskerPlayerImpl::clearChannelDelays() {
     if (audioEnabled)
-        return;
+        throw std::runtime_error{
+            "Audio is currently enabled. Can't safely clear channel delays."};
 
     std::fill(channelDelaySeconds.begin(), channelDelaySeconds.end(), 0);
     recalculateSamplesToWaitPerChannel(
@@ -311,7 +308,8 @@ void MaskerPlayerImpl::clearChannelDelays() {
 
 void MaskerPlayerImpl::useFirstChannelOnly() {
     if (audioEnabled)
-        return;
+        throw std::runtime_error{
+            "Audio is currently enabled. Can't safely use first channel only."};
 
     set(sharedState.firstChannelOnly);
     clear(sharedState.secondChannelOnly);
@@ -319,7 +317,8 @@ void MaskerPlayerImpl::useFirstChannelOnly() {
 
 void MaskerPlayerImpl::useSecondChannelOnly() {
     if (audioEnabled)
-        return;
+        throw std::runtime_error{"Audio is currently enabled. Can't safely use "
+                                 "second channel only."};
 
     set(sharedState.secondChannelOnly);
     clear(sharedState.firstChannelOnly);
@@ -327,7 +326,8 @@ void MaskerPlayerImpl::useSecondChannelOnly() {
 
 void MaskerPlayerImpl::useAllChannels() {
     if (audioEnabled)
-        return;
+        throw std::runtime_error{
+            "Audio is currently enabled. Can't safely use all channels."};
 
     clear(sharedState.firstChannelOnly);
     clear(sharedState.secondChannelOnly);
@@ -387,11 +387,6 @@ void MaskerPlayerImpl::fillAudioBuffer(
 
 static auto squared(double x) -> double { return x * x; }
 
-static void assignFadeSamples(
-    gsl::index &halfWindowLength, MaskerPlayerImpl::SharedState &sharedState) {
-    halfWindowLength = sharedState.rampSamples;
-}
-
 static auto sourceFrames(MaskerPlayerImpl::SharedState &sharedState)
     -> sample_index_type {
     return samples(firstChannel(sharedState.sourceAudio));
@@ -449,32 +444,29 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
     } else
         copySourceAudio(audioBuffer, sharedState);
     if (thisCallConsumesExecutionMessage(sharedState.fadeInMessage)) {
-        assignFadeSamples(rampSamples, sharedState);
-        steadyLevelSamples = sharedState.steadyLevelSamples;
-        vibrotactileSamples = sharedState.vibrotactileSamples;
-        vibrotactileTimeScalar = sharedState.vibrotactileTimeScalar;
-        vibrotactileSamplesToWait = sharedState.vibrotactileSamplesToWait;
         rampCounter = 0;
         state = State::fadingIn;
     }
-    const auto levelScalar_{sharedState.levelScalar};
     for (auto i{sample_index_type{0}}; i < framesToFill(audioBuffer); ++i) {
         for (channel_index_type j{0}; j < std::min(2L, channels(audioBuffer));
              ++j)
             at(channel(audioBuffer, j), i) *= gsl::narrow_cast<sample_type>(
-                (rampSamples != 0 ? squared(std::sin((pi() * rampCounter) /
-                                        (2 * rampSamples)))
-                                  : 1) *
-                levelScalar_);
+                (sharedState.rampSamples != 0
+                        ? squared(std::sin((pi() * rampCounter) /
+                              (2 * sharedState.rampSamples)))
+                        : 1) *
+                sharedState.levelScalar);
         if (channels(audioBuffer) > 2)
             at(channel(audioBuffer, 2), i) = playingVibrotactile &&
-                    vibrotactileCounter >= vibrotactileSamplesToWait
+                    vibrotactileCounter >= sharedState.vibrotactileSamplesToWait
                 ? gsl::narrow_cast<sample_type>(
-                      std::sin(2 * pi() * vibrotactileTimeScalar *
-                          (vibrotactileCounter - vibrotactileSamplesToWait)))
+                      std::sin(2 * pi() * sharedState.vibrotactileTimeScalar *
+                          (vibrotactileCounter -
+                              sharedState.vibrotactileSamplesToWait)))
                 : sample_type{0.};
         bool stateTransition{};
-        if (state == State::fadingIn && rampCounter == rampSamples) {
+        if (state == State::fadingIn &&
+            rampCounter == sharedState.rampSamples) {
             sharedState.fadeInCompleteSystemTime.store(time);
             sharedState.fadeInCompleteSystemTimeSampleOffset.store(i + 1);
             postCompletion(sharedState.fadeInMessage);
@@ -486,15 +478,17 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
         }
         if (playingVibrotactile &&
             vibrotactileCounter ==
-                vibrotactileSamples + vibrotactileSamplesToWait) {
+                sharedState.vibrotactileSamples +
+                    sharedState.vibrotactileSamplesToWait) {
             clear(playingVibrotactile);
         }
         if (state == State::steadyLevel &&
-            steadyLevelCounter == steadyLevelSamples) {
+            steadyLevelCounter == sharedState.steadyLevelSamples) {
             state = State::fadingOut;
             stateTransition = true;
         }
-        if (state == State::fadingOut && rampCounter == 2 * rampSamples) {
+        if (state == State::fadingOut &&
+            rampCounter == 2 * sharedState.rampSamples) {
             postCompletion(sharedState.fadeOutMessage);
             state = State::idle;
             clear(playingVibrotactile);
