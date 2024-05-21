@@ -1008,7 +1008,7 @@ MASKER_PLAYER_TEST(vibrotactile) {
     player.loadFile({});
     VibrotactileStimulus stimulus;
     stimulus.duration.seconds = 0.5;
-    stimulus.delay.seconds = 0.25;
+    stimulus.targetStartRelativeDelay.seconds = 0.25;
     stimulus.frequency.Hz = 2;
     player.prepareVibrotactileStimulus(stimulus);
 

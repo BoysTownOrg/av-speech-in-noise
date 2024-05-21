@@ -50,7 +50,8 @@ struct Frequency {
 
 struct VibrotactileStimulus {
     Duration duration{};
-    Delay delay;
+    Delay targetStartRelativeDelay{};
+    Delay additionalPostFadeInDelay{};
     Frequency frequency{};
 };
 }

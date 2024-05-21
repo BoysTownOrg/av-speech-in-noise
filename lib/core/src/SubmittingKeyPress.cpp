@@ -15,21 +15,26 @@ void InteractorImpl::notifyThatTrialWillBegin(int) {
     const std::array<double, 2> durationsSeconds = {.100, .250};
 
     VibrotactileStimulus stimulus;
-    // delay is relative to when masker has faded in completely
-    stimulus.delay.seconds = RunningATest::targetOnsetFringeDuration.seconds +
-        delaysSeconds.at(
-            randomizer.betweenInclusive(0, delaysSeconds.size() - 1));
+    stimulus.targetStartRelativeDelay.seconds = delaysSeconds.at(
+        randomizer.betweenInclusive(0, delaysSeconds.size() - 1));
+    stimulus.additionalPostFadeInDelay.seconds =
+        RunningATest::targetOnsetFringeDuration.seconds;
     stimulus.duration.seconds = durationsSeconds.at(
         randomizer.betweenInclusive(0, durationsSeconds.size() - 1));
     stimulus.frequency.Hz = 250;
     maskerPlayer.prepareVibrotactileStimulus(stimulus);
+    lastVibrotactileStimulus = stimulus;
 }
 
-void InteractorImpl::notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &t) {
-    targetStartTimeMilliseconds =
+void InteractorImpl::notifyThatTargetWillPlayAt(
+    const PlayerTimeWithDelay &targetStart) {
+    vibrotactileStartTimeMilliseconds =
         static_cast<double>(
-            (maskerPlayer.nanoseconds(t.playerTime) + 500000) / 1000000) +
-        t.delay.seconds * 1000;
+            (maskerPlayer.nanoseconds(targetStart.playerTime) + 500000) /
+            1000000) +
+        (targetStart.delay.seconds +
+            lastVibrotactileStimulus.targetStartRelativeDelay.seconds) *
+            1000;
 }
 
 auto InteractorImpl::submits(const std::vector<KeyPressResponse> &responses)
@@ -39,7 +44,7 @@ auto InteractorImpl::submits(const std::vector<KeyPressResponse> &responses)
     auto min{responses.end()};
     auto minReactionTimeMilliseconds{std::numeric_limits<double>::max()};
     for (auto it{responses.begin()}; it != responses.end(); ++it) {
-        const auto rt{it->seconds * 1000 - targetStartTimeMilliseconds};
+        const auto rt{it->seconds * 1000 - vibrotactileStartTimeMilliseconds};
         if (rt >= 0 && rt < minReactionTimeMilliseconds) {
             min = it;
             minReactionTimeMilliseconds = rt;
@@ -51,6 +56,7 @@ auto InteractorImpl::submits(const std::vector<KeyPressResponse> &responses)
     method.submit(response);
     KeyPressTrial trial;
     static_cast<KeyPressResponse &>(trial) = response;
+    trial.vibrotactileStimulus = lastVibrotactileStimulus;
     trial.rt.milliseconds = minReactionTimeMilliseconds;
     trial.target =
         std::filesystem::path{method.currentTarget().path}.filename();

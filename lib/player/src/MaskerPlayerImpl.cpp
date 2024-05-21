@@ -227,8 +227,10 @@ void MaskerPlayerImpl::prepareVibrotactileStimulus(
         gsl::narrow_cast<gsl::index>(stimulus.duration.seconds * sampleRateHz));
     sharedState.vibrotactileTimeScalar.store(
         stimulus.frequency.Hz / sampleRateHz);
-    sharedState.vibrotactileSamplesToWait.store(
-        gsl::narrow_cast<gsl::index>(stimulus.delay.seconds * sampleRateHz));
+    sharedState.vibrotactileSamplesToWait.store(gsl::narrow_cast<gsl::index>(
+        (stimulus.targetStartRelativeDelay.seconds +
+            stimulus.additionalPostFadeInDelay.seconds) *
+        sampleRateHz));
 }
 
 static_assert(std::numeric_limits<double>::is_iec559, "IEEE 754 required");

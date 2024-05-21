@@ -1,6 +1,8 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_IOUTPUTFILEHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_IOUTPUTFILEHPP_
 
+#include "Player.hpp"
+
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 
@@ -65,6 +67,7 @@ struct ReactionTime {
 };
 
 struct KeyPressTrial : KeyPressResponse, open_set::Trial {
+    VibrotactileStimulus vibrotactileStimulus;
     ReactionTime rt{};
 };
 

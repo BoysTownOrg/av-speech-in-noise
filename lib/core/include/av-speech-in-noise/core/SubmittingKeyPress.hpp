@@ -19,12 +19,13 @@ class InteractorImpl : public Interactor, public RunningATest::TestObserver {
     void notifyThatStimulusHasEnded() override;
 
   private:
+    VibrotactileStimulus lastVibrotactileStimulus;
     FixedLevelMethod &method;
     RunningATest &model;
     OutputFile &outputFile;
     MaskerPlayer &maskerPlayer;
     Randomizer &randomizer;
-    double targetStartTimeMilliseconds{};
+    double vibrotactileStartTimeMilliseconds{};
     bool readyForResponse{};
 };
 }
