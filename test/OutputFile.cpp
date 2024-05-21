@@ -456,6 +456,8 @@ class WritingKeyPressTrial : public WritingTrial {
         trial.target = "a";
         trial.key = KeyPressed::second;
         trial.rt.milliseconds = 3.4;
+        trial.vibrotactileStimulus.duration.seconds = 0.25;
+        trial.vibrotactileStimulus.targetStartRelativeDelay.seconds = 0.19;
     }
 
     auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
@@ -470,13 +472,19 @@ class WritingKeyPressTrial : public WritingTrial {
             at(headingLabels_, HeadingItem::keyPressed), line);
         assertNthCommaDelimitedEntryOfLine(
             writer, "3.4", at(headingLabels_, HeadingItem::reactionTime), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "0.25",
+            at(headingLabels_, HeadingItem::vibrotactileDuration), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "0.19",
+            at(headingLabels_, HeadingItem::vibrotactileDelay), line);
     }
 
     void run(OutputFileImpl &file) override { file.write(trial); }
 
     KeyPressTrial trial;
     std::map<HeadingItem, gsl::index> headingLabels_{{HeadingItem::target, 1},
-        {HeadingItem::keyPressed, 2}, {HeadingItem::reactionTime, 3}};
+        {HeadingItem::keyPressed, 2}, {HeadingItem::reactionTime, 3},
+        {HeadingItem::vibrotactileDuration, 4},
+        {HeadingItem::vibrotactileDelay, 5}};
 };
 
 class WritingFreeResponseTrial : public WritingFlaggableTrial {

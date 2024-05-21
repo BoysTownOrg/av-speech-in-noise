@@ -43,7 +43,9 @@ enum class HeadingItem {
     correctSyllable,
     time,
     keyPressed,
-    reactionTime
+    reactionTime,
+    vibrotactileDuration,
+    vibrotactileDelay
 };
 
 constexpr auto name(HeadingItem i) -> const char * {
@@ -104,6 +106,10 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "key pressed";
     case HeadingItem::reactionTime:
         return "reaction time (ms)";
+    case HeadingItem::vibrotactileDuration:
+        return "vibrotactile duration (s)";
+    case HeadingItem::vibrotactileDelay:
+        return "vibrotactile delay (s)";
     case HeadingItem::leftGazePositionRelativeScreenIsValid:
         return "valid left gaze position relative screen";
     case HeadingItem::rightGazePositionRelativeScreenIsValid:

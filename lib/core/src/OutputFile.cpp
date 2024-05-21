@@ -595,6 +595,10 @@ class KeyPressTrialFormatter : public TrialFormatter {
         insert(stream, HeadingItem::keyPressed);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::reactionTime);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::vibrotactileDuration);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::vibrotactileDelay);
         return insertNewLine(stream);
     }
 
@@ -604,6 +608,10 @@ class KeyPressTrialFormatter : public TrialFormatter {
         insert(stream, trial_.key);
         insertCommaAndSpace(stream);
         insert(stream, trial_.rt.milliseconds);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.vibrotactileStimulus.duration.seconds);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.vibrotactileStimulus.targetStartRelativeDelay.seconds);
         return insertNewLine(stream);
     }
 
