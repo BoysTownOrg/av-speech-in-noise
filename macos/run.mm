@@ -5,10 +5,10 @@
 #include "Timer.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
-#include "av-speech-in-noise/core/SubmittingKeyPress.hpp"
-#include "av-speech-in-noise/ui/KeyPress.hpp"
 #include "masking-images.h"
 
+#include <av-speech-in-noise/core/SubmittingKeyPress.hpp>
+#include <av-speech-in-noise/ui/KeyPress.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/core/AudioRecording.hpp>
 #include <av-speech-in-noise/core/EyeTracking.hpp>
@@ -451,7 +451,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         testController, submittingConsonantInteractor, consonantUI,
         consonantPresenter};
     static submitting_keypress::InteractorImpl submittingKeyPressInteractor{
-        fixedLevelMethod, runningATest, outputFile, maskerPlayer};
+        fixedLevelMethod, runningATest, outputFile, maskerPlayer, randomizer};
     static KeyPressUI keyPressControl{subjectNSWindow};
     static submitting_keypress::Presenter keypressPresenter{
         testUI, testController, submittingKeyPressInteractor, keyPressControl};
