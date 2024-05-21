@@ -3,6 +3,7 @@
 #include <gsl/gsl>
 
 #include <cmath>
+#include <stdexcept>
 #include <vector>
 #include <algorithm>
 #include <limits>
@@ -174,6 +175,9 @@ MaskerPlayerImpl::MaskerPlayerImpl(
 void MaskerPlayerImpl::attach(MaskerPlayer::Observer *e) { listener = e; }
 
 auto MaskerPlayerImpl::duration() -> Duration {
+    if (audioEnabled)
+        throw std::runtime_error{"Audio is currently enabled. Can't safely determine duration"};
+
     return Duration{samples(sharedState.sourceAudio) /
         av_speech_in_noise::sampleRateHz(player)};
 }
@@ -212,9 +216,8 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     player->loadFile(file.path);
     recalculateSamplesToWaitPerChannel(
         sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
-    write(sharedState.rampSamples,
-        gsl::narrow_cast<gsl::index>(
-            rampDuration_.seconds * av_speech_in_noise::sampleRateHz(player)));
+    sharedState.rampSamples = gsl::narrow_cast<gsl::index>(
+        rampDuration_.seconds * av_speech_in_noise::sampleRateHz(player));
     sharedState.sourceAudio = readAudio(file.path);
     std::fill(sharedState.audioFrameHeadsPerChannel.begin(),
         sharedState.audioFrameHeadsPerChannel.end(), 0);
@@ -222,20 +225,25 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
 
 void MaskerPlayerImpl::prepareVibrotactileStimulus(
     VibrotactileStimulus stimulus) {
+    if (audioEnabled)
+        return;
+
     const auto sampleRateHz{av_speech_in_noise::sampleRateHz(player)};
-    sharedState.vibrotactileSamples.store(
-        gsl::narrow_cast<gsl::index>(stimulus.duration.seconds * sampleRateHz));
-    sharedState.vibrotactileTimeScalar.store(
-        stimulus.frequency.Hz / sampleRateHz);
-    sharedState.vibrotactileSamplesToWait.store(gsl::narrow_cast<gsl::index>(
+    sharedState.vibrotactileSamples =
+        gsl::narrow_cast<gsl::index>(stimulus.duration.seconds * sampleRateHz);
+    sharedState.vibrotactileTimeScalar = stimulus.frequency.Hz / sampleRateHz;
+    sharedState.vibrotactileSamplesToWait = gsl::narrow_cast<gsl::index>(
         (stimulus.targetStartRelativeDelay.seconds +
             stimulus.additionalPostFadeInDelay.seconds) *
-        sampleRateHz));
+        sampleRateHz);
 }
 
 static_assert(std::numeric_limits<double>::is_iec559, "IEEE 754 required");
 
 auto MaskerPlayerImpl::digitalLevel() -> DigitalLevel {
+    if (audioEnabled)
+        throw std::runtime_error{"Audio is currently enabled. Can't safely determine level."};
+
     return noChannels(sharedState.sourceAudio)
         ? DigitalLevel{-std::numeric_limits<double>::infinity()}
         : DigitalLevel{
@@ -245,15 +253,20 @@ auto MaskerPlayerImpl::digitalLevel() -> DigitalLevel {
 auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }
 
 void MaskerPlayerImpl::apply(LevelAmplification x) {
-    write(sharedState.levelScalar, std::pow(10, x.dB / 20));
+    if (audioEnabled)
+        return;
+
+    sharedState.levelScalar = std::pow(10, x.dB / 20);
 }
 
 void MaskerPlayerImpl::setRampFor(Duration x) { rampDuration_ = x; }
 
 void MaskerPlayerImpl::setSteadyLevelFor(Duration x) {
-    write(sharedState.steadyLevelSamples,
-        gsl::narrow_cast<gsl::index>(
-            x.seconds * av_speech_in_noise::sampleRateHz(player)));
+    if (audioEnabled)
+        return;
+
+    sharedState.steadyLevelSamples = gsl::narrow_cast<gsl::index>(
+        x.seconds * av_speech_in_noise::sampleRateHz(player));
 }
 
 void MaskerPlayerImpl::setAudioDevice(std::string device) {
@@ -297,16 +310,25 @@ void MaskerPlayerImpl::clearChannelDelays() {
 }
 
 void MaskerPlayerImpl::useFirstChannelOnly() {
+    if (audioEnabled)
+        return;
+
     set(sharedState.firstChannelOnly);
     clear(sharedState.secondChannelOnly);
 }
 
 void MaskerPlayerImpl::useSecondChannelOnly() {
+    if (audioEnabled)
+        return;
+
     set(sharedState.secondChannelOnly);
     clear(sharedState.firstChannelOnly);
 }
 
 void MaskerPlayerImpl::useAllChannels() {
+    if (audioEnabled)
+        return;
+
     clear(sharedState.firstChannelOnly);
     clear(sharedState.secondChannelOnly);
 }
@@ -367,7 +389,7 @@ static auto squared(double x) -> double { return x * x; }
 
 static void assignFadeSamples(
     gsl::index &halfWindowLength, MaskerPlayerImpl::SharedState &sharedState) {
-    halfWindowLength = read(sharedState.rampSamples);
+    halfWindowLength = sharedState.rampSamples;
 }
 
 static auto sourceFrames(MaskerPlayerImpl::SharedState &sharedState)
@@ -377,8 +399,8 @@ static auto sourceFrames(MaskerPlayerImpl::SharedState &sharedState)
 
 static void copySourceAudio(const std::vector<channel_buffer_type> &audioBuffer,
     MaskerPlayerImpl::SharedState &sharedState) {
-    const auto usingFirstChannelOnly{sharedState.firstChannelOnly.load()};
-    const auto usingSecondChannelOnly{sharedState.secondChannelOnly.load()};
+    const auto usingFirstChannelOnly{sharedState.firstChannelOnly};
+    const auto usingSecondChannelOnly{sharedState.secondChannelOnly};
     for (channel_index_type i{0}; i < std::min(2L, channels(audioBuffer));
          ++i) {
         const auto samplesToWait{at(sharedState.samplesToWaitPerChannel, i)};
@@ -428,14 +450,14 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
         copySourceAudio(audioBuffer, sharedState);
     if (thisCallConsumesExecutionMessage(sharedState.fadeInMessage)) {
         assignFadeSamples(rampSamples, sharedState);
-        steadyLevelSamples = read(sharedState.steadyLevelSamples);
-        vibrotactileSamples = read(sharedState.vibrotactileSamples);
-        vibrotactileTimeScalar = read(sharedState.vibrotactileTimeScalar);
-        vibrotactileSamplesToWait = read(sharedState.vibrotactileSamplesToWait);
+        steadyLevelSamples = sharedState.steadyLevelSamples;
+        vibrotactileSamples = sharedState.vibrotactileSamples;
+        vibrotactileTimeScalar = sharedState.vibrotactileTimeScalar;
+        vibrotactileSamplesToWait = sharedState.vibrotactileSamplesToWait;
         rampCounter = 0;
         state = State::fadingIn;
     }
-    const auto levelScalar_{read(sharedState.levelScalar)};
+    const auto levelScalar_{sharedState.levelScalar};
     for (auto i{sample_index_type{0}}; i < framesToFill(audioBuffer); ++i) {
         for (channel_index_type j{0}; j < std::min(2L, channels(audioBuffer));
              ++j)
