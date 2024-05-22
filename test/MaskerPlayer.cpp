@@ -477,7 +477,7 @@ class MaskerPlayerTests : public ::testing::Test {
     MaskerPlayerListenerStub listener;
     AudioReaderStub audioReader;
     TimerStub timer;
-    MaskerPlayerImpl player{&audioPlayer, &audioReader, &timer};
+    MaskerPlayerImpl player{audioPlayer, audioReader, timer};
     std::vector<float> leftChannel;
 
     MaskerPlayerTests() { player.attach(&listener); }

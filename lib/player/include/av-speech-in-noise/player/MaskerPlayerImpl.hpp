@@ -54,7 +54,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
                          public AudioPlayer::Observer,
                          public Timer::Observer {
   public:
-    MaskerPlayerImpl(AudioPlayer *, AudioReader *, Timer *);
+    MaskerPlayerImpl(AudioPlayer &, AudioReader &, Timer &);
     void attach(MaskerPlayer::Observer *) override;
     void fadeIn() override;
     void loadFile(const LocalUrl &) override;
@@ -106,7 +106,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
 
   private:
     auto readAudio(std::string) -> audio_type;
-    auto fading() -> bool;
 
     class AudioThreadContext {
       public:
@@ -117,9 +116,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
 
       private:
         enum class State { fadingIn, steadyLevel, fadingOut, idle };
-
-        auto doneFadingIn() -> bool;
-        auto doneFadingOut() -> bool;
 
         SharedState &sharedState;
         gsl::index rampCounter{};
@@ -133,10 +129,10 @@ class MaskerPlayerImpl : public MaskerPlayer,
     SharedState sharedState{};
     AudioThreadContext audioThreadContext;
     std::vector<double> channelDelaySeconds;
-    AudioPlayer *player;
-    AudioReader *reader;
-    Timer *timer;
-    MaskerPlayer::Observer *listener{};
+    AudioPlayer &player;
+    AudioReader &reader;
+    Timer &timer;
+    MaskerPlayer::Observer *observer{};
     Duration rampDuration_{};
     bool playingFiniteSection{};
     bool audioEnabled{};

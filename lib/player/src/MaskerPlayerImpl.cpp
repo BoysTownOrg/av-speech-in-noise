@@ -66,8 +66,8 @@ static auto noChannels(const std::vector<channel_buffer_type> &x) -> bool {
     return x.empty();
 }
 
-static auto sampleRateHz(AudioPlayer *player) -> double {
-    return player->sampleRateHz();
+static auto sampleRateHz(AudioPlayer &player) -> double {
+    return player.sampleRateHz();
 }
 
 static void set(std::atomic<bool> &x) { x.store(true); }
@@ -119,7 +119,7 @@ static auto mathModulus(sample_index_type a, sample_index_type b)
 
 static void recalculateSamplesToWaitPerChannel(
     std::vector<sample_index_type> &samplesToWaitPerChannel,
-    AudioPlayer *player, const std::vector<double> &channelDelaySeconds) {
+    AudioPlayer &player, const std::vector<double> &channelDelaySeconds) {
     std::generate(samplesToWaitPerChannel.begin(),
         samplesToWaitPerChannel.end(), [&, n = 0]() mutable {
             return gsl::narrow_cast<channel_index_type>(
@@ -128,20 +128,20 @@ static void recalculateSamplesToWaitPerChannel(
         });
 }
 
-static void scheduleCallback(Timer *timer, Delay x) {
-    timer->scheduleCallbackAfterSeconds(x.seconds);
+static void scheduleCallback(Timer &timer, Delay x) {
+    timer.scheduleCallbackAfterSeconds(x.seconds);
 }
 
-static auto audioDeviceDescriptions(AudioPlayer *player)
+static auto audioDeviceDescriptions(AudioPlayer &player)
     -> std::vector<std::string> {
     std::vector<std::string> descriptions(
-        gsl::narrow<std::size_t>(player->deviceCount()));
+        gsl::narrow<std::size_t>(player.deviceCount()));
     std::generate(descriptions.begin(), descriptions.end(),
-        [&, n = 0]() mutable { return player->deviceDescription(n++); });
+        [&, n = 0]() mutable { return player.deviceDescription(n++); });
     return descriptions;
 }
 
-static auto findDeviceIndex(AudioPlayer *player, const std::string &device)
+static auto findDeviceIndex(AudioPlayer &player, const std::string &device)
     -> int {
     auto devices{audioDeviceDescriptions(player)};
     auto found{std::find(devices.begin(), devices.end(), device)};
@@ -158,16 +158,16 @@ static void panic(std::string_view message) {
 constexpr auto maxChannels{128};
 
 MaskerPlayerImpl::MaskerPlayerImpl(
-    AudioPlayer *player, AudioReader *reader, Timer *timer)
+    AudioPlayer &player, AudioReader &reader, Timer &timer)
     : audioThreadContext{sharedState}, channelDelaySeconds(maxChannels),
       player{player}, reader{reader}, timer{timer} {
     sharedState.samplesToWaitPerChannel.resize(maxChannels);
     sharedState.audioFrameHeadsPerChannel.resize(maxChannels);
-    player->attach(this);
-    timer->attach(this);
+    player.attach(this);
+    timer.attach(this);
 }
 
-void MaskerPlayerImpl::attach(MaskerPlayer::Observer *e) { listener = e; }
+void MaskerPlayerImpl::attach(MaskerPlayer::Observer *e) { observer = e; }
 
 auto MaskerPlayerImpl::duration() -> Duration {
     if (audioEnabled)
@@ -197,18 +197,18 @@ auto MaskerPlayerImpl::sampleRateHz() -> double {
 }
 
 auto MaskerPlayerImpl::nanoseconds(PlayerTime t) -> std::uintmax_t {
-    return player->nanoseconds(t);
+    return player.nanoseconds(t);
 }
 
 auto MaskerPlayerImpl::currentSystemTime() -> PlayerTime {
-    return player->currentSystemTime();
+    return player.currentSystemTime();
 }
 
 void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     if (audioEnabled)
         panic("Audio is currently enabled. Can't safely load file.");
 
-    player->loadFile(file.path);
+    player.loadFile(file.path);
     recalculateSamplesToWaitPerChannel(
         sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
     sharedState.rampSamples = gsl::narrow_cast<gsl::index>(
@@ -265,12 +265,12 @@ void MaskerPlayerImpl::setSteadyLevelFor(Duration x) {
 }
 
 void MaskerPlayerImpl::setAudioDevice(std::string device) {
-    player->setDevice(findDeviceIndex(player, device));
+    player.setDevice(findDeviceIndex(player, device));
 }
 
 auto MaskerPlayerImpl::readAudio(std::string filePath) -> audio_type {
     try {
-        return reader->read(std::move(filePath));
+        return reader.read(std::move(filePath));
     } catch (const AudioReader::InvalidFile &) {
         throw InvalidAudioFile{};
     }
@@ -279,9 +279,9 @@ auto MaskerPlayerImpl::readAudio(std::string filePath) -> audio_type {
 auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
     -> std::vector<std::string> {
     std::vector<std::string> descriptions{};
-    for (int i = 0; i < player->deviceCount(); ++i)
-        if (player->outputDevice(i))
-            descriptions.push_back(player->deviceDescription(i));
+    for (int i = 0; i < player.deviceCount(); ++i)
+        if (player.outputDevice(i))
+            descriptions.push_back(player.deviceDescription(i));
     return descriptions;
 }
 
@@ -345,7 +345,7 @@ void MaskerPlayerImpl::play() {
         postForExecution(sharedState.enableAudioMessage);
         audioEnabled = true;
     }
-    player->play();
+    player.play();
 }
 
 void MaskerPlayerImpl::stop() {
@@ -357,18 +357,18 @@ void MaskerPlayerImpl::stop() {
             expected = true;
         audioEnabled = false;
     }
-    player->stop();
+    player.stop();
 }
 
 void MaskerPlayerImpl::callback() {
     if (thisCallConsumesCompletionMessage(sharedState.fadeInMessage))
-        listener->fadeInComplete({{sharedState.fadeInCompleteSystemTime.load()},
+        observer->fadeInComplete({{sharedState.fadeInCompleteSystemTime.load()},
             sharedState.fadeInCompleteSystemTimeSampleOffset.load()});
 
     if (thisCallConsumesCompletionMessage(sharedState.fadeOutMessage)) {
         clear(playingFiniteSection);
         stop();
-        listener->fadeOutComplete();
+        observer->fadeOutComplete();
         return;
     }
 

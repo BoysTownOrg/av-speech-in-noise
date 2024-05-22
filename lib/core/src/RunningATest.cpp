@@ -270,12 +270,17 @@ void RunningATestImpl::attach(RunningATest::RequestObserver *listener) {
     requestObserver = listener;
 }
 
-void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
-    std::vector<std::reference_wrapper<TestObserver>> observers_) {
+void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test,
+    std::vector<std::reference_wrapper<TestObserver>> testObservers) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
-    if (testMethod_->complete())
+    if (testMethod->complete())
         return;
+
+    this->testMethod = testMethod;
+    this->test = test;
+    this->testObservers = testObservers;
+    trialNumber_ = 1;
 
     tryOpening(outputFile, test.identity);
     maskerPlayer.stop();
@@ -283,15 +288,11 @@ void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
         [&](const LocalUrl &file) { maskerPlayer.loadFile(file); },
         maskerFileUrl(test));
 
-    testMethod = testMethod_;
-    this->test = test;
-
     hide(targetPlayer);
     maskerPlayer.apply(maskerLevelAmplification(maskerPlayer, test));
     preparePlayersForNextTrial(
         testMethod, randomizer, targetPlayer, maskerPlayer, test);
     testMethod->writeTestingParameters(outputFile);
-    trialNumber_ = 1;
 
     useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);
@@ -304,7 +305,6 @@ void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
         maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
     }
 
-    testObservers = observers_;
     for (auto observer : testObservers)
         observer.get().notifyThatNewTestIsReady(test.identity.session);
 }
