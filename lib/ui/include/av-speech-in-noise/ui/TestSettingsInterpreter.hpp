@@ -29,6 +29,7 @@ enum class Method {
     fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording,
     fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking,
     fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking,
+    fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation,
     fixedLevelCoordinateResponseMeasureWithTargetReplacement,
     fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
@@ -88,6 +89,10 @@ constexpr auto name(Method c) -> const char * {
         fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking:
         return "fixed-level free response predetermined stimuli audio "
                "recording eye tracking";
+    case Method::
+        fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation:
+        return "fixed-level button response predetermined stimuli audio "
+               "recording eye tracking vibrotactile";
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
         return "fixed-level free response predetermined stimuli";
     case Method::fixedLevelSyllablesWithAllTargets:
@@ -195,7 +200,9 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
         TaskPresenter &chooseKeywordsPresenter,
         TaskPresenter &syllablesPresenter,
         TaskPresenter &correctKeywordsPresenter,
-        TaskPresenter &consonantPresenter, TaskPresenter &passFailPresenter);
+        TaskPresenter &consonantPresenter, TaskPresenter &passFailPresenter,
+        TaskPresenter &keypressPresenter,
+        RunningATest::TestObserver &submittingKeyPressResponse);
     void initializeTest(
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
@@ -224,6 +231,8 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     TaskPresenter &correctKeywordsPresenter;
     TaskPresenter &consonantPresenter;
     TaskPresenter &passFailPresenter;
+    TaskPresenter &keypressPresenter;
+    RunningATest::TestObserver &submittingKeyPressResponse;
 };
 }
 

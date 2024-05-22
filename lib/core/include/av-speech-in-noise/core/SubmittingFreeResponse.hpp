@@ -1,8 +1,8 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_SUBMITTINGFREERESPONSEHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_SUBMITTINGFREERESPONSEHPP_
 
+#include "IFixedLevelMethod.hpp"
 #include "IModel.hpp"
-#include "FixedLevelMethod.hpp"
 #include "IRunningATest.hpp"
 #include "IOutputFile.hpp"
 

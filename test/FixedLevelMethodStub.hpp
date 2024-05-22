@@ -32,9 +32,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     auto snr() -> SNR override { return SNR{}; }
 
-    void submit(const FreeResponse &) override {
-        submittedFreeResponse_ = true;
-    }
+    void submit(const Flaggable &) override { submittedFlaggable = true; }
 
     void submit(const ConsonantResponse &) override {
         submittedConsonant_ = true;
@@ -58,17 +56,14 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         threeKeywords_ = &r;
     }
 
-    void submit(const SyllableResponse &r) override { syllableResponse_ = &r; }
-
     KeywordsTestResults keywordsTestResults_{};
     LocalUrl currentTarget_;
     const ThreeKeywordsResponse *threeKeywords_{};
-    const SyllableResponse *syllableResponse_{};
     FixedLevelTest test{};
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest{};
     TargetPlaylist *targetList{};
     bool submittedConsonant_{};
-    bool submittedFreeResponse_{};
+    bool submittedFlaggable{};
 };
 }
 

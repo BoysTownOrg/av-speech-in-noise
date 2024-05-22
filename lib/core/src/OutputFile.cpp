@@ -1,6 +1,7 @@
 #include "OutputFile.hpp"
-#include <av-speech-in-noise/Model.hpp>
+
 #include <av-speech-in-noise/Interface.hpp>
+
 #include <sstream>
 #include <ostream>
 #include <algorithm>
@@ -15,6 +16,7 @@ enum class OutputFileImpl::Trial {
     Consonant,
     ThreeKeywords,
     Syllable,
+    KeyPress,
     none
 };
 
@@ -44,6 +46,10 @@ static auto operator<<(std::ostream &os, Consonant item) -> std::ostream & {
 }
 
 static auto operator<<(std::ostream &os, Syllable item) -> std::ostream & {
+    return os << name(item);
+}
+
+static auto operator<<(std::ostream &os, KeyPressed item) -> std::ostream & {
     return os << name(item);
 }
 
@@ -577,6 +583,41 @@ class SyllableTrialFormatter : public TrialFormatter {
   private:
     const SyllableTrial &trial_;
 };
+
+class KeyPressTrialFormatter : public TrialFormatter {
+  public:
+    explicit KeyPressTrialFormatter(const KeyPressTrial &trial_)
+        : trial_{trial_} {}
+
+    auto insertHeading(std::ostream &stream) -> std::ostream & override {
+        insert(stream, HeadingItem::target);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::keyPressed);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::reactionTime);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::vibrotactileDuration);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::vibrotactileDelay);
+        return insertNewLine(stream);
+    }
+
+    auto insertTrial(std::ostream &stream) -> std::ostream & override {
+        insert(stream, trial_.target);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.key);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.rt.milliseconds);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.vibrotactileStimulus.duration.seconds);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.vibrotactileStimulus.targetStartRelativeDelay.seconds);
+        return insertNewLine(stream);
+    }
+
+  private:
+    const KeyPressTrial &trial_;
+};
 }
 
 static void write(Writer &writer, const std::string &s) { writer.write(s); }
@@ -643,6 +684,11 @@ void OutputFileImpl::write(const ThreeKeywordsTrial &trial) {
 void OutputFileImpl::write(const SyllableTrial &trial) {
     SyllableTrialFormatter formatter{trial};
     av_speech_in_noise::write(writer, formatter, currentTrial, Trial::Syllable);
+}
+
+void OutputFileImpl::write(const KeyPressTrial &trial) {
+    KeyPressTrialFormatter formatter{trial};
+    av_speech_in_noise::write(writer, formatter, currentTrial, Trial::KeyPress);
 }
 
 void OutputFileImpl::write(const AdaptiveTest &test) {

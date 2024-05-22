@@ -124,7 +124,7 @@ static void update(
     finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
 }
 
-void FixedLevelMethodImpl::submit(const FreeResponse &response) {
+void FixedLevelMethodImpl::submit(const Flaggable &response) {
     if (usingFiniteTargetPlaylist_)
         update(finiteTargetPlaylistWithRepeatables, finiteTargetPlaylist,
             response.flagged, finiteTargetsExhausted_);
@@ -142,11 +142,6 @@ void FixedLevelMethodImpl::submit(const ThreeKeywordsResponse &response) {
         ++totalKeywordsCorrect_;
     if (response.thirdCorrect)
         ++totalKeywordsCorrect_;
-}
-
-void FixedLevelMethodImpl::submit(const SyllableResponse &response) {
-    update(finiteTargetPlaylistWithRepeatables, finiteTargetPlaylist,
-        response.flagged, finiteTargetsExhausted_);
 }
 
 auto FixedLevelMethodImpl::keywordsTestResults() -> KeywordsTestResults {

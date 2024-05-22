@@ -199,29 +199,25 @@ static void play(MaskerPlayer &maskerPlayer, const Calibration &calibration) {
     play(maskerPlayer);
 }
 
-static auto maskerLevelAmplification(MaskerPlayer &maskerPlayer,
-    RealLevel maskerLevel, RealLevel fullScaleLevel) -> LevelAmplification {
-    return LevelAmplification{
-        DigitalLevel{maskerLevel - fullScaleLevel - maskerPlayer.digitalLevel()}
-            .dBov};
+static auto maskerLevelAmplification(
+    MaskerPlayer &maskerPlayer, const Test &test) -> LevelAmplification {
+    return LevelAmplification{DigitalLevel{
+        test.maskerLevel - test.fullScaleLevel - maskerPlayer.digitalLevel()}
+                                  .dBov};
 }
 
-static auto targetLevelAmplification(TestMethod *testMethod,
-    MaskerPlayer &maskerPlayer, RealLevel maskerLevel,
-    RealLevel fullScaleLevel) {
+static auto targetLevelAmplification(
+    TestMethod *testMethod, MaskerPlayer &maskerPlayer, const Test &test) {
     return LevelAmplification{
-        maskerLevelAmplification(maskerPlayer, maskerLevel, fullScaleLevel).dB +
-        testMethod->snr().dB};
+        maskerLevelAmplification(maskerPlayer, test).dB + testMethod->snr().dB};
 }
 
 static void preparePlayersForNextTrial(TestMethod *testMethod,
     Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, RealLevel maskerLevel, RealLevel fullScaleLevel,
-    RationalNumber videoScale) {
-    loadFile(targetPlayer, testMethod->nextTarget(), videoScale);
-    apply(targetPlayer,
-        targetLevelAmplification(
-            testMethod, maskerPlayer, maskerLevel, fullScaleLevel));
+    MaskerPlayer &maskerPlayer, const Test &test) {
+    loadFile(targetPlayer, testMethod->nextTarget(), test.videoScale);
+    apply(
+        targetPlayer, targetLevelAmplification(testMethod, maskerPlayer, test));
     const auto maskerPlayerSeekTimeUpperLimit{
         maskerPlayer.duration() - trialDuration(targetPlayer, maskerPlayer)};
     maskerPlayer.seekSeconds(randomizer.betweenInclusive(
@@ -234,14 +230,13 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     MaskerPlayer &maskerPlayer,
     const std::vector<std::reference_wrapper<RunningATest::TestObserver>>
         &observers,
-    RealLevel maskerLevel, RealLevel fullScaleLevel,
-    RationalNumber videoScale) {
+    const Test &test) {
     for (auto observer : observers)
         observer.get().notifyThatSubjectHasResponded();
     if (!testMethod->complete()) {
         ++trialNumber_;
-        preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
-            maskerPlayer, maskerLevel, fullScaleLevel, videoScale);
+        preparePlayersForNextTrial(
+            testMethod, randomizer, targetPlayer, maskerPlayer, test);
     } else {
         testMethod->writeTestResult(outputFile);
         save(outputFile);
@@ -254,13 +249,11 @@ static void saveOutputFileAndPrepareNextTrialAfter(
     MaskerPlayer &maskerPlayer,
     const std::vector<std::reference_wrapper<RunningATest::TestObserver>>
         &observer,
-    RealLevel maskerLevel, RealLevel fullScaleLevel,
-    RationalNumber videoScale) {
+    const Test &test) {
     f();
     save(outputFile);
     prepareNextTrialIfNeeded(testMethod, trialNumber_, outputFile, randomizer,
-        targetPlayer, maskerPlayer, observer, maskerLevel, fullScaleLevel,
-        videoScale);
+        targetPlayer, maskerPlayer, observer, test);
 }
 
 RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
@@ -273,16 +266,21 @@ RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     maskerPlayer.attach(this);
 }
 
-void RunningATestImpl::attach(RunningATest::Observer *listener) {
-    listener_ = listener;
+void RunningATestImpl::attach(RunningATest::RequestObserver *listener) {
+    requestObserver = listener;
 }
 
-void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
-    std::vector<std::reference_wrapper<TestObserver>> observers_) {
+void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test,
+    std::vector<std::reference_wrapper<TestObserver>> testObservers) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
-    if (testMethod_->complete())
+    if (testMethod->complete())
         return;
+
+    this->testMethod = testMethod;
+    this->test = test;
+    this->testObservers = testObservers;
+    trialNumber_ = 1;
 
     tryOpening(outputFile, test.identity);
     maskerPlayer.stop();
@@ -290,20 +288,11 @@ void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
         [&](const LocalUrl &file) { maskerPlayer.loadFile(file); },
         maskerFileUrl(test));
 
-    testMethod = testMethod_;
-    fullScaleLevel_ = test.fullScaleLevel;
-    maskerLevel_ = test.maskerLevel;
-    condition = test.condition;
-    keepVideoShown = test.keepVideoShown;
-    videoScale = test.videoScale;
-
     hide(targetPlayer);
-    maskerPlayer.apply(
-        maskerLevelAmplification(maskerPlayer, maskerLevel_, fullScaleLevel_));
-    preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
-        maskerPlayer, maskerLevel_, fullScaleLevel_, test.videoScale);
+    maskerPlayer.apply(maskerLevelAmplification(maskerPlayer, test));
+    preparePlayersForNextTrial(
+        testMethod, randomizer, targetPlayer, maskerPlayer, test);
     testMethod->writeTestingParameters(outputFile);
-    trialNumber_ = 1;
 
     useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);
@@ -316,8 +305,7 @@ void RunningATestImpl::initialize(TestMethod *testMethod_, const Test &test,
         maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
     }
 
-    observers = observers_;
-    for (auto observer : observers)
+    for (auto observer : testObservers)
         observer.get().notifyThatNewTestIsReady(test.identity.session);
 }
 
@@ -331,9 +319,9 @@ void RunningATestImpl::playTrial(const AudioSettings &settings) {
         settings.audioDevice);
 
     playTrialTime_ = clock.time();
-    for (auto observer : observers)
+    for (auto observer : testObservers)
         observer.get().notifyThatTrialWillBegin(trialNumber_);
-    if (condition == Condition::audioVisual)
+    if (test.condition == Condition::audioVisual)
         show(targetPlayer);
     targetPlayer.preRoll();
     trialInProgress_ = true;
@@ -350,16 +338,16 @@ void RunningATestImpl::fadeInComplete(const AudioSampleTimeWithOffset &t) {
         Duration{offsetDuration(maskerPlayer, t) + targetOnsetFringeDuration}
             .seconds};
     targetPlayer.playAt(timeToPlayWithDelay);
-    for (auto observer : observers)
+    for (auto observer : testObservers)
         observer.get().notifyThatTargetWillPlayAt(timeToPlayWithDelay);
 }
 
 void RunningATestImpl::fadeOutComplete() {
-    if (!keepVideoShown)
+    if (!test.keepVideoShown)
         hide(targetPlayer);
-    for (auto observer : observers)
+    for (auto observer : testObservers)
         observer.get().notifyThatStimulusHasEnded();
-    listener_->trialComplete();
+    requestObserver->notifyThatPlayTrialHasCompleted();
     trialInProgress_ = false;
 }
 
@@ -371,13 +359,13 @@ void RunningATestImpl::submit(
             testMethod->writeLastCoordinateResponse(outputFile);
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, observers, maskerLevel_, fullScaleLevel_, videoScale);
+        maskerPlayer, testObservers, test);
 }
 
 void RunningATestImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, observers,
-        maskerLevel_, fullScaleLevel_, videoScale);
+        outputFile, randomizer, targetPlayer, maskerPlayer, testObservers,
+        test);
 }
 
 void RunningATestImpl::playCalibration(const Calibration &calibration) {

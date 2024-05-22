@@ -227,6 +227,8 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub consonantPresenter;
     TaskPresenterStub passFailPresenter;
+    TaskPresenterStub keypressPresenter;
+    RunningATest::TestObserver submittingKeyPressResponse;
     TestSettingsInterpreterImpl interpreter{runningATest, adaptiveMethod,
         fixedLevelMethod, eyeTracking, audioRecording, cyclicTargetsReader,
         targetsWithReplacementReader, predeterminedTargets, everyTargetOnce,
@@ -234,7 +236,8 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         freeResponseController, sessionController,
         coordinateResponseMeasurePresenter, freeResponsePresenter,
         chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
-        consonantPresenter, passFailPresenter};
+        consonantPresenter, passFailPresenter, keypressPresenter,
+        submittingKeyPressResponse};
     TestIdentity testIdentity;
 };
 
@@ -387,6 +390,11 @@ TEST_SETTINGS_INTERPRETER_TEST(
             fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking);
 }
 TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestPasses_fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactile_Method) {
+    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_TEST_METHOD(Method::
+            fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation);
+}
+TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestPasses_fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking_Method) {
     AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_TEST_METHOD(
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
@@ -502,6 +510,13 @@ TEST_SETTINGS_INTERPRETER_TEST(
     AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
         Method::
             fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking,
+        fixedLevelMethod.test);
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactile_PassesFixedLevelSettings) {
+    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
+        Method::
+            fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation,
         fixedLevelMethod.test);
 }
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -630,6 +645,11 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking_PassesTestMethod) {
     ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_METHOD(Method::
             fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking);
+}
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactile_PassesTestMethod) {
+    ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_METHOD(Method::
+            fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation);
 }
 TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking_PassesTestMethod) {
@@ -774,6 +794,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
         &freeResponsePresenter, sessionController.taskPresenter());
 }
 TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactile_PassesTaskPresenter) {
+    initializeTest(interpreter,
+        Method::
+            fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &keypressPresenter, sessionController.taskPresenter());
+}
+TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking_PassesTaskPresenter) {
     initializeTest(interpreter,
         Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking);
@@ -878,6 +906,21 @@ TEST_SETTINGS_INTERPRETER_TEST(
         &runningATest.observer[0].get(), &eyeTracking);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &runningATest.observer[1].get(), &audioRecording);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileSelectsAudioRecordingAndEyeTracking) {
+    initializeTest(interpreter,
+        Method::
+            fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        fixedLevelMethod.targetList, &predeterminedTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer[0].get(), &eyeTracking);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer[1].get(), &audioRecording);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer[2].get(), &submittingKeyPressResponse);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {

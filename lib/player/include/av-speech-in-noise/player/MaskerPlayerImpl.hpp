@@ -2,9 +2,13 @@
 #define AV_SPEECH_IN_NOISE_LIB_PLAYER_INCLUDE_AVSPEECHINNOISE_PLAYER_MASKERPLAYERIMPLHPP_
 
 #include "AudioReader.hpp"
+
+#include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/ITimer.hpp>
 #include <av-speech-in-noise/core/IMaskerPlayer.hpp>
+
 #include <gsl/gsl>
+
 #include <string>
 #include <vector>
 #include <atomic>
@@ -16,13 +20,13 @@ class AudioPlayer {
   public:
     class Observer {
       public:
-        virtual ~Observer() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void fillAudioBuffer(
             const std::vector<channel_buffer_type> &audio,
             player_system_time_type) = 0;
     };
 
-    virtual ~AudioPlayer() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(AudioPlayer);
     virtual void attach(Observer *) = 0;
     virtual void play() = 0;
     virtual void stop() = 0;
@@ -50,11 +54,10 @@ class MaskerPlayerImpl : public MaskerPlayer,
                          public AudioPlayer::Observer,
                          public Timer::Observer {
   public:
-    MaskerPlayerImpl(AudioPlayer *, AudioReader *, Timer *);
+    MaskerPlayerImpl(AudioPlayer &, AudioReader &, Timer &);
     void attach(MaskerPlayer::Observer *) override;
     void fadeIn() override;
     void loadFile(const LocalUrl &) override;
-    auto playing() -> bool override;
     void setAudioDevice(std::string) override;
     void apply(LevelAmplification) override;
     void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
@@ -78,19 +81,23 @@ class MaskerPlayerImpl : public MaskerPlayer,
     void useAllChannels() override;
     auto nanoseconds(PlayerTime) -> std::uintmax_t override;
     auto currentSystemTime() -> PlayerTime override;
+    void prepareVibrotactileStimulus(VibrotactileStimulus) override;
     static constexpr Delay callbackDelay{1. / 30};
 
     struct SharedState {
         audio_type sourceAudio{};
         std::vector<sample_index_type> samplesToWaitPerChannel;
         std::vector<sample_index_type> audioFrameHeadsPerChannel;
-        std::atomic<double> levelScalar{1};
+        double levelScalar{1};
+        double vibrotactileTimeScalar{};
         std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
         std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
-        std::atomic<gsl::index> rampSamples{};
-        std::atomic<gsl::index> steadyLevelSamples{};
-        std::atomic<bool> firstChannelOnly{};
-        std::atomic<bool> secondChannelOnly{};
+        gsl::index rampSamples{};
+        gsl::index steadyLevelSamples{};
+        gsl::index vibrotactileSamples{};
+        gsl::index vibrotactileSamplesToWait{};
+        bool firstChannelOnly{};
+        bool secondChannelOnly{};
         LockFreeMessage fadeInMessage{};
         LockFreeMessage fadeOutMessage{};
         LockFreeMessage disableAudioMessage{};
@@ -99,7 +106,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
 
   private:
     auto readAudio(std::string) -> audio_type;
-    auto fading() -> bool;
 
     class AudioThreadContext {
       public:
@@ -109,27 +115,24 @@ class MaskerPlayerImpl : public MaskerPlayer,
             player_system_time_type);
 
       private:
-        auto doneFadingIn() -> bool;
-        auto doneFadingOut() -> bool;
+        enum class State { fadingIn, steadyLevel, fadingOut, idle };
 
         SharedState &sharedState;
         gsl::index rampCounter{};
-        gsl::index rampSamples{};
         gsl::index steadyLevelCounter{};
-        gsl::index steadyLevelSamples{};
-        bool fadingOut{};
-        bool fadingIn{};
-        bool steadyingLevel{};
+        gsl::index vibrotactileCounter{};
+        State state{State::idle};
+        bool playingVibrotactile{};
         bool enabled{};
     };
 
     SharedState sharedState{};
     AudioThreadContext audioThreadContext;
     std::vector<double> channelDelaySeconds;
-    AudioPlayer *player;
-    AudioReader *reader;
-    Timer *timer;
-    MaskerPlayer::Observer *listener{};
+    AudioPlayer &player;
+    AudioReader &reader;
+    Timer &timer;
+    MaskerPlayer::Observer *observer{};
     Duration rampDuration_{};
     bool playingFiniteSection{};
     bool audioEnabled{};

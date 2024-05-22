@@ -1,10 +1,11 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
 
+#include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/OutputFile.hpp>
-#include <av-speech-in-noise/Model.hpp>
 
 #include <gtest/gtest.h>
+
 #include <gsl/gsl>
 
 #include <vector>
@@ -84,7 +85,7 @@ class OutputFilePathStub : public OutputFilePath {
 
 class UseCase {
   public:
-    virtual ~UseCase() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(UseCase);
     virtual void run(OutputFileImpl &) = 0;
 };
 
@@ -449,6 +450,43 @@ class WritingConsonantTrial : public WritingEvaluatedTrial {
         {HeadingItem::evaluation, 3}, {HeadingItem::target, 4}};
 };
 
+class WritingKeyPressTrial : public WritingTrial {
+  public:
+    WritingKeyPressTrial() {
+        trial.target = "a";
+        trial.key = KeyPressed::second;
+        trial.rt.milliseconds = 3.4;
+        trial.vibrotactileStimulus.duration.seconds = 0.25;
+        trial.vibrotactileStimulus.targetStartRelativeDelay.seconds = 0.19;
+    }
+
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return headingLabels_;
+    }
+
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "a", at(headingLabels_, HeadingItem::target), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "second",
+            at(headingLabels_, HeadingItem::keyPressed), line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "3.4", at(headingLabels_, HeadingItem::reactionTime), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "0.25",
+            at(headingLabels_, HeadingItem::vibrotactileDuration), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "0.19",
+            at(headingLabels_, HeadingItem::vibrotactileDelay), line);
+    }
+
+    void run(OutputFileImpl &file) override { file.write(trial); }
+
+    KeyPressTrial trial;
+    std::map<HeadingItem, gsl::index> headingLabels_{{HeadingItem::target, 1},
+        {HeadingItem::keyPressed, 2}, {HeadingItem::reactionTime, 3},
+        {HeadingItem::vibrotactileDuration, 4},
+        {HeadingItem::vibrotactileDelay, 5}};
+};
+
 class WritingFreeResponseTrial : public WritingFlaggableTrial {
   public:
     WritingFreeResponseTrial() {
@@ -566,7 +604,7 @@ class WritingSyllableTrial : public WritingEvaluatedTrial,
         {HeadingItem::evaluation, 3}, {HeadingItem::target, 4}};
 };
 
-static void assertWritesFlaggedTrial(
+void assertWritesFlaggedTrial(
     OutputFileImpl &file, WriterStub &writer, WritingFlaggableTrial &useCase) {
     useCase.flag();
     run(useCase, file);
@@ -574,7 +612,7 @@ static void assertWritesFlaggedTrial(
         writer, "FLAGGED", useCase.headingLabels().size() + 1);
 }
 
-static void assertNonFlaggedTrialDoesNotWriteExtraEntry(
+void assertNonFlaggedTrialDoesNotWriteExtraEntry(
     OutputFileImpl &file, WriterStub &writer, WritingFlaggableTrial &useCase) {
     useCase.clearFlag();
     run(useCase, file);
@@ -602,6 +640,7 @@ class OutputFileTests : public ::testing::Test {
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
     WritingConsonantTrial writingConsonantTrial;
     WritingFreeResponseTrial writingFreeResponseTrial;
+    WritingKeyPressTrial writingKeyPressTrial;
     WritingThreeKeywordsTrial writingThreeKeywordsTrial;
     WritingSyllableTrial writingSyllableTrial;
     WritingFixedLevelTest writingFixedLevelTest;
@@ -722,6 +761,10 @@ OUTPUT_FILE_TEST(writingFreeResponseTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingFreeResponseTrial);
 }
 
+OUTPUT_FILE_TEST(writingKeyPressTrialWritesHeadingOnFirstLine) {
+    assertWritesHeadingOnFirstLine(writingKeyPressTrial);
+}
+
 OUTPUT_FILE_TEST(writingThreeKeywordsTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingThreeKeywordsTrial);
 }
@@ -740,6 +783,10 @@ OUTPUT_FILE_TEST(writingConsonantTrialWritesHeadingOnFirstLine) {
 
 OUTPUT_FILE_TEST(writingOpenSetAdaptiveTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingOpenSetAdaptiveTrial);
+}
+
+OUTPUT_FILE_TEST(writeKeyPressTrialWritesTrialOnSecondLine) {
+    assertWritesTrialOnLine(writingKeyPressTrial, 2);
 }
 
 OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrialWritesTrialOnSecondLine) {

@@ -4,11 +4,11 @@
 #include "TestViewStub.hpp"
 #include "SessionViewStub.hpp"
 
+#include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/ui/TestImpl.hpp>
 
 #include <gtest/gtest.h>
 
-#include <algorithm>
 #include <utility>
 
 namespace av_speech_in_noise {
@@ -39,7 +39,7 @@ class TaskPresenterStub : public TaskPresenter {
 
 class PresenterUseCase {
   public:
-    virtual ~PresenterUseCase() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(PresenterUseCase);
     virtual void run(TestPresenter &) = 0;
 };
 
@@ -143,7 +143,7 @@ class TestPresenterStub : public TestPresenter {
 
 class ControllerUseCase {
   public:
-    virtual ~ControllerUseCase() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ControllerUseCase);
     virtual void run() = 0;
 };
 
@@ -637,12 +637,12 @@ TEST_PRESENTER_TEST(hidesResponseSubmission) {
 }
 
 TEST_PRESENTER_TEST(showsExitTestButtonWhenTrialCompletes) {
-    runningATest.facadeObserver->trialComplete();
+    runningATest.facadeObserver->notifyThatPlayTrialHasCompleted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.exitTestButtonShown());
 }
 
 TEST_PRESENTER_TEST(showsTaskResponseSubmissionWhenTrialCompletes) {
-    runningATest.facadeObserver->trialComplete();
+    runningATest.facadeObserver->notifyThatPlayTrialHasCompleted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionShown());
 }
 

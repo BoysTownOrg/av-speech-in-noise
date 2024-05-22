@@ -70,6 +70,13 @@ struct ConsonantResponse {
     Consonant consonant{};
 };
 
+enum class KeyPressed { first, second, unknown };
+
+struct KeyPressResponse : Flaggable {
+    KeyPressed key{KeyPressed::unknown};
+    double seconds{};
+};
+
 enum class Syllable {
     bi,
     di,

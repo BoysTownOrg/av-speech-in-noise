@@ -18,10 +18,10 @@ class RunningATest {
         explicit RequestFailure(const std::string &s) : std::runtime_error{s} {}
     };
 
-    class Observer {
+    class RequestObserver {
       public:
-        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
-        virtual void trialComplete() = 0;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RequestObserver);
+        virtual void notifyThatPlayTrialHasCompleted() = 0;
     };
 
     class TestObserver {
@@ -35,7 +35,7 @@ class RunningATest {
     };
 
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATest);
-    virtual void attach(Observer *) = 0;
+    virtual void attach(RequestObserver *) = 0;
     virtual void initialize(TestMethod *, const Test &,
         std::vector<std::reference_wrapper<TestObserver>>) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
@@ -49,6 +49,7 @@ class RunningATest {
     virtual auto targetFileName() -> std::string = 0;
     virtual void prepareNextTrialIfNeeded() = 0;
     virtual auto playTrialTime() -> std::string = 0;
+    static constexpr Duration targetOnsetFringeDuration{0.166};
 };
 }
 

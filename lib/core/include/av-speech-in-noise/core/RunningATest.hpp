@@ -28,7 +28,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
   public:
     RunningATestImpl(TargetPlayer &, MaskerPlayer &, ResponseEvaluator &,
         OutputFile &, Randomizer &, Clock &);
-    void attach(RunningATest::Observer *) override;
+    void attach(RunningATest::RequestObserver *) override;
     void initialize(TestMethod *, const Test &,
         std::vector<std::reference_wrapper<TestObserver>>) override;
     void playTrial(const AudioSettings &) override;
@@ -46,11 +46,11 @@ class RunningATestImpl : public TargetPlayer::Observer,
     void notifyThatPreRollHasCompleted() override;
     auto playTrialTime() -> std::string override;
     static constexpr Delay maskerChannelDelay{0.004};
-    static constexpr Duration targetOnsetFringeDuration{0.166};
     static constexpr Duration targetOffsetFringeDuration{
         targetOnsetFringeDuration};
 
   private:
+    Test test;
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
     ResponseEvaluator &evaluator;
@@ -58,15 +58,10 @@ class RunningATestImpl : public TargetPlayer::Observer,
     Randomizer &randomizer;
     Clock &clock;
     std::string playTrialTime_;
-    std::vector<std::reference_wrapper<TestObserver>> observers;
-    RunningATest::Observer *listener_{};
+    std::vector<std::reference_wrapper<TestObserver>> testObservers;
+    RunningATest::RequestObserver *requestObserver{};
     TestMethod *testMethod{};
-    RealLevel maskerLevel_{};
-    RealLevel fullScaleLevel_{};
-    RationalNumber videoScale{};
     int trialNumber_{};
-    Condition condition{};
-    bool keepVideoShown{};
     bool trialInProgress_{};
 };
 }

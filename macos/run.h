@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_MACOS_RUN_H_
 
 #include "AppKitTestSetupUIFactory.h"
+#include "AppKit-utility.h"
 
 #include <av-speech-in-noise/ui/Consonant.hpp>
 #include <av-speech-in-noise/ui/CorrectKeywords.hpp>
@@ -69,7 +70,7 @@ void initializeAppAndRunEventLoop(EyeTracker &, OutputFileNameFactory &,
     AppKitTestSetupUIFactory &, SessionUI &, TestUI &,
     submitting_free_response::UI &, submitting_syllable::UI &,
     submitting_keywords::UI &, submitting_number_keywords::UI &,
-    submitting_pass_fail::UI &, SubjectPresenter &, NSWindow *subjectNSWindow,
+    submitting_pass_fail::UI &, SubjectPresenter &, KeyableSubjectWindow *subjectNSWindow,
     SessionController::Observer * = nullptr);
 }
 

@@ -7,6 +7,8 @@
 #include "AppKit-utility.h"
 #include "masking-images.h"
 
+#include <av-speech-in-noise/core/SubmittingKeyPress.hpp>
+#include <av-speech-in-noise/ui/KeyPress.hpp>
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/core/AudioRecording.hpp>
 #include <av-speech-in-noise/core/EyeTracking.hpp>
@@ -195,6 +197,35 @@ class TextFileReaderImpl : public TextFileReader {
     }
 };
 
+class KeyPressUI : public submitting_keypress::Control,
+                   public KeyPressListener {
+  public:
+    explicit KeyPressUI(KeyableSubjectWindow *window) : window{window} {
+        window->listener = this;
+    }
+
+    void attach(Observer *ob) override { observer = ob; }
+
+    auto keyPressed() -> std::string override {
+        return string(lastPressEvent.characters);
+    }
+
+    auto keyPressedSeconds() -> double override {
+        return lastPressEvent.timestamp;
+    }
+
+    void giveKeyFocus() override { [window makeKeyWindow]; }
+
+    void onPress(NSEvent *event) override {
+        lastPressEvent = event;
+        observer->notifyThatKeyHasBeenPressed();
+    }
+
+  private:
+    KeyableSubjectWindow *window;
+    Observer *observer{};
+    NSEvent *lastPressEvent;
+};
 }
 
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
@@ -205,7 +236,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     submitting_keywords::UI &chooseKeywordsUI,
     submitting_number_keywords::UI &correctKeywordsUI,
     submitting_pass_fail::UI &passFailUI, SubjectPresenter &subjectPresenter,
-    NSWindow *subjectNSWindow,
+    KeyableSubjectWindow *subjectNSWindow,
     SessionController::Observer *sessionControllerObserver) {
     const auto videoNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
@@ -222,7 +253,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static AvFoundationAudioPlayer audioPlayer{audioDevices};
     static TimerImpl timer;
     NSLog(@"Initializing masker player...");
-    static MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader, &timer};
+    static MaskerPlayerImpl maskerPlayer{audioPlayer, audioReader, timer};
     maskerPlayer.setRampFor(Duration{0.02});
     NSLog(@"Initializing output file...");
     static FileWriter fileWriter;
@@ -419,6 +450,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_consonant::Controller consonantTaskController{
         testController, submittingConsonantInteractor, consonantUI,
         consonantPresenter};
+    static submitting_keypress::InteractorImpl submittingKeyPressInteractor{
+        fixedLevelMethod, runningATest, outputFile, maskerPlayer, randomizer};
+    static KeyPressUI keyPressControl{subjectNSWindow};
+    static submitting_keypress::Presenter keypressPresenter{
+        testUI, testController, submittingKeyPressInteractor, keyPressControl};
     static CoordinateResponseMeasureController
         coordinateResponseMeasureController{
             testController, runningATest, coordinateResponseMeasureView};
@@ -432,7 +468,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         freeResponseController, sessionController,
         coordinateResponseMeasurePresenter, freeResponsePresenter,
         chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
-        consonantPresenter, passFailPresenter};
+        consonantPresenter, passFailPresenter, keypressPresenter,
+        submittingKeyPressInteractor};
     static TestSetupController testSetupController{*testSetupUI, sessionUI,
         testSetupPresenter, runningATest, testSettingsInterpreter,
         textFileReader};

@@ -3,7 +3,8 @@
 
 #include "IResponseEvaluator.hpp"
 #include "IFixedLevelMethod.hpp"
-#include "OutputFile.hpp"
+
+#include <av-speech-in-noise/core/IOutputFile.hpp>
 
 namespace av_speech_in_noise {
 class FixedLevelMethodImpl : public FixedLevelMethod {
@@ -15,10 +16,9 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     void initialize(
         const FixedLevelTest &, FiniteTargetPlaylistWithRepeatables *) override;
     void submit(const coordinate_response_measure::Response &) override;
-    void submit(const FreeResponse &) override;
+    void submit(const Flaggable &) override;
     void submit(const ConsonantResponse &) override;
     void submit(const ThreeKeywordsResponse &) override;
-    void submit(const SyllableResponse &) override;
     void writeLastCoordinateResponse(OutputFile &) override;
     void writeTestingParameters(OutputFile &) override;
     void writeTestResult(OutputFile &) override {}

@@ -3,15 +3,19 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "assert-utility.hpp"
+
+#include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/FixedLevelMethod.hpp>
+
 #include <gtest/gtest.h>
+
 #include <stdexcept>
 
 namespace av_speech_in_noise {
 namespace {
 class UseCase {
   public:
-    virtual ~UseCase() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(UseCase);
     virtual void run(FixedLevelMethodImpl &) = 0;
 };
 
@@ -73,6 +77,13 @@ class SubmittingFreeResponse : public UseCase {
   public:
     void run(FixedLevelMethodImpl &m) override { m.submit(response); }
     void setFlagged() { response.flagged = true; }
+};
+
+class SubmittingKeyPressResponse : public UseCase {
+  public:
+    void run(FixedLevelMethodImpl &m) override { m.submit(response); }
+
+    KeyPressResponse response;
 };
 
 class SubmittingThreeKeywords : public UseCase {
@@ -502,6 +513,7 @@ class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests
         initializingMethod{targetList, test};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
+    SubmittingKeyPressResponse submittingKeyPressResponse;
     SubmittingThreeKeywords submittingThreeKeywords;
     SubmittingSyllable submittingSyllable;
 
@@ -531,6 +543,11 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     completeWhenTestCompleteAfterCoordinateResponse) {
     assertTestCompleteOnlyAfter(
         submittingCoordinateResponse, method, targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
+    completeWhenTestCompleteAfterKeyPressResponse) {
+    assertTestCompleteOnlyAfter(submittingKeyPressResponse, method, targetList);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(

@@ -28,7 +28,6 @@ class MaskerPlayer {
     virtual void setAudioDevice(std::string) = 0;
     virtual void fadeIn() = 0;
     virtual void loadFile(const LocalUrl &) = 0;
-    virtual auto playing() -> bool = 0;
     virtual auto digitalLevel() -> DigitalLevel = 0;
     virtual void apply(LevelAmplification) = 0;
     virtual auto duration() -> Duration = 0;
@@ -45,6 +44,7 @@ class MaskerPlayer {
     virtual void play() = 0;
     virtual void stop() = 0;
     virtual void setSteadyLevelFor(Duration) {}
+    virtual void prepareVibrotactileStimulus(VibrotactileStimulus) {}
 };
 }
 

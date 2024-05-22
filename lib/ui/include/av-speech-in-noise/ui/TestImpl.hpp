@@ -77,14 +77,15 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
     TaskPresenter *presenter{};
 };
 
-class TestPresenterImpl : public RunningATest::Observer, public TestPresenter {
+class TestPresenterImpl : public RunningATest::RequestObserver,
+                          public TestPresenter {
   public:
     TestPresenterImpl(RunningATest &, AdaptiveMethod &, TestView &,
         UninitializedTaskPresenter *);
     void initialize(TaskPresenter &) override;
     void start() override;
     void stop() override;
-    void trialComplete() override;
+    void notifyThatPlayTrialHasCompleted() override;
     void notifyThatTrialHasStarted() override;
     void notifyThatNextTrialIsReady() override;
     void hideResponseSubmission() override;

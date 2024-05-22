@@ -1,6 +1,9 @@
+#include "MaskerPlayerStub.hpp"
 #include "OutputFileStub.hpp"
+#include "RandomizerStub.hpp"
 #include "assert-utility.hpp"
 
+#include <av-speech-in-noise/core/SubmittingKeyPress.hpp>
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
@@ -133,13 +136,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     auto snr() -> SNR override { return SNR{}; }
 
-    void submit(const FreeResponse &) override {
-        submittedFreeResponse_ = true;
-    }
-
-    auto submittedFreeResponse() const -> bool {
-        return submittedFreeResponse_;
-    }
+    void submit(const Flaggable &) override { submittedFlaggable = true; }
 
     void submit(const ConsonantResponse &) override {
         submittedConsonant_ = true;
@@ -174,23 +171,17 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         return threeKeywords_;
     }
 
-    auto syllableResponse() -> const SyllableResponse * {
-        return syllableResponse_;
-    }
-
-    void submit(const SyllableResponse &r) override { syllableResponse_ = &r; }
+    bool submittedFlaggable{};
 
   private:
     KeywordsTestResults keywordsTestResults_{};
     std::stringstream log_{};
     LocalUrl currentTarget_;
     const ThreeKeywordsResponse *threeKeywords_{};
-    const SyllableResponse *syllableResponse_{};
     const FixedLevelTest *test_{};
     const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
     TargetPlaylist *targetList_{};
     bool submittedConsonant_{};
-    bool submittedFreeResponse_{};
 };
 
 class RunningATestStub : public RunningATest {
@@ -238,7 +229,7 @@ class RunningATestStub : public RunningATest {
         return audioDevices_;
     }
 
-    void attach(RunningATest::Observer *e) override { listener_ = e; }
+    void attach(RunningATest::RequestObserver *e) override { listener_ = e; }
 
     void playCalibration(const Calibration &c) override { calibration_ = &c; }
 
@@ -290,7 +281,7 @@ class RunningATestStub : public RunningATest {
     std::string playTrialTime_;
     AdaptiveMethodStub &adaptiveMethod;
     FixedLevelMethodStub &fixedLevelMethodStub;
-    const RunningATest::Observer *listener_{};
+    const RunningATest::RequestObserver *listener_{};
     const Calibration *calibration_{};
     const Calibration *leftSpeakerCalibration_{};
     const Calibration *rightSpeakerCalibration_{};
@@ -368,6 +359,19 @@ class SubmittingSyllableTests : public ::testing::Test {
     SyllableResponse syllableResponse;
 };
 
+class SubmittingKeypressTests : public ::testing::Test {
+  protected:
+    AdaptiveMethodStub adaptiveTestMethod;
+    FixedLevelMethodStub testMethod;
+    RunningATestStub model{adaptiveTestMethod, testMethod};
+    OutputFileStub outputFile;
+    MaskerPlayerStub maskerPlayer;
+    RandomizerStub randomizer;
+    submitting_keypress::InteractorImpl interactor{
+        testMethod, model, outputFile, maskerPlayer, randomizer};
+    std::vector<KeyPressResponse> responses;
+};
+
 #define SUBMITTING_FREE_RESPONSE_TEST(a) TEST_F(SubmittingFreeResponseTests, a)
 
 #define SUBMITTING_PASS_FAIL_TEST(a) TEST_F(SubmittingPassFailTests, a)
@@ -375,6 +379,8 @@ class SubmittingSyllableTests : public ::testing::Test {
 #define SUBMITTING_KEYWORDS_TEST(a) TEST_F(SubmittingKeywordsTests, a)
 
 #define SUBMITTING_CONSONANT_TEST(a) TEST_F(SubmittingConsonantTests, a)
+
+#define SUBMITTING_KEYPRESS_TEST(a) TEST_F(SubmittingKeypressTests, a)
 
 #define SUBMITTING_NUMBER_KEYWORDS_TEST(a)                                     \
     TEST_F(SubmittingNumberKeywordsTests, a)
@@ -425,7 +431,7 @@ SUBMITTING_FREE_RESPONSE_TEST(submitFreeResponseWritesTarget) {
 
 SUBMITTING_FREE_RESPONSE_TEST(submitFreeResponseSubmitsResponse) {
     interactor.submit(freeResponse);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFreeResponse());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFlaggable);
 }
 
 SUBMITTING_PASS_FAIL_TEST(
@@ -584,8 +590,7 @@ SUBMITTING_SYLLABLE(writesTarget) {
 
 SUBMITTING_SYLLABLE(submitsToTestMethod) {
     interactor.submit(syllableResponse);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &syllableResponse, fixedLevelMethod.syllableResponse());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(fixedLevelMethod.submittedFlaggable);
 }
 
 SUBMITTING_SYLLABLE(submitCorrectSyllable) {
@@ -622,6 +627,88 @@ SUBMITTING_CONSONANT_TEST(preparesNextTrialIfNeeded) {
 SUBMITTING_CONSONANT_TEST(savesOutputFileAfterWritingTrial) {
     interactor.submit({});
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+void submitValidResponse(submitting_keypress::InteractorImpl &interactor,
+    MaskerPlayerStub &maskerPlayer, KeyPressed key = {}) {
+    maskerPlayer.setNanosecondsFromPlayerTime(1e9);
+    PlayerTimeWithDelay playerTime;
+    playerTime.delay.seconds = .5;
+    interactor.notifyThatTargetWillPlayAt(playerTime);
+    interactor.notifyThatStimulusHasEnded();
+    KeyPressResponse response;
+    response.seconds = 1.5;
+    response.key = key;
+    interactor.submits({response});
+}
+
+SUBMITTING_KEYPRESS_TEST(savesReactionTime) {
+    randomizer.randomInts.push(2); // 60, 110, 160, 190
+    interactor.notifyThatTrialWillBegin({});
+
+    maskerPlayer.setNanosecondsFromPlayerTime(1e9);
+    PlayerTimeWithDelay playerTime;
+    playerTime.delay.seconds = .5;
+    interactor.notifyThatTargetWillPlayAt(playerTime);
+    responses.resize(5);
+    responses[0].seconds = 1.1 + 0.16;
+    responses[0].key = KeyPressed::first;
+    responses[1].seconds = -.2 + 0.16;
+    responses[1].key = KeyPressed::first;
+    responses[2].seconds = 1.4 + 0.16;
+    responses[2].key = KeyPressed::first;
+    responses[3].seconds = 1.7 + 0.16;
+    responses[3].key = KeyPressed::second;
+    responses[4].seconds = 2.3 + 0.16;
+    responses[4].key = KeyPressed::first;
+    interactor.notifyThatStimulusHasEnded();
+    interactor.submits(responses);
+    const auto start{(1000000000 + 500000000 + 500000) / 1000000};
+    const auto end{1700.};
+    assertEqual(end - start, outputFile.keypressTrial.rt.milliseconds, 3e-13);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        KeyPressed::second, outputFile.keypressTrial.key);
+}
+
+SUBMITTING_KEYPRESS_TEST(preparesNextTrialIfNeeded) {
+    submitValidResponse(interactor, maskerPlayer);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_KEYPRESS_TEST(savesOutputFileAfterWritingTrial) {
+    submitValidResponse(interactor, maskerPlayer);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+SUBMITTING_KEYPRESS_TEST(submitFreeResponseWritesResponse) {
+    submitValidResponse(interactor, maskerPlayer, KeyPressed::second);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        KeyPressed::second, outputFile.keypressTrial.key);
+}
+
+SUBMITTING_KEYPRESS_TEST(submitsResponseToTestMethod) {
+    submitValidResponse(interactor, maskerPlayer);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFlaggable);
+}
+
+SUBMITTING_KEYPRESS_TEST(writesTarget) {
+    testMethod.setCurrentTargetPath("a/b/c.txt");
+    submitValidResponse(interactor, maskerPlayer);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c.txt"}, outputFile.keypressTrial.target);
+}
+
+SUBMITTING_KEYPRESS_TEST(selectsRandomVibrotactileStimulus) {
+    randomizer.randomInts.push(3); // 60, 110, 160, 190
+    randomizer.randomInts.push(1); // 100, 250
+    interactor.notifyThatTrialWillBegin({});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0.190,
+        maskerPlayer.vibrotactileStimulus.targetStartRelativeDelay.seconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        RunningATest::targetOnsetFringeDuration.seconds,
+        maskerPlayer.vibrotactileStimulus.additionalPostFadeInDelay.seconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        0.250, maskerPlayer.vibrotactileStimulus.duration.seconds);
 }
 }
 }

@@ -1,6 +1,8 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_IOUTPUTFILEHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_IOUTPUTFILEHPP_
 
+#include "Player.hpp"
+
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 
@@ -60,6 +62,15 @@ struct FreeResponseTrial : FreeResponse, open_set::Trial {
     std::string time;
 };
 
+struct ReactionTime {
+    double milliseconds;
+};
+
+struct KeyPressTrial : KeyPressResponse, open_set::Trial {
+    VibrotactileStimulus vibrotactileStimulus;
+    ReactionTime rt{};
+};
+
 class Writable {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Writable);
@@ -75,6 +86,7 @@ class OutputFile {
     virtual void write(
         const coordinate_response_measure::FixedLevelTrial &) = 0;
     virtual void write(const FreeResponseTrial &) = 0;
+    virtual void write(const KeyPressTrial &) = 0;
     virtual void write(const CorrectKeywordsTrial &) = 0;
     virtual void write(const open_set::AdaptiveTrial &) = 0;
     virtual void write(const ConsonantTrial &) = 0;

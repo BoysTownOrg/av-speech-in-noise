@@ -172,123 +172,37 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
         assign(static_cast<Test &>(test), entryName, entry);
 }
 
+// https://stackoverflow.com/a/31836401
+template <typename C, C beginVal, C endVal> class EnumIterator {
+    using val_t = std::underlying_type_t<C>;
+    int val;
+
+  public:
+    EnumIterator(const C &f) : val(static_cast<val_t>(f)) {}
+    EnumIterator() : val(static_cast<val_t>(beginVal)) {}
+    auto operator++() -> EnumIterator {
+        ++val;
+        return *this;
+    }
+    auto operator*() -> C { return static_cast<C>(val); }
+    auto begin() -> EnumIterator { return *this; }
+    auto end() -> EnumIterator {
+        static const EnumIterator endIter = ++EnumIterator(endVal);
+        return endIter;
+    }
+    auto operator!=(const EnumIterator &i) -> bool { return val != i.val; }
+};
+
 static auto methodWithName(const std::string &contents)
     -> std::tuple<Method, std::string> {
     std::stringstream stream{contents};
     for (std::string line; std::getline(stream, line);)
         if (entryName(line) == name(TestSetting::method)) {
             const auto actual{entry(line)};
-            if (actual == name(Method::adaptivePassFail))
-                return std::make_tuple(Method::adaptivePassFail, actual);
-            if (actual == name(Method::adaptivePassFailWithEyeTracking))
-                return std::make_tuple(
-                    Method::adaptivePassFailWithEyeTracking, actual);
-            if (actual == name(Method::adaptiveCorrectKeywords))
-                return std::make_tuple(Method::adaptiveCorrectKeywords, actual);
-            if (actual == name(Method::adaptiveCorrectKeywordsWithEyeTracking))
-                return std::make_tuple(
-                    Method::adaptiveCorrectKeywordsWithEyeTracking, actual);
-            if (actual == name(Method::adaptiveCoordinateResponseMeasure))
-                return std::make_tuple(
-                    Method::adaptiveCoordinateResponseMeasure, actual);
-            if (actual ==
-                name(
-                    Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker))
-                return std::make_tuple(
-                    Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
-                    actual);
-            if (actual ==
-                name(
-                    Method::adaptiveCoordinateResponseMeasureWithDelayedMasker))
-                return std::make_tuple(
-                    Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
-                    actual);
-            if (actual ==
-                name(Method::adaptiveCoordinateResponseMeasureWithEyeTracking))
-                return std::make_tuple(
-                    Method::adaptiveCoordinateResponseMeasureWithEyeTracking,
-                    actual);
-            if (actual ==
-                name(Method::fixedLevelFreeResponseWithTargetReplacement))
-                return std::make_tuple(
-                    Method::fixedLevelFreeResponseWithTargetReplacement,
-                    actual);
-            if (actual ==
-                name(Method::fixedLevelFreeResponseWithSilentIntervalTargets))
-                return std::make_tuple(
-                    Method::fixedLevelFreeResponseWithSilentIntervalTargets,
-                    actual);
-            if (actual == name(Method::fixedLevelFreeResponseWithAllTargets))
-                return std::make_tuple(
-                    Method::fixedLevelFreeResponseWithAllTargets, actual);
-            if (actual ==
-                name(
-                    Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking))
-                return std::make_tuple(
-                    Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
-                    actual);
-            if (actual ==
-                name(Method::
-                        fixedLevelFreeResponseWithAllTargetsAndAudioRecording))
-                return std::make_tuple(
-                    Method::
-                        fixedLevelFreeResponseWithAllTargetsAndAudioRecording,
-                    actual);
-            if (actual ==
-                name(Method::fixedLevelFreeResponseWithPredeterminedTargets))
-                return std::make_tuple(
-                    Method::fixedLevelFreeResponseWithPredeterminedTargets,
-                    actual);
-            if (actual ==
-                name(Method::
-                        fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording))
-                return std::make_tuple(
-                    Method::
-                        fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording,
-                    actual);
-            if (actual ==
-                name(Method::
-                        fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking))
-                return std::make_tuple(
-                    Method::
-                        fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking,
-                    actual);
-            if (actual ==
-                name(Method::
-                        fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking))
-                return std::make_tuple(
-                    Method::
-                        fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking,
-                    actual);
-            if (actual ==
-                name(Method::
-                        fixedLevelCoordinateResponseMeasureWithTargetReplacement))
-                return std::make_tuple(
-                    Method::
-                        fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-                    actual);
-            if (actual ==
-                name(Method::
-                        fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking))
-                return std::make_tuple(
-                    Method::
-                        fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
-                    actual);
-            if (actual ==
-                name(Method::
-                        fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets))
-                return std::make_tuple(
-                    Method::
-                        fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-                    actual);
-            if (actual == name(Method::fixedLevelConsonants))
-                return std::make_tuple(Method::fixedLevelConsonants, actual);
-            if (actual == name(Method::fixedLevelChooseKeywordsWithAllTargets))
-                return std::make_tuple(
-                    Method::fixedLevelChooseKeywordsWithAllTargets, actual);
-            if (actual == name(Method::fixedLevelSyllablesWithAllTargets))
-                return std::make_tuple(
-                    Method::fixedLevelSyllablesWithAllTargets, actual);
+            for (const auto e : EnumIterator<Method, Method::adaptivePassFail,
+                     Method::fixedLevelSyllablesWithAllTargets>{})
+                if (actual == name(e))
+                    return std::make_tuple(e, actual);
             std::stringstream stream;
             stream << "Test method not recognized: " << actual;
             throw std::runtime_error{stream.str()};
@@ -440,6 +354,10 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::
         fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking:
         taskPresenter = &freeResponsePresenter;
+        break;
+    case Method::
+        fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation:
+        taskPresenter = &keypressPresenter;
         break;
     case Method::adaptivePassFail:
     case Method::adaptivePassFailWithEyeTracking:
@@ -609,6 +527,18 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             });
         break;
     case Method::
+        fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation:
+        av_speech_in_noise::initialize(methodName, contents, identity,
+            startingSnr, [&](const FixedLevelTest &test) {
+                av_speech_in_noise::initialize(
+                    fixedLevelMethod, test, predeterminedTargets);
+                av_speech_in_noise::initialize(runningATest, fixedLevelMethod,
+                    test,
+                    {std::ref(eyeTracking), std::ref(audioRecording),
+                        std::ref(submittingKeyPressResponse)});
+            });
+        break;
+    case Method::
         fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking:
         av_speech_in_noise::initializeFixedLevelFixedTrialsTest(methodName,
             contents, identity, startingSnr,
@@ -675,7 +605,8 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     TaskPresenter &freeResponsePresenter,
     TaskPresenter &chooseKeywordsPresenter, TaskPresenter &syllablesPresenter,
     TaskPresenter &correctKeywordsPresenter, TaskPresenter &consonantPresenter,
-    TaskPresenter &passFailPresenter)
+    TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter,
+    RunningATest::TestObserver &submittingKeyPressResponse)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
       fixedLevelMethod{fixedLevelMethod}, eyeTracking{eyeTracking},
       audioRecording{audioRecording}, cyclicTargetsReader{cyclicTargetsReader},
@@ -693,5 +624,7 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       syllablesPresenter{syllablesPresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
       consonantPresenter{consonantPresenter},
-      passFailPresenter{passFailPresenter} {}
+      passFailPresenter{passFailPresenter},
+      keypressPresenter{keypressPresenter},
+      submittingKeyPressResponse{submittingKeyPressResponse} {}
 }

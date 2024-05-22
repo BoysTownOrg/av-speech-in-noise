@@ -41,7 +41,11 @@ enum class HeadingItem {
     thirdKeywordEvaluation,
     subjectSyllable,
     correctSyllable,
-    time
+    time,
+    keyPressed,
+    reactionTime,
+    vibrotactileDuration,
+    vibrotactileDelay
 };
 
 constexpr auto name(HeadingItem i) -> const char * {
@@ -98,6 +102,14 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "correct syllable";
     case HeadingItem::time:
         return "time";
+    case HeadingItem::keyPressed:
+        return "key pressed";
+    case HeadingItem::reactionTime:
+        return "reaction time (ms)";
+    case HeadingItem::vibrotactileDuration:
+        return "vibrotactile duration (s)";
+    case HeadingItem::vibrotactileDelay:
+        return "vibrotactile delay (s)";
     case HeadingItem::leftGazePositionRelativeScreenIsValid:
         return "valid left gaze position relative screen";
     case HeadingItem::rightGazePositionRelativeScreenIsValid:
@@ -212,6 +224,17 @@ constexpr auto name(coordinate_response_measure::Color c) -> const char * {
     }
 }
 
+constexpr auto name(KeyPressed k) -> const char * {
+    switch (k) {
+    case KeyPressed::first:
+        return "first";
+    case KeyPressed::second:
+        return "second";
+    case KeyPressed::unknown:
+        return "unknown";
+    }
+}
+
 class Writer {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Writer);
@@ -251,6 +274,7 @@ class OutputFileImpl : public OutputFile {
     void write(TargetStartTime) override;
     void write(const EyeTrackerTargetPlayerSynchronization &) override;
     void write(const SyllableTrial &) override;
+    void write(const KeyPressTrial &) override;
     void write(Writable &) override;
     auto parentPath() -> std::filesystem::path override;
 

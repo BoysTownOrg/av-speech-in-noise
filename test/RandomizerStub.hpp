@@ -1,7 +1,9 @@
-#ifndef TESTS_RANDOMIZERSTUB_HPP_
-#define TESTS_RANDOMIZERSTUB_HPP_
+#ifndef AV_SPEECH_IN_NOISE_TEST_RANDOMIZERSTUB_HPP_
+#define AV_SPEECH_IN_NOISE_TEST_RANDOMIZERSTUB_HPP_
 
 #include <av-speech-in-noise/core/Randomizer.hpp>
+
+#include <queue>
 
 namespace av_speech_in_noise {
 class RandomizerStub : public Randomizer {
@@ -27,8 +29,15 @@ class RandomizerStub : public Randomizer {
     auto betweenInclusive(int a, int b) -> int override {
         lowerIntBound_ = a;
         upperIntBound_ = b;
+        if (!randomInts.empty()) {
+            const auto i{randomInts.front()};
+            randomInts.pop();
+            return i;
+        }
         return randomInt_;
     }
+
+    std::queue<int> randomInts;
 
   private:
     double lowerBound_{};
