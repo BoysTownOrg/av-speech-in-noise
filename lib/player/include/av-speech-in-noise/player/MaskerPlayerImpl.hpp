@@ -58,7 +58,6 @@ class MaskerPlayerImpl : public MaskerPlayer,
     void attach(MaskerPlayer::Observer *) override;
     void fadeIn() override;
     void loadFile(const LocalUrl &) override;
-    auto playing() -> bool override;
     void setAudioDevice(std::string) override;
     void apply(LevelAmplification) override;
     void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
@@ -82,7 +81,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     void useAllChannels() override;
     auto nanoseconds(PlayerTime) -> std::uintmax_t override;
     auto currentSystemTime() -> PlayerTime override;
-    void prepareVibrotactileStimulus(VibrotactileStimulus);
+    void prepareVibrotactileStimulus(VibrotactileStimulus) override;
     static constexpr Delay callbackDelay{1. / 30};
 
     struct SharedState {

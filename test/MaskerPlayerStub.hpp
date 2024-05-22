@@ -1,5 +1,5 @@
-#ifndef TESTS_MASKERPLAYERSTUB_HPP_
-#define TESTS_MASKERPLAYERSTUB_HPP_
+#ifndef AV_SPEECH_IN_NOISE_TEST_MASKERPLAYERSTUB_HPP_
+#define AV_SPEECH_IN_NOISE_TEST_MASKERPLAYERSTUB_HPP_
 
 #include <av-speech-in-noise/core/IMaskerPlayer.hpp>
 
@@ -88,8 +88,6 @@ class MaskerPlayerStub : public MaskerPlayer {
     }
 
     [[nodiscard]] auto timesFadedIn() const -> int { return timesFadedIn_; }
-
-    auto playing() -> bool override { return playing_; }
 
     void setPlaying() { playing_ = true; }
 

@@ -3,7 +3,9 @@
 #include <gsl/gsl>
 
 #include <cmath>
-#include <stdexcept>
+#include <exception>
+#include <iostream>
+#include <string_view>
 #include <vector>
 #include <algorithm>
 #include <limits>
@@ -148,6 +150,11 @@ static auto findDeviceIndex(AudioPlayer *player, const std::string &device)
     return gsl::narrow<int>(std::distance(devices.begin(), found));
 }
 
+static void panic(std::string_view message) {
+    std::cerr << message << '\n';
+    std::terminate();
+}
+
 constexpr auto maxChannels{128};
 
 MaskerPlayerImpl::MaskerPlayerImpl(
@@ -164,8 +171,7 @@ void MaskerPlayerImpl::attach(MaskerPlayer::Observer *e) { listener = e; }
 
 auto MaskerPlayerImpl::duration() -> Duration {
     if (audioEnabled)
-        throw std::runtime_error{
-            "Audio is currently enabled. Can't safely determine duration."};
+        panic("Audio is currently enabled. Can't safely determine duration.");
 
     return Duration{samples(sharedState.sourceAudio) /
         av_speech_in_noise::sampleRateHz(player)};
@@ -173,8 +179,7 @@ auto MaskerPlayerImpl::duration() -> Duration {
 
 void MaskerPlayerImpl::seekSeconds(double x) {
     if (audioEnabled)
-        throw std::runtime_error{
-            "Audio is currently enabled. Can't safely seek."};
+        panic("Audio is currently enabled. Can't safely seek.");
 
     recalculateSamplesToWaitPerChannel(
         sharedState.samplesToWaitPerChannel, player, channelDelaySeconds);
@@ -201,8 +206,7 @@ auto MaskerPlayerImpl::currentSystemTime() -> PlayerTime {
 
 void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     if (audioEnabled)
-        throw std::runtime_error{
-            "Audio is currently enabled. Can't safely load file."};
+        panic("Audio is currently enabled. Can't safely load file.");
 
     player->loadFile(file.path);
     recalculateSamplesToWaitPerChannel(
@@ -217,8 +221,8 @@ void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
 void MaskerPlayerImpl::prepareVibrotactileStimulus(
     VibrotactileStimulus stimulus) {
     if (audioEnabled)
-        throw std::runtime_error{"Audio is currently enabled. Can't safely "
-                                 "prepare vibrotactile stimulus."};
+        panic("Audio is currently enabled. Can't safely "
+              "prepare vibrotactile stimulus.");
 
     const auto sampleRateHz{av_speech_in_noise::sampleRateHz(player)};
     sharedState.vibrotactileSamples =
@@ -234,8 +238,7 @@ static_assert(std::numeric_limits<double>::is_iec559, "IEEE 754 required");
 
 auto MaskerPlayerImpl::digitalLevel() -> DigitalLevel {
     if (audioEnabled)
-        throw std::runtime_error{
-            "Audio is currently enabled. Can't safely determine level."};
+        panic("Audio is currently enabled. Can't safely determine level.");
 
     return noChannels(sharedState.sourceAudio)
         ? DigitalLevel{-std::numeric_limits<double>::infinity()}
@@ -243,12 +246,9 @@ auto MaskerPlayerImpl::digitalLevel() -> DigitalLevel {
               20 * std::log10(rms(firstChannel(sharedState.sourceAudio)))};
 }
 
-auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }
-
 void MaskerPlayerImpl::apply(LevelAmplification x) {
     if (audioEnabled)
-        throw std::runtime_error{
-            "Audio is currently enabled. Can't safely change level."};
+        panic("Audio is currently enabled. Can't safely change level.");
 
     sharedState.levelScalar = std::pow(10, x.dB / 20);
 }
@@ -257,8 +257,8 @@ void MaskerPlayerImpl::setRampFor(Duration x) { rampDuration_ = x; }
 
 void MaskerPlayerImpl::setSteadyLevelFor(Duration x) {
     if (audioEnabled)
-        throw std::runtime_error{"Audio is currently enabled. Can't safely "
-                                 "change steady level duration."};
+        panic("Audio is currently enabled. Can't safely "
+              "change steady level duration.");
 
     sharedState.steadyLevelSamples = gsl::narrow_cast<gsl::index>(
         x.seconds * av_speech_in_noise::sampleRateHz(player));
@@ -288,8 +288,7 @@ auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
 void MaskerPlayerImpl::setChannelDelaySeconds(
     channel_index_type channel, double seconds) {
     if (audioEnabled)
-        throw std::runtime_error{
-            "Audio is currently enabled. Can't safely set channel delay."};
+        panic("Audio is currently enabled. Can't safely set channel delay.");
 
     at(channelDelaySeconds, channel) = seconds;
     recalculateSamplesToWaitPerChannel(
@@ -298,8 +297,7 @@ void MaskerPlayerImpl::setChannelDelaySeconds(
 
 void MaskerPlayerImpl::clearChannelDelays() {
     if (audioEnabled)
-        throw std::runtime_error{
-            "Audio is currently enabled. Can't safely clear channel delays."};
+        panic("Audio is currently enabled. Can't safely clear channel delays.");
 
     std::fill(channelDelaySeconds.begin(), channelDelaySeconds.end(), 0);
     recalculateSamplesToWaitPerChannel(
@@ -308,8 +306,8 @@ void MaskerPlayerImpl::clearChannelDelays() {
 
 void MaskerPlayerImpl::useFirstChannelOnly() {
     if (audioEnabled)
-        throw std::runtime_error{
-            "Audio is currently enabled. Can't safely use first channel only."};
+        panic(
+            "Audio is currently enabled. Can't safely use first channel only.");
 
     set(sharedState.firstChannelOnly);
     clear(sharedState.secondChannelOnly);
@@ -317,8 +315,8 @@ void MaskerPlayerImpl::useFirstChannelOnly() {
 
 void MaskerPlayerImpl::useSecondChannelOnly() {
     if (audioEnabled)
-        throw std::runtime_error{"Audio is currently enabled. Can't safely use "
-                                 "second channel only."};
+        panic("Audio is currently enabled. Can't safely use "
+              "second channel only.");
 
     set(sharedState.secondChannelOnly);
     clear(sharedState.firstChannelOnly);
@@ -326,8 +324,7 @@ void MaskerPlayerImpl::useSecondChannelOnly() {
 
 void MaskerPlayerImpl::useAllChannels() {
     if (audioEnabled)
-        throw std::runtime_error{
-            "Audio is currently enabled. Can't safely use all channels."};
+        panic("Audio is currently enabled. Can't safely use all channels.");
 
     clear(sharedState.firstChannelOnly);
     clear(sharedState.secondChannelOnly);

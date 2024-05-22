@@ -580,11 +580,6 @@ MASKER_PLAYER_TEST(fadeOutThenLoad) {
     assertAsyncFilledMonoAudioEquals(player, audioPlayer, {4, 5, 6});
 }
 
-MASKER_PLAYER_TEST(playingWhenAudioPlayerPlaying) {
-    audioPlayer.setPlaying();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(player.playing());
-}
-
 MASKER_PLAYER_TEST(durationReturnsDuration) {
     setSampleRateHz(audioPlayer, 3);
     loadMonoAudio(player, audioReader, {1, 2, 3, 4, 5, 6});
