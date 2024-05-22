@@ -1000,6 +1000,7 @@ MASKER_PLAYER_TEST(vibrotactile) {
     setSampleRateHz(audioPlayer, 8);
     setSteadyLevelSeconds(player, 1);
 
+    player.enableVibrotactileStimulus();
     player.loadFile({});
     VibrotactileStimulus stimulus;
     stimulus.duration.seconds = 0.5;

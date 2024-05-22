@@ -82,6 +82,8 @@ class MaskerPlayerImpl : public MaskerPlayer,
     auto nanoseconds(PlayerTime) -> std::uintmax_t override;
     auto currentSystemTime() -> PlayerTime override;
     void prepareVibrotactileStimulus(VibrotactileStimulus) override;
+    void enableVibrotactileStimulus() override;
+    void disableVibrotactileStimulus() override;
     static constexpr Delay callbackDelay{1. / 30};
 
     struct SharedState {
@@ -98,6 +100,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         gsl::index vibrotactileSamplesToWait{};
         bool firstChannelOnly{};
         bool secondChannelOnly{};
+        bool vibrotactileEnabled{};
         LockFreeMessage fadeInMessage{};
         LockFreeMessage fadeOutMessage{};
         LockFreeMessage disableAudioMessage{};

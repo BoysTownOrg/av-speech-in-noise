@@ -305,6 +305,11 @@ void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test,
         maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
     }
 
+    if (test.enableVibrotactileStimulus)
+        maskerPlayer.enableVibrotactileStimulus();
+    else
+        maskerPlayer.disableVibrotactileStimulus();
+
     for (auto observer : testObservers)
         observer.get().notifyThatNewTestIsReady(test.identity.session);
 }

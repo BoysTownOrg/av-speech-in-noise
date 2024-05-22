@@ -39,6 +39,8 @@ class MaskerPlayer {
     virtual void useSecondChannelOnly() = 0;
     virtual void clearChannelDelays() = 0;
     virtual void setChannelDelaySeconds(gsl::index channel, double seconds) = 0;
+    virtual void enableVibrotactileStimulus() = 0;
+    virtual void disableVibrotactileStimulus() = 0;
     virtual auto nanoseconds(PlayerTime) -> std::uintmax_t = 0;
     virtual auto currentSystemTime() -> PlayerTime = 0;
     virtual void play() = 0;

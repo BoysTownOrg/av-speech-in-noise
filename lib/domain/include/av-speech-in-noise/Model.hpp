@@ -123,12 +123,13 @@ struct Test {
     TestIdentity identity;
     LocalUrl targetsUrl;
     LocalUrl maskerFileUrl;
+    RationalNumber videoScale{2, 3};
     RealLevel maskerLevel;
     RealLevel fullScaleLevel;
     Condition condition{};
     AudioChannelOption audioChannelOption{AudioChannelOption::all};
     bool keepVideoShown{};
-    RationalNumber videoScale{2, 3};
+    bool enableVibrotactileStimulus{};
 };
 
 struct TrackingSequence {
