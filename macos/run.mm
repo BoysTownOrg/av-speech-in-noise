@@ -253,7 +253,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static AvFoundationAudioPlayer audioPlayer{audioDevices};
     static TimerImpl timer;
     NSLog(@"Initializing masker player...");
-    static MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader, &timer};
+    static MaskerPlayerImpl maskerPlayer{audioPlayer, audioReader, timer};
     maskerPlayer.setRampFor(Duration{0.02});
     NSLog(@"Initializing output file...");
     static FileWriter fileWriter;
