@@ -260,7 +260,7 @@ static void initialize(const std::string &method, const std::string &contents,
 
 static void initialize(const std::string &method, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr,
-    const std::function<void(const FixedLevelTest &)> &f) {
+    const std::function<void(FixedLevelTest &)> &f) {
     FixedLevelTest test;
     av_speech_in_noise::initialize(
         test, contents, method, identity, startingSnr);
@@ -529,7 +529,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::
         fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation:
         av_speech_in_noise::initialize(methodName, contents, identity,
-            startingSnr, [&](const FixedLevelTest &test) {
+            startingSnr, [&](FixedLevelTest &test) {
+                test.enableVibrotactileStimulus = true;
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, predeterminedTargets);
                 av_speech_in_noise::initialize(runningATest, fixedLevelMethod,
