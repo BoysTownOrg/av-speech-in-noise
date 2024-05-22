@@ -14,8 +14,8 @@ TestControllerImpl::TestControllerImpl(SessionController &sessionController,
     SessionControl &sessionControl, TestControl &control,
     TestPresenter &presenter)
     : sessionController{sessionController}, runningATest{runningATest},
-      adaptiveMethod{adaptiveMethod},
-      sessionControl{sessionControl}, presenter{presenter} {
+      adaptiveMethod{adaptiveMethod}, sessionControl{sessionControl},
+      presenter{presenter} {
     control.attach(this);
 }
 
@@ -123,7 +123,7 @@ void TestPresenterImpl::notifyThatTrialHasStarted() {
     taskPresenter->notifyThatTrialHasStarted();
 }
 
-void TestPresenterImpl::trialComplete() {
+void TestPresenterImpl::notifyThatPlayTrialHasCompleted() {
     view.showExitTestButton();
     taskPresenter->showResponseSubmission();
 }

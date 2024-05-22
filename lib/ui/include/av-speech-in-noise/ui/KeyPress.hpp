@@ -8,6 +8,7 @@
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
+
 #include <vector>
 
 namespace av_speech_in_noise::submitting_keypress {
@@ -27,8 +28,7 @@ class Control {
 
 class Presenter : public TaskPresenter, public Control::Observer {
   public:
-    Presenter(TestView &testView, TestController &testController,
-        Interactor &interactor, Control &control);
+    Presenter(TestView &, TestController &, Interactor &, Control &);
     void notifyThatKeyHasBeenPressed() override;
     void start() override;
     void stop() override;

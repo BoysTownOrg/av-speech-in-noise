@@ -188,8 +188,8 @@ class RunningATestStub : public RunningATest {
   public:
     explicit RunningATestStub(AdaptiveMethodStub &adaptiveMethod,
         FixedLevelMethodStub &fixedLevelMethodStub)
-        : adaptiveMethod{adaptiveMethod}, fixedLevelMethodStub{
-                                              fixedLevelMethodStub} {}
+        : adaptiveMethod{adaptiveMethod},
+          fixedLevelMethodStub{fixedLevelMethodStub} {}
 
     [[nodiscard]] auto nextTrialPreparedIfNeeded() const -> bool {
         return nextTrialPreparedIfNeeded_;
@@ -229,7 +229,7 @@ class RunningATestStub : public RunningATest {
         return audioDevices_;
     }
 
-    void attach(RunningATest::Observer *e) override { listener_ = e; }
+    void attach(RunningATest::RequestObserver *e) override { listener_ = e; }
 
     void playCalibration(const Calibration &c) override { calibration_ = &c; }
 
@@ -281,7 +281,7 @@ class RunningATestStub : public RunningATest {
     std::string playTrialTime_;
     AdaptiveMethodStub &adaptiveMethod;
     FixedLevelMethodStub &fixedLevelMethodStub;
-    const RunningATest::Observer *listener_{};
+    const RunningATest::RequestObserver *listener_{};
     const Calibration *calibration_{};
     const Calibration *leftSpeakerCalibration_{};
     const Calibration *rightSpeakerCalibration_{};

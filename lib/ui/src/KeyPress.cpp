@@ -11,7 +11,7 @@ Presenter::Presenter(TestView &testView, TestController &testController,
 void Presenter::notifyThatKeyHasBeenPressed() {
     if (!acceptingKeyPresses)
         return;
-    auto response{KeyPressResponse{}};
+    KeyPressResponse response;
     const auto keyPressed{control.keyPressed()};
     if (keyPressed == "1")
         response.key = KeyPressed::first;
@@ -19,8 +19,7 @@ void Presenter::notifyThatKeyHasBeenPressed() {
         response.key = KeyPressed::second;
     else
         return;
-    const auto seconds{control.keyPressedSeconds()};
-    response.seconds = seconds;
+    response.seconds = control.keyPressedSeconds();
     keyPressResponses.push_back(response);
     attemptToSubmitResponse();
 }

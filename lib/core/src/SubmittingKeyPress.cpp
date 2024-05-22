@@ -10,28 +10,37 @@ InteractorImpl::InteractorImpl(FixedLevelMethod &method, RunningATest &model,
     : method{method}, model{model}, outputFile{outputFile},
       maskerPlayer{maskerPlayer}, randomizer{randomizer} {}
 
+template <std::size_t N>
+auto randomSelection(Randomizer &randomizer, std::array<double, N> x)
+    -> double {
+    return x.at(randomizer.betweenInclusive(0, x.size() - 1));
+}
+
 void InteractorImpl::notifyThatTrialWillBegin(int) {
     const std::array<double, 4> delaysSeconds = {.060, .110, .160, .190};
     const std::array<double, 2> durationsSeconds = {.100, .250};
 
     VibrotactileStimulus stimulus;
-    stimulus.targetStartRelativeDelay.seconds = delaysSeconds.at(
-        randomizer.betweenInclusive(0, delaysSeconds.size() - 1));
+    stimulus.targetStartRelativeDelay.seconds =
+        randomSelection(randomizer, delaysSeconds);
     stimulus.additionalPostFadeInDelay.seconds =
         RunningATest::targetOnsetFringeDuration.seconds;
-    stimulus.duration.seconds = durationsSeconds.at(
-        randomizer.betweenInclusive(0, durationsSeconds.size() - 1));
+    stimulus.duration.seconds = randomSelection(randomizer, durationsSeconds);
     stimulus.frequency.Hz = 250;
     maskerPlayer.prepareVibrotactileStimulus(stimulus);
     lastVibrotactileStimulus = stimulus;
 }
 
+static auto nanoToMilliseconds(std::uintmax_t t) -> std::uintmax_t {
+    // integer rounding
+    return (t + 500000) / 1000000;
+}
+
 void InteractorImpl::notifyThatTargetWillPlayAt(
     const PlayerTimeWithDelay &targetStart) {
     vibrotactileStartTimeMilliseconds =
-        static_cast<double>(
-            (maskerPlayer.nanoseconds(targetStart.playerTime) + 500000) /
-            1000000) +
+        static_cast<double>(nanoToMilliseconds(
+            maskerPlayer.nanoseconds(targetStart.playerTime))) +
         (targetStart.delay.seconds +
             lastVibrotactileStimulus.targetStartRelativeDelay.seconds) *
             1000;
@@ -52,7 +61,7 @@ auto InteractorImpl::submits(const std::vector<KeyPressResponse> &responses)
     }
     if (min == responses.end())
         return false;
-    KeyPressResponse response = *min;
+    const auto response{*min};
     method.submit(response);
     KeyPressTrial trial;
     static_cast<KeyPressResponse &>(trial) = response;
