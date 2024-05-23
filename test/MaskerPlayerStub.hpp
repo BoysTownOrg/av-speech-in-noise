@@ -8,6 +8,14 @@
 namespace av_speech_in_noise {
 class MaskerPlayerStub : public MaskerPlayer {
   public:
+    void enableVibrotactileStimulus() override {
+        vibrotactileStimulusEnabled = true;
+    }
+
+    void disableVibrotactileStimulus() override {
+        vibrotactileStimulusDisabled = true;
+    }
+
     auto steadyLevelDuration() -> Duration { return steadyLevelDuration_; }
 
     void setSteadyLevelFor(Duration x) override { steadyLevelDuration_ = x; }
@@ -166,6 +174,8 @@ class MaskerPlayerStub : public MaskerPlayer {
     }
 
     VibrotactileStimulus vibrotactileStimulus;
+    bool vibrotactileStimulusEnabled{false};
+    bool vibrotactileStimulusDisabled{false};
 
   private:
     std::vector<std::string> outputAudioDeviceDescriptions_;

@@ -234,6 +234,22 @@ void MaskerPlayerImpl::prepareVibrotactileStimulus(
         sampleRateHz);
 }
 
+void MaskerPlayerImpl::enableVibrotactileStimulus() {
+    if (audioEnabled)
+        panic("Audio is currently enabled. Can't safely "
+              "enable vibrotactile stimulus.");
+
+    sharedState.vibrotactileEnabled = true;
+}
+
+void MaskerPlayerImpl::disableVibrotactileStimulus() {
+    if (audioEnabled)
+        panic("Audio is currently enabled. Can't safely "
+              "disable vibrotactile stimulus.");
+
+    sharedState.vibrotactileEnabled = false;
+}
+
 static_assert(std::numeric_limits<double>::is_iec559, "IEEE 754 required");
 
 auto MaskerPlayerImpl::digitalLevel() -> DigitalLevel {
@@ -453,7 +469,7 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
                               (2 * sharedState.rampSamples)))
                         : 1) *
                 sharedState.levelScalar);
-        if (channels(audioBuffer) > 2)
+        if (sharedState.vibrotactileEnabled && channels(audioBuffer) > 2)
             at(channel(audioBuffer, 2), i) = playingVibrotactile &&
                     vibrotactileCounter >= sharedState.vibrotactileSamplesToWait
                 ? gsl::narrow_cast<sample_type>(

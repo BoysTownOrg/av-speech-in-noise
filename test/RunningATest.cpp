@@ -10,9 +10,9 @@
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/RunningATest.hpp>
 
-#include <functional>
 #include <gtest/gtest.h>
 
+#include <functional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -739,6 +739,18 @@ RECOGNITION_TEST_MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         RunningATestImpl::maskerChannelDelay.seconds,
         maskerPlayer.channelDelaySeconds());
+}
+
+RECOGNITION_TEST_MODEL_TEST(initializeTestEnablesVibrotactileStimulus) {
+    test.enableVibrotactileStimulus = true;
+    run(initializingTest, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(maskerPlayer.vibrotactileStimulusEnabled);
+}
+
+RECOGNITION_TEST_MODEL_TEST(initializeTestDisablesVibrotactileStimulus) {
+    test.enableVibrotactileStimulus = false;
+    run(initializingTest, model);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(maskerPlayer.vibrotactileStimulusDisabled);
 }
 
 RECOGNITION_TEST_MODEL_TEST(

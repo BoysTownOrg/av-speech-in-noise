@@ -923,6 +923,15 @@ TEST_SETTINGS_INTERPRETER_TEST(
         &runningATest.observer[2].get(), &submittingKeyPressResponse);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileEnablesVibrotactile) {
+    initializeTest(interpreter,
+        Method::
+            fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        runningATest.test.enableVibrotactileStimulus);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
     initializeTest(interpreter, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
