@@ -15,6 +15,7 @@ add_executable(
   TargetPlayer.cpp
   TestSettingsInterpreter.cpp
   Consonant.cpp
+  Emotion.cpp
   CoordinateResponseMeasure.cpp
   CorrectKeywords.cpp
   FreeResponse.cpp

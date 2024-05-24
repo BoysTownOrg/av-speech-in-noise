@@ -68,6 +68,14 @@ class Interactor {
     virtual auto submits(const std::vector<KeyPressResponse> &) -> bool = 0;
 };
 }
+
+namespace submitting_emotion {
+class Interactor {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
+    virtual void submit(const EmotionResponse &) = 0;
+};
+}
 }
 
 #endif

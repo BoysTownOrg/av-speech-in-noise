@@ -3,6 +3,7 @@ add_library(
   src/SessionControllerImpl.cpp
   src/TestSettingsInterpreter.cpp
   src/Consonant.cpp
+  src/Emotion.cpp
   src/KeyPress.cpp
   src/FreeResponse.cpp
   src/CorrectKeywords.cpp
