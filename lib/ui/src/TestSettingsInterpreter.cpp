@@ -455,7 +455,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             });
         break;
     case Method::fixedLevelEmotionsWithPredeterminedTargets:
-        throw "unimplemented";
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
         av_speech_in_noise::initialize(methodName, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {

@@ -388,6 +388,11 @@ TEST_SETTINGS_INTERPRETER_TEST(
     AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_TEST_METHOD(
         Method::fixedLevelSyllablesWithAllTargets);
 }
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestPasses_fixedLevelEmotionsWithPredeterminedTargets_Method) {
+    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_TEST_METHOD(
+        Method::fixedLevelEmotionsWithPredeterminedTargets);
+}
 
 TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_adaptivePassFail_PassesAdaptiveSettings) {
