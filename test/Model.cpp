@@ -619,6 +619,30 @@ SUBMITTING_EMOTION_TEST(submitsToFixedLevelMethod) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFlaggable);
 }
 
+SUBMITTING_EMOTION_TEST(preparesNextTrialIfNeeded) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_EMOTION_TEST(savesOutputFileAfterWritingTrial) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+SUBMITTING_EMOTION_TEST(writesResponse) {
+    response.emotion = Emotion::angry;
+    interactor.submit(response);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Emotion::angry, outputFile.emotionTrial.emotion);
+}
+
+SUBMITTING_EMOTION_TEST(writesTarget) {
+    testMethod.setCurrentTargetPath("a/b/c.txt");
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c.txt"}, outputFile.emotionTrial.target);
+}
+
 SUBMITTING_CONSONANT_TEST(submitConsonantSubmitsResponse) {
     ConsonantResponse r;
     interactor.submit(r);
