@@ -34,15 +34,9 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     void submit(const Flaggable &) override { submittedFlaggable = true; }
 
-    void submit(const ConsonantResponse &) override {
-        submittedConsonant_ = true;
-    }
-
     void writeTestingParameters(OutputFile &) override {}
 
     void writeLastCoordinateResponse(OutputFile &) override {}
-
-    void writeLastConsonant(OutputFile &) override {}
 
     void writeTestResult(OutputFile &) override {}
 
@@ -62,7 +56,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     FixedLevelTest test{};
     FixedLevelFixedTrialsTest fixedLevelFixedTrialsTest{};
     TargetPlaylist *targetList{};
-    bool submittedConsonant_{};
     bool submittedFlaggable{};
 };
 }

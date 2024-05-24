@@ -2,7 +2,7 @@
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_SUBMITTINGCONSONANTHPP_
 
 #include "IModel.hpp"
-#include "FixedLevelMethod.hpp"
+#include "IFixedLevelMethod.hpp"
 #include "IRunningATest.hpp"
 #include "IOutputFile.hpp"
 

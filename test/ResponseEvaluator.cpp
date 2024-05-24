@@ -1,6 +1,9 @@
 #include "assert-utility.hpp"
+
 #include <av-speech-in-noise/core/ResponseEvaluator.hpp>
+
 #include <gtest/gtest.h>
+
 #include <string_view>
 
 namespace av_speech_in_noise::coordinate_response_measure {
@@ -96,103 +99,6 @@ COORDINATE_RESPONSE_EVALUATOR_TEST(miscellaneous) {
     assertCorrect(evaluator, "a/b/c/red8 4.mov", {8, Color::red});
     assertIncorrect(evaluator, "a/b/c/blue9-3.mov", {3, Color::blue});
     assertIncorrect(evaluator, "a/b/c/red8 4.mov", {4, Color::red});
-}
-}
-}
-
-namespace av_speech_in_noise {
-static auto correct(ResponseEvaluatorImpl &evaluator, std::string_view s,
-    ConsonantResponse r) -> bool {
-    return evaluator.correct(LocalUrl{std::string{s}}, r);
-}
-
-static void assertIncorrect(
-    ResponseEvaluatorImpl &evaluator, const std::string &s, Consonant r) {
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(
-        correct(evaluator, s, ConsonantResponse{r}));
-}
-
-static void assertCorrect(
-    ResponseEvaluatorImpl &evaluator, const std::string &s, Consonant r) {
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(correct(evaluator, s, ConsonantResponse{r}));
-}
-
-namespace {
-class ConsonantResponseEvaluatorTests : public ::testing::Test {
-  protected:
-    ResponseEvaluatorImpl evaluator{};
-};
-
-#define CONSONANT_RESPONSE_EVALUATOR_TEST(a)                                   \
-    TEST_F(ConsonantResponseEvaluatorTests, a)
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(b) {
-    assertCorrect(evaluator, "choose_bi_1-25_Communicator.mp4", Consonant::bi);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(c) {
-    assertCorrect(evaluator, "choose_si_2-25_FabricMask.mp4", Consonant::si);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(d) {
-    assertCorrect(evaluator, "choose_di_2-25_Communicator.mp4", Consonant::di);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(h) {
-    assertCorrect(evaluator, "choose_hi_1-25_Clear.mp4", Consonant::hi);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(k) {
-    assertCorrect(evaluator, "choose_ki_2-25_FabricMask.mp4", Consonant::ki);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(m) {
-    assertCorrect(evaluator, "choose_mi_1-25_HospitalMask.mp4", Consonant::mi);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(n) {
-    assertCorrect(evaluator, "choose_ni_3-25_HospitalMask.mp4", Consonant::ni);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(p) {
-    assertCorrect(evaluator, "choose_pi_2-25_NoMask.mp4", Consonant::pi);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(s) {
-    assertCorrect(evaluator, "choose_shi_2-25_Clear.mp4", Consonant::shi);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(t) {
-    assertCorrect(evaluator, "choose_ti_3-25_Communicator.mp4", Consonant::ti);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(v) {
-    assertCorrect(evaluator, "choose_vi_3-25_FabricMask.mp4", Consonant::vi);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(z) {
-    assertCorrect(evaluator, "choose_zi_3-25_NoMask.mp4", Consonant::zi);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(thi) {
-    assertCorrect(evaluator, "choose_thi_1-25.mov", Consonant::thi);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(fi) {
-    assertCorrect(evaluator, "choose_fi_1-25.wav", Consonant::fi);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(notB) {
-    assertIncorrect(evaluator, "choose_zi_3-25_NoMask.mp4", Consonant::bi);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(invalidFormatIsAlwaysIncorrect) {
-    assertIncorrect(evaluator, "idontknowb", Consonant::bi);
-}
-
-CONSONANT_RESPONSE_EVALUATOR_TEST(parsesConsonant) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(Consonant::bi,
-        evaluator.correctConsonant({"choose_bi_1-25_Communicator.mp4"}));
 }
 }
 }

@@ -107,12 +107,8 @@ class SubmittingSyllable : public UseCase {
 };
 
 class SubmittingConsonant : public UseCase {
-    ConsonantResponse response{};
-
   public:
-    void run(FixedLevelMethodImpl &m) override { m.submit(response); }
-
-    void setConsonant(Consonant c) { response.consonant = c; }
+    void run(FixedLevelMethodImpl &m) override { m.submit(Flaggable{false}); }
 };
 
 auto blueColor() { return coordinate_response_measure::Color::blue; }
@@ -369,10 +365,6 @@ FIXED_LEVEL_METHOD_TEST(
         std::string{"a"}, evaluator.correctFilePath());
 }
 
-void writeLastConsonant(FixedLevelMethodImpl &method, OutputFile &outputFile) {
-    method.writeLastConsonant(outputFile);
-}
-
 class FixedLevelMethodWithFiniteTargetPlaylistTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
@@ -405,63 +397,6 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
     method.writeTestingParameters(outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(test), outputFile.fixedLevelTest());
-}
-
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeConsonantPassesConsonant) {
-    submittingConsonant.setConsonant(Consonant::bi);
-    run(submittingConsonant, method);
-    writeLastConsonant(method, outputFile);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Consonant::bi, outputFile.consonantTrial().subjectConsonant);
-}
-
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeConsonantPassesTarget) {
-    targetList.setCurrent("a");
-    run(submittingConsonant, method);
-    writeLastConsonant(method, outputFile);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, outputFile.consonantTrial().target);
-}
-
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
-    writeConsonantPassesCorrectConsonant) {
-    evaluator.setCorrectConsonant(Consonant::bi);
-    run(submittingConsonant, method);
-    writeLastConsonant(method, outputFile);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Consonant::bi, outputFile.consonantTrial().correctConsonant);
-}
-
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
-    writeCorrectCoordinateResponse) {
-    evaluator.setCorrect();
-    run(submittingConsonant, method);
-    writeLastConsonant(method, outputFile);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.consonantTrial().correct);
-}
-
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
-    writeIncorrectCoordinateResponse) {
-    evaluator.setIncorrect();
-    run(submittingConsonant, method);
-    writeLastConsonant(method, outputFile);
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.consonantTrial().correct);
-}
-
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
-    submitConsonantPassesCurrentTargetToEvaluator) {
-    targetList.setCurrent("a");
-    run(submittingConsonant, method);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, evaluator.correctConsonantUrl().path);
-}
-
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
-    submitConsonantPassesCorrectTargetToEvaluator) {
-    targetList.setCurrent("a");
-    run(submittingConsonant, method);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, evaluator.correctUrlForConsonantResponse().path);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
