@@ -616,6 +616,13 @@ TEST_SETTINGS_INTERPRETER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &syllablesPresenter, sessionController.taskPresenter());
 }
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializeTestWith_fixedLevelEmotionsWithPredeterminedTargets_PassesTaskPresenter) {
+    initializeTest(
+        interpreter, Method::fixedLevelEmotionsWithPredeterminedTargets);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &emotionPresenter, sessionController.taskPresenter());
+}
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsInitializesFixedLevelTest) {
