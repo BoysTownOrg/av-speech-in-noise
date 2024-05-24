@@ -84,20 +84,22 @@ EMOTION_PRESENTER_TEST(hidesPlayButtonAfterClicked) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(ui.playButton_.hidden);
 }
 
-/*
-CONSONANT_TASK_CONTROLLER_TEST(submitsConsonantAfterResponseButtonIsClicked) {
-    control.setConsonant(Consonant::bi);
-    notifyThatResponseButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(Consonant::bi, model.response().consonant);
+EMOTION_PRESENTER_TEST(submitsEmotionAfterResponseButtonIsClicked) {
+    ui.emotion_ = Emotion::sad;
+    ui.observer->notifyThatResponseButtonHasBeenClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(Emotion::sad, model.response.emotion);
 }
 
-CONSONANT_TASK_CONTROLLER_TEST(
-    notifiesThatUserIsDoneRespondingAndIsReadyForNextTrialAfterResponseButtonIsClicked)
-{ notifyThatResponseButtonHasBeenClicked(control);
+EMOTION_PRESENTER_TEST(
+    notifiesThatUserIsDoneRespondingAfterResponseButtonIsClicked) {
+    ui.observer->notifyThatResponseButtonHasBeenClicked();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController
-            .notifiedThatUserIsDoneRespondingAndIsReadyForNextTrial());
+        testController.notifiedThatUserIsDoneResponding());
 }
-*/
+
+EMOTION_PRESENTER_TEST(showsPlayButtonAfterResponseButtonIsClicked) {
+    ui.observer->notifyThatResponseButtonHasBeenClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(ui.playButton_.shown);
+}
 }
 }
