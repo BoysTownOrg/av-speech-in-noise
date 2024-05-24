@@ -10,6 +10,7 @@
 #include <av-speech-in-noise/core/SubmittingKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingNumberKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingSyllable.hpp>
+#include <av-speech-in-noise/core/SubmittingEmotion.hpp>
 
 #include <gtest/gtest.h>
 
@@ -316,6 +317,17 @@ class SubmittingConsonantTests : public ::testing::Test {
     ConsonantResponse response;
 };
 
+class SubmittingEmotionTests : public ::testing::Test {
+  protected:
+    AdaptiveMethodStub adaptiveTestMethod;
+    FixedLevelMethodStub testMethod;
+    RunningATestStub model{adaptiveTestMethod, testMethod};
+    OutputFileStub outputFile;
+    submitting_emotion::InteractorImpl interactor{
+        testMethod, model, outputFile};
+    EmotionResponse response;
+};
+
 class SubmittingPassFailTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub testMethod;
@@ -379,6 +391,8 @@ class SubmittingKeypressTests : public ::testing::Test {
 #define SUBMITTING_KEYWORDS_TEST(a) TEST_F(SubmittingKeywordsTests, a)
 
 #define SUBMITTING_CONSONANT_TEST(a) TEST_F(SubmittingConsonantTests, a)
+
+#define SUBMITTING_EMOTION_TEST(a) TEST_F(SubmittingEmotionTests, a)
 
 #define SUBMITTING_KEYPRESS_TEST(a) TEST_F(SubmittingKeypressTests, a)
 
@@ -598,6 +612,11 @@ SUBMITTING_SYLLABLE(submitCorrectSyllable) {
     syllableResponse.syllable = Syllable::dji;
     interactor.submit(syllableResponse);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().correct);
+}
+
+SUBMITTING_EMOTION_TEST(submitsToFixedLevelMethod) {
+    interactor.submit(response);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFlaggable);
 }
 
 SUBMITTING_CONSONANT_TEST(submitConsonantSubmitsResponse) {

@@ -72,8 +72,8 @@ struct ConsonantResponse {
 
 enum class Emotion { angry, disgusted, happy, neutral, sad, unknown };
 
-struct EmotionResponse {
-    Emotion emotion;
+struct EmotionResponse : Flaggable {
+    Emotion emotion{};
 };
 
 enum class KeyPressed { first, second, unknown };

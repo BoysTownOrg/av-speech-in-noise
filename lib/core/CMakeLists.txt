@@ -13,6 +13,7 @@ add_library(
   src/SubmittingPassFail.cpp
   src/SubmittingKeywords.cpp
   src/SubmittingConsonant.cpp
+  src/SubmittingEmotion.cpp
   src/AudioRecording.cpp
   src/EyeTracking.cpp)
 target_include_directories(

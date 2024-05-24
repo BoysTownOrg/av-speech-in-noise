@@ -268,6 +268,8 @@ class OutputFileImpl : public OutputFile {
     void write(const FreeResponseTrial &) override;
     void write(const CorrectKeywordsTrial &) override;
     void write(const ConsonantTrial &) override;
+    void write(const EmotionTrial &) override { /* TODO */
+    }
     void write(const ThreeKeywordsTrial &) override;
     void write(const AdaptiveTestResults &) override;
     void write(const BinocularGazeSamples &) override;

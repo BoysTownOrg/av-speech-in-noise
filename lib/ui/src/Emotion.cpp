@@ -18,7 +18,9 @@ void Presenter::notifyThatPlayButtonHasBeenClicked() {
 }
 
 void Presenter::notifyThatResponseButtonHasBeenClicked() {
-    interactor.submit(EmotionResponse{ui.emotion()});
+    EmotionResponse response;
+    response.emotion = ui.emotion();
+    interactor.submit(response);
     testController.notifyThatUserIsDoneResponding();
     ui.playButton().show();
 }

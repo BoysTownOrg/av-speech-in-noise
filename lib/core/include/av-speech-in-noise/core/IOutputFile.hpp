@@ -51,6 +51,8 @@ struct ConsonantTrial : Target, Evaluative {
     Consonant correctConsonant{};
 };
 
+struct EmotionTrial : EmotionResponse, Target {};
+
 struct ThreeKeywordsTrial : ThreeKeywordsResponse, open_set::Trial {};
 
 struct SyllableTrial : open_set::Trial, Evaluative, Flaggable {
@@ -90,6 +92,7 @@ class OutputFile {
     virtual void write(const CorrectKeywordsTrial &) = 0;
     virtual void write(const open_set::AdaptiveTrial &) = 0;
     virtual void write(const ConsonantTrial &) = 0;
+    virtual void write(const EmotionTrial &) = 0;
     virtual void write(const AdaptiveTest &) = 0;
     virtual void write(const FixedLevelTest &) = 0;
     virtual void write(const AdaptiveTestResults &) = 0;
