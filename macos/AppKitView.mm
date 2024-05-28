@@ -159,10 +159,7 @@ void AppKitUI::attach(Observer *ob) {
     responseButtons_.attach(ob);
 }
 
-auto AppKitUI::emotion() -> Emotion {
-    // TODO
-    return Emotion::sad;
-}
+auto AppKitUI::emotion() -> Emotion { return responseButtons_.emotion(); }
 
 auto AppKitUI::playButton() -> View & { return playButton_; }
 
@@ -208,18 +205,26 @@ AppKitUI::ResponseButtons::ResponseButtons(NSView *view)
     : action{[ObjCToCppAction new]} {
     action->responder = this;
 
-    std::vector<std::vector<std::string>> emotions{{"angry", "disgusted"},
-        {"happy", "neutral", "sad"}, {"scared", "surprised"}};
+    std::vector<std::vector<std::pair<std::string, Emotion>>> layout{
+        {{"angry", Emotion::angry}, {"disgusted", Emotion::disgusted}},
+        {{"happy", Emotion::happy}, {"neutral", Emotion::neutral},
+            {"sad", Emotion::sad}},
+        {{"scared", Emotion::scared}, {"surprised", Emotion::surprised}}};
 
-    std::vector<NSView *> columns(emotions.size());
-    std::transform(emotions.begin(), emotions.end(), columns.begin(),
-        [&](const auto &column) {
-            std::vector<NSView *> b(column.size());
-            std::transform(
-                column.begin(), column.end(), b.begin(), [&](const auto &cell) {
-                    return nsButton(cell, action, @selector(callback:));
+    std::vector<NSView *> columns(layout.size());
+    std::transform(
+        layout.begin(), layout.end(), columns.begin(), [&](const auto &order) {
+            std::vector<NSView *> column(order.size());
+            std::transform(order.begin(), order.end(), column.begin(),
+                [&](const auto &cell) {
+                    auto [name, emotion]{cell};
+                    auto button {
+                        nsButton(name, action, @selector(callback:))
+                    };
+                    emotions[(__bridge void *)button] = emotion;
+                    return button;
                 });
-            const auto stack{[NSStackView stackViewWithViews:nsArray(b)]};
+            const auto stack{[NSStackView stackViewWithViews:nsArray(column)]};
             stack.orientation = NSUserInterfaceLayoutOrientationVertical;
             return stack;
         });
@@ -239,7 +244,12 @@ void AppKitUI::ResponseButtons::hide() { av_speech_in_noise::hide(buttons); }
 void AppKitUI::ResponseButtons::attach(Observer *ob) { this->observer = ob; }
 
 void AppKitUI::ResponseButtons::callback(id sender) {
+    lastButtonPressed = sender;
     observer->notifyThatResponseButtonHasBeenClicked();
+}
+
+auto AppKitUI::ResponseButtons::emotion() -> Emotion {
+    return emotions.at((__bridge void *)lastButtonPressed);
 }
 }
 

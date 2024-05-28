@@ -8,6 +8,7 @@
 #include <av-speech-in-noise/ui/Subject.hpp>
 
 #import <AppKit/AppKit.h>
+#include <map>
 
 #include <unordered_map>
 
@@ -72,12 +73,15 @@ class AppKitUI : public UI {
         void show() override;
         void hide() override;
         void callback(id sender) override;
+        auto emotion() -> Emotion;
 
       private:
         // order important
+        std::map<void *, Emotion> emotions{};
+        NSButton *lastButtonPressed{};
+        Observer *observer{};
         ObjCToCppAction *action;
         NSStackView *buttons;
-        Observer *observer{};
     };
 
   private:
