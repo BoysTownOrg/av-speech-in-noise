@@ -1,6 +1,8 @@
 #ifndef AV_SPEECH_IN_NOISE_MACOS_APPKITVIEW_H_
 #define AV_SPEECH_IN_NOISE_MACOS_APPKITVIEW_H_
 
+#include <av-speech-in-noise/Interface.hpp>
+#include <av-speech-in-noise/ui/Emotion.hpp>
 #include <av-speech-in-noise/ui/Consonant.hpp>
 #include <av-speech-in-noise/ui/CoordinateResponseMeasure.hpp>
 #include <av-speech-in-noise/ui/Subject.hpp>
@@ -11,8 +13,15 @@
 
 @class CoordinateResponseMeasureUIActions;
 @class ConsonantUIActions;
+@class ObjCToCppAction;
 
 namespace av_speech_in_noise {
+class ObjCToCppResponder {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ObjCToCppResponder);
+    virtual void callback(id sender) = 0;
+};
+
 class SubjectAppKitView : public SubjectView {
   public:
     explicit SubjectAppKitView(NSWindow *window) : window{window} {}
@@ -29,6 +38,55 @@ class SubjectAppKitView : public SubjectView {
   private:
     NSWindow *window;
 };
+
+namespace submitting_emotion {
+class AppKitUI : public UI {
+  public:
+    explicit AppKitUI(NSView *);
+    void attach(Observer *) override;
+    auto emotion() -> Emotion override;
+    auto playButton() -> View & override;
+    auto responseButtons() -> View & override;
+    void show() override;
+    void hide() override;
+
+    class PlayButton : public View, public ObjCToCppResponder {
+      public:
+        explicit PlayButton(NSView *);
+        void attach(Observer *);
+        void show() override;
+        void hide() override;
+        void callback(id sender) override;
+
+      private:
+        // order important
+        ObjCToCppAction *action;
+        NSButton *button;
+        Observer *observer{};
+    };
+
+    class ResponseButtons : public View, public ObjCToCppResponder {
+      public:
+        explicit ResponseButtons(NSView *);
+        void attach(Observer *);
+        void show() override;
+        void hide() override;
+        void callback(id sender) override;
+
+      private:
+        // order important
+        ObjCToCppAction *action;
+        NSStackView *buttons;
+        Observer *observer{};
+    };
+
+  private:
+    PlayButton playButton_;
+    ResponseButtons responseButtons_;
+    NSView *view;
+    Observer *observer{};
+};
+}
 
 namespace submitting_consonant {
 class AppKitUI : public View, public Control {

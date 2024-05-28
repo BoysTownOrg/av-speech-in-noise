@@ -18,6 +18,19 @@
 @interface ConsonantUIActions : NSObject
 @end
 
+@interface ObjCToCppAction : NSObject
+@end
+
+@implementation ObjCToCppAction {
+  @public
+    av_speech_in_noise::ObjCToCppResponder *responder;
+}
+
+- (void)callback:(id)sender {
+    responder->callback(sender);
+}
+@end
+
 @implementation CoordinateResponseMeasureUIActions {
   @public
     av_speech_in_noise::AppKitCoordinateResponseMeasureUI *controller;
@@ -134,6 +147,100 @@ static auto equallyDistributedConsonantImageButtonGrid(
         });
     const auto grid{[NSStackView stackViewWithViews:nsArray(rows)]};
     return grid;
+}
+
+namespace submitting_emotion {
+AppKitUI::AppKitUI(NSView *view)
+    : playButton_{view}, responseButtons_{view}, view{view} {}
+
+void AppKitUI::attach(Observer *ob) {
+    this->observer = ob;
+    playButton_.attach(ob);
+    responseButtons_.attach(ob);
+}
+
+auto AppKitUI::emotion() -> Emotion {
+    // TODO
+    return Emotion::sad;
+}
+
+auto AppKitUI::playButton() -> View & { return playButton_; }
+
+auto AppKitUI::responseButtons() -> View & { return responseButtons_; }
+
+void AppKitUI::show() { av_speech_in_noise::show(view); }
+
+void AppKitUI::hide() { av_speech_in_noise::hide(view); }
+
+AppKitUI::PlayButton::PlayButton(NSView *view)
+    : action{[ObjCToCppAction new]}, button {
+    nsButton("", action, @selector(callback:))
+}
+{
+    action->responder = this;
+    [button setBezelStyle:NSBezelStyleTexturedSquare];
+    const auto font{[NSFont fontWithName:@"Courier" size:36]};
+    [button
+        setAttributedTitle:
+            [[NSAttributedString alloc]
+                initWithString:@"Play"
+                    attributes:[NSDictionary dictionaryWithObjectsAndKeys:font,
+                                             NSFontAttributeName, nil]]];
+    addAutolayoutEnabledSubview(view, button);
+    [NSLayoutConstraint activateConstraints:@[
+        [button.widthAnchor constraintEqualToAnchor:view.widthAnchor],
+        [button.heightAnchor constraintEqualToAnchor:view.heightAnchor],
+    ]];
+    hide();
+}
+
+void AppKitUI::PlayButton::show() { av_speech_in_noise::show(button); }
+
+void AppKitUI::PlayButton::hide() { av_speech_in_noise::hide(button); }
+
+void AppKitUI::PlayButton::attach(Observer *ob) { this->observer = ob; }
+
+void AppKitUI::PlayButton::callback(id sender) {
+    observer->notifyThatPlayButtonHasBeenClicked();
+}
+
+AppKitUI::ResponseButtons::ResponseButtons(NSView *view)
+    : action{[ObjCToCppAction new]} {
+    action->responder = this;
+
+    std::vector<std::vector<std::string>> emotions{{"angry", "disgusted"},
+        {"happy", "neutral", "sad"}, {"scared", "surprised"}};
+
+    std::vector<NSView *> columns(emotions.size());
+    std::transform(emotions.begin(), emotions.end(), columns.begin(),
+        [&](const auto &column) {
+            std::vector<NSView *> b(column.size());
+            std::transform(
+                column.begin(), column.end(), b.begin(), [&](const auto &cell) {
+                    return nsButton(cell, action, @selector(callback:));
+                });
+            const auto stack{[NSStackView stackViewWithViews:nsArray(b)]};
+            stack.orientation = NSUserInterfaceLayoutOrientationVertical;
+            return stack;
+        });
+    buttons = [NSStackView stackViewWithViews:nsArray(columns)];
+    addAutolayoutEnabledSubview(view, buttons);
+    [NSLayoutConstraint activateConstraints:@[
+        [buttons.widthAnchor constraintEqualToAnchor:view.widthAnchor],
+        [buttons.heightAnchor constraintEqualToAnchor:view.heightAnchor],
+    ]];
+    hide();
+}
+
+void AppKitUI::ResponseButtons::show() { av_speech_in_noise::show(buttons); }
+
+void AppKitUI::ResponseButtons::hide() { av_speech_in_noise::hide(buttons); }
+
+void AppKitUI::ResponseButtons::attach(Observer *ob) { this->observer = ob; }
+
+void AppKitUI::ResponseButtons::callback(id sender) {
+    observer->notifyThatResponseButtonHasBeenClicked();
+}
 }
 
 namespace submitting_consonant {

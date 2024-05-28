@@ -7,6 +7,8 @@
 #include "AppKit-utility.h"
 #include "masking-images.h"
 
+#include <av-speech-in-noise/core/SubmittingEmotion.hpp>
+#include <av-speech-in-noise/ui/Emotion.hpp>
 #include <av-speech-in-noise/core/SubmittingKeyPress.hpp>
 #include <av-speech-in-noise/ui/KeyPress.hpp>
 #include <av-speech-in-noise/Model.hpp>
@@ -362,6 +364,23 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             constraintEqualToAnchor:subjectNSWindow.contentView.bottomAnchor
                            constant:-80]
     ]];
+    const auto emotionNSView{
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
+    addAutolayoutEnabledSubview(subjectNSWindow.contentView, emotionNSView);
+    [NSLayoutConstraint activateConstraints:@[
+        [emotionNSView.centerXAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.centerXAnchor],
+        [emotionNSView.widthAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.widthAnchor
+                         multiplier:0.5],
+        [emotionNSView.heightAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.heightAnchor
+                         multiplier:0.5],
+        [emotionNSView.bottomAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.bottomAnchor
+                           constant:-80]
+    ]];
+
     static submitting_consonant::AppKitUI consonantUI{consonantNSView};
     NSLog(@"Initializing CRM UI...");
     const auto coordinateResponseMeasureNSView{
@@ -455,6 +474,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static KeyPressUI keyPressControl{subjectNSWindow};
     static submitting_keypress::Presenter keypressPresenter{
         testUI, testController, submittingKeyPressInteractor, keyPressControl};
+    static submitting_emotion::AppKitUI emotionUI{emotionNSView};
+    static submitting_emotion::InteractorImpl emotionInteractor{
+        fixedLevelMethod, runningATest, outputFile};
+    static submitting_emotion::Presenter emotionPresenter{
+        emotionUI, testController, emotionInteractor};
     static CoordinateResponseMeasureController
         coordinateResponseMeasureController{
             testController, runningATest, coordinateResponseMeasureView};
@@ -469,7 +493,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         coordinateResponseMeasurePresenter, freeResponsePresenter,
         chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
         consonantPresenter, passFailPresenter, keypressPresenter,
-        submittingKeyPressInteractor};
+        submittingKeyPressInteractor, emotionPresenter};
     static TestSetupController testSetupController{*testSetupUI, sessionUI,
         testSetupPresenter, runningATest, testSettingsInterpreter,
         textFileReader};
