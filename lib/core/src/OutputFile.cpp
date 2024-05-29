@@ -55,6 +55,10 @@ static auto operator<<(std::ostream &os, KeyPressed item) -> std::ostream & {
     return os << name(item);
 }
 
+static auto operator<<(std::ostream &os, Emotion item) -> std::ostream & {
+    return os << name(item);
+}
+
 static auto operator<<(std::ostream &os, Point3D point) -> std::ostream & {
     return os << point.x << ' ' << point.y << ' ' << point.z;
 }
@@ -599,7 +603,10 @@ class EmotionTrialFormatter : public TrialFormatter {
     }
 
     auto insertTrial(std::ostream &stream) -> std::ostream & override {
-        return stream;
+        insert(stream, trial_.target);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.emotion);
+        return insertNewLine(stream);
     }
 
   private:

@@ -238,6 +238,27 @@ constexpr auto name(KeyPressed k) -> const char * {
     }
 }
 
+constexpr auto name(Emotion e) -> const char * {
+    switch (e) {
+    case Emotion::angry:
+        return "angry";
+    case Emotion::disgusted:
+        return "disgusted";
+    case Emotion::happy:
+        return "happy";
+    case Emotion::neutral:
+        return "neutral";
+    case Emotion::sad:
+        return "sad";
+    case Emotion::scared:
+        return "scared";
+    case Emotion::surprised:
+        return "surprised";
+    case Emotion::unknown:
+        return "unknown";
+    }
+}
+
 class Writer {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Writer);

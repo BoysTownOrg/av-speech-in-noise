@@ -820,6 +820,10 @@ OUTPUT_FILE_TEST(writeKeyPressTrialWritesTrialOnSecondLine) {
     assertWritesTrialOnLine(writingKeyPressTrial, 2);
 }
 
+OUTPUT_FILE_TEST(writeEmotionTrialWritesTrialOnSecondLine) {
+    assertWritesTrialOnLine(writingEmotionTrial, 2);
+}
+
 OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrialWritesTrialOnSecondLine) {
     assertWritesTrialOnLine(writingAdaptiveCoordinateResponseTrial, 2);
 }
