@@ -45,7 +45,8 @@ enum class HeadingItem {
     keyPressed,
     reactionTime,
     vibrotactileDuration,
-    vibrotactileDelay
+    vibrotactileDelay,
+    emotion,
 };
 
 constexpr auto name(HeadingItem i) -> const char * {
@@ -100,6 +101,8 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "subject syllable";
     case HeadingItem::correctSyllable:
         return "correct syllable";
+    case HeadingItem::emotion:
+        return "emotion";
     case HeadingItem::time:
         return "time";
     case HeadingItem::keyPressed:
@@ -268,8 +271,7 @@ class OutputFileImpl : public OutputFile {
     void write(const FreeResponseTrial &) override;
     void write(const CorrectKeywordsTrial &) override;
     void write(const ConsonantTrial &) override;
-    void write(const EmotionTrial &) override { /* TODO */
-    }
+    void write(const EmotionTrial &) override;
     void write(const ThreeKeywordsTrial &) override;
     void write(const AdaptiveTestResults &) override;
     void write(const BinocularGazeSamples &) override;
