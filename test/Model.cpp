@@ -10,6 +10,7 @@
 #include <av-speech-in-noise/core/SubmittingKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingNumberKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingSyllable.hpp>
+#include <av-speech-in-noise/core/SubmittingEmotion.hpp>
 
 #include <gtest/gtest.h>
 
@@ -138,18 +139,9 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     void submit(const Flaggable &) override { submittedFlaggable = true; }
 
-    void submit(const ConsonantResponse &) override {
-        submittedConsonant_ = true;
-        log_ << "submitConsonant ";
-    }
-
     void writeTestingParameters(OutputFile &) override {}
 
     void writeLastCoordinateResponse(OutputFile &) override {}
-
-    void writeLastConsonant(OutputFile &) override {
-        log_ << "writeLastConsonant ";
-    }
 
     void writeTestResult(OutputFile &) override {}
 
@@ -314,6 +306,31 @@ class SubmittingConsonantTests : public ::testing::Test {
     submitting_consonant::InteractorImpl interactor{
         testMethod, model, outputFile};
     ConsonantResponse response;
+
+    void assertIncorrect(const std::string &s, Consonant r) {
+        testMethod.setCurrentTargetPath(s);
+        response.consonant = r;
+        interactor.submit(response);
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.consonantTrial().correct);
+    }
+
+    void assertCorrect(const std::string &s, Consonant r) {
+        testMethod.setCurrentTargetPath(s);
+        response.consonant = r;
+        interactor.submit(response);
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.consonantTrial().correct);
+    }
+};
+
+class SubmittingEmotionTests : public ::testing::Test {
+  protected:
+    AdaptiveMethodStub adaptiveTestMethod;
+    FixedLevelMethodStub testMethod;
+    RunningATestStub model{adaptiveTestMethod, testMethod};
+    OutputFileStub outputFile;
+    submitting_emotion::InteractorImpl interactor{
+        testMethod, model, outputFile};
+    EmotionResponse response;
 };
 
 class SubmittingPassFailTests : public ::testing::Test {
@@ -379,6 +396,8 @@ class SubmittingKeypressTests : public ::testing::Test {
 #define SUBMITTING_KEYWORDS_TEST(a) TEST_F(SubmittingKeywordsTests, a)
 
 #define SUBMITTING_CONSONANT_TEST(a) TEST_F(SubmittingConsonantTests, a)
+
+#define SUBMITTING_EMOTION_TEST(a) TEST_F(SubmittingEmotionTests, a)
 
 #define SUBMITTING_KEYPRESS_TEST(a) TEST_F(SubmittingKeypressTests, a)
 
@@ -600,23 +619,38 @@ SUBMITTING_SYLLABLE(submitCorrectSyllable) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.syllableTrial().correct);
 }
 
-SUBMITTING_CONSONANT_TEST(submitConsonantSubmitsResponse) {
-    ConsonantResponse r;
-    interactor.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedConsonant());
+SUBMITTING_EMOTION_TEST(submitsToFixedLevelMethod) {
+    interactor.submit(response);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFlaggable);
 }
 
-SUBMITTING_CONSONANT_TEST(submitConsonantWritesTrialAfterSubmittingResponse) {
-    ConsonantResponse r;
-    interactor.submit(r);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        contains(testMethod.log(), "submitConsonant writeLastConsonant "));
-}
-
-SUBMITTING_CONSONANT_TEST(queriesNextTargetAfterWritingResponse) {
+SUBMITTING_EMOTION_TEST(preparesNextTrialIfNeeded) {
     interactor.submit({});
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        contains(testMethod.log(), "writeLastConsonant TOOLATE "));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_EMOTION_TEST(savesOutputFileAfterWritingTrial) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+SUBMITTING_EMOTION_TEST(writesResponse) {
+    response.emotion = Emotion::angry;
+    interactor.submit(response);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Emotion::angry, outputFile.emotionTrial.emotion);
+}
+
+SUBMITTING_EMOTION_TEST(writesTarget) {
+    testMethod.setCurrentTargetPath("a/b/c.txt");
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c.txt"}, outputFile.emotionTrial.target);
+}
+
+SUBMITTING_CONSONANT_TEST(submitConsonantSubmitsResponse) {
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFlaggable);
 }
 
 SUBMITTING_CONSONANT_TEST(preparesNextTrialIfNeeded) {
@@ -627,6 +661,91 @@ SUBMITTING_CONSONANT_TEST(preparesNextTrialIfNeeded) {
 SUBMITTING_CONSONANT_TEST(savesOutputFileAfterWritingTrial) {
     interactor.submit({});
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+SUBMITTING_CONSONANT_TEST(passesConsonantToOutputFile) {
+    response.consonant = Consonant::bi;
+    interactor.submit(response);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Consonant::bi, outputFile.consonantTrial().subjectConsonant);
+}
+
+SUBMITTING_CONSONANT_TEST(passesCorrectConsonantToOutputFile) {
+    testMethod.setCurrentTargetPath("choose_bi_1-25_Communicator.mp4");
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        Consonant::bi, outputFile.consonantTrial().correctConsonant);
+}
+
+SUBMITTING_CONSONANT_TEST(passesTargetToOutputFile) {
+    testMethod.setCurrentTargetPath("a/b/c.txt");
+    interactor.submit({});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c.txt"}, outputFile.consonantTrial().target);
+}
+
+SUBMITTING_CONSONANT_TEST(b) {
+    assertCorrect("choose_bi_1-25_Communicator.mp4", Consonant::bi);
+}
+
+SUBMITTING_CONSONANT_TEST(c) {
+    assertCorrect("choose_si_2-25_FabricMask.mp4", Consonant::si);
+}
+
+SUBMITTING_CONSONANT_TEST(d) {
+    assertCorrect("choose_di_2-25_Communicator.mp4", Consonant::di);
+}
+
+SUBMITTING_CONSONANT_TEST(h) {
+    assertCorrect("choose_hi_1-25_Clear.mp4", Consonant::hi);
+}
+
+SUBMITTING_CONSONANT_TEST(k) {
+    assertCorrect("choose_ki_2-25_FabricMask.mp4", Consonant::ki);
+}
+
+SUBMITTING_CONSONANT_TEST(m) {
+    assertCorrect("choose_mi_1-25_HospitalMask.mp4", Consonant::mi);
+}
+
+SUBMITTING_CONSONANT_TEST(n) {
+    assertCorrect("choose_ni_3-25_HospitalMask.mp4", Consonant::ni);
+}
+
+SUBMITTING_CONSONANT_TEST(p) {
+    assertCorrect("choose_pi_2-25_NoMask.mp4", Consonant::pi);
+}
+
+SUBMITTING_CONSONANT_TEST(s) {
+    assertCorrect("choose_shi_2-25_Clear.mp4", Consonant::shi);
+}
+
+SUBMITTING_CONSONANT_TEST(t) {
+    assertCorrect("choose_ti_3-25_Communicator.mp4", Consonant::ti);
+}
+
+SUBMITTING_CONSONANT_TEST(v) {
+    assertCorrect("choose_vi_3-25_FabricMask.mp4", Consonant::vi);
+}
+
+SUBMITTING_CONSONANT_TEST(z) {
+    assertCorrect("choose_zi_3-25_NoMask.mp4", Consonant::zi);
+}
+
+SUBMITTING_CONSONANT_TEST(thi) {
+    assertCorrect("choose_thi_1-25.mov", Consonant::thi);
+}
+
+SUBMITTING_CONSONANT_TEST(fi) {
+    assertCorrect("choose_fi_1-25.wav", Consonant::fi);
+}
+
+SUBMITTING_CONSONANT_TEST(notB) {
+    assertIncorrect("choose_zi_3-25_NoMask.mp4", Consonant::bi);
+}
+
+SUBMITTING_CONSONANT_TEST(invalidFormatIsAlwaysIncorrect) {
+    assertIncorrect("idontknowb", Consonant::bi);
 }
 
 void submitValidResponse(submitting_keypress::InteractorImpl &interactor,

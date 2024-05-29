@@ -12,58 +12,36 @@
 
 namespace av_speech_in_noise {
 enum class Method {
-    adaptivePassFail,
-    adaptivePassFailWithEyeTracking,
+    adaptivePassFail, // <-- this one should be first...
     adaptiveCorrectKeywords,
-    adaptiveCorrectKeywordsWithEyeTracking,
     adaptiveCoordinateResponseMeasure,
-    adaptiveCoordinateResponseMeasureWithSingleSpeaker,
-    adaptiveCoordinateResponseMeasureWithDelayedMasker,
-    adaptiveCoordinateResponseMeasureWithEyeTracking,
     fixedLevelFreeResponseWithTargetReplacement,
     fixedLevelFreeResponseWithSilentIntervalTargets,
     fixedLevelFreeResponseWithAllTargets,
-    fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
-    fixedLevelFreeResponseWithAllTargetsAndAudioRecording,
     fixedLevelFreeResponseWithPredeterminedTargets,
-    fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording,
-    fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking,
-    fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking,
-    fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation,
+    fixedLevelButtonResponseWithPredeterminedTargets,
     fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
     fixedLevelConsonants,
+    fixedLevelEmotionsWithPredeterminedTargets,
     fixedLevelChooseKeywordsWithAllTargets,
-    fixedLevelSyllablesWithAllTargets,
+    fixedLevelSyllablesWithAllTargets, // <-- this one should be last...
     unknown
 };
 
+// None of these should be prefixes of another...
 constexpr auto name(Method c) -> const char * {
     switch (c) {
     case Method::adaptivePassFail:
         return "adaptive pass fail";
-    case Method::adaptivePassFailWithEyeTracking:
-        return "adaptive pass fail eye tracking";
     case Method::adaptiveCorrectKeywords:
         return "adaptive number keywords";
-    case Method::adaptiveCorrectKeywordsWithEyeTracking:
-        return "adaptive number keywords eye tracking";
     case Method::adaptiveCoordinateResponseMeasure:
         return "adaptive CRM";
-    case Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker:
-        return "adaptive CRM not spatial";
-    case Method::adaptiveCoordinateResponseMeasureWithDelayedMasker:
-        return "adaptive CRM spatial";
-    case Method::adaptiveCoordinateResponseMeasureWithEyeTracking:
-        return "adaptive CRM eye tracking";
     case Method::fixedLevelFreeResponseWithTargetReplacement:
         return "fixed-level free response with replacement";
     case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
         return "fixed-level CRM with replacement";
-    case Method::
-        fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking:
-        return "fixed-level CRM with replacement eye tracking";
     case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
         return "fixed-level free response silent intervals";
     case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
@@ -74,29 +52,14 @@ constexpr auto name(Method c) -> const char * {
         return "fixed-level consonants";
     case Method::fixedLevelChooseKeywordsWithAllTargets:
         return "fixed-level choose keywords all stimuli";
-    case Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking:
-        return "fixed-level free response all stimuli eye tracking";
-    case Method::fixedLevelFreeResponseWithAllTargetsAndAudioRecording:
-        return "fixed-level free response all stimuli audio recording";
-    case Method::
-        fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecording:
-        return "fixed-level free response predetermined stimuli audio "
-               "recording";
-    case Method::fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTracking:
-        return "fixed-level free response predetermined stimuli eye "
-               "tracking";
-    case Method::
-        fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTracking:
-        return "fixed-level free response predetermined stimuli audio "
-               "recording eye tracking";
-    case Method::
-        fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileStimulation:
-        return "fixed-level button response predetermined stimuli audio "
-               "recording eye tracking vibrotactile";
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
         return "fixed-level free response predetermined stimuli";
+    case Method::fixedLevelButtonResponseWithPredeterminedTargets:
+        return "fixed-level button response predetermined stimuli";
     case Method::fixedLevelSyllablesWithAllTargets:
         return "fixed-level syllables all stimuli";
+    case Method::fixedLevelEmotionsWithPredeterminedTargets:
+        return "fixed-level emotions predetermined stimuli";
     case Method::unknown:
         return "unknown";
     }
@@ -202,7 +165,8 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
         TaskPresenter &correctKeywordsPresenter,
         TaskPresenter &consonantPresenter, TaskPresenter &passFailPresenter,
         TaskPresenter &keypressPresenter,
-        RunningATest::TestObserver &submittingKeyPressResponse);
+        RunningATest::TestObserver &submittingKeyPressResponse,
+        TaskPresenter &emotionPresenter);
     void initializeTest(
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
@@ -233,6 +197,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     TaskPresenter &passFailPresenter;
     TaskPresenter &keypressPresenter;
     RunningATest::TestObserver &submittingKeyPressResponse;
+    TaskPresenter &emotionPresenter;
 };
 }
 

@@ -487,6 +487,32 @@ class WritingKeyPressTrial : public WritingTrial {
         {HeadingItem::vibrotactileDelay, 5}};
 };
 
+class WritingEmotionTrial : public WritingTrial {
+  public:
+    WritingEmotionTrial() {
+        trial.target = "a";
+        trial.emotion = Emotion::scared;
+    }
+
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return headingLabels_;
+    }
+
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "a", at(headingLabels_, HeadingItem::target), line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "scared", at(headingLabels_, HeadingItem::emotion), line);
+    }
+
+    void run(OutputFileImpl &file) override { file.write(trial); }
+
+    EmotionTrial trial;
+    std::map<HeadingItem, gsl::index> headingLabels_{
+        {HeadingItem::target, 1}, {HeadingItem::emotion, 2}};
+};
+
 class WritingFreeResponseTrial : public WritingFlaggableTrial {
   public:
     WritingFreeResponseTrial() {
@@ -641,6 +667,7 @@ class OutputFileTests : public ::testing::Test {
     WritingConsonantTrial writingConsonantTrial;
     WritingFreeResponseTrial writingFreeResponseTrial;
     WritingKeyPressTrial writingKeyPressTrial;
+    WritingEmotionTrial writingEmotionTrial;
     WritingThreeKeywordsTrial writingThreeKeywordsTrial;
     WritingSyllableTrial writingSyllableTrial;
     WritingFixedLevelTest writingFixedLevelTest;
@@ -765,6 +792,10 @@ OUTPUT_FILE_TEST(writingKeyPressTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingKeyPressTrial);
 }
 
+OUTPUT_FILE_TEST(writingEmotionTrialWritesHeadingOnFirstLine) {
+    assertWritesHeadingOnFirstLine(writingEmotionTrial);
+}
+
 OUTPUT_FILE_TEST(writingThreeKeywordsTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingThreeKeywordsTrial);
 }
@@ -787,6 +818,10 @@ OUTPUT_FILE_TEST(writingOpenSetAdaptiveTrialWritesHeadingOnFirstLine) {
 
 OUTPUT_FILE_TEST(writeKeyPressTrialWritesTrialOnSecondLine) {
     assertWritesTrialOnLine(writingKeyPressTrial, 2);
+}
+
+OUTPUT_FILE_TEST(writeEmotionTrialWritesTrialOnSecondLine) {
+    assertWritesTrialOnLine(writingEmotionTrial, 2);
 }
 
 OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrialWritesTrialOnSecondLine) {

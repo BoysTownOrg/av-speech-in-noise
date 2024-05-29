@@ -1,18 +1,16 @@
-#ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_SUBMITTINGCONSONANTHPP_
-#define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_SUBMITTINGCONSONANTHPP_
+#ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_SUBMITTINGEMOTIONHPP_
+#define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_SUBMITTINGEMOTIONHPP_
 
 #include "IModel.hpp"
 #include "IFixedLevelMethod.hpp"
 #include "IRunningATest.hpp"
 #include "IOutputFile.hpp"
 
-#include <av-speech-in-noise/Model.hpp>
-
-namespace av_speech_in_noise::submitting_consonant {
+namespace av_speech_in_noise::submitting_emotion {
 class InteractorImpl : public Interactor {
   public:
     InteractorImpl(FixedLevelMethod &, RunningATest &, OutputFile &);
-    void submit(const ConsonantResponse &r) override;
+    void submit(const EmotionResponse &) override;
 
   private:
     FixedLevelMethod &method;

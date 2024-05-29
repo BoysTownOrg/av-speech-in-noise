@@ -76,6 +76,11 @@ class OutputFileStub : public OutputFile {
         consonantTrial_ = p;
     }
 
+    void write(const EmotionTrial &e) override {
+        addToLog("writeTrial ");
+        emotionTrial = e;
+    }
+
     void write(const open_set::AdaptiveTrial &p) override {
         addToLog("writeTrial ");
         openSetAdaptiveTrial_ = p;
@@ -175,6 +180,7 @@ class OutputFileStub : public OutputFile {
     auto syllableTrial() -> const SyllableTrial & { return syllableTrial_; }
 
     KeyPressTrial keypressTrial{};
+    EmotionTrial emotionTrial;
 
   private:
     coordinate_response_measure::AdaptiveTrial

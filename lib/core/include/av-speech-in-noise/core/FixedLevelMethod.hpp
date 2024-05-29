@@ -17,12 +17,10 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
         const FixedLevelTest &, FiniteTargetPlaylistWithRepeatables *) override;
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const Flaggable &) override;
-    void submit(const ConsonantResponse &) override;
     void submit(const ThreeKeywordsResponse &) override;
     void writeLastCoordinateResponse(OutputFile &) override;
     void writeTestingParameters(OutputFile &) override;
     void writeTestResult(OutputFile &) override {}
-    void writeLastConsonant(OutputFile &) override;
     auto snr() -> SNR override;
     auto nextTarget() -> LocalUrl override;
     auto currentTarget() -> LocalUrl override;
@@ -32,7 +30,6 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
   private:
     coordinate_response_measure::FixedLevelTrial
         lastCoordinateResponseMeasureTrial{};
-    ConsonantTrial lastConsonantTrial{};
     const FixedLevelTest *test_{};
     TargetPlaylist *targetList{};
     FiniteTargetPlaylist *finiteTargetPlaylist{};

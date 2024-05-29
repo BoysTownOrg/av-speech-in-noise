@@ -70,6 +70,21 @@ struct ConsonantResponse {
     Consonant consonant{};
 };
 
+enum class Emotion {
+    angry,
+    disgusted,
+    happy,
+    neutral,
+    sad,
+    scared,
+    surprised,
+    unknown
+};
+
+struct EmotionResponse : Flaggable {
+    Emotion emotion{};
+};
+
 enum class KeyPressed { first, second, unknown };
 
 struct KeyPressResponse : Flaggable {

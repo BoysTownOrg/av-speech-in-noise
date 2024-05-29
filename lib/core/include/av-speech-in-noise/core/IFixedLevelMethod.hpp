@@ -12,11 +12,9 @@ class FixedLevelMethod : public virtual TestMethod {
         const FixedLevelTest &, FiniteTargetPlaylistWithRepeatables *) = 0;
     virtual void initialize(
         const FixedLevelFixedTrialsTest &, TargetPlaylist *) = 0;
-    virtual void submit(const ConsonantResponse &) = 0;
     virtual void submit(const Flaggable &) = 0;
     virtual void submit(const ThreeKeywordsResponse &) = 0;
     using TestMethod::submit;
-    virtual void writeLastConsonant(OutputFile &) = 0;
     virtual auto keywordsTestResults() -> KeywordsTestResults = 0;
 };
 }

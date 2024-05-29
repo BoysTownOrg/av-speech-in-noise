@@ -45,7 +45,8 @@ enum class HeadingItem {
     keyPressed,
     reactionTime,
     vibrotactileDuration,
-    vibrotactileDelay
+    vibrotactileDelay,
+    emotion,
 };
 
 constexpr auto name(HeadingItem i) -> const char * {
@@ -100,6 +101,8 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "subject syllable";
     case HeadingItem::correctSyllable:
         return "correct syllable";
+    case HeadingItem::emotion:
+        return "emotion";
     case HeadingItem::time:
         return "time";
     case HeadingItem::keyPressed:
@@ -235,6 +238,27 @@ constexpr auto name(KeyPressed k) -> const char * {
     }
 }
 
+constexpr auto name(Emotion e) -> const char * {
+    switch (e) {
+    case Emotion::angry:
+        return "angry";
+    case Emotion::disgusted:
+        return "disgusted";
+    case Emotion::happy:
+        return "happy";
+    case Emotion::neutral:
+        return "neutral";
+    case Emotion::sad:
+        return "sad";
+    case Emotion::scared:
+        return "scared";
+    case Emotion::surprised:
+        return "surprised";
+    case Emotion::unknown:
+        return "unknown";
+    }
+}
+
 class Writer {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Writer);
@@ -268,6 +292,7 @@ class OutputFileImpl : public OutputFile {
     void write(const FreeResponseTrial &) override;
     void write(const CorrectKeywordsTrial &) override;
     void write(const ConsonantTrial &) override;
+    void write(const EmotionTrial &) override;
     void write(const ThreeKeywordsTrial &) override;
     void write(const AdaptiveTestResults &) override;
     void write(const BinocularGazeSamples &) override;

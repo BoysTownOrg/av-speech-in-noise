@@ -1,4 +1,5 @@
 #include "OutputFile.hpp"
+#include "IOutputFile.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 
@@ -17,6 +18,7 @@ enum class OutputFileImpl::Trial {
     ThreeKeywords,
     Syllable,
     KeyPress,
+    Emotion,
     none
 };
 
@@ -50,6 +52,10 @@ static auto operator<<(std::ostream &os, Syllable item) -> std::ostream & {
 }
 
 static auto operator<<(std::ostream &os, KeyPressed item) -> std::ostream & {
+    return os << name(item);
+}
+
+static auto operator<<(std::ostream &os, Emotion item) -> std::ostream & {
     return os << name(item);
 }
 
@@ -584,6 +590,29 @@ class SyllableTrialFormatter : public TrialFormatter {
     const SyllableTrial &trial_;
 };
 
+class EmotionTrialFormatter : public TrialFormatter {
+  public:
+    explicit EmotionTrialFormatter(const EmotionTrial &trial_)
+        : trial_{trial_} {}
+
+    auto insertHeading(std::ostream &stream) -> std::ostream & override {
+        insert(stream, HeadingItem::target);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::emotion);
+        return insertNewLine(stream);
+    }
+
+    auto insertTrial(std::ostream &stream) -> std::ostream & override {
+        insert(stream, trial_.target);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.emotion);
+        return insertNewLine(stream);
+    }
+
+  private:
+    const EmotionTrial &trial_;
+};
+
 class KeyPressTrialFormatter : public TrialFormatter {
   public:
     explicit KeyPressTrialFormatter(const KeyPressTrial &trial_)
@@ -611,7 +640,8 @@ class KeyPressTrialFormatter : public TrialFormatter {
         insertCommaAndSpace(stream);
         insert(stream, trial_.vibrotactileStimulus.duration.seconds);
         insertCommaAndSpace(stream);
-        insert(stream, trial_.vibrotactileStimulus.targetStartRelativeDelay.seconds);
+        insert(stream,
+            trial_.vibrotactileStimulus.targetStartRelativeDelay.seconds);
         return insertNewLine(stream);
     }
 
@@ -689,6 +719,11 @@ void OutputFileImpl::write(const SyllableTrial &trial) {
 void OutputFileImpl::write(const KeyPressTrial &trial) {
     KeyPressTrialFormatter formatter{trial};
     av_speech_in_noise::write(writer, formatter, currentTrial, Trial::KeyPress);
+}
+
+void OutputFileImpl::write(const EmotionTrial &trial) {
+    EmotionTrialFormatter formatter{trial};
+    av_speech_in_noise::write(writer, formatter, currentTrial, Trial::Emotion);
 }
 
 void OutputFileImpl::write(const AdaptiveTest &test) {

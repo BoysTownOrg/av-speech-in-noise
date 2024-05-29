@@ -72,16 +72,6 @@ static auto current(TargetPlaylist *list) -> LocalUrl {
     return list->current();
 }
 
-void FixedLevelMethodImpl::submit(const ConsonantResponse &response) {
-    lastConsonantTrial.subjectConsonant = response.consonant;
-    lastConsonantTrial.correctConsonant =
-        evaluator.correctConsonant(current(targetList));
-    lastConsonantTrial.target = current(targetList).path;
-    lastConsonantTrial.correct =
-        evaluator.correct(current(targetList), response);
-    finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
-}
-
 void FixedLevelMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
     lastCoordinateResponseMeasureTrial.subjectColor = response.color;
@@ -105,10 +95,6 @@ auto FixedLevelMethodImpl::currentTarget() -> LocalUrl {
 
 void FixedLevelMethodImpl::writeTestingParameters(OutputFile &file) {
     file.write(*test_);
-}
-
-void FixedLevelMethodImpl::writeLastConsonant(OutputFile &file) {
-    file.write(lastConsonantTrial);
 }
 
 void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile &file) {
