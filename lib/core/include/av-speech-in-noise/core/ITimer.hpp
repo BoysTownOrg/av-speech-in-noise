@@ -15,6 +15,7 @@ class Timer {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Timer);
     virtual void attach(Observer *) = 0;
     virtual void scheduleCallbackAfterSeconds(double) = 0;
+    virtual void cancelLastCallback() = 0;
 };
 }
 

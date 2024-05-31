@@ -14,11 +14,14 @@ class InteractorImpl : public Interactor, public RunningATest::TestObserver {
     InteractorImpl(FixedLevelMethod &, RunningATest &, OutputFile &,
         MaskerPlayer &, Randomizer &);
     auto submits(const std::vector<KeyPressResponse> &) -> bool override;
+    void forceSubmit(const std::vector<KeyPressResponse> &) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
     void notifyThatTrialWillBegin(int) override;
     void notifyThatStimulusHasEnded() override;
 
   private:
+    void writeSaveAndReadyNextTrial(KeyPressTrial &);
+
     VibrotactileStimulus lastVibrotactileStimulus;
     FixedLevelMethod &method;
     RunningATest &model;

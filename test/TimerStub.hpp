@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_TESTS_TIMERSTUB_HPP_
 
 #include <av-speech-in-noise/core/ITimer.hpp>
+
 namespace av_speech_in_noise {
 class TimerStub : public Timer {
   public:
@@ -16,6 +17,10 @@ class TimerStub : public Timer {
     void callback() { observer->callback(); }
 
     void attach(Observer *a) override { observer = a; }
+
+    void cancelLastCallback() override { callbackCancelled = true; }
+
+    bool callbackCancelled{};
 
   private:
     Observer *observer{};

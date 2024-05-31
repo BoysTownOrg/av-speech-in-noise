@@ -810,6 +810,11 @@ SUBMITTING_KEYPRESS_TEST(submitsResponseToTestMethod) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFlaggable);
 }
 
+SUBMITTING_KEYPRESS_TEST(forceSubmits) {
+    interactor.forceSubmit({});
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFlaggable);
+}
+
 SUBMITTING_KEYPRESS_TEST(writesTarget) {
     testMethod.setCurrentTargetPath("a/b/c.txt");
     submitValidResponse(interactor, maskerPlayer);

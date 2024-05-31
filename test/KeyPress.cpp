@@ -1,3 +1,4 @@
+#include "TimerStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
@@ -32,9 +33,14 @@ class InteractorStub : public Interactor {
         return submits_;
     }
 
+    void forceSubmit(const std::vector<KeyPressResponse> &) override {
+        forceSubmitted = true;
+    }
+
     std::vector<KeyPressResponse> responses{};
     bool submitted{false};
     bool submits_{false};
+    bool forceSubmitted{false};
 };
 
 class KeyPressUITests : public ::testing::Test {
@@ -43,7 +49,8 @@ class KeyPressUITests : public ::testing::Test {
     InteractorStub model;
     ControlStub control;
     TestControllerStub testController;
-    Presenter presenter{testView, testController, model, control};
+    TimerStub timer;
+    Presenter presenter{testView, testController, model, control, timer};
 };
 
 #define KEY_PRESS_UI_TEST(a) TEST_F(KeyPressUITests, a)
@@ -110,6 +117,18 @@ KEY_PRESS_UI_TEST(passesKeyPressedSeconds) {
 KEY_PRESS_UI_TEST(givesKeyFocusAfterTrialStarts) {
     presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.keyFocusGiven);
+}
+
+KEY_PRESS_UI_TEST(schedulesCallbackWhenStimulusEnds) {
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
+}
+
+KEY_PRESS_UI_TEST(validResponseCancelsCallback) {
+    presenter.notifyThatTrialHasStarted();
+    model.submits_ = true;
+    control.listener_->notifyThatKeyHasBeenPressed();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackCancelled);
 }
 }
 }

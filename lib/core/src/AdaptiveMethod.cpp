@@ -1,4 +1,5 @@
 #include "AdaptiveMethod.hpp"
+
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
@@ -86,8 +87,8 @@ static auto testResults(
 
 AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
     ResponseEvaluator &evaluator, Randomizer &randomizer)
-    : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
-                                                                  randomizer} {}
+    : snrTrackFactory{snrTrackFactory}, evaluator{evaluator},
+      randomizer{randomizer} {}
 
 void AdaptiveMethodImpl::initialize(
     const AdaptiveTest &t, TargetPlaylistReader *targetListSetReader) {
