@@ -106,18 +106,21 @@ PASS_FAIL_PRESENTER_TEST(
 
 PASS_FAIL_PRESENTER_TEST(
     responderSubmitsCorrectResponseAfterCorrectButtonIsClicked) {
+    start(presenter);
     notifyThatCorrectButtonHasBeenClicked(ui);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.correctResponseSubmitted());
 }
 
 PASS_FAIL_PRESENTER_TEST(
     responderSubmitsIncorrectResponseAfterIncorrectButtonIsClicked) {
+    start(presenter);
     notifyThatIncorrectButtonHasBeenClicked(ui);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.incorrectResponseSubmitted());
 }
 
 PASS_FAIL_PRESENTER_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterCorrectButtonIsClicked) {
+    start(presenter);
     notifyThatCorrectButtonHasBeenClicked(ui);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController
@@ -126,6 +129,7 @@ PASS_FAIL_PRESENTER_TEST(
 
 PASS_FAIL_PRESENTER_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterIncorrectButtonIsClicked) {
+    start(presenter);
     notifyThatIncorrectButtonHasBeenClicked(ui);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController
