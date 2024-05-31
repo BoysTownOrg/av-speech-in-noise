@@ -7,6 +7,8 @@
 #include "AppKit-utility.h"
 #include "masking-images.h"
 
+#include <av-speech-in-noise/core/SubmittingFixedPassFail.hpp>
+#include <av-speech-in-noise/ui/FixedPassFail.hpp>
 #include <av-speech-in-noise/core/SubmittingEmotion.hpp>
 #include <av-speech-in-noise/ui/Emotion.hpp>
 #include <av-speech-in-noise/core/SubmittingKeyPress.hpp>
@@ -416,8 +418,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         syllablesUI, testUI};
     static submitting_number_keywords::Presenter correctKeywordsPresenter{
         testUI, correctKeywordsUI};
-    static submitting_pass_fail::Presenter passFailPresenter{
-        testUI, passFailUI};
     static CoordinateResponseMeasurePresenter
         coordinateResponseMeasurePresenter{coordinateResponseMeasureView};
     static TestSetupPresenterImpl testSetupPresenter{*testSetupUI, sessionUI};
@@ -425,7 +425,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static TestPresenterImpl testPresenter{
         runningATest, adaptiveMethod, testUI, &taskPresenter};
     static SessionPresenterImpl sessionPresenter{sessionUI, runningATest};
-    NSLog(@"Initializing controllers...");
     static SessionControllerImpl sessionController{
         testSetupPresenter, testPresenter, subjectPresenter};
     static TestControllerImpl testController{sessionController, runningATest,
@@ -462,8 +461,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     freeResponseController.setNTrialsPerNewPuzzlePiece(5);
     static submitting_pass_fail::InteractorImpl submittingPassFailInteractor{
         adaptiveMethod, runningATest, outputFile};
-    static submitting_pass_fail::Controller passFailController{
-        testController, submittingPassFailInteractor, passFailUI};
+    static submitting_pass_fail::Presenter passFailPresenter{
+        testController, testUI, submittingPassFailInteractor, passFailUI};
     static submitting_consonant::InteractorImpl submittingConsonantInteractor{
         fixedLevelMethod, runningATest, outputFile};
     static submitting_consonant::Controller consonantTaskController{
@@ -472,13 +471,19 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_keypress::InteractorImpl submittingKeyPressInteractor{
         fixedLevelMethod, runningATest, outputFile, maskerPlayer, randomizer};
     static KeyPressUI keyPressControl{subjectNSWindow};
-    static submitting_keypress::Presenter keypressPresenter{
-        testUI, testController, submittingKeyPressInteractor, keyPressControl};
+    static TimerImpl keyPressTimer;
+    static submitting_keypress::Presenter keypressPresenter{testUI,
+        testController, submittingKeyPressInteractor, keyPressControl,
+        keyPressTimer};
     static submitting_emotion::AppKitUI emotionUI{emotionNSView};
     static submitting_emotion::InteractorImpl emotionInteractor{
         fixedLevelMethod, runningATest, outputFile};
     static submitting_emotion::Presenter emotionPresenter{
         emotionUI, testController, emotionInteractor};
+    static submitting_fixed_pass_fail::InteractorImpl fixedPassFailInteractor(
+        fixedLevelMethod, runningATest, outputFile);
+    static submitting_fixed_pass_fail::Presenter fixedPassFailPresenter(
+        testController, testUI, fixedPassFailInteractor, passFailUI);
     static CoordinateResponseMeasureController
         coordinateResponseMeasureController{
             testController, runningATest, coordinateResponseMeasureView};
@@ -493,7 +498,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         coordinateResponseMeasurePresenter, freeResponsePresenter,
         chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
         consonantPresenter, passFailPresenter, keypressPresenter,
-        submittingKeyPressInteractor, emotionPresenter};
+        submittingKeyPressInteractor, emotionPresenter, fixedPassFailPresenter};
     static TestSetupController testSetupController{*testSetupUI, sessionUI,
         testSetupPresenter, runningATest, testSettingsInterpreter,
         textFileReader};

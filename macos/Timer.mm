@@ -8,14 +8,15 @@
 @implementation CallbackScheduler {
   @public
     av_speech_in_noise::TimerImpl *controller;
+    NSTimer *lastTimer;
 }
 
 - (void)scheduleCallbackAfterSeconds:(double)x {
-    [NSTimer scheduledTimerWithTimeInterval:x
-                                     target:self
-                                   selector:@selector(timerCallback)
-                                   userInfo:nil
-                                    repeats:NO];
+    lastTimer = [NSTimer scheduledTimerWithTimeInterval:x
+                                                 target:self
+                                               selector:@selector(timerCallback)
+                                               userInfo:nil
+                                                repeats:NO];
 }
 
 - (void)timerCallback {
@@ -35,4 +36,6 @@ void TimerImpl::scheduleCallbackAfterSeconds(double x) {
 }
 
 void TimerImpl::timerCallback() { listener->callback(); }
+
+void TimerImpl::cancelLastCallback() { [scheduler->lastTimer invalidate]; }
 }

@@ -85,7 +85,7 @@
 
 @implementation PassFailUIObserverImpl {
   @public
-    av_speech_in_noise::submitting_pass_fail::Control::Observer *observer;
+    av_speech_in_noise::submitting_pass_fail::UI::Observer *observer;
 }
 
 - (void)notifyThatCorrectButtonHasBeenClicked {
