@@ -22,6 +22,7 @@ class TaskPresenter : public Presenter {
     virtual void hideResponseSubmission() = 0;
     virtual void complete() {}
     virtual void notifyThatTrialHasStarted() {}
+    virtual void enableDualTask(TaskPresenter *) {}
 };
 }
 

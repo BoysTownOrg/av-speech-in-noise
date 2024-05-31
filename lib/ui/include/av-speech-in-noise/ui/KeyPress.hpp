@@ -39,9 +39,13 @@ class Presenter : public TaskPresenter,
     void hideResponseSubmission() override;
     void notifyThatTrialHasStarted() override;
     void callback() override;
+    void enableDualTask(TaskPresenter *) override;
 
   private:
     void attemptToSubmitResponse();
+    void moveAlong();
+
+    enum class State { aboutToDualTask, dualTasking, singleTask };
 
     std::vector<KeyPressResponse> keyPressResponses;
     TestView &testView;
@@ -49,7 +53,9 @@ class Presenter : public TaskPresenter,
     Interactor &interactor;
     Control &control;
     Timer &timer;
+    TaskPresenter *dualTask{};
     bool acceptingKeyPresses{};
+    State state{State::singleTask};
 };
 }
 

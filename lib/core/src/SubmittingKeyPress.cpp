@@ -85,7 +85,8 @@ void InteractorImpl::writeSaveAndReadyNextTrial(KeyPressTrial &trial) {
         std::filesystem::path{method.currentTarget().path}.filename();
     outputFile.write(trial);
     outputFile.save();
-    model.prepareNextTrialIfNeeded();
+    if (!deferringNextTrial)
+        model.prepareNextTrialIfNeeded();
     readyForResponse = false;
 }
 }

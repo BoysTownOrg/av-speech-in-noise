@@ -375,6 +375,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
         taskPresenter = &freeResponsePresenter;
         break;
+    case Method::fixedLevelButtonThenPassFailResponseWithPredeterminedTargets:
+        keypressPresenter.enableDualTask(&fixedPassFailPresenter);
     case Method::fixedLevelButtonResponseWithPredeterminedTargets:
         testObservers.emplace_back(submittingKeyPressResponse);
         taskPresenter = &keypressPresenter;
@@ -468,6 +470,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             });
         break;
     case Method::fixedLevelButtonResponseWithPredeterminedTargets:
+    case Method::fixedLevelButtonThenPassFailResponseWithPredeterminedTargets:
         av_speech_in_noise::initialize(methodName, contents, identity,
             startingSnr, [&](FixedLevelTest &test) {
                 test.enableVibrotactileStimulus = true;

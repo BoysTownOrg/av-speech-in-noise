@@ -37,6 +37,10 @@ class InteractorStub : public Interactor {
         forceSubmitted = true;
     }
 
+    void deferNextTrial() override {}
+
+    void dontDeferNextTrial() override {}
+
     std::vector<KeyPressResponse> responses{};
     bool submitted{false};
     bool submits_{false};

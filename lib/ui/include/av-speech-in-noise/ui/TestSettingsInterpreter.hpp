@@ -21,6 +21,7 @@ enum class Method {
     fixedLevelFreeResponseWithAllTargets,
     fixedLevelFreeResponseWithPredeterminedTargets,
     fixedLevelButtonResponseWithPredeterminedTargets,
+    fixedLevelButtonThenPassFailResponseWithPredeterminedTargets,
     fixedLevelCoordinateResponseMeasureWithTargetReplacement,
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
     fixedLevelConsonants,
@@ -57,6 +58,8 @@ constexpr auto name(Method c) -> const char * {
         return "fixed-level free response predetermined stimuli";
     case Method::fixedLevelButtonResponseWithPredeterminedTargets:
         return "fixed-level button response predetermined stimuli";
+    case Method::fixedLevelButtonThenPassFailResponseWithPredeterminedTargets:
+        return "fixed-level button response pass fail predetermined stimuli";
     case Method::fixedLevelSyllablesWithAllTargets:
         return "fixed-level syllables all stimuli";
     case Method::fixedLevelEmotionsWithPredeterminedTargets:

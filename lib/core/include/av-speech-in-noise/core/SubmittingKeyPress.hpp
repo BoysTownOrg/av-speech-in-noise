@@ -18,6 +18,8 @@ class InteractorImpl : public Interactor, public RunningATest::TestObserver {
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
     void notifyThatTrialWillBegin(int) override;
     void notifyThatStimulusHasEnded() override;
+    void deferNextTrial() override { deferringNextTrial = true; }
+    void dontDeferNextTrial() override { deferringNextTrial = false; }
 
   private:
     void writeSaveAndReadyNextTrial(KeyPressTrial &);
@@ -30,6 +32,7 @@ class InteractorImpl : public Interactor, public RunningATest::TestObserver {
     Randomizer &randomizer;
     double vibrotactileStartTimeMilliseconds{};
     bool readyForResponse{};
+    bool deferringNextTrial{};
 };
 }
 

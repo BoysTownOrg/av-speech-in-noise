@@ -16,14 +16,14 @@ void Presenter::notifyThatIncorrectButtonHasBeenClicked() {
     testController.notifyThatUserIsDoneResponding();
 }
 
-void Presenter::start() {
-    ui.attach(this);
-    testView.showNextTrialButton();
-}
+void Presenter::start() { testView.showNextTrialButton(); }
 
 void Presenter::stop() { ui.hide(); }
 
 void Presenter::hideResponseSubmission() { ui.hide(); }
 
-void Presenter::showResponseSubmission() { ui.show(); }
+void Presenter::showResponseSubmission() {
+    ui.attach(this);
+    ui.show();
+}
 }

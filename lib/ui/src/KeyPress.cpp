@@ -25,11 +25,29 @@ void Presenter::notifyThatKeyHasBeenPressed() {
     attemptToSubmitResponse();
 }
 
-void Presenter::start() { testView.showNextTrialButton(); }
+void Presenter::start() {
+    switch (state) {
+    case State::aboutToDualTask:
+        state = State::dualTasking;
+        interactor.deferNextTrial();
+        break;
+    case State::dualTasking:
+    case State::singleTask:
+        state = State::singleTask;
+        interactor.dontDeferNextTrial();
+        break;
+    }
+
+    testView.showNextTrialButton();
+}
 
 void Presenter::stop() { acceptingKeyPresses = false; }
 
-void Presenter::hideResponseSubmission() {}
+void Presenter::hideResponseSubmission() {
+    if (state == State::dualTasking)
+        if (dualTask != nullptr)
+            dualTask->hideResponseSubmission();
+}
 
 void Presenter::notifyThatTrialHasStarted() {
     keyPressResponses.clear();
@@ -45,14 +63,27 @@ void Presenter::showResponseSubmission() {
 void Presenter::attemptToSubmitResponse() {
     if (interactor.submits(keyPressResponses)) {
         timer.cancelLastCallback();
-        testController.notifyThatUserIsDoneResponding();
         acceptingKeyPresses = false;
+        moveAlong();
     }
 }
 
 void Presenter::callback() {
     interactor.forceSubmit(keyPressResponses);
-    testController.notifyThatUserIsDoneResponding();
     acceptingKeyPresses = false;
+    moveAlong();
+}
+
+void Presenter::moveAlong() {
+    if (state == State::dualTasking) {
+        if (dualTask != nullptr)
+            dualTask->showResponseSubmission();
+    } else
+        testController.notifyThatUserIsDoneResponding();
+}
+
+void Presenter::enableDualTask(TaskPresenter *other) {
+    dualTask = other;
+    state = State::aboutToDualTask;
 }
 }

@@ -76,6 +76,8 @@ class Interactor {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
     virtual auto submits(const std::vector<KeyPressResponse> &) -> bool = 0;
     virtual void forceSubmit(const std::vector<KeyPressResponse> &) = 0;
+    virtual void deferNextTrial() = 0;
+    virtual void dontDeferNextTrial() = 0;
 };
 }
 
