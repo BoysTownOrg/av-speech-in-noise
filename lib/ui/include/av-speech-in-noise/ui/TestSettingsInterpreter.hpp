@@ -15,6 +15,7 @@ enum class Method {
     adaptivePassFail, // <-- this one should be first...
     adaptiveCorrectKeywords,
     adaptiveCoordinateResponseMeasure,
+    fixedLevelPassFailWithPredeterminedTargets,
     fixedLevelFreeResponseWithTargetReplacement,
     fixedLevelFreeResponseWithSilentIntervalTargets,
     fixedLevelFreeResponseWithAllTargets,
@@ -60,6 +61,8 @@ constexpr auto name(Method c) -> const char * {
         return "fixed-level syllables all stimuli";
     case Method::fixedLevelEmotionsWithPredeterminedTargets:
         return "fixed-level emotions predetermined stimuli";
+    case Method::fixedLevelPassFailWithPredeterminedTargets:
+        return "fixed-level pass fail predetermined stimuli";
     case Method::unknown:
         return "unknown";
     }
@@ -166,7 +169,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
         TaskPresenter &consonantPresenter, TaskPresenter &passFailPresenter,
         TaskPresenter &keypressPresenter,
         RunningATest::TestObserver &submittingKeyPressResponse,
-        TaskPresenter &emotionPresenter);
+        TaskPresenter &emotionPresenter, TaskPresenter &fixedPassFailPresenter);
     void initializeTest(
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
@@ -198,6 +201,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     TaskPresenter &keypressPresenter;
     RunningATest::TestObserver &submittingKeyPressResponse;
     TaskPresenter &emotionPresenter;
+    TaskPresenter &fixedPassFailPresenter;
 };
 }
 

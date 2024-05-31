@@ -25,6 +25,15 @@ class Interactor {
 };
 }
 
+namespace submitting_fixed_pass_fail {
+class Interactor {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Interactor);
+    virtual void submitCorrectResponse() = 0;
+    virtual void submitIncorrectResponse() = 0;
+};
+}
+
 namespace submitting_keywords {
 class Interactor {
   public:

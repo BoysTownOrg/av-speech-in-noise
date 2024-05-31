@@ -9,6 +9,7 @@ add_library(
   src/CorrectKeywords.cpp
   src/CoordinateResponseMeasure.cpp
   src/PassFail.cpp
+  src/FixedPassFail.cpp
   src/TestImpl.cpp
   src/TestSetupImpl.cpp
   src/ChooseKeywords.cpp

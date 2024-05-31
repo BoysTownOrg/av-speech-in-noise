@@ -355,8 +355,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         testObservers.emplace_back(eyeTracking);
     if (contains(methodName, "audio recording"))
         testObservers.emplace_back(audioRecording);
-    if (contains(methodName, "vibrotactile"))
-        testObservers.emplace_back(submittingKeyPressResponse);
 
     auto audioChannelOption{AudioChannelOption::all};
     if (contains(methodName, "not spatial"))
@@ -378,6 +376,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         taskPresenter = &freeResponsePresenter;
         break;
     case Method::fixedLevelButtonResponseWithPredeterminedTargets:
+        testObservers.emplace_back(submittingKeyPressResponse);
         taskPresenter = &keypressPresenter;
         break;
     case Method::adaptivePassFail:
@@ -397,6 +396,9 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         break;
     case Method::fixedLevelEmotionsWithPredeterminedTargets:
         taskPresenter = &emotionPresenter;
+        break;
+    case Method::fixedLevelPassFailWithPredeterminedTargets:
+        taskPresenter = &fixedPassFailPresenter;
         break;
     case Method::unknown:
         break;
@@ -456,6 +458,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         break;
     case Method::fixedLevelEmotionsWithPredeterminedTargets:
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
+    case Method::fixedLevelPassFailWithPredeterminedTargets:
         av_speech_in_noise::initialize(methodName, contents, identity,
             startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
@@ -532,7 +535,7 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     TaskPresenter &correctKeywordsPresenter, TaskPresenter &consonantPresenter,
     TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter,
     RunningATest::TestObserver &submittingKeyPressResponse,
-    TaskPresenter &emotionPresenter)
+    TaskPresenter &emotionPresenter, TaskPresenter &fixedPassFailPresenter)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
       fixedLevelMethod{fixedLevelMethod}, eyeTracking{eyeTracking},
       audioRecording{audioRecording}, cyclicTargetsReader{cyclicTargetsReader},
@@ -553,5 +556,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       passFailPresenter{passFailPresenter},
       keypressPresenter{keypressPresenter},
       submittingKeyPressResponse{submittingKeyPressResponse},
-      emotionPresenter{emotionPresenter} {}
+      emotionPresenter{emotionPresenter},
+      fixedPassFailPresenter{fixedPassFailPresenter} {}
 }

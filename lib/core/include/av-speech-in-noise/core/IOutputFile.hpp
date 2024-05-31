@@ -73,6 +73,8 @@ struct KeyPressTrial : KeyPressResponse, open_set::Trial {
     ReactionTime rt{};
 };
 
+struct PassFailTrial : Evaluative, Target {};
+
 class Writable {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Writable);
@@ -101,6 +103,7 @@ class OutputFile {
     virtual void write(const EyeTrackerTargetPlayerSynchronization &) = 0;
     virtual void write(const ThreeKeywordsTrial &) = 0;
     virtual void write(const SyllableTrial &) = 0;
+    virtual void write(const PassFailTrial &) = 0;
     virtual void write(Writable &) = 0;
     virtual void close() = 0;
     virtual void save() = 0;
