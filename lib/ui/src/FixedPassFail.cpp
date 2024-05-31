@@ -2,7 +2,7 @@
 
 namespace av_speech_in_noise::submitting_fixed_pass_fail {
 Presenter::Presenter(TestController &testController, TestView &testView,
-    Interactor &interactor, UI &ui)
+    Interactor &interactor, submitting_pass_fail::UI &ui)
     : testController{testController}, interactor{interactor},
       testView{testView}, ui{ui} {
     ui.attach(this);
