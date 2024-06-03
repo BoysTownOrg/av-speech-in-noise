@@ -62,10 +62,6 @@ namespace submitting_number_keywords {
 class UI : public View, public Control {};
 }
 
-namespace submitting_pass_fail {
-class UI : public View, public Control {};
-}
-
 void initializeAppAndRunEventLoop(EyeTracker &, OutputFileNameFactory &,
     AppKitTestSetupUIFactory &, SessionUI &, TestUI &,
     submitting_free_response::UI &, submitting_syllable::UI &,

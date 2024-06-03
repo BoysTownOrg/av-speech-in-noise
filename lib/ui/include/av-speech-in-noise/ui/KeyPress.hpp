@@ -4,6 +4,7 @@
 #include "Task.hpp"
 #include "Test.hpp"
 
+#include <av-speech-in-noise/core/ITimer.hpp>
 #include <av-speech-in-noise/core/Player.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
@@ -26,25 +27,35 @@ class Control {
     virtual void giveKeyFocus() = 0;
 };
 
-class Presenter : public TaskPresenter, public Control::Observer {
+class Presenter : public TaskPresenter,
+                  public Control::Observer,
+                  public Timer::Observer {
   public:
-    Presenter(TestView &, TestController &, Interactor &, Control &);
+    Presenter(TestView &, TestController &, Interactor &, Control &, Timer &);
     void notifyThatKeyHasBeenPressed() override;
     void start() override;
     void stop() override;
     void showResponseSubmission() override;
     void hideResponseSubmission() override;
     void notifyThatTrialHasStarted() override;
+    void callback() override;
+    void enableDualTask(TaskPresenter *) override;
 
   private:
     void attemptToSubmitResponse();
+    void moveAlong();
+
+    enum class State { aboutToDualTask, dualTasking, singleTask };
 
     std::vector<KeyPressResponse> keyPressResponses;
     TestView &testView;
     TestController &testController;
     Interactor &interactor;
     Control &control;
+    Timer &timer;
+    TaskPresenter *dualTask{};
     bool acceptingKeyPresses{};
+    State state{State::singleTask};
 };
 }
 

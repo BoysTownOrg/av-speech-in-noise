@@ -62,19 +62,31 @@ auto InteractorImpl::submits(const std::vector<KeyPressResponse> &responses)
     if (min == responses.end())
         return false;
     const auto response{*min};
-    method.submit(response);
     KeyPressTrial trial;
     static_cast<KeyPressResponse &>(trial) = response;
-    trial.vibrotactileStimulus = lastVibrotactileStimulus;
     trial.rt.milliseconds = minReactionTimeMilliseconds;
-    trial.target =
-        std::filesystem::path{method.currentTarget().path}.filename();
-    outputFile.write(trial);
-    outputFile.save();
-    model.prepareNextTrialIfNeeded();
-    readyForResponse = false;
+    writeSaveAndReadyNextTrial(trial);
     return true;
 }
 
 void InteractorImpl::notifyThatStimulusHasEnded() { readyForResponse = true; }
+
+void InteractorImpl::forceSubmit(const std::vector<KeyPressResponse> &) {
+    KeyPressTrial trial;
+    trial.rt.milliseconds = std::numeric_limits<double>::infinity();
+    writeSaveAndReadyNextTrial(trial);
+}
+
+void InteractorImpl::writeSaveAndReadyNextTrial(KeyPressTrial &trial) {
+    trial.vibrotactileStimulus = lastVibrotactileStimulus;
+    trial.target =
+        std::filesystem::path{method.currentTarget().path}.filename();
+    outputFile.write(trial);
+    outputFile.save();
+    if (!deferringNextTrial) {
+        method.submit(Flaggable{false});
+        model.prepareNextTrialIfNeeded();
+    }
+    readyForResponse = false;
+}
 }

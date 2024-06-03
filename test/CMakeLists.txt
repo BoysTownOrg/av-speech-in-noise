@@ -21,6 +21,7 @@ add_executable(
   FreeResponse.cpp
   KeyPress.cpp
   PassFail.cpp
+  FixedPassFail.cpp
   Test.cpp
   TestSetup.cpp
   SessionController.cpp

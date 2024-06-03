@@ -1,3 +1,4 @@
+#include "TimerStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
@@ -32,9 +33,31 @@ class InteractorStub : public Interactor {
         return submits_;
     }
 
+    void forceSubmit(const std::vector<KeyPressResponse> &) override {
+        forceSubmitted = true;
+    }
+
+    void deferNextTrial() override { trialAdvancementDeferred = true; }
+
+    void dontDeferNextTrial() override { trialAdvancementNotDeferred = true; }
+
     std::vector<KeyPressResponse> responses{};
     bool submitted{false};
     bool submits_{false};
+    bool forceSubmitted{false};
+    bool trialAdvancementDeferred{};
+    bool trialAdvancementNotDeferred{};
+};
+
+class TaskPresenterStub : public TaskPresenter {
+  public:
+    void showResponseSubmission() override { responseShown = true; }
+    void hideResponseSubmission() override { responseHidden = true; }
+    void start() override {}
+    void stop() override {}
+
+    bool responseShown{};
+    bool responseHidden{};
 };
 
 class KeyPressUITests : public ::testing::Test {
@@ -43,7 +66,9 @@ class KeyPressUITests : public ::testing::Test {
     InteractorStub model;
     ControlStub control;
     TestControllerStub testController;
-    Presenter presenter{testView, testController, model, control};
+    TimerStub timer;
+    Presenter presenter{testView, testController, model, control, timer};
+    TaskPresenterStub dualTask;
 };
 
 #define KEY_PRESS_UI_TEST(a) TEST_F(KeyPressUITests, a)
@@ -110,6 +135,53 @@ KEY_PRESS_UI_TEST(passesKeyPressedSeconds) {
 KEY_PRESS_UI_TEST(givesKeyFocusAfterTrialStarts) {
     presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(control.keyFocusGiven);
+}
+
+KEY_PRESS_UI_TEST(schedulesCallbackWhenStimulusEnds) {
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
+}
+
+KEY_PRESS_UI_TEST(validResponseCancelsCallback) {
+    presenter.notifyThatTrialHasStarted();
+    model.submits_ = true;
+    control.listener_->notifyThatKeyHasBeenPressed();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackCancelled);
+}
+
+KEY_PRESS_UI_TEST(stoppingBeforeResponseCancelsCallback) {
+    presenter.notifyThatTrialHasStarted();
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(timer.callbackCancelled);
+    presenter.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackCancelled);
+}
+
+KEY_PRESS_UI_TEST(dualTaskDefersTrialAdvancement) {
+    presenter.enableDualTask(&dualTask);
+    presenter.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.trialAdvancementDeferred);
+}
+
+KEY_PRESS_UI_TEST(singleTaskDoesNotDeferTrialAdvancement) {
+    presenter.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.trialAdvancementNotDeferred);
+}
+
+KEY_PRESS_UI_TEST(dualTaskShowsDualResponse) {
+    presenter.enableDualTask(&dualTask);
+    presenter.start();
+    presenter.notifyThatTrialHasStarted();
+    model.submits_ = true;
+    control.listener_->notifyThatKeyHasBeenPressed();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(dualTask.responseShown);
+}
+
+KEY_PRESS_UI_TEST(dualTaskHidesDualResponse) {
+    presenter.enableDualTask(&dualTask);
+    presenter.start();
+    presenter.hideResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(dualTask.responseHidden);
 }
 }
 }

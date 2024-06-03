@@ -12,6 +12,7 @@ class TimerImpl : public Timer {
     void attach(Observer *e) override;
     void scheduleCallbackAfterSeconds(double x) override;
     void timerCallback();
+    void cancelLastCallback() override;
 
   private:
     Observer *listener{};

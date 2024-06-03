@@ -11,6 +11,7 @@ add_library(
   src/SubmittingFreeResponse.cpp
   src/SubmittingKeyPress.cpp
   src/SubmittingPassFail.cpp
+  src/SubmittingFixedPassFail.cpp
   src/SubmittingKeywords.cpp
   src/SubmittingConsonant.cpp
   src/SubmittingEmotion.cpp

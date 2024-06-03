@@ -1,5 +1,6 @@
 #include "assert-utility.hpp"
 #include "AudioReaderStub.hpp"
+#include "TimerStub.hpp"
 
 #include <av-speech-in-noise/player/AudioReader.hpp>
 #include <av-speech-in-noise/player/MaskerPlayerImpl.hpp>
@@ -222,25 +223,6 @@ auto subvector(const std::vector<T> &v, int offset, int size)
     const auto begin = v.begin() + offset;
     return {begin, begin + size};
 }
-
-class TimerStub : public Timer {
-  public:
-    void scheduleCallbackAfterSeconds(double) override {
-        callbackScheduled_ = true;
-    }
-
-    [[nodiscard]] auto callbackScheduled() const { return callbackScheduled_; }
-
-    void clearCallbackCount() { callbackScheduled_ = false; }
-
-    void callback() { observer->callback(); }
-
-    void attach(Observer *a) override { observer = a; }
-
-  private:
-    Observer *observer{};
-    bool callbackScheduled_{};
-};
 
 template <typename T> auto vector(gsl::index size) -> std::vector<T> {
     return std::vector<T>(size);

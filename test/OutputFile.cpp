@@ -411,6 +411,35 @@ class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
         {HeadingItem::evaluation, 4}, {HeadingItem::reversals, 5}};
 };
 
+class WritingPassFailTrial : public WritingEvaluatedTrial {
+  public:
+    WritingPassFailTrial() { trial.target = "a.txt"; }
+
+    void incorrect() override { trial.correct = false; }
+
+    void correct() override { trial.correct = true; }
+
+    auto evaluationEntryIndex() -> gsl::index override {
+        return headingLabels_.at(HeadingItem::evaluation);
+    }
+
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return headingLabels_;
+    }
+
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "a.txt", at(headingLabels_, HeadingItem::target), line);
+    }
+
+    void run(OutputFileImpl &file) override { file.write(trial); }
+
+    PassFailTrial trial;
+    std::map<HeadingItem, gsl::index> headingLabels_{
+        {HeadingItem::target, 1}, {HeadingItem::evaluation, 2}};
+};
+
 class WritingConsonantTrial : public WritingEvaluatedTrial {
   public:
     WritingConsonantTrial() {
@@ -664,6 +693,7 @@ class OutputFileTests : public ::testing::Test {
         writingFixedLevelCoordinateResponseTrial;
     WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
+    WritingPassFailTrial writingPassFailTrial;
     WritingConsonantTrial writingConsonantTrial;
     WritingFreeResponseTrial writingFreeResponseTrial;
     WritingKeyPressTrial writingKeyPressTrial;
@@ -808,6 +838,10 @@ OUTPUT_FILE_TEST(writingCorrectKeywordsTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingCorrectKeywordsTrial);
 }
 
+OUTPUT_FILE_TEST(writingPassFailTrialWritesHeadingOnFirstLine) {
+    assertWritesHeadingOnFirstLine(writingPassFailTrial);
+}
+
 OUTPUT_FILE_TEST(writingConsonantTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingConsonantTrial);
 }
@@ -851,6 +885,10 @@ OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialWritesTrialOnSecondLine) {
 
 OUTPUT_FILE_TEST(writeCorrectKeywordsTrialWritesTrialOnSecondLine) {
     assertWritesTrialOnLine(writingCorrectKeywordsTrial, 2);
+}
+
+OUTPUT_FILE_TEST(writePassFailTrialWritesTrialOnSecondLine) {
+    assertWritesTrialOnLine(writingPassFailTrial, 2);
 }
 
 OUTPUT_FILE_TEST(
@@ -937,6 +975,10 @@ OUTPUT_FILE_TEST(writeIncorrectOpenSetAdaptiveTrial) {
 
 OUTPUT_FILE_TEST(writeIncorrectKeywordsTrial) {
     assertIncorrectTrialWritesEvaluation(writingCorrectKeywordsTrial);
+}
+
+OUTPUT_FILE_TEST(writeIncorrectPassFailTrial) {
+    assertIncorrectTrialWritesEvaluation(writingPassFailTrial);
 }
 
 OUTPUT_FILE_TEST(writeIncorrectSyllableTrial) {

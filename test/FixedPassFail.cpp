@@ -2,13 +2,13 @@
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
 
-#include <av-speech-in-noise/ui/PassFail.hpp>
+#include <av-speech-in-noise/ui/FixedPassFail.hpp>
 
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise::submitting_pass_fail {
+namespace av_speech_in_noise::submitting_fixed_pass_fail {
 namespace {
-class UIStub : public UI {
+class UIStub : public submitting_pass_fail::UI {
   public:
     void notifyThatCorrectButtonHasBeenClicked() {
         listener_->notifyThatCorrectButtonHasBeenClicked();
@@ -69,7 +69,7 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
-class SubmittingPassFailPresenterTests : public ::testing::Test {
+class SubmittingFixedPassFailPresenterTests : public ::testing::Test {
   protected:
     InteractorStub model;
     UIStub ui;
@@ -78,7 +78,8 @@ class SubmittingPassFailPresenterTests : public ::testing::Test {
     Presenter presenter{testController, testView, model, ui};
 };
 
-#define PASS_FAIL_PRESENTER_TEST(a) TEST_F(SubmittingPassFailPresenterTests, a)
+#define PASS_FAIL_PRESENTER_TEST(a)                                            \
+    TEST_F(SubmittingFixedPassFailPresenterTests, a)
 
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
     AV_SPEECH_IN_NOISE_EXPECT_TRUE((a).hidden())
@@ -106,34 +107,32 @@ PASS_FAIL_PRESENTER_TEST(
 
 PASS_FAIL_PRESENTER_TEST(
     responderSubmitsCorrectResponseAfterCorrectButtonIsClicked) {
-    start(presenter);
+    presenter.showResponseSubmission();
     notifyThatCorrectButtonHasBeenClicked(ui);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.correctResponseSubmitted());
 }
 
 PASS_FAIL_PRESENTER_TEST(
     responderSubmitsIncorrectResponseAfterIncorrectButtonIsClicked) {
-    start(presenter);
+    presenter.showResponseSubmission();
     notifyThatIncorrectButtonHasBeenClicked(ui);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.incorrectResponseSubmitted());
 }
 
 PASS_FAIL_PRESENTER_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterCorrectButtonIsClicked) {
-    start(presenter);
+    presenter.showResponseSubmission();
     notifyThatCorrectButtonHasBeenClicked(ui);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController
-            .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
+        testController.notifiedThatUserIsDoneResponding());
 }
 
 PASS_FAIL_PRESENTER_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterIncorrectButtonIsClicked) {
-    start(presenter);
+    presenter.showResponseSubmission();
     notifyThatIncorrectButtonHasBeenClicked(ui);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController
-            .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
+        testController.notifiedThatUserIsDoneResponding());
 }
 }
 }

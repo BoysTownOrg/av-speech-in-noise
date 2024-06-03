@@ -2,10 +2,11 @@
 
 namespace av_speech_in_noise::submitting_keypress {
 Presenter::Presenter(TestView &testView, TestController &testController,
-    Interactor &interactor, Control &control)
+    Interactor &interactor, Control &control, Timer &timer)
     : testView{testView}, testController{testController},
-      interactor{interactor}, control{control} {
+      interactor{interactor}, control{control}, timer{timer} {
     control.attach(this);
+    timer.attach(this);
 }
 
 void Presenter::notifyThatKeyHasBeenPressed() {
@@ -24,11 +25,34 @@ void Presenter::notifyThatKeyHasBeenPressed() {
     attemptToSubmitResponse();
 }
 
-void Presenter::start() { testView.showNextTrialButton(); }
+void Presenter::start() {
+    switch (state) {
+    case State::aboutToDualTask:
+        state = State::dualTasking;
+        interactor.deferNextTrial();
+        break;
+    case State::dualTasking:
+    case State::singleTask:
+        state = State::singleTask;
+        interactor.dontDeferNextTrial();
+        break;
+    }
 
-void Presenter::stop() { acceptingKeyPresses = false; }
+    testView.showNextTrialButton();
+}
 
-void Presenter::hideResponseSubmission() {}
+void Presenter::stop() {
+    if (acceptingKeyPresses)
+        timer.cancelLastCallback();
+    acceptingKeyPresses = false;
+    hideResponseSubmission();
+}
+
+void Presenter::hideResponseSubmission() {
+    if (state == State::dualTasking)
+        if (dualTask != nullptr)
+            dualTask->hideResponseSubmission();
+}
 
 void Presenter::notifyThatTrialHasStarted() {
     keyPressResponses.clear();
@@ -36,12 +60,35 @@ void Presenter::notifyThatTrialHasStarted() {
     control.giveKeyFocus();
 }
 
-void Presenter::showResponseSubmission() { attemptToSubmitResponse(); }
+void Presenter::showResponseSubmission() {
+    timer.scheduleCallbackAfterSeconds(5);
+    attemptToSubmitResponse();
+}
 
 void Presenter::attemptToSubmitResponse() {
     if (interactor.submits(keyPressResponses)) {
-        testController.notifyThatUserIsDoneResponding();
+        timer.cancelLastCallback();
         acceptingKeyPresses = false;
+        moveAlong();
     }
+}
+
+void Presenter::callback() {
+    interactor.forceSubmit(keyPressResponses);
+    acceptingKeyPresses = false;
+    moveAlong();
+}
+
+void Presenter::moveAlong() {
+    if (state == State::dualTasking) {
+        if (dualTask != nullptr)
+            dualTask->showResponseSubmission();
+    } else
+        testController.notifyThatUserIsDoneResponding();
+}
+
+void Presenter::enableDualTask(TaskPresenter *other) {
+    dualTask = other;
+    state = State::aboutToDualTask;
 }
 }

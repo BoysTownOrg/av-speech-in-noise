@@ -19,6 +19,7 @@ enum class OutputFileImpl::Trial {
     Syllable,
     KeyPress,
     Emotion,
+    PassFail,
     none
 };
 
@@ -148,20 +149,7 @@ static auto evaluation(bool b) -> std::string {
     return b ? correct : incorrect;
 }
 
-static auto evaluation(const open_set::AdaptiveTrial &trial) -> std::string {
-    return evaluation(trial.correct);
-}
-
-static auto evaluation(const ConsonantTrial &trial) -> std::string {
-    return evaluation(trial.correct);
-}
-
-static auto evaluation(const coordinate_response_measure::Trial &trial)
-    -> std::string {
-    return evaluation(trial.correct);
-}
-
-static auto evaluation(const SyllableTrial &trial) -> std::string {
+static auto evaluation(const Evaluative &trial) -> std::string {
     return evaluation(trial.correct);
 }
 
@@ -613,6 +601,28 @@ class EmotionTrialFormatter : public TrialFormatter {
     const EmotionTrial &trial_;
 };
 
+class PassFailTrialFormatter : public TrialFormatter {
+  public:
+    explicit PassFailTrialFormatter(const PassFailTrial &trial)
+        : trial{trial} {}
+
+    auto insertHeading(std::ostream &stream) -> std::ostream & override {
+        insert(stream, HeadingItem::target);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::evaluation);
+        return insertNewLine(stream);
+    }
+
+    auto insertTrial(std::ostream &stream) -> std::ostream & override {
+        insert(stream, trial.target);
+        insertCommaAndSpace(stream);
+        insert(stream, evaluation(trial));
+        return insertNewLine(stream);
+    }
+
+    const PassFailTrial &trial;
+};
+
 class KeyPressTrialFormatter : public TrialFormatter {
   public:
     explicit KeyPressTrialFormatter(const KeyPressTrial &trial_)
@@ -719,6 +729,11 @@ void OutputFileImpl::write(const SyllableTrial &trial) {
 void OutputFileImpl::write(const KeyPressTrial &trial) {
     KeyPressTrialFormatter formatter{trial};
     av_speech_in_noise::write(writer, formatter, currentTrial, Trial::KeyPress);
+}
+
+void OutputFileImpl::write(const PassFailTrial &trial) {
+    PassFailTrialFormatter formatter{trial};
+    av_speech_in_noise::write(writer, formatter, currentTrial, Trial::PassFail);
 }
 
 void OutputFileImpl::write(const EmotionTrial &trial) {

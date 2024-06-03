@@ -5,10 +5,12 @@
 #include "IResponseEvaluator.hpp"
 #include "IAdaptiveMethod.hpp"
 #include "IOutputFile.hpp"
+
+#include <av-speech-in-noise/Interface.hpp>
+
 #include <limits>
 #include <memory>
 #include <vector>
-#include <string>
 
 namespace av_speech_in_noise {
 constexpr auto maximumInt{std::numeric_limits<int>::max()};
@@ -16,7 +18,7 @@ constexpr auto minimumInt{std::numeric_limits<int>::min()};
 
 class Track {
   public:
-    virtual ~Track() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Track);
     struct Settings {
         const TrackingRule *rule{};
         int startingX{};
@@ -34,7 +36,7 @@ class Track {
 
     class Factory {
       public:
-        virtual ~Factory() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Factory);
         virtual auto make(const Settings &) -> std::shared_ptr<Track> = 0;
     };
 };
