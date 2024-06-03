@@ -37,14 +37,27 @@ class InteractorStub : public Interactor {
         forceSubmitted = true;
     }
 
-    void deferNextTrial() override {}
+    void deferNextTrial() override { trialAdvancementDeferred = true; }
 
-    void dontDeferNextTrial() override {}
+    void dontDeferNextTrial() override { trialAdvancementNotDeferred = true; }
 
     std::vector<KeyPressResponse> responses{};
     bool submitted{false};
     bool submits_{false};
     bool forceSubmitted{false};
+    bool trialAdvancementDeferred{};
+    bool trialAdvancementNotDeferred{};
+};
+
+class TaskPresenterStub : public TaskPresenter {
+  public:
+    void showResponseSubmission() override { responseShown = true; }
+    void hideResponseSubmission() override { responseHidden = true; }
+    void start() override {}
+    void stop() override {}
+
+    bool responseShown{};
+    bool responseHidden{};
 };
 
 class KeyPressUITests : public ::testing::Test {
@@ -55,6 +68,7 @@ class KeyPressUITests : public ::testing::Test {
     TestControllerStub testController;
     TimerStub timer;
     Presenter presenter{testView, testController, model, control, timer};
+    TaskPresenterStub dualTask;
 };
 
 #define KEY_PRESS_UI_TEST(a) TEST_F(KeyPressUITests, a)
@@ -141,6 +155,17 @@ KEY_PRESS_UI_TEST(stoppingBeforeResponseCancelsCallback) {
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(timer.callbackCancelled);
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackCancelled);
+}
+
+KEY_PRESS_UI_TEST(dualTaskDefersTrialAdvancement) {
+    presenter.enableDualTask(&dualTask);
+    presenter.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.trialAdvancementDeferred);
+}
+
+KEY_PRESS_UI_TEST(singleTaskDoesNotDeferTrialAdvancement) {
+    presenter.start();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.trialAdvancementNotDeferred);
 }
 }
 }
