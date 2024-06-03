@@ -42,6 +42,8 @@ void Presenter::start() {
 }
 
 void Presenter::stop() {
+    if (acceptingKeyPresses)
+        timer.cancelLastCallback();
     acceptingKeyPresses = false;
     hideResponseSubmission();
 }
