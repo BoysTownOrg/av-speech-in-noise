@@ -848,6 +848,12 @@ SUBMITTING_KEYPRESS_TEST(preparesNextTrialIfNeeded) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
 }
 
+SUBMITTING_KEYPRESS_TEST(doesNotPrepareNextTrialWhenDeferring) {
+    interactor.deferNextTrial();
+    submitValidResponse(interactor, maskerPlayer);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(model.nextTrialPreparedIfNeeded());
+}
+
 SUBMITTING_KEYPRESS_TEST(savesOutputFileAfterWritingTrial) {
     submitValidResponse(interactor, maskerPlayer);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
