@@ -14,6 +14,8 @@ class InteractorImpl : public Interactor {
     void submitIncorrectResponse() override;
 
   private:
+    void submit(bool correct);
+
     FixedLevelMethod &method;
     RunningATest &model;
     OutputFile &outputFile;
