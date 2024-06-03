@@ -149,20 +149,7 @@ static auto evaluation(bool b) -> std::string {
     return b ? correct : incorrect;
 }
 
-static auto evaluation(const open_set::AdaptiveTrial &trial) -> std::string {
-    return evaluation(trial.correct);
-}
-
-static auto evaluation(const ConsonantTrial &trial) -> std::string {
-    return evaluation(trial.correct);
-}
-
-static auto evaluation(const coordinate_response_measure::Trial &trial)
-    -> std::string {
-    return evaluation(trial.correct);
-}
-
-static auto evaluation(const SyllableTrial &trial) -> std::string {
+static auto evaluation(const Evaluative &trial) -> std::string {
     return evaluation(trial.correct);
 }
 
@@ -628,6 +615,8 @@ class PassFailTrialFormatter : public TrialFormatter {
 
     auto insertTrial(std::ostream &stream) -> std::ostream & override {
         insert(stream, trial.target);
+        insertCommaAndSpace(stream);
+        insert(stream, evaluation(trial));
         return insertNewLine(stream);
     }
 

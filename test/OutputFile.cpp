@@ -977,6 +977,10 @@ OUTPUT_FILE_TEST(writeIncorrectKeywordsTrial) {
     assertIncorrectTrialWritesEvaluation(writingCorrectKeywordsTrial);
 }
 
+OUTPUT_FILE_TEST(writeIncorrectPassFailTrial) {
+    assertIncorrectTrialWritesEvaluation(writingPassFailTrial);
+}
+
 OUTPUT_FILE_TEST(writeIncorrectSyllableTrial) {
     assertIncorrectTrialWritesEvaluation(writingSyllableTrial);
 }
