@@ -19,6 +19,7 @@ enum class OutputFileImpl::Trial {
     Syllable,
     KeyPress,
     Emotion,
+    PassFail,
     none
 };
 
@@ -613,6 +614,23 @@ class EmotionTrialFormatter : public TrialFormatter {
     const EmotionTrial &trial_;
 };
 
+class PassFailTrialFormatter : public TrialFormatter {
+  public:
+    explicit PassFailTrialFormatter(const PassFailTrial &trial)
+        : trial{trial} {}
+
+    auto insertHeading(std::ostream &stream) -> std::ostream & override {
+        insert(stream, HeadingItem::target);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::evaluation);
+        return insertNewLine(stream);
+    }
+
+    auto insertTrial(std::ostream &s) -> std::ostream & override { return s; }
+
+    const PassFailTrial &trial;
+};
+
 class KeyPressTrialFormatter : public TrialFormatter {
   public:
     explicit KeyPressTrialFormatter(const KeyPressTrial &trial_)
@@ -719,6 +737,11 @@ void OutputFileImpl::write(const SyllableTrial &trial) {
 void OutputFileImpl::write(const KeyPressTrial &trial) {
     KeyPressTrialFormatter formatter{trial};
     av_speech_in_noise::write(writer, formatter, currentTrial, Trial::KeyPress);
+}
+
+void OutputFileImpl::write(const PassFailTrial &trial) {
+    PassFailTrialFormatter formatter{trial};
+    av_speech_in_noise::write(writer, formatter, currentTrial, Trial::PassFail);
 }
 
 void OutputFileImpl::write(const EmotionTrial &trial) {
