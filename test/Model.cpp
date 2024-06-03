@@ -7,6 +7,7 @@
 #include <av-speech-in-noise/core/SubmittingConsonant.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
+#include <av-speech-in-noise/core/SubmittingFixedPassFail.hpp>
 #include <av-speech-in-noise/core/SubmittingKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingNumberKeywords.hpp>
 #include <av-speech-in-noise/core/SubmittingSyllable.hpp>
@@ -180,8 +181,8 @@ class RunningATestStub : public RunningATest {
   public:
     explicit RunningATestStub(AdaptiveMethodStub &adaptiveMethod,
         FixedLevelMethodStub &fixedLevelMethodStub)
-        : adaptiveMethod{adaptiveMethod},
-          fixedLevelMethodStub{fixedLevelMethodStub} {}
+        : adaptiveMethod{adaptiveMethod}, fixedLevelMethodStub{
+                                              fixedLevelMethodStub} {}
 
     [[nodiscard]] auto nextTrialPreparedIfNeeded() const -> bool {
         return nextTrialPreparedIfNeeded_;
@@ -343,6 +344,16 @@ class SubmittingPassFailTests : public ::testing::Test {
         testMethod, model, outputFile};
 };
 
+class SubmittingFixedPassFailTests : public ::testing::Test {
+  protected:
+    AdaptiveMethodStub adaptiveMethod;
+    FixedLevelMethodStub testMethod;
+    RunningATestStub model{adaptiveMethod, testMethod};
+    OutputFileStub outputFile;
+    submitting_fixed_pass_fail::InteractorImpl interactor{
+        testMethod, model, outputFile};
+};
+
 class SubmittingKeywordsTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub testMethod;
@@ -392,6 +403,9 @@ class SubmittingKeypressTests : public ::testing::Test {
 #define SUBMITTING_FREE_RESPONSE_TEST(a) TEST_F(SubmittingFreeResponseTests, a)
 
 #define SUBMITTING_PASS_FAIL_TEST(a) TEST_F(SubmittingPassFailTests, a)
+
+#define SUBMITTING_FIXED_PASS_FAIL_TEST(a)                                     \
+    TEST_F(SubmittingFixedPassFailTests, a)
 
 #define SUBMITTING_KEYWORDS_TEST(a) TEST_F(SubmittingKeywordsTests, a)
 
@@ -497,6 +511,27 @@ SUBMITTING_PASS_FAIL_TEST(submitCorrectSavesOutputFileAfterWritingTrial) {
 }
 
 SUBMITTING_PASS_FAIL_TEST(submitIncorrectSavesOutputFileAfterWritingTrial) {
+    interactor.submitIncorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+SUBMITTING_FIXED_PASS_FAIL_TEST(submittingCorrectPreparesNextTrialIfNeeded) {
+    interactor.submitCorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_FIXED_PASS_FAIL_TEST(submittingIncorrectPreparesNextTrialIfNeeded) {
+    interactor.submitIncorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
+}
+
+SUBMITTING_FIXED_PASS_FAIL_TEST(submitCorrectSavesOutputFileAfterWritingTrial) {
+    interactor.submitCorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
+}
+
+SUBMITTING_FIXED_PASS_FAIL_TEST(
+    submitIncorrectSavesOutputFileAfterWritingTrial) {
     interactor.submitIncorrectResponse();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
 }
