@@ -176,5 +176,12 @@ KEY_PRESS_UI_TEST(dualTaskShowsDualResponse) {
     control.listener_->notifyThatKeyHasBeenPressed();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(dualTask.responseShown);
 }
+
+KEY_PRESS_UI_TEST(dualTaskHidesDualResponse) {
+    presenter.enableDualTask(&dualTask);
+    presenter.start();
+    presenter.hideResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(dualTask.responseHidden);
+}
 }
 }
