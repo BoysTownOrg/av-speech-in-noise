@@ -167,5 +167,14 @@ KEY_PRESS_UI_TEST(singleTaskDoesNotDeferTrialAdvancement) {
     presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.trialAdvancementNotDeferred);
 }
+
+KEY_PRESS_UI_TEST(dualTaskShowsDualResponse) {
+    presenter.enableDualTask(&dualTask);
+    presenter.start();
+    presenter.notifyThatTrialHasStarted();
+    model.submits_ = true;
+    control.listener_->notifyThatKeyHasBeenPressed();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(dualTask.responseShown);
+}
 }
 }
