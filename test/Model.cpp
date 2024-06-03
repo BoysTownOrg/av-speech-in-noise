@@ -536,6 +536,25 @@ SUBMITTING_FIXED_PASS_FAIL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(outputFile.log(), "save "));
 }
 
+SUBMITTING_FIXED_PASS_FAIL_TEST(submitsToFixedLevelMethod) {
+    interactor.submitCorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testMethod.submittedFlaggable);
+}
+
+SUBMITTING_FIXED_PASS_FAIL_TEST(writesTarget) {
+    testMethod.setCurrentTargetPath("a/b/c.txt");
+    interactor.submitCorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"c.txt"}, outputFile.passFailTrial.target);
+}
+
+SUBMITTING_FIXED_PASS_FAIL_TEST(writesEvaluation) {
+    interactor.submitCorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.passFailTrial.correct);
+    interactor.submitIncorrectResponse();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.passFailTrial.correct);
+}
+
 SUBMITTING_KEYWORDS_TEST(preparesNextTrialIfNeeded) {
     interactor.submit({});
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(model.nextTrialPreparedIfNeeded());
