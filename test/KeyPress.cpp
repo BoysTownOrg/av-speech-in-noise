@@ -134,5 +134,13 @@ KEY_PRESS_UI_TEST(validResponseCancelsCallback) {
     control.listener_->notifyThatKeyHasBeenPressed();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackCancelled);
 }
+
+KEY_PRESS_UI_TEST(stoppingBeforeResponseCancelsCallback) {
+    presenter.notifyThatTrialHasStarted();
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(timer.callbackCancelled);
+    presenter.stop();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackCancelled);
+}
 }
 }
