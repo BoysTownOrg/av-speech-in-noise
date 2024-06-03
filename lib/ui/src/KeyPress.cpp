@@ -41,7 +41,10 @@ void Presenter::start() {
     testView.showNextTrialButton();
 }
 
-void Presenter::stop() { acceptingKeyPresses = false; }
+void Presenter::stop() {
+    acceptingKeyPresses = false;
+    hideResponseSubmission();
+}
 
 void Presenter::hideResponseSubmission() {
     if (state == State::dualTasking)
