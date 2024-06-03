@@ -626,7 +626,10 @@ class PassFailTrialFormatter : public TrialFormatter {
         return insertNewLine(stream);
     }
 
-    auto insertTrial(std::ostream &s) -> std::ostream & override { return s; }
+    auto insertTrial(std::ostream &stream) -> std::ostream & override {
+        insert(stream, trial.target);
+        return insertNewLine(stream);
+    }
 
     const PassFailTrial &trial;
 };

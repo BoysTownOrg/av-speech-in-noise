@@ -887,6 +887,10 @@ OUTPUT_FILE_TEST(writeCorrectKeywordsTrialWritesTrialOnSecondLine) {
     assertWritesTrialOnLine(writingCorrectKeywordsTrial, 2);
 }
 
+OUTPUT_FILE_TEST(writePassFailTrialWritesTrialOnSecondLine) {
+    assertWritesTrialOnLine(writingPassFailTrial, 2);
+}
+
 OUTPUT_FILE_TEST(
     writeAdaptiveCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
     assertWritesTrialOnLineAfterWritingTwice(
