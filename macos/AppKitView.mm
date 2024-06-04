@@ -218,8 +218,7 @@ AppKitUI::ResponseButtons::ResponseButtons(NSView *view)
             std::transform(order.begin(), order.end(), column.begin(),
                 [&](const auto &cell) {
                     auto [name, emotion]{cell};
-                    const auto image{
-                        [NSImage imageNamed:nsString(name + ".png")]};
+                    const auto image{[NSImage imageNamed:nsString(name)]};
                     const auto button {
                         [NSButton
                             buttonWithImage:image != nil
@@ -232,7 +231,8 @@ AppKitUI::ResponseButtons::ResponseButtons(NSView *view)
                     button.bordered = NO;
                     button.imageScaling = NSImageScaleProportionallyDown;
                     [NSLayoutConstraint activateConstraints:@[
-                        [button.heightAnchor constraintEqualToConstant:200]
+                        [button.heightAnchor constraintEqualToConstant:300],
+                        [button.widthAnchor constraintEqualToConstant:300]
                     ]];
                     emotions[(__bridge void *)button] = emotion;
                     return button;
