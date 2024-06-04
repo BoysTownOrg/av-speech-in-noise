@@ -218,9 +218,19 @@ AppKitUI::ResponseButtons::ResponseButtons(NSView *view)
             std::transform(order.begin(), order.end(), column.begin(),
                 [&](const auto &cell) {
                     auto [name, emotion]{cell};
-                    auto button {
-                        nsButton(name, action, @selector(callback:))
+                    const auto image{
+                        [NSImage imageNamed:nsString(name + ".png")]};
+                    const auto button {
+                        [NSButton
+                            buttonWithImage:image != nil
+                                ? image
+                                : [NSImage
+                                      imageNamed:NSImageNameApplicationIcon]
+                                     target:action
+                                     action:@selector(callback:)]
                     };
+                    button.bordered = NO;
+                    button.imageScaling = NSImageScaleProportionallyUpOrDown;
                     emotions[(__bridge void *)button] = emotion;
                     return button;
                 });
