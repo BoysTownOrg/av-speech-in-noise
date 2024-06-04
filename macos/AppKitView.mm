@@ -185,8 +185,8 @@ AppKitUI::PlayButton::PlayButton(NSView *view)
                                              NSFontAttributeName, nil]]];
     addAutolayoutEnabledSubview(view, button);
     [NSLayoutConstraint activateConstraints:@[
-        [button.widthAnchor constraintEqualToAnchor:view.widthAnchor],
-        [button.heightAnchor constraintEqualToAnchor:view.heightAnchor],
+        [button.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
+        [button.centerYAnchor constraintEqualToAnchor:view.centerYAnchor],
     ]];
     hide();
 }
@@ -206,10 +206,10 @@ AppKitUI::ResponseButtons::ResponseButtons(NSView *view)
     action->responder = this;
 
     std::vector<std::vector<std::pair<std::string, Emotion>>> layout{
-        {{"angry", Emotion::angry}, {"disgusted", Emotion::disgusted}},
-        {{"happy", Emotion::happy}, {"neutral", Emotion::neutral},
-            {"sad", Emotion::sad}},
-        {{"scared", Emotion::scared}, {"surprised", Emotion::surprised}}};
+        {{"Angry", Emotion::angry}, {"Disgusted", Emotion::disgusted}},
+        {{"Happy", Emotion::happy}, {"Neutral", Emotion::neutral},
+            {"Sad", Emotion::sad}},
+        {{"Scared", Emotion::scared}, {"Surprised", Emotion::surprised}}};
 
     std::vector<NSView *> columns(layout.size());
     std::transform(
@@ -230,7 +230,10 @@ AppKitUI::ResponseButtons::ResponseButtons(NSView *view)
                                      action:@selector(callback:)]
                     };
                     button.bordered = NO;
-                    button.imageScaling = NSImageScaleProportionallyUpOrDown;
+                    button.imageScaling = NSImageScaleProportionallyDown;
+                    [NSLayoutConstraint activateConstraints:@[
+                        [button.heightAnchor constraintEqualToConstant:200]
+                    ]];
                     emotions[(__bridge void *)button] = emotion;
                     return button;
                 });
@@ -241,8 +244,8 @@ AppKitUI::ResponseButtons::ResponseButtons(NSView *view)
     buttons = [NSStackView stackViewWithViews:nsArray(columns)];
     addAutolayoutEnabledSubview(view, buttons);
     [NSLayoutConstraint activateConstraints:@[
-        [buttons.widthAnchor constraintEqualToAnchor:view.widthAnchor],
-        [buttons.heightAnchor constraintEqualToAnchor:view.heightAnchor],
+        [buttons.centerYAnchor constraintEqualToAnchor:view.centerYAnchor],
+        [buttons.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
     ]];
     hide();
 }

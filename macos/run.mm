@@ -374,13 +374,12 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             constraintEqualToAnchor:subjectNSWindow.contentView.centerXAnchor],
         [emotionNSView.widthAnchor
             constraintEqualToAnchor:subjectNSWindow.contentView.widthAnchor
-                         multiplier:0.5],
+                         multiplier:0.8],
         [emotionNSView.heightAnchor
             constraintEqualToAnchor:subjectNSWindow.contentView.heightAnchor
-                         multiplier:0.5],
-        [emotionNSView.bottomAnchor
-            constraintEqualToAnchor:subjectNSWindow.contentView.bottomAnchor
-                           constant:-80]
+                         multiplier:0.8],
+        [emotionNSView.centerYAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.centerYAnchor]
     ]];
 
     static submitting_consonant::AppKitUI consonantUI{consonantNSView};
