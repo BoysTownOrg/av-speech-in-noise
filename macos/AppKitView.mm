@@ -187,6 +187,8 @@ AppKitUI::PlayButton::PlayButton(NSView *view)
     [NSLayoutConstraint activateConstraints:@[
         [button.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
         [button.centerYAnchor constraintEqualToAnchor:view.centerYAnchor],
+        [button.heightAnchor constraintEqualToConstant:200],
+        [button.widthAnchor constraintEqualToConstant:300]
     ]];
     hide();
 }
