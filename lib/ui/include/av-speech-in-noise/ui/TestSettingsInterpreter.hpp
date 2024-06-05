@@ -26,6 +26,7 @@ enum class Method {
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
     fixedLevelConsonants,
     fixedLevelEmotionsWithPredeterminedTargets,
+    fixedLevelChildEmotionsWithPredeterminedTargets,
     fixedLevelChooseKeywordsWithAllTargets,
     fixedLevelSyllablesWithAllTargets, // <-- this one should be last...
     unknown
@@ -64,6 +65,8 @@ constexpr auto name(Method c) -> const char * {
         return "fixed-level syllables all stimuli";
     case Method::fixedLevelEmotionsWithPredeterminedTargets:
         return "fixed-level emotions predetermined stimuli";
+    case Method::fixedLevelChildEmotionsWithPredeterminedTargets:
+        return "fixed-level child emotions predetermined stimuli";
     case Method::fixedLevelPassFailWithPredeterminedTargets:
         return "fixed-level pass fail predetermined stimuli";
     case Method::unknown:
@@ -172,7 +175,8 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
         TaskPresenter &consonantPresenter, TaskPresenter &passFailPresenter,
         TaskPresenter &keypressPresenter,
         RunningATest::TestObserver &submittingKeyPressResponse,
-        TaskPresenter &emotionPresenter, TaskPresenter &fixedPassFailPresenter);
+        TaskPresenter &emotionPresenter, TaskPresenter &childEmotionPresenter,
+        TaskPresenter &fixedPassFailPresenter);
     void initializeTest(
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
@@ -204,6 +208,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     TaskPresenter &keypressPresenter;
     RunningATest::TestObserver &submittingKeyPressResponse;
     TaskPresenter &emotionPresenter;
+    TaskPresenter &childEmotionPresenter;
     TaskPresenter &fixedPassFailPresenter;
 };
 }

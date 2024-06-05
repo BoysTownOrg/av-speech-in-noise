@@ -238,6 +238,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TaskPresenterStub keypressPresenter;
     RunningATest::TestObserver submittingKeyPressResponse;
     TaskPresenterStub emotionPresenter;
+    TaskPresenterStub childEmotionPresenter;
     TaskPresenterStub fixedPassFailPresenter;
     TestSettingsInterpreterImpl interpreter{runningATest, adaptiveMethod,
         fixedLevelMethod, eyeTracking, audioRecording, cyclicTargetsReader,
@@ -247,7 +248,8 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         coordinateResponseMeasurePresenter, freeResponsePresenter,
         chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
         consonantPresenter, passFailPresenter, keypressPresenter,
-        submittingKeyPressResponse, emotionPresenter, fixedPassFailPresenter};
+        submittingKeyPressResponse, emotionPresenter, childEmotionPresenter,
+        fixedPassFailPresenter};
     TestIdentity testIdentity;
 };
 

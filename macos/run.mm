@@ -381,6 +381,22 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         [emotionNSView.centerYAnchor
             constraintEqualToAnchor:subjectNSWindow.contentView.centerYAnchor]
     ]];
+    const auto childEmotionNSView{
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
+    addAutolayoutEnabledSubview(
+        subjectNSWindow.contentView, childEmotionNSView);
+    [NSLayoutConstraint activateConstraints:@[
+        [childEmotionNSView.centerXAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.centerXAnchor],
+        [childEmotionNSView.widthAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.widthAnchor
+                         multiplier:0.8],
+        [childEmotionNSView.heightAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.heightAnchor
+                         multiplier:0.8],
+        [childEmotionNSView.centerYAnchor
+            constraintEqualToAnchor:subjectNSWindow.contentView.centerYAnchor]
+    ]];
 
     static submitting_consonant::AppKitUI consonantUI{consonantNSView};
     NSLog(@"Initializing CRM UI...");
@@ -483,12 +499,15 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     std::vector<std::vector<Emotion>> childEmotionLayout{{Emotion::angry},
         {Emotion::happy, Emotion::neutral, Emotion::sad}, {Emotion::scared}};
 
-    static submitting_emotion::AppKitUI emotionUI{
-        emotionNSView, childEmotionLayout};
+    static submitting_emotion::AppKitUI emotionUI{emotionNSView, emotionLayout};
+    static submitting_emotion::AppKitUI childEmotionUI{
+        childEmotionNSView, childEmotionLayout};
     static submitting_emotion::InteractorImpl emotionInteractor{
         fixedLevelMethod, runningATest, outputFile};
     static submitting_emotion::Presenter emotionPresenter{
         emotionUI, testController, emotionInteractor};
+    static submitting_emotion::Presenter childEmotionPresenter{
+        childEmotionUI, testController, emotionInteractor};
     static submitting_fixed_pass_fail::InteractorImpl fixedPassFailInteractor(
         fixedLevelMethod, runningATest, outputFile);
     static submitting_fixed_pass_fail::Presenter fixedPassFailPresenter(
@@ -507,7 +526,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         coordinateResponseMeasurePresenter, freeResponsePresenter,
         chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
         consonantPresenter, passFailPresenter, keypressPresenter,
-        submittingKeyPressInteractor, emotionPresenter, fixedPassFailPresenter};
+        submittingKeyPressInteractor, emotionPresenter, childEmotionPresenter,
+        fixedPassFailPresenter};
     static TestSetupController testSetupController{*testSetupUI, sessionUI,
         testSetupPresenter, runningATest, testSettingsInterpreter,
         textFileReader};
