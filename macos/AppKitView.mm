@@ -150,8 +150,9 @@ static auto equallyDistributedConsonantImageButtonGrid(
 }
 
 namespace submitting_emotion {
-AppKitUI::AppKitUI(NSView *view)
-    : playButton_{view}, responseButtons_{view}, view{view} {}
+AppKitUI::AppKitUI(
+    NSView *view, const std::vector<std::vector<Emotion>> &layout)
+    : playButton_{view}, responseButtons_{view, layout}, view{view} {}
 
 void AppKitUI::attach(Observer *ob) {
     this->observer = ob;
@@ -203,24 +204,40 @@ void AppKitUI::PlayButton::callback(id sender) {
     observer->notifyThatPlayButtonHasBeenClicked();
 }
 
-AppKitUI::ResponseButtons::ResponseButtons(NSView *view)
+static auto imageName(Emotion emotion) -> const char * {
+    switch (emotion) {
+    case Emotion::angry:
+        return "Angry";
+    case Emotion::disgusted:
+        return "Disgusted";
+    case Emotion::happy:
+        return "Happy";
+    case Emotion::neutral:
+        return "Neutral";
+    case Emotion::sad:
+        return "Sad";
+    case Emotion::scared:
+        return "Scared";
+    case Emotion::surprised:
+        return "Surprised";
+    case Emotion::unknown:
+        return "?";
+    }
+}
+
+AppKitUI::ResponseButtons::ResponseButtons(
+    NSView *view, const std::vector<std::vector<Emotion>> &layout)
     : action{[ObjCToCppAction new]} {
     action->responder = this;
-
-    std::vector<std::vector<std::pair<std::string, Emotion>>> layout{
-        {{"Angry", Emotion::angry}, {"Disgusted", Emotion::disgusted}},
-        {{"Happy", Emotion::happy}, {"Neutral", Emotion::neutral},
-            {"Sad", Emotion::sad}},
-        {{"Scared", Emotion::scared}, {"Surprised", Emotion::surprised}}};
 
     std::vector<NSView *> columns(layout.size());
     std::transform(
         layout.begin(), layout.end(), columns.begin(), [&](const auto &order) {
             std::vector<NSView *> column(order.size());
             std::transform(order.begin(), order.end(), column.begin(),
-                [&](const auto &cell) {
-                    auto [name, emotion]{cell};
-                    const auto image{[NSImage imageNamed:nsString(name)]};
+                [&](const auto &emotion) {
+                    const auto image{
+                        [NSImage imageNamed:nsString(imageName(emotion))]};
                     const auto button {
                         [NSButton
                             buttonWithImage:image != nil

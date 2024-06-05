@@ -178,7 +178,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         testSetupUI.session_.string = userDefaults.string(forKey: "Session") ?? ""
         testSetupUI.startingSnr_.string = userDefaults.string(forKey: "StartingSNR") ?? ""
         testSetupUI.transducer_.string = userDefaults.string(forKey: "Transducer") ?? ""
-        //testSetupUI.testSettingsPathControl.url = URL(fileURLWithPath: userDefaults.string(forKey: "TestSettingsFilePath") ?? "")
+        testSetupUI.testSettingsPathControl.url = URL(string: userDefaults.string(forKey: "TestSettingsFilePath") ?? "")
         testSetupUI.rmeSetting_.string = userDefaults.string(forKey: "RMESetting") ?? ""
         
         NSLog("Creating session view...")
@@ -213,7 +213,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         userDefaults.set(testSetupUI.session_.string, forKey: "Session")
         userDefaults.set(testSetupUI.startingSnr_.string, forKey: "StartingSNR")
         userDefaults.set(testSetupUI.transducer_.string, forKey: "Transducer")
-        userDefaults.set(testSetupUI.testSettingsPathControl.url?.path ?? "", forKey: "TestSettingsFilePath")
+        userDefaults.set(testSetupUI.testSettingsPathControl.url?.absoluteString ?? "", forKey: "TestSettingsFilePath")
         userDefaults.set(testSetupUI.rmeSetting_.string, forKey: "RMESetting")
     }
 }

@@ -474,7 +474,17 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_keypress::Presenter keypressPresenter{testUI,
         testController, submittingKeyPressInteractor, keyPressControl,
         keyPressTimer};
-    static submitting_emotion::AppKitUI emotionUI{emotionNSView};
+
+    std::vector<std::vector<Emotion>> emotionLayout{
+        {Emotion::angry, Emotion::disgusted},
+        {Emotion::happy, Emotion::neutral, Emotion::sad},
+        {Emotion::scared, Emotion::surprised}};
+
+    std::vector<std::vector<Emotion>> childEmotionLayout{{Emotion::angry},
+        {Emotion::happy, Emotion::neutral, Emotion::sad}, {Emotion::scared}};
+
+    static submitting_emotion::AppKitUI emotionUI{
+        emotionNSView, childEmotionLayout};
     static submitting_emotion::InteractorImpl emotionInteractor{
         fixedLevelMethod, runningATest, outputFile};
     static submitting_emotion::Presenter emotionPresenter{

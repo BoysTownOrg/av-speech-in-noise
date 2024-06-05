@@ -8,8 +8,9 @@
 #include <av-speech-in-noise/ui/Subject.hpp>
 
 #import <AppKit/AppKit.h>
-#include <map>
 
+#include <map>
+#include <vector>
 #include <unordered_map>
 
 @class CoordinateResponseMeasureUIActions;
@@ -43,7 +44,7 @@ class SubjectAppKitView : public SubjectView {
 namespace submitting_emotion {
 class AppKitUI : public UI {
   public:
-    explicit AppKitUI(NSView *);
+    explicit AppKitUI(NSView *, const std::vector<std::vector<Emotion>> &);
     void attach(Observer *) override;
     auto emotion() -> Emotion override;
     auto playButton() -> View & override;
@@ -68,7 +69,8 @@ class AppKitUI : public UI {
 
     class ResponseButtons : public View, public ObjCToCppResponder {
       public:
-        explicit ResponseButtons(NSView *);
+        explicit ResponseButtons(
+            NSView *, const std::vector<std::vector<Emotion>> &);
         void attach(Observer *);
         void show() override;
         void hide() override;
