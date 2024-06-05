@@ -399,6 +399,9 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::fixedLevelEmotionsWithPredeterminedTargets:
         taskPresenter = &emotionPresenter;
         break;
+    case Method::fixedLevelChildEmotionsWithPredeterminedTargets:
+        taskPresenter = &childEmotionPresenter;
+        break;
     case Method::fixedLevelPassFailWithPredeterminedTargets:
         taskPresenter = &fixedPassFailPresenter;
         break;
@@ -459,6 +462,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             });
         break;
     case Method::fixedLevelEmotionsWithPredeterminedTargets:
+    case Method::fixedLevelChildEmotionsWithPredeterminedTargets:
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
     case Method::fixedLevelPassFailWithPredeterminedTargets:
         av_speech_in_noise::initialize(methodName, contents, identity,
@@ -538,7 +542,8 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     TaskPresenter &correctKeywordsPresenter, TaskPresenter &consonantPresenter,
     TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter,
     RunningATest::TestObserver &submittingKeyPressResponse,
-    TaskPresenter &emotionPresenter, TaskPresenter &fixedPassFailPresenter)
+    TaskPresenter &emotionPresenter, TaskPresenter &childEmotionPresenter,
+    TaskPresenter &fixedPassFailPresenter)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
       fixedLevelMethod{fixedLevelMethod}, eyeTracking{eyeTracking},
       audioRecording{audioRecording}, cyclicTargetsReader{cyclicTargetsReader},
@@ -560,5 +565,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       keypressPresenter{keypressPresenter},
       submittingKeyPressResponse{submittingKeyPressResponse},
       emotionPresenter{emotionPresenter},
+      childEmotionPresenter{childEmotionPresenter},
       fixedPassFailPresenter{fixedPassFailPresenter} {}
 }
