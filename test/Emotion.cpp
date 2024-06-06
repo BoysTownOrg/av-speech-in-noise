@@ -79,8 +79,8 @@ EMOTION_PRESENTER_TEST(
         testController.notifiedThatUserIsReadyForNextTrial());
 }
 
-EMOTION_PRESENTER_TEST(hidesPlayButtonAfterClicked) {
-    ui.observer->notifyThatPlayButtonHasBeenClicked();
+EMOTION_PRESENTER_TEST(hidesPlayButtonAfterTrialStarts) {
+    presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(ui.playButton_.hidden);
 }
 

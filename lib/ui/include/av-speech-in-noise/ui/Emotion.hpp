@@ -34,6 +34,7 @@ class Presenter : public UI::Observer, public TaskPresenter {
     void stop() override;
     void showResponseSubmission() override;
     void hideResponseSubmission() override;
+    void notifyThatTrialHasStarted() override;
 
   private:
     UI &ui;
