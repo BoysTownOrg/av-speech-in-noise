@@ -27,8 +27,11 @@ class UIStub : public UI, public ViewStub {
 
     auto responseButtons() -> View & override { return responseButtons_; }
 
+    auto cursor() -> View & override { return cursor_; }
+
     ViewStub playButton_;
     ViewStub responseButtons_;
+    ViewStub cursor_;
     Emotion emotion_{Emotion::unknown};
     Observer *observer{};
 };
@@ -72,6 +75,11 @@ EMOTION_PRESENTER_TEST(showsResponseButtonWhenShowingResponseSubmission) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(ui.responseButtons_.shown);
 }
 
+EMOTION_PRESENTER_TEST(showsCursorWhenShowingResponseSubmission) {
+    presenter.showResponseSubmission();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(ui.cursor_.shown);
+}
+
 EMOTION_PRESENTER_TEST(
     notifiesThatUserIsReadyForNextTrialAfterPlayButtonIsClicked) {
     ui.observer->notifyThatPlayButtonHasBeenClicked();
@@ -79,9 +87,14 @@ EMOTION_PRESENTER_TEST(
         testController.notifiedThatUserIsReadyForNextTrial());
 }
 
-EMOTION_PRESENTER_TEST(hidesPlayButtonAfterClicked) {
-    ui.observer->notifyThatPlayButtonHasBeenClicked();
+EMOTION_PRESENTER_TEST(hidesPlayButtonAfterTrialStarts) {
+    presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(ui.playButton_.hidden);
+}
+
+EMOTION_PRESENTER_TEST(hidesCursorAfterTrialStarts) {
+    presenter.notifyThatTrialHasStarted();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(ui.cursor_.hidden);
 }
 
 EMOTION_PRESENTER_TEST(submitsEmotionAfterResponseButtonIsClicked) {

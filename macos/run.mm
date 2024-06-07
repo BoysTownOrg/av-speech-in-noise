@@ -373,11 +373,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         [emotionNSView.centerXAnchor
             constraintEqualToAnchor:subjectNSWindow.contentView.centerXAnchor],
         [emotionNSView.widthAnchor
-            constraintEqualToAnchor:subjectNSWindow.contentView.widthAnchor
-                         multiplier:0.8],
+            constraintEqualToAnchor:subjectNSWindow.contentView.widthAnchor],
         [emotionNSView.heightAnchor
-            constraintEqualToAnchor:subjectNSWindow.contentView.heightAnchor
-                         multiplier:0.8],
+            constraintEqualToAnchor:subjectNSWindow.contentView.heightAnchor],
         [emotionNSView.centerYAnchor
             constraintEqualToAnchor:subjectNSWindow.contentView.centerYAnchor]
     ]];
@@ -389,11 +387,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         [childEmotionNSView.centerXAnchor
             constraintEqualToAnchor:subjectNSWindow.contentView.centerXAnchor],
         [childEmotionNSView.widthAnchor
-            constraintEqualToAnchor:subjectNSWindow.contentView.widthAnchor
-                         multiplier:0.8],
+            constraintEqualToAnchor:subjectNSWindow.contentView.widthAnchor],
         [childEmotionNSView.heightAnchor
-            constraintEqualToAnchor:subjectNSWindow.contentView.heightAnchor
-                         multiplier:0.8],
+            constraintEqualToAnchor:subjectNSWindow.contentView.heightAnchor],
         [childEmotionNSView.centerYAnchor
             constraintEqualToAnchor:subjectNSWindow.contentView.centerYAnchor]
     ]];

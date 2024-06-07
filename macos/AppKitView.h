@@ -49,6 +49,7 @@ class AppKitUI : public UI {
     auto emotion() -> Emotion override;
     auto playButton() -> View & override;
     auto responseButtons() -> View & override;
+    auto cursor() -> View & override;
     void show() override;
     void hide() override;
 
@@ -86,9 +87,16 @@ class AppKitUI : public UI {
         NSStackView *buttons;
     };
 
+    class Cursor : public View {
+      public:
+        void show() override;
+        void hide() override;
+    };
+
   private:
     PlayButton playButton_;
     ResponseButtons responseButtons_;
+    Cursor cursor_;
     NSView *view;
     Observer *observer{};
 };

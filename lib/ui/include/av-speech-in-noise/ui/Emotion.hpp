@@ -22,6 +22,7 @@ class UI : public virtual View {
     virtual void attach(Observer *) = 0;
     virtual auto emotion() -> Emotion = 0;
     virtual auto playButton() -> View & = 0;
+    virtual auto cursor() -> View & = 0;
     virtual auto responseButtons() -> View & = 0;
 };
 
@@ -34,6 +35,7 @@ class Presenter : public UI::Observer, public TaskPresenter {
     void stop() override;
     void showResponseSubmission() override;
     void hideResponseSubmission() override;
+    void notifyThatTrialHasStarted() override;
 
   private:
     UI &ui;

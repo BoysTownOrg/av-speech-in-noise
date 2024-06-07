@@ -13,22 +13,28 @@ void Presenter::start() {
 }
 
 void Presenter::notifyThatPlayButtonHasBeenClicked() {
-    ui.playButton().hide();
     testController.notifyThatUserIsReadyForNextTrial();
+}
+
+void Presenter::notifyThatTrialHasStarted() {
+    ui.playButton().hide();
+    ui.cursor().hide();
 }
 
 void Presenter::notifyThatResponseButtonHasBeenClicked() {
     EmotionResponse response;
     response.emotion = ui.emotion();
     interactor.submit(response);
-    // TODO: This shows the play button on the tester window, but that is not wanted
     testController.notifyThatUserIsDoneResponding();
     ui.playButton().show();
 }
 
 void Presenter::hideResponseSubmission() { ui.responseButtons().hide(); }
 
-void Presenter::showResponseSubmission() { ui.responseButtons().show(); }
+void Presenter::showResponseSubmission() {
+    ui.responseButtons().show();
+    ui.cursor().show();
+}
 
 void Presenter::stop() {
     ui.responseButtons().hide();
