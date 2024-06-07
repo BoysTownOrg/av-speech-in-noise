@@ -22,6 +22,7 @@ class UI : public virtual View {
     virtual void attach(Observer *) = 0;
     virtual auto emotion() -> Emotion = 0;
     virtual auto playButton() -> View & = 0;
+    virtual auto cursor() -> View & = 0;
     virtual auto responseButtons() -> View & = 0;
 };
 

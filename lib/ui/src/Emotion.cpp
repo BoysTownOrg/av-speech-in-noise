@@ -16,7 +16,10 @@ void Presenter::notifyThatPlayButtonHasBeenClicked() {
     testController.notifyThatUserIsReadyForNextTrial();
 }
 
-void Presenter::notifyThatTrialHasStarted() { ui.playButton().hide(); }
+void Presenter::notifyThatTrialHasStarted() {
+    ui.playButton().hide();
+    ui.cursor().hide();
+}
 
 void Presenter::notifyThatResponseButtonHasBeenClicked() {
     EmotionResponse response;
@@ -28,7 +31,10 @@ void Presenter::notifyThatResponseButtonHasBeenClicked() {
 
 void Presenter::hideResponseSubmission() { ui.responseButtons().hide(); }
 
-void Presenter::showResponseSubmission() { ui.responseButtons().show(); }
+void Presenter::showResponseSubmission() {
+    ui.responseButtons().show();
+    ui.cursor().show();
+}
 
 void Presenter::stop() {
     ui.responseButtons().hide();
