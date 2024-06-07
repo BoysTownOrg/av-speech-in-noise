@@ -166,9 +166,15 @@ auto AppKitUI::playButton() -> View & { return playButton_; }
 
 auto AppKitUI::responseButtons() -> View & { return responseButtons_; }
 
+auto AppKitUI::cursor() -> View & { return cursor_; }
+
 void AppKitUI::show() { av_speech_in_noise::show(view); }
 
 void AppKitUI::hide() { av_speech_in_noise::hide(view); }
+
+void AppKitUI::Cursor::show() { [NSCursor unhide]; }
+
+void AppKitUI::Cursor::hide() { [NSCursor hide]; }
 
 AppKitUI::PlayButton::PlayButton(NSView *view)
     : action{[ObjCToCppAction new]}, button {
