@@ -231,12 +231,34 @@ static auto imageName(Emotion emotion) -> const char * {
     }
 }
 
+static auto emotionLabel(Emotion emotion) -> const char * {
+    switch (emotion) {
+    case Emotion::angry:
+        return "Angry";
+    case Emotion::disgusted:
+        return "Disgust";
+    case Emotion::happy:
+        return "Happy";
+    case Emotion::neutral:
+        return "Neutral";
+    case Emotion::sad:
+        return "Sad";
+    case Emotion::scared:
+        return "Scared";
+    case Emotion::surprised:
+        return "Surprise";
+    case Emotion::unknown:
+        return "?";
+    }
+}
+
 AppKitUI::ResponseButtons::ResponseButtons(
     NSView *view, const std::vector<std::vector<Emotion>> &layout)
     : action{[ObjCToCppAction new]} {
     action->responder = this;
 
     std::vector<NSView *> columns(layout.size());
+    const auto font{[NSFont fontWithName:@"Courier" size:16]};
     std::transform(
         layout.begin(), layout.end(), columns.begin(), [&](const auto &order) {
             std::vector<NSView *> column(order.size());
@@ -256,11 +278,20 @@ AppKitUI::ResponseButtons::ResponseButtons(
                     button.bordered = NO;
                     button.imageScaling = NSImageScaleProportionallyDown;
                     [NSLayoutConstraint activateConstraints:@[
-                        [button.heightAnchor constraintEqualToConstant:300],
-                        [button.widthAnchor constraintEqualToConstant:300]
+                        [button.heightAnchor constraintEqualToConstant:250],
+                        [button.widthAnchor constraintEqualToConstant:250]
                     ]];
                     emotions[(__bridge void *)button] = emotion;
-                    return button;
+                    const auto text{[NSTextField
+                        textFieldWithString:nsString(emotionLabel(emotion))]};
+                    text.editable = NO;
+                    text.font = font;
+                    const auto stack {
+                        [NSStackView stackViewWithViews:@[ button, text ]]
+                    };
+                    stack.orientation =
+                        NSUserInterfaceLayoutOrientationVertical;
+                    return stack;
                 });
             const auto stack{[NSStackView stackViewWithViews:nsArray(column)]};
             stack.orientation = NSUserInterfaceLayoutOrientationVertical;
