@@ -17,7 +17,7 @@ auto randomSelection(Randomizer &randomizer, std::array<double, N> x)
 }
 
 void InteractorImpl::notifyThatTrialWillBegin(int) {
-    const std::array<double, 4> delaysSeconds = {.060, .110, .160, .190};
+    const std::array<double, 4> delaysSeconds = {2.060, 2.110, 2.160, 2.190};
     const std::array<double, 2> durationsSeconds = {.100, .250};
 
     VibrotactileStimulus stimulus;
