@@ -83,6 +83,7 @@ enum class Emotion {
 
 struct EmotionResponse : Flaggable {
     Emotion emotion{};
+    double reactionTimeMilliseconds{};
 };
 
 enum class KeyPressed { first, second, unknown };
