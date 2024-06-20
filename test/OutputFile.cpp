@@ -521,6 +521,7 @@ class WritingEmotionTrial : public WritingTrial {
     WritingEmotionTrial() {
         trial.target = "a";
         trial.emotion = Emotion::scared;
+        trial.reactionTimeMilliseconds = 1.23;
     }
 
     auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
@@ -533,13 +534,15 @@ class WritingEmotionTrial : public WritingTrial {
             writer, "a", at(headingLabels_, HeadingItem::target), line);
         assertNthCommaDelimitedEntryOfLine(
             writer, "scared", at(headingLabels_, HeadingItem::emotion), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "1.23",
+            at(headingLabels_, HeadingItem::reactionTime), line);
     }
 
     void run(OutputFileImpl &file) override { file.write(trial); }
 
     EmotionTrial trial;
-    std::map<HeadingItem, gsl::index> headingLabels_{
-        {HeadingItem::target, 1}, {HeadingItem::emotion, 2}};
+    std::map<HeadingItem, gsl::index> headingLabels_{{HeadingItem::target, 1},
+        {HeadingItem::emotion, 2}, {HeadingItem::reactionTime, 3}};
 };
 
 class WritingFreeResponseTrial : public WritingFlaggableTrial {
