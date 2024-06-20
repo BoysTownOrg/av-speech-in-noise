@@ -181,8 +181,8 @@ class RunningATestStub : public RunningATest {
   public:
     explicit RunningATestStub(AdaptiveMethodStub &adaptiveMethod,
         FixedLevelMethodStub &fixedLevelMethodStub)
-        : adaptiveMethod{adaptiveMethod}, fixedLevelMethodStub{
-                                              fixedLevelMethodStub} {}
+        : adaptiveMethod{adaptiveMethod},
+          fixedLevelMethodStub{fixedLevelMethodStub} {}
 
     [[nodiscard]] auto nextTrialPreparedIfNeeded() const -> bool {
         return nextTrialPreparedIfNeeded_;
@@ -816,7 +816,7 @@ void submitValidResponse(submitting_keypress::InteractorImpl &interactor,
 }
 
 SUBMITTING_KEYPRESS_TEST(savesReactionTime) {
-    randomizer.randomInts.push(2); // 60, 110, 160, 190
+    randomizer.randomInts.push(2); // 60, 110, 160, 190; 2 second delay added
     interactor.notifyThatTrialWillBegin({});
 
     maskerPlayer.setNanosecondsFromPlayerTime(1e9);
@@ -824,21 +824,21 @@ SUBMITTING_KEYPRESS_TEST(savesReactionTime) {
     playerTime.delay.seconds = .5;
     interactor.notifyThatTargetWillPlayAt(playerTime);
     responses.resize(5);
-    responses[0].seconds = 1.1 + 0.16;
+    responses[0].seconds = 1.1 + 2.16;
     responses[0].key = KeyPressed::first;
-    responses[1].seconds = -.2 + 0.16;
+    responses[1].seconds = -.2 + 2.16;
     responses[1].key = KeyPressed::first;
-    responses[2].seconds = 1.4 + 0.16;
+    responses[2].seconds = 1.4 + 2.16;
     responses[2].key = KeyPressed::first;
-    responses[3].seconds = 1.7 + 0.16;
+    responses[3].seconds = 1.7 + 2.16;
     responses[3].key = KeyPressed::second;
-    responses[4].seconds = 2.3 + 0.16;
+    responses[4].seconds = 2.3 + 2.16;
     responses[4].key = KeyPressed::first;
     interactor.notifyThatStimulusHasEnded();
     interactor.submits(responses);
     const auto start{(1000000000 + 500000000 + 500000) / 1000000};
     const auto end{1700.};
-    assertEqual(end - start, outputFile.keypressTrial.rt.milliseconds, 3e-13);
+    assertEqual(end - start, outputFile.keypressTrial.rt.milliseconds, 5e-13);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         KeyPressed::second, outputFile.keypressTrial.key);
 }
@@ -893,10 +893,10 @@ SUBMITTING_KEYPRESS_TEST(writesTarget) {
 }
 
 SUBMITTING_KEYPRESS_TEST(selectsRandomVibrotactileStimulus) {
-    randomizer.randomInts.push(3); // 60, 110, 160, 190
+    randomizer.randomInts.push(3); // 60, 110, 160, 190; 2 second delay added
     randomizer.randomInts.push(1); // 100, 250
     interactor.notifyThatTrialWillBegin({});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0.190,
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2.190,
         maskerPlayer.vibrotactileStimulus.targetStartRelativeDelay.seconds);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         RunningATest::targetOnsetFringeDuration.seconds,

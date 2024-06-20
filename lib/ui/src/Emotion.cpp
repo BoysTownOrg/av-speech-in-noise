@@ -1,9 +1,10 @@
 #include "Emotion.hpp"
 
 namespace av_speech_in_noise::submitting_emotion {
-Presenter::Presenter(
-    UI &ui, TestController &testController, Interactor &interactor)
-    : ui{ui}, testController{testController}, interactor{interactor} {
+Presenter::Presenter(UI &ui, TestController &testController,
+    Interactor &interactor, SystemTime &systemTime)
+    : ui{ui}, testController{testController}, interactor{interactor},
+      systemTime{systemTime} {
     ui.attach(this);
 }
 
@@ -24,6 +25,8 @@ void Presenter::notifyThatTrialHasStarted() {
 void Presenter::notifyThatResponseButtonHasBeenClicked() {
     EmotionResponse response;
     response.emotion = ui.emotion();
+    response.reactionTimeMilliseconds =
+        (systemTime.nowSeconds() - lastResponseShownSeconds) * 1000.;
     interactor.submit(response);
     testController.notifyThatUserIsDoneResponding();
     ui.playButton().show();
@@ -34,6 +37,7 @@ void Presenter::hideResponseSubmission() { ui.responseButtons().hide(); }
 void Presenter::showResponseSubmission() {
     ui.responseButtons().show();
     ui.cursor().show();
+    lastResponseShownSeconds = systemTime.nowSeconds();
 }
 
 void Presenter::stop() {

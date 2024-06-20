@@ -587,6 +587,8 @@ class EmotionTrialFormatter : public TrialFormatter {
         insert(stream, HeadingItem::target);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::emotion);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::reactionTime);
         return insertNewLine(stream);
     }
 
@@ -594,6 +596,8 @@ class EmotionTrialFormatter : public TrialFormatter {
         insert(stream, trial_.target);
         insertCommaAndSpace(stream);
         insert(stream, trial_.emotion);
+        insertCommaAndSpace(stream);
+        insert(stream, trial_.reactionTimeMilliseconds);
         return insertNewLine(stream);
     }
 

@@ -190,6 +190,13 @@ class LocalTimeClock : public Clock {
     }
 };
 
+class MacosSystemTime : public submitting_emotion::SystemTime {
+  public:
+    auto nowSeconds() -> double override {
+        return [NSProcessInfo processInfo].systemUptime;
+    };
+};
+
 class TextFileReaderImpl : public TextFileReader {
   public:
     auto read(const LocalUrl &s) -> std::string override {
@@ -500,10 +507,11 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         childEmotionNSView, childEmotionLayout};
     static submitting_emotion::InteractorImpl emotionInteractor{
         fixedLevelMethod, runningATest, outputFile};
+    static MacosSystemTime systemTime;
     static submitting_emotion::Presenter emotionPresenter{
-        emotionUI, testController, emotionInteractor};
+        emotionUI, testController, emotionInteractor, systemTime};
     static submitting_emotion::Presenter childEmotionPresenter{
-        childEmotionUI, testController, emotionInteractor};
+        childEmotionUI, testController, emotionInteractor, systemTime};
     static submitting_fixed_pass_fail::InteractorImpl fixedPassFailInteractor(
         fixedLevelMethod, runningATest, outputFile);
     static submitting_fixed_pass_fail::Presenter fixedPassFailPresenter(

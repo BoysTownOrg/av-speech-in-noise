@@ -26,9 +26,15 @@ class UI : public virtual View {
     virtual auto responseButtons() -> View & = 0;
 };
 
+class SystemTime {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SystemTime);
+    virtual auto nowSeconds() -> double = 0;
+};
+
 class Presenter : public UI::Observer, public TaskPresenter {
   public:
-    Presenter(UI &, TestController &, Interactor &);
+    Presenter(UI &, TestController &, Interactor &, SystemTime &);
     void notifyThatPlayButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
     void start() override;
@@ -41,6 +47,8 @@ class Presenter : public UI::Observer, public TaskPresenter {
     UI &ui;
     TestController &testController;
     Interactor &interactor;
+    SystemTime &systemTime;
+    double lastResponseShownSeconds{};
 };
 }
 

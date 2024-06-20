@@ -43,12 +43,19 @@ class InteractorStub : public Interactor {
     EmotionResponse response;
 };
 
+class SystemTimeStub : public SystemTime {
+  public:
+    auto nowSeconds() -> double override { return now; }
+    double now{};
+};
+
 class PresenterTests : public ::testing::Test {
   protected:
     UIStub ui;
     InteractorStub model;
     TestControllerStub testController;
-    Presenter presenter{ui, testController, model};
+    SystemTimeStub systemTime;
+    Presenter presenter{ui, testController, model, systemTime};
 };
 
 #define EMOTION_PRESENTER_TEST(a) TEST_F(PresenterTests, a)
@@ -101,6 +108,14 @@ EMOTION_PRESENTER_TEST(submitsEmotionAfterResponseButtonIsClicked) {
     ui.emotion_ = Emotion::sad;
     ui.observer->notifyThatResponseButtonHasBeenClicked();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(Emotion::sad, model.response.emotion);
+}
+
+EMOTION_PRESENTER_TEST(submitsReactionTimeAfterResponseButtonIsClicked) {
+    systemTime.now = 17;
+    presenter.showResponseSubmission();
+    systemTime.now = 17.3;
+    ui.observer->notifyThatResponseButtonHasBeenClicked();
+    assertEqual(300., model.response.reactionTimeMilliseconds, 7e-13);
 }
 
 EMOTION_PRESENTER_TEST(
