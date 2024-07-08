@@ -11,13 +11,14 @@ InteractorImpl::InteractorImpl(FixedLevelMethod &method, RunningATest &model,
       maskerPlayer{maskerPlayer}, randomizer{randomizer} {}
 
 template <std::size_t N>
-auto randomSelection(Randomizer &randomizer, std::array<double, N> x)
-    -> double {
+auto randomSelection(
+    Randomizer &randomizer, std::array<double, N> x) -> double {
     return x.at(randomizer.betweenInclusive(0, x.size() - 1));
 }
 
 void InteractorImpl::notifyThatTrialWillBegin(int) {
-    const std::array<double, 4> delaysSeconds = {2.060, 2.110, 2.160, 2.190};
+    const std::array<double, 6> delaysSeconds = {
+        1.94, 2., 2.060, 2.110, 2.160, 2.190};
     const std::array<double, 2> durationsSeconds = {.100, .250};
 
     VibrotactileStimulus stimulus;
@@ -46,8 +47,8 @@ void InteractorImpl::notifyThatTargetWillPlayAt(
             1000;
 }
 
-auto InteractorImpl::submits(const std::vector<KeyPressResponse> &responses)
-    -> bool {
+auto InteractorImpl::submits(
+    const std::vector<KeyPressResponse> &responses) -> bool {
     if (!readyForResponse)
         return false;
     auto min{responses.end()};
