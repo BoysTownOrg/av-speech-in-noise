@@ -902,7 +902,11 @@ SUBMITTING_KEYPRESS_TEST(selectsRandomVibrotactileStimulus) {
         RunningATest::targetOnsetFringeDuration.seconds,
         maskerPlayer.vibrotactileStimulus.additionalPostFadeInDelay.seconds);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        0.250, maskerPlayer.vibrotactileStimulus.duration.seconds);
+        0.100, maskerPlayer.vibrotactileStimulus.gap.seconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0.250,
+        maskerPlayer.vibrotactileStimulus.vibrations.at(0).duration.seconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0.100,
+        maskerPlayer.vibrotactileStimulus.vibrations.at(1).duration.seconds);
 }
 }
 }

@@ -23,8 +23,8 @@ enum class OutputFileImpl::Trial {
     none
 };
 
-static auto operator<<(std::ostream &os, const std::vector<int> &v)
-    -> std::ostream & {
+static auto operator<<(
+    std::ostream &os, const std::vector<int> &v) -> std::ostream & {
     if (!v.empty()) {
         auto first{true};
         os << v.front();
@@ -82,8 +82,8 @@ static auto insertNewLine(std::ostream &stream) -> std::ostream & {
 }
 
 template <typename T>
-auto insertLabeledLine(std::ostream &stream, const std::string &label, T thing)
-    -> std::ostream & {
+auto insertLabeledLine(
+    std::ostream &stream, const std::string &label, T thing) -> std::ostream & {
     return insertNewLine(insert(insert(insert(stream, label), ": "), thing));
 }
 
@@ -91,54 +91,54 @@ static auto string(const std::stringstream &stream) -> std::string {
     return stream.str();
 }
 
-static auto insertSubjectId(std::ostream &stream, const TestIdentity &p)
-    -> std::ostream & {
+static auto insertSubjectId(
+    std::ostream &stream, const TestIdentity &p) -> std::ostream & {
     return insertLabeledLine(stream, "subject", p.subjectId);
 }
 
-static auto insertTester(std::ostream &stream, const TestIdentity &p)
-    -> std::ostream & {
+static auto insertTester(
+    std::ostream &stream, const TestIdentity &p) -> std::ostream & {
     return insertLabeledLine(stream, "tester", p.testerId);
 }
 
-static auto insertSession(std::ostream &stream, const TestIdentity &p)
-    -> std::ostream & {
+static auto insertSession(
+    std::ostream &stream, const TestIdentity &p) -> std::ostream & {
     return insertLabeledLine(stream, "session", p.session);
 }
 
-static auto insertMethod(std::ostream &stream, const TestIdentity &p)
-    -> std::ostream & {
+static auto insertMethod(
+    std::ostream &stream, const TestIdentity &p) -> std::ostream & {
     return insertLabeledLine(stream, "method", p.method);
 }
 
-static auto insertRmeSetting(std::ostream &stream, const TestIdentity &p)
-    -> std::ostream & {
+static auto insertRmeSetting(
+    std::ostream &stream, const TestIdentity &p) -> std::ostream & {
     return insertLabeledLine(stream, "RME setting", p.rmeSetting);
 }
 
-static auto insertTransducer(std::ostream &stream, const TestIdentity &p)
-    -> std::ostream & {
+static auto insertTransducer(
+    std::ostream &stream, const TestIdentity &p) -> std::ostream & {
     return insertLabeledLine(stream, "transducer", p.transducer);
 }
 
-static auto insertMasker(std::ostream &stream, const Test &p)
-    -> std::ostream & {
+static auto insertMasker(
+    std::ostream &stream, const Test &p) -> std::ostream & {
     return insertLabeledLine(stream, "masker", p.maskerFileUrl.path);
 }
 
-static auto insertTargetPlaylist(std::ostream &stream, const Test &p)
-    -> std::ostream & {
+static auto insertTargetPlaylist(
+    std::ostream &stream, const Test &p) -> std::ostream & {
     return insertLabeledLine(stream, "targets", p.targetsUrl.path);
 }
 
-static auto insertMaskerLevel(std::ostream &stream, const Test &p)
-    -> std::ostream & {
+static auto insertMaskerLevel(
+    std::ostream &stream, const Test &p) -> std::ostream & {
     return insertLabeledLine(
         stream, "masker level (dB SPL)", p.maskerLevel.dB_SPL);
 }
 
-static auto insertCondition(std::ostream &stream, const Test &p)
-    -> std::ostream & {
+static auto insertCondition(
+    std::ostream &stream, const Test &p) -> std::ostream & {
     return insertLabeledLine(stream, "condition", name(p.condition));
 }
 
@@ -155,8 +155,8 @@ static auto evaluation(const Evaluative &trial) -> std::string {
 
 static auto identity(const Test &test) -> TestIdentity { return test.identity; }
 
-static auto operator<<(std::ostream &stream, const TestIdentity &identity)
-    -> std::ostream & {
+static auto operator<<(
+    std::ostream &stream, const TestIdentity &identity) -> std::ostream & {
     return insertTransducer(
         insertRmeSetting(
             insertMethod(
@@ -168,8 +168,8 @@ static auto operator<<(std::ostream &stream, const TestIdentity &identity)
         identity);
 }
 
-static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
-    -> std::ostream & {
+static auto operator<<(
+    std::ostream &stream, const AdaptiveTest &test) -> std::ostream & {
     stream << identity(test);
     insertMasker(stream, test);
     insertTargetPlaylist(stream, test);
@@ -194,8 +194,8 @@ static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
     return insertNewLine(stream);
 }
 
-static auto operator<<(std::ostream &stream, const FixedLevelTest &test)
-    -> std::ostream & {
+static auto operator<<(
+    std::ostream &stream, const FixedLevelTest &test) -> std::ostream & {
     stream << identity(test);
     insertMasker(stream, test);
     insertTargetPlaylist(stream, test);
@@ -264,8 +264,8 @@ static auto operator<<(std::ostream &stream,
     return insertNewLine(stream);
 }
 
-static auto operator<<(std::ostream &stream, TargetStartTime t)
-    -> std::ostream & {
+static auto operator<<(
+    std::ostream &stream, TargetStartTime t) -> std::ostream & {
     return insertLabeledLine(stream, "target start time (ns)", t.nanoseconds);
 }
 
@@ -281,14 +281,14 @@ static auto operator<<(std::ostream &stream,
     return insertNewLine(stream);
 }
 
-static auto operator<<(std::ostream &stream, const AdaptiveTestResult &result)
-    -> std::ostream & {
+static auto operator<<(
+    std::ostream &stream, const AdaptiveTestResult &result) -> std::ostream & {
     return insertLabeledLine(
         stream, "threshold for " + result.targetsUrl.path, result.threshold);
 }
 
-static auto operator<<(std::ostream &stream, const Flaggable &flaggable)
-    -> std::ostream & {
+static auto operator<<(
+    std::ostream &stream, const Flaggable &flaggable) -> std::ostream & {
     if (flaggable.flagged) {
         insertCommaAndSpace(stream);
         insert(stream, "FLAGGED");
@@ -652,7 +652,9 @@ class KeyPressTrialFormatter : public TrialFormatter {
         insertCommaAndSpace(stream);
         insert(stream, trial_.rt.milliseconds);
         insertCommaAndSpace(stream);
-        insert(stream, trial_.vibrotactileStimulus.duration.seconds);
+        if (trial_.vibrotactileStimulus.vibrations.size() > 0)
+            insert(stream,
+                trial_.vibrotactileStimulus.vibrations.at(0).duration.seconds);
         insertCommaAndSpace(stream);
         insert(stream,
             trial_.vibrotactileStimulus.targetStartRelativeDelay.seconds);
@@ -782,8 +784,8 @@ void OutputFileImpl::openNewFile(const TestIdentity &test) {
     currentTrial = Trial::none;
 }
 
-auto OutputFileImpl::generateNewFilePath(const TestIdentity &test)
-    -> std::string {
+auto OutputFileImpl::generateNewFilePath(
+    const TestIdentity &test) -> std::string {
     path.setRelativeOutputDirectory(test.relativeOutputUrl.path);
     return path.outputDirectory() + "/" + path.generateFileName(test) + ".txt";
 }

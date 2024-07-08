@@ -168,16 +168,16 @@ void assertEndsWith(WriterStub &writer, const std::string &s) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(endsWith(written(writer), s));
 }
 
-auto find_nth_element(const std::string &content, gsl::index n, char what)
-    -> std::string::size_type {
+auto find_nth_element(const std::string &content, gsl::index n,
+    char what) -> std::string::size_type {
     auto found{std::string::npos};
     for (int i = 0; i < n; ++i)
         found = content.find(what, found + 1U);
     return found;
 }
 
-auto upUntilFirstOfAny(const std::string &content, std::vector<char> v)
-    -> std::string {
+auto upUntilFirstOfAny(
+    const std::string &content, std::vector<char> v) -> std::string {
     return content.substr(0, content.find_first_of({v.begin(), v.end()}));
 }
 
@@ -226,8 +226,8 @@ void assertNthEntryOfSecondLine(
 
 auto test(WritingTest &useCase) -> Test & { return useCase.test(); }
 
-auto at(const std::map<HeadingItem, gsl::index> &m, HeadingItem item)
-    -> gsl::index {
+auto at(const std::map<HeadingItem, gsl::index> &m,
+    HeadingItem item) -> gsl::index {
     return m.at(item);
 }
 
@@ -485,7 +485,8 @@ class WritingKeyPressTrial : public WritingTrial {
         trial.target = "a";
         trial.key = KeyPressed::second;
         trial.rt.milliseconds = 3.4;
-        trial.vibrotactileStimulus.duration.seconds = 0.25;
+        trial.vibrotactileStimulus.vibrations.resize(1);
+        trial.vibrotactileStimulus.vibrations.at(0).duration.seconds = 0.25;
         trial.vibrotactileStimulus.targetStartRelativeDelay.seconds = 0.19;
     }
 

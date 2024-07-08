@@ -1,6 +1,7 @@
 #include "assert-utility.hpp"
 #include "AudioReaderStub.hpp"
 #include "TimerStub.hpp"
+#include "av-speech-in-noise/core/Player.hpp"
 
 #include <av-speech-in-noise/player/AudioReader.hpp>
 #include <av-speech-in-noise/player/MaskerPlayerImpl.hpp>
@@ -125,8 +126,8 @@ class AudioPlayerStub : public AudioPlayer {
         return nanoseconds_;
     }
 
-    [[nodiscard]] auto systemTimeForNanoseconds() const
-        -> player_system_time_type {
+    [[nodiscard]] auto
+    systemTimeForNanoseconds() const -> player_system_time_type {
         return systemTimeForNanoseconds_;
     }
 
@@ -179,13 +180,13 @@ class MaskerPlayerListenerStub : public MaskerPlayer::Observer {
 
     void fadeOutComplete() override { fadeOutCompleted_ = true; }
 
-    [[nodiscard]] auto fadeInCompleteSystemTime() const
-        -> player_system_time_type {
+    [[nodiscard]] auto
+    fadeInCompleteSystemTime() const -> player_system_time_type {
         return fadeInCompleteSystemTime_;
     }
 
-    [[nodiscard]] auto fadeInCompleteSystemTimeSampleOffset() const
-        -> gsl::index {
+    [[nodiscard]] auto
+    fadeInCompleteSystemTimeSampleOffset() const -> gsl::index {
         return fadeInCompleteSystemTimeSampleOffset_;
     }
 
@@ -210,16 +211,16 @@ class MaskerPlayerListenerStub : public MaskerPlayer::Observer {
 };
 
 template <typename T>
-auto elementWiseProduct(std::vector<T> v, const std::vector<T> &y)
-    -> std::vector<T> {
+auto elementWiseProduct(
+    std::vector<T> v, const std::vector<T> &y) -> std::vector<T> {
     std::transform(
         v.begin(), v.end(), y.begin(), v.begin(), std::multiplies<T>());
     return v;
 }
 
 template <typename T>
-auto subvector(const std::vector<T> &v, int offset, int size)
-    -> std::vector<T> {
+auto subvector(
+    const std::vector<T> &v, int offset, int size) -> std::vector<T> {
     const auto begin = v.begin() + offset;
     return {begin, begin + size};
 }
@@ -258,8 +259,8 @@ auto mToN(int M, int N) -> std::vector<float> {
 
 auto oneToN(int N) -> std::vector<float> { return mToN(1, N); }
 
-auto concatenate(std::vector<float> first, const std::vector<float> &second)
-    -> std::vector<float> {
+auto concatenate(std::vector<float> first,
+    const std::vector<float> &second) -> std::vector<float> {
     first.insert(first.end(), second.begin(), second.end());
     return first;
 }
@@ -278,8 +279,8 @@ void setCurrentSystemTime(AudioPlayerStub &player, std::uintmax_t t) {
     player.setCurrentSystemTime(t);
 }
 
-auto nanoseconds(MaskerPlayerImpl &player, player_system_time_type t = {})
-    -> std::uintmax_t {
+auto nanoseconds(MaskerPlayerImpl &player,
+    player_system_time_type t = {}) -> std::uintmax_t {
     return player.nanoseconds({t});
 }
 
@@ -287,14 +288,14 @@ auto currentSystemTime(MaskerPlayerImpl &player) -> PlayerTime {
     return player.currentSystemTime();
 }
 
-auto systemTimeForNanoseconds(AudioPlayerStub &player)
-    -> player_system_time_type {
+auto systemTimeForNanoseconds(
+    AudioPlayerStub &player) -> player_system_time_type {
     return player.systemTimeForNanoseconds();
 }
 
 auto fillAudioBuffer(AudioPlayer::Observer *observer, gsl::index channels,
-    gsl::index frames, player_system_time_type t = {})
-    -> std::vector<std::vector<float>> {
+    gsl::index frames,
+    player_system_time_type t = {}) -> std::vector<std::vector<float>> {
     std::vector<std::vector<float>> audio(channels);
     std::vector<gsl::span<float>> adapted;
     for (auto &channel : audio) {
@@ -321,8 +322,8 @@ auto setOnPlayTask(AudioPlayerStub &audioPlayer,
 }
 
 auto fillAudioBufferAsync(MaskerPlayerImpl &player,
-    AudioPlayerStub &audioPlayer, gsl::index channels, gsl::index frames)
-    -> std::future<std::vector<std::vector<float>>> {
+    AudioPlayerStub &audioPlayer, gsl::index channels,
+    gsl::index frames) -> std::future<std::vector<std::vector<float>>> {
     auto future{
         setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
             return fillAudioBuffer(observer, channels, frames);
@@ -331,15 +332,15 @@ auto fillAudioBufferAsync(MaskerPlayerImpl &player,
     return future;
 }
 
-auto fillAudioBufferMonoAsync(
-    MaskerPlayerImpl &player, AudioPlayerStub &audioPlayer, gsl::index frames)
-    -> std::future<std::vector<std::vector<float>>> {
+auto fillAudioBufferMonoAsync(MaskerPlayerImpl &player,
+    AudioPlayerStub &audioPlayer,
+    gsl::index frames) -> std::future<std::vector<std::vector<float>>> {
     return fillAudioBufferAsync(player, audioPlayer, 1, frames);
 }
 
-auto fillAudioBufferStereoAsync(
-    MaskerPlayerImpl &player, AudioPlayerStub &audioPlayer, gsl::index frames)
-    -> std::future<std::vector<std::vector<float>>> {
+auto fillAudioBufferStereoAsync(MaskerPlayerImpl &player,
+    AudioPlayerStub &audioPlayer,
+    gsl::index frames) -> std::future<std::vector<std::vector<float>>> {
     return fillAudioBufferAsync(player, audioPlayer, 2, frames);
 }
 
@@ -618,9 +619,8 @@ MASKER_PLAYER_TEST(setChannelDelayMonoLoadNewAudio) {
     setSampleRateHz(audioPlayer, 3);
     setChannelDelaySeconds(player, 0, 1);
     loadMonoAudio(player, audioReader, {4, 5, 6});
-    callInRealisticExecutionContext(player, audioPlayer, [&]() {
-        loadMonoAudio(player, audioReader, {1, 2, 3});
-    });
+    callInRealisticExecutionContext(player, audioPlayer,
+        [&]() { loadMonoAudio(player, audioReader, {1, 2, 3}); });
     assertAsyncFilledMonoAudioEquals(player, audioPlayer, {0, 0, 0});
 }
 
@@ -798,9 +798,8 @@ MASKER_PLAYER_TEST(twentydBMultipliesSignalByTen) {
 
 MASKER_PLAYER_TEST(loadFileResetsSampleIndex) {
     loadMonoAudio(player, audioReader, {1, 2, 3});
-    callInRealisticExecutionContext(player, audioPlayer, [&]() {
-        loadMonoAudio(player, audioReader, {4, 5, 6});
-    });
+    callInRealisticExecutionContext(player, audioPlayer,
+        [&]() { loadMonoAudio(player, audioReader, {4, 5, 6}); });
     assertAsyncFilledMonoAudioEquals(player, audioPlayer, {4, 5, 6});
 }
 
@@ -985,7 +984,8 @@ MASKER_PLAYER_TEST(vibrotactile) {
     player.enableVibrotactileStimulus();
     player.loadFile({});
     VibrotactileStimulus stimulus;
-    stimulus.duration.seconds = 0.5;
+    stimulus.vibrations.resize(1);
+    stimulus.vibrations.at(0).duration.seconds = 0.5;
     stimulus.targetStartRelativeDelay.seconds = 0.25;
     stimulus.frequency.Hz = 2;
     player.prepareVibrotactileStimulus(stimulus);

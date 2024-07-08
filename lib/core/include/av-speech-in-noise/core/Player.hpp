@@ -48,8 +48,13 @@ struct Frequency {
     double Hz;
 };
 
-struct VibrotactileStimulus {
+struct Vibration {
     Duration duration{};
+};
+
+struct VibrotactileStimulus {
+    std::vector<Vibration> vibrations;
+    Duration gap;
     Delay targetStartRelativeDelay{};
     Delay additionalPostFadeInDelay{};
     Frequency frequency{};

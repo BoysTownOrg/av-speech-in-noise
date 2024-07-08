@@ -26,7 +26,13 @@ void InteractorImpl::notifyThatTrialWillBegin(int) {
         randomSelection(randomizer, delaysSeconds);
     stimulus.additionalPostFadeInDelay.seconds =
         RunningATest::targetOnsetFringeDuration.seconds;
-    stimulus.duration.seconds = randomSelection(randomizer, durationsSeconds);
+    stimulus.vibrations.resize(2);
+    const auto firstDurationIndex = randomizer.betweenInclusive(0, 1);
+    stimulus.vibrations.at(0).duration.seconds =
+        durationsSeconds.at(firstDurationIndex);
+    stimulus.vibrations.at(1).duration.seconds =
+        durationsSeconds.at((firstDurationIndex + 1) % 2);
+    stimulus.gap.seconds = 0.1;
     stimulus.frequency.Hz = 250;
     maskerPlayer.prepareVibrotactileStimulus(stimulus);
     lastVibrotactileStimulus = stimulus;
