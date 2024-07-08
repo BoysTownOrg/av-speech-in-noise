@@ -485,8 +485,9 @@ class WritingKeyPressTrial : public WritingTrial {
         trial.target = "a";
         trial.key = KeyPressed::second;
         trial.rt.milliseconds = 3.4;
-        trial.vibrotactileStimulus.vibrations.resize(1);
+        trial.vibrotactileStimulus.vibrations.resize(2);
         trial.vibrotactileStimulus.vibrations.at(0).duration.seconds = 0.25;
+        trial.vibrotactileStimulus.vibrations.at(1).duration.seconds = 0.1;
         trial.vibrotactileStimulus.targetStartRelativeDelay.seconds = 0.19;
     }
 
@@ -502,7 +503,7 @@ class WritingKeyPressTrial : public WritingTrial {
             at(headingLabels_, HeadingItem::keyPressed), line);
         assertNthCommaDelimitedEntryOfLine(
             writer, "3.4", at(headingLabels_, HeadingItem::reactionTime), line);
-        assertNthCommaDelimitedEntryOfLine(writer, "0.25",
+        assertNthCommaDelimitedEntryOfLine(writer, "[0.25; 0.1]",
             at(headingLabels_, HeadingItem::vibrotactileDuration), line);
         assertNthCommaDelimitedEntryOfLine(writer, "0.19",
             at(headingLabels_, HeadingItem::vibrotactileDelay), line);

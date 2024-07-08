@@ -652,9 +652,15 @@ class KeyPressTrialFormatter : public TrialFormatter {
         insertCommaAndSpace(stream);
         insert(stream, trial_.rt.milliseconds);
         insertCommaAndSpace(stream);
-        if (trial_.vibrotactileStimulus.vibrations.size() > 0)
-            insert(stream,
-                trial_.vibrotactileStimulus.vibrations.at(0).duration.seconds);
+        stream << '[';
+        auto first{true};
+        for (const auto &v : trial_.vibrotactileStimulus.vibrations) {
+            if (!first)
+                stream << "; ";
+            insert(stream, v.duration.seconds);
+            first = false;
+        }
+        stream << ']';
         insertCommaAndSpace(stream);
         insert(stream,
             trial_.vibrotactileStimulus.targetStartRelativeDelay.seconds);
