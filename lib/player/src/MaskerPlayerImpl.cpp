@@ -229,14 +229,21 @@ void MaskerPlayerImpl::prepareVibrotactileStimulus(
         (stimulus.targetStartRelativeDelay.seconds +
             stimulus.additionalPostFadeInDelay.seconds) *
         sampleRateHz);
-    sharedState.vibrotactileStimulus.resize(gsl::narrow_cast<gsl::index>(
-        stimulus.vibrations.at(0).duration.seconds * sampleRateHz));
-    std::generate(sharedState.vibrotactileStimulus.begin(),
-        sharedState.vibrotactileStimulus.end(),
-        [n = 0, &stimulus, &sampleRateHz]() mutable {
-            return gsl::narrow_cast<sample_type>(std::sin(
-                2 * pi() * stimulus.frequency.Hz * n++ / sampleRateHz));
-        });
+    sharedState.vibrotactileStimulus.clear();
+    for (auto i{0}; i < stimulus.vibrations.size(); ++i) {
+        if (i > 0)
+            for (auto j{0}; j < gsl::narrow_cast<gsl::index>(
+                                    stimulus.gap.seconds * sampleRateHz);
+                 ++j)
+                sharedState.vibrotactileStimulus.push_back(0);
+        for (auto j{0};
+             j < gsl::narrow_cast<gsl::index>(
+                     stimulus.vibrations.at(i).duration.seconds * sampleRateHz);
+             ++j)
+            sharedState.vibrotactileStimulus.push_back(
+                gsl::narrow_cast<sample_type>(std::sin(
+                    2 * pi() * stimulus.frequency.Hz * j / sampleRateHz)));
+    }
 }
 
 void MaskerPlayerImpl::enableVibrotactileStimulus() {

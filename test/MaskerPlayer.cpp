@@ -1,9 +1,7 @@
 #include "assert-utility.hpp"
 #include "AudioReaderStub.hpp"
 #include "TimerStub.hpp"
-#include "av-speech-in-noise/core/Player.hpp"
 
-#include <av-speech-in-noise/player/AudioReader.hpp>
 #include <av-speech-in-noise/player/MaskerPlayerImpl.hpp>
 
 #include <gtest/gtest.h>
@@ -979,13 +977,15 @@ MASKER_PLAYER_TEST(steadyLevelFollowingFadeIn) {
 MASKER_PLAYER_TEST(vibrotactile) {
     setRampSeconds(player, 3);
     setSampleRateHz(audioPlayer, 8);
-    setSteadyLevelSeconds(player, 1);
+    setSteadyLevelSeconds(player, 4);
 
     player.enableVibrotactileStimulus();
     player.loadFile({});
     VibrotactileStimulus stimulus;
-    stimulus.vibrations.resize(1);
+    stimulus.vibrations.resize(2);
     stimulus.vibrations.at(0).duration.seconds = 0.5;
+    stimulus.vibrations.at(1).duration.seconds = 0.5;
+    stimulus.gap.seconds = 1;
     stimulus.targetStartRelativeDelay.seconds = 0.25;
     stimulus.frequency.Hz = 2;
     player.prepareVibrotactileStimulus(stimulus);
@@ -994,10 +994,17 @@ MASKER_PLAYER_TEST(vibrotactile) {
     auto future{
         setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
             av_speech_in_noise::fillAudioBuffer(observer, 3, halfWindowLength);
-            return av_speech_in_noise::fillAudioBuffer(observer, 3, 6);
+            return av_speech_in_noise::fillAudioBuffer(observer, 3, 18);
         })};
     fadeIn(player);
-    assertEqual(future.get().at(2), {0, 0, 0, 1, 0, -1}, 1e-15F);
+    assertEqual(future.get().at(2),
+        {
+            0, 0, // target start delay
+            0, 1, 0, -1, // vibration #1
+            0, 0, 0, 0, 0, 0, 0, 0, // gap
+            0, 1, 0, -1 // vibration #2
+        },
+        1e-15F);
 }
 
 MASKER_PLAYER_TEST(steadyLevelFollowingFadeInAmplified) {
