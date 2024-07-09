@@ -87,16 +87,15 @@ class MaskerPlayerImpl : public MaskerPlayer,
     static constexpr Delay callbackDelay{1. / 30};
 
     struct SharedState {
-        audio_type sourceAudio{};
+        audio_type sourceAudio;
         std::vector<sample_index_type> samplesToWaitPerChannel;
         std::vector<sample_index_type> audioFrameHeadsPerChannel;
+        std::vector<sample_type> vibrotactileStimulus;
         double levelScalar{1};
-        double vibrotactileTimeScalar{};
         std::atomic<player_system_time_type> fadeInCompleteSystemTime{};
         std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
         gsl::index rampSamples{};
         gsl::index steadyLevelSamples{};
-        gsl::index vibrotactileSamples{};
         gsl::index vibrotactileSamplesToWait{};
         bool firstChannelOnly{};
         bool secondChannelOnly{};

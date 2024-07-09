@@ -19,8 +19,8 @@
 #include <utility>
 
 namespace av_speech_in_noise {
-static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
-    -> bool {
+static auto operator==(
+    const AdaptiveTestResult &a, const AdaptiveTestResult &b) -> bool {
     return a.targetsUrl.path == b.targetsUrl.path && a.threshold == b.threshold;
 }
 
@@ -816,7 +816,7 @@ void submitValidResponse(submitting_keypress::InteractorImpl &interactor,
 }
 
 SUBMITTING_KEYPRESS_TEST(savesReactionTime) {
-    randomizer.randomInts.push(2); // 60, 110, 160, 190; 2 second delay added
+    randomizer.randomInts.push(4); // 1.94, 2, 2.06, 2.11, 2.16, 2.19
     interactor.notifyThatTrialWillBegin({});
 
     maskerPlayer.setNanosecondsFromPlayerTime(1e9);
@@ -893,16 +893,20 @@ SUBMITTING_KEYPRESS_TEST(writesTarget) {
 }
 
 SUBMITTING_KEYPRESS_TEST(selectsRandomVibrotactileStimulus) {
-    randomizer.randomInts.push(3); // 60, 110, 160, 190; 2 second delay added
+    randomizer.randomInts.push(3); // 1.94, 2, 2.06, 2.11, 2.16, 2.19
     randomizer.randomInts.push(1); // 100, 250
     interactor.notifyThatTrialWillBegin({});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2.190,
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2.110,
         maskerPlayer.vibrotactileStimulus.targetStartRelativeDelay.seconds);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         RunningATest::targetOnsetFringeDuration.seconds,
         maskerPlayer.vibrotactileStimulus.additionalPostFadeInDelay.seconds);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        0.250, maskerPlayer.vibrotactileStimulus.duration.seconds);
+        0.100, maskerPlayer.vibrotactileStimulus.gap.seconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0.250,
+        maskerPlayer.vibrotactileStimulus.vibrations.at(0).duration.seconds);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0.100,
+        maskerPlayer.vibrotactileStimulus.vibrations.at(1).duration.seconds);
 }
 }
 }

@@ -19,13 +19,13 @@ static auto at(const std::vector<double> &x, gsl::index n) -> double {
     return x.at(n);
 }
 
-static auto at(std::vector<sample_index_type> &x, gsl::index n)
-    -> sample_index_type & {
+static auto at(
+    std::vector<sample_index_type> &x, gsl::index n) -> sample_index_type & {
     return x.at(n);
 }
 
-static auto channel(const audio_type &x, channel_index_type i)
-    -> const channel_type & {
+static auto channel(
+    const audio_type &x, channel_index_type i) -> const channel_type & {
     return x.at(i);
 }
 
@@ -46,8 +46,8 @@ static auto samples(const audio_type &x) -> sample_index_type {
     return samples(firstChannel(x));
 }
 
-static auto firstChannel(const std::vector<channel_buffer_type> &x)
-    -> channel_buffer_type {
+static auto firstChannel(
+    const std::vector<channel_buffer_type> &x) -> channel_buffer_type {
     return x.front();
 }
 
@@ -55,8 +55,8 @@ static auto channels(const audio_type &x) -> channel_index_type {
     return x.size();
 }
 
-static auto channels(const std::vector<channel_buffer_type> &x)
-    -> channel_index_type {
+static auto channels(
+    const std::vector<channel_buffer_type> &x) -> channel_index_type {
     return x.size();
 }
 
@@ -106,13 +106,13 @@ static void mute(channel_buffer_type x) {
     std::fill(x.begin(), x.end(), sample_type{0});
 }
 
-static auto framesToFill(const std::vector<channel_buffer_type> &audioBuffer)
-    -> sample_index_type {
+static auto framesToFill(
+    const std::vector<channel_buffer_type> &audioBuffer) -> sample_index_type {
     return noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
 }
 
-static auto mathModulus(sample_index_type a, sample_index_type b)
-    -> sample_index_type {
+static auto mathModulus(
+    sample_index_type a, sample_index_type b) -> sample_index_type {
     auto result{a % b};
     return result > 0 ? result : result + b;
 }
@@ -132,8 +132,8 @@ static void scheduleCallback(Timer &timer, Delay x) {
     timer.scheduleCallbackAfterSeconds(x.seconds);
 }
 
-static auto audioDeviceDescriptions(AudioPlayer &player)
-    -> std::vector<std::string> {
+static auto audioDeviceDescriptions(
+    AudioPlayer &player) -> std::vector<std::string> {
     std::vector<std::string> descriptions(
         gsl::narrow<std::size_t>(player.deviceCount()));
     std::generate(descriptions.begin(), descriptions.end(),
@@ -141,8 +141,8 @@ static auto audioDeviceDescriptions(AudioPlayer &player)
     return descriptions;
 }
 
-static auto findDeviceIndex(AudioPlayer &player, const std::string &device)
-    -> int {
+static auto findDeviceIndex(
+    AudioPlayer &player, const std::string &device) -> int {
     auto devices{audioDeviceDescriptions(player)};
     auto found{std::find(devices.begin(), devices.end(), device)};
     if (found == devices.end())
@@ -225,13 +225,25 @@ void MaskerPlayerImpl::prepareVibrotactileStimulus(
               "prepare vibrotactile stimulus.");
 
     const auto sampleRateHz{av_speech_in_noise::sampleRateHz(player)};
-    sharedState.vibrotactileSamples =
-        gsl::narrow_cast<gsl::index>(stimulus.duration.seconds * sampleRateHz);
-    sharedState.vibrotactileTimeScalar = stimulus.frequency.Hz / sampleRateHz;
     sharedState.vibrotactileSamplesToWait = gsl::narrow_cast<gsl::index>(
         (stimulus.targetStartRelativeDelay.seconds +
             stimulus.additionalPostFadeInDelay.seconds) *
         sampleRateHz);
+    sharedState.vibrotactileStimulus.clear();
+    for (auto i{0}; i < stimulus.vibrations.size(); ++i) {
+        if (i > 0)
+            for (auto j{0}; j < gsl::narrow_cast<gsl::index>(
+                                    stimulus.gap.seconds * sampleRateHz);
+                 ++j)
+                sharedState.vibrotactileStimulus.push_back(0);
+        for (auto j{0};
+             j < gsl::narrow_cast<gsl::index>(
+                     stimulus.vibrations.at(i).duration.seconds * sampleRateHz);
+             ++j)
+            sharedState.vibrotactileStimulus.push_back(
+                gsl::narrow_cast<sample_type>(std::sin(
+                    2 * pi() * stimulus.frequency.Hz * j / sampleRateHz)));
+    }
 }
 
 void MaskerPlayerImpl::enableVibrotactileStimulus() {
@@ -400,8 +412,8 @@ void MaskerPlayerImpl::fillAudioBuffer(
 
 static auto squared(double x) -> double { return x * x; }
 
-static auto sourceFrames(MaskerPlayerImpl::SharedState &sharedState)
-    -> sample_index_type {
+static auto sourceFrames(
+    MaskerPlayerImpl::SharedState &sharedState) -> sample_index_type {
     return samples(firstChannel(sharedState.sourceAudio));
 }
 
@@ -472,10 +484,8 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
         if (sharedState.vibrotactileEnabled && channels(audioBuffer) > 2)
             at(channel(audioBuffer, 2), i) = playingVibrotactile &&
                     vibrotactileCounter >= sharedState.vibrotactileSamplesToWait
-                ? gsl::narrow_cast<sample_type>(
-                      std::sin(2 * pi() * sharedState.vibrotactileTimeScalar *
-                          (vibrotactileCounter -
-                              sharedState.vibrotactileSamplesToWait)))
+                ? sharedState.vibrotactileStimulus.at(vibrotactileCounter -
+                      sharedState.vibrotactileSamplesToWait)
                 : sample_type{0.};
         bool stateTransition{};
         if (state == State::fadingIn &&
@@ -491,7 +501,7 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
         }
         if (playingVibrotactile &&
             vibrotactileCounter ==
-                sharedState.vibrotactileSamples +
+                sharedState.vibrotactileStimulus.size() +
                     sharedState.vibrotactileSamplesToWait) {
             clear(playingVibrotactile);
         }
