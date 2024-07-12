@@ -9,7 +9,6 @@
 #include <vector>
 #include <algorithm>
 #include <limits>
-#include <iostream>
 
 namespace av_speech_in_noise {
 static auto at(std::vector<double> &x, gsl::index n) -> double & {
@@ -390,18 +389,13 @@ void MaskerPlayerImpl::stop() {
 }
 
 void MaskerPlayerImpl::callback() {
-    if (thisCallConsumesCompletionMessage(sharedState.fadeInMessage)) {
-        std::cout << "Fade in completed\n";
+    if (thisCallConsumesCompletionMessage(sharedState.fadeInMessage))
         observer->fadeInComplete({{sharedState.fadeInCompleteSystemTime.load()},
             sharedState.fadeInCompleteSystemTimeSampleOffset.load()});
-    }
 
     if (thisCallConsumesCompletionMessage(sharedState.fadeOutMessage)) {
-        std::cout << "Fade out completed\n";
         clear(playingFiniteSection);
-        std::cout << "Stopping masker player...\n";
         stop();
-        std::cout << "Masker player stopped\n";
         observer->fadeOutComplete();
         return;
     }
