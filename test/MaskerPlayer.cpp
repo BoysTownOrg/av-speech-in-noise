@@ -994,7 +994,10 @@ MASKER_PLAYER_TEST(vibrotactile) {
     auto future{
         setOnPlayTask(audioPlayer, [=](AudioPlayer::Observer *observer) {
             av_speech_in_noise::fillAudioBuffer(observer, 3, halfWindowLength);
-            return av_speech_in_noise::fillAudioBuffer(observer, 3, 18);
+            auto result{av_speech_in_noise::fillAudioBuffer(observer, 3, 18)};
+            // The following line exposes a bug...
+            av_speech_in_noise::fillAudioBuffer(observer, 3, 100);
+            return result;
         })};
     fadeIn(player);
     assertEqual(future.get().at(2),
