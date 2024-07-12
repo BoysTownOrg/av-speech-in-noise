@@ -506,7 +506,7 @@ void MaskerPlayerImpl::AudioThreadContext::fillAudioBuffer(
             stateTransition = true;
         }
         if (playingVibrotactile &&
-            vibrotactileCounter ==
+            vibrotactileCounter + 1 ==
                 sharedState.vibrotactileStimulus.size() +
                     sharedState.vibrotactileSamplesToWait) {
             clear(playingVibrotactile);
