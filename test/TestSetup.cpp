@@ -1,8 +1,8 @@
 #include "RunningATestStub.hpp"
 #include "assert-utility.hpp"
 #include "SessionViewStub.hpp"
-#include "av-speech-in-noise/Interface.hpp"
 
+#include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/ui/TestSetupImpl.hpp>
 
 #include <gtest/gtest.h>
@@ -370,16 +370,14 @@ class TestSetupFailureTests : public ::testing::Test {
 
 #define TEST_SETUP_FAILURE_TEST(a) TEST_F(TestSetupFailureTests, a)
 
-TEST_SETUP_CONTROLLER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {
+TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesSubjectId) {
     control.setSubjectId("b");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"b"}, testSettingsInterpreter.identity().subjectId);
 }
 
-TEST_SETUP_CONTROLLER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesStartingSnr) {
+TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesStartingSnr) {
     control.setStartingSnr("1");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, testSettingsInterpreter.startingSnr());
@@ -391,8 +389,7 @@ TEST_SETUP_CONTROLLER_TEST(confirmingTestSetupRoundsStartingSnr) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2, testSettingsInterpreter.startingSnr());
 }
 
-TEST_SETUP_CONTROLLER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidStartingSnrShowsMessage) {
+TEST_SETUP_CONTROLLER_TEST(confirmingTestWithInvalidStartingSnrShowsMessage) {
     control.setStartingSnr("a");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -400,32 +397,28 @@ TEST_SETUP_CONTROLLER_TEST(
         presenter.errorMessage());
 }
 
-TEST_SETUP_CONTROLLER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
+TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesTesterId) {
     control.setTesterId("c");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"c"}, testSettingsInterpreter.identity().testerId);
 }
 
-TEST_SETUP_CONTROLLER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
+TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesSession) {
     control.setSession("e");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"e"}, testSettingsInterpreter.identity().session);
 }
 
-TEST_SETUP_CONTROLLER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesRmeSetting) {
+TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesRmeSetting) {
     control.setRmeSetting("e");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"e"}, testSettingsInterpreter.identity().rmeSetting);
 }
 
-TEST_SETUP_CONTROLLER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTransducer) {
+TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesTransducer) {
     control.setTransducer("a");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
