@@ -385,6 +385,12 @@ TEST_SETUP_CONTROLLER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, testSettingsInterpreter.startingSnr());
 }
 
+TEST_SETUP_CONTROLLER_TEST(confirmingTestSetupRoundsStartingSnr) {
+    control.setStartingSnr("1.5");
+    run(confirmingTestSetup);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2, testSettingsInterpreter.startingSnr());
+}
+
 TEST_SETUP_CONTROLLER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidStartingSnrShowsMessage) {
     control.setStartingSnr("a");
@@ -535,8 +541,8 @@ TEST_SETUP_PRESENTER_TEST(presenterHidesViewWhenStopped) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-auto contains(const std::vector<std::string> &items, const std::string &item)
-    -> bool {
+auto contains(
+    const std::vector<std::string> &items, const std::string &item) -> bool {
     return std::find(items.begin(), items.end(), item) != items.end();
 }
 
