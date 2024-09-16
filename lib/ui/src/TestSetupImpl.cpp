@@ -1,8 +1,13 @@
 #include "TestSetupImpl.hpp"
 #include "Input.hpp"
 
+#include <cmath>
+#include <exception>
 #include <functional>
+#include <gsl/gsl_util>
 #include <sstream>
+#include <stdexcept>
+#include <string>
 
 namespace av_speech_in_noise {
 TestSetupController::TestSetupController(TestSetupControl &control,
@@ -38,6 +43,20 @@ static auto readTestSettingsFile(
     }
 }
 
+static auto roundedInteger(
+    const std::string &x, const std::string &identifier) -> int {
+    try {
+        return gsl::narrow<int>(std::lround(std::stod(x)));
+    } catch (const std::exception &) {
+        std::stringstream stream;
+        stream << '"' << x << '"';
+        stream << " is not a valid ";
+        stream << identifier;
+        stream << '.';
+        throw BadInput{stream.str()};
+    }
+}
+
 void TestSetupController::notifyThatConfirmButtonHasBeenClicked() {
     showErrorMessageOnRuntimeError(presenter, [&] {
         TestIdentity testIdentity;
@@ -49,7 +68,7 @@ void TestSetupController::notifyThatConfirmButtonHasBeenClicked() {
         testIdentity.relativeOutputUrl.path = "Documents/AvSpeechInNoise Data";
         testSettingsInterpreter.initializeTest(
             readTestSettingsFile(textFileReader, control), testIdentity,
-            SNR{readInteger(control.startingSnr(), "starting SNR")});
+            SNR{roundedInteger(control.startingSnr(), "starting SNR")});
     });
 }
 
