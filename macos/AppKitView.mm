@@ -12,6 +12,10 @@
 #include <string>
 #include <tuple>
 
+@interface ClickTrackingButton : NSButton
+@end
+
+
 @interface CoordinateResponseMeasureUIActions : NSObject
 @end
 
@@ -19,6 +23,16 @@
 @end
 
 @interface ObjCToCppAction : NSObject
+@end
+
+@implementation ClickTrackingButton {
+  @public
+    NSEvent *lastMouseDown;
+}
+
+- (void)mouseDown:(NSEvent *)event {
+    lastMouseDown = event;
+}
 @end
 
 @implementation ObjCToCppAction {
