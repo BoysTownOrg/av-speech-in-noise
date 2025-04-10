@@ -529,9 +529,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         freeResponseController, sessionController,
         coordinateResponseMeasurePresenter, freeResponsePresenter,
         chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
-        consonantPresenter, passFailPresenter, keypressPresenter,
-        submittingKeyPressInteractor, emotionPresenter, childEmotionPresenter,
-        fixedPassFailPresenter};
+        consonantPresenter, submittingConsonantInteractor, passFailPresenter,
+        keypressPresenter, submittingKeyPressInteractor, emotionPresenter,
+        childEmotionPresenter, fixedPassFailPresenter};
     static TestSetupController testSetupController{*testSetupUI, sessionUI,
         testSetupPresenter, runningATest, testSettingsInterpreter,
         textFileReader};
