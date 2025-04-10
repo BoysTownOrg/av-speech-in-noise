@@ -424,6 +424,10 @@ auto AppKitUI::consonant() -> Consonant {
     return consonants.at((__bridge void *)lastButtonPressed);
 }
 
+auto AppKitUI::buttonPressedSeconds() -> double override {
+    return lastButtonPressed.lastMouseDown.timestamp;
+}
+
 void AppKitUI::hideCursor() { [NSCursor hide]; }
 
 void AppKitUI::showCursor() { [NSCursor unhide]; }
