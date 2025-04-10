@@ -19,8 +19,8 @@
 #include <utility>
 
 namespace av_speech_in_noise {
-static auto operator==(
-    const AdaptiveTestResult &a, const AdaptiveTestResult &b) -> bool {
+static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
+    -> bool {
     return a.targetsUrl.path == b.targetsUrl.path && a.threshold == b.threshold;
 }
 
@@ -304,22 +304,23 @@ class SubmittingConsonantTests : public ::testing::Test {
     FixedLevelMethodStub testMethod;
     RunningATestStub model{adaptiveTestMethod, testMethod};
     OutputFileStub outputFile;
+    MaskerPlayerStub maskerPlayer;
     submitting_consonant::InteractorImpl interactor{
-        testMethod, model, outputFile};
+        testMethod, model, outputFile, maskerPlayer};
     ConsonantResponse response;
 
     void assertIncorrect(const std::string &s, Consonant r) {
         testMethod.setCurrentTargetPath(s);
         response.consonant = r;
         interactor.submit(response);
-        AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.consonantTrial().correct);
+        AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.consonantTrial.correct);
     }
 
     void assertCorrect(const std::string &s, Consonant r) {
         testMethod.setCurrentTargetPath(s);
         response.consonant = r;
         interactor.submit(response);
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.consonantTrial().correct);
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.consonantTrial.correct);
     }
 };
 
@@ -721,21 +722,21 @@ SUBMITTING_CONSONANT_TEST(passesConsonantToOutputFile) {
     response.consonant = Consonant::bi;
     interactor.submit(response);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Consonant::bi, outputFile.consonantTrial().subjectConsonant);
+        Consonant::bi, outputFile.consonantTrial.subjectConsonant);
 }
 
 SUBMITTING_CONSONANT_TEST(passesCorrectConsonantToOutputFile) {
     testMethod.setCurrentTargetPath("choose_bi_1-25_Communicator.mp4");
     interactor.submit({});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Consonant::bi, outputFile.consonantTrial().correctConsonant);
+        Consonant::bi, outputFile.consonantTrial.correctConsonant);
 }
 
 SUBMITTING_CONSONANT_TEST(passesTargetToOutputFile) {
     testMethod.setCurrentTargetPath("a/b/c.txt");
     interactor.submit({});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"c.txt"}, outputFile.consonantTrial().target);
+        std::string{"c.txt"}, outputFile.consonantTrial.target);
 }
 
 SUBMITTING_CONSONANT_TEST(b) {
@@ -800,6 +801,18 @@ SUBMITTING_CONSONANT_TEST(notB) {
 
 SUBMITTING_CONSONANT_TEST(invalidFormatIsAlwaysIncorrect) {
     assertIncorrect("idontknowb", Consonant::bi);
+}
+
+SUBMITTING_CONSONANT_TEST(savesReactionTime) {
+    maskerPlayer.setNanosecondsFromPlayerTime(1e9);
+    PlayerTimeWithDelay playerTime;
+    playerTime.delay.seconds = .5;
+    interactor.notifyThatTargetWillPlayAt(playerTime);
+    response.seconds = 1.7;
+    interactor.submit(response);
+    const auto start{(1000000000 + 500000000) / 1000000};
+    const auto end{1700.};
+    assertEqual(end - start, outputFile.consonantTrial.rt.milliseconds);
 }
 
 void submitValidResponse(submitting_keypress::InteractorImpl &interactor,

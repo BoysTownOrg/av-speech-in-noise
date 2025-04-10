@@ -46,9 +46,14 @@ struct FixedLevelTrial : Trial {};
 
 struct CorrectKeywordsTrial : CorrectKeywords, open_set::AdaptiveTrial {};
 
+struct ReactionTime {
+    double milliseconds;
+};
+
 struct ConsonantTrial : Target, Evaluative {
     Consonant subjectConsonant{};
     Consonant correctConsonant{};
+    ReactionTime rt{};
 };
 
 struct EmotionTrial : EmotionResponse, Target {};
@@ -62,10 +67,6 @@ struct SyllableTrial : open_set::Trial, Evaluative, Flaggable {
 
 struct FreeResponseTrial : FreeResponse, open_set::Trial {
     std::string time;
-};
-
-struct ReactionTime {
-    double milliseconds;
 };
 
 struct KeyPressTrial : KeyPressResponse, open_set::Trial {

@@ -68,6 +68,7 @@ enum class Consonant {
 
 struct ConsonantResponse {
     Consonant consonant{};
+    double seconds{};
 };
 
 enum class Emotion {

@@ -4,9 +4,10 @@
 #include <string>
 
 namespace av_speech_in_noise::submitting_consonant {
-InteractorImpl::InteractorImpl(
-    FixedLevelMethod &method, RunningATest &model, OutputFile &outputFile)
-    : method{method}, model{model}, outputFile{outputFile} {}
+InteractorImpl::InteractorImpl(FixedLevelMethod &method, RunningATest &model,
+    OutputFile &outputFile, MaskerPlayer &maskerPlayer)
+    : method{method}, model{model}, outputFile{outputFile},
+      maskerPlayer{maskerPlayer} {}
 
 static auto consonant(const std::string &match) -> Consonant {
     if (match == "bi")
@@ -55,9 +56,23 @@ void InteractorImpl::submit(const ConsonantResponse &r) {
     trial.target =
         std::filesystem::path{method.currentTarget().path}.filename();
     trial.correct = trial.correctConsonant == trial.subjectConsonant;
+    trial.rt.milliseconds = r.seconds * 1000 - lastTargetStartTimeMilliseconds;
     outputFile.write(trial);
     outputFile.save();
     method.submit(Flaggable{false});
     model.prepareNextTrialIfNeeded();
+}
+
+static auto nanoToMilliseconds(std::uintmax_t t) -> std::uintmax_t {
+    // integer rounding
+    return (t + 500000) / 1000000;
+}
+
+void InteractorImpl::notifyThatTargetWillPlayAt(
+    const PlayerTimeWithDelay &targetStart) {
+    lastTargetStartTimeMilliseconds =
+        static_cast<double>(nanoToMilliseconds(
+            maskerPlayer.nanoseconds(targetStart.playerTime))) +
+        targetStart.delay.seconds * 1000;
 }
 }

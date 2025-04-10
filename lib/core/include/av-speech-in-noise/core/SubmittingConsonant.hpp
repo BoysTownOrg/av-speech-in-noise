@@ -5,19 +5,24 @@
 #include "IFixedLevelMethod.hpp"
 #include "IRunningATest.hpp"
 #include "IOutputFile.hpp"
+#include "IMaskerPlayer.hpp"
 
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise::submitting_consonant {
-class InteractorImpl : public Interactor {
+class InteractorImpl : public Interactor, RunningATest::TestObserver {
   public:
-    InteractorImpl(FixedLevelMethod &, RunningATest &, OutputFile &);
+    InteractorImpl(
+        FixedLevelMethod &, RunningATest &, OutputFile &, MaskerPlayer &);
     void submit(const ConsonantResponse &r) override;
+    void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
 
   private:
     FixedLevelMethod &method;
     RunningATest &model;
     OutputFile &outputFile;
+    MaskerPlayer &maskerPlayer;
+    double lastTargetStartTimeMilliseconds{};
 };
 }
 

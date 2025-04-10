@@ -78,7 +78,7 @@ class OutputFileStub : public OutputFile {
 
     void write(const ConsonantTrial &p) override {
         addToLog("writeTrial ");
-        consonantTrial_ = p;
+        consonantTrial = p;
     }
 
     void write(const EmotionTrial &e) override {
@@ -166,10 +166,6 @@ class OutputFileStub : public OutputFile {
         return correctKeywordsTrial_;
     }
 
-    auto consonantTrial() const -> const ConsonantTrial & {
-        return consonantTrial_;
-    }
-
     auto openSetAdaptiveTrial() const -> const open_set::AdaptiveTrial & {
         return openSetAdaptiveTrial_;
     }
@@ -187,6 +183,7 @@ class OutputFileStub : public OutputFile {
     KeyPressTrial keypressTrial{};
     EmotionTrial emotionTrial;
     PassFailTrial passFailTrial{};
+    ConsonantTrial consonantTrial{};
 
   private:
     coordinate_response_measure::AdaptiveTrial
@@ -194,7 +191,6 @@ class OutputFileStub : public OutputFile {
     coordinate_response_measure::FixedLevelTrial fixedLevelTrial_{};
     FreeResponseTrial freeResponseTrial_{};
     CorrectKeywordsTrial correctKeywordsTrial_{};
-    ConsonantTrial consonantTrial_{};
     ThreeKeywordsTrial threeKeywordsTrial_{};
     SyllableTrial syllableTrial_{};
     open_set::AdaptiveTrial openSetAdaptiveTrial_{};

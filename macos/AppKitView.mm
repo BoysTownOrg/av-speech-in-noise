@@ -86,7 +86,7 @@ static auto consonantTextButton(
     ConsonantUIActions *actions, const std::string &text) -> NSButton * {
     const auto title{nsString(text)};
     const auto button {
-        [NSButton
+        [ClickTrackingButton
             buttonWithTitle:title
                      target:actions
                      action:@selector(notifyThatResponseButtonHasBeenClicked:)]
@@ -119,7 +119,7 @@ static auto consonantImageButton(
     ConsonantUIActions *actions, const std::string &consonant) -> NSButton * {
     const auto image{[NSImage imageNamed:nsString(consonant + ".bmp")]};
     const auto button {
-        [NSButton
+        [ClickTrackingButton
             buttonWithImage:image != nil
                 ? image
                 : [NSImage imageNamed:NSImageNameApplicationIcon]
