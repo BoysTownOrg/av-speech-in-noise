@@ -14,7 +14,10 @@ void Controller::notifyThatReadyButtonHasBeenClicked() {
 }
 
 void Controller::notifyThatResponseButtonHasBeenClicked() {
-    interactor.submit(ConsonantResponse{control.consonant()});
+    ConsonantResponse response;
+    response.consonant = control.consonant();
+    response.seconds = control.buttonPressedSeconds();
+    interactor.submit(response);
     testController.notifyThatUserIsDoneRespondingAndIsReadyForNextTrial();
 }
 
