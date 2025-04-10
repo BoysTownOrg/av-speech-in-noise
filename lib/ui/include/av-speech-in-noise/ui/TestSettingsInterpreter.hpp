@@ -172,8 +172,9 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
         TaskPresenter &chooseKeywordsPresenter,
         TaskPresenter &syllablesPresenter,
         TaskPresenter &correctKeywordsPresenter,
-        TaskPresenter &consonantPresenter, TaskPresenter &passFailPresenter,
-        TaskPresenter &keypressPresenter,
+        TaskPresenter &consonantPresenter,
+        RunningATest::TestObserver &submittingConsonantResponse,
+        TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter,
         RunningATest::TestObserver &submittingKeyPressResponse,
         TaskPresenter &emotionPresenter, TaskPresenter &childEmotionPresenter,
         TaskPresenter &fixedPassFailPresenter);
@@ -204,6 +205,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     TaskPresenter &syllablesPresenter;
     TaskPresenter &correctKeywordsPresenter;
     TaskPresenter &consonantPresenter;
+    RunningATest::TestObserver &submittingConsonantResponse;
     TaskPresenter &passFailPresenter;
     TaskPresenter &keypressPresenter;
     RunningATest::TestObserver &submittingKeyPressResponse;
