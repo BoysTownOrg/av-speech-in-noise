@@ -23,10 +23,17 @@ class ConsonantControlStub : public Control {
 
     void setConsonant(Consonant c) { consonant_ = c; }
 
+    void setButtonPressedSeconds(double d) { buttonPressedSeconds_ = d; }
+
     auto consonant() -> Consonant override { return consonant_; }
+
+    auto buttonPressedSeconds() -> double override {
+        return buttonPressedSeconds_;
+    }
 
   private:
     Consonant consonant_{Consonant::unknown};
+    double buttonPressedSeconds_{};
     Observer *listener_{};
 };
 
@@ -208,15 +215,16 @@ CONSONANT_TASK_CONTROLLER_TEST(hidesReadyButtonAfterClicked) {
 
 CONSONANT_TASK_CONTROLLER_TEST(submitsConsonantAfterResponseButtonIsClicked) {
     control.setConsonant(Consonant::bi);
+    control.setButtonPressedSeconds(1.2);
     notifyThatResponseButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(Consonant::bi, model.response().consonant);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1.2, model.response().seconds);
 }
 
 CONSONANT_TASK_CONTROLLER_TEST(
     notifiesThatUserIsDoneRespondingAndIsReadyForNextTrialAfterResponseButtonIsClicked) {
     notifyThatResponseButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testController
             .notifiedThatUserIsDoneRespondingAndIsReadyForNextTrial());
 }
 }

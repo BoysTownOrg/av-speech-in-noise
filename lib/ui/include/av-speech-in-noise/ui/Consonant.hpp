@@ -21,6 +21,7 @@ class Control {
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Control);
     virtual void attach(Observer *) = 0;
     virtual auto consonant() -> Consonant = 0;
+    virtual auto buttonPressedSeconds() -> double = 0;
 };
 
 class View : public virtual av_speech_in_noise::View {

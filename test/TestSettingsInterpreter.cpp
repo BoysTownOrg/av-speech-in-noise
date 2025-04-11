@@ -234,6 +234,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TaskPresenterStub syllablesPresenter;
     TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub consonantPresenter;
+    RunningATest::TestObserver submittingConsonantResponse;
     TaskPresenterStub passFailPresenter;
     TaskPresenterStub keypressPresenter;
     RunningATest::TestObserver submittingKeyPressResponse;
@@ -247,9 +248,9 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         freeResponseController, sessionController,
         coordinateResponseMeasurePresenter, freeResponsePresenter,
         chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
-        consonantPresenter, passFailPresenter, keypressPresenter,
-        submittingKeyPressResponse, emotionPresenter, childEmotionPresenter,
-        fixedPassFailPresenter};
+        consonantPresenter, submittingConsonantResponse, passFailPresenter,
+        keypressPresenter, submittingKeyPressResponse, emotionPresenter,
+        childEmotionPresenter, fixedPassFailPresenter};
     TestIdentity testIdentity;
 };
 
@@ -983,6 +984,8 @@ TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4, eachTargetNTimes.repeats());
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &eachTargetNTimes);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &runningATest.observer.front().get(), &submittingConsonantResponse);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

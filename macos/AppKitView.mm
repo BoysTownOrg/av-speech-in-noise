@@ -12,6 +12,9 @@
 #include <string>
 #include <tuple>
 
+@interface ClickTrackingButton : NSButton
+@end
+
 @interface CoordinateResponseMeasureUIActions : NSObject
 @end
 
@@ -19,6 +22,18 @@
 @end
 
 @interface ObjCToCppAction : NSObject
+@end
+
+@implementation ClickTrackingButton {
+  @public
+    NSEvent *lastMouseDown;
+}
+
+- (void)mouseDown:(NSEvent *)event {
+    lastMouseDown = event;
+
+    [super mouseDown:event];
+}
 @end
 
 @implementation ObjCToCppAction {
@@ -72,7 +87,7 @@ static auto consonantTextButton(
     ConsonantUIActions *actions, const std::string &text) -> NSButton * {
     const auto title{nsString(text)};
     const auto button {
-        [NSButton
+        [ClickTrackingButton
             buttonWithTitle:title
                      target:actions
                      action:@selector(notifyThatResponseButtonHasBeenClicked:)]
@@ -105,7 +120,7 @@ static auto consonantImageButton(
     ConsonantUIActions *actions, const std::string &consonant) -> NSButton * {
     const auto image{[NSImage imageNamed:nsString(consonant + ".bmp")]};
     const auto button {
-        [NSButton
+        [ClickTrackingButton
             buttonWithImage:image != nil
                 ? image
                 : [NSImage imageNamed:NSImageNameApplicationIcon]
@@ -408,6 +423,10 @@ void AppKitUI::hideResponseButtons() {
 
 auto AppKitUI::consonant() -> Consonant {
     return consonants.at((__bridge void *)lastButtonPressed);
+}
+
+auto AppKitUI::buttonPressedSeconds() -> double {
+    return lastButtonPressed->lastMouseDown.timestamp;
 }
 
 void AppKitUI::hideCursor() { [NSCursor hide]; }

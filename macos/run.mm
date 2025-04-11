@@ -482,7 +482,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_pass_fail::Presenter passFailPresenter{
         testController, testUI, submittingPassFailInteractor, passFailUI};
     static submitting_consonant::InteractorImpl submittingConsonantInteractor{
-        fixedLevelMethod, runningATest, outputFile};
+        fixedLevelMethod, runningATest, outputFile, maskerPlayer};
     static submitting_consonant::Controller consonantTaskController{
         testController, submittingConsonantInteractor, consonantUI,
         consonantPresenter};
@@ -529,9 +529,9 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         freeResponseController, sessionController,
         coordinateResponseMeasurePresenter, freeResponsePresenter,
         chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
-        consonantPresenter, passFailPresenter, keypressPresenter,
-        submittingKeyPressInteractor, emotionPresenter, childEmotionPresenter,
-        fixedPassFailPresenter};
+        consonantPresenter, submittingConsonantInteractor, passFailPresenter,
+        keypressPresenter, submittingKeyPressInteractor, emotionPresenter,
+        childEmotionPresenter, fixedPassFailPresenter};
     static TestSetupController testSetupController{*testSetupUI, sessionUI,
         testSetupPresenter, runningATest, testSettingsInterpreter,
         textFileReader};

@@ -388,6 +388,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         taskPresenter = &correctKeywordsPresenter;
         break;
     case Method::fixedLevelConsonants:
+        testObservers.emplace_back(submittingConsonantResponse);
         taskPresenter = &consonantPresenter;
         break;
     case Method::fixedLevelChooseKeywordsWithAllTargets:
@@ -540,6 +541,7 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     TaskPresenter &freeResponsePresenter,
     TaskPresenter &chooseKeywordsPresenter, TaskPresenter &syllablesPresenter,
     TaskPresenter &correctKeywordsPresenter, TaskPresenter &consonantPresenter,
+    RunningATest::TestObserver &submittingConsonantResponse,
     TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter,
     RunningATest::TestObserver &submittingKeyPressResponse,
     TaskPresenter &emotionPresenter, TaskPresenter &childEmotionPresenter,
@@ -561,6 +563,7 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       syllablesPresenter{syllablesPresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
       consonantPresenter{consonantPresenter},
+      submittingConsonantResponse{submittingConsonantResponse},
       passFailPresenter{passFailPresenter},
       keypressPresenter{keypressPresenter},
       submittingKeyPressResponse{submittingKeyPressResponse},
