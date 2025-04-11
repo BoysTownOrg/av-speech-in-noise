@@ -812,7 +812,7 @@ SUBMITTING_CONSONANT_TEST(savesReactionTime) {
     interactor.submit(response);
     const auto start{(1000000000 + 500000000) / 1000000};
     const auto end{1700.};
-    assertEqual(end - start, outputFile.consonantTrial.rt.milliseconds);
+    assertEqual(end - start, outputFile.consonantTrial.rt.milliseconds, 1e-12);
 }
 
 void submitValidResponse(submitting_keypress::InteractorImpl &interactor,
