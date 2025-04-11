@@ -482,7 +482,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static submitting_pass_fail::Presenter passFailPresenter{
         testController, testUI, submittingPassFailInteractor, passFailUI};
     static submitting_consonant::InteractorImpl submittingConsonantInteractor{
-        fixedLevelMethod, runningATest, outputFile};
+        fixedLevelMethod, runningATest, outputFile, maskerPlayer};
     static submitting_consonant::Controller consonantTaskController{
         testController, submittingConsonantInteractor, consonantUI,
         consonantPresenter};

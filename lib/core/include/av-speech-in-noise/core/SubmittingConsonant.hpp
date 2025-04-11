@@ -10,7 +10,7 @@
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise::submitting_consonant {
-class InteractorImpl : public Interactor, RunningATest::TestObserver {
+class InteractorImpl : public Interactor, public RunningATest::TestObserver {
   public:
     InteractorImpl(
         FixedLevelMethod &, RunningATest &, OutputFile &, MaskerPlayer &);

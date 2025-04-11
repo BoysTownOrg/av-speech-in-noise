@@ -15,7 +15,6 @@
 @interface ClickTrackingButton : NSButton
 @end
 
-
 @interface CoordinateResponseMeasureUIActions : NSObject
 @end
 
@@ -32,6 +31,8 @@
 
 - (void)mouseDown:(NSEvent *)event {
     lastMouseDown = event;
+
+    [super mouseDown:event];
 }
 @end
 
@@ -424,8 +425,8 @@ auto AppKitUI::consonant() -> Consonant {
     return consonants.at((__bridge void *)lastButtonPressed);
 }
 
-auto AppKitUI::buttonPressedSeconds() -> double override {
-    return lastButtonPressed.lastMouseDown.timestamp;
+auto AppKitUI::buttonPressedSeconds() -> double {
+    return lastButtonPressed->lastMouseDown.timestamp;
 }
 
 void AppKitUI::hideCursor() { [NSCursor hide]; }

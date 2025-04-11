@@ -16,6 +16,7 @@
 @class CoordinateResponseMeasureUIActions;
 @class ConsonantUIActions;
 @class ObjCToCppAction;
+@class ClickTrackingButton;
 
 namespace av_speech_in_noise {
 class ObjCToCppResponder {
@@ -125,7 +126,7 @@ class AppKitUI : public View, public Control {
     NSView *view;
     NSStackView *responseButtons;
     NSButton *readyButton{};
-    NSButton *lastButtonPressed{};
+    ClickTrackingButton *lastButtonPressed{};
     ConsonantUIActions *actions;
     Observer *listener_{};
 };
