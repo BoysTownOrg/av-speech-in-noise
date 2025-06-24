@@ -3,8 +3,11 @@
 #include <cmath>
 #include <functional>
 #include <numeric>
+#include <stdexcept>
 
 namespace av_speech_in_noise {
+using std::plus;
+
 template <class UnaryOperator>
 static auto transform(std::vector<double> v, UnaryOperator f)
     -> std::vector<double> {
@@ -209,4 +212,166 @@ auto LogisticSweetPoints::operator()(Phi phi) -> std::vector<double> {
     std::sort(sweetPoints.begin(), sweetPoints.end());
     return sweetPoints;
 }
+
+static auto logNormalizedSum(std::vector<double> v) -> std::vector<double> {
+    const auto sum = std::accumulate(v.begin(), v.end(), 0.0);
+    return transform(v, [sum](double x) { return std::log(x / sum); });
+}
+
+UpdatedMaximumLikelihood::UpdatedMaximumLikelihood(
+    PosteriorDistributions distributions,
+    PsychometricFunction &psychometricFunction, SweetPoints &sweetPointComputer,
+    PhiComputer &phiComputer, TrackSpecifications trackSpecifications)
+    : _alphaSpace(distributions.alpha.space),
+      _betaSpace(distributions.beta.space),
+      _gammaSpace(distributions.gamma.space),
+      _lambdaSpace(distributions.lambda.space), _phi({}),
+      psychometricFunction(psychometricFunction),
+      sweetPointComputer(sweetPointComputer), phiComputer(phiComputer),
+      _x(trackSpecifications.startingX),
+      lowerBound(trackSpecifications.lowerBound),
+      upperBound(trackSpecifications.upperBound),
+      down(trackSpecifications.down), up(trackSpecifications.up),
+      consecutiveDown(0), consecutiveUp(0),
+      trackDirection(TrackDirection::undefined), _reversals(0), _trials(0) {
+    for (const auto l : distributions.lambda.prior)
+        for (const auto g : distributions.gamma.prior)
+            for (const auto b : distributions.beta.prior)
+                for (const auto a : distributions.alpha.prior)
+                    _posterior.push_back(a * b * g * l);
+    if (_posterior.size() == 0)
+        throw std::runtime_error("Empty parameter space passed.");
+    _posterior = logNormalizedSum(std::move(_posterior));
+    if (_alphaSpace.size() > 1)
+        sweetPointIndeces.push_back(2);
+    if (_betaSpace.size() > 1) {
+        sweetPointIndeces.push_back(1);
+        sweetPointIndeces.push_back(3);
+    }
+    if (_gammaSpace.size() > 1)
+        sweetPointIndeces.push_back(0);
+    if (_lambdaSpace.size() > 1)
+        sweetPointIndeces.push_back(4);
+    std::sort(sweetPointIndeces.begin(), sweetPointIndeces.end());
+    xCandidateIndex = (_x < (lowerBound + upperBound) / 2)
+        ? sweetPointIndeces.front()
+        : sweetPointIndeces.back();
+}
+
+void UpdatedMaximumLikelihood::addToPosteriorAndShiftByMax(
+    const std::vector<double> &result) {
+    std::transform(_posterior.begin(), _posterior.end(), result.begin(),
+        _posterior.begin(), plus<>());
+    const auto max = *std::max_element(_posterior.begin(), _posterior.end());
+    _posterior =
+        transform(std::move(_posterior), [max](double x) { return x - max; });
+}
+
+auto UpdatedMaximumLikelihood::evaluatePsychometricFunction()
+    -> std::vector<double> {
+    std::vector<double> result;
+    for (const auto lambda : _lambdaSpace)
+        for (const auto gamma : _gammaSpace)
+            for (const auto beta : _betaSpace)
+                for (const auto alpha : _alphaSpace)
+                    result.push_back(
+                        psychometricFunction({alpha, beta, gamma, lambda}, _x));
+    return result;
+}
+
+auto UpdatedMaximumLikelihood::computeSweetPoint(Phi phi)
+    -> std::vector<double> {
+    auto sweetPoint = sweetPointComputer(phi);
+    sweetPoint.insert(sweetPoint.end(), (2 * sweetPoint[2]) - sweetPoint[1]);
+    sweetPoint.insert(sweetPoint.begin(), (2 * sweetPoint[0]) - sweetPoint[1]);
+    return transform(std::move(sweetPoint), [&](double x) {
+        return std::max(std::min(x, upperBound), lowerBound);
+    });
+}
+
+void UpdatedMaximumLikelihood::pushDown() {
+    if (++consecutiveDown == down) {
+        xCandidateIndex = std::max(xCandidateIndex,
+                              *std::min_element(sweetPointIndeces.begin(),
+                                  sweetPointIndeces.end()) +
+                                  1) -
+            1;
+        consecutiveDown = 0;
+        if (trackDirection == TrackDirection::up) {
+            ++_reversals;
+            _reversalXs.push_back(_x);
+        }
+        trackDirection = TrackDirection::down;
+    }
+    consecutiveUp = 0;
+
+    addToPosteriorAndShiftByMax(
+        logNormalizedSum(evaluatePsychometricFunction()));
+    _phi = phiComputer(*this);
+    _sweetPoint = computeSweetPoint(_phi);
+    _x = _sweetPoint[xCandidateIndex];
+    ++_trials;
+}
+
+void UpdatedMaximumLikelihood::pushUp() {
+    if (++consecutiveUp == up) {
+        xCandidateIndex = std::min(xCandidateIndex + 1,
+            *std::max_element(
+                sweetPointIndeces.begin(), sweetPointIndeces.end()));
+        consecutiveUp = 0;
+        if (trackDirection == TrackDirection::down) {
+            ++_reversals;
+            _reversalXs.push_back(_x);
+        }
+        trackDirection = TrackDirection::up;
+    }
+    consecutiveDown = 0;
+
+    addToPosteriorAndShiftByMax(logNormalizedSum(transform(
+        evaluatePsychometricFunction(), [](double x) { return 1 - x; })));
+    _phi = phiComputer(*this);
+    _sweetPoint = computeSweetPoint(_phi);
+    _x = _sweetPoint[xCandidateIndex];
+    ++_trials;
+}
+
+auto UpdatedMaximumLikelihood::lambdaSpace(size_t index) const -> const
+    double & {
+    return _lambdaSpace[(index / _alphaSpace.size() / _betaSpace.size() /
+                            _gammaSpace.size()) %
+        _lambdaSpace.size()];
+}
+
+auto UpdatedMaximumLikelihood::gammaSpace(size_t index) const -> const
+    double & {
+    return _gammaSpace[(index / _alphaSpace.size() / _betaSpace.size()) %
+        _gammaSpace.size()];
+}
+
+auto UpdatedMaximumLikelihood::betaSpace(size_t index) const -> const double & {
+    return _betaSpace[(index / _alphaSpace.size()) % _betaSpace.size()];
+}
+
+auto UpdatedMaximumLikelihood::alphaSpace(size_t index) const -> const
+    double & {
+    return _alphaSpace[index % _alphaSpace.size()];
+}
+
+auto UpdatedMaximumLikelihood::x() const -> double { return _x; }
+
+auto UpdatedMaximumLikelihood::reversals() const -> int { return _reversals; }
+
+auto UpdatedMaximumLikelihood::sweetPoints() const -> std::vector<double> {
+    return _sweetPoint;
+}
+
+auto UpdatedMaximumLikelihood::phi() const -> std::vector<double> {
+    return {_phi.alpha, _phi.beta, _phi.gamma, _phi.lambda};
+}
+
+auto UpdatedMaximumLikelihood::reversalXs() const -> std::vector<double> {
+    return _reversalXs;
+}
+
+auto UpdatedMaximumLikelihood::trials() const -> long { return _trials; }
 }
