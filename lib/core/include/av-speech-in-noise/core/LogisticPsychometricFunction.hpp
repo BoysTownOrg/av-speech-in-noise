@@ -32,10 +32,6 @@ class SweetPoints {
 class LogisticSweetPoints : public SweetPoints {
   public:
     auto operator()(Phi phi) -> std::vector<double> override;
-
-  private:
-    auto alphaEstimate(Phi phi, double x) -> double;
-    auto betaEstimate(Phi phi, double x) -> double;
 };
 }
 

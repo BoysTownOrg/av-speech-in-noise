@@ -13,11 +13,11 @@ static auto transform(std::vector<double> v, UnaryOperator f)
 }
 
 static auto sortIndices(const std::vector<double> &v) -> std::vector<size_t> {
-    std::vector<size_t> indeces(v.size());
-    std::iota(indeces.begin(), indeces.end(), 0);
-    std::sort(indeces.begin(), indeces.end(),
+    std::vector<size_t> indices(v.size());
+    std::iota(indices.begin(), indices.end(), 0);
+    std::sort(indices.begin(), indices.end(),
         [&v](size_t i1, size_t i2) { return v[i1] < v[i2]; });
-    return indeces;
+    return indices;
 }
 
 static auto maxEpsilon(double tolerance, double x) -> double {
@@ -175,6 +175,22 @@ auto LogisticPsychometricFunction::operator()(Phi phi, double x) -> double {
             (1 + std::exp(-(x - phi.alpha) * phi.beta)));
 }
 
+static auto alphaEstimate(Phi phi, double x) -> double {
+    return -std::exp(2 * phi.beta * (phi.alpha - x)) *
+        std::pow(1 + std::exp(phi.beta * (x - phi.alpha)), 2) *
+        (-phi.gamma + (phi.lambda - 1) * std::exp(phi.beta * (x - phi.alpha))) *
+        (1 - phi.gamma + phi.lambda * std::exp(phi.beta * (x - phi.alpha))) /
+        (std::pow(phi.beta, 2) * std::pow(phi.gamma + phi.lambda - 1, 2));
+}
+
+static auto betaEstimate(Phi phi, double x) -> double {
+    return -std::exp(2 * phi.beta * (phi.alpha - x)) *
+        std::pow(1 + std::exp(phi.beta * (x - phi.alpha)), 2) *
+        (-phi.gamma + (phi.lambda - 1) * std::exp(phi.beta * (x - phi.alpha))) *
+        (1 - phi.gamma + phi.lambda * std::exp(phi.beta * (x - phi.alpha))) /
+        (std::pow(x - phi.alpha, 2) * std::pow(phi.gamma + phi.lambda - 1, 2));
+}
+
 auto LogisticSweetPoints::operator()(Phi phi) -> std::vector<double> {
     std::vector<double> sweetPoints = {
         fminsearch(
@@ -192,21 +208,5 @@ auto LogisticSweetPoints::operator()(Phi phi) -> std::vector<double> {
             {phi.alpha})[0]};
     std::sort(sweetPoints.begin(), sweetPoints.end());
     return sweetPoints;
-}
-
-auto LogisticSweetPoints::alphaEstimate(Phi phi, double x) -> double {
-    return -std::exp(2 * phi.beta * (phi.alpha - x)) *
-        std::pow(1 + std::exp(phi.beta * (x - phi.alpha)), 2) *
-        (-phi.gamma + (phi.lambda - 1) * std::exp(phi.beta * (x - phi.alpha))) *
-        (1 - phi.gamma + phi.lambda * std::exp(phi.beta * (x - phi.alpha))) /
-        (std::pow(phi.beta, 2) * std::pow(phi.gamma + phi.lambda - 1, 2));
-}
-
-auto LogisticSweetPoints::betaEstimate(Phi phi, double x) -> double {
-    return -std::exp(2 * phi.beta * (phi.alpha - x)) *
-        std::pow(1 + std::exp(phi.beta * (x - phi.alpha)), 2) *
-        (-phi.gamma + (phi.lambda - 1) * std::exp(phi.beta * (x - phi.alpha))) *
-        (1 - phi.gamma + phi.lambda * std::exp(phi.beta * (x - phi.alpha))) /
-        (std::pow(x - phi.alpha, 2) * std::pow(phi.gamma + phi.lambda - 1, 2));
 }
 }
