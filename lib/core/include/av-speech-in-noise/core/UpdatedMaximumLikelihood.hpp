@@ -1,8 +1,7 @@
-#ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_LOGISTICPSYCHOMETRICFUNCTIONHPP_
-#define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_LOGISTICPSYCHOMETRICFUNCTIONHPP_
+#ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_UPDATEDMAXIMUMLIKELIHOODHPP_
+#define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_UPDATEDMAXIMUMLIKELIHOODHPP_
 
 #include <av-speech-in-noise/Interface.hpp>
-#include <string>
 #include <vector>
 
 namespace av_speech_in_noise {
@@ -17,22 +16,13 @@ class PsychometricFunction {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(PsychometricFunction);
     virtual auto operator()(Phi phi, double x) -> double = 0;
+    virtual auto sweetPoints(Phi phi) -> std::vector<double> = 0;
 };
 
 class LogisticPsychometricFunction : public PsychometricFunction {
   public:
     auto operator()(Phi phi, double x) -> double override;
-};
-
-class SweetPoints {
-  public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SweetPoints);
-    virtual auto operator()(Phi phi) -> std::vector<double> = 0;
-};
-
-class LogisticSweetPoints : public SweetPoints {
-  public:
-    auto operator()(Phi phi) -> std::vector<double> override;
+    auto sweetPoints(Phi phi) -> std::vector<double> override;
 };
 
 class PriorProbability {
@@ -89,7 +79,6 @@ class UpdatedMaximumLikelihood {
     Phi _phi;
     // Order important for construction
     PsychometricFunction &psychometricFunction;
-    SweetPoints &sweetPointComputer;
     PhiComputer &phiComputer;
     double _x;
     double lowerBound;
@@ -104,9 +93,8 @@ class UpdatedMaximumLikelihood {
     long _trials;
 
   public:
-    UpdatedMaximumLikelihood(PosteriorDistributions distributions,
-        PsychometricFunction &psychometricFunction,
-        SweetPoints &sweetPointComputer, PhiComputer &phiComputer,
+    UpdatedMaximumLikelihood(const PosteriorDistributions &distributions,
+        PsychometricFunction &psychometricFunction, PhiComputer &phiComputer,
         TrackSpecifications trackSpecifications);
     void pushDown();
     void pushUp();

@@ -1,7 +1,10 @@
 #include "assert-utility.hpp"
-#include <av-speech-in-noise/core/LogisticPsychometricFunction.hpp>
-#include <cmath>
+
+#include <av-speech-in-noise/core/UpdatedMaximumLikelihood.hpp>
+
 #include <gtest/gtest.h>
+
+#include <cmath>
 #include <algorithm>
 #include <numeric>
 #include <utility>
@@ -38,7 +41,8 @@ TEST_F(LogisticSweetPointTester, testZeroedParameters) {
     const auto beta = 0;
     const auto gamma = 0;
     const auto lambda = 0;
-    assertEqual(LogisticSweetPoints{}({alpha, beta, gamma, lambda}),
+    assertEqual(LogisticPsychometricFunction{}.sweetPoints(
+                    {alpha, beta, gamma, lambda}),
         {-6.338253001141149e29, 0, 6.338253001141149e29}, 1e15);
 }
 
@@ -47,7 +51,8 @@ TEST_F(LogisticSweetPointTester, testSimpleParameters) {
     const auto beta = 2;
     const auto gamma = 0.1;
     const auto lambda = 0.1;
-    assertEqual(LogisticSweetPoints{}({alpha, beta, gamma, lambda}),
+    assertEqual(LogisticPsychometricFunction{}.sweetPoints(
+                    {alpha, beta, gamma, lambda}),
         {0.095141601562522, 1, 1.904858398437488}, 1e-15);
 }
 
@@ -206,10 +211,8 @@ TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiDownOnly) {
     track.lowerBound = -30.0;
     track.upperBound = 30.0;
     LogisticPsychometricFunction pf;
-    LogisticSweetPoints sp;
     MeanPhi pc;
-    UpdatedMaximumLikelihood uml(
-        exampleLogisticConfiguration(), pf, sp, pc, track);
+    UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
     assertEqual(uml.x(), 30.0);
     assertEqual(uml.reversals(), 0);
     uml.pushDown();
@@ -231,10 +234,8 @@ TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiUpOnly) {
     track.lowerBound = -30.0;
     track.upperBound = 30.0;
     LogisticPsychometricFunction pf;
-    LogisticSweetPoints sp;
     MeanPhi pc;
-    UpdatedMaximumLikelihood uml(
-        exampleLogisticConfiguration(), pf, sp, pc, track);
+    UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
     assertEqual(uml.x(), 30.0);
     assertEqual(uml.reversals(), 0);
     uml.pushUp();
@@ -256,10 +257,8 @@ TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiAlternating) {
     track.lowerBound = -30.0;
     track.upperBound = 30.0;
     LogisticPsychometricFunction pf;
-    LogisticSweetPoints sp;
     MeanPhi pc;
-    UpdatedMaximumLikelihood uml(
-        exampleLogisticConfiguration(), pf, sp, pc, track);
+    UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(uml.sweetPoints().empty());
     uml.pushUp();
     assertEqual(uml.phi(),

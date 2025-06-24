@@ -1,4 +1,5 @@
-#include "LogisticPsychometricFunction.hpp"
+#include "UpdatedMaximumLikelihood.hpp"
+
 #include <algorithm>
 #include <cmath>
 #include <functional>
@@ -6,8 +7,6 @@
 #include <stdexcept>
 
 namespace av_speech_in_noise {
-using std::plus;
-
 template <class UnaryOperator>
 static auto transform(std::vector<double> v, UnaryOperator f)
     -> std::vector<double> {
@@ -194,7 +193,7 @@ static auto betaEstimate(Phi phi, double x) -> double {
         (std::pow(x - phi.alpha, 2) * std::pow(phi.gamma + phi.lambda - 1, 2));
 }
 
-auto LogisticSweetPoints::operator()(Phi phi) -> std::vector<double> {
+auto LogisticPsychometricFunction::sweetPoints(Phi phi) -> std::vector<double> {
     std::vector<double> sweetPoints = {
         fminsearch(
             [&](std::vector<double> x) {
@@ -219,15 +218,14 @@ static auto logNormalizedSum(std::vector<double> v) -> std::vector<double> {
 }
 
 UpdatedMaximumLikelihood::UpdatedMaximumLikelihood(
-    PosteriorDistributions distributions,
-    PsychometricFunction &psychometricFunction, SweetPoints &sweetPointComputer,
-    PhiComputer &phiComputer, TrackSpecifications trackSpecifications)
+    const PosteriorDistributions &distributions,
+    PsychometricFunction &psychometricFunction, PhiComputer &phiComputer,
+    TrackSpecifications trackSpecifications)
     : _alphaSpace(distributions.alpha.space),
       _betaSpace(distributions.beta.space),
       _gammaSpace(distributions.gamma.space),
       _lambdaSpace(distributions.lambda.space), _phi({}),
-      psychometricFunction(psychometricFunction),
-      sweetPointComputer(sweetPointComputer), phiComputer(phiComputer),
+      psychometricFunction(psychometricFunction), phiComputer(phiComputer),
       _x(trackSpecifications.startingX),
       lowerBound(trackSpecifications.lowerBound),
       upperBound(trackSpecifications.upperBound),
@@ -261,7 +259,7 @@ UpdatedMaximumLikelihood::UpdatedMaximumLikelihood(
 void UpdatedMaximumLikelihood::addToPosteriorAndShiftByMax(
     const std::vector<double> &result) {
     std::transform(_posterior.begin(), _posterior.end(), result.begin(),
-        _posterior.begin(), plus<>());
+        _posterior.begin(), std::plus<>());
     const auto max = *std::max_element(_posterior.begin(), _posterior.end());
     _posterior =
         transform(std::move(_posterior), [max](double x) { return x - max; });
@@ -281,7 +279,7 @@ auto UpdatedMaximumLikelihood::evaluatePsychometricFunction()
 
 auto UpdatedMaximumLikelihood::computeSweetPoint(Phi phi)
     -> std::vector<double> {
-    auto sweetPoint = sweetPointComputer(phi);
+    auto sweetPoint = psychometricFunction.sweetPoints(phi);
     sweetPoint.insert(sweetPoint.end(), (2 * sweetPoint[2]) - sweetPoint[1]);
     sweetPoint.insert(sweetPoint.begin(), (2 * sweetPoint[0]) - sweetPoint[1]);
     return transform(std::move(sweetPoint), [&](double x) {
