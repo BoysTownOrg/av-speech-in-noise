@@ -60,7 +60,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void writeLastCorrectKeywords(OutputFile &) override;
     void writeTestingParameters(OutputFile &) override;
     void writeTestResult(OutputFile &) override;
-    auto snr() -> SNR override;
+    auto snr() -> FloatSNR override;
     auto complete() -> bool override;
     auto nextTarget() -> LocalUrl override;
     auto currentTarget() -> LocalUrl override;

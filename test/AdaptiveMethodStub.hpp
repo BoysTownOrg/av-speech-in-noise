@@ -16,7 +16,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> LocalUrl override { return {}; }
     auto currentTarget() -> LocalUrl override { return {}; }
-    auto snr() -> SNR override { return SNR{}; }
+    auto snr() -> FloatSNR override { return FloatSNR{}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const CorrectKeywords &) override {}

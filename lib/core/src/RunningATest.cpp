@@ -10,7 +10,7 @@ class NullTestMethod : public TestMethod {
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> LocalUrl override { return {}; }
     auto currentTarget() -> LocalUrl override { return {}; }
-    auto snr() -> SNR override { return SNR{}; }
+    auto snr() -> FloatSNR override { return FloatSNR{}; }
     void submit(const coordinate_response_measure::Response &) override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
     void writeTestingParameters(OutputFile &) override {}
@@ -203,7 +203,7 @@ static auto maskerLevelAmplification(
     MaskerPlayer &maskerPlayer, const Test &test) -> LevelAmplification {
     return LevelAmplification{DigitalLevel{
         test.maskerLevel - test.fullScaleLevel - maskerPlayer.digitalLevel()}
-                                  .dBov};
+            .dBov};
 }
 
 static auto targetLevelAmplification(

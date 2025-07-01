@@ -59,7 +59,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return {};
     }
     auto currentTarget() -> LocalUrl override { return {}; }
-    auto snr() -> SNR override { return SNR{}; }
+    auto snr() -> FloatSNR override { return FloatSNR{}; }
     void submitCorrectResponse() override { log_ << "submitCorrectResponse "; }
     void submitIncorrectResponse() override {
         log_ << "submitIncorrectResponse ";
@@ -136,7 +136,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         currentTarget_.path = std::move(s);
     }
 
-    auto snr() -> SNR override { return SNR{}; }
+    auto snr() -> FloatSNR override { return FloatSNR{}; }
 
     void submit(const Flaggable &) override { submittedFlaggable = true; }
 

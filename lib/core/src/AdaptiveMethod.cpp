@@ -125,8 +125,8 @@ auto AdaptiveMethodImpl::complete() -> bool {
 
 auto AdaptiveMethodImpl::nextTarget() -> LocalUrl { return targetList->next(); }
 
-auto AdaptiveMethodImpl::snr() -> SNR {
-    SNR snr;
+auto AdaptiveMethodImpl::snr() -> FloatSNR {
+    FloatSNR snr{};
     snr.dB = x(snrTrack);
     return snr;
 }
