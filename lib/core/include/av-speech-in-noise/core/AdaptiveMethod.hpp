@@ -28,7 +28,7 @@ class Track {
     };
     virtual void down() = 0;
     virtual void up() = 0;
-    virtual auto x() -> int = 0;
+    virtual auto x() -> double = 0;
     virtual auto complete() -> bool = 0;
     virtual auto reversals() -> int = 0;
     virtual void reset() = 0;

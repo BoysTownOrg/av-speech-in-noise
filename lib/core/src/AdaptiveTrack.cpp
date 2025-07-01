@@ -85,7 +85,7 @@ void AdaptiveTrack::stepDown() {
     previousStep = Step::fall;
 }
 
-auto AdaptiveTrack::x() -> int { return x_; }
+auto AdaptiveTrack::x() -> double { return x_; }
 
 auto AdaptiveTrack::complete() -> bool { return complete_(); }
 

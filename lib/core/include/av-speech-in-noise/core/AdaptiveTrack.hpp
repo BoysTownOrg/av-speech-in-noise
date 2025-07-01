@@ -9,7 +9,7 @@ namespace adaptive_track {
 class AdaptiveTrack : public av_speech_in_noise::Track {
   public:
     explicit AdaptiveTrack(const Settings &);
-    auto x() -> int override;
+    auto x() -> double override;
     void up() override;
     void down() override;
     auto complete() -> bool override;

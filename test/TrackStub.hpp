@@ -52,7 +52,7 @@ class TrackStub : public Track {
         threshold_ = thresholdWhenUpdated_;
     }
 
-    auto x() -> int override { return x_; }
+    auto x() -> double override { return x_; }
 
     auto complete() -> bool override { return complete_; }
 
