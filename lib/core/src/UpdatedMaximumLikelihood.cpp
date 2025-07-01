@@ -249,6 +249,7 @@ UpdatedMaximumLikelihood::UpdatedMaximumLikelihood(
 }
 
 void UpdatedMaximumLikelihood::reset() {
+    trials = 0;
     consecutiveDown = 0;
     consecutiveUp = 0;
     trackDirection = TrackDirection::undefined;
@@ -318,6 +319,7 @@ void UpdatedMaximumLikelihood::down() {
     _phi = phiComputer(*this);
     _sweetPoint = computeSweetPoint(_phi);
     _x = _sweetPoint[xCandidateIndex];
+    ++trials;
 }
 
 void UpdatedMaximumLikelihood::up() {
@@ -339,6 +341,7 @@ void UpdatedMaximumLikelihood::up() {
     _phi = phiComputer(*this);
     _sweetPoint = computeSweetPoint(_phi);
     _x = _sweetPoint[xCandidateIndex];
+    ++trials;
 }
 
 auto UpdatedMaximumLikelihood::lambdaSpace(size_t index) const -> const
@@ -386,4 +389,7 @@ auto UpdatedMaximumLikelihood::reversalXs() const -> std::vector<double> {
     return _reversalXs;
 }
 
+auto UpdatedMaximumLikelihood::complete() -> bool {
+    return trials >= trackSpecifications.trials;
+}
 }

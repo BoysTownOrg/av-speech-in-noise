@@ -62,6 +62,7 @@ struct PosteriorDistributions {
 struct TrackSpecifications {
     int down;
     int up;
+    int trials;
     double startingX;
     double upperBound;
     double lowerBound;
@@ -89,6 +90,7 @@ class UpdatedMaximumLikelihood : public Track {
     int consecutiveUp;
     std::size_t xCandidateIndex;
     TrackDirection trackDirection;
+    int trials;
     int _reversals;
 
   public:
@@ -110,7 +112,7 @@ class UpdatedMaximumLikelihood : public Track {
     auto gammaSpace(size_t index) const -> const double &;
     auto lambdaSpace(size_t index) const -> const double &;
     auto reversalXs() const -> std::vector<double>;
-    auto complete() -> bool override { return false; }
+    auto complete() -> bool override;
     auto threshold(int reversals) -> double override {
         return std::numeric_limits<double>::quiet_NaN();
     }

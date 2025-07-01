@@ -321,4 +321,29 @@ TEST_F(UpdatedMaximumLikelihoodTester,
     assertEqual(uml.x(), 11.828823619069409, 1e-13);
     assertEqual(uml.reversals(), 0);
 }
+
+TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticCompletion) {
+    TrackSpecifications track{};
+    track.down = 3;
+    track.up = 1;
+    track.trials = 10;
+    track.startingX = 30.0;
+    track.lowerBound = -30.0;
+    track.upperBound = 30.0;
+    LogisticPsychometricFunction pf;
+    MeanPhi pc;
+    UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
+    uml.up();
+    uml.up();
+    uml.down();
+    uml.up();
+    uml.up();
+    uml.down();
+    uml.down();
+    uml.up();
+    uml.up();
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(uml.complete());
+    uml.up();
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(uml.complete());
+}
 }
