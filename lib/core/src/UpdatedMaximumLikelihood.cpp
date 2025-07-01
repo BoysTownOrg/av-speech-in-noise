@@ -221,36 +221,46 @@ UpdatedMaximumLikelihood::UpdatedMaximumLikelihood(
     const PosteriorDistributions &distributions,
     PsychometricFunction &psychometricFunction, PhiComputer &phiComputer,
     TrackSpecifications trackSpecifications)
-    : _alphaSpace(distributions.alpha.space),
-      _betaSpace(distributions.beta.space),
-      _gammaSpace(distributions.gamma.space),
-      _lambdaSpace(distributions.lambda.space), _phi({}),
+    : posteriorDistributions{distributions},
+      trackSpecifications{trackSpecifications}, _phi{},
       psychometricFunction(psychometricFunction), phiComputer(phiComputer),
       _x(trackSpecifications.startingX),
       lowerBound(trackSpecifications.lowerBound),
       upperBound(trackSpecifications.upperBound),
       down(trackSpecifications.down), up(trackSpecifications.up),
       consecutiveDown(0), consecutiveUp(0),
-      trackDirection(TrackDirection::undefined), _reversals(0), _trials(0) {
-    for (const auto l : distributions.lambda.prior)
-        for (const auto g : distributions.gamma.prior)
-            for (const auto b : distributions.beta.prior)
-                for (const auto a : distributions.alpha.prior)
-                    _posterior.push_back(a * b * g * l);
-    if (_posterior.size() == 0)
+      trackDirection(TrackDirection::undefined), _reversals(0) {
+    if (distributions.lambda.prior.empty() ||
+        distributions.gamma.prior.empty() || distributions.beta.prior.empty() ||
+        distributions.alpha.prior.empty())
         throw std::runtime_error("Empty parameter space passed.");
-    _posterior = logNormalizedSum(std::move(_posterior));
-    if (_alphaSpace.size() > 1)
+    if (posteriorDistributions.alpha.space.size() > 1)
         sweetPointIndeces.push_back(2);
-    if (_betaSpace.size() > 1) {
+    if (posteriorDistributions.beta.space.size() > 1) {
         sweetPointIndeces.push_back(1);
         sweetPointIndeces.push_back(3);
     }
-    if (_gammaSpace.size() > 1)
+    if (posteriorDistributions.gamma.space.size() > 1)
         sweetPointIndeces.push_back(0);
-    if (_lambdaSpace.size() > 1)
+    if (posteriorDistributions.lambda.space.size() > 1)
         sweetPointIndeces.push_back(4);
     std::sort(sweetPointIndeces.begin(), sweetPointIndeces.end());
+    reset();
+}
+
+void UpdatedMaximumLikelihood::reset() {
+    consecutiveDown = 0;
+    consecutiveUp = 0;
+    trackDirection = TrackDirection::undefined;
+    _x = trackSpecifications.startingX;
+    _reversals = 0;
+    _posterior.clear();
+    for (const auto l : posteriorDistributions.lambda.prior)
+        for (const auto g : posteriorDistributions.gamma.prior)
+            for (const auto b : posteriorDistributions.beta.prior)
+                for (const auto a : posteriorDistributions.alpha.prior)
+                    _posterior.push_back(a * b * g * l);
+    _posterior = logNormalizedSum(std::move(_posterior));
     xCandidateIndex = (_x < (lowerBound + upperBound) / 2)
         ? sweetPointIndeces.front()
         : sweetPointIndeces.back();
@@ -268,10 +278,10 @@ void UpdatedMaximumLikelihood::addToPosteriorAndShiftByMax(
 auto UpdatedMaximumLikelihood::evaluatePsychometricFunction()
     -> std::vector<double> {
     std::vector<double> result;
-    for (const auto lambda : _lambdaSpace)
-        for (const auto gamma : _gammaSpace)
-            for (const auto beta : _betaSpace)
-                for (const auto alpha : _alphaSpace)
+    for (const auto lambda : posteriorDistributions.lambda.space)
+        for (const auto gamma : posteriorDistributions.gamma.space)
+            for (const auto beta : posteriorDistributions.beta.space)
+                for (const auto alpha : posteriorDistributions.alpha.space)
                     result.push_back(
                         psychometricFunction({alpha, beta, gamma, lambda}, _x));
     return result;
@@ -308,7 +318,6 @@ void UpdatedMaximumLikelihood::pushDown() {
     _phi = phiComputer(*this);
     _sweetPoint = computeSweetPoint(_phi);
     _x = _sweetPoint[xCandidateIndex];
-    ++_trials;
 }
 
 void UpdatedMaximumLikelihood::pushUp() {
@@ -330,29 +339,35 @@ void UpdatedMaximumLikelihood::pushUp() {
     _phi = phiComputer(*this);
     _sweetPoint = computeSweetPoint(_phi);
     _x = _sweetPoint[xCandidateIndex];
-    ++_trials;
 }
 
 auto UpdatedMaximumLikelihood::lambdaSpace(size_t index) const -> const
     double & {
-    return _lambdaSpace[(index / _alphaSpace.size() / _betaSpace.size() /
-                            _gammaSpace.size()) %
-        _lambdaSpace.size()];
+    return posteriorDistributions.lambda
+        .space[(index / posteriorDistributions.alpha.space.size() /
+                   posteriorDistributions.beta.space.size() /
+                   posteriorDistributions.gamma.space.size()) %
+            posteriorDistributions.lambda.space.size()];
 }
 
 auto UpdatedMaximumLikelihood::gammaSpace(size_t index) const -> const
     double & {
-    return _gammaSpace[(index / _alphaSpace.size() / _betaSpace.size()) %
-        _gammaSpace.size()];
+    return posteriorDistributions.gamma
+        .space[(index / posteriorDistributions.alpha.space.size() /
+                   posteriorDistributions.beta.space.size()) %
+            posteriorDistributions.gamma.space.size()];
 }
 
 auto UpdatedMaximumLikelihood::betaSpace(size_t index) const -> const double & {
-    return _betaSpace[(index / _alphaSpace.size()) % _betaSpace.size()];
+    return posteriorDistributions.beta
+        .space[(index / posteriorDistributions.alpha.space.size()) %
+            posteriorDistributions.beta.space.size()];
 }
 
 auto UpdatedMaximumLikelihood::alphaSpace(size_t index) const -> const
     double & {
-    return _alphaSpace[index % _alphaSpace.size()];
+    return posteriorDistributions.alpha
+        .space[index % posteriorDistributions.alpha.space.size()];
 }
 
 auto UpdatedMaximumLikelihood::x() const -> double { return _x; }
@@ -371,5 +386,4 @@ auto UpdatedMaximumLikelihood::reversalXs() const -> std::vector<double> {
     return _reversalXs;
 }
 
-auto UpdatedMaximumLikelihood::trials() const -> long { return _trials; }
 }

@@ -68,10 +68,8 @@ struct TrackSpecifications {
 enum class TrackDirection { up, down, undefined };
 
 class UpdatedMaximumLikelihood {
-    std::vector<double> _alphaSpace;
-    std::vector<double> _betaSpace;
-    std::vector<double> _gammaSpace;
-    std::vector<double> _lambdaSpace;
+    const PosteriorDistributions posteriorDistributions;
+    TrackSpecifications trackSpecifications;
     std::vector<double> _posterior;
     std::vector<std::size_t> sweetPointIndeces;
     std::vector<double> _sweetPoint;
@@ -81,16 +79,15 @@ class UpdatedMaximumLikelihood {
     PsychometricFunction &psychometricFunction;
     PhiComputer &phiComputer;
     double _x;
-    double lowerBound;
-    double upperBound;
-    int down;
-    int up;
+    const double lowerBound;
+    const double upperBound;
+    const int down;
+    const int up;
     int consecutiveDown;
     int consecutiveUp;
     std::size_t xCandidateIndex;
     TrackDirection trackDirection;
     int _reversals;
-    long _trials;
 
   public:
     UpdatedMaximumLikelihood(const PosteriorDistributions &distributions,
@@ -98,9 +95,9 @@ class UpdatedMaximumLikelihood {
         TrackSpecifications trackSpecifications);
     void pushDown();
     void pushUp();
+    void reset();
     double x() const;
     int reversals() const;
-    long trials() const;
     std::vector<double> sweetPoints() const;
     std::vector<double> phi() const;
     const std::vector<double> &posterior() const { return _posterior; };
