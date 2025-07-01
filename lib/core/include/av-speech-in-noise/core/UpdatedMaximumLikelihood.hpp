@@ -1,7 +1,9 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_UPDATEDMAXIMUMLIKELIHOODHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_UPDATEDMAXIMUMLIKELIHOODHPP_
 
+#include "AdaptiveMethod.hpp"
 #include <av-speech-in-noise/Interface.hpp>
+#include <limits>
 #include <vector>
 
 namespace av_speech_in_noise {
@@ -67,7 +69,7 @@ struct TrackSpecifications {
 
 enum class TrackDirection { up, down, undefined };
 
-class UpdatedMaximumLikelihood {
+class UpdatedMaximumLikelihood : public Track {
     const PosteriorDistributions posteriorDistributions;
     TrackSpecifications trackSpecifications;
     std::vector<double> _posterior;
@@ -81,8 +83,8 @@ class UpdatedMaximumLikelihood {
     double _x;
     const double lowerBound;
     const double upperBound;
-    const int down;
-    const int up;
+    const int down_;
+    const int up_;
     int consecutiveDown;
     int consecutiveUp;
     std::size_t xCandidateIndex;
@@ -93,24 +95,30 @@ class UpdatedMaximumLikelihood {
     UpdatedMaximumLikelihood(const PosteriorDistributions &distributions,
         PsychometricFunction &psychometricFunction, PhiComputer &phiComputer,
         TrackSpecifications trackSpecifications);
-    void pushDown();
-    void pushUp();
-    void reset();
-    double x() const;
-    int reversals() const;
-    std::vector<double> sweetPoints() const;
-    std::vector<double> phi() const;
-    const std::vector<double> &posterior() const { return _posterior; };
-    const double &alphaSpace(size_t index) const;
-    const double &betaSpace(size_t index) const;
-    const double &gammaSpace(size_t index) const;
-    const double &lambdaSpace(size_t index) const;
-    std::vector<double> reversalXs() const;
+    void down() override;
+    void up() override;
+    void reset() override;
+    auto x() -> double override;
+    auto reversals() -> int override;
+    auto sweetPoints() const -> std::vector<double>;
+    auto phi() const -> std::vector<double>;
+    auto posterior() const -> const std::vector<double> & {
+        return _posterior;
+    };
+    auto alphaSpace(size_t index) const -> const double &;
+    auto betaSpace(size_t index) const -> const double &;
+    auto gammaSpace(size_t index) const -> const double &;
+    auto lambdaSpace(size_t index) const -> const double &;
+    auto reversalXs() const -> std::vector<double>;
+    auto complete() -> bool override { return false; }
+    auto threshold(int reversals) -> double override {
+        return std::numeric_limits<double>::quiet_NaN();
+    }
 
   private:
     void addToPosteriorAndShiftByMax(const std::vector<double> &result);
-    std::vector<double> computeSweetPoint(Phi phi);
-    std::vector<double> evaluatePsychometricFunction();
+    auto computeSweetPoint(Phi phi) -> std::vector<double>;
+    auto evaluatePsychometricFunction() -> std::vector<double>;
 };
 }
 

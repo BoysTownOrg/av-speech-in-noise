@@ -227,7 +227,7 @@ UpdatedMaximumLikelihood::UpdatedMaximumLikelihood(
       _x(trackSpecifications.startingX),
       lowerBound(trackSpecifications.lowerBound),
       upperBound(trackSpecifications.upperBound),
-      down(trackSpecifications.down), up(trackSpecifications.up),
+      down_(trackSpecifications.down), up_(trackSpecifications.up),
       consecutiveDown(0), consecutiveUp(0),
       trackDirection(TrackDirection::undefined), _reversals(0) {
     if (distributions.lambda.prior.empty() ||
@@ -297,8 +297,8 @@ auto UpdatedMaximumLikelihood::computeSweetPoint(Phi phi)
     });
 }
 
-void UpdatedMaximumLikelihood::pushDown() {
-    if (++consecutiveDown == down) {
+void UpdatedMaximumLikelihood::down() {
+    if (++consecutiveDown == down_) {
         xCandidateIndex = std::max(xCandidateIndex,
                               *std::min_element(sweetPointIndeces.begin(),
                                   sweetPointIndeces.end()) +
@@ -320,8 +320,8 @@ void UpdatedMaximumLikelihood::pushDown() {
     _x = _sweetPoint[xCandidateIndex];
 }
 
-void UpdatedMaximumLikelihood::pushUp() {
-    if (++consecutiveUp == up) {
+void UpdatedMaximumLikelihood::up() {
+    if (++consecutiveUp == up_) {
         xCandidateIndex = std::min(xCandidateIndex + 1,
             *std::max_element(
                 sweetPointIndeces.begin(), sweetPointIndeces.end()));
@@ -370,9 +370,9 @@ auto UpdatedMaximumLikelihood::alphaSpace(size_t index) const -> const
         .space[index % posteriorDistributions.alpha.space.size()];
 }
 
-auto UpdatedMaximumLikelihood::x() const -> double { return _x; }
+auto UpdatedMaximumLikelihood::x() -> double { return _x; }
 
-auto UpdatedMaximumLikelihood::reversals() const -> int { return _reversals; }
+auto UpdatedMaximumLikelihood::reversals() -> int { return _reversals; }
 
 auto UpdatedMaximumLikelihood::sweetPoints() const -> std::vector<double> {
     return _sweetPoint;

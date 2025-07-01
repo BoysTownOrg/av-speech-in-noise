@@ -215,13 +215,13 @@ TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiDownOnly) {
     UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
     assertEqual(uml.x(), 30.0);
     assertEqual(uml.reversals(), 0);
-    uml.pushDown();
+    uml.down();
     assertEqual(uml.x(), 6.652636329123384, 1e-13);
     assertEqual(uml.reversals(), 0);
-    uml.pushDown();
+    uml.down();
     assertEqual(uml.x(), 3.301128275552773, 1e-13);
     assertEqual(uml.reversals(), 0);
-    uml.pushDown();
+    uml.down();
     assertEqual(uml.x(), -2.377301836485305, 1e-13);
     assertEqual(uml.reversals(), 0);
 }
@@ -238,13 +238,13 @@ TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiUpOnly) {
     UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
     assertEqual(uml.x(), 30.0);
     assertEqual(uml.reversals(), 0);
-    uml.pushUp();
+    uml.up();
     assertEqual(uml.x(), 7.937229385563851, 1e-13);
     assertEqual(uml.reversals(), 0);
-    uml.pushUp();
+    uml.up();
     assertEqual(uml.x(), 14.914421286430443, 1e-13);
     assertEqual(uml.reversals(), 0);
-    uml.pushUp();
+    uml.up();
     assertEqual(uml.x(), 20.816765327034403, 1e-13);
     assertEqual(uml.reversals(), 0);
 }
@@ -260,7 +260,7 @@ TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiAlternating) {
     MeanPhi pc;
     UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(uml.sweetPoints().empty());
-    uml.pushUp();
+    uml.up();
     assertEqual(uml.phi(),
         {0.935279300498662, 0.501739472594823, 0.109708801753186,
             0.137098486912143},
@@ -269,16 +269,16 @@ TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiAlternating) {
         {-6.129234036864910, -2.625748166977760, 0.877737702909389,
             4.407483544236620, 7.937229385563851},
         1e-13);
-    uml.pushDown();
+    uml.down();
     assertEqual(uml.x(), 4.242855160473956, 1e-13);
     assertEqual(uml.reversals(), 0);
-    uml.pushUp();
+    uml.up();
     assertEqual(uml.x(), 9.861193730461308, 1e-13);
     assertEqual(uml.reversals(), 0);
-    uml.pushDown();
+    uml.down();
     assertEqual(uml.x(), 7.537607961883664, 1e-13);
     assertEqual(uml.reversals(), 0);
-    uml.pushUp();
+    uml.up();
     assertEqual(uml.x(), 11.828823619069409, 1e-13);
     assertEqual(uml.reversals(), 0);
 }
@@ -295,11 +295,11 @@ TEST_F(UpdatedMaximumLikelihoodTester,
     MeanPhi pc;
     UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(uml.sweetPoints().empty());
-    uml.pushUp();
-    uml.pushUp();
-    uml.pushDown();
+    uml.up();
+    uml.up();
+    uml.down();
     uml.reset();
-    uml.pushUp();
+    uml.up();
     assertEqual(uml.phi(),
         {0.935279300498662, 0.501739472594823, 0.109708801753186,
             0.137098486912143},
@@ -308,16 +308,16 @@ TEST_F(UpdatedMaximumLikelihoodTester,
         {-6.129234036864910, -2.625748166977760, 0.877737702909389,
             4.407483544236620, 7.937229385563851},
         1e-13);
-    uml.pushDown();
+    uml.down();
     assertEqual(uml.x(), 4.242855160473956, 1e-13);
     assertEqual(uml.reversals(), 0);
-    uml.pushUp();
+    uml.up();
     assertEqual(uml.x(), 9.861193730461308, 1e-13);
     assertEqual(uml.reversals(), 0);
-    uml.pushDown();
+    uml.down();
     assertEqual(uml.x(), 7.537607961883664, 1e-13);
     assertEqual(uml.reversals(), 0);
-    uml.pushUp();
+    uml.up();
     assertEqual(uml.x(), 11.828823619069409, 1e-13);
     assertEqual(uml.reversals(), 0);
 }
