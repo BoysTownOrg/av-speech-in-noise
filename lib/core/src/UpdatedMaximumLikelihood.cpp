@@ -14,6 +14,39 @@ static auto transform(std::vector<double> v, UnaryOperator f)
     return v;
 }
 
+static auto linspace(double x1, double x2, std::size_t N)
+    -> std::vector<double> {
+    if (N <= 0)
+        return {};
+    if (N == 1)
+        return {x2};
+    if (x1 == x2)
+        return std::vector<double>(N, x1);
+    std::vector<double> x(N);
+    x.back() = x2;
+    const auto step = (x2 - x1) / (N - 1);
+    for (size_t i = N - 1; i > 1; i--)
+        x[i - 1] = x2 - step * (N - i);
+    x.front() = x1;
+    return x;
+}
+
+static auto logspace(double x1, double x2, std::size_t N)
+    -> std::vector<double> {
+    return transform(
+        linspace(x1, x2, N), [](double x) { return std::pow(10, x); });
+}
+
+static auto normpdf(std::vector<double> x, double mu, double sigma)
+    -> std::vector<double> {
+    return transform(std::move(x), [mu, sigma](double x) {
+        const auto pi = std::acos(-1);
+        return sigma <= 0 ? std::numeric_limits<double>::quiet_NaN()
+                          : std::exp(-0.5 * std::pow((x - mu) / sigma, 2)) /
+                (std::sqrt(2 * pi) * sigma);
+    });
+}
+
 static auto sortIndices(const std::vector<double> &v) -> std::vector<size_t> {
     std::vector<size_t> indices(v.size());
     std::iota(indices.begin(), indices.end(), 0);
@@ -391,5 +424,68 @@ auto UpdatedMaximumLikelihood::reversalXs() const -> std::vector<double> {
 
 auto UpdatedMaximumLikelihood::complete() -> bool {
     return trials >= trackSpecifications.trials;
+}
+
+auto LinearSpacer::operator()(double lower, double upper, std::size_t N)
+    -> std::vector<double> {
+    if (N == 1)
+        return {lower};
+    return linspace(lower, upper, N);
+}
+
+auto LogSpacer::operator()(double lower, double upper, std::size_t N)
+    -> std::vector<double> {
+    if (N == 1)
+        return {lower};
+    return logspace(std::log10(lower), std::log10(upper), N);
+}
+
+LinearNormPrior::LinearNormPrior(double mu, double sigma)
+    : mu{mu}, sigma{sigma} {}
+
+std::vector<double> LinearNormPrior::operator()(
+    std::vector<double> space) const {
+    return normpdf(std::move(space), mu, sigma);
+}
+
+LogNormPrior::LogNormPrior(double mu, double sigma) : mu(mu), sigma(sigma) {}
+
+auto LogNormPrior::operator()(std::vector<double> space) const
+    -> std::vector<double> {
+    return normpdf(
+        transform(std::move(space), [](double x) { return std::log10(x); }), mu,
+        sigma);
+}
+
+auto FlatPrior::operator()(std::vector<double> space) const
+    -> std::vector<double> {
+    return std::vector<double>(space.size(), 1);
+}
+
+auto MeanPhi::operator()(const UpdatedMaximumLikelihood &uml) const -> Phi {
+    auto normalizedPosterior =
+        transform(uml.posterior(), [](double x) { return std::exp(x); });
+    const auto sum = std::accumulate(
+        normalizedPosterior.begin(), normalizedPosterior.end(), 0.0);
+    normalizedPosterior = transform(
+        std::move(normalizedPosterior), [sum](double x) { return x / sum; });
+    double alphaEstimate = 0;
+    double betaEstimate = 0;
+    double gammaEstimate = 0;
+    double lambdaEstimate = 0;
+    for (size_t i = 0; i < normalizedPosterior.size(); i++) {
+        alphaEstimate += normalizedPosterior[i] * uml.alphaSpace(i);
+        betaEstimate += normalizedPosterior[i] * uml.betaSpace(i);
+        gammaEstimate += normalizedPosterior[i] * uml.gammaSpace(i);
+        lambdaEstimate += normalizedPosterior[i] * uml.lambdaSpace(i);
+    }
+    return {alphaEstimate, betaEstimate, gammaEstimate, lambdaEstimate};
+}
+
+auto exampleLogisticConfiguration() -> PosteriorDistributions {
+    return {{LinearSpacer()(-30, 30, 61), LinearNormPrior(0, 10)},
+        {LogSpacer()(0.1, 10, 41), LogNormPrior(-0.5, 0.4)},
+        {LinearSpacer()(0.02, 0.2, 11), FlatPrior()},
+        {LinearSpacer()(0.02, 0.2, 11), FlatPrior()}};
 }
 }

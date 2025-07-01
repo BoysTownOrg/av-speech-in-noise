@@ -4,6 +4,7 @@
 #include "AdaptiveMethod.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <limits>
+#include <memory>
 #include <vector>
 
 namespace av_speech_in_noise {
@@ -70,6 +71,58 @@ struct TrackSpecifications {
 
 enum class TrackDirection { up, down, undefined };
 
+class ParameterSpacer {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ParameterSpacer);
+    virtual auto operator()(double lower, double upper, std::size_t N)
+        -> std::vector<double> = 0;
+};
+
+class LinearSpacer : public ParameterSpacer {
+  public:
+    auto operator()(double lower, double upper, std::size_t N)
+        -> std::vector<double> override;
+};
+
+class LogSpacer : public ParameterSpacer {
+  public:
+    auto operator()(double lower, double upper, std::size_t N)
+        -> std::vector<double> override;
+};
+
+class LinearNormPrior : public PriorProbability {
+    const double mu;
+    const double sigma;
+
+  public:
+    LinearNormPrior(double mu, double sigma);
+    auto operator()(std::vector<double> space) const
+        -> std::vector<double> override;
+};
+
+class LogNormPrior : public PriorProbability {
+    const double mu;
+    const double sigma;
+
+  public:
+    LogNormPrior(double mu, double sigma);
+    auto operator()(std::vector<double> space) const
+        -> std::vector<double> override;
+};
+
+class FlatPrior : public PriorProbability {
+  public:
+    auto operator()(std::vector<double> space) const
+        -> std::vector<double> override;
+};
+
+auto exampleLogisticConfiguration() -> PosteriorDistributions;
+
+class MeanPhi : public PhiComputer {
+  public:
+    auto operator()(const UpdatedMaximumLikelihood &) const -> Phi override;
+};
+
 class UpdatedMaximumLikelihood : public Track {
     const PosteriorDistributions posteriorDistributions;
     TrackSpecifications trackSpecifications;
@@ -116,6 +169,25 @@ class UpdatedMaximumLikelihood : public Track {
     auto threshold(int reversals) -> double override {
         return std::numeric_limits<double>::quiet_NaN();
     }
+
+    class Factory : public Track::Factory {
+      public:
+        auto make(const Settings &s) -> std::shared_ptr<Track> override {
+            TrackSpecifications specs{};
+            specs.down = 2;
+            specs.up = 1;
+            specs.trials = 30;
+            specs.startingX = s.startingX;
+            specs.lowerBound = s.floor;
+            specs.upperBound = s.ceiling;
+            return std::make_shared<UpdatedMaximumLikelihood>(
+                exampleLogisticConfiguration(), pf, pc, specs);
+        }
+
+      private:
+        LogisticPsychometricFunction pf;
+        MeanPhi pc;
+    };
 
   private:
     void addToPosteriorAndShiftByMax(const std::vector<double> &result);
