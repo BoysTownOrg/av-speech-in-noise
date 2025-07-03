@@ -73,7 +73,7 @@ static void resetTrack(TargetPlaylistWithTrack &targetListWithTrack) {
     track(targetListWithTrack)->reset();
 }
 
-static auto x(Track *track) -> int { return track->x(); }
+static auto x(Track *track) -> double { return track->x(); }
 
 static auto testResults(
     const std::vector<TargetPlaylistWithTrack> &targetListsWithTracks,
