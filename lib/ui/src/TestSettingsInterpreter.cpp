@@ -89,6 +89,8 @@ static void applyToEachEntry(
         f(entryName(line), entry(line));
 }
 
+static auto boolean(const std::string &s) -> bool { return s == "true"; }
+
 static auto integer(const std::string &s) -> int {
     try {
         return std::stoi(s);
@@ -124,7 +126,7 @@ static void assign(
     else if (entryName == name(TestSetting::videoScaleDenominator))
         test.videoScale.denominator = integer(entry);
     else if (entryName == name(TestSetting::keepVideoShown))
-        test.keepVideoShown = entry == "true";
+        test.keepVideoShown = boolean(entry);
     else if (entryName == name(TestSetting::condition))
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
             if (entry == name(c))
@@ -169,6 +171,8 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
         test.thresholdReversals = integer(entry);
     else if (entryName == name(TestSetting::startingSnr))
         test.startingSnr.dB = integer(entry);
+    else if (entryName == name(TestSetting::uml))
+        test.uml = boolean(entry);
     else
         assign(static_cast<Test &>(test), entryName, entry);
 }
@@ -228,8 +232,8 @@ static void initialize(AdaptiveTest &test, const std::string &contents,
     SNR startingSnr) {
     test.identity = identity;
     test.startingSnr = startingSnr;
-    applyToEachEntry(
-        [&](auto entryName, auto entry) { assign(test, entryName, entry); },
+    applyToEachEntry([&](const auto &entryName,
+                         const auto &entry) { assign(test, entryName, entry); },
         contents);
     test.ceilingSnr = SessionControllerImpl::ceilingSnr;
     test.floorSnr = SessionControllerImpl::floorSnr;
@@ -252,14 +256,18 @@ static void initialize(FixedLevelTest &test, const std::string &contents,
 static void initialize(FixedLevelTest &test, const std::string &contents,
     const std::string &method, const TestIdentity &identity, SNR startingSnr) {
     initialize(test, contents, method, identity, startingSnr,
-        [&](auto entryName, auto entry) { assign(test, entryName, entry); });
+        [&](const auto &entryName, const auto &entry) {
+            assign(test, entryName, entry);
+        });
 }
 
 static void initialize(FixedLevelTestWithEachTargetNTimes &test,
     const std::string &contents, const std::string &method,
     const TestIdentity &identity, SNR startingSnr) {
     initialize(test, contents, method, identity, startingSnr,
-        [&](auto entryName, auto entry) { assign(test, entryName, entry); });
+        [&](const auto &entryName, const auto &entry) {
+            assign(test, entryName, entry);
+        });
 }
 
 static void initialize(const std::string &method, const std::string &contents,
@@ -426,7 +434,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             startingSnr, [&](AdaptiveTest &test) {
                 test.audioChannelOption = audioChannelOption;
                 av_speech_in_noise::initialize(adaptiveMethod, test,
-                    targetsWithReplacementReader, levittTrackFactory);
+                    targetsWithReplacementReader,
+                    test.uml ? umlTrackFactory : levittTrackFactory);
                 av_speech_in_noise::initialize(
                     runningATest, adaptiveMethod, test, testObservers);
             });
@@ -507,8 +516,10 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
 auto TestSettingsInterpreterImpl::calibration(const std::string &contents)
     -> Calibration {
     Calibration calibration;
-    applyToEachEntry([&](auto entryName,
-                         auto entry) { assign(calibration, entryName, entry); },
+    applyToEachEntry(
+        [&](const auto &entryName, const auto &entry) {
+            assign(calibration, entryName, entry);
+        },
         contents);
     calibration.fullScaleLevel = SessionControllerImpl::fullScaleLevel;
     return calibration;
