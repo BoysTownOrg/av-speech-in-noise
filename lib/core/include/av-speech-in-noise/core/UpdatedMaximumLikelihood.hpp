@@ -169,6 +169,7 @@ class UpdatedMaximumLikelihood : public Track {
     auto threshold(int reversals) -> double override {
         return std::numeric_limits<double>::quiet_NaN();
     }
+    auto formatResult() -> std::string override { return ""; }
 
     class Factory : public Track::Factory {
       public:

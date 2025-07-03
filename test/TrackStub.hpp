@@ -78,6 +78,8 @@ class TrackStub : public Track {
     [[nodiscard]] auto thresholdReversals() const -> int {
         return thresholdReversals_;
     }
+
+    auto formatResult() -> std::string override { return ""; }
 };
 
 class TrackFactoryStub : public Track::Factory {

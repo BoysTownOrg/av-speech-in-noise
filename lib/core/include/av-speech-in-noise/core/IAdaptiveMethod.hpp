@@ -37,6 +37,7 @@ class Track {
     virtual auto reversals() -> int = 0;
     virtual void reset() = 0;
     virtual auto threshold(int reversals) -> double = 0;
+    virtual auto formatResult() -> std::string = 0;
 
     class Factory {
       public:
