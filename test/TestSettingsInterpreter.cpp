@@ -894,6 +894,22 @@ TEST_SETTINGS_INTERPRETER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializesAdaptiveMethodWithLevittTrackFactory) {
+    initializeTest(interpreter,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail)});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &levittTrackFactory, adaptiveMethod.trackFactory);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(initializesAdaptiveMethodWithUmlTrackFactory) {
+    initializeTest(interpreter,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::uml, "true")});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        &umlTrackFactory, adaptiveMethod.trackFactory);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(initializesPuzzleWithPath) {
     initializeTest(interpreter,
         {entryWithNewline(TestSetting::method,
