@@ -31,8 +31,8 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return tracksResetted_;
     }
 
-    void initialize(
-        const AdaptiveTest &t, TargetPlaylistReader *reader) override {
+    void initialize(const AdaptiveTest &t, TargetPlaylistReader *reader,
+        Track::Factory *) override {
         test_ = &t;
         targetListReader_ = reader;
     }

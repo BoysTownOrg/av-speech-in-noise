@@ -85,19 +85,18 @@ static auto testResults(
     return results;
 }
 
-AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
+AdaptiveMethodImpl::AdaptiveMethodImpl(
     ResponseEvaluator &evaluator, Randomizer &randomizer)
-    : snrTrackFactory{snrTrackFactory}, evaluator{evaluator},
-      randomizer{randomizer} {}
+    : evaluator{evaluator}, randomizer{randomizer} {}
 
-void AdaptiveMethodImpl::initialize(
-    const AdaptiveTest &t, TargetPlaylistReader *targetListSetReader) {
+void AdaptiveMethodImpl::initialize(const AdaptiveTest &t,
+    TargetPlaylistReader *targetListSetReader, Track::Factory *factory) {
     test = &t;
     thresholdReversals = t.thresholdReversals;
     targetListsWithTracks.clear();
     for (const auto &list : targetListSetReader->read(t.targetsUrl))
         targetListsWithTracks.push_back(
-            {list, snrTrackFactory.make(trackSettings(t))});
+            {list, factory->make(trackSettings(t))});
     selectNextList();
 }
 

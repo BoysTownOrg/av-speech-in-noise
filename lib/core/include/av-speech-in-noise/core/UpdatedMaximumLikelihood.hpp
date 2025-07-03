@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_UPDATEDMAXIMUMLIKELIHOODHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_UPDATEDMAXIMUMLIKELIHOODHPP_
 
-#include "AdaptiveMethod.hpp"
+#include "IAdaptiveMethod.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <limits>
 #include <memory>

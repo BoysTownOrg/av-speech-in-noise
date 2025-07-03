@@ -31,6 +31,7 @@
 #include <av-speech-in-noise/core/OutputFilePath.hpp>
 #include <av-speech-in-noise/core/ResponseEvaluator.hpp>
 #include <av-speech-in-noise/core/AdaptiveTrack.hpp>
+#include <av-speech-in-noise/core/UpdatedMaximumLikelihood.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
 #include <av-speech-in-noise/core/SubmittingKeywords.hpp>
@@ -274,12 +275,12 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
     static OutputFileImpl outputFile{fileWriter, outputFilePath};
     NSLog(@"Initializing adaptive method...");
-    static adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
+    static adaptive_track::AdaptiveTrack::Factory levittTrackFactory;
+    static UpdatedMaximumLikelihood::Factory umlTrackFactory;
     static ResponseEvaluatorImpl responseEvaluator;
     static TextFileReaderImpl textFileReader;
     static MersenneTwisterRandomizer randomizer;
-    static AdaptiveMethodImpl adaptiveMethod{
-        snrTrackFactory, responseEvaluator, randomizer};
+    static AdaptiveMethodImpl adaptiveMethod{responseEvaluator, randomizer};
     NSLog(@"Initializing target playlists...");
     static MacOsDirectoryReader directoryReader;
     static FileExtensionFilter targetFileExtensionFilter{
@@ -525,13 +526,14 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         adaptiveMethod, fixedLevelMethod, eyeTracking, audioRecording,
         cyclicTargetsReader, targetsWithReplacementReader,
         predeterminedTargetPlaylist, everyTargetOnce, silentIntervalTargets,
-        allTargetsNTimes, targetsWithReplacement, revealImagePuzzle,
-        freeResponseController, sessionController,
-        coordinateResponseMeasurePresenter, freeResponsePresenter,
-        chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
-        consonantPresenter, submittingConsonantInteractor, passFailPresenter,
-        keypressPresenter, submittingKeyPressInteractor, emotionPresenter,
-        childEmotionPresenter, fixedPassFailPresenter};
+        allTargetsNTimes, targetsWithReplacement, levittTrackFactory,
+        umlTrackFactory, revealImagePuzzle, freeResponseController,
+        sessionController, coordinateResponseMeasurePresenter,
+        freeResponsePresenter, chooseKeywordsPresenter, syllablesPresenter,
+        correctKeywordsPresenter, consonantPresenter,
+        submittingConsonantInteractor, passFailPresenter, keypressPresenter,
+        submittingKeyPressInteractor, emotionPresenter, childEmotionPresenter,
+        fixedPassFailPresenter};
     static TestSetupController testSetupController{*testSetupUI, sessionUI,
         testSetupPresenter, runningATest, testSettingsInterpreter,
         textFileReader};

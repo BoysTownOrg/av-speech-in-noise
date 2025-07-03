@@ -6,8 +6,8 @@
 namespace av_speech_in_noise {
 class AdaptiveMethodStub : public AdaptiveMethod {
   public:
-    void initialize(
-        const AdaptiveTest &t, TargetPlaylistReader *reader) override {
+    void initialize(const AdaptiveTest &t, TargetPlaylistReader *reader,
+        Track::Factory *) override {
         test = t;
         targetListReader = reader;
     }

@@ -8,39 +8,10 @@
 
 #include <av-speech-in-noise/Interface.hpp>
 
-#include <limits>
 #include <memory>
 #include <vector>
 
 namespace av_speech_in_noise {
-constexpr auto maximumInt{std::numeric_limits<int>::max()};
-constexpr auto minimumInt{std::numeric_limits<int>::min()};
-
-class Track {
-  public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Track);
-    struct Settings {
-        const TrackingRule *rule{};
-        int startingX{};
-        int ceiling{maximumInt};
-        int floor{minimumInt};
-        int bumpLimit{maximumInt};
-    };
-    virtual void down() = 0;
-    virtual void up() = 0;
-    virtual auto x() -> double = 0;
-    virtual auto complete() -> bool = 0;
-    virtual auto reversals() -> int = 0;
-    virtual void reset() = 0;
-    virtual auto threshold(int reversals) -> double = 0;
-
-    class Factory {
-      public:
-        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Factory);
-        virtual auto make(const Settings &) -> std::shared_ptr<Track> = 0;
-    };
-};
-
 struct TargetPlaylistWithTrack {
     std::shared_ptr<TargetPlaylist> list;
     std::shared_ptr<Track> track;
@@ -48,8 +19,9 @@ struct TargetPlaylistWithTrack {
 
 class AdaptiveMethodImpl : public AdaptiveMethod {
   public:
-    AdaptiveMethodImpl(Track::Factory &, ResponseEvaluator &, Randomizer &);
-    void initialize(const AdaptiveTest &, TargetPlaylistReader *) override;
+    AdaptiveMethodImpl(ResponseEvaluator &, Randomizer &);
+    void initialize(const AdaptiveTest &, TargetPlaylistReader *,
+        Track::Factory *) override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
     void submit(const CorrectKeywords &) override;
@@ -70,13 +42,12 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
   private:
     void selectNextList();
 
-    std::vector<TargetPlaylistWithTrack> targetListsWithTracks{};
+    std::vector<TargetPlaylistWithTrack> targetListsWithTracks;
     coordinate_response_measure::AdaptiveTrial
         lastCoordinateResponseMeasureTrial{};
     open_set::AdaptiveTrial lastOpenSetTrial{};
     CorrectKeywordsTrial lastCorrectKeywordsTrial{};
     const AdaptiveTest *test{};
-    Track::Factory &snrTrackFactory;
     ResponseEvaluator &evaluator;
     Randomizer &randomizer;
     Track *snrTrack{};

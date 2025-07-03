@@ -300,8 +300,8 @@ static void initializeFixedLevelTestWithEachTargetNTimes(
 }
 
 static void initialize(AdaptiveMethod &method, const AdaptiveTest &test,
-    TargetPlaylistReader &reader) {
-    method.initialize(test, &reader);
+    TargetPlaylistReader &reader, Track::Factory &factory) {
+    method.initialize(test, &reader, &factory);
 }
 
 static void initialize(RunningATest &model, TestMethod &method,
@@ -414,8 +414,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::adaptiveCorrectKeywords:
         av_speech_in_noise::initialize(methodName, contents, identity,
             startingSnr, [&](const AdaptiveTest &test) {
-                av_speech_in_noise::initialize(
-                    adaptiveMethod, test, cyclicTargetsReader);
+                av_speech_in_noise::initialize(adaptiveMethod, test,
+                    cyclicTargetsReader, levittTrackFactory);
                 av_speech_in_noise::initialize(
                     runningATest, adaptiveMethod, test, testObservers);
             });
@@ -425,8 +425,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         av_speech_in_noise::initialize(methodName, contents, identity,
             startingSnr, [&](AdaptiveTest &test) {
                 test.audioChannelOption = audioChannelOption;
-                av_speech_in_noise::initialize(
-                    adaptiveMethod, test, targetsWithReplacementReader);
+                av_speech_in_noise::initialize(adaptiveMethod, test,
+                    targetsWithReplacementReader, levittTrackFactory);
                 av_speech_in_noise::initialize(
                     runningATest, adaptiveMethod, test, testObservers);
             });
@@ -533,8 +533,8 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
     RepeatableFiniteTargetPlaylist &eachTargetNTimes,
-    TargetPlaylist &targetsWithReplacement,
-    submitting_free_response::Puzzle &puzzle,
+    TargetPlaylist &targetsWithReplacement, Track::Factory &levittTrackFactory,
+    Track::Factory &umlTrackFactory, submitting_free_response::Puzzle &puzzle,
     FreeResponseController &freeResponseController,
     SessionController &sessionController,
     TaskPresenter &coordinateResponseMeasurePresenter,
@@ -548,7 +548,9 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     TaskPresenter &fixedPassFailPresenter)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
       fixedLevelMethod{fixedLevelMethod}, eyeTracking{eyeTracking},
-      audioRecording{audioRecording}, cyclicTargetsReader{cyclicTargetsReader},
+      audioRecording{audioRecording}, levittTrackFactory{levittTrackFactory},
+      umlTrackFactory{umlTrackFactory},
+      cyclicTargetsReader{cyclicTargetsReader},
       targetsWithReplacementReader{targetsWithReplacementReader},
       predeterminedTargets{predeterminedTargets},
       everyTargetOnce{everyTargetOnce},

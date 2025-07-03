@@ -1,7 +1,7 @@
 #ifndef TESTS_TRACKSTUB_HPP_
 #define TESTS_TRACKSTUB_HPP_
 
-#include <av-speech-in-noise/core/AdaptiveMethod.hpp>
+#include <av-speech-in-noise/core/IAdaptiveMethod.hpp>
 #include <utility>
 #include <vector>
 
