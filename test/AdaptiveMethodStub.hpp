@@ -12,7 +12,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         targetListReader = reader;
         trackFactory = f;
     }
-    auto testResults() -> AdaptiveTestResults override { return testResults_; }
+    auto testResults() -> std::string override { return testResults_; }
     void resetTracks() override { tracksResetted = true; }
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> LocalUrl override { return {}; }
@@ -29,7 +29,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void writeTestResult(OutputFile &) override {}
     void submit(const coordinate_response_measure::Response &) override {}
 
-    AdaptiveTestResults testResults_;
+    std::string testResults_;
     AdaptiveTest test{};
     TargetPlaylistReader *targetListReader{};
     Track::Factory *trackFactory{};

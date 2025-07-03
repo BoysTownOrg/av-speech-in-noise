@@ -5,6 +5,7 @@
 #include "TestMethod.hpp"
 
 #include <limits>
+#include <string>
 #include <vector>
 #include <memory>
 
@@ -49,7 +50,7 @@ class AdaptiveMethod : public virtual TestMethod {
     virtual void initialize(
         const AdaptiveTest &, TargetPlaylistReader *, Track::Factory *) = 0;
     virtual void resetTracks() = 0;
-    virtual auto testResults() -> AdaptiveTestResults = 0;
+    virtual auto testResults() -> std::string = 0;
     using TestMethod::submit;
     virtual void submit(const CorrectKeywords &) = 0;
     virtual void writeLastCorrectKeywords(OutputFile &) = 0;

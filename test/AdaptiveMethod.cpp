@@ -828,8 +828,9 @@ ADAPTIVE_METHOD_TEST(testResults) {
     targetLists.at(1)->setDirectory("b");
     at(tracks, 2)->setThreshold(33.);
     targetLists.at(2)->setDirectory("c");
-    assertEqual(
-        {{{"a"}, 11.}, {{"b"}, 22.}, {{"c"}, 33.}}, method.testResults());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        std::string{"thresholds (targets: dB SNR)\na: 11\nb: 22\nc: 33"},
+        method.testResults());
 }
 
 ADAPTIVE_METHOD_TEST(writeTestResultPassThresholdReversals) {

@@ -1,6 +1,7 @@
 #include "AdaptiveMethod.hpp"
 
 #include <gsl/gsl>
+#include <sstream>
 
 namespace av_speech_in_noise {
 static auto track(const TargetPlaylistWithTrack &t) -> Track * {
@@ -212,8 +213,14 @@ void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile &file) {
     file.write(lastCorrectKeywordsTrial);
 }
 
-auto AdaptiveMethodImpl::testResults() -> AdaptiveTestResults {
-    return av_speech_in_noise::testResults(
-        targetListsWithTracks, thresholdReversals);
+auto AdaptiveMethodImpl::testResults() -> std::string {
+    const auto results{av_speech_in_noise::testResults(
+        targetListsWithTracks, thresholdReversals)};
+    std::stringstream thresholds;
+    thresholds << "thresholds (targets: dB SNR)";
+    for (const auto &result : results)
+        thresholds << '\n'
+                   << result.targetsUrl.path << ": " << result.threshold;
+    return thresholds.str();
 }
 }
