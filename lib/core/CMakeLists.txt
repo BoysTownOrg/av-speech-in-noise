@@ -7,7 +7,7 @@ add_library(
   src/RunningATest.cpp
   src/ResponseEvaluator.cpp
   src/EyeTrackerCalibration.cpp
-  src/AdaptiveTrack.cpp
+  src/LevittTrack.cpp
   src/SubmittingFreeResponse.cpp
   src/SubmittingKeyPress.cpp
   src/SubmittingPassFail.cpp

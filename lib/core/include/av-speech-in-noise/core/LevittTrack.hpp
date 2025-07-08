@@ -1,14 +1,14 @@
-#ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_ADAPTIVETRACKHPP_
-#define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_ADAPTIVETRACKHPP_
+#ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_LEVITTTRACKHPP_
+#define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_LEVITTTRACKHPP_
 
 #include "IAdaptiveMethod.hpp"
 #include <vector>
 #include <memory>
 
 namespace av_speech_in_noise {
-class AdaptiveTrack : public Track {
+class LevittTrack : public Track {
   public:
-    explicit AdaptiveTrack(const Settings &);
+    explicit LevittTrack(const Settings &);
     auto x() -> double override;
     void up() override;
     void down() override;
@@ -19,7 +19,7 @@ class AdaptiveTrack : public Track {
 
     class Factory : public Track::Factory {
         auto make(const Settings &s) -> std::shared_ptr<Track> override {
-            return std::make_shared<AdaptiveTrack>(s);
+            return std::make_shared<LevittTrack>(s);
         }
     };
 
@@ -28,8 +28,8 @@ class AdaptiveTrack : public Track {
     enum class Step { undefined, rise, fall };
     void updateBumpCount(int bumpBoundary);
     void update(Direction, int bumpBoundary, const std::vector<int> &,
-        void (AdaptiveTrack::*)());
-    void callIfConsecutiveCountMet(void (AdaptiveTrack::*)(), int threshold);
+        void (LevittTrack::*)());
+    void callIfConsecutiveCountMet(void (LevittTrack::*)(), int threshold);
     auto consecutiveCountMet(int threshold) -> bool;
     void stepDown();
     void stepUp();

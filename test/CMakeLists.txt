@@ -1,7 +1,7 @@
 add_executable(
   av-speech-in-noise-test-exe
   AdaptiveMethod.cpp
-  AdaptiveTrack.cpp
+  LevittTrack.cpp
   AudioReaderSimplified.cpp
   FixedLevelMethod.cpp
   MaskerPlayer.cpp

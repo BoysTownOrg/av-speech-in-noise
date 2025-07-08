@@ -1,31 +1,31 @@
 #include "assert-utility.hpp"
-#include <av-speech-in-noise/core/AdaptiveTrack.hpp>
+#include <av-speech-in-noise/core/LevittTrack.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 
 namespace av_speech_in_noise {
 namespace {
-void reset(AdaptiveTrack &track) { track.reset(); }
+void reset(LevittTrack &track) { track.reset(); }
 
-void down(AdaptiveTrack &track) { track.down(); }
+void down(LevittTrack &track) { track.down(); }
 
-void up(AdaptiveTrack &track) { track.up(); }
+void up(LevittTrack &track) { track.up(); }
 
-void assertXEquals(AdaptiveTrack &track, int expected) {
+void assertXEquals(LevittTrack &track, int expected) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(expected, track.x());
 }
 
-auto complete(AdaptiveTrack &track) -> bool { return track.complete(); }
+auto complete(LevittTrack &track) -> bool { return track.complete(); }
 
-void assertIncomplete(AdaptiveTrack &track) {
+void assertIncomplete(LevittTrack &track) {
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(complete(track));
 }
 
-void assertComplete(AdaptiveTrack &track) {
+void assertComplete(LevittTrack &track) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(complete(track));
 }
 
-void update(AdaptiveTrack &track, const std::string &directions) {
+void update(LevittTrack &track, const std::string &directions) {
     for (const auto &c : directions)
         if (c == 'd')
             down(track);
@@ -33,70 +33,70 @@ void update(AdaptiveTrack &track, const std::string &directions) {
             up(track);
 }
 
-void assertReversalsEquals(AdaptiveTrack &track, int n) {
+void assertReversalsEquals(LevittTrack &track, int n) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(n, track.reversals());
 }
 
-void assertReversalsEqualsAfterDown(AdaptiveTrack &track, int n) {
+void assertReversalsEqualsAfterDown(LevittTrack &track, int n) {
     down(track);
     assertReversalsEquals(track, n);
 }
 
-void assertReversalsEqualsAfterUp(AdaptiveTrack &track, int n) {
+void assertReversalsEqualsAfterUp(LevittTrack &track, int n) {
     up(track);
     assertReversalsEquals(track, n);
 }
 
-void assertIncompleteAfterDown(AdaptiveTrack &track) {
+void assertIncompleteAfterDown(LevittTrack &track) {
     down(track);
     assertIncomplete(track);
 }
 
-void assertIncompleteAfterUp(AdaptiveTrack &track) {
+void assertIncompleteAfterUp(LevittTrack &track) {
     up(track);
     assertIncomplete(track);
 }
 
-void assertCompleteAfterUp(AdaptiveTrack &track) {
+void assertCompleteAfterUp(LevittTrack &track) {
     up(track);
     assertComplete(track);
 }
 
-void assertCompleteAfterDown(AdaptiveTrack &track) {
+void assertCompleteAfterDown(LevittTrack &track) {
     down(track);
     assertComplete(track);
 }
 
-void assertXEqualsAfterDown(AdaptiveTrack &track, int x) {
+void assertXEqualsAfterDown(LevittTrack &track, int x) {
     down(track);
     assertXEquals(track, x);
 }
 
-void assertXEqualsAfterUp(AdaptiveTrack &track, int x) {
+void assertXEqualsAfterUp(LevittTrack &track, int x) {
     up(track);
     assertXEquals(track, x);
 }
 
 void assertXEqualsAfter(
-    AdaptiveTrack &track, const std::string &directions, int x) {
+    LevittTrack &track, const std::string &directions, int x) {
     update(track, directions);
     assertXEquals(track, x);
 }
 
-void assertThresholdEquals(AdaptiveTrack &track, double x) {
+void assertThresholdEquals(LevittTrack &track, double x) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, std::get<Threshold>(track.result()));
 }
 
-auto construct(const AdaptiveTrack::Settings &settings) -> AdaptiveTrack {
-    return AdaptiveTrack{settings};
+auto construct(const LevittTrack::Settings &settings) -> LevittTrack {
+    return LevittTrack{settings};
 }
 
-class AdaptiveTrackTests : public ::testing::Test {
+class LevittTrackTests : public ::testing::Test {
   protected:
-    AdaptiveTrack::Settings settings{};
+    LevittTrack::Settings settings{};
     av_speech_in_noise::TrackingRule rule;
 
-    AdaptiveTrackTests() {
+    LevittTrackTests() {
         settings.rule = &rule;
         rule.resize(3);
         setFirstSequenceRunCount(999);
@@ -125,22 +125,22 @@ class AdaptiveTrackTests : public ::testing::Test {
     void setFirstSequenceDown(int x) { firstSequence().down = x; }
 };
 
-#define ADAPTIVE_TRACK_TEST(a) TEST_F(AdaptiveTrackTests, a)
+#define LEVITT_TRACK_TEST(a) TEST_F(LevittTrackTests, a)
 
-ADAPTIVE_TRACK_TEST(xEqualToStartingX) {
+LEVITT_TRACK_TEST(xEqualToStartingX) {
     setStartingX(1);
     auto track{construct(settings)};
     assertXEquals(track, 1);
 }
 
-ADAPTIVE_TRACK_TEST(noRunSequencesMeansNoChanges) {
+LEVITT_TRACK_TEST(noRunSequencesMeansNoChanges) {
     setStartingX(5);
     auto track{construct(settings)};
     assertXEqualsAfterDown(track, 5);
     assertXEqualsAfterUp(track, 5);
 }
 
-ADAPTIVE_TRACK_TEST(stepsAccordingToStepSize1Down1Up) {
+LEVITT_TRACK_TEST(stepsAccordingToStepSize1Down1Up) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
     setFirstSequenceStepSize(4);
@@ -153,7 +153,7 @@ ADAPTIVE_TRACK_TEST(stepsAccordingToStepSize1Down1Up) {
     assertXEqualsAfterUp(track, 5 - 4 + 4 - 4 - 4 + 4);
 }
 
-ADAPTIVE_TRACK_TEST(stepsAccordingToStepSize2Down1Up) {
+LEVITT_TRACK_TEST(stepsAccordingToStepSize2Down1Up) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(2);
     setFirstSequenceStepSize(4);
@@ -167,7 +167,7 @@ ADAPTIVE_TRACK_TEST(stepsAccordingToStepSize2Down1Up) {
     assertXEqualsAfterUp(track, 5 - 4 + 4 - 4 + 4);
 }
 
-ADAPTIVE_TRACK_TEST(stepsAccordingToStepSize1Down2Up) {
+LEVITT_TRACK_TEST(stepsAccordingToStepSize1Down2Up) {
     setFirstSequenceDown(1);
     setFirstSequenceUp(2);
     setFirstSequenceStepSize(4);
@@ -181,7 +181,7 @@ ADAPTIVE_TRACK_TEST(stepsAccordingToStepSize1Down2Up) {
     assertXEqualsAfterUp(track, 5 - 4 + 4 - 4 + 4);
 }
 
-ADAPTIVE_TRACK_TEST(exhaustedRunSequencesMeansNoMoreStepChanges) {
+LEVITT_TRACK_TEST(exhaustedRunSequencesMeansNoMoreStepChanges) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
     setFirstSequenceRunCount(3);
@@ -193,7 +193,7 @@ ADAPTIVE_TRACK_TEST(exhaustedRunSequencesMeansNoMoreStepChanges) {
     assertXEqualsAfterUp(track, 5 - 4 + 4 - 4);
 }
 
-ADAPTIVE_TRACK_TEST(floorActsAsLowerLimit) {
+LEVITT_TRACK_TEST(floorActsAsLowerLimit) {
     setFloor(0);
     setFirstSequenceDown(1);
     setFirstSequenceStepSize(4);
@@ -204,7 +204,7 @@ ADAPTIVE_TRACK_TEST(floorActsAsLowerLimit) {
     assertXEqualsAfterDown(track, 0);
 }
 
-ADAPTIVE_TRACK_TEST(ceilingActsAsUpperLimit) {
+LEVITT_TRACK_TEST(ceilingActsAsUpperLimit) {
     setCeiling(10);
     setFirstSequenceUp(1);
     setFirstSequenceStepSize(4);
@@ -215,13 +215,13 @@ ADAPTIVE_TRACK_TEST(ceilingActsAsUpperLimit) {
     assertXEqualsAfterUp(track, 10);
 }
 
-ADAPTIVE_TRACK_TEST(incompleteWhenNonZeroRunCount) {
+LEVITT_TRACK_TEST(incompleteWhenNonZeroRunCount) {
     setFirstSequenceRunCount(3);
     auto track{construct(settings)};
     assertIncomplete(track);
 }
 
-ADAPTIVE_TRACK_TEST(completeWhenExhausted) {
+LEVITT_TRACK_TEST(completeWhenExhausted) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
     setFirstSequenceRunCount(3);
@@ -232,7 +232,7 @@ ADAPTIVE_TRACK_TEST(completeWhenExhausted) {
     assertCompleteAfterUp(track);
 }
 
-ADAPTIVE_TRACK_TEST(completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling) {
+LEVITT_TRACK_TEST(completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling) {
     setStartingX(10);
     setCeiling(10);
     setBumpLimit(3);
@@ -242,7 +242,7 @@ ADAPTIVE_TRACK_TEST(completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling) {
     assertCompleteAfterUp(track);
 }
 
-ADAPTIVE_TRACK_TEST(
+LEVITT_TRACK_TEST(
     stillCompleteIfPushedUpBumpLimitPlusOneConsecutiveTimesAtCeiling) {
     setStartingX(10);
     setCeiling(10);
@@ -252,7 +252,7 @@ ADAPTIVE_TRACK_TEST(
     assertCompleteAfterUp(track);
 }
 
-ADAPTIVE_TRACK_TEST(
+LEVITT_TRACK_TEST(
     stillCompleteIfPushedUpBumpLimitConsecutiveTimesAtCeilingThenPushedDown) {
     setStartingX(10);
     setCeiling(10);
@@ -262,7 +262,7 @@ ADAPTIVE_TRACK_TEST(
     assertCompleteAfterDown(track);
 }
 
-ADAPTIVE_TRACK_TEST(completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling2) {
+LEVITT_TRACK_TEST(completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling2) {
     setStartingX(5);
     setCeiling(7);
     setFirstSequenceStepSize(7 - 5);
@@ -276,7 +276,7 @@ ADAPTIVE_TRACK_TEST(completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling2) {
     assertCompleteAfterUp(track);
 }
 
-ADAPTIVE_TRACK_TEST(completeIfPushedDownBumpLimitConsecutiveTimesAtFloor) {
+LEVITT_TRACK_TEST(completeIfPushedDownBumpLimitConsecutiveTimesAtFloor) {
     setStartingX(-10);
     setFloor(-10);
     setBumpLimit(3);
@@ -286,7 +286,7 @@ ADAPTIVE_TRACK_TEST(completeIfPushedDownBumpLimitConsecutiveTimesAtFloor) {
     assertCompleteAfterDown(track);
 }
 
-ADAPTIVE_TRACK_TEST(
+LEVITT_TRACK_TEST(
     stillCompleteIfPushedDownBumpLimitPlusOneConsecutiveTimesAtFloor) {
     setStartingX(-10);
     setFloor(-10);
@@ -296,7 +296,7 @@ ADAPTIVE_TRACK_TEST(
     assertCompleteAfterDown(track);
 }
 
-ADAPTIVE_TRACK_TEST(
+LEVITT_TRACK_TEST(
     stillCompleteIfPushedDownBumpLimitConsecutiveTimesAtFloorThenPushedUp) {
     setStartingX(-10);
     setFloor(-10);
@@ -306,7 +306,7 @@ ADAPTIVE_TRACK_TEST(
     assertCompleteAfterUp(track);
 }
 
-ADAPTIVE_TRACK_TEST(completeIfPushedDownBumpLimitConsecutiveTimesAtFloor2) {
+LEVITT_TRACK_TEST(completeIfPushedDownBumpLimitConsecutiveTimesAtFloor2) {
     setStartingX(-5);
     setFloor(-7);
     setFirstSequenceStepSize(7 - 5);
@@ -320,7 +320,7 @@ ADAPTIVE_TRACK_TEST(completeIfPushedDownBumpLimitConsecutiveTimesAtFloor2) {
     assertCompleteAfterDown(track);
 }
 
-ADAPTIVE_TRACK_TEST(incompleteIfPushedDownBumpLimitNonconsecutiveTimesAtFloor) {
+LEVITT_TRACK_TEST(incompleteIfPushedDownBumpLimitNonconsecutiveTimesAtFloor) {
     setStartingX(-5);
     setFloor(-5);
     setBumpLimit(3);
@@ -329,7 +329,7 @@ ADAPTIVE_TRACK_TEST(incompleteIfPushedDownBumpLimitNonconsecutiveTimesAtFloor) {
     assertIncomplete(track);
 }
 
-ADAPTIVE_TRACK_TEST(incompleteIfPushedUpBumpLimitNonconsecutiveTimesAtCeiling) {
+LEVITT_TRACK_TEST(incompleteIfPushedUpBumpLimitNonconsecutiveTimesAtCeiling) {
     setStartingX(5);
     setCeiling(5);
     setBumpLimit(3);
@@ -338,7 +338,7 @@ ADAPTIVE_TRACK_TEST(incompleteIfPushedUpBumpLimitNonconsecutiveTimesAtCeiling) {
     assertIncomplete(track);
 }
 
-ADAPTIVE_TRACK_TEST(threshold) {
+LEVITT_TRACK_TEST(threshold) {
     settings.thresholdReversals = 4;
     setStartingX(0);
     setFirstSequenceRunCount(7);
@@ -359,7 +359,7 @@ ADAPTIVE_TRACK_TEST(threshold) {
     assertThresholdEquals(track, (12 + 6 + 9 + 3) / 4.);
 }
 
-ADAPTIVE_TRACK_TEST(thresholdFromTwoSequences) {
+LEVITT_TRACK_TEST(thresholdFromTwoSequences) {
     settings.thresholdReversals = 6;
     setStartingX(0);
     setFirstSequenceRunCount(4);
@@ -387,7 +387,7 @@ ADAPTIVE_TRACK_TEST(thresholdFromTwoSequences) {
     assertThresholdEquals(track, (6 + 0 + 24 + 18 + 36 + 30) / 6.);
 }
 
-ADAPTIVE_TRACK_TEST(thresholdTooManyReversals) {
+LEVITT_TRACK_TEST(thresholdTooManyReversals) {
     settings.thresholdReversals = 5;
     setStartingX(0);
     setFirstSequenceRunCount(4);
@@ -407,7 +407,7 @@ ADAPTIVE_TRACK_TEST(thresholdTooManyReversals) {
     assertThresholdEquals(track, (-9 - 3 - 6 + 3) / 4.);
 }
 
-ADAPTIVE_TRACK_TEST(thresholdNegativeReversals) {
+LEVITT_TRACK_TEST(thresholdNegativeReversals) {
     settings.thresholdReversals = -1;
     setStartingX(0);
     setFirstSequenceRunCount(4);
@@ -421,7 +421,7 @@ ADAPTIVE_TRACK_TEST(thresholdNegativeReversals) {
 }
 
 // https://doi.org/10.1121/1.1912375
-ADAPTIVE_TRACK_TEST(LevittFigure4) {
+LEVITT_TRACK_TEST(LevittFigure4) {
     setStartingX(0);
     setFirstSequenceRunCount(8);
     setFirstSequenceStepSize(1);
@@ -432,7 +432,7 @@ ADAPTIVE_TRACK_TEST(LevittFigure4) {
 }
 
 // https://doi.org/10.1121/1.1912375
-ADAPTIVE_TRACK_TEST(LevittFigure5) {
+LEVITT_TRACK_TEST(LevittFigure5) {
     setStartingX(0);
     setFirstSequenceRunCount(5);
     setFirstSequenceStepSize(1);
@@ -442,7 +442,7 @@ ADAPTIVE_TRACK_TEST(LevittFigure5) {
     assertXEqualsAfter(track, "dddduduududdddduuuddddd", 1);
 }
 
-ADAPTIVE_TRACK_TEST(twoSequences) {
+LEVITT_TRACK_TEST(twoSequences) {
     setStartingX(65);
     setFirstSequenceRunCount(2);
     setFirstSequenceStepSize(8);
@@ -466,7 +466,7 @@ ADAPTIVE_TRACK_TEST(twoSequences) {
     assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
 }
 
-ADAPTIVE_TRACK_TEST(threeSequences) {
+LEVITT_TRACK_TEST(threeSequences) {
     setStartingX(0);
     setFirstSequenceRunCount(1);
     setFirstSequenceStepSize(10);
@@ -484,7 +484,7 @@ ADAPTIVE_TRACK_TEST(threeSequences) {
     assertXEqualsAfter(track, "ddudddudddddudddddduddd", 3);
 }
 
-ADAPTIVE_TRACK_TEST(varyingDownUpRule) {
+LEVITT_TRACK_TEST(varyingDownUpRule) {
     setStartingX(65);
     setFirstSequenceRunCount(2);
     setFirstSequenceStepSize(8);
@@ -508,7 +508,7 @@ ADAPTIVE_TRACK_TEST(varyingDownUpRule) {
     assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
 }
 
-ADAPTIVE_TRACK_TEST(reversals) {
+LEVITT_TRACK_TEST(reversals) {
     setStartingX(0);
     setFirstSequenceDown(2);
     setFirstSequenceUp(1);
@@ -522,7 +522,7 @@ ADAPTIVE_TRACK_TEST(reversals) {
     assertReversalsEqualsAfterDown(track, 3);
 }
 
-ADAPTIVE_TRACK_TEST(sanityTest) {
+LEVITT_TRACK_TEST(sanityTest) {
     setStartingX(0);
     setFirstSequenceUp(1);
     setFirstSequenceDown(2);
@@ -566,7 +566,7 @@ ADAPTIVE_TRACK_TEST(sanityTest) {
     assertXEquals(track, -10);
 }
 
-ADAPTIVE_TRACK_TEST(resetResetsReversals) {
+LEVITT_TRACK_TEST(resetResetsReversals) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
     auto track{construct(settings)};
@@ -580,7 +580,7 @@ ADAPTIVE_TRACK_TEST(resetResetsReversals) {
     assertReversalsEquals(track, 1);
 }
 
-ADAPTIVE_TRACK_TEST(twoSequencesWithReset) {
+LEVITT_TRACK_TEST(twoSequencesWithReset) {
     setStartingX(65);
     setFirstSequenceRunCount(2);
     setFirstSequenceStepSize(8);
@@ -606,7 +606,7 @@ ADAPTIVE_TRACK_TEST(twoSequencesWithReset) {
     assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
 }
 
-ADAPTIVE_TRACK_TEST(twoSequencesWithReset2) {
+LEVITT_TRACK_TEST(twoSequencesWithReset2) {
     setStartingX(65);
     setFirstSequenceRunCount(2);
     setFirstSequenceStepSize(8);
@@ -626,7 +626,7 @@ ADAPTIVE_TRACK_TEST(twoSequencesWithReset2) {
     assertXEqualsAfterUp(track, 65 - 8 - 8 + 8);
 }
 
-ADAPTIVE_TRACK_TEST(
+LEVITT_TRACK_TEST(
     completeIfPushedDownBumpLimitConsecutiveTimesAtFloorAfterReset) {
     setStartingX(-10);
     setFloor(-10);

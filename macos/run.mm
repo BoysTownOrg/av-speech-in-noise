@@ -30,7 +30,7 @@
 #include <av-speech-in-noise/core/OutputFile.hpp>
 #include <av-speech-in-noise/core/OutputFilePath.hpp>
 #include <av-speech-in-noise/core/ResponseEvaluator.hpp>
-#include <av-speech-in-noise/core/AdaptiveTrack.hpp>
+#include <av-speech-in-noise/core/LevittTrack.hpp>
 #include <av-speech-in-noise/core/UpdatedMaximumLikelihood.hpp>
 #include <av-speech-in-noise/core/SubmittingFreeResponse.hpp>
 #include <av-speech-in-noise/core/SubmittingPassFail.hpp>
@@ -275,7 +275,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
     static OutputFileImpl outputFile{fileWriter, outputFilePath};
     NSLog(@"Initializing adaptive method...");
-    static adaptive_track::AdaptiveTrack::Factory levittTrackFactory;
+    static LevittTrack::Factory levittTrackFactory;
     static UpdatedMaximumLikelihood::Factory umlTrackFactory;
     static ResponseEvaluatorImpl responseEvaluator;
     static TextFileReaderImpl textFileReader;
