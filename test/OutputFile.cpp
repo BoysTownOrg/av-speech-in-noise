@@ -1090,6 +1090,15 @@ OUTPUT_FILE_TEST(writeAdaptiveTestResult) {
     assertContainsColonDelimitedEntry(writer, "c", "3");
 }
 
+OUTPUT_FILE_TEST(writeUmlAdaptiveTestResult) {
+    AdaptiveTestResults results{};
+    results.push_back({{"a"}, Phi{1., 2., 3., 4.}});
+    results.push_back({{"b"}, Phi{3., 1., 2., 4.}});
+    file.write(results);
+    assertContainsColonDelimitedEntry(writer, "a", "1 2 3 4");
+    assertContainsColonDelimitedEntry(writer, "b", "3 1 2 4");
+}
+
 OUTPUT_FILE_TEST(writeCommonFixedLevelTest) {
     assertCommonTestWritten(writingFixedLevelTest);
 }
