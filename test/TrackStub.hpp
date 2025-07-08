@@ -70,8 +70,6 @@ class TrackStub : public Track {
     [[nodiscard]] auto resetted() const -> bool { return resetted_; }
 
     auto threshold() -> double override { return threshold_; }
-
-    auto formatResult() -> std::string override { return ""; }
 };
 
 class TrackFactoryStub : public Track::Factory {
