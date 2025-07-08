@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_ADAPTIVETRACKHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_ADAPTIVETRACKHPP_
 
-#include "AdaptiveMethod.hpp"
+#include "IAdaptiveMethod.hpp"
 #include <vector>
 #include <memory>
 
@@ -15,7 +15,7 @@ class AdaptiveTrack : public av_speech_in_noise::Track {
     auto complete() -> bool override;
     auto reversals() -> int override;
     void reset() override;
-    auto threshold(int reversals) -> double override;
+    auto threshold() -> double override;
     auto formatResult() -> std::string override { return ""; }
 
     class Factory : public Track::Factory {
@@ -55,6 +55,7 @@ class AdaptiveTrack : public av_speech_in_noise::Track {
     int sameDirectionConsecutiveCount{};
     int runCounter{};
     int reversals_{};
+    int thresholdReversals{};
     Direction previousDirection{Direction::undefined};
     Step previousStep{Step::undefined};
 };

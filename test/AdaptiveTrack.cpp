@@ -83,8 +83,8 @@ void assertXEqualsAfter(
     assertXEquals(track, x);
 }
 
-void assertThresholdEquals(AdaptiveTrack &track, int lastReversals, double x) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, track.threshold(lastReversals));
+void assertThresholdEquals(AdaptiveTrack &track, double x) {
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, track.threshold());
 }
 
 auto construct(const AdaptiveTrack::Settings &settings) -> AdaptiveTrack {
@@ -339,6 +339,7 @@ ADAPTIVE_TRACK_TEST(incompleteIfPushedUpBumpLimitNonconsecutiveTimesAtCeiling) {
 }
 
 ADAPTIVE_TRACK_TEST(threshold) {
+    settings.thresholdReversals = 4;
     setStartingX(0);
     setFirstSequenceRunCount(7);
     setFirstSequenceStepSize(3);
@@ -355,10 +356,11 @@ ADAPTIVE_TRACK_TEST(threshold) {
     update(track, "dddd");
     assertXEquals(track, 3);
     up(track);
-    assertThresholdEquals(track, 4, (12 + 6 + 9 + 3) / 4.);
+    assertThresholdEquals(track, (12 + 6 + 9 + 3) / 4.);
 }
 
 ADAPTIVE_TRACK_TEST(thresholdFromTwoSequences) {
+    settings.thresholdReversals = 6;
     setStartingX(0);
     setFirstSequenceRunCount(4);
     setFirstSequenceStepSize(3);
@@ -382,10 +384,11 @@ ADAPTIVE_TRACK_TEST(thresholdFromTwoSequences) {
     update(track, "dd");
     assertXEquals(track, 30);
     up(track);
-    assertThresholdEquals(track, 6, (6 + 0 + 24 + 18 + 36 + 30) / 6.);
+    assertThresholdEquals(track, (6 + 0 + 24 + 18 + 36 + 30) / 6.);
 }
 
 ADAPTIVE_TRACK_TEST(thresholdTooManyReversals) {
+    settings.thresholdReversals = 5;
     setStartingX(0);
     setFirstSequenceRunCount(4);
     setFirstSequenceStepSize(3);
@@ -401,10 +404,11 @@ ADAPTIVE_TRACK_TEST(thresholdTooManyReversals) {
     update(track, "uuu");
     assertXEquals(track, 3);
     update(track, "dd");
-    assertThresholdEquals(track, 5, (-9 - 3 - 6 + 3) / 4.);
+    assertThresholdEquals(track, (-9 - 3 - 6 + 3) / 4.);
 }
 
 ADAPTIVE_TRACK_TEST(thresholdNegativeReversals) {
+    settings.thresholdReversals = -1;
     setStartingX(0);
     setFirstSequenceRunCount(4);
     setFirstSequenceStepSize(3);
@@ -412,7 +416,7 @@ ADAPTIVE_TRACK_TEST(thresholdNegativeReversals) {
     setFirstSequenceUp(1);
     auto track{construct(settings)};
     update(track, "dduddudd");
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(std::isnan(track.threshold(-1)));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(std::isnan(track.threshold()));
 }
 
 // https://doi.org/10.1121/1.1912375

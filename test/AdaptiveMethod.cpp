@@ -833,13 +833,15 @@ ADAPTIVE_METHOD_TEST(testResults) {
         method.testResults());
 }
 
-ADAPTIVE_METHOD_TEST(writeTestResultPassThresholdReversals) {
+ADAPTIVE_METHOD_TEST(passesThresholdReversals) {
     test.thresholdReversals = 1;
     initialize(method, test, targetListReader, snrTrackFactory);
-    method.writeTestResult(outputFile);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, at(tracks, 0)->thresholdReversals());
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, at(tracks, 1)->thresholdReversals());
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, at(tracks, 2)->thresholdReversals());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        snrTrackFactory.parameters()[0].thresholdReversals, 1);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        snrTrackFactory.parameters()[1].thresholdReversals, 1);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        snrTrackFactory.parameters()[2].thresholdReversals, 1);
 }
 
 ADAPTIVE_METHOD_TEST(submitCorrectResponsePassesCurrentToEvaluator) {

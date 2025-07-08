@@ -1,5 +1,5 @@
-#ifndef TESTS_TRACKSTUB_HPP_
-#define TESTS_TRACKSTUB_HPP_
+#ifndef AV_SPEECH_IN_NOISE_TEST_TRACKSTUB_HPP_
+#define AV_SPEECH_IN_NOISE_TEST_TRACKSTUB_HPP_
 
 #include <av-speech-in-noise/core/IAdaptiveMethod.hpp>
 #include <utility>
@@ -14,7 +14,6 @@ class TrackStub : public Track {
     int reversals_{};
     int reversalsWhenUpdated_{};
     int xWhenUpdated_{};
-    int thresholdReversals_{};
     bool pushedDown_{};
     bool pushedUp_{};
     bool complete_{};
@@ -70,14 +69,7 @@ class TrackStub : public Track {
 
     [[nodiscard]] auto resetted() const -> bool { return resetted_; }
 
-    auto threshold(int reversals) -> double override {
-        thresholdReversals_ = reversals;
-        return threshold_;
-    }
-
-    [[nodiscard]] auto thresholdReversals() const -> int {
-        return thresholdReversals_;
-    }
+    auto threshold() -> double override { return threshold_; }
 
     auto formatResult() -> std::string override { return ""; }
 };

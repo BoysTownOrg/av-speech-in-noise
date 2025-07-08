@@ -42,6 +42,7 @@ static auto trackSettings(const AdaptiveTest &test) -> Track::Settings {
     trackSettings.startingX = test.startingSnr.dB;
     trackSettings.floor = test.floorSnr.dB;
     trackSettings.bumpLimit = test.trackBumpLimit;
+    trackSettings.thresholdReversals = test.thresholdReversals;
     return trackSettings;
 }
 
@@ -77,12 +78,11 @@ static void resetTrack(TargetPlaylistWithTrack &targetListWithTrack) {
 static auto x(Track *track) -> double { return track->x(); }
 
 static auto testResults(
-    const std::vector<TargetPlaylistWithTrack> &targetListsWithTracks,
-    int thresholdReversals) -> AdaptiveTestResults {
+    const std::vector<TargetPlaylistWithTrack> &targetListsWithTracks)
+    -> AdaptiveTestResults {
     AdaptiveTestResults results;
     for (const auto &t : targetListsWithTracks)
-        results.push_back(
-            {t.list->directory(), t.track->threshold(thresholdReversals)});
+        results.push_back({t.list->directory(), t.track->threshold()});
     return results;
 }
 
@@ -93,7 +93,6 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(
 void AdaptiveMethodImpl::initialize(const AdaptiveTest &t,
     TargetPlaylistReader *targetListSetReader, Track::Factory *factory) {
     test = &t;
-    thresholdReversals = t.thresholdReversals;
     targetListsWithTracks.clear();
     for (const auto &list : targetListSetReader->read(t.targetsUrl))
         targetListsWithTracks.push_back(
@@ -189,8 +188,7 @@ void AdaptiveMethodImpl::submit(const CorrectKeywords &p) {
 }
 
 void AdaptiveMethodImpl::writeTestResult(OutputFile &file) {
-    file.write(av_speech_in_noise::testResults(
-        targetListsWithTracks, thresholdReversals));
+    file.write(av_speech_in_noise::testResults(targetListsWithTracks));
 }
 
 void AdaptiveMethodImpl::writeTestingParameters(OutputFile &file) {
@@ -214,8 +212,7 @@ void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile &file) {
 }
 
 auto AdaptiveMethodImpl::testResults() -> std::string {
-    const auto results{av_speech_in_noise::testResults(
-        targetListsWithTracks, thresholdReversals)};
+    const auto results{av_speech_in_noise::testResults(targetListsWithTracks)};
     std::stringstream thresholds;
     thresholds << "thresholds (targets: dB SNR)";
     for (const auto &result : results)

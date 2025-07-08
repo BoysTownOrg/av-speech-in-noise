@@ -29,6 +29,7 @@ class Track {
         int ceiling{maximumInt};
         int floor{minimumInt};
         int bumpLimit{maximumInt};
+        int thresholdReversals;
     };
     virtual void down() = 0;
     virtual void up() = 0;
@@ -36,7 +37,7 @@ class Track {
     virtual auto complete() -> bool = 0;
     virtual auto reversals() -> int = 0;
     virtual void reset() = 0;
-    virtual auto threshold(int reversals) -> double = 0;
+    virtual auto threshold() -> double = 0;
     virtual auto formatResult() -> std::string = 0;
 
     class Factory {

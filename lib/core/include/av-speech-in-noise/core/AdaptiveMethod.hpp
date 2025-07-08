@@ -52,7 +52,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     Randomizer &randomizer;
     Track *snrTrack{};
     TargetPlaylist *targetList{};
-    int thresholdReversals{};
 };
 }
 

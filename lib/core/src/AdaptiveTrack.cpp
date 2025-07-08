@@ -5,7 +5,8 @@
 namespace adaptive_track {
 AdaptiveTrack::AdaptiveTrack(const Settings &p)
     : startingX_{p.startingX}, x_{p.startingX}, ceiling_{p.ceiling},
-      floor_{p.floor}, bumpLimit_{p.bumpLimit}, bumpCount_{0} {
+      floor_{p.floor}, bumpLimit_{p.bumpLimit}, bumpCount_{0},
+      thresholdReversals{p.thresholdReversals} {
     for (const auto &sequence : *p.rule)
         if (sequence.runCount != 0) {
             stepSizes.push_back(sequence.stepSize);
@@ -113,9 +114,9 @@ static auto bounded(int reversals, const std::vector<int> &reversalX)
         std::min<gsl::index>(reversals, size(reversalX)), gsl::index{0});
 }
 
-auto AdaptiveTrack::threshold(int reversals) -> double {
+auto AdaptiveTrack::threshold() -> double {
     return std::accumulate(reversalX.rbegin(),
-               reversalX.rbegin() + bounded(reversals, reversalX), 0) /
-        (bounded(reversals, reversalX) * 1.);
+               reversalX.rbegin() + bounded(thresholdReversals, reversalX), 0) /
+        (bounded(thresholdReversals, reversalX) * 1.);
 }
 }
