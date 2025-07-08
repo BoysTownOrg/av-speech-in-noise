@@ -17,7 +17,7 @@ struct Target {
 };
 
 struct AdaptiveProgress {
-    SNR snr{};
+    FloatSNR snr{};
     int reversals{};
 };
 

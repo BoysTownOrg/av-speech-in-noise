@@ -6,6 +6,7 @@
 #include <sstream>
 #include <ostream>
 #include <algorithm>
+#include <string_view>
 #include <variant>
 
 namespace av_speech_in_noise {
@@ -70,12 +71,12 @@ static auto operator<<(std::ostream &os, Point2D point) -> std::ostream & {
 }
 
 template <typename T>
-auto insert(std::ostream &stream, T item) -> std::ostream & {
+static auto insert(std::ostream &stream, const T &item) -> std::ostream & {
     return stream << item;
 }
 
 static auto insertCommaAndSpace(std::ostream &stream) -> std::ostream & {
-    return insert(stream, ", ");
+    return insert(stream, std::string_view{", "});
 }
 
 static auto insertNewLine(std::ostream &stream) -> std::ostream & {
@@ -83,9 +84,10 @@ static auto insertNewLine(std::ostream &stream) -> std::ostream & {
 }
 
 template <typename T>
-auto insertLabeledLine(std::ostream &stream, const std::string &label, T thing)
-    -> std::ostream & {
-    return insertNewLine(insert(insert(insert(stream, label), ": "), thing));
+static auto insertLabeledLine(std::ostream &stream, const std::string &label,
+    const T &thing) -> std::ostream & {
+    return insertNewLine(
+        insert(insert(insert(stream, label), std::string_view{": "}), thing));
 }
 
 static auto string(const std::stringstream &stream) -> std::string {
@@ -296,7 +298,7 @@ static auto operator<<(std::ostream &stream, const Flaggable &flaggable)
     -> std::ostream & {
     if (flaggable.flagged) {
         insertCommaAndSpace(stream);
-        insert(stream, "FLAGGED");
+        insert(stream, std::string_view{"FLAGGED"});
     }
     return stream;
 }

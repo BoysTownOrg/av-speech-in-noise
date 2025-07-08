@@ -168,6 +168,10 @@ struct SNR : RealLevelDifference {
     explicit constexpr SNR(int dB = {}) : RealLevelDifference{dB} {}
 };
 
+struct FloatSNR {
+    double dB;
+};
+
 struct AdaptiveTest : Test {
     TrackingRule trackingRule;
     SNR startingSnr{};

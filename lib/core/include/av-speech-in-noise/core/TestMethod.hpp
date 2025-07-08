@@ -7,10 +7,6 @@
 namespace av_speech_in_noise {
 class OutputFile;
 
-struct FloatSNR {
-    double dB;
-};
-
 class TestMethod {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestMethod);
