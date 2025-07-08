@@ -36,7 +36,7 @@ class Track {
     virtual auto complete() -> bool = 0;
     virtual auto reversals() -> int = 0;
     virtual void reset() = 0;
-    virtual auto threshold() -> double = 0;
+    virtual auto result() -> std::variant<Threshold, Phi> = 0;
 
     class Factory {
       public:

@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <cmath>
 
-namespace adaptive_track {
+namespace av_speech_in_noise {
 namespace {
 void reset(AdaptiveTrack &track) { track.reset(); }
 
@@ -84,7 +84,7 @@ void assertXEqualsAfter(
 }
 
 void assertThresholdEquals(AdaptiveTrack &track, double x) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, track.threshold());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, std::get<Threshold>(track.result()));
 }
 
 auto construct(const AdaptiveTrack::Settings &settings) -> AdaptiveTrack {
@@ -416,7 +416,8 @@ ADAPTIVE_TRACK_TEST(thresholdNegativeReversals) {
     setFirstSequenceUp(1);
     auto track{construct(settings)};
     update(track, "dduddudd");
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(std::isnan(track.threshold()));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+        std::isnan(std::get<Threshold>(track.result())));
 }
 
 // https://doi.org/10.1121/1.1912375

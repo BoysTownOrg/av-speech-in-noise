@@ -159,9 +159,7 @@ class UpdatedMaximumLikelihood : public Track {
     auto lambdaSpace(size_t index) const -> const double &;
     auto reversalXs() const -> std::vector<double>;
     auto complete() -> bool override;
-    auto threshold() -> double override {
-        return std::numeric_limits<double>::quiet_NaN();
-    }
+    auto result() -> std::variant<Threshold, Phi> override { return _phi; }
 
     class Factory : public Track::Factory {
       public:

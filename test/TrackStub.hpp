@@ -69,7 +69,9 @@ class TrackStub : public Track {
 
     [[nodiscard]] auto resetted() const -> bool { return resetted_; }
 
-    auto threshold() -> double override { return threshold_; }
+    auto result() -> std::variant<Threshold, Phi> override {
+        return threshold_;
+    }
 };
 
 class TrackFactoryStub : public Track::Factory {

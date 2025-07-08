@@ -5,8 +5,8 @@
 #include <vector>
 #include <memory>
 
-namespace adaptive_track {
-class AdaptiveTrack : public av_speech_in_noise::Track {
+namespace av_speech_in_noise {
+class AdaptiveTrack : public Track {
   public:
     explicit AdaptiveTrack(const Settings &);
     auto x() -> double override;
@@ -15,7 +15,7 @@ class AdaptiveTrack : public av_speech_in_noise::Track {
     auto complete() -> bool override;
     auto reversals() -> int override;
     void reset() override;
-    auto threshold() -> double override;
+    auto result() -> std::variant<Threshold, Phi> override;
 
     class Factory : public Track::Factory {
         auto make(const Settings &s) -> std::shared_ptr<Track> override {

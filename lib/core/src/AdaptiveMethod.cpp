@@ -81,7 +81,7 @@ static auto testResults(
     -> AdaptiveTestResults {
     AdaptiveTestResults results;
     for (const auto &t : targetListsWithTracks)
-        results.push_back({t.list->directory(), t.track->threshold()});
+        results.push_back({t.list->directory(), t.track->result()});
     return results;
 }
 

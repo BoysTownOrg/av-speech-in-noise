@@ -2,7 +2,7 @@
 #include <gsl/gsl>
 #include <algorithm>
 
-namespace adaptive_track {
+namespace av_speech_in_noise {
 AdaptiveTrack::AdaptiveTrack(const Settings &p)
     : startingX_{p.startingX}, x_{p.startingX}, ceiling_{p.ceiling},
       floor_{p.floor}, bumpLimit_{p.bumpLimit}, bumpCount_{0},
@@ -114,7 +114,7 @@ static auto bounded(int reversals, const std::vector<int> &reversalX)
         std::min<gsl::index>(reversals, size(reversalX)), gsl::index{0});
 }
 
-auto AdaptiveTrack::threshold() -> double {
+auto AdaptiveTrack::result() -> std::variant<Threshold, Phi> {
     return std::accumulate(reversalX.rbegin(),
                reversalX.rbegin() + bounded(thresholdReversals, reversalX), 0) /
         (bounded(thresholdReversals, reversalX) * 1.);
