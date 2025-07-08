@@ -1,7 +1,9 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_DOMAIN_INCLUDE_AVSPEECHINNOISE_MODELHPP_
 #define AV_SPEECH_IN_NOISE_LIB_DOMAIN_INCLUDE_AVSPEECHINNOISE_MODELHPP_
 
+#include <ostream>
 #include <string>
+#include <variant>
 #include <vector>
 #include <cstdint>
 
@@ -176,9 +178,23 @@ struct AdaptiveTest : Test {
     bool uml{false};
 };
 
+struct Phi {
+    double alpha;
+    double beta;
+    double gamma;
+    double lambda;
+};
+
+inline auto operator<<(std::ostream &os, Phi phi) -> std::ostream & {
+    return os << phi.alpha << ' ' << phi.beta << ' ' << phi.gamma << ' '
+              << phi.lambda;
+}
+
+using Threshold = double;
+
 struct AdaptiveTestResult {
     LocalUrl targetsUrl;
-    double threshold{};
+    std::variant<Threshold, Phi> result{};
 };
 
 struct KeywordsTestResults {

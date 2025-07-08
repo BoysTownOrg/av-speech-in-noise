@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <functional>
+#include <variant>
 
 namespace av_speech_in_noise {
 static void readyNextTrial(TestPresenter &presenter) {
@@ -146,8 +147,11 @@ void TestPresenterImpl::updateAdaptiveTestResults() {
     std::stringstream thresholds;
     thresholds << "thresholds (targets: dB SNR)";
     for (const auto &result : adaptiveMethod.testResults())
-        thresholds << '\n'
-                   << result.targetsUrl.path << ": " << result.threshold;
+        std::visit(
+            [&thresholds, &result](auto arg) {
+                thresholds << '\n' << result.targetsUrl.path << ": " << arg;
+            },
+            result.result);
     view.setContinueTestingDialogMessage(thresholds.str());
 }
 

@@ -8,13 +8,6 @@
 #include <vector>
 
 namespace av_speech_in_noise {
-struct Phi {
-    double alpha;
-    double beta;
-    double gamma;
-    double lambda;
-};
-
 class PsychometricFunction {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(PsychometricFunction);

@@ -5,16 +5,23 @@
 #include "TargetPlaylistStub.hpp"
 #include "TrackStub.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/core/AdaptiveMethod.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 #include <algorithm>
 #include <functional>
+#include <variant>
 
 namespace av_speech_in_noise {
+static auto operator==(const Phi &a, const Phi &b) -> bool {
+    return a.alpha == b.alpha && a.beta == b.beta && a.gamma == b.gamma &&
+        a.lambda == b.lambda;
+}
+
 static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
     -> bool {
-    return a.targetsUrl.path == b.targetsUrl.path && a.threshold == b.threshold;
+    return a.targetsUrl.path == b.targetsUrl.path && a.result == b.result;
 }
 
 namespace {
@@ -807,15 +814,15 @@ ADAPTIVE_METHOD_TEST(writeTestResult) {
     targetLists.at(2)->setDirectory("c");
     method.writeTestResult(outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        11., adaptiveTestResult(outputFile).at(0).threshold);
+        11., std::get<Threshold>(adaptiveTestResult(outputFile).at(0).result));
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, adaptiveTestResult(outputFile).at(0).targetsUrl.path);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        22., adaptiveTestResult(outputFile).at(1).threshold);
+        22., std::get<Threshold>(adaptiveTestResult(outputFile).at(1).result));
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"b"}, adaptiveTestResult(outputFile).at(1).targetsUrl.path);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        33., adaptiveTestResult(outputFile).at(2).threshold);
+        33., std::get<Threshold>(adaptiveTestResult(outputFile).at(2).result));
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"c"}, adaptiveTestResult(outputFile).at(2).targetsUrl.path);
 }
@@ -828,8 +835,10 @@ ADAPTIVE_METHOD_TEST(testResults) {
     targetLists.at(1)->setDirectory("b");
     at(tracks, 2)->setThreshold(33.);
     targetLists.at(2)->setDirectory("c");
-    assertEqual(
-        {{{"a"}, 11.}, {{"b"}, 22.}, {{"c"}, 33.}}, method.testResults());
+    assertEqual({{{"a"}, std::variant<Threshold, Phi>{11.}},
+                    {{"b"}, std::variant<Threshold, Phi>{22.}},
+                    {{"c"}, std::variant<Threshold, Phi>{33.}}},
+        method.testResults());
 }
 
 ADAPTIVE_METHOD_TEST(passesThresholdReversals) {

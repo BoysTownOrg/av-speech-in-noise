@@ -1085,9 +1085,9 @@ OUTPUT_FILE_TEST(writeAdaptiveTestResult) {
     results.push_back({{"b"}, 2.});
     results.push_back({{"c"}, 3.});
     file.write(results);
-    assertContainsColonDelimitedEntry(writer, "threshold for a", "1");
-    assertContainsColonDelimitedEntry(writer, "threshold for b", "2");
-    assertContainsColonDelimitedEntry(writer, "threshold for c", "3");
+    assertContainsColonDelimitedEntry(writer, "a", "1");
+    assertContainsColonDelimitedEntry(writer, "b", "2");
+    assertContainsColonDelimitedEntry(writer, "c", "3");
 }
 
 OUTPUT_FILE_TEST(writeCommonFixedLevelTest) {

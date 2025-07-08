@@ -19,9 +19,14 @@
 #include <utility>
 
 namespace av_speech_in_noise {
+static auto operator==(const Phi &a, const Phi &b) -> bool {
+    return a.alpha == b.alpha && a.beta == b.beta && a.gamma == b.gamma &&
+        a.lambda == b.lambda;
+}
+
 static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
     -> bool {
-    return a.targetsUrl.path == b.targetsUrl.path && a.threshold == b.threshold;
+    return a.targetsUrl.path == b.targetsUrl.path && a.result == b.result;
 }
 
 namespace {
