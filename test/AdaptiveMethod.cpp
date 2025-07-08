@@ -645,10 +645,10 @@ ADAPTIVE_METHOD_TEST(resetTracksResetsEachTrack) {
 }
 
 ADAPTIVE_METHOD_TEST(snrReturnsThatOfCurrentTrack) {
-    at(tracks, 0)->setX(1);
+    at(tracks, 0)->setX(1.2);
     selectNextList(randomizer, 0);
     initialize(method, test, targetListReader, snrTrackFactory);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, method.snr().dB);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1.2, method.snr().dB);
 }
 
 ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesCurrentTargetToEvaluator) {

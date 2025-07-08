@@ -10,7 +10,7 @@ class TrackStub : public AdaptiveTrack {
     Settings settings_;
     double thresholdWhenUpdated_{};
     double threshold_{};
-    int x_{};
+    double x_{};
     int reversals_{};
     int reversalsWhenUpdated_{};
     int xWhenUpdated_{};
@@ -35,7 +35,7 @@ class TrackStub : public AdaptiveTrack {
 
     [[nodiscard]] auto pushedDown() const { return pushedDown_; }
 
-    void setX(int x) { x_ = x; }
+    void setX(double x) { x_ = x; }
 
     void down() override {
         pushedDown_ = true;
