@@ -3,6 +3,8 @@
 
 #include "TargetPlaylist.hpp"
 #include "TestMethod.hpp"
+
+#include <limits>
 #include <vector>
 #include <memory>
 
@@ -14,9 +16,41 @@ class TargetPlaylistReader {
     virtual auto read(const LocalUrl &) -> lists_type = 0;
 };
 
+constexpr auto maximumInt{std::numeric_limits<int>::max()};
+constexpr auto minimumInt{std::numeric_limits<int>::min()};
+
+class AdaptiveTrack {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(AdaptiveTrack);
+    struct Settings {
+        const TrackingRule *rule{};
+        int startingX{};
+        int ceiling{maximumInt};
+        int floor{minimumInt};
+        int bumpLimit{maximumInt};
+        int thresholdReversals;
+        int trials;
+    };
+    virtual void down() = 0;
+    virtual void up() = 0;
+    virtual auto x() -> double = 0;
+    virtual auto complete() -> bool = 0;
+    virtual auto reversals() -> int = 0;
+    virtual void reset() = 0;
+    virtual auto result() -> std::variant<Threshold, Phi> = 0;
+
+    class Factory {
+      public:
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Factory);
+        virtual auto make(const Settings &)
+            -> std::shared_ptr<AdaptiveTrack> = 0;
+    };
+};
+
 class AdaptiveMethod : public virtual TestMethod {
   public:
-    virtual void initialize(const AdaptiveTest &, TargetPlaylistReader *) = 0;
+    virtual void initialize(const AdaptiveTest &, TargetPlaylistReader *,
+        AdaptiveTrack::Factory *) = 0;
     virtual void resetTracks() = 0;
     virtual auto testResults() -> AdaptiveTestResults = 0;
     using TestMethod::submit;

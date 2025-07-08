@@ -1,11 +1,12 @@
-#include "AdaptiveTrack.hpp"
+#include "LevittTrack.hpp"
 #include <gsl/gsl>
 #include <algorithm>
 
-namespace adaptive_track {
-AdaptiveTrack::AdaptiveTrack(const Settings &p)
+namespace av_speech_in_noise {
+LevittTrack::LevittTrack(const Settings &p)
     : startingX_{p.startingX}, x_{p.startingX}, ceiling_{p.ceiling},
-      floor_{p.floor}, bumpLimit_{p.bumpLimit}, bumpCount_{0} {
+      floor_{p.floor}, bumpLimit_{p.bumpLimit}, bumpCount_{0},
+      thresholdReversals{p.thresholdReversals} {
     for (const auto &sequence : *p.rule)
         if (sequence.runCount != 0) {
             stepSizes.push_back(sequence.stepSize);
@@ -16,17 +17,17 @@ AdaptiveTrack::AdaptiveTrack(const Settings &p)
     stepSizes.push_back(0);
 }
 
-void AdaptiveTrack::up() {
-    update(Direction::up, ceiling_, up_, &AdaptiveTrack::stepUp);
+void LevittTrack::up() {
+    update(Direction::up, ceiling_, up_, &LevittTrack::stepUp);
 }
 
-void AdaptiveTrack::updateBumpCount(int bumpBoundary) {
+void LevittTrack::updateBumpCount(int bumpBoundary) {
     bumpCount_ = x_ == bumpBoundary ? bumpCount_ + 1 : 0;
 }
 
-void AdaptiveTrack::update(Direction direction, int bumpBoundary,
+void LevittTrack::update(Direction direction, int bumpBoundary,
     const std::vector<int> &thresholds,
-    void (AdaptiveTrack::*whenThresholdMet)()) {
+    void (LevittTrack::*whenThresholdMet)()) {
     if (complete_())
         return;
 
@@ -36,36 +37,36 @@ void AdaptiveTrack::update(Direction direction, int bumpBoundary,
     previousDirection = direction;
 }
 
-void AdaptiveTrack::callIfConsecutiveCountMet(
-    void (AdaptiveTrack::*f)(), int threshold) {
+void LevittTrack::callIfConsecutiveCountMet(
+    void (LevittTrack::*f)(), int threshold) {
     if (consecutiveCountMet(threshold))
         (this->*f)();
 }
 
-auto AdaptiveTrack::consecutiveCountMet(int threshold) -> bool {
+auto LevittTrack::consecutiveCountMet(int threshold) -> bool {
     return sameDirectionConsecutiveCount == threshold;
 }
 
-void AdaptiveTrack::updateConsecutiveCount(Direction direction) {
+void LevittTrack::updateConsecutiveCount(Direction direction) {
     sameDirectionConsecutiveCount =
         previousDirection == direction ? sameDirectionConsecutiveCount + 1 : 1;
 }
 
-void AdaptiveTrack::stepUp() {
+void LevittTrack::stepUp() {
     updateReversals(Step::fall);
     x_ = std::min(x_ + stepSize(), ceiling_);
     sameDirectionConsecutiveCount = 0;
     previousStep = Step::rise;
 }
 
-void AdaptiveTrack::updateReversals(Step step) {
+void LevittTrack::updateReversals(Step step) {
     if (previousStep == step)
         reversal();
 }
 
-auto AdaptiveTrack::stepSize() -> int { return stepSizes.at(sequenceIndex); }
+auto LevittTrack::stepSize() -> int { return stepSizes.at(sequenceIndex); }
 
-void AdaptiveTrack::reversal() {
+void LevittTrack::reversal() {
     ++reversals_;
     reversalX.push_back(x_);
     if (++runCounter == runCounts.at(sequenceIndex)) {
@@ -74,28 +75,28 @@ void AdaptiveTrack::reversal() {
     }
 }
 
-void AdaptiveTrack::down() {
-    update(Direction::down, floor_, down_, &AdaptiveTrack::stepDown);
+void LevittTrack::down() {
+    update(Direction::down, floor_, down_, &LevittTrack::stepDown);
 }
 
-void AdaptiveTrack::stepDown() {
+void LevittTrack::stepDown() {
     updateReversals(Step::rise);
     x_ = std::max(x_ - stepSize(), floor_);
     sameDirectionConsecutiveCount = 0;
     previousStep = Step::fall;
 }
 
-auto AdaptiveTrack::x() -> int { return x_; }
+auto LevittTrack::x() -> double { return x_; }
 
-auto AdaptiveTrack::complete() -> bool { return complete_(); }
+auto LevittTrack::complete() -> bool { return complete_(); }
 
-auto AdaptiveTrack::complete_() const -> bool {
+auto LevittTrack::complete_() const -> bool {
     return sequenceIndex == runCounts.size() || bumpCount_ == bumpLimit_;
 }
 
-auto AdaptiveTrack::reversals() -> int { return reversals_; }
+auto LevittTrack::reversals() -> int { return reversals_; }
 
-void AdaptiveTrack::reset() {
+void LevittTrack::reset() {
     x_ = startingX_;
     sameDirectionConsecutiveCount = 0;
     reversals_ = 0;
@@ -113,9 +114,9 @@ static auto bounded(int reversals, const std::vector<int> &reversalX)
         std::min<gsl::index>(reversals, size(reversalX)), gsl::index{0});
 }
 
-auto AdaptiveTrack::threshold(int reversals) -> double {
+auto LevittTrack::result() -> std::variant<Threshold, Phi> {
     return std::accumulate(reversalX.rbegin(),
-               reversalX.rbegin() + bounded(reversals, reversalX), 0) /
-        (bounded(reversals, reversalX) * 1.);
+               reversalX.rbegin() + bounded(thresholdReversals, reversalX), 0) /
+        (bounded(thresholdReversals, reversalX) * 1.);
 }
 }

@@ -7,7 +7,7 @@ add_library(
   src/RunningATest.cpp
   src/ResponseEvaluator.cpp
   src/EyeTrackerCalibration.cpp
-  src/AdaptiveTrack.cpp
+  src/LevittTrack.cpp
   src/SubmittingFreeResponse.cpp
   src/SubmittingKeyPress.cpp
   src/SubmittingPassFail.cpp
@@ -16,7 +16,8 @@ add_library(
   src/SubmittingConsonant.cpp
   src/SubmittingEmotion.cpp
   src/AudioRecording.cpp
-  src/EyeTracking.cpp)
+  src/EyeTracking.cpp
+  src/UpdatedMaximumLikelihood.cpp)
 target_include_directories(
   av-speech-in-noise-core-lib
   PUBLIC include

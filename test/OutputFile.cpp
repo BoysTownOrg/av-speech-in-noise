@@ -1085,9 +1085,18 @@ OUTPUT_FILE_TEST(writeAdaptiveTestResult) {
     results.push_back({{"b"}, 2.});
     results.push_back({{"c"}, 3.});
     file.write(results);
-    assertContainsColonDelimitedEntry(writer, "threshold for a", "1");
-    assertContainsColonDelimitedEntry(writer, "threshold for b", "2");
-    assertContainsColonDelimitedEntry(writer, "threshold for c", "3");
+    assertContainsColonDelimitedEntry(writer, "a", "1");
+    assertContainsColonDelimitedEntry(writer, "b", "2");
+    assertContainsColonDelimitedEntry(writer, "c", "3");
+}
+
+OUTPUT_FILE_TEST(writeUmlAdaptiveTestResult) {
+    AdaptiveTestResults results{};
+    results.push_back({{"a"}, Phi{1., 2., 3., 4.}});
+    results.push_back({{"b"}, Phi{3., 1., 2., 4.}});
+    file.write(results);
+    assertContainsColonDelimitedEntry(writer, "a", "1 2 3 4");
+    assertContainsColonDelimitedEntry(writer, "b", "3 1 2 4");
 }
 
 OUTPUT_FILE_TEST(writeCommonFixedLevelTest) {

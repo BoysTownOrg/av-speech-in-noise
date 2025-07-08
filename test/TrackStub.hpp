@@ -1,12 +1,12 @@
-#ifndef TESTS_TRACKSTUB_HPP_
-#define TESTS_TRACKSTUB_HPP_
+#ifndef AV_SPEECH_IN_NOISE_TEST_TRACKSTUB_HPP_
+#define AV_SPEECH_IN_NOISE_TEST_TRACKSTUB_HPP_
 
-#include <av-speech-in-noise/core/AdaptiveMethod.hpp>
+#include <av-speech-in-noise/core/IAdaptiveMethod.hpp>
 #include <utility>
 #include <vector>
 
 namespace av_speech_in_noise {
-class TrackStub : public Track {
+class TrackStub : public AdaptiveTrack {
     Settings settings_;
     double thresholdWhenUpdated_{};
     double threshold_{};
@@ -14,7 +14,6 @@ class TrackStub : public Track {
     int reversals_{};
     int reversalsWhenUpdated_{};
     int xWhenUpdated_{};
-    int thresholdReversals_{};
     bool pushedDown_{};
     bool pushedUp_{};
     bool complete_{};
@@ -52,7 +51,7 @@ class TrackStub : public Track {
         threshold_ = thresholdWhenUpdated_;
     }
 
-    auto x() -> int override { return x_; }
+    auto x() -> double override { return x_; }
 
     auto complete() -> bool override { return complete_; }
 
@@ -70,34 +69,30 @@ class TrackStub : public Track {
 
     [[nodiscard]] auto resetted() const -> bool { return resetted_; }
 
-    auto threshold(int reversals) -> double override {
-        thresholdReversals_ = reversals;
+    auto result() -> std::variant<Threshold, Phi> override {
         return threshold_;
-    }
-
-    [[nodiscard]] auto thresholdReversals() const -> int {
-        return thresholdReversals_;
     }
 };
 
-class TrackFactoryStub : public Track::Factory {
+class TrackFactoryStub : public AdaptiveTrack::Factory {
   public:
     [[nodiscard]] auto parameters() const -> auto & { return parameters_; }
 
-    auto make(const Track::Settings &s) -> std::shared_ptr<Track> override {
+    auto make(const AdaptiveTrack::Settings &s)
+        -> std::shared_ptr<AdaptiveTrack> override {
         parameters_.push_back(s);
         auto track = tracks_.front();
         tracks_.erase(tracks_.begin());
         return track;
     }
 
-    void setTracks(std::vector<std::shared_ptr<Track>> t) {
+    void setTracks(std::vector<std::shared_ptr<AdaptiveTrack>> t) {
         tracks_ = std::move(t);
     }
 
   private:
-    std::vector<Track::Settings> parameters_;
-    std::vector<std::shared_ptr<Track>> tracks_;
+    std::vector<AdaptiveTrack::Settings> parameters_;
+    std::vector<std::shared_ptr<AdaptiveTrack>> tracks_;
 };
 }
 

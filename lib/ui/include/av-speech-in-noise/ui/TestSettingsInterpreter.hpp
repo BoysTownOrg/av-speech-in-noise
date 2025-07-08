@@ -97,7 +97,9 @@ enum class TestSetting {
     videoScaleNumerator,
     videoScaleDenominator,
     keepVideoShown,
-    puzzle
+    puzzle,
+    uml,
+    trials
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -148,6 +150,10 @@ constexpr auto name(TestSetting p) -> const char * {
         return "video scale numerator";
     case TestSetting::videoScaleDenominator:
         return "video scale denominator";
+    case TestSetting::uml:
+        return "uml";
+    case TestSetting::trials:
+        return "trials";
     }
 }
 
@@ -164,6 +170,8 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
         RepeatableFiniteTargetPlaylist &eachTargetNTimes,
         TargetPlaylist &targetsWithReplacement,
+        AdaptiveTrack::Factory &levittTrackFactory,
+        AdaptiveTrack::Factory &umlTrackFactory,
         submitting_free_response::Puzzle &puzzle,
         FreeResponseController &freeResponseController,
         SessionController &sessionController,
@@ -189,6 +197,8 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     FixedLevelMethod &fixedLevelMethod;
     RunningATest::TestObserver &eyeTracking;
     RunningATest::TestObserver &audioRecording;
+    AdaptiveTrack::Factory &levittTrackFactory;
+    AdaptiveTrack::Factory &umlTrackFactory;
     TargetPlaylistReader &cyclicTargetsReader;
     TargetPlaylistReader &targetsWithReplacementReader;
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets;

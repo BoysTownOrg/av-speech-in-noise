@@ -19,9 +19,14 @@
 #include <utility>
 
 namespace av_speech_in_noise {
+static auto operator==(const Phi &a, const Phi &b) -> bool {
+    return a.alpha == b.alpha && a.beta == b.beta && a.gamma == b.gamma &&
+        a.lambda == b.lambda;
+}
+
 static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
     -> bool {
-    return a.targetsUrl.path == b.targetsUrl.path && a.threshold == b.threshold;
+    return a.targetsUrl.path == b.targetsUrl.path && a.result == b.result;
 }
 
 namespace {
@@ -31,8 +36,8 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return tracksResetted_;
     }
 
-    void initialize(
-        const AdaptiveTest &t, TargetPlaylistReader *reader) override {
+    void initialize(const AdaptiveTest &t, TargetPlaylistReader *reader,
+        AdaptiveTrack::Factory *) override {
         test_ = &t;
         targetListReader_ = reader;
     }
@@ -59,7 +64,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return {};
     }
     auto currentTarget() -> LocalUrl override { return {}; }
-    auto snr() -> SNR override { return SNR{}; }
+    auto snr() -> FloatSNR override { return FloatSNR{}; }
     void submitCorrectResponse() override { log_ << "submitCorrectResponse "; }
     void submitIncorrectResponse() override {
         log_ << "submitIncorrectResponse ";
@@ -136,7 +141,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         currentTarget_.path = std::move(s);
     }
 
-    auto snr() -> SNR override { return SNR{}; }
+    auto snr() -> FloatSNR override { return FloatSNR{}; }
 
     void submit(const Flaggable &) override { submittedFlaggable = true; }
 

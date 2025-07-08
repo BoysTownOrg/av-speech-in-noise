@@ -66,7 +66,11 @@ auto FixedLevelMethodImpl::nextTarget() -> LocalUrl {
     return targetList->next();
 }
 
-auto FixedLevelMethodImpl::snr() -> SNR { return snr_; }
+auto FixedLevelMethodImpl::snr() -> FloatSNR {
+    FloatSNR snr{};
+    snr.dB = snr_.dB;
+    return snr;
+}
 
 static auto current(TargetPlaylist *list) -> LocalUrl {
     return list->current();

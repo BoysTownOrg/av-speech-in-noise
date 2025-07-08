@@ -27,7 +27,11 @@ class TestMethodStub : public TestMethod {
   public:
     void setSnr_dB(int x) { snr_dB_ = x; }
 
-    auto snr() -> SNR override { return SNR{snr_dB_}; }
+    auto snr() -> FloatSNR override {
+        FloatSNR snr{};
+        snr.dB = snr_dB_;
+        return snr;
+    }
 
     void setNextTarget(std::string s) { nextTarget_ = std::move(s); }
 

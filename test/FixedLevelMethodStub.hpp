@@ -30,7 +30,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     auto currentTarget() -> LocalUrl override { return currentTarget_; }
 
-    auto snr() -> SNR override { return SNR{}; }
+    auto snr() -> FloatSNR override { return FloatSNR{}; }
 
     void submit(const Flaggable &) override { submittedFlaggable = true; }
 

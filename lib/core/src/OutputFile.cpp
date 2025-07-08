@@ -6,6 +6,7 @@
 #include <sstream>
 #include <ostream>
 #include <algorithm>
+#include <variant>
 
 namespace av_speech_in_noise {
 enum class OutputFileImpl::Trial {
@@ -283,8 +284,12 @@ static auto operator<<(std::ostream &stream,
 
 static auto operator<<(std::ostream &stream, const AdaptiveTestResult &result)
     -> std::ostream & {
-    return insertLabeledLine(
-        stream, "threshold for " + result.targetsUrl.path, result.threshold);
+    std::visit(
+        [&stream, &result](auto arg) {
+            insertLabeledLine(stream, result.targetsUrl.path, arg);
+        },
+        result.result);
+    return stream;
 }
 
 static auto operator<<(std::ostream &stream, const Flaggable &flaggable)

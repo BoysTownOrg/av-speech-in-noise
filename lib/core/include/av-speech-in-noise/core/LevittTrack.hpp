@@ -1,25 +1,26 @@
-#ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_ADAPTIVETRACKHPP_
-#define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_ADAPTIVETRACKHPP_
+#ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_LEVITTTRACKHPP_
+#define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_LEVITTTRACKHPP_
 
-#include "AdaptiveMethod.hpp"
+#include "IAdaptiveMethod.hpp"
 #include <vector>
 #include <memory>
 
-namespace adaptive_track {
-class AdaptiveTrack : public av_speech_in_noise::Track {
+namespace av_speech_in_noise {
+class LevittTrack : public AdaptiveTrack {
   public:
-    explicit AdaptiveTrack(const Settings &);
-    auto x() -> int override;
+    explicit LevittTrack(const Settings &);
+    auto x() -> double override;
     void up() override;
     void down() override;
     auto complete() -> bool override;
     auto reversals() -> int override;
     void reset() override;
-    auto threshold(int reversals) -> double override;
+    auto result() -> std::variant<Threshold, Phi> override;
 
-    class Factory : public Track::Factory {
-        auto make(const Settings &s) -> std::shared_ptr<Track> override {
-            return std::make_shared<AdaptiveTrack>(s);
+    class Factory : public AdaptiveTrack::Factory {
+        auto make(const Settings &s)
+            -> std::shared_ptr<AdaptiveTrack> override {
+            return std::make_shared<LevittTrack>(s);
         }
     };
 
@@ -28,8 +29,8 @@ class AdaptiveTrack : public av_speech_in_noise::Track {
     enum class Step { undefined, rise, fall };
     void updateBumpCount(int bumpBoundary);
     void update(Direction, int bumpBoundary, const std::vector<int> &,
-        void (AdaptiveTrack::*)());
-    void callIfConsecutiveCountMet(void (AdaptiveTrack::*)(), int threshold);
+        void (LevittTrack::*)());
+    void callIfConsecutiveCountMet(void (LevittTrack::*)(), int threshold);
     auto consecutiveCountMet(int threshold) -> bool;
     void stepDown();
     void stepUp();
@@ -54,6 +55,7 @@ class AdaptiveTrack : public av_speech_in_noise::Track {
     int sameDirectionConsecutiveCount{};
     int runCounter{};
     int reversals_{};
+    int thresholdReversals{};
     Direction previousDirection{Direction::undefined};
     Step previousStep{Step::undefined};
 };

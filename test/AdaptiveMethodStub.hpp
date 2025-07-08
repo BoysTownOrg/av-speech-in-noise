@@ -6,17 +6,18 @@
 namespace av_speech_in_noise {
 class AdaptiveMethodStub : public AdaptiveMethod {
   public:
-    void initialize(
-        const AdaptiveTest &t, TargetPlaylistReader *reader) override {
+    void initialize(const AdaptiveTest &t, TargetPlaylistReader *reader,
+        AdaptiveTrack::Factory *f) override {
         test = t;
         targetListReader = reader;
+        trackFactory = f;
     }
     auto testResults() -> AdaptiveTestResults override { return testResults_; }
     void resetTracks() override { tracksResetted = true; }
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> LocalUrl override { return {}; }
     auto currentTarget() -> LocalUrl override { return {}; }
-    auto snr() -> SNR override { return SNR{}; }
+    auto snr() -> FloatSNR override { return FloatSNR{}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const CorrectKeywords &) override {}
@@ -31,6 +32,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     AdaptiveTestResults testResults_;
     AdaptiveTest test{};
     TargetPlaylistReader *targetListReader{};
+    AdaptiveTrack::Factory *trackFactory{};
     bool tracksResetted{};
 };
 }

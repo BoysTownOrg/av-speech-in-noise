@@ -21,7 +21,7 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     void writeLastCoordinateResponse(OutputFile &) override;
     void writeTestingParameters(OutputFile &) override;
     void writeTestResult(OutputFile &) override {}
-    auto snr() -> SNR override;
+    auto snr() -> FloatSNR override;
     auto nextTarget() -> LocalUrl override;
     auto currentTarget() -> LocalUrl override;
     auto complete() -> bool override;

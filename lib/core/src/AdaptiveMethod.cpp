@@ -3,7 +3,7 @@
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
-static auto track(const TargetPlaylistWithTrack &t) -> Track * {
+static auto track(const TargetPlaylistWithTrack &t) -> AdaptiveTrack * {
     return t.track.get();
 }
 
@@ -15,13 +15,13 @@ static auto incomplete(const TargetPlaylistWithTrack &t) -> bool {
     return !complete(t);
 }
 
-static void assignReversals(AdaptiveProgress &trial, Track *track) {
+static void assignReversals(AdaptiveProgress &trial, AdaptiveTrack *track) {
     trial.reversals = track->reversals();
 }
 
 static auto correct(const CorrectKeywords &p) -> bool { return p.count >= 2; }
 
-static void assignSnr(open_set::AdaptiveTrial &trial, Track *track) {
+static void assignSnr(open_set::AdaptiveTrial &trial, AdaptiveTrack *track) {
     trial.snr.dB = track->x();
 }
 
@@ -34,13 +34,15 @@ static auto fileName(ResponseEvaluator &evaluator, const LocalUrl &target)
     return evaluator.fileName(target);
 }
 
-static auto trackSettings(const AdaptiveTest &test) -> Track::Settings {
-    Track::Settings trackSettings{};
+static auto trackSettings(const AdaptiveTest &test) -> AdaptiveTrack::Settings {
+    AdaptiveTrack::Settings trackSettings{};
     trackSettings.rule = &test.trackingRule;
     trackSettings.ceiling = test.ceilingSnr.dB;
     trackSettings.startingX = test.startingSnr.dB;
     trackSettings.floor = test.floorSnr.dB;
     trackSettings.bumpLimit = test.trackBumpLimit;
+    trackSettings.thresholdReversals = test.thresholdReversals;
+    trackSettings.trials = test.trials;
     return trackSettings;
 }
 
@@ -51,9 +53,9 @@ static auto moveCompleteTracksToEnd(
             targetListsWithTracks.end(), incomplete));
 }
 
-static void down(Track *track) { track->down(); }
+static void down(AdaptiveTrack *track) { track->down(); }
 
-static void up(Track *track) { track->up(); }
+static void up(AdaptiveTrack *track) { track->up(); }
 
 static auto current(TargetPlaylist *list) -> LocalUrl {
     return list->current();
@@ -73,31 +75,29 @@ static void resetTrack(TargetPlaylistWithTrack &targetListWithTrack) {
     track(targetListWithTrack)->reset();
 }
 
-static auto x(Track *track) -> int { return track->x(); }
+static auto x(AdaptiveTrack *track) -> double { return track->x(); }
 
 static auto testResults(
-    const std::vector<TargetPlaylistWithTrack> &targetListsWithTracks,
-    int thresholdReversals) -> AdaptiveTestResults {
+    const std::vector<TargetPlaylistWithTrack> &targetListsWithTracks)
+    -> AdaptiveTestResults {
     AdaptiveTestResults results;
     for (const auto &t : targetListsWithTracks)
-        results.push_back(
-            {t.list->directory(), t.track->threshold(thresholdReversals)});
+        results.push_back({t.list->directory(), t.track->result()});
     return results;
 }
 
-AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
+AdaptiveMethodImpl::AdaptiveMethodImpl(
     ResponseEvaluator &evaluator, Randomizer &randomizer)
-    : snrTrackFactory{snrTrackFactory}, evaluator{evaluator},
-      randomizer{randomizer} {}
+    : evaluator{evaluator}, randomizer{randomizer} {}
 
-void AdaptiveMethodImpl::initialize(
-    const AdaptiveTest &t, TargetPlaylistReader *targetListSetReader) {
+void AdaptiveMethodImpl::initialize(const AdaptiveTest &t,
+    TargetPlaylistReader *targetListSetReader,
+    AdaptiveTrack::Factory *factory) {
     test = &t;
-    thresholdReversals = t.thresholdReversals;
     targetListsWithTracks.clear();
     for (const auto &list : targetListSetReader->read(t.targetsUrl))
         targetListsWithTracks.push_back(
-            {list, snrTrackFactory.make(trackSettings(t))});
+            {list, factory->make(trackSettings(t))});
     selectNextList();
 }
 
@@ -125,8 +125,8 @@ auto AdaptiveMethodImpl::complete() -> bool {
 
 auto AdaptiveMethodImpl::nextTarget() -> LocalUrl { return targetList->next(); }
 
-auto AdaptiveMethodImpl::snr() -> SNR {
-    SNR snr;
+auto AdaptiveMethodImpl::snr() -> FloatSNR {
+    FloatSNR snr{};
     snr.dB = x(snrTrack);
     return snr;
 }
@@ -189,8 +189,7 @@ void AdaptiveMethodImpl::submit(const CorrectKeywords &p) {
 }
 
 void AdaptiveMethodImpl::writeTestResult(OutputFile &file) {
-    file.write(av_speech_in_noise::testResults(
-        targetListsWithTracks, thresholdReversals));
+    file.write(av_speech_in_noise::testResults(targetListsWithTracks));
 }
 
 void AdaptiveMethodImpl::writeTestingParameters(OutputFile &file) {
@@ -214,7 +213,6 @@ void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile &file) {
 }
 
 auto AdaptiveMethodImpl::testResults() -> AdaptiveTestResults {
-    return av_speech_in_noise::testResults(
-        targetListsWithTracks, thresholdReversals);
+    return av_speech_in_noise::testResults(targetListsWithTracks);
 }
 }
