@@ -333,7 +333,7 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
 class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
   public:
     WritingOpenSetAdaptiveTrial() {
-        trial.snr.dB = 11;
+        trial.snr.dB = 11.1;
         trial.target = "a";
         trial.reversals = 22;
     }
@@ -341,7 +341,7 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
     void assertContainsCommaDelimitedTrialOnLine(
         WriterStub &writer, gsl::index line) override {
         assertNthCommaDelimitedEntryOfLine(
-            writer, "11", at(headingLabels_, HeadingItem::snr_dB), line);
+            writer, "11.1", at(headingLabels_, HeadingItem::snr_dB), line);
         assertNthCommaDelimitedEntryOfLine(
             writer, "a", at(headingLabels_, HeadingItem::target), line);
         assertNthCommaDelimitedEntryOfLine(
