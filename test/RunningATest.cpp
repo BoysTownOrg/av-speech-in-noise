@@ -25,7 +25,7 @@ constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
 namespace {
 class TestMethodStub : public TestMethod {
   public:
-    void setSnr_dB(int x) { snr_dB_ = x; }
+    void setSnr_dB(double x) { snr_dB_ = x; }
 
     auto snr() -> FloatSNR override {
         FloatSNR snr{};
@@ -73,7 +73,7 @@ class TestMethodStub : public TestMethod {
     std::string currentTarget_{};
     std::string currentTargetWhenNextTarget_{};
     std::string nextTarget_{};
-    int snr_dB_{};
+    double snr_dB_{};
     bool complete_{};
 };
 
@@ -375,7 +375,7 @@ void setDigitalLevel(MaskerPlayerStub &player, DigitalLevel x) {
     player.setDigitalLevel(x);
 }
 
-void setSnr_dB(TestMethodStub &method, int x) { method.setSnr_dB(x); }
+void setSnr_dB(TestMethodStub &method, double x) { method.setSnr_dB(x); }
 
 void fadeOutComplete(MaskerPlayerStub &player) { player.fadeOutComplete(); }
 
@@ -578,10 +578,10 @@ class RunningATestTests : public ::testing::Test {
         setMaskerLevel_dB_SPL(test, 3);
         setFullScaleLevel_dB_SPL(test, 4);
         run(initializingTest, model);
-        setDigitalLevel(maskerPlayer, DigitalLevel{5});
-        setSnr_dB(testMethod, 2);
+        setDigitalLevel(maskerPlayer, DigitalLevel{5.5});
+        setSnr_dB(testMethod, 2.2);
         run(useCase, model);
-        assertLevelEquals_dB(targetPlayer, 2 + 3 - 4 - 5);
+        assertLevelEquals_dB(targetPlayer, 2.2 + 3 - 4 - 5.5);
     }
 
     void assertResponseDoesNotLoadNextTargetWhenComplete(UseCase &useCase) {
