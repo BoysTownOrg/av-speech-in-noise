@@ -32,13 +32,14 @@ class UseCase {
 };
 
 void initialize(AdaptiveMethodImpl &method, const AdaptiveTest &test,
-    TargetPlaylistReader &targetListReader, Track::Factory &factory) {
+    TargetPlaylistReader &targetListReader, AdaptiveTrack::Factory &factory) {
     method.initialize(test, &targetListReader, &factory);
 }
 
 class Initializing : public UseCase {
   public:
-    explicit Initializing(TargetPlaylistReader &reader, Track::Factory &factory)
+    explicit Initializing(
+        TargetPlaylistReader &reader, AdaptiveTrack::Factory &factory)
         : reader{reader}, factory{factory} {}
 
     void run(AdaptiveMethodImpl &method) override {
@@ -48,7 +49,7 @@ class Initializing : public UseCase {
   private:
     AdaptiveTest test{};
     TargetPlaylistReader &reader;
-    Track::Factory &factory;
+    AdaptiveTrack::Factory &factory;
 };
 
 void submit(AdaptiveMethodImpl &method,
@@ -281,24 +282,24 @@ class WritingCorrectKeywords : public WritingResponseUseCase,
 
 void resetTracks(AdaptiveMethodImpl &method) { method.resetTracks(); }
 
-void assertStartingXEqualsOne(const Track::Settings &s) {
+void assertStartingXEqualsOne(const AdaptiveTrack::Settings &s) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, s.startingX);
 }
 
-void assertCeilingEqualsOne(const Track::Settings &s) {
+void assertCeilingEqualsOne(const AdaptiveTrack::Settings &s) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, s.ceiling);
 }
 
-void assertFloorEqualsOne(const Track::Settings &s) {
+void assertFloorEqualsOne(const AdaptiveTrack::Settings &s) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, s.floor);
 }
 
-void assertBumpLimitEqualsOne(const Track::Settings &s) {
+void assertBumpLimitEqualsOne(const AdaptiveTrack::Settings &s) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, s.bumpLimit);
 }
 
 void assertTargetLevelRuleEquals(
-    const TrackingRule &rule, const Track::Settings &s) {
+    const TrackingRule &rule, const AdaptiveTrack::Settings &s) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&rule, s.rule);
 }
 
@@ -309,19 +310,20 @@ void write(AdaptiveMethodImpl &method,
     method.writeLastCoordinateResponse(outputFile);
 }
 
-auto settings(const TrackFactoryStub &factory) -> std::vector<Track::Settings> {
+auto settings(const TrackFactoryStub &factory)
+    -> std::vector<AdaptiveTrack::Settings> {
     return factory.parameters();
 }
 
 auto settings(const TrackFactoryStub &factory, gsl::index i)
-    -> Track::Settings {
+    -> AdaptiveTrack::Settings {
     return settings(factory).at(i);
 }
 
 constexpr auto listCount{3};
 
 void forEachSettings(const TrackFactoryStub &factory,
-    const std::function<void(const Track::Settings &)> &f) {
+    const std::function<void(const AdaptiveTrack::Settings &)> &f) {
     for (int i = 0; i < listCount; ++i)
         f(settings(factory, i));
 }

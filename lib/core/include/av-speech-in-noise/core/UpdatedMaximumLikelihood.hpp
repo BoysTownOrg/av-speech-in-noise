@@ -115,7 +115,7 @@ class MeanPhi : public PhiComputer {
     auto operator()(const UpdatedMaximumLikelihood &) const -> Phi override;
 };
 
-class UpdatedMaximumLikelihood : public Track {
+class UpdatedMaximumLikelihood : public AdaptiveTrack {
     const PosteriorDistributions posteriorDistributions;
     TrackSpecifications trackSpecifications;
     std::vector<double> _posterior;
@@ -160,9 +160,10 @@ class UpdatedMaximumLikelihood : public Track {
     auto complete() -> bool override;
     auto result() -> std::variant<Threshold, Phi> override { return _phi; }
 
-    class Factory : public Track::Factory {
+    class Factory : public AdaptiveTrack::Factory {
       public:
-        auto make(const Settings &s) -> std::shared_ptr<Track> override {
+        auto make(const Settings &s)
+            -> std::shared_ptr<AdaptiveTrack> override {
             TrackSpecifications specs{};
             specs.down = 2;
             specs.up = 1;

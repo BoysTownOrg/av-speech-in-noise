@@ -310,7 +310,7 @@ static void initializeFixedLevelTestWithEachTargetNTimes(
 }
 
 static void initialize(AdaptiveMethod &method, const AdaptiveTest &test,
-    TargetPlaylistReader &reader, Track::Factory &factory) {
+    TargetPlaylistReader &reader, AdaptiveTrack::Factory &factory) {
     method.initialize(test, &reader, &factory);
 }
 
@@ -546,8 +546,10 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
     RepeatableFiniteTargetPlaylist &eachTargetNTimes,
-    TargetPlaylist &targetsWithReplacement, Track::Factory &levittTrackFactory,
-    Track::Factory &umlTrackFactory, submitting_free_response::Puzzle &puzzle,
+    TargetPlaylist &targetsWithReplacement,
+    AdaptiveTrack::Factory &levittTrackFactory,
+    AdaptiveTrack::Factory &umlTrackFactory,
+    submitting_free_response::Puzzle &puzzle,
     FreeResponseController &freeResponseController,
     SessionController &sessionController,
     TaskPresenter &coordinateResponseMeasurePresenter,

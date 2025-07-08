@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace av_speech_in_noise {
-class TrackStub : public Track {
+class TrackStub : public AdaptiveTrack {
     Settings settings_;
     double thresholdWhenUpdated_{};
     double threshold_{};
@@ -74,24 +74,25 @@ class TrackStub : public Track {
     }
 };
 
-class TrackFactoryStub : public Track::Factory {
+class TrackFactoryStub : public AdaptiveTrack::Factory {
   public:
     [[nodiscard]] auto parameters() const -> auto & { return parameters_; }
 
-    auto make(const Track::Settings &s) -> std::shared_ptr<Track> override {
+    auto make(const AdaptiveTrack::Settings &s)
+        -> std::shared_ptr<AdaptiveTrack> override {
         parameters_.push_back(s);
         auto track = tracks_.front();
         tracks_.erase(tracks_.begin());
         return track;
     }
 
-    void setTracks(std::vector<std::shared_ptr<Track>> t) {
+    void setTracks(std::vector<std::shared_ptr<AdaptiveTrack>> t) {
         tracks_ = std::move(t);
     }
 
   private:
-    std::vector<Track::Settings> parameters_;
-    std::vector<std::shared_ptr<Track>> tracks_;
+    std::vector<AdaptiveTrack::Settings> parameters_;
+    std::vector<std::shared_ptr<AdaptiveTrack>> tracks_;
 };
 }
 

@@ -19,9 +19,9 @@ class TargetPlaylistReader {
 constexpr auto maximumInt{std::numeric_limits<int>::max()};
 constexpr auto minimumInt{std::numeric_limits<int>::min()};
 
-class Track {
+class AdaptiveTrack {
   public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Track);
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(AdaptiveTrack);
     struct Settings {
         const TrackingRule *rule{};
         int startingX{};
@@ -42,14 +42,15 @@ class Track {
     class Factory {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Factory);
-        virtual auto make(const Settings &) -> std::shared_ptr<Track> = 0;
+        virtual auto make(const Settings &)
+            -> std::shared_ptr<AdaptiveTrack> = 0;
     };
 };
 
 class AdaptiveMethod : public virtual TestMethod {
   public:
-    virtual void initialize(
-        const AdaptiveTest &, TargetPlaylistReader *, Track::Factory *) = 0;
+    virtual void initialize(const AdaptiveTest &, TargetPlaylistReader *,
+        AdaptiveTrack::Factory *) = 0;
     virtual void resetTracks() = 0;
     virtual auto testResults() -> AdaptiveTestResults = 0;
     using TestMethod::submit;

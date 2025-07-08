@@ -37,7 +37,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     }
 
     void initialize(const AdaptiveTest &t, TargetPlaylistReader *reader,
-        Track::Factory *) override {
+        AdaptiveTrack::Factory *) override {
         test_ = &t;
         targetListReader_ = reader;
     }

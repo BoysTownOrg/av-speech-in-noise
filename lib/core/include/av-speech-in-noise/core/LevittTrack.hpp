@@ -6,7 +6,7 @@
 #include <memory>
 
 namespace av_speech_in_noise {
-class LevittTrack : public Track {
+class LevittTrack : public AdaptiveTrack {
   public:
     explicit LevittTrack(const Settings &);
     auto x() -> double override;
@@ -17,8 +17,9 @@ class LevittTrack : public Track {
     void reset() override;
     auto result() -> std::variant<Threshold, Phi> override;
 
-    class Factory : public Track::Factory {
-        auto make(const Settings &s) -> std::shared_ptr<Track> override {
+    class Factory : public AdaptiveTrack::Factory {
+        auto make(const Settings &s)
+            -> std::shared_ptr<AdaptiveTrack> override {
             return std::make_shared<LevittTrack>(s);
         }
     };

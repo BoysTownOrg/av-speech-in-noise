@@ -14,14 +14,14 @@
 namespace av_speech_in_noise {
 struct TargetPlaylistWithTrack {
     std::shared_ptr<TargetPlaylist> list;
-    std::shared_ptr<Track> track;
+    std::shared_ptr<AdaptiveTrack> track;
 };
 
 class AdaptiveMethodImpl : public AdaptiveMethod {
   public:
     AdaptiveMethodImpl(ResponseEvaluator &, Randomizer &);
     void initialize(const AdaptiveTest &, TargetPlaylistReader *,
-        Track::Factory *) override;
+        AdaptiveTrack::Factory *) override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
     void submit(const CorrectKeywords &) override;
@@ -50,7 +50,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     const AdaptiveTest *test{};
     ResponseEvaluator &evaluator;
     Randomizer &randomizer;
-    Track *snrTrack{};
+    AdaptiveTrack *snrTrack{};
     TargetPlaylist *targetList{};
 };
 }
