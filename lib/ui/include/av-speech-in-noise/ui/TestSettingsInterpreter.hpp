@@ -98,7 +98,8 @@ enum class TestSetting {
     videoScaleDenominator,
     keepVideoShown,
     puzzle,
-    uml
+    uml,
+    trials
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -151,6 +152,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "video scale denominator";
     case TestSetting::uml:
         return "uml";
+    case TestSetting::trials:
+        return "trials";
     }
 }
 

@@ -29,6 +29,7 @@ class Track {
         int floor{minimumInt};
         int bumpLimit{maximumInt};
         int thresholdReversals;
+        int trials;
     };
     virtual void down() = 0;
     virtual void up() = 0;

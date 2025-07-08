@@ -175,6 +175,7 @@ struct AdaptiveTest : Test {
     SNR floorSnr{};
     int trackBumpLimit{};
     int thresholdReversals{};
+    int trials{};
     bool uml{false};
 };
 

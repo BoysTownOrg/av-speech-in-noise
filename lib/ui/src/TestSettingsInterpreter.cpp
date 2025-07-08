@@ -173,6 +173,8 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
         test.startingSnr.dB = integer(entry);
     else if (entryName == name(TestSetting::uml))
         test.uml = boolean(entry);
+    else if (entryName == name(TestSetting::trials))
+        test.trials = integer(entry);
     else
         assign(static_cast<Test &>(test), entryName, entry);
 }

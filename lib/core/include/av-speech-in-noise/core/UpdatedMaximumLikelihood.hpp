@@ -3,7 +3,6 @@
 
 #include "IAdaptiveMethod.hpp"
 #include <av-speech-in-noise/Interface.hpp>
-#include <limits>
 #include <memory>
 #include <vector>
 
@@ -167,7 +166,7 @@ class UpdatedMaximumLikelihood : public Track {
             TrackSpecifications specs{};
             specs.down = 2;
             specs.up = 1;
-            specs.trials = 30;
+            specs.trials = s.trials;
             specs.startingX = s.startingX;
             specs.lowerBound = s.floor;
             specs.upperBound = s.ceiling;

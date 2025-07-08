@@ -42,6 +42,7 @@ static auto trackSettings(const AdaptiveTest &test) -> Track::Settings {
     trackSettings.floor = test.floorSnr.dB;
     trackSettings.bumpLimit = test.trackBumpLimit;
     trackSettings.thresholdReversals = test.thresholdReversals;
+    trackSettings.trials = test.trials;
     return trackSettings;
 }
 
