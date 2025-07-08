@@ -143,7 +143,12 @@ void TestPresenterImpl::updateTrialInformation() {
 
 void TestPresenterImpl::updateAdaptiveTestResults() {
     view.showContinueTestingDialog();
-    view.setContinueTestingDialogMessage(adaptiveMethod.testResults());
+    std::stringstream thresholds;
+    thresholds << "thresholds (targets: dB SNR)";
+    for (const auto &result : adaptiveMethod.testResults())
+        thresholds << '\n'
+                   << result.targetsUrl.path << ": " << result.threshold;
+    view.setContinueTestingDialogMessage(thresholds.str());
 }
 
 void TestPresenterImpl::initialize(TaskPresenter &p) {

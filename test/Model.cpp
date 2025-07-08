@@ -43,7 +43,9 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return targetListReader_;
     }
 
-    auto testResults() -> std::string override { return {}; }
+    void setTestResults(AdaptiveTestResults v) { testResults_ = std::move(v); }
+
+    auto testResults() -> AdaptiveTestResults override { return testResults_; }
 
     void resetTracks() override { tracksResetted_ = true; }
 
@@ -80,6 +82,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void submit(const coordinate_response_measure::Response &) override {}
 
   private:
+    AdaptiveTestResults testResults_;
     std::stringstream log_{};
     const AdaptiveTest *test_{};
     TargetPlaylistReader *targetListReader_{};

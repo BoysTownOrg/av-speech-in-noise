@@ -579,10 +579,11 @@ TEST_CONTROLLER_TEST(completesTaskWhenTestIsComplete) {
 }
 
 TEST_PRESENTER_TEST(showsAdaptiveTestResults) {
-    adaptiveMethod.testResults_ = "hi";
+    adaptiveMethod.testResults_ = {{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}};
     presenter.updateAdaptiveTestResults();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"hi"}, view.continueTestingDialogMessage());
+        std::string{"thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3"},
+        view.continueTestingDialogMessage());
 }
 
 TEST_PRESENTER_TEST(showsContinueTestingDialog) {

@@ -36,7 +36,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     auto complete() -> bool override;
     auto nextTarget() -> LocalUrl override;
     auto currentTarget() -> LocalUrl override;
-    auto testResults() -> std::string override;
+    auto testResults() -> AdaptiveTestResults override;
     void resetTracks() override;
 
   private:
