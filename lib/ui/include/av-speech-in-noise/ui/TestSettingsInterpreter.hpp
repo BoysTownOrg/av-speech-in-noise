@@ -9,9 +9,10 @@
 #include <av-speech-in-noise/core/IFixedLevelMethod.hpp>
 #include <av-speech-in-noise/core/IRunningATest.hpp>
 #include <av-speech-in-noise/core/TargetPlaylist.hpp>
+#include <cstdint>
 
 namespace av_speech_in_noise {
-enum class Method {
+enum class Method : std::uint8_t {
     adaptivePassFail, // <-- this one should be first...
     adaptiveCorrectKeywords,
     adaptiveCoordinateResponseMeasure,
@@ -74,7 +75,7 @@ constexpr auto name(Method c) -> const char * {
     }
 }
 
-enum class TestSetting {
+enum class TestSetting : std::uint8_t {
     method,
     targets,
     masker,
@@ -99,7 +100,8 @@ enum class TestSetting {
     keepVideoShown,
     puzzle,
     uml,
-    trials
+    trials,
+    alphaSpace
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -154,6 +156,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "uml";
     case TestSetting::trials:
         return "trials";
+    case TestSetting::alphaSpace:
+        return "alpha space";
     }
 }
 

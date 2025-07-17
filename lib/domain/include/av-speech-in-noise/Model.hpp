@@ -211,6 +211,7 @@ struct FloatSNR {
 };
 
 struct AdaptiveTest : Test {
+    UmlSettings umlSettings;
     TrackingRule trackingRule;
     SNR startingSnr{};
     SNR ceilingSnr{};

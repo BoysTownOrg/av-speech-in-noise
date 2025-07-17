@@ -1,5 +1,8 @@
 #include "TestSettingsInterpreter.hpp"
+
+#include <math.h>
 #include "SessionController.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <gsl/gsl>
 
@@ -173,7 +176,16 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
         test.startingSnr.dB = integer(entry);
     else if (entryName == name(TestSetting::uml))
         test.uml = boolean(entry);
-    else if (entryName == name(TestSetting::trials))
+    else if (entryName == name(TestSetting::alphaSpace)) {
+        std::stringstream stream{entry};
+        std::string kind;
+        stream >> kind;
+        if (kind == "linear")
+            test.umlSettings.alpha.space.space = ParameterSpace::Linear;
+        stream >> test.umlSettings.alpha.space.lower;
+        stream >> test.umlSettings.alpha.space.upper;
+        stream >> test.umlSettings.alpha.space.N;
+    } else if (entryName == name(TestSetting::trials))
         test.trials = integer(entry);
     else
         assign(static_cast<Test &>(test), entryName, entry);

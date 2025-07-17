@@ -6,6 +6,7 @@
 #include "TrackStub.hpp"
 #include "assert-utility.hpp"
 #include "PuzzleStub.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/ui/SessionController.hpp>
@@ -1129,6 +1130,20 @@ TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
             entryWithNewline(TestSetting::reversalsPerStepSize, "5 6"),
             entryWithNewline(TestSetting::stepSizes, "7 8")});
     assertEqual({first, second}, adaptiveMethod.test.trackingRule);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(umlSettings) {
+    initializeTest(interpreter,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::alphaSpace, "linear -29 31 63")});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(ParameterSpace::Linear,
+        adaptiveMethod.test.umlSettings.alpha.space.space);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        -29., adaptiveMethod.test.umlSettings.alpha.space.lower);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        31., adaptiveMethod.test.umlSettings.alpha.space.upper);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        63, adaptiveMethod.test.umlSettings.alpha.space.N);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(consonantTestWithTargetRepetitions) {
