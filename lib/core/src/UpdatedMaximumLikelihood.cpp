@@ -2,10 +2,12 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <numeric>
 #include <stdexcept>
+#include <vector>
 
 namespace av_speech_in_noise {
 template <class UnaryOperator>
@@ -15,8 +17,7 @@ static auto transform(std::vector<double> v, UnaryOperator f)
     return v;
 }
 
-static auto linspace(double x1, double x2, std::size_t N)
-    -> std::vector<double> {
+auto linspace(double x1, double x2, std::size_t N) -> std::vector<double> {
     if (N <= 0)
         return {};
     if (N == 1)
@@ -32,10 +33,9 @@ static auto linspace(double x1, double x2, std::size_t N)
     return x;
 }
 
-static auto logspace(double x1, double x2, std::size_t N)
-    -> std::vector<double> {
-    return transform(
-        linspace(x1, x2, N), [](double x) { return std::pow(10, x); });
+auto logspace(double x1, double x2, std::size_t N) -> std::vector<double> {
+    return transform(linspace(std::log10(x1), std::log10(x2), N),
+        [](double x) { return std::pow(10, x); });
 }
 
 static auto normpdf(std::vector<double> x, double mu, double sigma)
@@ -407,10 +407,6 @@ auto UpdatedMaximumLikelihood::alphaSpace(size_t index) const -> const
         .space[index % posteriorDistributions.alpha.space.size()];
 }
 
-auto UpdatedMaximumLikelihood::x() -> double { return _x; }
-
-auto UpdatedMaximumLikelihood::reversals() -> int { return _reversals; }
-
 auto UpdatedMaximumLikelihood::sweetPoints() const -> std::vector<double> {
     return _sweetPoint;
 }
@@ -419,26 +415,12 @@ auto UpdatedMaximumLikelihood::phi() const -> std::vector<double> {
     return {_phi.alpha, _phi.beta, _phi.gamma, _phi.lambda};
 }
 
-auto UpdatedMaximumLikelihood::reversalXs() const -> std::vector<double> {
-    return _reversalXs;
-}
+auto UpdatedMaximumLikelihood::x() -> double { return _x; }
+
+auto UpdatedMaximumLikelihood::reversals() -> int { return _reversals; }
 
 auto UpdatedMaximumLikelihood::complete() -> bool {
     return trials >= trackSpecifications.trials;
-}
-
-auto LinearSpacer::operator()(double lower, double upper, std::size_t N)
-    -> std::vector<double> {
-    if (N == 1)
-        return {lower};
-    return linspace(lower, upper, N);
-}
-
-auto LogSpacer::operator()(double lower, double upper, std::size_t N)
-    -> std::vector<double> {
-    if (N == 1)
-        return {lower};
-    return logspace(std::log10(lower), std::log10(upper), N);
 }
 
 LinearNormPrior::LinearNormPrior(double mu, double sigma)
@@ -484,13 +466,15 @@ auto MeanPhi::operator()(const UpdatedMaximumLikelihood &uml) const -> Phi {
 }
 
 auto exampleLogisticConfiguration() -> PosteriorDistributions {
-    return {{LinearSpacer()(-30, 30, 61), LinearNormPrior(0, 10)},
-        {LogSpacer()(0.1, 10, 41), LogNormPrior(-0.5, 0.4)},
-        {LinearSpacer()(0.02, 0.2, 11), FlatPrior()},
-        {LinearSpacer()(0.02, 0.2, 11), FlatPrior()}};
+    return {{linspace(-30, 30, 61), LinearNormPrior(0, 10)},
+        {logspace(0.1, 10, 41), LogNormPrior(-0.5, 0.4)},
+        {linspace(0.02, 0.2, 11), FlatPrior()},
+        {linspace(0.02, 0.2, 11), FlatPrior()}};
 }
 
-enum class PriorProbabilityKind { LinearNorm, LogNorm, Flat };
+enum class PriorProbabilityKind : std::uint8_t { LinearNorm, LogNorm, Flat };
+
+enum class ParameterSpace : std::uint8_t { Linear, Log };
 
 struct PriorProbabiltyData {
     double mu;
@@ -502,6 +486,13 @@ struct PriorProbabilitySetting {
     PriorProbabilityKind kind;
 };
 
+struct ParameterSpaceSetting {
+    double lower;
+    double upper;
+    std::size_t N;
+    ParameterSpace space;
+};
+
 static auto makePriorProbability(PriorProbabilitySetting s)
     -> std::unique_ptr<PriorProbability> {
     switch (s.kind) {
@@ -511,6 +502,15 @@ static auto makePriorProbability(PriorProbabilitySetting s)
         return std::make_unique<LogNormPrior>(s.data.mu, s.data.sigma);
     case PriorProbabilityKind::Flat:
         return std::make_unique<FlatPrior>();
+    }
+}
+
+static auto makeParameterSpace(ParameterSpaceSetting s) -> std::vector<double> {
+    switch (s.space) {
+    case ParameterSpace::Linear:
+        return linspace(s.lower, s.upper, s.N);
+    case ParameterSpace::Log:
+        return logspace(s.lower, s.upper, s.N);
     }
 }
 
@@ -535,13 +535,34 @@ auto UpdatedMaximumLikelihood::Factory::make(const Settings &s)
     gammaPriorProbability.kind = PriorProbabilityKind::Flat;
     PriorProbabilitySetting lambdaPriorProbability{};
     lambdaPriorProbability.kind = PriorProbabilityKind::Flat;
+    ParameterSpaceSetting alphaSpace{};
+    alphaSpace.lower = -30;
+    alphaSpace.upper = -30;
+    alphaSpace.N = 61;
+    alphaSpace.space = ParameterSpace::Linear;
+    ParameterSpaceSetting betaSpace{};
+    betaSpace.lower = 0.1;
+    betaSpace.upper = 10;
+    betaSpace.N = 41;
+    betaSpace.space = ParameterSpace::Log;
+    ParameterSpaceSetting gammaSpace{};
+    gammaSpace.lower = 0.02;
+    gammaSpace.upper = 0.2;
+    gammaSpace.N = 11;
+    gammaSpace.space = ParameterSpace::Linear;
+    ParameterSpaceSetting lambdaSpace{};
+    lambdaSpace.lower = 0.02;
+    lambdaSpace.upper = 0.2;
+    lambdaSpace.N = 11;
+    lambdaSpace.space = ParameterSpace::Linear;
     PosteriorDistributions posteriorDistributions{
-        {LinearSpacer()(-30, 30, 61),
+        {makeParameterSpace(alphaSpace),
             *makePriorProbability(alphaPriorProbability)},
-        {LogSpacer()(0.1, 10, 41), *makePriorProbability(betaPriorProbability)},
-        {LinearSpacer()(0.02, 0.2, 11),
+        {makeParameterSpace(betaSpace),
+            *makePriorProbability(betaPriorProbability)},
+        {makeParameterSpace(gammaSpace),
             *makePriorProbability(gammaPriorProbability)},
-        {LinearSpacer()(0.02, 0.2, 11),
+        {makeParameterSpace(lambdaSpace),
             *makePriorProbability(lambdaPriorProbability)}};
     return std::make_shared<UpdatedMaximumLikelihood>(
         posteriorDistributions, pf, pc, specs);

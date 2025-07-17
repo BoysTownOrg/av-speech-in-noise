@@ -3,6 +3,7 @@
 
 #include "IAdaptiveMethod.hpp"
 #include <av-speech-in-noise/Interface.hpp>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -61,26 +62,10 @@ struct TrackSpecifications {
     double lowerBound;
 };
 
-enum class TrackDirection { up, down, undefined };
+enum class TrackDirection : std::uint8_t { up, down, undefined };
 
-class ParameterSpacer {
-  public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ParameterSpacer);
-    virtual auto operator()(double lower, double upper, std::size_t N)
-        -> std::vector<double> = 0;
-};
-
-class LinearSpacer : public ParameterSpacer {
-  public:
-    auto operator()(double lower, double upper, std::size_t N)
-        -> std::vector<double> override;
-};
-
-class LogSpacer : public ParameterSpacer {
-  public:
-    auto operator()(double lower, double upper, std::size_t N)
-        -> std::vector<double> override;
-};
+auto linspace(double x1, double x2, std::size_t N) -> std::vector<double>;
+auto logspace(double x1, double x2, std::size_t N) -> std::vector<double>;
 
 class LinearNormPrior : public PriorProbability {
     const double mu;
@@ -156,7 +141,6 @@ class UpdatedMaximumLikelihood : public AdaptiveTrack {
     auto betaSpace(size_t index) const -> const double &;
     auto gammaSpace(size_t index) const -> const double &;
     auto lambdaSpace(size_t index) const -> const double &;
-    auto reversalXs() const -> std::vector<double>;
     auto complete() -> bool override;
     auto result() -> std::variant<Threshold, Phi> override { return _phi; }
 
