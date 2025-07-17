@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <functional>
+#include <memory>
 #include <numeric>
 #include <stdexcept>
 
@@ -487,5 +488,62 @@ auto exampleLogisticConfiguration() -> PosteriorDistributions {
         {LogSpacer()(0.1, 10, 41), LogNormPrior(-0.5, 0.4)},
         {LinearSpacer()(0.02, 0.2, 11), FlatPrior()},
         {LinearSpacer()(0.02, 0.2, 11), FlatPrior()}};
+}
+
+enum class PriorProbabilityKind { LinearNorm, LogNorm, Flat };
+
+struct PriorProbabiltyData {
+    double mu;
+    double sigma;
+};
+
+struct PriorProbabilitySetting {
+    PriorProbabiltyData data;
+    PriorProbabilityKind kind;
+};
+
+static auto makePriorProbability(PriorProbabilitySetting s)
+    -> std::unique_ptr<PriorProbability> {
+    switch (s.kind) {
+    case PriorProbabilityKind::LinearNorm:
+        return std::make_unique<LinearNormPrior>(s.data.mu, s.data.sigma);
+    case PriorProbabilityKind::LogNorm:
+        return std::make_unique<LogNormPrior>(s.data.mu, s.data.sigma);
+    case PriorProbabilityKind::Flat:
+        return std::make_unique<FlatPrior>();
+    }
+}
+
+auto UpdatedMaximumLikelihood::Factory::make(const Settings &s)
+    -> std::shared_ptr<AdaptiveTrack> {
+    TrackSpecifications specs{};
+    specs.down = 2;
+    specs.up = 1;
+    specs.trials = s.trials;
+    specs.startingX = s.startingX;
+    specs.lowerBound = s.floor;
+    specs.upperBound = s.ceiling;
+    PriorProbabilitySetting alphaPriorProbability{};
+    alphaPriorProbability.kind = PriorProbabilityKind::LinearNorm;
+    alphaPriorProbability.data.mu = 0;
+    alphaPriorProbability.data.sigma = 10;
+    PriorProbabilitySetting betaPriorProbability{};
+    betaPriorProbability.kind = PriorProbabilityKind::LogNorm;
+    betaPriorProbability.data.mu = -0.5;
+    betaPriorProbability.data.sigma = 0.4;
+    PriorProbabilitySetting gammaPriorProbability{};
+    gammaPriorProbability.kind = PriorProbabilityKind::Flat;
+    PriorProbabilitySetting lambdaPriorProbability{};
+    lambdaPriorProbability.kind = PriorProbabilityKind::Flat;
+    PosteriorDistributions posteriorDistributions{
+        {LinearSpacer()(-30, 30, 61),
+            *makePriorProbability(alphaPriorProbability)},
+        {LogSpacer()(0.1, 10, 41), *makePriorProbability(betaPriorProbability)},
+        {LinearSpacer()(0.02, 0.2, 11),
+            *makePriorProbability(gammaPriorProbability)},
+        {LinearSpacer()(0.02, 0.2, 11),
+            *makePriorProbability(lambdaPriorProbability)}};
+    return std::make_shared<UpdatedMaximumLikelihood>(
+        posteriorDistributions, pf, pc, specs);
 }
 }

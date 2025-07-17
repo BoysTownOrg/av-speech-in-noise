@@ -162,18 +162,7 @@ class UpdatedMaximumLikelihood : public AdaptiveTrack {
 
     class Factory : public AdaptiveTrack::Factory {
       public:
-        auto make(const Settings &s)
-            -> std::shared_ptr<AdaptiveTrack> override {
-            TrackSpecifications specs{};
-            specs.down = 2;
-            specs.up = 1;
-            specs.trials = s.trials;
-            specs.startingX = s.startingX;
-            specs.lowerBound = s.floor;
-            specs.upperBound = s.ceiling;
-            return std::make_shared<UpdatedMaximumLikelihood>(
-                exampleLogisticConfiguration(), pf, pc, specs);
-        }
+        auto make(const Settings &s) -> std::shared_ptr<AdaptiveTrack> override;
 
       private:
         LogisticPsychometricFunction pf;
