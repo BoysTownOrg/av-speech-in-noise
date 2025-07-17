@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <cstdint>
 #include <functional>
 #include <memory>
 #include <numeric>
@@ -472,34 +471,13 @@ auto exampleLogisticConfiguration() -> PosteriorDistributions {
         {linspace(0.02, 0.2, 11), FlatPrior()}};
 }
 
-enum class PriorProbabilityKind : std::uint8_t { LinearNorm, LogNorm, Flat };
-
-enum class ParameterSpace : std::uint8_t { Linear, Log };
-
-struct PriorProbabiltyData {
-    double mu;
-    double sigma;
-};
-
-struct PriorProbabilitySetting {
-    PriorProbabiltyData data;
-    PriorProbabilityKind kind;
-};
-
-struct ParameterSpaceSetting {
-    double lower;
-    double upper;
-    std::size_t N;
-    ParameterSpace space;
-};
-
 static auto makePriorProbability(PriorProbabilitySetting s)
     -> std::unique_ptr<PriorProbability> {
     switch (s.kind) {
     case PriorProbabilityKind::LinearNorm:
-        return std::make_unique<LinearNormPrior>(s.data.mu, s.data.sigma);
+        return std::make_unique<LinearNormPrior>(s.mu, s.sigma);
     case PriorProbabilityKind::LogNorm:
-        return std::make_unique<LogNormPrior>(s.data.mu, s.data.sigma);
+        return std::make_unique<LogNormPrior>(s.mu, s.sigma);
     case PriorProbabilityKind::Flat:
         return std::make_unique<FlatPrior>();
     }
@@ -525,19 +503,19 @@ auto UpdatedMaximumLikelihood::Factory::make(const Settings &s)
     specs.upperBound = s.ceiling;
     PriorProbabilitySetting alphaPriorProbability{};
     alphaPriorProbability.kind = PriorProbabilityKind::LinearNorm;
-    alphaPriorProbability.data.mu = 0;
-    alphaPriorProbability.data.sigma = 10;
+    alphaPriorProbability.mu = 0;
+    alphaPriorProbability.sigma = 10;
     PriorProbabilitySetting betaPriorProbability{};
     betaPriorProbability.kind = PriorProbabilityKind::LogNorm;
-    betaPriorProbability.data.mu = -0.5;
-    betaPriorProbability.data.sigma = 0.4;
+    betaPriorProbability.mu = -0.5;
+    betaPriorProbability.sigma = 0.4;
     PriorProbabilitySetting gammaPriorProbability{};
     gammaPriorProbability.kind = PriorProbabilityKind::Flat;
     PriorProbabilitySetting lambdaPriorProbability{};
     lambdaPriorProbability.kind = PriorProbabilityKind::Flat;
     ParameterSpaceSetting alphaSpace{};
     alphaSpace.lower = -30;
-    alphaSpace.upper = -30;
+    alphaSpace.upper = 30;
     alphaSpace.N = 61;
     alphaSpace.space = ParameterSpace::Linear;
     ParameterSpaceSetting betaSpace{};
@@ -556,14 +534,14 @@ auto UpdatedMaximumLikelihood::Factory::make(const Settings &s)
     lambdaSpace.N = 11;
     lambdaSpace.space = ParameterSpace::Linear;
     PosteriorDistributions posteriorDistributions{
-        {makeParameterSpace(alphaSpace),
-            *makePriorProbability(alphaPriorProbability)},
-        {makeParameterSpace(betaSpace),
-            *makePriorProbability(betaPriorProbability)},
-        {makeParameterSpace(gammaSpace),
-            *makePriorProbability(gammaPriorProbability)},
-        {makeParameterSpace(lambdaSpace),
-            *makePriorProbability(lambdaPriorProbability)}};
+        {makeParameterSpace(s.umlSettings.alpha.space),
+            *makePriorProbability(s.umlSettings.alpha.priorProbability)},
+        {makeParameterSpace(s.umlSettings.beta.space),
+            *makePriorProbability(s.umlSettings.beta.priorProbability)},
+        {makeParameterSpace(s.umlSettings.gamma.space),
+            *makePriorProbability(s.umlSettings.gamma.priorProbability)},
+        {makeParameterSpace(s.umlSettings.lambda.space),
+            *makePriorProbability(s.umlSettings.lambda.priorProbability)}};
     return std::make_shared<UpdatedMaximumLikelihood>(
         posteriorDistributions, pf, pc, specs);
 }

@@ -3,6 +3,7 @@
 
 #include "TargetPlaylist.hpp"
 #include "TestMethod.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <limits>
 #include <vector>
@@ -23,6 +24,7 @@ class AdaptiveTrack {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(AdaptiveTrack);
     struct Settings {
+        UmlSettings umlSettings;
         const TrackingRule *rule{};
         int startingX{};
         int ceiling{maximumInt};
