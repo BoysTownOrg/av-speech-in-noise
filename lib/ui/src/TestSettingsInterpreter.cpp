@@ -158,6 +158,29 @@ static void assign(Calibration &calibration, const std::string &entryName,
         calibration.level.dB_SPL = integer(entry);
 }
 
+static void initializeParameterSpace(
+    PhiParameterSetting &s, const std::string &entry) {
+    std::stringstream stream{entry};
+    std::string kind;
+    stream >> kind;
+    if (kind == "linear")
+        s.space.space = ParameterSpace::Linear;
+    stream >> s.space.lower;
+    stream >> s.space.upper;
+    stream >> s.space.N;
+}
+
+static void initializeParameterPrior(
+    PhiParameterSetting &s, const std::string &entry) {
+    std::stringstream stream{entry};
+    std::string kind;
+    stream >> kind;
+    if (kind == "linearnorm")
+        s.priorProbability.kind = PriorProbabilityKind::LinearNorm;
+    stream >> s.priorProbability.mu;
+    stream >> s.priorProbability.sigma;
+}
+
 static void assign(AdaptiveTest &test, const std::string &entryName,
     const std::string &entry) {
     if (entryName == name(TestSetting::up))
@@ -174,25 +197,11 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
         test.startingSnr.dB = integer(entry);
     else if (entryName == name(TestSetting::uml))
         test.uml = boolean(entry);
-    else if (entryName == name(TestSetting::alphaSpace)) {
-        std::stringstream stream{entry};
-        std::string kind;
-        stream >> kind;
-        if (kind == "linear")
-            test.umlSettings.alpha.space.space = ParameterSpace::Linear;
-        stream >> test.umlSettings.alpha.space.lower;
-        stream >> test.umlSettings.alpha.space.upper;
-        stream >> test.umlSettings.alpha.space.N;
-    } else if (entryName == name(TestSetting::alphaPrior)) {
-        std::stringstream stream{entry};
-        std::string kind;
-        stream >> kind;
-        if (kind == "linearnorm")
-            test.umlSettings.alpha.priorProbability.kind =
-                PriorProbabilityKind::LinearNorm;
-        stream >> test.umlSettings.alpha.priorProbability.mu;
-        stream >> test.umlSettings.alpha.priorProbability.sigma;
-    } else if (entryName == name(TestSetting::trials))
+    else if (entryName == name(TestSetting::alphaSpace))
+        initializeParameterSpace(test.umlSettings.alpha, entry);
+    else if (entryName == name(TestSetting::alphaPrior))
+        initializeParameterPrior(test.umlSettings.alpha, entry);
+    else if (entryName == name(TestSetting::trials))
         test.trials = integer(entry);
     else
         assign(static_cast<Test &>(test), entryName, entry);
