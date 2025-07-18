@@ -529,6 +529,14 @@ class AdaptiveMethodTests : public ::testing::Test {
 
 #define ADAPTIVE_METHOD_TEST(a) TEST_F(AdaptiveMethodTests, a)
 
+ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithUmlSettings) {
+    test.umlSettings.alpha.space.N = 42;
+    initialize(method, test, targetListReader, snrTrackFactory);
+    forEachSettings(snrTrackFactory, [&](auto s) {
+        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(42, s.umlSettings.alpha.space.N);
+    });
+}
+
 ADAPTIVE_METHOD_TEST(initializeCreatesSnrTrackForEachList) {
     initialize(method, test, targetListReader, snrTrackFactory);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(

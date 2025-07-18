@@ -36,6 +36,7 @@ static auto fileName(ResponseEvaluator &evaluator, const LocalUrl &target)
 
 static auto trackSettings(const AdaptiveTest &test) -> AdaptiveTrack::Settings {
     AdaptiveTrack::Settings trackSettings{};
+    trackSettings.umlSettings = test.umlSettings;
     trackSettings.rule = &test.trackingRule;
     trackSettings.ceiling = test.ceilingSnr.dB;
     trackSettings.startingX = test.startingSnr.dB;
