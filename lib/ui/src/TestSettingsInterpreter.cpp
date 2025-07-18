@@ -181,6 +181,8 @@ static void initializeParameterPrior(
         s.priorProbability.kind = PriorProbabilityKind::LinearNorm;
     else if (kind == "lognorm")
         s.priorProbability.kind = PriorProbabilityKind::LogNorm;
+    else if (kind == "flat")
+        s.priorProbability.kind = PriorProbabilityKind::Flat;
     stream >> s.priorProbability.mu;
     stream >> s.priorProbability.sigma;
 }
