@@ -165,6 +165,8 @@ static void initializeParameterSpace(
     stream >> kind;
     if (kind == "linear")
         s.space.space = ParameterSpace::Linear;
+    else if (kind == "log")
+        s.space.space = ParameterSpace::Log;
     stream >> s.space.lower;
     stream >> s.space.upper;
     stream >> s.space.N;
@@ -177,6 +179,8 @@ static void initializeParameterPrior(
     stream >> kind;
     if (kind == "linearnorm")
         s.priorProbability.kind = PriorProbabilityKind::LinearNorm;
+    else if (kind == "lognorm")
+        s.priorProbability.kind = PriorProbabilityKind::LogNorm;
     stream >> s.priorProbability.mu;
     stream >> s.priorProbability.sigma;
 }
@@ -201,6 +205,18 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
         initializeParameterSpace(test.umlSettings.alpha, entry);
     else if (entryName == name(TestSetting::alphaPrior))
         initializeParameterPrior(test.umlSettings.alpha, entry);
+    else if (entryName == name(TestSetting::betaSpace))
+        initializeParameterSpace(test.umlSettings.beta, entry);
+    else if (entryName == name(TestSetting::betaPrior))
+        initializeParameterPrior(test.umlSettings.beta, entry);
+    else if (entryName == name(TestSetting::gammaSpace))
+        initializeParameterSpace(test.umlSettings.gamma, entry);
+    else if (entryName == name(TestSetting::gammaPrior))
+        initializeParameterPrior(test.umlSettings.gamma, entry);
+    else if (entryName == name(TestSetting::lambdaSpace))
+        initializeParameterSpace(test.umlSettings.lambda, entry);
+    else if (entryName == name(TestSetting::lambdaPrior))
+        initializeParameterPrior(test.umlSettings.lambda, entry);
     else if (entryName == name(TestSetting::trials))
         test.trials = integer(entry);
     else

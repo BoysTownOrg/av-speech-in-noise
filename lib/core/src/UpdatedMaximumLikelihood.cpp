@@ -501,38 +501,6 @@ auto UpdatedMaximumLikelihood::Factory::make(const Settings &s)
     specs.startingX = s.startingX;
     specs.lowerBound = s.floor;
     specs.upperBound = s.ceiling;
-    PriorProbabilitySetting alphaPriorProbability{};
-    alphaPriorProbability.kind = PriorProbabilityKind::LinearNorm;
-    alphaPriorProbability.mu = 0;
-    alphaPriorProbability.sigma = 10;
-    PriorProbabilitySetting betaPriorProbability{};
-    betaPriorProbability.kind = PriorProbabilityKind::LogNorm;
-    betaPriorProbability.mu = -0.5;
-    betaPriorProbability.sigma = 0.4;
-    PriorProbabilitySetting gammaPriorProbability{};
-    gammaPriorProbability.kind = PriorProbabilityKind::Flat;
-    PriorProbabilitySetting lambdaPriorProbability{};
-    lambdaPriorProbability.kind = PriorProbabilityKind::Flat;
-    ParameterSpaceSetting alphaSpace{};
-    alphaSpace.lower = -30;
-    alphaSpace.upper = 30;
-    alphaSpace.N = 61;
-    alphaSpace.space = ParameterSpace::Linear;
-    ParameterSpaceSetting betaSpace{};
-    betaSpace.lower = 0.1;
-    betaSpace.upper = 10;
-    betaSpace.N = 41;
-    betaSpace.space = ParameterSpace::Log;
-    ParameterSpaceSetting gammaSpace{};
-    gammaSpace.lower = 0.02;
-    gammaSpace.upper = 0.2;
-    gammaSpace.N = 11;
-    gammaSpace.space = ParameterSpace::Linear;
-    ParameterSpaceSetting lambdaSpace{};
-    lambdaSpace.lower = 0.02;
-    lambdaSpace.upper = 0.2;
-    lambdaSpace.N = 11;
-    lambdaSpace.space = ParameterSpace::Linear;
     PosteriorDistributions posteriorDistributions{
         {makeParameterSpace(s.umlSettings.alpha.space),
             *makePriorProbability(s.umlSettings.alpha.priorProbability)},

@@ -1136,23 +1136,39 @@ TEST_SETTINGS_INTERPRETER_TEST(umlSettings) {
     initializeTest(interpreter,
         {
             entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            entryWithNewline(TestSetting::alphaSpace, "linear -29 31 63"),
-            entryWithNewline(TestSetting::alphaPrior, "linearnorm 1.2 3.4"),
+            entryWithNewline(TestSetting::alphaSpace, "log -29 31 63"),
+            entryWithNewline(TestSetting::alphaPrior, "lognorm 1.2 3.4"),
+            entryWithNewline(TestSetting::betaSpace, "linear 0.2 3.4 11"),
+            entryWithNewline(TestSetting::betaPrior, "linearnorm 2.3 4.5"),
         });
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(ParameterSpace::Linear,
-        adaptiveMethod.test.umlSettings.alpha.space.space);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        ParameterSpace::Log, adaptiveMethod.test.umlSettings.alpha.space.space);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         -29., adaptiveMethod.test.umlSettings.alpha.space.lower);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         31., adaptiveMethod.test.umlSettings.alpha.space.upper);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         63, adaptiveMethod.test.umlSettings.alpha.space.N);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(PriorProbabilityKind::LinearNorm,
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(PriorProbabilityKind::LogNorm,
         adaptiveMethod.test.umlSettings.alpha.priorProbability.kind);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         1.2, adaptiveMethod.test.umlSettings.alpha.priorProbability.mu);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         3.4, adaptiveMethod.test.umlSettings.alpha.priorProbability.sigma);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(ParameterSpace::Linear,
+        adaptiveMethod.test.umlSettings.beta.space.space);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        0.2, adaptiveMethod.test.umlSettings.beta.space.lower);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        3.4, adaptiveMethod.test.umlSettings.beta.space.upper);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        11, adaptiveMethod.test.umlSettings.beta.space.N);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(PriorProbabilityKind::LinearNorm,
+        adaptiveMethod.test.umlSettings.beta.priorProbability.kind);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        2.3, adaptiveMethod.test.umlSettings.beta.priorProbability.mu);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        4.5, adaptiveMethod.test.umlSettings.beta.priorProbability.sigma);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(consonantTestWithTargetRepetitions) {
