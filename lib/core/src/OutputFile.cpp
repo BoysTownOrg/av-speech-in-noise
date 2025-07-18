@@ -437,6 +437,8 @@ class OpenSetAdaptiveTrialFormatter : public TrialFormatter {
         insert(stream, HeadingItem::evaluation);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::reversals);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::phi);
         return insertNewLine(stream);
     }
 
@@ -448,6 +450,9 @@ class OpenSetAdaptiveTrialFormatter : public TrialFormatter {
         insert(stream, evaluation(trial_));
         insertCommaAndSpace(stream);
         insert(stream, trial_.reversals);
+        insertCommaAndSpace(stream);
+        if (trial_.phi)
+            insert(stream, *trial_.phi);
         return insertNewLine(stream);
     }
 

@@ -8,6 +8,7 @@
 
 #include <gsl/gsl>
 
+#include <optional>
 #include <vector>
 #include <map>
 #include <iostream>
@@ -336,6 +337,7 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
         trial.snr.dB = 11.1;
         trial.target = "a";
         trial.reversals = 22;
+        trial.phi = std::make_optional<Phi>({1.2, 2.3, 3.4, 4.5});
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
@@ -346,6 +348,8 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
             writer, "a", at(headingLabels_, HeadingItem::target), line);
         assertNthCommaDelimitedEntryOfLine(
             writer, "22", at(headingLabels_, HeadingItem::reversals), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "1.2 2.3 3.4 4.5",
+            at(headingLabels_, HeadingItem::phi), line);
     }
 
     void incorrect() override { trial.correct = false; }
@@ -366,7 +370,7 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
     open_set::AdaptiveTrial trial{};
     std::map<HeadingItem, gsl::index> headingLabels_{{HeadingItem::snr_dB, 1},
         {HeadingItem::target, 2}, {HeadingItem::evaluation, 3},
-        {HeadingItem::reversals, 4}};
+        {HeadingItem::reversals, 4}, {HeadingItem::phi, 5}};
 };
 
 class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
