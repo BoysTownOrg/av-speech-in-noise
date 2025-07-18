@@ -1109,7 +1109,9 @@ TEST_SETTINGS_INTERPRETER_TEST(oneSequence) {
             entryWithNewline(TestSetting::down, "2"),
             entryWithNewline(TestSetting::reversalsPerStepSize, "3"),
             entryWithNewline(TestSetting::stepSizes, "4")});
-    assertEqual({sequence}, adaptiveMethod.test.levittSettings.trackingRule);
+    assertEqual({sequence},
+        std::get<LevittSettings>(adaptiveMethod.test.trackSettings)
+            .trackingRule);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
@@ -1129,50 +1131,65 @@ TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
             entryWithNewline(TestSetting::down, "3 4"),
             entryWithNewline(TestSetting::reversalsPerStepSize, "5 6"),
             entryWithNewline(TestSetting::stepSizes, "7 8")});
-    assertEqual(
-        {first, second}, adaptiveMethod.test.levittSettings.trackingRule);
+    assertEqual({first, second},
+        std::get<LevittSettings>(adaptiveMethod.test.trackSettings)
+            .trackingRule);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(umlSettings) {
     initializeTest(interpreter,
         {
             entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::uml, "true"),
             entryWithNewline(TestSetting::alphaSpace, "log -29 31 63"),
             entryWithNewline(TestSetting::alphaPrior, "flat"),
             entryWithNewline(TestSetting::betaSpace, "linear 0.2 3.4 11"),
             entryWithNewline(TestSetting::betaPrior, "linearnorm 2.3 4.5"),
             entryWithNewline(TestSetting::gammaPrior, "lognorm 1.2 3.4"),
         });
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        ParameterSpace::Log, adaptiveMethod.test.umlSettings.alpha.space.space);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        -29., adaptiveMethod.test.umlSettings.alpha.space.lower);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        31., adaptiveMethod.test.umlSettings.alpha.space.upper);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        63, adaptiveMethod.test.umlSettings.alpha.space.N);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(ParameterSpace::Log,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .alpha.space.space);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(-29.,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .alpha.space.lower);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(31.,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .alpha.space.upper);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(63,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings).alpha.space.N);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(PriorProbabilityKind::Flat,
-        adaptiveMethod.test.umlSettings.alpha.priorProbability.kind);
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .alpha.priorProbability.kind);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(ParameterSpace::Linear,
-        adaptiveMethod.test.umlSettings.beta.space.space);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        0.2, adaptiveMethod.test.umlSettings.beta.space.lower);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        3.4, adaptiveMethod.test.umlSettings.beta.space.upper);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        11, adaptiveMethod.test.umlSettings.beta.space.N);
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .beta.space.space);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0.2,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .beta.space.lower);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3.4,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .beta.space.upper);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(11,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings).beta.space.N);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(PriorProbabilityKind::LinearNorm,
-        adaptiveMethod.test.umlSettings.beta.priorProbability.kind);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        2.3, adaptiveMethod.test.umlSettings.beta.priorProbability.mu);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        4.5, adaptiveMethod.test.umlSettings.beta.priorProbability.sigma);
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .beta.priorProbability.kind);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2.3,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .beta.priorProbability.mu);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4.5,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .beta.priorProbability.sigma);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(PriorProbabilityKind::LogNorm,
-        adaptiveMethod.test.umlSettings.gamma.priorProbability.kind);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        1.2, adaptiveMethod.test.umlSettings.gamma.priorProbability.mu);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        3.4, adaptiveMethod.test.umlSettings.gamma.priorProbability.sigma);
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .gamma.priorProbability.kind);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1.2,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .gamma.priorProbability.mu);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3.4,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .gamma.priorProbability.sigma);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(consonantTestWithTargetRepetitions) {

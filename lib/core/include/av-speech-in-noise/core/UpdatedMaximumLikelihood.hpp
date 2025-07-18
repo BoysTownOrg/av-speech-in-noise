@@ -4,7 +4,6 @@
 #include "IAdaptiveMethod.hpp"
 #include <av-speech-in-noise/Interface.hpp>
 #include <cstdint>
-#include <memory>
 #include <vector>
 
 namespace av_speech_in_noise {
@@ -54,8 +53,6 @@ struct PosteriorDistributions {
 };
 
 struct TrackSpecifications {
-    int down;
-    int up;
     int trials;
     double startingX;
     double upperBound;
@@ -101,17 +98,16 @@ class MeanPhi : public PhiComputer {
 class UpdatedMaximumLikelihood : public AdaptiveTrack {
     const PosteriorDistributions posteriorDistributions;
     TrackSpecifications trackSpecifications;
+    LogisticPsychometricFunction psychometricFunction;
+    MeanPhi phiComputer;
     std::vector<double> _posterior;
     std::vector<std::size_t> sweetPointIndeces;
     std::vector<double> _sweetPoint;
     std::vector<double> _reversalXs;
     Phi _phi;
     // Order important for construction
-    PsychometricFunction &psychometricFunction;
-    PhiComputer &phiComputer;
+    // ^ why??
     double _x;
-    const double lowerBound;
-    const double upperBound;
     const int down_;
     const int up_;
     int consecutiveDown;
@@ -122,9 +118,7 @@ class UpdatedMaximumLikelihood : public AdaptiveTrack {
     int _reversals;
 
   public:
-    UpdatedMaximumLikelihood(const PosteriorDistributions &distributions,
-        PsychometricFunction &psychometricFunction, PhiComputer &phiComputer,
-        TrackSpecifications trackSpecifications);
+    UpdatedMaximumLikelihood(const UmlSettings &, const Settings &);
     void down() override;
     void up() override;
     void reset() override;
@@ -141,15 +135,6 @@ class UpdatedMaximumLikelihood : public AdaptiveTrack {
     auto lambdaSpace(size_t index) const -> const double &;
     auto complete() -> bool override;
     auto result() -> std::variant<Threshold, Phi> override { return _phi; }
-
-    class Factory : public AdaptiveTrack::Factory {
-      public:
-        auto make(const Settings &s) -> std::shared_ptr<AdaptiveTrack> override;
-
-      private:
-        LogisticPsychometricFunction pf;
-        MeanPhi pc;
-    };
 
   private:
     void addToPosteriorAndShiftByMax(const std::vector<double> &result);

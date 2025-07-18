@@ -3,12 +3,11 @@
 
 #include "IAdaptiveMethod.hpp"
 #include <vector>
-#include <memory>
 
 namespace av_speech_in_noise {
 class LevittTrack : public AdaptiveTrack {
   public:
-    explicit LevittTrack(const Settings &);
+    explicit LevittTrack(const LevittSettings &, const Settings &);
     auto x() -> double override;
     void up() override;
     void down() override;
@@ -16,13 +15,6 @@ class LevittTrack : public AdaptiveTrack {
     auto reversals() -> int override;
     void reset() override;
     auto result() -> std::variant<Threshold, Phi> override;
-
-    class Factory : public AdaptiveTrack::Factory {
-        auto make(const Settings &s)
-            -> std::shared_ptr<AdaptiveTrack> override {
-            return std::make_shared<LevittTrack>(s);
-        }
-    };
 
   private:
     enum class Direction { undefined, up, down };

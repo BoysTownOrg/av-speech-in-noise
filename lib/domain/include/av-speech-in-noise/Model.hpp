@@ -196,6 +196,8 @@ struct UmlSettings {
         {{}, {}, PriorProbabilityKind::Flat}};
     PhiParameterSetting lambda{{0.02, 0.2, 11, ParameterSpace::Linear},
         {{}, {}, PriorProbabilityKind::Flat}};
+    int up{1};
+    int down{2};
     int trials{};
 };
 
@@ -216,8 +218,7 @@ struct FloatSNR {
 };
 
 struct AdaptiveTest : Test {
-    UmlSettings umlSettings;
-    LevittSettings levittSettings;
+    std::variant<UmlSettings, LevittSettings> trackSettings;
     SNR startingSnr{};
     SNR ceilingSnr{};
     SNR floorSnr{};

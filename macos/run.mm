@@ -51,6 +51,7 @@
 #include <filesystem>
 
 #include <Foundation/Foundation.h>
+#include <variant>
 
 // https://stackoverflow.com/a/116220
 namespace {
@@ -237,6 +238,24 @@ class KeyPressUI : public submitting_keypress::Control,
     KeyableSubjectWindow *window;
     Observer *observer{};
     NSEvent *lastPressEvent;
+};
+
+static auto make(const UmlSettings &specific, const AdaptiveTrack::Settings &s)
+    -> std::shared_ptr<AdaptiveTrack> {
+    return std::make_shared<UpdatedMaximumLikelihood>(specific, s);
+}
+
+static auto make(const LevittSettings &specific,
+    const AdaptiveTrack::Settings &s) -> std::shared_ptr<AdaptiveTrack> {
+    return std::make_shared<LevittTrack>(specific, s);
+}
+
+class AdaptiveTrackFactory : public AdaptiveTrack::Factory {
+    auto make(const std::variant<UmlSettings, LevittSettings> &specific,
+        const Settings &s) -> std::shared_ptr<AdaptiveTrack> override {
+        return std::visit(
+            [&s](const auto &specific) { return make(specific, s); }, specific);
+    }
 };
 }
 

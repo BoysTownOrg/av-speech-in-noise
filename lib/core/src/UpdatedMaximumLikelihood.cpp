@@ -1,4 +1,5 @@
 #include "UpdatedMaximumLikelihood.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -250,22 +251,50 @@ static auto logNormalizedSum(std::vector<double> v) -> std::vector<double> {
     return transform(v, [sum](double x) { return std::log(x / sum); });
 }
 
+static auto makePriorProbability(PriorProbabilitySetting s)
+    -> std::unique_ptr<PriorProbability> {
+    switch (s.kind) {
+    case PriorProbabilityKind::LinearNorm:
+        return std::make_unique<LinearNormPrior>(s.mu, s.sigma);
+    case PriorProbabilityKind::LogNorm:
+        return std::make_unique<LogNormPrior>(s.mu, s.sigma);
+    case PriorProbabilityKind::Flat:
+        return std::make_unique<FlatPrior>();
+    }
+}
+
+static auto makeParameterSpace(ParameterSpaceSetting s) -> std::vector<double> {
+    switch (s.space) {
+    case ParameterSpace::Linear:
+        return linspace(s.lower, s.upper, s.N);
+    case ParameterSpace::Log:
+        return logspace(s.lower, s.upper, s.N);
+    }
+}
+
 UpdatedMaximumLikelihood::UpdatedMaximumLikelihood(
-    const PosteriorDistributions &distributions,
-    PsychometricFunction &psychometricFunction, PhiComputer &phiComputer,
-    TrackSpecifications trackSpecifications)
-    : posteriorDistributions{distributions},
-      trackSpecifications{trackSpecifications}, _phi{},
-      psychometricFunction(psychometricFunction), phiComputer(phiComputer),
-      _x(trackSpecifications.startingX),
-      lowerBound(trackSpecifications.lowerBound),
-      upperBound(trackSpecifications.upperBound),
-      down_(trackSpecifications.down), up_(trackSpecifications.up),
-      consecutiveDown(0), consecutiveUp(0),
-      trackDirection(TrackDirection::undefined), _reversals(0) {
-    if (distributions.lambda.prior.empty() ||
-        distributions.gamma.prior.empty() || distributions.beta.prior.empty() ||
-        distributions.alpha.prior.empty())
+    const UmlSettings &umlSettings, const Settings &settings)
+    : posteriorDistributions{{makeParameterSpace(umlSettings.alpha.space),
+                                 *makePriorProbability(
+                                     umlSettings.alpha.priorProbability)},
+          {makeParameterSpace(umlSettings.beta.space),
+              *makePriorProbability(umlSettings.beta.priorProbability)},
+          {makeParameterSpace(umlSettings.gamma.space),
+              *makePriorProbability(umlSettings.gamma.priorProbability)},
+          {makeParameterSpace(umlSettings.lambda.space),
+              *makePriorProbability(umlSettings.lambda.priorProbability)}},
+      _phi{}, down_{umlSettings.down}, up_{umlSettings.up}, consecutiveDown(0),
+      consecutiveUp(0), trackDirection(TrackDirection::undefined),
+      _reversals(0) {
+    trackSpecifications.trials = umlSettings.trials;
+    trackSpecifications.startingX = settings.startingX;
+    trackSpecifications.lowerBound = settings.floor;
+    trackSpecifications.upperBound = settings.ceiling;
+
+    if (posteriorDistributions.lambda.prior.empty() ||
+        posteriorDistributions.gamma.prior.empty() ||
+        posteriorDistributions.beta.prior.empty() ||
+        posteriorDistributions.alpha.prior.empty())
         throw std::runtime_error("Empty parameter space passed.");
     if (posteriorDistributions.alpha.space.size() > 1)
         sweetPointIndeces.push_back(2);
@@ -295,7 +324,9 @@ void UpdatedMaximumLikelihood::reset() {
                 for (const auto a : posteriorDistributions.alpha.prior)
                     _posterior.push_back(a * b * g * l);
     _posterior = logNormalizedSum(std::move(_posterior));
-    xCandidateIndex = (_x < (lowerBound + upperBound) / 2)
+    xCandidateIndex = (_x < (trackSpecifications.lowerBound +
+                                trackSpecifications.upperBound) /
+                              2)
         ? sweetPointIndeces.front()
         : sweetPointIndeces.back();
 }
@@ -327,7 +358,8 @@ auto UpdatedMaximumLikelihood::computeSweetPoint(Phi phi)
     sweetPoint.insert(sweetPoint.end(), (2 * sweetPoint[2]) - sweetPoint[1]);
     sweetPoint.insert(sweetPoint.begin(), (2 * sweetPoint[0]) - sweetPoint[1]);
     return transform(std::move(sweetPoint), [&](double x) {
-        return std::max(std::min(x, upperBound), lowerBound);
+        return std::max(std::min(x, trackSpecifications.upperBound),
+            trackSpecifications.lowerBound);
     });
 }
 
@@ -462,48 +494,5 @@ auto MeanPhi::operator()(const UpdatedMaximumLikelihood &uml) const -> Phi {
         lambdaEstimate += normalizedPosterior[i] * uml.lambdaSpace(i);
     }
     return {alphaEstimate, betaEstimate, gammaEstimate, lambdaEstimate};
-}
-
-static auto makePriorProbability(PriorProbabilitySetting s)
-    -> std::unique_ptr<PriorProbability> {
-    switch (s.kind) {
-    case PriorProbabilityKind::LinearNorm:
-        return std::make_unique<LinearNormPrior>(s.mu, s.sigma);
-    case PriorProbabilityKind::LogNorm:
-        return std::make_unique<LogNormPrior>(s.mu, s.sigma);
-    case PriorProbabilityKind::Flat:
-        return std::make_unique<FlatPrior>();
-    }
-}
-
-static auto makeParameterSpace(ParameterSpaceSetting s) -> std::vector<double> {
-    switch (s.space) {
-    case ParameterSpace::Linear:
-        return linspace(s.lower, s.upper, s.N);
-    case ParameterSpace::Log:
-        return logspace(s.lower, s.upper, s.N);
-    }
-}
-
-auto UpdatedMaximumLikelihood::Factory::make(const Settings &s)
-    -> std::shared_ptr<AdaptiveTrack> {
-    TrackSpecifications specs{};
-    specs.down = 2;
-    specs.up = 1;
-    specs.trials = s.trials;
-    specs.startingX = s.startingX;
-    specs.lowerBound = s.floor;
-    specs.upperBound = s.ceiling;
-    PosteriorDistributions posteriorDistributions{
-        {makeParameterSpace(s.umlSettings.alpha.space),
-            *makePriorProbability(s.umlSettings.alpha.priorProbability)},
-        {makeParameterSpace(s.umlSettings.beta.space),
-            *makePriorProbability(s.umlSettings.beta.priorProbability)},
-        {makeParameterSpace(s.umlSettings.gamma.space),
-            *makePriorProbability(s.umlSettings.gamma.priorProbability)},
-        {makeParameterSpace(s.umlSettings.lambda.space),
-            *makePriorProbability(s.umlSettings.lambda.priorProbability)}};
-    return std::make_shared<UpdatedMaximumLikelihood>(
-        posteriorDistributions, pf, pc, specs);
 }
 }

@@ -37,9 +37,6 @@ static auto fileName(ResponseEvaluator &evaluator, const LocalUrl &target)
 
 static auto trackSettings(const AdaptiveTest &test) -> AdaptiveTrack::Settings {
     AdaptiveTrack::Settings trackSettings{};
-    trackSettings.umlSettings = test.umlSettings;
-    trackSettings.trials = test.umlSettings.trials;
-    trackSettings.rule = &test.levittSettings.trackingRule;
     trackSettings.ceiling = test.ceilingSnr.dB;
     trackSettings.startingX = test.startingSnr.dB;
     trackSettings.floor = test.floorSnr.dB;
@@ -99,7 +96,7 @@ void AdaptiveMethodImpl::initialize(const AdaptiveTest &t,
     targetListsWithTracks.clear();
     for (const auto &list : targetListSetReader->read(t.targetsUrl))
         targetListsWithTracks.push_back(
-            {list, factory->make(trackSettings(t))});
+            {list, factory->make(t.trackSettings, trackSettings(t))});
     selectNextList();
 }
 

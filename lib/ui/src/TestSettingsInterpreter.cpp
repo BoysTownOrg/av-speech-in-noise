@@ -1,5 +1,6 @@
 #include "TestSettingsInterpreter.hpp"
 #include "SessionController.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <gsl/gsl>
 
@@ -27,14 +28,14 @@ static auto vectorOfInts(const std::string &s) -> std::vector<int> {
     return v;
 }
 
-static auto trackingRule(AdaptiveTest &test) -> TrackingRule & {
-    return test.levittSettings.trackingRule;
+static auto trackingRule(LevittSettings &s) -> TrackingRule & {
+    return s.trackingRule;
 }
 
 static void resizeTrackingRuleEnough(
-    AdaptiveTest &test, const std::vector<int> &v) {
-    if (trackingRule(test).size() < v.size())
-        trackingRule(test).resize(v.size());
+    LevittSettings &s, const std::vector<int> &v) {
+    if (trackingRule(s).size() < v.size())
+        trackingRule(s).resize(v.size());
 }
 
 static auto up(TrackingSequence &sequence) -> int & { return sequence.up; }
@@ -61,13 +62,13 @@ static auto trim(std::string s) -> std::string {
     return s;
 }
 
-static void assignToEachElementOfTrackingRule(AdaptiveTest &test,
+static void assignToEachElementOfTrackingRule(LevittSettings &s,
     const std::function<int &(TrackingSequence &)> &elementRef,
     const std::string &entry) {
     auto v{vectorOfInts(entry)};
-    resizeTrackingRuleEnough(test, v);
+    resizeTrackingRuleEnough(s, v);
     for (std::size_t i{0}; i < v.size(); ++i)
-        elementRef(trackingRule(test).at(i)) = v.at(i);
+        elementRef(trackingRule(s).at(i)) = v.at(i);
 }
 
 static auto entryName(const std::string &line) -> std::string {
@@ -187,16 +188,17 @@ static void initializeParameterPrior(
     stream >> s.priorProbability.sigma;
 }
 
-static void assign(AdaptiveTest &test, const std::string &entryName,
+static void assign(AdaptiveTest &test, UmlSettings &umlSettings,
+    LevittSettings &levittSettings, const std::string &entryName,
     const std::string &entry) {
     if (entryName == name(TestSetting::up))
-        assignToEachElementOfTrackingRule(test, up, entry);
+        assignToEachElementOfTrackingRule(levittSettings, up, entry);
     else if (entryName == name(TestSetting::down))
-        assignToEachElementOfTrackingRule(test, down, entry);
+        assignToEachElementOfTrackingRule(levittSettings, down, entry);
     else if (entryName == name(TestSetting::reversalsPerStepSize))
-        assignToEachElementOfTrackingRule(test, runCount, entry);
+        assignToEachElementOfTrackingRule(levittSettings, runCount, entry);
     else if (entryName == name(TestSetting::stepSizes))
-        assignToEachElementOfTrackingRule(test, stepSize, entry);
+        assignToEachElementOfTrackingRule(levittSettings, stepSize, entry);
     else if (entryName == name(TestSetting::thresholdReversals))
         test.thresholdReversals = integer(entry);
     else if (entryName == name(TestSetting::startingSnr))
@@ -204,23 +206,23 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
     else if (entryName == name(TestSetting::uml))
         test.uml = boolean(entry);
     else if (entryName == name(TestSetting::alphaSpace))
-        initializeParameterSpace(test.umlSettings.alpha, entry);
+        initializeParameterSpace(umlSettings.alpha, entry);
     else if (entryName == name(TestSetting::alphaPrior))
-        initializeParameterPrior(test.umlSettings.alpha, entry);
+        initializeParameterPrior(umlSettings.alpha, entry);
     else if (entryName == name(TestSetting::betaSpace))
-        initializeParameterSpace(test.umlSettings.beta, entry);
+        initializeParameterSpace(umlSettings.beta, entry);
     else if (entryName == name(TestSetting::betaPrior))
-        initializeParameterPrior(test.umlSettings.beta, entry);
+        initializeParameterPrior(umlSettings.beta, entry);
     else if (entryName == name(TestSetting::gammaSpace))
-        initializeParameterSpace(test.umlSettings.gamma, entry);
+        initializeParameterSpace(umlSettings.gamma, entry);
     else if (entryName == name(TestSetting::gammaPrior))
-        initializeParameterPrior(test.umlSettings.gamma, entry);
+        initializeParameterPrior(umlSettings.gamma, entry);
     else if (entryName == name(TestSetting::lambdaSpace))
-        initializeParameterSpace(test.umlSettings.lambda, entry);
+        initializeParameterSpace(umlSettings.lambda, entry);
     else if (entryName == name(TestSetting::lambdaPrior))
-        initializeParameterPrior(test.umlSettings.lambda, entry);
+        initializeParameterPrior(umlSettings.lambda, entry);
     else if (entryName == name(TestSetting::trials))
-        test.umlSettings.trials = integer(entry);
+        umlSettings.trials = integer(entry);
     else
         assign(static_cast<Test &>(test), entryName, entry);
 }
@@ -275,13 +277,16 @@ static auto methodWithName(const std::string &contents)
     throw std::runtime_error{"Test method not found"};
 }
 
-static void initialize(AdaptiveTest &test, const std::string &contents,
+static void initialize(AdaptiveTest &test, UmlSettings &umlSettings,
+    LevittSettings &levittSettings, const std::string &contents,
     const std::string &methodName, const TestIdentity &identity,
     SNR startingSnr) {
     test.identity = identity;
     test.startingSnr = startingSnr;
-    applyToEachEntry([&](const auto &entryName,
-                         const auto &entry) { assign(test, entryName, entry); },
+    applyToEachEntry(
+        [&](const auto &entryName, const auto &entry) {
+            assign(test, umlSettings, levittSettings, entryName, entry);
+        },
         contents);
     test.ceilingSnr = SessionControllerImpl::ceilingSnr;
     test.floorSnr = SessionControllerImpl::floorSnr;
@@ -322,8 +327,14 @@ static void initialize(const std::string &method, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr,
     const std::function<void(AdaptiveTest &)> &f) {
     AdaptiveTest test;
-    av_speech_in_noise::initialize(
-        test, contents, method, identity, startingSnr);
+    UmlSettings umlSettings;
+    LevittSettings levittSettings;
+    av_speech_in_noise::initialize(test, umlSettings, levittSettings, contents,
+        method, identity, startingSnr);
+    if (test.uml)
+        test.trackSettings = umlSettings;
+    else
+        test.trackSettings = levittSettings;
     f(test);
 }
 

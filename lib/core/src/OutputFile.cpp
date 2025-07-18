@@ -1,5 +1,6 @@
 #include "OutputFile.hpp"
 #include "IOutputFile.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 
@@ -171,19 +172,13 @@ static auto operator<<(std::ostream &stream, const TestIdentity &identity)
         identity);
 }
 
-static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
+static auto operator<<(std::ostream &stream, const LevittSettings &s)
     -> std::ostream & {
-    stream << identity(test);
-    insertMasker(stream, test);
-    insertTargetPlaylist(stream, test);
-    insertMaskerLevel(stream, test);
-    insertLabeledLine(stream, "starting SNR (dB)", test.startingSnr.dB);
-    insertCondition(stream, test);
     std::vector<int> up;
     std::vector<int> down;
     std::vector<int> runCounts;
     std::vector<int> stepSizes;
-    for (auto sequence : test.levittSettings.trackingRule) {
+    for (auto sequence : s.trackingRule) {
         up.push_back(sequence.up);
         down.push_back(sequence.down);
         runCounts.push_back(sequence.runCount);
@@ -192,7 +187,23 @@ static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
     insertLabeledLine(stream, "up", up);
     insertLabeledLine(stream, "down", down);
     insertLabeledLine(stream, "reversals per step size", runCounts);
-    insertLabeledLine(stream, "step sizes (dB)", stepSizes);
+    return insertLabeledLine(stream, "step sizes (dB)", stepSizes);
+}
+
+static auto operator<<(std::ostream &stream, const UmlSettings &s)
+    -> std::ostream & {
+    return stream;
+}
+
+static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
+    -> std::ostream & {
+    stream << identity(test);
+    insertMasker(stream, test);
+    insertTargetPlaylist(stream, test);
+    insertMaskerLevel(stream, test);
+    insertLabeledLine(stream, "starting SNR (dB)", test.startingSnr.dB);
+    std::visit([&stream](const auto &s) { stream << s; }, test.trackSettings);
+    insertCondition(stream, test);
     insertLabeledLine(stream, "threshold reversals", test.thresholdReversals);
     return insertNewLine(stream);
 }

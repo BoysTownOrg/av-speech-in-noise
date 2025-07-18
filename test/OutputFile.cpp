@@ -1,5 +1,6 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/OutputFile.hpp>
@@ -1071,8 +1072,10 @@ OUTPUT_FILE_TEST(writesTrackSettings) {
     second.down = 6;
     second.runCount = 7;
     second.stepSize = 8;
-    test.levittSettings.trackingRule.push_back(first);
-    test.levittSettings.trackingRule.push_back(second);
+    LevittSettings levittSettings;
+    levittSettings.trackingRule.push_back(first);
+    levittSettings.trackingRule.push_back(second);
+    test.trackSettings = levittSettings;
     test.thresholdReversals = 9;
     file.write(test);
     assertContainsColonDelimitedEntry(writer, "up", "1 5");
