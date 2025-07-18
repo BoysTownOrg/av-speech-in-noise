@@ -482,7 +482,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         av_speech_in_noise::initialize(methodName, contents, identity,
             startingSnr, [&](const AdaptiveTest &test) {
                 av_speech_in_noise::initialize(adaptiveMethod, test,
-                    cyclicTargetsReader, levittTrackFactory);
+                    cyclicTargetsReader, adaptiveTrackFactory);
                 av_speech_in_noise::initialize(
                     runningATest, adaptiveMethod, test, testObservers);
             });
@@ -493,8 +493,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             startingSnr, [&](AdaptiveTest &test) {
                 test.audioChannelOption = audioChannelOption;
                 av_speech_in_noise::initialize(adaptiveMethod, test,
-                    targetsWithReplacementReader,
-                    test.uml ? umlTrackFactory : levittTrackFactory);
+                    targetsWithReplacementReader, adaptiveTrackFactory);
                 av_speech_in_noise::initialize(
                     runningATest, adaptiveMethod, test, testObservers);
             });
@@ -604,8 +603,7 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
     RepeatableFiniteTargetPlaylist &eachTargetNTimes,
     TargetPlaylist &targetsWithReplacement,
-    AdaptiveTrack::Factory &levittTrackFactory,
-    AdaptiveTrack::Factory &umlTrackFactory,
+    AdaptiveTrack::Factory &adaptiveTrackFactory,
     submitting_free_response::Puzzle &puzzle,
     FreeResponseController &freeResponseController,
     SessionController &sessionController,
@@ -620,8 +618,8 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     TaskPresenter &fixedPassFailPresenter)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
       fixedLevelMethod{fixedLevelMethod}, eyeTracking{eyeTracking},
-      audioRecording{audioRecording}, levittTrackFactory{levittTrackFactory},
-      umlTrackFactory{umlTrackFactory},
+      audioRecording{audioRecording},
+      adaptiveTrackFactory{adaptiveTrackFactory},
       cyclicTargetsReader{cyclicTargetsReader},
       targetsWithReplacementReader{targetsWithReplacementReader},
       predeterminedTargets{predeterminedTargets},

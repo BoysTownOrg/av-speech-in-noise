@@ -194,9 +194,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
         RepeatableFiniteTargetPlaylist &eachTargetNTimes,
-        TargetPlaylist &targetsWithReplacement,
-        AdaptiveTrack::Factory &levittTrackFactory,
-        AdaptiveTrack::Factory &umlTrackFactory,
+        TargetPlaylist &targetsWithReplacement, AdaptiveTrack::Factory &,
         submitting_free_response::Puzzle &puzzle,
         FreeResponseController &freeResponseController,
         SessionController &sessionController,
@@ -222,8 +220,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     FixedLevelMethod &fixedLevelMethod;
     RunningATest::TestObserver &eyeTracking;
     RunningATest::TestObserver &audioRecording;
-    AdaptiveTrack::Factory &levittTrackFactory;
-    AdaptiveTrack::Factory &umlTrackFactory;
+    AdaptiveTrack::Factory &adaptiveTrackFactory;
     TargetPlaylistReader &cyclicTargetsReader;
     TargetPlaylistReader &targetsWithReplacementReader;
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets;

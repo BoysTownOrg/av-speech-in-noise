@@ -228,8 +228,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
-    TrackFactoryStub levittTrackFactory;
-    TrackFactoryStub umlTrackFactory;
+    TrackFactoryStub adaptiveTrackFactory;
     submitting_free_response::PuzzleStub puzzle;
     FreeResponseControllerStub freeResponseController;
     TaskPresenterStub coordinateResponseMeasurePresenter;
@@ -249,13 +248,12 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         fixedLevelMethod, eyeTracking, audioRecording, cyclicTargetsReader,
         targetsWithReplacementReader, predeterminedTargets, everyTargetOnce,
         silentIntervalTargets, eachTargetNTimes, targetsWithReplacement,
-        levittTrackFactory, umlTrackFactory, puzzle, freeResponseController,
-        sessionController, coordinateResponseMeasurePresenter,
-        freeResponsePresenter, chooseKeywordsPresenter, syllablesPresenter,
-        correctKeywordsPresenter, consonantPresenter,
-        submittingConsonantResponse, passFailPresenter, keypressPresenter,
-        submittingKeyPressResponse, emotionPresenter, childEmotionPresenter,
-        fixedPassFailPresenter};
+        adaptiveTrackFactory, puzzle, freeResponseController, sessionController,
+        coordinateResponseMeasurePresenter, freeResponsePresenter,
+        chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
+        consonantPresenter, submittingConsonantResponse, passFailPresenter,
+        keypressPresenter, submittingKeyPressResponse, emotionPresenter,
+        childEmotionPresenter, fixedPassFailPresenter};
     TestIdentity testIdentity;
 };
 
@@ -893,22 +891,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     runningATest.testComplete_ = true;
     initializeTest(interpreter, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializesAdaptiveMethodWithLevittTrackFactory) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail)});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &levittTrackFactory, adaptiveMethod.trackFactory);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(initializesAdaptiveMethodWithUmlTrackFactory) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            entryWithNewline(TestSetting::uml, "true")});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &umlTrackFactory, adaptiveMethod.trackFactory);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(initializesPuzzleWithPath) {
