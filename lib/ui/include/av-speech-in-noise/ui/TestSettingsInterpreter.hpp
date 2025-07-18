@@ -102,7 +102,13 @@ enum class TestSetting : std::uint8_t {
     uml,
     trials,
     alphaSpace,
-    alphaPrior
+    alphaPrior,
+    betaSpace,
+    betaPrior,
+    gammaSpace,
+    gammaPrior,
+    lambdaSpace,
+    lambdaPrior,
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -161,6 +167,18 @@ constexpr auto name(TestSetting p) -> const char * {
         return "alpha space";
     case TestSetting::alphaPrior:
         return "alpha prior";
+    case TestSetting::betaSpace:
+        return "beta space";
+    case TestSetting::betaPrior:
+        return "beta prior";
+    case TestSetting::gammaSpace:
+        return "gamma space";
+    case TestSetting::gammaPrior:
+        return "gamma prior";
+    case TestSetting::lambdaSpace:
+        return "lambda space";
+    case TestSetting::lambdaPrior:
+        return "lambda prior";
     }
 }
 
