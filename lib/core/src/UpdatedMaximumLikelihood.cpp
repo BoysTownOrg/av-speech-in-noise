@@ -413,7 +413,7 @@ auto UpdatedMaximumLikelihood::sweetPoints() const -> std::vector<double> {
 
 auto UpdatedMaximumLikelihood::phi() -> std::optional<Phi> {
     return std::make_optional<Phi>(
-        {_phi.alpha, _phi.beta, _phi.gamma, _phi.lambda});
+        Phi{_phi.alpha, _phi.beta, _phi.gamma, _phi.lambda});
 }
 
 auto UpdatedMaximumLikelihood::x() -> double { return _x; }
