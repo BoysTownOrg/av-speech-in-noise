@@ -101,7 +101,8 @@ enum class TestSetting : std::uint8_t {
     puzzle,
     uml,
     trials,
-    alphaSpace
+    alphaSpace,
+    alphaPrior
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -158,6 +159,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "trials";
     case TestSetting::alphaSpace:
         return "alpha space";
+    case TestSetting::alphaPrior:
+        return "alpha prior";
     }
 }
 

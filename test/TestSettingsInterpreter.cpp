@@ -1134,8 +1134,11 @@ TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
 
 TEST_SETTINGS_INTERPRETER_TEST(umlSettings) {
     initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            entryWithNewline(TestSetting::alphaSpace, "linear -29 31 63")});
+        {
+            entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::alphaSpace, "linear -29 31 63"),
+            entryWithNewline(TestSetting::alphaPrior, "linearnorm 1.2 3.4"),
+        });
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(ParameterSpace::Linear,
         adaptiveMethod.test.umlSettings.alpha.space.space);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -1144,6 +1147,12 @@ TEST_SETTINGS_INTERPRETER_TEST(umlSettings) {
         31., adaptiveMethod.test.umlSettings.alpha.space.upper);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         63, adaptiveMethod.test.umlSettings.alpha.space.N);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(PriorProbabilityKind::LinearNorm,
+        adaptiveMethod.test.umlSettings.alpha.priorProbability.kind);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        1.2, adaptiveMethod.test.umlSettings.alpha.priorProbability.mu);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        3.4, adaptiveMethod.test.umlSettings.alpha.priorProbability.sigma);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(consonantTestWithTargetRepetitions) {

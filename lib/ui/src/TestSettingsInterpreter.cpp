@@ -1,11 +1,9 @@
 #include "TestSettingsInterpreter.hpp"
-
-#include <math.h>
 #include "SessionController.hpp"
-#include "av-speech-in-noise/Model.hpp"
 
 #include <gsl/gsl>
 
+#include <math.h>
 #include <sstream>
 #include <functional>
 #include <stdexcept>
@@ -185,6 +183,15 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
         stream >> test.umlSettings.alpha.space.lower;
         stream >> test.umlSettings.alpha.space.upper;
         stream >> test.umlSettings.alpha.space.N;
+    } else if (entryName == name(TestSetting::alphaPrior)) {
+        std::stringstream stream{entry};
+        std::string kind;
+        stream >> kind;
+        if (kind == "linearnorm")
+            test.umlSettings.alpha.priorProbability.kind =
+                PriorProbabilityKind::LinearNorm;
+        stream >> test.umlSettings.alpha.priorProbability.mu;
+        stream >> test.umlSettings.alpha.priorProbability.sigma;
     } else if (entryName == name(TestSetting::trials))
         test.trials = integer(entry);
     else
