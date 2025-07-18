@@ -1071,8 +1071,8 @@ OUTPUT_FILE_TEST(writesTrackSettings) {
     second.down = 6;
     second.runCount = 7;
     second.stepSize = 8;
-    test.trackingRule.push_back(first);
-    test.trackingRule.push_back(second);
+    test.levittSettings.trackingRule.push_back(first);
+    test.levittSettings.trackingRule.push_back(second);
     test.thresholdReversals = 9;
     file.write(test);
     assertContainsColonDelimitedEntry(writer, "up", "1 5");

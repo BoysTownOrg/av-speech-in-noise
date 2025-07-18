@@ -183,7 +183,7 @@ static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
     std::vector<int> down;
     std::vector<int> runCounts;
     std::vector<int> stepSizes;
-    for (auto sequence : test.trackingRule) {
+    for (auto sequence : test.levittSettings.trackingRule) {
         up.push_back(sequence.up);
         down.push_back(sequence.down);
         runCounts.push_back(sequence.runCount);

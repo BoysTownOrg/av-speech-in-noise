@@ -545,8 +545,9 @@ ADAPTIVE_METHOD_TEST(initializeCreatesSnrTrackForEachList) {
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithTargetLevelRule) {
     initialize(method, test, targetListReader, snrTrackFactory);
-    forEachSettings(snrTrackFactory,
-        [&](auto s) { assertTargetLevelRuleEquals(test.trackingRule, s); });
+    forEachSettings(snrTrackFactory, [&](auto s) {
+        assertTargetLevelRuleEquals(test.levittSettings.trackingRule, s);
+    });
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithSnr) {

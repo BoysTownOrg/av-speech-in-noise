@@ -28,7 +28,7 @@ static auto vectorOfInts(const std::string &s) -> std::vector<int> {
 }
 
 static auto trackingRule(AdaptiveTest &test) -> TrackingRule & {
-    return test.trackingRule;
+    return test.levittSettings.trackingRule;
 }
 
 static void resizeTrackingRuleEnough(
@@ -220,7 +220,7 @@ static void assign(AdaptiveTest &test, const std::string &entryName,
     else if (entryName == name(TestSetting::lambdaPrior))
         initializeParameterPrior(test.umlSettings.lambda, entry);
     else if (entryName == name(TestSetting::trials))
-        test.trials = integer(entry);
+        test.umlSettings.trials = integer(entry);
     else
         assign(static_cast<Test &>(test), entryName, entry);
 }

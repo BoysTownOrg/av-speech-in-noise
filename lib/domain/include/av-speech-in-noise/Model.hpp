@@ -196,6 +196,11 @@ struct UmlSettings {
         {{}, {}, PriorProbabilityKind::Flat}};
     PhiParameterSetting lambda{{0.02, 0.2, 11, ParameterSpace::Linear},
         {{}, {}, PriorProbabilityKind::Flat}};
+    int trials{};
+};
+
+struct LevittSettings {
+    TrackingRule trackingRule;
 };
 
 struct RealLevelDifference {
@@ -212,13 +217,12 @@ struct FloatSNR {
 
 struct AdaptiveTest : Test {
     UmlSettings umlSettings;
-    TrackingRule trackingRule;
+    LevittSettings levittSettings;
     SNR startingSnr{};
     SNR ceilingSnr{};
     SNR floorSnr{};
     int trackBumpLimit{};
     int thresholdReversals{};
-    int trials{};
     bool uml{false};
 };
 

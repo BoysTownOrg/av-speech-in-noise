@@ -38,13 +38,13 @@ static auto fileName(ResponseEvaluator &evaluator, const LocalUrl &target)
 static auto trackSettings(const AdaptiveTest &test) -> AdaptiveTrack::Settings {
     AdaptiveTrack::Settings trackSettings{};
     trackSettings.umlSettings = test.umlSettings;
-    trackSettings.rule = &test.trackingRule;
+    trackSettings.trials = test.umlSettings.trials;
+    trackSettings.rule = &test.levittSettings.trackingRule;
     trackSettings.ceiling = test.ceilingSnr.dB;
     trackSettings.startingX = test.startingSnr.dB;
     trackSettings.floor = test.floorSnr.dB;
     trackSettings.bumpLimit = test.trackBumpLimit;
     trackSettings.thresholdReversals = test.thresholdReversals;
-    trackSettings.trials = test.trials;
     return trackSettings;
 }
 

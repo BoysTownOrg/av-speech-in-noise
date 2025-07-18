@@ -1109,7 +1109,7 @@ TEST_SETTINGS_INTERPRETER_TEST(oneSequence) {
             entryWithNewline(TestSetting::down, "2"),
             entryWithNewline(TestSetting::reversalsPerStepSize, "3"),
             entryWithNewline(TestSetting::stepSizes, "4")});
-    assertEqual({sequence}, adaptiveMethod.test.trackingRule);
+    assertEqual({sequence}, adaptiveMethod.test.levittSettings.trackingRule);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
@@ -1129,7 +1129,8 @@ TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
             entryWithNewline(TestSetting::down, "3 4"),
             entryWithNewline(TestSetting::reversalsPerStepSize, "5 6"),
             entryWithNewline(TestSetting::stepSizes, "7 8")});
-    assertEqual({first, second}, adaptiveMethod.test.trackingRule);
+    assertEqual(
+        {first, second}, adaptiveMethod.test.levittSettings.trackingRule);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(umlSettings) {
