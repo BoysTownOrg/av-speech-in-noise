@@ -93,8 +93,6 @@ class FlatPrior : public PriorProbability {
         -> std::vector<double> override;
 };
 
-auto exampleLogisticConfiguration() -> PosteriorDistributions;
-
 class MeanPhi : public PhiComputer {
   public:
     auto operator()(const UpdatedMaximumLikelihood &) const -> Phi override;

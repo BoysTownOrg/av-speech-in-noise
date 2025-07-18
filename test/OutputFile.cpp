@@ -337,7 +337,7 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
         trial.snr.dB = 11.1;
         trial.target = "a";
         trial.reversals = 22;
-        trial.phi = std::make_optional<Phi>({1.2, 2.3, 3.4, 4.5});
+        trial.phi = Phi{1.2, 2.3, 3.4, 4.5};
     }
 
     void assertContainsCommaDelimitedTrialOnLine(

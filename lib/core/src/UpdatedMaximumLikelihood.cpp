@@ -5,7 +5,6 @@
 #include <functional>
 #include <memory>
 #include <numeric>
-#include <optional>
 #include <stdexcept>
 #include <vector>
 
@@ -412,8 +411,7 @@ auto UpdatedMaximumLikelihood::sweetPoints() const -> std::vector<double> {
 }
 
 auto UpdatedMaximumLikelihood::phi() -> std::optional<Phi> {
-    return std::make_optional<Phi>(
-        Phi{_phi.alpha, _phi.beta, _phi.gamma, _phi.lambda});
+    return Phi{_phi.alpha, _phi.beta, _phi.gamma, _phi.lambda};
 }
 
 auto UpdatedMaximumLikelihood::x() -> double { return _x; }
@@ -464,13 +462,6 @@ auto MeanPhi::operator()(const UpdatedMaximumLikelihood &uml) const -> Phi {
         lambdaEstimate += normalizedPosterior[i] * uml.lambdaSpace(i);
     }
     return {alphaEstimate, betaEstimate, gammaEstimate, lambdaEstimate};
-}
-
-auto exampleLogisticConfiguration() -> PosteriorDistributions {
-    return {{linspace(-30, 30, 61), LinearNormPrior(0, 10)},
-        {logspace(0.1, 10, 41), LogNormPrior(-0.5, 0.4)},
-        {linspace(0.02, 0.2, 11), FlatPrior()},
-        {linspace(0.02, 0.2, 11), FlatPrior()}};
 }
 
 static auto makePriorProbability(PriorProbabilitySetting s)

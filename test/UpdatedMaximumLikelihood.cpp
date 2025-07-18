@@ -3,7 +3,6 @@
 #include <av-speech-in-noise/core/UpdatedMaximumLikelihood.hpp>
 
 #include <gtest/gtest.h>
-#include <optional>
 
 namespace av_speech_in_noise {
 class LogisticPsychometricFunctionTester : public ::testing::Test {};
@@ -53,6 +52,13 @@ TEST_F(LogisticSweetPointTester, testSimpleParameters) {
 }
 
 class UpdatedMaximumLikelihoodTester : public ::testing::Test {};
+
+auto exampleLogisticConfiguration() -> PosteriorDistributions {
+    return {{linspace(-30, 30, 61), LinearNormPrior(0, 10)},
+        {logspace(0.1, 10, 41), LogNormPrior(-0.5, 0.4)},
+        {linspace(0.02, 0.2, 11), FlatPrior()},
+        {linspace(0.02, 0.2, 11), FlatPrior()}};
+}
 
 TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiDownOnly) {
     TrackSpecifications track{};
