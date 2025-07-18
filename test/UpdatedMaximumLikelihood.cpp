@@ -3,6 +3,7 @@
 #include <av-speech-in-noise/core/UpdatedMaximumLikelihood.hpp>
 
 #include <gtest/gtest.h>
+#include <optional>
 
 namespace av_speech_in_noise {
 class LogisticPsychometricFunctionTester : public ::testing::Test {};
@@ -111,7 +112,8 @@ TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiAlternating) {
     UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(uml.sweetPoints().empty());
     uml.up();
-    assertEqual(uml.phi(),
+    const auto phi{*uml.phi()};
+    assertEqual({phi.alpha, phi.beta, phi.gamma, phi.lambda},
         {0.935279300498662, 0.501739472594823, 0.109708801753186,
             0.137098486912143},
         1e-13);
@@ -150,7 +152,8 @@ TEST_F(UpdatedMaximumLikelihoodTester,
     uml.down();
     uml.reset();
     uml.up();
-    assertEqual(uml.phi(),
+    const auto phi{*uml.phi()};
+    assertEqual({phi.alpha, phi.beta, phi.gamma, phi.lambda},
         {0.935279300498662, 0.501739472594823, 0.109708801753186,
             0.137098486912143},
         1e-13);

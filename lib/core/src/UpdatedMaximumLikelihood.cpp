@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <stdexcept>
 #include <vector>
 
@@ -410,8 +411,9 @@ auto UpdatedMaximumLikelihood::sweetPoints() const -> std::vector<double> {
     return _sweetPoint;
 }
 
-auto UpdatedMaximumLikelihood::phi() const -> std::vector<double> {
-    return {_phi.alpha, _phi.beta, _phi.gamma, _phi.lambda};
+auto UpdatedMaximumLikelihood::phi() -> std::optional<Phi> {
+    return std::make_optional<Phi>(
+        {_phi.alpha, _phi.beta, _phi.gamma, _phi.lambda});
 }
 
 auto UpdatedMaximumLikelihood::x() -> double { return _x; }

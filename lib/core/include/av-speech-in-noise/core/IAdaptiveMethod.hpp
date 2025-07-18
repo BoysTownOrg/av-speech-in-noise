@@ -6,6 +6,7 @@
 #include "av-speech-in-noise/Model.hpp"
 
 #include <limits>
+#include <optional>
 #include <vector>
 #include <memory>
 
@@ -40,6 +41,7 @@ class AdaptiveTrack {
     virtual auto reversals() -> int = 0;
     virtual void reset() = 0;
     virtual auto result() -> std::variant<Threshold, Phi> = 0;
+    virtual auto phi() -> std::optional<Phi> { return {}; }
 
     class Factory {
       public:

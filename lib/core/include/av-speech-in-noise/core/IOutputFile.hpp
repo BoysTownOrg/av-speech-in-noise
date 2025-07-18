@@ -8,6 +8,7 @@
 
 #include <exception>
 #include <filesystem>
+#include <optional>
 #include <ostream>
 #include <string>
 
@@ -17,6 +18,7 @@ struct Target {
 };
 
 struct AdaptiveProgress {
+    std::optional<Phi> phi;
     FloatSNR snr{};
     int reversals{};
 };

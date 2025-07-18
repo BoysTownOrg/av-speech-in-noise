@@ -133,7 +133,7 @@ class UpdatedMaximumLikelihood : public AdaptiveTrack {
     auto x() -> double override;
     auto reversals() -> int override;
     auto sweetPoints() const -> std::vector<double>;
-    auto phi() const -> std::vector<double>;
+    auto phi() -> std::optional<Phi> override;
     auto posterior() const -> const std::vector<double> & {
         return _posterior;
     };
