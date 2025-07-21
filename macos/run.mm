@@ -240,21 +240,25 @@ class KeyPressUI : public submitting_keypress::Control,
     NSEvent *lastPressEvent;
 };
 
-static auto make(const UmlSettings &specific, const AdaptiveTrack::Settings &s)
+auto make(const UmlSettings &specific, const AdaptiveTrack::Settings &s)
     -> std::shared_ptr<AdaptiveTrack> {
     return std::make_shared<UpdatedMaximumLikelihood>(specific, s);
 }
 
-static auto make(const LevittSettings &specific,
-    const AdaptiveTrack::Settings &s) -> std::shared_ptr<AdaptiveTrack> {
+auto make(const LevittSettings &specific, const AdaptiveTrack::Settings &s)
+    -> std::shared_ptr<AdaptiveTrack> {
     return std::make_shared<LevittTrack>(specific, s);
 }
 
 class AdaptiveTrackFactory : public AdaptiveTrack::Factory {
     auto make(const std::variant<UmlSettings, LevittSettings> &specific,
-        const Settings &s) -> std::shared_ptr<AdaptiveTrack> override {
+        const AdaptiveTrack::Settings &s)
+        -> std::shared_ptr<AdaptiveTrack> override {
         return std::visit(
-            [&s](const auto &specific) { return make(specific, s); }, specific);
+            [&s](const auto &specific) {
+                return av_speech_in_noise::make(specific, s);
+            },
+            specific);
     }
 };
 }
@@ -294,8 +298,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
     static OutputFileImpl outputFile{fileWriter, outputFilePath};
     NSLog(@"Initializing adaptive method...");
-    static LevittTrack::Factory levittTrackFactory;
-    static UpdatedMaximumLikelihood::Factory umlTrackFactory;
+    static AdaptiveTrackFactory adaptiveTrackFactory;
     static ResponseEvaluatorImpl responseEvaluator;
     static TextFileReaderImpl textFileReader;
     static MersenneTwisterRandomizer randomizer;
@@ -545,14 +548,13 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         adaptiveMethod, fixedLevelMethod, eyeTracking, audioRecording,
         cyclicTargetsReader, targetsWithReplacementReader,
         predeterminedTargetPlaylist, everyTargetOnce, silentIntervalTargets,
-        allTargetsNTimes, targetsWithReplacement, levittTrackFactory,
-        umlTrackFactory, revealImagePuzzle, freeResponseController,
-        sessionController, coordinateResponseMeasurePresenter,
-        freeResponsePresenter, chooseKeywordsPresenter, syllablesPresenter,
-        correctKeywordsPresenter, consonantPresenter,
-        submittingConsonantInteractor, passFailPresenter, keypressPresenter,
-        submittingKeyPressInteractor, emotionPresenter, childEmotionPresenter,
-        fixedPassFailPresenter};
+        allTargetsNTimes, targetsWithReplacement, adaptiveTrackFactory,
+        revealImagePuzzle, freeResponseController, sessionController,
+        coordinateResponseMeasurePresenter, freeResponsePresenter,
+        chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
+        consonantPresenter, submittingConsonantInteractor, passFailPresenter,
+        keypressPresenter, submittingKeyPressInteractor, emotionPresenter,
+        childEmotionPresenter, fixedPassFailPresenter};
     static TestSetupController testSetupController{*testSetupUI, sessionUI,
         testSetupPresenter, runningATest, testSettingsInterpreter,
         textFileReader};
