@@ -1,5 +1,6 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/OutputFile.hpp>
@@ -8,6 +9,7 @@
 
 #include <gsl/gsl>
 
+#include <optional>
 #include <vector>
 #include <map>
 #include <iostream>
@@ -336,6 +338,7 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
         trial.snr.dB = 11.1;
         trial.target = "a";
         trial.reversals = 22;
+        trial.phi = Phi{1.2, 2.3, 3.4, 4.5};
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
@@ -346,6 +349,8 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
             writer, "a", at(headingLabels_, HeadingItem::target), line);
         assertNthCommaDelimitedEntryOfLine(
             writer, "22", at(headingLabels_, HeadingItem::reversals), line);
+        assertNthCommaDelimitedEntryOfLine(writer, "1.2 2.3 3.4 4.5",
+            at(headingLabels_, HeadingItem::phi), line);
     }
 
     void incorrect() override { trial.correct = false; }
@@ -366,7 +371,7 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
     open_set::AdaptiveTrial trial{};
     std::map<HeadingItem, gsl::index> headingLabels_{{HeadingItem::snr_dB, 1},
         {HeadingItem::target, 2}, {HeadingItem::evaluation, 3},
-        {HeadingItem::reversals, 4}};
+        {HeadingItem::reversals, 4}, {HeadingItem::phi, 5}};
 };
 
 class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
@@ -1055,7 +1060,7 @@ OUTPUT_FILE_TEST(writeCommonAdaptiveTest) {
     assertCommonTestWritten(writingAdaptiveTest);
 }
 
-OUTPUT_FILE_TEST(writesTrackSettings) {
+OUTPUT_FILE_TEST(writesLevittTrackSettings) {
     AdaptiveTest test;
     TrackingSequence first;
     first.up = 1;
@@ -1067,8 +1072,10 @@ OUTPUT_FILE_TEST(writesTrackSettings) {
     second.down = 6;
     second.runCount = 7;
     second.stepSize = 8;
-    test.trackingRule.push_back(first);
-    test.trackingRule.push_back(second);
+    LevittSettings levittSettings;
+    levittSettings.trackingRule.push_back(first);
+    levittSettings.trackingRule.push_back(second);
+    test.trackSettings = levittSettings;
     test.thresholdReversals = 9;
     file.write(test);
     assertContainsColonDelimitedEntry(writer, "up", "1 5");
@@ -1076,6 +1083,43 @@ OUTPUT_FILE_TEST(writesTrackSettings) {
     assertContainsColonDelimitedEntry(writer, "reversals per step size", "3 7");
     assertContainsColonDelimitedEntry(writer, "step sizes (dB)", "4 8");
     assertContainsColonDelimitedEntry(writer, "threshold reversals", "9");
+    assertEndsWith(writer, "\n\n");
+}
+
+OUTPUT_FILE_TEST(writesUmlTrackSettings) {
+    AdaptiveTest test;
+    UmlSettings settings;
+    settings.alpha.space.space = ParameterSpace::Linear;
+    settings.alpha.space.lower = -12.3;
+    settings.alpha.space.upper = 45.6;
+    settings.alpha.space.N = 7;
+    settings.beta.space.space = ParameterSpace::Log;
+    settings.beta.space.lower = -2.3;
+    settings.beta.space.upper = 5.6;
+    settings.beta.space.N = 70;
+    settings.alpha.priorProbability.kind = PriorProbabilityKind::LinearNorm;
+    settings.alpha.priorProbability.mu = 1.2;
+    settings.alpha.priorProbability.sigma = 3.4;
+    settings.beta.priorProbability.kind = PriorProbabilityKind::LogNorm;
+    settings.beta.priorProbability.mu = 1.01;
+    settings.beta.priorProbability.sigma = 2.02;
+    settings.gamma.priorProbability.kind = PriorProbabilityKind::Flat;
+    settings.up = 42;
+    settings.down = 64;
+    settings.trials = 123;
+    test.trackSettings = settings;
+    file.write(test);
+    assertContainsColonDelimitedEntry(
+        writer, "alpha space", "linear -12.3 45.6 7");
+    assertContainsColonDelimitedEntry(writer, "beta space", "log -2.3 5.6 70");
+    assertContainsColonDelimitedEntry(
+        writer, "alpha prior", "linearnorm 1.2 3.4");
+    assertContainsColonDelimitedEntry(
+        writer, "beta prior", "lognorm 1.01 2.02");
+    assertContainsColonDelimitedEntry(writer, "gamma prior", "flat");
+    assertContainsColonDelimitedEntry(writer, "up", "42");
+    assertContainsColonDelimitedEntry(writer, "down", "64");
+    assertContainsColonDelimitedEntry(writer, "trials", "123");
     assertEndsWith(writer, "\n\n");
 }
 

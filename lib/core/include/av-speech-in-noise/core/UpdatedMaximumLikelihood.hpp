@@ -3,7 +3,7 @@
 
 #include "IAdaptiveMethod.hpp"
 #include <av-speech-in-noise/Interface.hpp>
-#include <memory>
+#include <cstdint>
 #include <vector>
 
 namespace av_speech_in_noise {
@@ -53,34 +53,16 @@ struct PosteriorDistributions {
 };
 
 struct TrackSpecifications {
-    int down;
-    int up;
     int trials;
     double startingX;
     double upperBound;
     double lowerBound;
 };
 
-enum class TrackDirection { up, down, undefined };
+enum class TrackDirection : std::uint8_t { up, down, undefined };
 
-class ParameterSpacer {
-  public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(ParameterSpacer);
-    virtual auto operator()(double lower, double upper, std::size_t N)
-        -> std::vector<double> = 0;
-};
-
-class LinearSpacer : public ParameterSpacer {
-  public:
-    auto operator()(double lower, double upper, std::size_t N)
-        -> std::vector<double> override;
-};
-
-class LogSpacer : public ParameterSpacer {
-  public:
-    auto operator()(double lower, double upper, std::size_t N)
-        -> std::vector<double> override;
-};
+auto linspace(double x1, double x2, std::size_t N) -> std::vector<double>;
+auto logspace(double x1, double x2, std::size_t N) -> std::vector<double>;
 
 class LinearNormPrior : public PriorProbability {
     const double mu;
@@ -108,8 +90,6 @@ class FlatPrior : public PriorProbability {
         -> std::vector<double> override;
 };
 
-auto exampleLogisticConfiguration() -> PosteriorDistributions;
-
 class MeanPhi : public PhiComputer {
   public:
     auto operator()(const UpdatedMaximumLikelihood &) const -> Phi override;
@@ -118,17 +98,16 @@ class MeanPhi : public PhiComputer {
 class UpdatedMaximumLikelihood : public AdaptiveTrack {
     const PosteriorDistributions posteriorDistributions;
     TrackSpecifications trackSpecifications;
+    LogisticPsychometricFunction psychometricFunction;
+    MeanPhi phiComputer;
     std::vector<double> _posterior;
     std::vector<std::size_t> sweetPointIndeces;
     std::vector<double> _sweetPoint;
     std::vector<double> _reversalXs;
     Phi _phi;
     // Order important for construction
-    PsychometricFunction &psychometricFunction;
-    PhiComputer &phiComputer;
+    // ^ why??
     double _x;
-    const double lowerBound;
-    const double upperBound;
     const int down_;
     const int up_;
     int consecutiveDown;
@@ -139,16 +118,14 @@ class UpdatedMaximumLikelihood : public AdaptiveTrack {
     int _reversals;
 
   public:
-    UpdatedMaximumLikelihood(const PosteriorDistributions &distributions,
-        PsychometricFunction &psychometricFunction, PhiComputer &phiComputer,
-        TrackSpecifications trackSpecifications);
+    UpdatedMaximumLikelihood(const UmlSettings &, const Settings &);
     void down() override;
     void up() override;
     void reset() override;
     auto x() -> double override;
     auto reversals() -> int override;
     auto sweetPoints() const -> std::vector<double>;
-    auto phi() const -> std::vector<double>;
+    auto phi() -> std::optional<Phi> override;
     auto posterior() const -> const std::vector<double> & {
         return _posterior;
     };
@@ -156,29 +133,8 @@ class UpdatedMaximumLikelihood : public AdaptiveTrack {
     auto betaSpace(size_t index) const -> const double &;
     auto gammaSpace(size_t index) const -> const double &;
     auto lambdaSpace(size_t index) const -> const double &;
-    auto reversalXs() const -> std::vector<double>;
     auto complete() -> bool override;
     auto result() -> std::variant<Threshold, Phi> override { return _phi; }
-
-    class Factory : public AdaptiveTrack::Factory {
-      public:
-        auto make(const Settings &s)
-            -> std::shared_ptr<AdaptiveTrack> override {
-            TrackSpecifications specs{};
-            specs.down = 2;
-            specs.up = 1;
-            specs.trials = s.trials;
-            specs.startingX = s.startingX;
-            specs.lowerBound = s.floor;
-            specs.upperBound = s.ceiling;
-            return std::make_shared<UpdatedMaximumLikelihood>(
-                exampleLogisticConfiguration(), pf, pc, specs);
-        }
-
-      private:
-        LogisticPsychometricFunction pf;
-        MeanPhi pc;
-    };
 
   private:
     void addToPosteriorAndShiftByMax(const std::vector<double> &result);

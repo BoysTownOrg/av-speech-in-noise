@@ -15,7 +15,8 @@ static auto incomplete(const TargetPlaylistWithTrack &t) -> bool {
     return !complete(t);
 }
 
-static void assignReversals(AdaptiveProgress &trial, AdaptiveTrack *track) {
+static void assignProgress(AdaptiveProgress &trial, AdaptiveTrack *track) {
+    trial.phi = track->phi();
     trial.reversals = track->reversals();
 }
 
@@ -36,13 +37,11 @@ static auto fileName(ResponseEvaluator &evaluator, const LocalUrl &target)
 
 static auto trackSettings(const AdaptiveTest &test) -> AdaptiveTrack::Settings {
     AdaptiveTrack::Settings trackSettings{};
-    trackSettings.rule = &test.trackingRule;
     trackSettings.ceiling = test.ceilingSnr.dB;
     trackSettings.startingX = test.startingSnr.dB;
     trackSettings.floor = test.floorSnr.dB;
     trackSettings.bumpLimit = test.trackBumpLimit;
     trackSettings.thresholdReversals = test.thresholdReversals;
-    trackSettings.trials = test.trials;
     return trackSettings;
 }
 
@@ -97,7 +96,7 @@ void AdaptiveMethodImpl::initialize(const AdaptiveTest &t,
     targetListsWithTracks.clear();
     for (const auto &list : targetListSetReader->read(t.targetsUrl))
         targetListsWithTracks.push_back(
-            {list, factory->make(trackSettings(t))});
+            {list, factory->make(t.trackSettings, trackSettings(t))});
     selectNextList();
 }
 
@@ -150,7 +149,7 @@ void AdaptiveMethodImpl::submit(
         down(snrTrack);
     else
         up(snrTrack);
-    assignReversals(lastCoordinateResponseMeasureTrial, snrTrack);
+    assignProgress(lastCoordinateResponseMeasureTrial, snrTrack);
     selectNextList();
 }
 
@@ -160,7 +159,7 @@ void AdaptiveMethodImpl::submitIncorrectResponse() {
     assignTarget(lastOpenSetTrial, evaluator, targetList);
 
     up(snrTrack);
-    assignReversals(lastOpenSetTrial, snrTrack);
+    assignProgress(lastOpenSetTrial, snrTrack);
     selectNextList();
 }
 
@@ -170,7 +169,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     assignTarget(lastOpenSetTrial, evaluator, targetList);
 
     down(snrTrack);
-    assignReversals(lastOpenSetTrial, snrTrack);
+    assignProgress(lastOpenSetTrial, snrTrack);
     selectNextList();
 }
 
@@ -184,7 +183,7 @@ void AdaptiveMethodImpl::submit(const CorrectKeywords &p) {
         down(snrTrack);
     else
         up(snrTrack);
-    assignReversals(lastCorrectKeywordsTrial, snrTrack);
+    assignProgress(lastCorrectKeywordsTrial, snrTrack);
     selectNextList();
 }
 

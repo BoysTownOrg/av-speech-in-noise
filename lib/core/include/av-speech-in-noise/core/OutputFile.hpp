@@ -17,6 +17,7 @@ enum class HeadingItem {
     subjectColor,
     evaluation,
     reversals,
+    phi,
     target,
     correctKeywords,
     freeResponse,
@@ -125,6 +126,8 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "valid left gaze origin relative tracker";
     case HeadingItem::rightGazeOriginRelativeTrackerIsValid:
         return "valid right gaze origin relative tracker";
+    case HeadingItem::phi:
+        return "phi";
     }
 }
 

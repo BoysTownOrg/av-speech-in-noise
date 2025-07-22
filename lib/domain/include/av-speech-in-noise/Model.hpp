@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_DOMAIN_INCLUDE_AVSPEECHINNOISE_MODELHPP_
 #define AV_SPEECH_IN_NOISE_LIB_DOMAIN_INCLUDE_AVSPEECHINNOISE_MODELHPP_
 
+#include <cstddef>
 #include <ostream>
 #include <string>
 #include <variant>
@@ -9,7 +10,7 @@
 
 namespace av_speech_in_noise {
 namespace coordinate_response_measure {
-enum class Color { green, red, blue, white, unknown };
+enum class Color : std::uint8_t { green, red, blue, white, unknown };
 
 struct Response {
     int number{};
@@ -50,7 +51,7 @@ struct TestIdentity {
     LocalUrl relativeOutputUrl;
 };
 
-enum class Consonant {
+enum class Consonant : std::uint8_t {
     bi,
     si,
     di,
@@ -73,7 +74,7 @@ struct ConsonantResponse {
     double seconds{};
 };
 
-enum class Emotion {
+enum class Emotion : std::uint8_t {
     angry,
     disgusted,
     happy,
@@ -89,14 +90,14 @@ struct EmotionResponse : Flaggable {
     double reactionTimeMilliseconds{};
 };
 
-enum class KeyPressed { first, second, unknown };
+enum class KeyPressed : std::uint8_t { first, second, unknown };
 
 struct KeyPressResponse : Flaggable {
     KeyPressed key{KeyPressed::unknown};
     double seconds{};
 };
 
-enum class Syllable {
+enum class Syllable : std::uint8_t {
     bi,
     di,
     dji,
@@ -125,13 +126,17 @@ struct SyllableResponse : Flaggable {
     Syllable syllable{};
 };
 
-enum class Condition { auditoryOnly, audioVisual };
+enum class Condition : std::uint8_t { auditoryOnly, audioVisual };
 
 struct RealLevel {
     int dB_SPL{};
 };
 
-enum class AudioChannelOption { all, singleSpeaker, delayedMasker };
+enum class AudioChannelOption : std::uint8_t {
+    all,
+    singleSpeaker,
+    delayedMasker
+};
 
 struct RationalNumber {
     int numerator;
@@ -160,6 +165,46 @@ struct TrackingSequence {
 
 using TrackingRule = typename std::vector<TrackingSequence>;
 
+enum class PriorProbabilityKind : std::uint8_t { LinearNorm, LogNorm, Flat };
+
+enum class ParameterSpace : std::uint8_t { Linear, Log };
+
+struct PriorProbabilitySetting {
+    double mu;
+    double sigma;
+    PriorProbabilityKind kind;
+};
+
+struct ParameterSpaceSetting {
+    double lower;
+    double upper;
+    std::size_t N;
+    ParameterSpace space;
+};
+
+struct PhiParameterSetting {
+    ParameterSpaceSetting space;
+    PriorProbabilitySetting priorProbability;
+};
+
+struct UmlSettings {
+    PhiParameterSetting alpha{{-30, 30, 61, ParameterSpace::Linear},
+        {0, 10, PriorProbabilityKind::LinearNorm}};
+    PhiParameterSetting beta{{0.1, 10, 41, ParameterSpace::Log},
+        {-0.5, 0.4, PriorProbabilityKind::LogNorm}};
+    PhiParameterSetting gamma{{0.02, 0.2, 11, ParameterSpace::Linear},
+        {{}, {}, PriorProbabilityKind::Flat}};
+    PhiParameterSetting lambda{{0.02, 0.2, 11, ParameterSpace::Linear},
+        {{}, {}, PriorProbabilityKind::Flat}};
+    int up{1};
+    int down{2};
+    int trials{};
+};
+
+struct LevittSettings {
+    TrackingRule trackingRule;
+};
+
 struct RealLevelDifference {
     int dB;
 };
@@ -173,13 +218,12 @@ struct FloatSNR {
 };
 
 struct AdaptiveTest : Test {
-    TrackingRule trackingRule;
+    std::variant<UmlSettings, LevittSettings> trackSettings;
     SNR startingSnr{};
     SNR ceilingSnr{};
     SNR floorSnr{};
     int trackBumpLimit{};
     int thresholdReversals{};
-    int trials{};
     bool uml{false};
 };
 

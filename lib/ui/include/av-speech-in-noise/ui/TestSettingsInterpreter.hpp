@@ -9,9 +9,10 @@
 #include <av-speech-in-noise/core/IFixedLevelMethod.hpp>
 #include <av-speech-in-noise/core/IRunningATest.hpp>
 #include <av-speech-in-noise/core/TargetPlaylist.hpp>
+#include <cstdint>
 
 namespace av_speech_in_noise {
-enum class Method {
+enum class Method : std::uint8_t {
     adaptivePassFail, // <-- this one should be first...
     adaptiveCorrectKeywords,
     adaptiveCoordinateResponseMeasure,
@@ -74,7 +75,7 @@ constexpr auto name(Method c) -> const char * {
     }
 }
 
-enum class TestSetting {
+enum class TestSetting : std::uint8_t {
     method,
     targets,
     masker,
@@ -99,7 +100,15 @@ enum class TestSetting {
     keepVideoShown,
     puzzle,
     uml,
-    trials
+    trials,
+    alphaSpace,
+    alphaPrior,
+    betaSpace,
+    betaPrior,
+    gammaSpace,
+    gammaPrior,
+    lambdaSpace,
+    lambdaPrior,
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -154,6 +163,22 @@ constexpr auto name(TestSetting p) -> const char * {
         return "uml";
     case TestSetting::trials:
         return "trials";
+    case TestSetting::alphaSpace:
+        return "alpha space";
+    case TestSetting::alphaPrior:
+        return "alpha prior";
+    case TestSetting::betaSpace:
+        return "beta space";
+    case TestSetting::betaPrior:
+        return "beta prior";
+    case TestSetting::gammaSpace:
+        return "gamma space";
+    case TestSetting::gammaPrior:
+        return "gamma prior";
+    case TestSetting::lambdaSpace:
+        return "lambda space";
+    case TestSetting::lambdaPrior:
+        return "lambda prior";
     }
 }
 
@@ -169,9 +194,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
         RepeatableFiniteTargetPlaylist &eachTargetNTimes,
-        TargetPlaylist &targetsWithReplacement,
-        AdaptiveTrack::Factory &levittTrackFactory,
-        AdaptiveTrack::Factory &umlTrackFactory,
+        TargetPlaylist &targetsWithReplacement, AdaptiveTrack::Factory &,
         submitting_free_response::Puzzle &puzzle,
         FreeResponseController &freeResponseController,
         SessionController &sessionController,
@@ -197,8 +220,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     FixedLevelMethod &fixedLevelMethod;
     RunningATest::TestObserver &eyeTracking;
     RunningATest::TestObserver &audioRecording;
-    AdaptiveTrack::Factory &levittTrackFactory;
-    AdaptiveTrack::Factory &umlTrackFactory;
+    AdaptiveTrack::Factory &adaptiveTrackFactory;
     TargetPlaylistReader &cyclicTargetsReader;
     TargetPlaylistReader &targetsWithReplacementReader;
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets;

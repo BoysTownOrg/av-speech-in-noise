@@ -1,8 +1,10 @@
 #include "TestSettingsInterpreter.hpp"
 #include "SessionController.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <gsl/gsl>
 
+#include <math.h>
 #include <sstream>
 #include <functional>
 #include <stdexcept>
@@ -26,14 +28,14 @@ static auto vectorOfInts(const std::string &s) -> std::vector<int> {
     return v;
 }
 
-static auto trackingRule(AdaptiveTest &test) -> TrackingRule & {
-    return test.trackingRule;
+static auto trackingRule(LevittSettings &s) -> TrackingRule & {
+    return s.trackingRule;
 }
 
 static void resizeTrackingRuleEnough(
-    AdaptiveTest &test, const std::vector<int> &v) {
-    if (trackingRule(test).size() < v.size())
-        trackingRule(test).resize(v.size());
+    LevittSettings &s, const std::vector<int> &v) {
+    if (trackingRule(s).size() < v.size())
+        trackingRule(s).resize(v.size());
 }
 
 static auto up(TrackingSequence &sequence) -> int & { return sequence.up; }
@@ -60,13 +62,13 @@ static auto trim(std::string s) -> std::string {
     return s;
 }
 
-static void assignToEachElementOfTrackingRule(AdaptiveTest &test,
+static void assignToEachElementOfTrackingRule(LevittSettings &s,
     const std::function<int &(TrackingSequence &)> &elementRef,
     const std::string &entry) {
     auto v{vectorOfInts(entry)};
-    resizeTrackingRuleEnough(test, v);
+    resizeTrackingRuleEnough(s, v);
     for (std::size_t i{0}; i < v.size(); ++i)
-        elementRef(trackingRule(test).at(i)) = v.at(i);
+        elementRef(trackingRule(s).at(i)) = v.at(i);
 }
 
 static auto entryName(const std::string &line) -> std::string {
@@ -157,24 +159,70 @@ static void assign(Calibration &calibration, const std::string &entryName,
         calibration.level.dB_SPL = integer(entry);
 }
 
-static void assign(AdaptiveTest &test, const std::string &entryName,
+static void initializeParameterSpace(
+    PhiParameterSetting &s, const std::string &entry) {
+    std::stringstream stream{entry};
+    std::string kind;
+    stream >> kind;
+    if (kind == "linear")
+        s.space.space = ParameterSpace::Linear;
+    else if (kind == "log")
+        s.space.space = ParameterSpace::Log;
+    stream >> s.space.lower;
+    stream >> s.space.upper;
+    stream >> s.space.N;
+}
+
+static void initializeParameterPrior(
+    PhiParameterSetting &s, const std::string &entry) {
+    std::stringstream stream{entry};
+    std::string kind;
+    stream >> kind;
+    if (kind == "linearnorm")
+        s.priorProbability.kind = PriorProbabilityKind::LinearNorm;
+    else if (kind == "lognorm")
+        s.priorProbability.kind = PriorProbabilityKind::LogNorm;
+    else if (kind == "flat")
+        s.priorProbability.kind = PriorProbabilityKind::Flat;
+    stream >> s.priorProbability.mu;
+    stream >> s.priorProbability.sigma;
+}
+
+static void assign(AdaptiveTest &test, UmlSettings &umlSettings,
+    LevittSettings &levittSettings, const std::string &entryName,
     const std::string &entry) {
     if (entryName == name(TestSetting::up))
-        assignToEachElementOfTrackingRule(test, up, entry);
+        assignToEachElementOfTrackingRule(levittSettings, up, entry);
     else if (entryName == name(TestSetting::down))
-        assignToEachElementOfTrackingRule(test, down, entry);
+        assignToEachElementOfTrackingRule(levittSettings, down, entry);
     else if (entryName == name(TestSetting::reversalsPerStepSize))
-        assignToEachElementOfTrackingRule(test, runCount, entry);
+        assignToEachElementOfTrackingRule(levittSettings, runCount, entry);
     else if (entryName == name(TestSetting::stepSizes))
-        assignToEachElementOfTrackingRule(test, stepSize, entry);
+        assignToEachElementOfTrackingRule(levittSettings, stepSize, entry);
     else if (entryName == name(TestSetting::thresholdReversals))
         test.thresholdReversals = integer(entry);
     else if (entryName == name(TestSetting::startingSnr))
         test.startingSnr.dB = integer(entry);
     else if (entryName == name(TestSetting::uml))
         test.uml = boolean(entry);
+    else if (entryName == name(TestSetting::alphaSpace))
+        initializeParameterSpace(umlSettings.alpha, entry);
+    else if (entryName == name(TestSetting::alphaPrior))
+        initializeParameterPrior(umlSettings.alpha, entry);
+    else if (entryName == name(TestSetting::betaSpace))
+        initializeParameterSpace(umlSettings.beta, entry);
+    else if (entryName == name(TestSetting::betaPrior))
+        initializeParameterPrior(umlSettings.beta, entry);
+    else if (entryName == name(TestSetting::gammaSpace))
+        initializeParameterSpace(umlSettings.gamma, entry);
+    else if (entryName == name(TestSetting::gammaPrior))
+        initializeParameterPrior(umlSettings.gamma, entry);
+    else if (entryName == name(TestSetting::lambdaSpace))
+        initializeParameterSpace(umlSettings.lambda, entry);
+    else if (entryName == name(TestSetting::lambdaPrior))
+        initializeParameterPrior(umlSettings.lambda, entry);
     else if (entryName == name(TestSetting::trials))
-        test.trials = integer(entry);
+        umlSettings.trials = integer(entry);
     else
         assign(static_cast<Test &>(test), entryName, entry);
 }
@@ -229,13 +277,16 @@ static auto methodWithName(const std::string &contents)
     throw std::runtime_error{"Test method not found"};
 }
 
-static void initialize(AdaptiveTest &test, const std::string &contents,
+static void initialize(AdaptiveTest &test, UmlSettings &umlSettings,
+    LevittSettings &levittSettings, const std::string &contents,
     const std::string &methodName, const TestIdentity &identity,
     SNR startingSnr) {
     test.identity = identity;
     test.startingSnr = startingSnr;
-    applyToEachEntry([&](const auto &entryName,
-                         const auto &entry) { assign(test, entryName, entry); },
+    applyToEachEntry(
+        [&](const auto &entryName, const auto &entry) {
+            assign(test, umlSettings, levittSettings, entryName, entry);
+        },
         contents);
     test.ceilingSnr = SessionControllerImpl::ceilingSnr;
     test.floorSnr = SessionControllerImpl::floorSnr;
@@ -276,8 +327,14 @@ static void initialize(const std::string &method, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr,
     const std::function<void(AdaptiveTest &)> &f) {
     AdaptiveTest test;
-    av_speech_in_noise::initialize(
-        test, contents, method, identity, startingSnr);
+    UmlSettings umlSettings;
+    LevittSettings levittSettings;
+    av_speech_in_noise::initialize(test, umlSettings, levittSettings, contents,
+        method, identity, startingSnr);
+    if (test.uml)
+        test.trackSettings = umlSettings;
+    else
+        test.trackSettings = levittSettings;
     f(test);
 }
 
@@ -425,7 +482,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         av_speech_in_noise::initialize(methodName, contents, identity,
             startingSnr, [&](const AdaptiveTest &test) {
                 av_speech_in_noise::initialize(adaptiveMethod, test,
-                    cyclicTargetsReader, levittTrackFactory);
+                    cyclicTargetsReader, adaptiveTrackFactory);
                 av_speech_in_noise::initialize(
                     runningATest, adaptiveMethod, test, testObservers);
             });
@@ -436,8 +493,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             startingSnr, [&](AdaptiveTest &test) {
                 test.audioChannelOption = audioChannelOption;
                 av_speech_in_noise::initialize(adaptiveMethod, test,
-                    targetsWithReplacementReader,
-                    test.uml ? umlTrackFactory : levittTrackFactory);
+                    targetsWithReplacementReader, adaptiveTrackFactory);
                 av_speech_in_noise::initialize(
                     runningATest, adaptiveMethod, test, testObservers);
             });
@@ -547,8 +603,7 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
     RepeatableFiniteTargetPlaylist &eachTargetNTimes,
     TargetPlaylist &targetsWithReplacement,
-    AdaptiveTrack::Factory &levittTrackFactory,
-    AdaptiveTrack::Factory &umlTrackFactory,
+    AdaptiveTrack::Factory &adaptiveTrackFactory,
     submitting_free_response::Puzzle &puzzle,
     FreeResponseController &freeResponseController,
     SessionController &sessionController,
@@ -563,8 +618,8 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     TaskPresenter &fixedPassFailPresenter)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
       fixedLevelMethod{fixedLevelMethod}, eyeTracking{eyeTracking},
-      audioRecording{audioRecording}, levittTrackFactory{levittTrackFactory},
-      umlTrackFactory{umlTrackFactory},
+      audioRecording{audioRecording},
+      adaptiveTrackFactory{adaptiveTrackFactory},
       cyclicTargetsReader{cyclicTargetsReader},
       targetsWithReplacementReader{targetsWithReplacementReader},
       predeterminedTargets{predeterminedTargets},

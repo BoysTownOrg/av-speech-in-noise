@@ -1,10 +1,13 @@
 #include "UpdatedMaximumLikelihood.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <algorithm>
 #include <cmath>
 #include <functional>
+#include <memory>
 #include <numeric>
 #include <stdexcept>
+#include <vector>
 
 namespace av_speech_in_noise {
 template <class UnaryOperator>
@@ -14,8 +17,7 @@ static auto transform(std::vector<double> v, UnaryOperator f)
     return v;
 }
 
-static auto linspace(double x1, double x2, std::size_t N)
-    -> std::vector<double> {
+auto linspace(double x1, double x2, std::size_t N) -> std::vector<double> {
     if (N <= 0)
         return {};
     if (N == 1)
@@ -31,10 +33,9 @@ static auto linspace(double x1, double x2, std::size_t N)
     return x;
 }
 
-static auto logspace(double x1, double x2, std::size_t N)
-    -> std::vector<double> {
-    return transform(
-        linspace(x1, x2, N), [](double x) { return std::pow(10, x); });
+auto logspace(double x1, double x2, std::size_t N) -> std::vector<double> {
+    return transform(linspace(std::log10(x1), std::log10(x2), N),
+        [](double x) { return std::pow(10, x); });
 }
 
 static auto normpdf(std::vector<double> x, double mu, double sigma)
@@ -250,22 +251,50 @@ static auto logNormalizedSum(std::vector<double> v) -> std::vector<double> {
     return transform(v, [sum](double x) { return std::log(x / sum); });
 }
 
+static auto makePriorProbability(PriorProbabilitySetting s)
+    -> std::unique_ptr<PriorProbability> {
+    switch (s.kind) {
+    case PriorProbabilityKind::LinearNorm:
+        return std::make_unique<LinearNormPrior>(s.mu, s.sigma);
+    case PriorProbabilityKind::LogNorm:
+        return std::make_unique<LogNormPrior>(s.mu, s.sigma);
+    case PriorProbabilityKind::Flat:
+        return std::make_unique<FlatPrior>();
+    }
+}
+
+static auto makeParameterSpace(ParameterSpaceSetting s) -> std::vector<double> {
+    switch (s.space) {
+    case ParameterSpace::Linear:
+        return linspace(s.lower, s.upper, s.N);
+    case ParameterSpace::Log:
+        return logspace(s.lower, s.upper, s.N);
+    }
+}
+
 UpdatedMaximumLikelihood::UpdatedMaximumLikelihood(
-    const PosteriorDistributions &distributions,
-    PsychometricFunction &psychometricFunction, PhiComputer &phiComputer,
-    TrackSpecifications trackSpecifications)
-    : posteriorDistributions{distributions},
-      trackSpecifications{trackSpecifications}, _phi{},
-      psychometricFunction(psychometricFunction), phiComputer(phiComputer),
-      _x(trackSpecifications.startingX),
-      lowerBound(trackSpecifications.lowerBound),
-      upperBound(trackSpecifications.upperBound),
-      down_(trackSpecifications.down), up_(trackSpecifications.up),
-      consecutiveDown(0), consecutiveUp(0),
-      trackDirection(TrackDirection::undefined), _reversals(0) {
-    if (distributions.lambda.prior.empty() ||
-        distributions.gamma.prior.empty() || distributions.beta.prior.empty() ||
-        distributions.alpha.prior.empty())
+    const UmlSettings &umlSettings, const Settings &settings)
+    : posteriorDistributions{{makeParameterSpace(umlSettings.alpha.space),
+                                 *makePriorProbability(
+                                     umlSettings.alpha.priorProbability)},
+          {makeParameterSpace(umlSettings.beta.space),
+              *makePriorProbability(umlSettings.beta.priorProbability)},
+          {makeParameterSpace(umlSettings.gamma.space),
+              *makePriorProbability(umlSettings.gamma.priorProbability)},
+          {makeParameterSpace(umlSettings.lambda.space),
+              *makePriorProbability(umlSettings.lambda.priorProbability)}},
+      _phi{}, down_{umlSettings.down}, up_{umlSettings.up}, consecutiveDown(0),
+      consecutiveUp(0), trackDirection(TrackDirection::undefined),
+      _reversals(0) {
+    trackSpecifications.trials = umlSettings.trials;
+    trackSpecifications.startingX = settings.startingX;
+    trackSpecifications.lowerBound = settings.floor;
+    trackSpecifications.upperBound = settings.ceiling;
+
+    if (posteriorDistributions.lambda.prior.empty() ||
+        posteriorDistributions.gamma.prior.empty() ||
+        posteriorDistributions.beta.prior.empty() ||
+        posteriorDistributions.alpha.prior.empty())
         throw std::runtime_error("Empty parameter space passed.");
     if (posteriorDistributions.alpha.space.size() > 1)
         sweetPointIndeces.push_back(2);
@@ -295,7 +324,9 @@ void UpdatedMaximumLikelihood::reset() {
                 for (const auto a : posteriorDistributions.alpha.prior)
                     _posterior.push_back(a * b * g * l);
     _posterior = logNormalizedSum(std::move(_posterior));
-    xCandidateIndex = (_x < (lowerBound + upperBound) / 2)
+    xCandidateIndex = (_x < (trackSpecifications.lowerBound +
+                                trackSpecifications.upperBound) /
+                              2)
         ? sweetPointIndeces.front()
         : sweetPointIndeces.back();
 }
@@ -327,7 +358,8 @@ auto UpdatedMaximumLikelihood::computeSweetPoint(Phi phi)
     sweetPoint.insert(sweetPoint.end(), (2 * sweetPoint[2]) - sweetPoint[1]);
     sweetPoint.insert(sweetPoint.begin(), (2 * sweetPoint[0]) - sweetPoint[1]);
     return transform(std::move(sweetPoint), [&](double x) {
-        return std::max(std::min(x, upperBound), lowerBound);
+        return std::max(std::min(x, trackSpecifications.upperBound),
+            trackSpecifications.lowerBound);
     });
 }
 
@@ -406,38 +438,20 @@ auto UpdatedMaximumLikelihood::alphaSpace(size_t index) const -> const
         .space[index % posteriorDistributions.alpha.space.size()];
 }
 
-auto UpdatedMaximumLikelihood::x() -> double { return _x; }
-
-auto UpdatedMaximumLikelihood::reversals() -> int { return _reversals; }
-
 auto UpdatedMaximumLikelihood::sweetPoints() const -> std::vector<double> {
     return _sweetPoint;
 }
 
-auto UpdatedMaximumLikelihood::phi() const -> std::vector<double> {
-    return {_phi.alpha, _phi.beta, _phi.gamma, _phi.lambda};
+auto UpdatedMaximumLikelihood::phi() -> std::optional<Phi> {
+    return Phi{_phi.alpha, _phi.beta, _phi.gamma, _phi.lambda};
 }
 
-auto UpdatedMaximumLikelihood::reversalXs() const -> std::vector<double> {
-    return _reversalXs;
-}
+auto UpdatedMaximumLikelihood::x() -> double { return _x; }
+
+auto UpdatedMaximumLikelihood::reversals() -> int { return _reversals; }
 
 auto UpdatedMaximumLikelihood::complete() -> bool {
     return trials >= trackSpecifications.trials;
-}
-
-auto LinearSpacer::operator()(double lower, double upper, std::size_t N)
-    -> std::vector<double> {
-    if (N == 1)
-        return {lower};
-    return linspace(lower, upper, N);
-}
-
-auto LogSpacer::operator()(double lower, double upper, std::size_t N)
-    -> std::vector<double> {
-    if (N == 1)
-        return {lower};
-    return logspace(std::log10(lower), std::log10(upper), N);
 }
 
 LinearNormPrior::LinearNormPrior(double mu, double sigma)
@@ -480,12 +494,5 @@ auto MeanPhi::operator()(const UpdatedMaximumLikelihood &uml) const -> Phi {
         lambdaEstimate += normalizedPosterior[i] * uml.lambdaSpace(i);
     }
     return {alphaEstimate, betaEstimate, gammaEstimate, lambdaEstimate};
-}
-
-auto exampleLogisticConfiguration() -> PosteriorDistributions {
-    return {{LinearSpacer()(-30, 30, 61), LinearNormPrior(0, 10)},
-        {LogSpacer()(0.1, 10, 41), LogNormPrior(-0.5, 0.4)},
-        {LinearSpacer()(0.02, 0.2, 11), FlatPrior()},
-        {LinearSpacer()(0.02, 0.2, 11), FlatPrior()}};
 }
 }

@@ -1,4 +1,5 @@
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/core/UpdatedMaximumLikelihood.hpp>
 
@@ -53,16 +54,24 @@ TEST_F(LogisticSweetPointTester, testSimpleParameters) {
 
 class UpdatedMaximumLikelihoodTester : public ::testing::Test {};
 
+auto exampleLogisticConfiguration() -> UmlSettings {
+    return {PhiParameterSetting{{-30, 30, 61, ParameterSpace::Linear},
+                {0, 10, PriorProbabilityKind::LinearNorm}},
+        PhiParameterSetting{{0.1, 10, 41, ParameterSpace::Log},
+            {-0.5, 0.4, PriorProbabilityKind::LogNorm}},
+        PhiParameterSetting{{0.02, 0.2, 11, ParameterSpace::Linear},
+            {{}, {}, PriorProbabilityKind::Flat}},
+        PhiParameterSetting{{0.02, 0.2, 11, ParameterSpace::Linear},
+            {{}, {}, PriorProbabilityKind::Flat}},
+        1, 3, 10};
+}
+
 TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiDownOnly) {
-    TrackSpecifications track{};
-    track.down = 3;
-    track.up = 1;
+    UpdatedMaximumLikelihood::Settings track{};
     track.startingX = 30.0;
-    track.lowerBound = -30.0;
-    track.upperBound = 30.0;
-    LogisticPsychometricFunction pf;
-    MeanPhi pc;
-    UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
+    track.floor = -30.0;
+    track.ceiling = 30.0;
+    UpdatedMaximumLikelihood uml{exampleLogisticConfiguration(), track};
     assertEqual(uml.x(), 30.0);
     assertEqual(uml.reversals(), 0);
     uml.down();
@@ -77,15 +86,11 @@ TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiDownOnly) {
 }
 
 TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiUpOnly) {
-    TrackSpecifications track{};
-    track.down = 3;
-    track.up = 1;
+    UpdatedMaximumLikelihood::Settings track{};
     track.startingX = 30.0;
-    track.lowerBound = -30.0;
-    track.upperBound = 30.0;
-    LogisticPsychometricFunction pf;
-    MeanPhi pc;
-    UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
+    track.floor = -30.0;
+    track.ceiling = 30.0;
+    UpdatedMaximumLikelihood uml{exampleLogisticConfiguration(), track};
     assertEqual(uml.x(), 30.0);
     assertEqual(uml.reversals(), 0);
     uml.up();
@@ -100,18 +105,15 @@ TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiUpOnly) {
 }
 
 TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiAlternating) {
-    TrackSpecifications track{};
-    track.down = 3;
-    track.up = 1;
+    UpdatedMaximumLikelihood::Settings track{};
     track.startingX = 30.0;
-    track.lowerBound = -30.0;
-    track.upperBound = 30.0;
-    LogisticPsychometricFunction pf;
-    MeanPhi pc;
-    UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
+    track.floor = -30.0;
+    track.ceiling = 30.0;
+    UpdatedMaximumLikelihood uml{exampleLogisticConfiguration(), track};
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(uml.sweetPoints().empty());
     uml.up();
-    assertEqual(uml.phi(),
+    const auto phi{*uml.phi()};
+    assertEqual({phi.alpha, phi.beta, phi.gamma, phi.lambda},
         {0.935279300498662, 0.501739472594823, 0.109708801753186,
             0.137098486912143},
         1e-13);
@@ -135,22 +137,19 @@ TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticMeanPhiAlternating) {
 
 TEST_F(UpdatedMaximumLikelihoodTester,
     testExampleLogisticMeanPhiAlternatingWithReset) {
-    TrackSpecifications track{};
-    track.down = 3;
-    track.up = 1;
+    UpdatedMaximumLikelihood::Settings track{};
     track.startingX = 30.0;
-    track.lowerBound = -30.0;
-    track.upperBound = 30.0;
-    LogisticPsychometricFunction pf;
-    MeanPhi pc;
-    UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
+    track.floor = -30.0;
+    track.ceiling = 30.0;
+    UpdatedMaximumLikelihood uml{exampleLogisticConfiguration(), track};
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(uml.sweetPoints().empty());
     uml.up();
     uml.up();
     uml.down();
     uml.reset();
     uml.up();
-    assertEqual(uml.phi(),
+    const auto phi{*uml.phi()};
+    assertEqual({phi.alpha, phi.beta, phi.gamma, phi.lambda},
         {0.935279300498662, 0.501739472594823, 0.109708801753186,
             0.137098486912143},
         1e-13);
@@ -173,16 +172,11 @@ TEST_F(UpdatedMaximumLikelihoodTester,
 }
 
 TEST_F(UpdatedMaximumLikelihoodTester, testExampleLogisticCompletion) {
-    TrackSpecifications track{};
-    track.down = 3;
-    track.up = 1;
-    track.trials = 10;
+    UpdatedMaximumLikelihood::Settings track{};
     track.startingX = 30.0;
-    track.lowerBound = -30.0;
-    track.upperBound = 30.0;
-    LogisticPsychometricFunction pf;
-    MeanPhi pc;
-    UpdatedMaximumLikelihood uml(exampleLogisticConfiguration(), pf, pc, track);
+    track.floor = -30.0;
+    track.ceiling = 30.0;
+    UpdatedMaximumLikelihood uml{exampleLogisticConfiguration(), track};
     uml.up();
     uml.up();
     uml.down();

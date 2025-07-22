@@ -1,5 +1,6 @@
 #include "OutputFile.hpp"
 #include "IOutputFile.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 
@@ -68,6 +69,31 @@ static auto operator<<(std::ostream &os, Point3D point) -> std::ostream & {
 
 static auto operator<<(std::ostream &os, Point2D point) -> std::ostream & {
     return os << point.x << ' ' << point.y;
+}
+
+static auto operator<<(std::ostream &os, ParameterSpaceSetting s)
+    -> std::ostream & {
+    return os << (s.space == ParameterSpace::Linear ? "linear" : "log") << ' '
+              << s.lower << ' ' << s.upper << ' ' << s.N;
+}
+
+static constexpr auto name(PriorProbabilityKind k) -> const char * {
+    switch (k) {
+    case PriorProbabilityKind::LinearNorm:
+        return "linearnorm";
+    case PriorProbabilityKind::LogNorm:
+        return "lognorm";
+    case PriorProbabilityKind::Flat:
+        return "flat";
+    }
+}
+
+static auto operator<<(std::ostream &os, PriorProbabilitySetting s)
+    -> std::ostream & {
+    os << name(s.kind);
+    if (s.kind != PriorProbabilityKind::Flat)
+        os << ' ' << s.mu << ' ' << s.sigma;
+    return os;
 }
 
 template <typename T>
@@ -171,19 +197,13 @@ static auto operator<<(std::ostream &stream, const TestIdentity &identity)
         identity);
 }
 
-static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
+static auto operator<<(std::ostream &stream, const LevittSettings &s)
     -> std::ostream & {
-    stream << identity(test);
-    insertMasker(stream, test);
-    insertTargetPlaylist(stream, test);
-    insertMaskerLevel(stream, test);
-    insertLabeledLine(stream, "starting SNR (dB)", test.startingSnr.dB);
-    insertCondition(stream, test);
     std::vector<int> up;
     std::vector<int> down;
     std::vector<int> runCounts;
     std::vector<int> stepSizes;
-    for (auto sequence : test.trackingRule) {
+    for (auto sequence : s.trackingRule) {
         up.push_back(sequence.up);
         down.push_back(sequence.down);
         runCounts.push_back(sequence.runCount);
@@ -192,7 +212,33 @@ static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
     insertLabeledLine(stream, "up", up);
     insertLabeledLine(stream, "down", down);
     insertLabeledLine(stream, "reversals per step size", runCounts);
-    insertLabeledLine(stream, "step sizes (dB)", stepSizes);
+    return insertLabeledLine(stream, "step sizes (dB)", stepSizes);
+}
+
+static auto operator<<(std::ostream &stream, const UmlSettings &s)
+    -> std::ostream & {
+    insertLabeledLine(stream, "alpha space", s.alpha.space);
+    insertLabeledLine(stream, "alpha prior", s.alpha.priorProbability);
+    insertLabeledLine(stream, "beta space", s.beta.space);
+    insertLabeledLine(stream, "beta prior", s.beta.priorProbability);
+    insertLabeledLine(stream, "gamma space", s.gamma.space);
+    insertLabeledLine(stream, "gamma prior", s.gamma.priorProbability);
+    insertLabeledLine(stream, "lambda space", s.lambda.space);
+    insertLabeledLine(stream, "lambda prior", s.lambda.priorProbability);
+    insertLabeledLine(stream, "up", s.up);
+    insertLabeledLine(stream, "down", s.down);
+    return insertLabeledLine(stream, "trials", s.trials);
+}
+
+static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
+    -> std::ostream & {
+    stream << identity(test);
+    insertMasker(stream, test);
+    insertTargetPlaylist(stream, test);
+    insertMaskerLevel(stream, test);
+    insertLabeledLine(stream, "starting SNR (dB)", test.startingSnr.dB);
+    std::visit([&stream](const auto &s) { stream << s; }, test.trackSettings);
+    insertCondition(stream, test);
     insertLabeledLine(stream, "threshold reversals", test.thresholdReversals);
     return insertNewLine(stream);
 }
@@ -437,6 +483,8 @@ class OpenSetAdaptiveTrialFormatter : public TrialFormatter {
         insert(stream, HeadingItem::evaluation);
         insertCommaAndSpace(stream);
         insert(stream, HeadingItem::reversals);
+        insertCommaAndSpace(stream);
+        insert(stream, HeadingItem::phi);
         return insertNewLine(stream);
     }
 
@@ -448,6 +496,9 @@ class OpenSetAdaptiveTrialFormatter : public TrialFormatter {
         insert(stream, evaluation(trial_));
         insertCommaAndSpace(stream);
         insert(stream, trial_.reversals);
+        insertCommaAndSpace(stream);
+        if (trial_.phi)
+            insert(stream, *trial_.phi);
         return insertNewLine(stream);
     }
 

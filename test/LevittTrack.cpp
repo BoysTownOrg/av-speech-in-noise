@@ -1,4 +1,5 @@
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <av-speech-in-noise/core/LevittTrack.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
@@ -87,26 +88,28 @@ void assertThresholdEquals(LevittTrack &track, double x) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(x, std::get<Threshold>(track.result()));
 }
 
-auto construct(const LevittTrack::Settings &settings) -> LevittTrack {
-    return LevittTrack{settings};
+auto construct(const LevittSettings &specific,
+    const LevittTrack::Settings &settings) -> LevittTrack {
+    return LevittTrack{specific, settings};
 }
 
 class LevittTrackTests : public ::testing::Test {
   protected:
+    LevittSettings levittSettings;
     LevittTrack::Settings settings{};
-    av_speech_in_noise::TrackingRule rule;
 
     LevittTrackTests() {
-        settings.rule = &rule;
-        rule.resize(3);
+        levittSettings.trackingRule.resize(3);
         setFirstSequenceRunCount(999);
     }
 
-    auto firstSequence() -> auto & { return rule.at(0); }
+    auto firstSequence() -> auto & { return levittSettings.trackingRule.at(0); }
 
-    auto secondSequence() -> auto & { return rule.at(1); }
+    auto secondSequence() -> auto & {
+        return levittSettings.trackingRule.at(1);
+    }
 
-    auto thirdSequence() -> auto & { return rule.at(2); }
+    auto thirdSequence() -> auto & { return levittSettings.trackingRule.at(2); }
 
     void setStartingX(int x) { settings.startingX = x; }
 
@@ -129,13 +132,13 @@ class LevittTrackTests : public ::testing::Test {
 
 LEVITT_TRACK_TEST(xEqualToStartingX) {
     setStartingX(1);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEquals(track, 1);
 }
 
 LEVITT_TRACK_TEST(noRunSequencesMeansNoChanges) {
     setStartingX(5);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEqualsAfterDown(track, 5);
     assertXEqualsAfterUp(track, 5);
 }
@@ -145,7 +148,7 @@ LEVITT_TRACK_TEST(stepsAccordingToStepSize1Down1Up) {
     setFirstSequenceDown(1);
     setFirstSequenceStepSize(4);
     setStartingX(5);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEqualsAfterDown(track, 5 - 4);
     assertXEqualsAfterUp(track, 5 - 4 + 4);
     assertXEqualsAfterDown(track, 5 - 4 + 4 - 4);
@@ -158,7 +161,7 @@ LEVITT_TRACK_TEST(stepsAccordingToStepSize2Down1Up) {
     setFirstSequenceDown(2);
     setFirstSequenceStepSize(4);
     setStartingX(5);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEqualsAfterDown(track, 5);
     assertXEqualsAfterDown(track, 5 - 4);
     assertXEqualsAfterUp(track, 5 - 4 + 4);
@@ -172,7 +175,7 @@ LEVITT_TRACK_TEST(stepsAccordingToStepSize1Down2Up) {
     setFirstSequenceUp(2);
     setFirstSequenceStepSize(4);
     setStartingX(5);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEqualsAfterDown(track, 5 - 4);
     assertXEqualsAfterUp(track, 5 - 4);
     assertXEqualsAfterUp(track, 5 - 4 + 4);
@@ -187,7 +190,7 @@ LEVITT_TRACK_TEST(exhaustedRunSequencesMeansNoMoreStepChanges) {
     setFirstSequenceRunCount(3);
     setFirstSequenceStepSize(4);
     setStartingX(5);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEqualsAfter(track, "dudu", 5 - 4 + 4 - 4);
     assertXEqualsAfterDown(track, 5 - 4 + 4 - 4);
     assertXEqualsAfterUp(track, 5 - 4 + 4 - 4);
@@ -198,7 +201,7 @@ LEVITT_TRACK_TEST(floorActsAsLowerLimit) {
     setFirstSequenceDown(1);
     setFirstSequenceStepSize(4);
     setStartingX(5);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEquals(track, 5);
     assertXEqualsAfterDown(track, 5 - 4);
     assertXEqualsAfterDown(track, 0);
@@ -209,7 +212,7 @@ LEVITT_TRACK_TEST(ceilingActsAsUpperLimit) {
     setFirstSequenceUp(1);
     setFirstSequenceStepSize(4);
     setStartingX(5);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEquals(track, 5);
     assertXEqualsAfterUp(track, 5 + 4);
     assertXEqualsAfterUp(track, 10);
@@ -217,7 +220,7 @@ LEVITT_TRACK_TEST(ceilingActsAsUpperLimit) {
 
 LEVITT_TRACK_TEST(incompleteWhenNonZeroRunCount) {
     setFirstSequenceRunCount(3);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertIncomplete(track);
 }
 
@@ -225,7 +228,7 @@ LEVITT_TRACK_TEST(completeWhenExhausted) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
     setFirstSequenceRunCount(3);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertIncompleteAfterDown(track);
     assertIncompleteAfterUp(track);
     assertIncompleteAfterDown(track);
@@ -236,7 +239,7 @@ LEVITT_TRACK_TEST(completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling) {
     setStartingX(10);
     setCeiling(10);
     setBumpLimit(3);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertIncompleteAfterUp(track);
     assertIncompleteAfterUp(track);
     assertCompleteAfterUp(track);
@@ -247,7 +250,7 @@ LEVITT_TRACK_TEST(
     setStartingX(10);
     setCeiling(10);
     setBumpLimit(3);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     update(track, "uuu");
     assertCompleteAfterUp(track);
 }
@@ -257,7 +260,7 @@ LEVITT_TRACK_TEST(
     setStartingX(10);
     setCeiling(10);
     setBumpLimit(3);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     update(track, "uuu");
     assertCompleteAfterDown(track);
 }
@@ -268,7 +271,7 @@ LEVITT_TRACK_TEST(completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling2) {
     setFirstSequenceStepSize(7 - 5);
     setFirstSequenceUp(1);
     setBumpLimit(3);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEquals(track, 5);
     assertXEqualsAfterUp(track, 7);
     assertIncompleteAfterUp(track);
@@ -280,7 +283,7 @@ LEVITT_TRACK_TEST(completeIfPushedDownBumpLimitConsecutiveTimesAtFloor) {
     setStartingX(-10);
     setFloor(-10);
     setBumpLimit(3);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertIncompleteAfterDown(track);
     assertIncompleteAfterDown(track);
     assertCompleteAfterDown(track);
@@ -291,7 +294,7 @@ LEVITT_TRACK_TEST(
     setStartingX(-10);
     setFloor(-10);
     setBumpLimit(3);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     update(track, "ddd");
     assertCompleteAfterDown(track);
 }
@@ -301,7 +304,7 @@ LEVITT_TRACK_TEST(
     setStartingX(-10);
     setFloor(-10);
     setBumpLimit(3);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     update(track, "ddd");
     assertCompleteAfterUp(track);
 }
@@ -312,7 +315,7 @@ LEVITT_TRACK_TEST(completeIfPushedDownBumpLimitConsecutiveTimesAtFloor2) {
     setFirstSequenceStepSize(7 - 5);
     setFirstSequenceDown(1);
     setBumpLimit(3);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEquals(track, -5);
     assertXEqualsAfterDown(track, -7);
     assertIncompleteAfterDown(track);
@@ -324,7 +327,7 @@ LEVITT_TRACK_TEST(incompleteIfPushedDownBumpLimitNonconsecutiveTimesAtFloor) {
     setStartingX(-5);
     setFloor(-5);
     setBumpLimit(3);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     update(track, "ddud");
     assertIncomplete(track);
 }
@@ -333,7 +336,7 @@ LEVITT_TRACK_TEST(incompleteIfPushedUpBumpLimitNonconsecutiveTimesAtCeiling) {
     setStartingX(5);
     setCeiling(5);
     setBumpLimit(3);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     update(track, "uudu");
     assertIncomplete(track);
 }
@@ -345,7 +348,7 @@ LEVITT_TRACK_TEST(threshold) {
     setFirstSequenceStepSize(3);
     setFirstSequenceDown(2);
     setFirstSequenceUp(1);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     update(track, "dduudd");
     update(track, "uuuu");
     assertXEquals(track, 12);
@@ -370,7 +373,7 @@ LEVITT_TRACK_TEST(thresholdFromTwoSequences) {
     secondSequence().stepSize = 6;
     secondSequence().down = 2;
     secondSequence().up = 1;
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     update(track, "dduudddduuu");
     assertXEquals(track, 6);
     update(track, "dd");
@@ -394,7 +397,7 @@ LEVITT_TRACK_TEST(thresholdTooManyReversals) {
     setFirstSequenceStepSize(3);
     setFirstSequenceDown(2);
     setFirstSequenceUp(1);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     update(track, "dddddd");
     assertXEquals(track, -9);
     update(track, "uu");
@@ -414,7 +417,7 @@ LEVITT_TRACK_TEST(thresholdNegativeReversals) {
     setFirstSequenceStepSize(3);
     setFirstSequenceDown(2);
     setFirstSequenceUp(1);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     update(track, "dduddudd");
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         std::isnan(std::get<Threshold>(track.result())));
@@ -427,7 +430,7 @@ LEVITT_TRACK_TEST(LevittFigure4) {
     setFirstSequenceStepSize(1);
     setFirstSequenceDown(1);
     setFirstSequenceUp(1);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEqualsAfter(track, "dduuuudduuuddddduuudduu", 1);
 }
 
@@ -438,7 +441,7 @@ LEVITT_TRACK_TEST(LevittFigure5) {
     setFirstSequenceStepSize(1);
     setFirstSequenceDown(2);
     setFirstSequenceUp(1);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEqualsAfter(track, "dddduduududdddduuuddddd", 1);
 }
 
@@ -452,7 +455,7 @@ LEVITT_TRACK_TEST(twoSequences) {
     secondSequence().stepSize = 4;
     secondSequence().down = 2;
     secondSequence().up = 1;
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEqualsAfterDown(track, 65);
     assertXEqualsAfterDown(track, 65 - 8);
     assertXEqualsAfterDown(track, 65 - 8);
@@ -480,7 +483,7 @@ LEVITT_TRACK_TEST(threeSequences) {
     thirdSequence().stepSize = 2;
     thirdSequence().down = 3;
     thirdSequence().up = 1;
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEqualsAfter(track, "ddudddudddddudddddduddd", 3);
 }
 
@@ -494,7 +497,7 @@ LEVITT_TRACK_TEST(varyingDownUpRule) {
     secondSequence().stepSize = 4;
     secondSequence().up = 2;
     secondSequence().down = 1;
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertXEqualsAfterDown(track, 65);
     assertXEqualsAfterDown(track, 65 - 8);
     assertXEqualsAfterDown(track, 65 - 8);
@@ -512,7 +515,7 @@ LEVITT_TRACK_TEST(reversals) {
     setStartingX(0);
     setFirstSequenceDown(2);
     setFirstSequenceUp(1);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertReversalsEquals(track, 0);
     assertReversalsEqualsAfterUp(track, 0);
     assertReversalsEqualsAfterDown(track, 0);
@@ -529,7 +532,7 @@ LEVITT_TRACK_TEST(sanityTest) {
     setFirstSequenceStepSize(3);
     setBumpLimit(5);
     setFloor(-10);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     assertIncomplete(track);
     assertXEqualsAfterDown(track, 0);
     assertXEqualsAfterDown(track, 0 - 3);
@@ -569,7 +572,7 @@ LEVITT_TRACK_TEST(sanityTest) {
 LEVITT_TRACK_TEST(resetResetsReversals) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     down(track);
     up(track);
     reset(track);
@@ -590,7 +593,7 @@ LEVITT_TRACK_TEST(twoSequencesWithReset) {
     secondSequence().stepSize = 4;
     secondSequence().down = 2;
     secondSequence().up = 1;
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     update(track, "dddduuddddu");
     reset(track);
     assertXEqualsAfterDown(track, 65);
@@ -616,7 +619,7 @@ LEVITT_TRACK_TEST(twoSequencesWithReset2) {
     secondSequence().stepSize = 4;
     secondSequence().down = 2;
     secondSequence().up = 1;
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     update(track, "dddduud");
     reset(track);
     assertXEqualsAfterDown(track, 65);
@@ -631,7 +634,7 @@ LEVITT_TRACK_TEST(
     setStartingX(-10);
     setFloor(-10);
     setBumpLimit(3);
-    auto track{construct(settings)};
+    auto track{construct(levittSettings, settings)};
     down(track);
     reset(track);
     assertIncompleteAfterDown(track);

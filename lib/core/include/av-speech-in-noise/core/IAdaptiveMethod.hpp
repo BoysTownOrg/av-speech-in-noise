@@ -5,6 +5,8 @@
 #include "TestMethod.hpp"
 
 #include <limits>
+#include <optional>
+#include <variant>
 #include <vector>
 #include <memory>
 
@@ -23,13 +25,11 @@ class AdaptiveTrack {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(AdaptiveTrack);
     struct Settings {
-        const TrackingRule *rule{};
         int startingX{};
         int ceiling{maximumInt};
         int floor{minimumInt};
         int bumpLimit{maximumInt};
         int thresholdReversals;
-        int trials;
     };
     virtual void down() = 0;
     virtual void up() = 0;
@@ -38,12 +38,13 @@ class AdaptiveTrack {
     virtual auto reversals() -> int = 0;
     virtual void reset() = 0;
     virtual auto result() -> std::variant<Threshold, Phi> = 0;
+    virtual auto phi() -> std::optional<Phi> { return {}; }
 
     class Factory {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Factory);
-        virtual auto make(const Settings &)
-            -> std::shared_ptr<AdaptiveTrack> = 0;
+        virtual auto make(const std::variant<UmlSettings, LevittSettings> &,
+            const Settings &) -> std::shared_ptr<AdaptiveTrack> = 0;
     };
 };
 

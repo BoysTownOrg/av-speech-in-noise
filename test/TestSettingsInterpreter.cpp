@@ -6,6 +6,7 @@
 #include "TrackStub.hpp"
 #include "assert-utility.hpp"
 #include "PuzzleStub.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/ui/SessionController.hpp>
@@ -227,8 +228,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
-    TrackFactoryStub levittTrackFactory;
-    TrackFactoryStub umlTrackFactory;
+    TrackFactoryStub adaptiveTrackFactory;
     submitting_free_response::PuzzleStub puzzle;
     FreeResponseControllerStub freeResponseController;
     TaskPresenterStub coordinateResponseMeasurePresenter;
@@ -248,13 +248,12 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         fixedLevelMethod, eyeTracking, audioRecording, cyclicTargetsReader,
         targetsWithReplacementReader, predeterminedTargets, everyTargetOnce,
         silentIntervalTargets, eachTargetNTimes, targetsWithReplacement,
-        levittTrackFactory, umlTrackFactory, puzzle, freeResponseController,
-        sessionController, coordinateResponseMeasurePresenter,
-        freeResponsePresenter, chooseKeywordsPresenter, syllablesPresenter,
-        correctKeywordsPresenter, consonantPresenter,
-        submittingConsonantResponse, passFailPresenter, keypressPresenter,
-        submittingKeyPressResponse, emotionPresenter, childEmotionPresenter,
-        fixedPassFailPresenter};
+        adaptiveTrackFactory, puzzle, freeResponseController, sessionController,
+        coordinateResponseMeasurePresenter, freeResponsePresenter,
+        chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
+        consonantPresenter, submittingConsonantResponse, passFailPresenter,
+        keypressPresenter, submittingKeyPressResponse, emotionPresenter,
+        childEmotionPresenter, fixedPassFailPresenter};
     TestIdentity testIdentity;
 };
 
@@ -894,22 +893,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializesAdaptiveMethodWithLevittTrackFactory) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail)});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &levittTrackFactory, adaptiveMethod.trackFactory);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(initializesAdaptiveMethodWithUmlTrackFactory) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            entryWithNewline(TestSetting::uml, "true")});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &umlTrackFactory, adaptiveMethod.trackFactory);
-}
-
 TEST_SETTINGS_INTERPRETER_TEST(initializesPuzzleWithPath) {
     initializeTest(interpreter,
         {entryWithNewline(TestSetting::method,
@@ -1108,7 +1091,9 @@ TEST_SETTINGS_INTERPRETER_TEST(oneSequence) {
             entryWithNewline(TestSetting::down, "2"),
             entryWithNewline(TestSetting::reversalsPerStepSize, "3"),
             entryWithNewline(TestSetting::stepSizes, "4")});
-    assertEqual({sequence}, adaptiveMethod.test.trackingRule);
+    assertEqual({sequence},
+        std::get<LevittSettings>(adaptiveMethod.test.trackSettings)
+            .trackingRule);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
@@ -1128,7 +1113,65 @@ TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
             entryWithNewline(TestSetting::down, "3 4"),
             entryWithNewline(TestSetting::reversalsPerStepSize, "5 6"),
             entryWithNewline(TestSetting::stepSizes, "7 8")});
-    assertEqual({first, second}, adaptiveMethod.test.trackingRule);
+    assertEqual({first, second},
+        std::get<LevittSettings>(adaptiveMethod.test.trackSettings)
+            .trackingRule);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(umlSettings) {
+    initializeTest(interpreter,
+        {
+            entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::uml, "true"),
+            entryWithNewline(TestSetting::alphaSpace, "log -29 31 63"),
+            entryWithNewline(TestSetting::alphaPrior, "flat"),
+            entryWithNewline(TestSetting::betaSpace, "linear 0.2 3.4 11"),
+            entryWithNewline(TestSetting::betaPrior, "linearnorm 2.3 4.5"),
+            entryWithNewline(TestSetting::gammaPrior, "lognorm 1.2 3.4"),
+        });
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(ParameterSpace::Log,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .alpha.space.space);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(-29.,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .alpha.space.lower);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(31.,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .alpha.space.upper);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(63,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings).alpha.space.N);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(PriorProbabilityKind::Flat,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .alpha.priorProbability.kind);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(ParameterSpace::Linear,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .beta.space.space);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0.2,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .beta.space.lower);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3.4,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .beta.space.upper);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(11,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings).beta.space.N);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(PriorProbabilityKind::LinearNorm,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .beta.priorProbability.kind);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2.3,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .beta.priorProbability.mu);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4.5,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .beta.priorProbability.sigma);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(PriorProbabilityKind::LogNorm,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .gamma.priorProbability.kind);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1.2,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .gamma.priorProbability.mu);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3.4,
+        std::get<UmlSettings>(adaptiveMethod.test.trackSettings)
+            .gamma.priorProbability.sigma);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(consonantTestWithTargetRepetitions) {
