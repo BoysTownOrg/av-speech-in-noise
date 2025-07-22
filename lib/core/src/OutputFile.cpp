@@ -220,8 +220,11 @@ static auto operator<<(std::ostream &stream, const UmlSettings &s)
     insertLabeledLine(stream, "alpha space", s.alpha.space);
     insertLabeledLine(stream, "alpha prior", s.alpha.priorProbability);
     insertLabeledLine(stream, "beta space", s.beta.space);
+    insertLabeledLine(stream, "beta prior", s.beta.priorProbability);
     insertLabeledLine(stream, "gamma space", s.gamma.space);
+    insertLabeledLine(stream, "gamma prior", s.gamma.priorProbability);
     insertLabeledLine(stream, "lambda space", s.lambda.space);
+    insertLabeledLine(stream, "lambda prior", s.lambda.priorProbability);
     return insertNewLine(stream);
 }
 

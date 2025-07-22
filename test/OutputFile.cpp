@@ -1100,6 +1100,9 @@ OUTPUT_FILE_TEST(writesUmlTrackSettings) {
     settings.alpha.priorProbability.kind = PriorProbabilityKind::LinearNorm;
     settings.alpha.priorProbability.mu = 1.2;
     settings.alpha.priorProbability.sigma = 3.4;
+    settings.beta.priorProbability.kind = PriorProbabilityKind::LogNorm;
+    settings.beta.priorProbability.mu = 1.01;
+    settings.beta.priorProbability.sigma = 2.02;
     test.trackSettings = settings;
     file.write(test);
     assertContainsColonDelimitedEntry(
@@ -1107,6 +1110,8 @@ OUTPUT_FILE_TEST(writesUmlTrackSettings) {
     assertContainsColonDelimitedEntry(writer, "beta space", "log -2.3 5.6 70");
     assertContainsColonDelimitedEntry(
         writer, "alpha prior", "linearnorm 1.2 3.4");
+    assertContainsColonDelimitedEntry(
+        writer, "beta prior", "lognorm 1.01 2.02");
     assertEndsWith(writer, "\n\n");
 }
 
