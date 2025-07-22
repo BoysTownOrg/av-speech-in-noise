@@ -4,7 +4,6 @@
 
 #include <gsl/gsl>
 
-#include <math.h>
 #include <sstream>
 #include <functional>
 #include <stdexcept>
@@ -101,8 +100,10 @@ static void broadcast(
             each.get().configure(key, value);
 }
 
-static void assign(
-    Test &test, const std::string &entryName, const std::string &entry) {
+static void assign(Test &test,
+    const std::map<std::string,
+        std::vector<std::reference_wrapper<Configurable>>> &configurables,
+    const std::string &entryName, const std::string &entry) {
     if (entryName == name(TestSetting::targets))
         test.targetsUrl.path = entry;
     else if (entryName == name(TestSetting::masker))
@@ -123,32 +124,37 @@ static void assign(
         test.identity.meta = entry;
     else if (entryName == name(TestSetting::relativeOutputPath))
         test.identity.relativeOutputUrl.path = entry;
-    else if (entryName == name(TestSetting::videoScaleNumerator))
-        test.videoScale.numerator = integer(entry);
-    else if (entryName == name(TestSetting::videoScaleDenominator))
-        test.videoScale.denominator = integer(entry);
     else if (entryName == name(TestSetting::keepVideoShown))
         test.keepVideoShown = boolean(entry);
-    else if (entryName == name(TestSetting::condition))
+    else if (entryName == name(TestSetting::condition)) {
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
             if (entry == name(c))
                 test.condition = c;
+    } else if (auto search = configurables.find(entryName);
+        search != configurables.end())
+        for (auto each : search->second)
+            each.get().configure(entryName, entry);
 }
 
-static void assign(FixedLevelTest &test, const std::string &entryName,
-    const std::string &entry) {
+static void assign(FixedLevelTest &test,
+    const std::map<std::string,
+        std::vector<std::reference_wrapper<Configurable>>> &configurables,
+    const std::string &entryName, const std::string &entry) {
     if (entryName == name(TestSetting::startingSnr))
         test.snr.dB = integer(entry);
     else
-        assign(static_cast<Test &>(test), entryName, entry);
+        assign(static_cast<Test &>(test), configurables, entryName, entry);
 }
 
 static void assign(FixedLevelTestWithEachTargetNTimes &test,
+    const std::map<std::string,
+        std::vector<std::reference_wrapper<Configurable>>> &configurables,
     const std::string &entryName, const std::string &entry) {
     if (entryName == name(TestSetting::targetRepetitions))
         test.timesEachTargetIsPlayed = integer(entry);
     else
-        assign(static_cast<FixedLevelTest &>(test), entryName, entry);
+        assign(static_cast<FixedLevelTest &>(test), configurables, entryName,
+            entry);
 }
 
 static void assign(Calibration &calibration, const std::string &entryName,
@@ -189,8 +195,10 @@ static void initializeParameterPrior(
 }
 
 static void assign(AdaptiveTest &test, UmlSettings &umlSettings,
-    LevittSettings &levittSettings, const std::string &entryName,
-    const std::string &entry) {
+    LevittSettings &levittSettings,
+    const std::map<std::string,
+        std::vector<std::reference_wrapper<Configurable>>> &configurables,
+    const std::string &entryName, const std::string &entry) {
     if (entryName == name(TestSetting::up))
         assignToEachElementOfTrackingRule(levittSettings, up, entry);
     else if (entryName == name(TestSetting::down))
@@ -224,7 +232,7 @@ static void assign(AdaptiveTest &test, UmlSettings &umlSettings,
     else if (entryName == name(TestSetting::trials))
         umlSettings.trials = integer(entry);
     else
-        assign(static_cast<Test &>(test), entryName, entry);
+        assign(static_cast<Test &>(test), configurables, entryName, entry);
 }
 
 // https://stackoverflow.com/a/31836401
@@ -278,14 +286,17 @@ static auto methodWithName(const std::string &contents)
 }
 
 static void initialize(AdaptiveTest &test, UmlSettings &umlSettings,
-    LevittSettings &levittSettings, const std::string &contents,
-    const std::string &methodName, const TestIdentity &identity,
-    SNR startingSnr) {
+    LevittSettings &levittSettings,
+    const std::map<std::string,
+        std::vector<std::reference_wrapper<Configurable>>> &configurables,
+    const std::string &contents, const std::string &methodName,
+    const TestIdentity &identity, SNR startingSnr) {
     test.identity = identity;
     test.startingSnr = startingSnr;
     applyToEachEntry(
         [&](const auto &entryName, const auto &entry) {
-            assign(test, umlSettings, levittSettings, entryName, entry);
+            assign(test, umlSettings, levittSettings, configurables, entryName,
+                entry);
         },
         contents);
     test.ceilingSnr = SessionControllerImpl::ceilingSnr;
@@ -306,31 +317,39 @@ static void initialize(FixedLevelTest &test, const std::string &contents,
     applyToEachEntry(f, contents);
 }
 
-static void initialize(FixedLevelTest &test, const std::string &contents,
-    const std::string &method, const TestIdentity &identity, SNR startingSnr) {
-    initialize(test, contents, method, identity, startingSnr,
-        [&](const auto &entryName, const auto &entry) {
-            assign(test, entryName, entry);
-        });
-}
-
-static void initialize(FixedLevelTestWithEachTargetNTimes &test,
+static void initialize(FixedLevelTest &test,
+    const std::map<std::string,
+        std::vector<std::reference_wrapper<Configurable>>> &configurables,
     const std::string &contents, const std::string &method,
     const TestIdentity &identity, SNR startingSnr) {
     initialize(test, contents, method, identity, startingSnr,
         [&](const auto &entryName, const auto &entry) {
-            assign(test, entryName, entry);
+            assign(test, configurables, entryName, entry);
         });
 }
 
-static void initialize(const std::string &method, const std::string &contents,
+static void initialize(FixedLevelTestWithEachTargetNTimes &test,
+    const std::map<std::string,
+        std::vector<std::reference_wrapper<Configurable>>> &configurables,
+    const std::string &contents, const std::string &method,
+    const TestIdentity &identity, SNR startingSnr) {
+    initialize(test, contents, method, identity, startingSnr,
+        [&](const auto &entryName, const auto &entry) {
+            assign(test, configurables, entryName, entry);
+        });
+}
+
+static void initialize(
+    const std::map<std::string,
+        std::vector<std::reference_wrapper<Configurable>>> &configurables,
+    const std::string &method, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr,
     const std::function<void(AdaptiveTest &)> &f) {
     AdaptiveTest test;
     UmlSettings umlSettings;
     LevittSettings levittSettings;
-    av_speech_in_noise::initialize(test, umlSettings, levittSettings, contents,
-        method, identity, startingSnr);
+    av_speech_in_noise::initialize(test, umlSettings, levittSettings,
+        configurables, contents, method, identity, startingSnr);
     if (test.uml)
         test.trackSettings = umlSettings;
     else
@@ -338,31 +357,39 @@ static void initialize(const std::string &method, const std::string &contents,
     f(test);
 }
 
-static void initialize(const std::string &method, const std::string &contents,
+static void initialize(
+    const std::map<std::string,
+        std::vector<std::reference_wrapper<Configurable>>> &configurables,
+    const std::string &method, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr,
     const std::function<void(FixedLevelTest &)> &f) {
     FixedLevelTest test;
     av_speech_in_noise::initialize(
-        test, contents, method, identity, startingSnr);
+        test, configurables, contents, method, identity, startingSnr);
     f(test);
 }
 
-static void initializeFixedLevelFixedTrialsTest(const std::string &method,
-    const std::string &contents, const TestIdentity &identity, SNR startingSnr,
+static void initializeFixedLevelFixedTrialsTest(
+    const std::map<std::string,
+        std::vector<std::reference_wrapper<Configurable>>> &configurables,
+    const std::string &method, const std::string &contents,
+    const TestIdentity &identity, SNR startingSnr,
     const std::function<void(const FixedLevelFixedTrialsTest &)> &f) {
     FixedLevelFixedTrialsTest test;
     av_speech_in_noise::initialize(
-        test, contents, method, identity, startingSnr);
+        test, configurables, contents, method, identity, startingSnr);
     f(test);
 }
 
 static void initializeFixedLevelTestWithEachTargetNTimes(
+    const std::map<std::string,
+        std::vector<std::reference_wrapper<Configurable>>> &configurables,
     const std::string &method, const std::string &contents,
     const TestIdentity &identity, SNR startingSnr,
     const std::function<void(const FixedLevelTestWithEachTargetNTimes &)> &f) {
     FixedLevelTestWithEachTargetNTimes test;
     av_speech_in_noise::initialize(
-        test, contents, method, identity, startingSnr);
+        test, configurables, contents, method, identity, startingSnr);
     f(test);
 }
 
@@ -475,8 +502,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
 
     switch (method) {
     case Method::adaptiveCorrectKeywords:
-        av_speech_in_noise::initialize(methodName, contents, identity,
-            startingSnr, [&](const AdaptiveTest &test) {
+        av_speech_in_noise::initialize(configurables, methodName, contents,
+            identity, startingSnr, [&](const AdaptiveTest &test) {
                 av_speech_in_noise::initialize(adaptiveMethod, test,
                     cyclicTargetsReader, adaptiveTrackFactory);
                 av_speech_in_noise::initialize(
@@ -485,8 +512,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         break;
     case Method::adaptiveCoordinateResponseMeasure:
     case Method::adaptivePassFail:
-        av_speech_in_noise::initialize(methodName, contents, identity,
-            startingSnr, [&](AdaptiveTest &test) {
+        av_speech_in_noise::initialize(configurables, methodName, contents,
+            identity, startingSnr, [&](AdaptiveTest &test) {
                 test.audioChannelOption = audioChannelOption;
                 av_speech_in_noise::initialize(adaptiveMethod, test,
                     targetsWithReplacementReader, adaptiveTrackFactory);
@@ -496,8 +523,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         break;
     case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
     case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
-        av_speech_in_noise::initialize(methodName, contents, identity,
-            startingSnr, [&](const FixedLevelTest &test) {
+        av_speech_in_noise::initialize(configurables, methodName, contents,
+            identity, startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, silentIntervalTargets);
                 av_speech_in_noise::initialize(
@@ -507,8 +534,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::fixedLevelFreeResponseWithAllTargets:
     case Method::fixedLevelChooseKeywordsWithAllTargets:
     case Method::fixedLevelSyllablesWithAllTargets:
-        av_speech_in_noise::initialize(methodName, contents, identity,
-            startingSnr, [&](const FixedLevelTest &test) {
+        av_speech_in_noise::initialize(configurables, methodName, contents,
+            identity, startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, everyTargetOnce);
                 av_speech_in_noise::initialize(
@@ -517,7 +544,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         break;
     case Method::fixedLevelConsonants:
         av_speech_in_noise::initializeFixedLevelTestWithEachTargetNTimes(
-            methodName, contents, identity, startingSnr,
+            configurables, methodName, contents, identity, startingSnr,
             [&](const FixedLevelTestWithEachTargetNTimes &test) {
                 eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
                 fixedLevelMethod.initialize(test, &eachTargetNTimes);
@@ -529,8 +556,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::fixedLevelChildEmotionsWithPredeterminedTargets:
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
     case Method::fixedLevelPassFailWithPredeterminedTargets:
-        av_speech_in_noise::initialize(methodName, contents, identity,
-            startingSnr, [&](const FixedLevelTest &test) {
+        av_speech_in_noise::initialize(configurables, methodName, contents,
+            identity, startingSnr, [&](const FixedLevelTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, predeterminedTargets);
                 av_speech_in_noise::initialize(
@@ -539,8 +566,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         break;
     case Method::fixedLevelButtonResponseWithPredeterminedTargets:
     case Method::fixedLevelButtonThenPassFailResponseWithPredeterminedTargets:
-        av_speech_in_noise::initialize(methodName, contents, identity,
-            startingSnr, [&](FixedLevelTest &test) {
+        av_speech_in_noise::initialize(configurables, methodName, contents,
+            identity, startingSnr, [&](FixedLevelTest &test) {
                 test.enableVibrotactileStimulus = true;
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, predeterminedTargets);
@@ -550,8 +577,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         break;
     case Method::fixedLevelFreeResponseWithTargetReplacement:
     case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
-        av_speech_in_noise::initializeFixedLevelFixedTrialsTest(methodName,
-            contents, identity, startingSnr,
+        av_speech_in_noise::initializeFixedLevelFixedTrialsTest(configurables,
+            methodName, contents, identity, startingSnr,
             [&](const FixedLevelFixedTrialsTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, targetsWithReplacement);

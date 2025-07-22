@@ -1,4 +1,5 @@
 #include "RunningATest.hpp"
+#include "Configuration.hpp"
 
 #include <gsl/gsl>
 
@@ -121,7 +122,7 @@ static void tryOpening(OutputFile &file, const TestIdentity &p) {
     }
 }
 
-constexpr auto operator-(const RealLevel &a, const RealLevel &b)
+static constexpr auto operator-(const RealLevel &a, const RealLevel &b)
     -> RealLevelDifference {
     return RealLevelDifference{a.dB_SPL - b.dB_SPL};
 }
@@ -173,10 +174,10 @@ static constexpr auto operator-(const Duration &a, const Duration &b)
 static void play(TargetPlayer &targetPlayer, const Calibration &calibration,
     RationalNumber videoScale) {
     throwRequestFailureOnInvalidAudioDevice(
-        [&](auto device) { setAudioDevice(targetPlayer, device); },
+        [&](const auto &device) { setAudioDevice(targetPlayer, device); },
         calibration.audioDevice);
     throwRequestFailureOnInvalidAudioFile(
-        [&](auto file) {
+        [&](const auto &file) {
             loadFile(targetPlayer, file, videoScale);
             apply(targetPlayer, levelAmplification(targetPlayer, calibration));
         },
@@ -188,10 +189,10 @@ static void play(TargetPlayer &targetPlayer, const Calibration &calibration,
 static void play(MaskerPlayer &maskerPlayer, const Calibration &calibration) {
     maskerPlayer.stop();
     throwRequestFailureOnInvalidAudioDevice(
-        [&](auto device) { setAudioDevice(maskerPlayer, device); },
+        [&](const auto &device) { setAudioDevice(maskerPlayer, device); },
         calibration.audioDevice);
     throwRequestFailureOnInvalidAudioFile(
-        [&](auto file) {
+        [&](const auto &file) {
             loadFile(maskerPlayer, file);
             apply(maskerPlayer, levelAmplification(maskerPlayer, calibration));
         },
@@ -214,8 +215,8 @@ static auto targetLevelAmplification(
 
 static void preparePlayersForNextTrial(TestMethod *testMethod,
     Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, const Test &test) {
-    loadFile(targetPlayer, testMethod->nextTarget(), test.videoScale);
+    MaskerPlayer &maskerPlayer, const Test &test, RationalNumber videoScale) {
+    loadFile(targetPlayer, testMethod->nextTarget(), videoScale);
     apply(
         targetPlayer, targetLevelAmplification(testMethod, maskerPlayer, test));
     const auto maskerPlayerSeekTimeUpperLimit{
@@ -230,13 +231,13 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     MaskerPlayer &maskerPlayer,
     const std::vector<std::reference_wrapper<RunningATest::TestObserver>>
         &observers,
-    const Test &test) {
+    const Test &test, RationalNumber videoScale) {
     for (auto observer : observers)
         observer.get().notifyThatSubjectHasResponded();
     if (!testMethod->complete()) {
         ++trialNumber_;
-        preparePlayersForNextTrial(
-            testMethod, randomizer, targetPlayer, maskerPlayer, test);
+        preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
+            maskerPlayer, test, videoScale);
     } else {
         testMethod->writeTestResult(outputFile);
         save(outputFile);
@@ -249,19 +250,22 @@ static void saveOutputFileAndPrepareNextTrialAfter(
     MaskerPlayer &maskerPlayer,
     const std::vector<std::reference_wrapper<RunningATest::TestObserver>>
         &observer,
-    const Test &test) {
+    const Test &test, RationalNumber videoScale) {
     f();
     save(outputFile);
     prepareNextTrialIfNeeded(testMethod, trialNumber_, outputFile, randomizer,
-        targetPlayer, maskerPlayer, observer, test);
+        targetPlayer, maskerPlayer, observer, test, videoScale);
 }
 
 RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
-    OutputFile &outputFile, Randomizer &randomizer, Clock &clock)
+    OutputFile &outputFile, Randomizer &randomizer, Clock &clock,
+    ConfigurationRegistry &registry)
     : maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
       evaluator{evaluator}, outputFile{outputFile}, randomizer{randomizer},
       clock{clock}, testMethod{&nullTestMethod} {
+    registry.subscribe(*this, "video scale denominator");
+    registry.subscribe(*this, "video scale numerator");
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
 }
@@ -291,7 +295,7 @@ void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test,
     hide(targetPlayer);
     maskerPlayer.apply(maskerLevelAmplification(maskerPlayer, test));
     preparePlayersForNextTrial(
-        testMethod, randomizer, targetPlayer, maskerPlayer, test);
+        testMethod, randomizer, targetPlayer, maskerPlayer, test, videoScale);
     testMethod->writeTestingParameters(outputFile);
 
     useAllChannels(targetPlayer);
@@ -318,7 +322,7 @@ void RunningATestImpl::playTrial(const AudioSettings &settings) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     throwRequestFailureOnInvalidAudioDevice(
-        [&](auto device) {
+        [&](const auto &device) {
             setAudioDevices(maskerPlayer, targetPlayer, device);
         },
         settings.audioDevice);
@@ -364,13 +368,13 @@ void RunningATestImpl::submit(
             testMethod->writeLastCoordinateResponse(outputFile);
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, testObservers, test);
+        maskerPlayer, testObservers, test, videoScale);
 }
 
 void RunningATestImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, testObservers,
-        test);
+        outputFile, randomizer, targetPlayer, maskerPlayer, testObservers, test,
+        videoScale);
 }
 
 void RunningATestImpl::playCalibration(const Calibration &calibration) {
@@ -406,4 +410,20 @@ auto RunningATestImpl::targetFileName() -> std::string {
 }
 
 auto RunningATestImpl::playTrialTime() -> std::string { return playTrialTime_; }
+
+static auto integer(const std::string &s) -> int {
+    try {
+        return std::stoi(s);
+    } catch (const std::invalid_argument &) {
+        return 0;
+    }
+}
+
+void RunningATestImpl::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "video scale denominator")
+        videoScale.denominator = integer(value);
+    else if (key == "video scale numerator")
+        videoScale.numerator = integer(value);
+}
 }
