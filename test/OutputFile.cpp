@@ -1060,7 +1060,7 @@ OUTPUT_FILE_TEST(writeCommonAdaptiveTest) {
     assertCommonTestWritten(writingAdaptiveTest);
 }
 
-OUTPUT_FILE_TEST(writesTrackSettings) {
+OUTPUT_FILE_TEST(writesLevittTrackSettings) {
     AdaptiveTest test;
     TrackingSequence first;
     first.up = 1;
@@ -1083,6 +1083,20 @@ OUTPUT_FILE_TEST(writesTrackSettings) {
     assertContainsColonDelimitedEntry(writer, "reversals per step size", "3 7");
     assertContainsColonDelimitedEntry(writer, "step sizes (dB)", "4 8");
     assertContainsColonDelimitedEntry(writer, "threshold reversals", "9");
+    assertEndsWith(writer, "\n\n");
+}
+
+OUTPUT_FILE_TEST(writesUmlTrackSettings) {
+    AdaptiveTest test;
+    UmlSettings settings;
+    settings.alpha.space.space = ParameterSpace::Linear;
+    settings.alpha.space.lower = -12.3;
+    settings.alpha.space.upper = 45.6;
+    settings.alpha.space.N = 7;
+    test.trackSettings = settings;
+    file.write(test);
+    assertContainsColonDelimitedEntry(
+        writer, "alpha space", "linear -12.3 45.6 7");
     assertEndsWith(writer, "\n\n");
 }
 

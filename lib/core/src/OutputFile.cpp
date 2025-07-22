@@ -71,6 +71,12 @@ static auto operator<<(std::ostream &os, Point2D point) -> std::ostream & {
     return os << point.x << ' ' << point.y;
 }
 
+static auto operator<<(std::ostream &os, ParameterSpaceSetting s)
+    -> std::ostream & {
+    return os << (s.space == ParameterSpace::Linear ? "linear" : "log") << ' '
+              << s.lower << ' ' << s.upper << ' ' << s.N;
+}
+
 template <typename T>
 static auto insert(std::ostream &stream, const T &item) -> std::ostream & {
     return stream << item;
@@ -192,7 +198,8 @@ static auto operator<<(std::ostream &stream, const LevittSettings &s)
 
 static auto operator<<(std::ostream &stream, const UmlSettings &s)
     -> std::ostream & {
-    return stream;
+    insertLabeledLine(stream, "alpha space", s.alpha.space);
+    return insertNewLine(stream);
 }
 
 static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
