@@ -225,7 +225,9 @@ static auto operator<<(std::ostream &stream, const UmlSettings &s)
     insertLabeledLine(stream, "gamma prior", s.gamma.priorProbability);
     insertLabeledLine(stream, "lambda space", s.lambda.space);
     insertLabeledLine(stream, "lambda prior", s.lambda.priorProbability);
-    return insertNewLine(stream);
+    insertLabeledLine(stream, "up", s.up);
+    insertLabeledLine(stream, "down", s.down);
+    return insertLabeledLine(stream, "trials", s.trials);
 }
 
 static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
