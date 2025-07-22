@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_RECOGNITIONTESTMODELHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_RECOGNITIONTESTMODELHPP_
 
+#include "Configuration.hpp"
 #include "Randomizer.hpp"
 #include "IMaskerPlayer.hpp"
 #include "IOutputFile.hpp"
@@ -24,10 +25,11 @@ auto trialDuration(TargetPlayer &target, MaskerPlayer &masker) -> Duration;
 
 class RunningATestImpl : public TargetPlayer::Observer,
                          public MaskerPlayer::Observer,
+                         public Configurable,
                          public RunningATest {
   public:
     RunningATestImpl(TargetPlayer &, MaskerPlayer &, ResponseEvaluator &,
-        OutputFile &, Randomizer &, Clock &);
+        OutputFile &, Randomizer &, Clock &, ConfigurationRegistry &);
     void attach(RunningATest::RequestObserver *) override;
     void initialize(TestMethod *, const Test &,
         std::vector<std::reference_wrapper<TestObserver>>) override;
@@ -45,12 +47,14 @@ class RunningATestImpl : public TargetPlayer::Observer,
     void prepareNextTrialIfNeeded() override;
     void notifyThatPreRollHasCompleted() override;
     auto playTrialTime() -> std::string override;
+    void configure(const std::string &key, const std::string &value) override;
     static constexpr Delay maskerChannelDelay{0.004};
     static constexpr Duration targetOffsetFringeDuration{
         targetOnsetFringeDuration};
 
   private:
     Test test;
+    RationalNumber videoScale{2, 3};
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
     ResponseEvaluator &evaluator;

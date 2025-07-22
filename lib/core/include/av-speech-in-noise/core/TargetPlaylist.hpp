@@ -6,8 +6,6 @@
 
 #include <gsl/gsl>
 
-#include <string>
-
 namespace av_speech_in_noise {
 class TargetPlaylist {
   public:

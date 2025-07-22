@@ -5,11 +5,16 @@
 #include "Task.hpp"
 #include "TestSetupImpl.hpp"
 
+#include <av-speech-in-noise/core/Configuration.hpp>
 #include <av-speech-in-noise/core/IAdaptiveMethod.hpp>
 #include <av-speech-in-noise/core/IFixedLevelMethod.hpp>
 #include <av-speech-in-noise/core/IRunningATest.hpp>
 #include <av-speech-in-noise/core/TargetPlaylist.hpp>
 #include <cstdint>
+#include <functional>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace av_speech_in_noise {
 enum class Method : std::uint8_t {
@@ -215,6 +220,8 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     auto calibration(const std::string &) -> Calibration override;
 
   private:
+    std::map<std::string, std::vector<std::reference_wrapper<Configurable>>>
+        configurables;
     RunningATest &runningATest;
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;

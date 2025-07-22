@@ -2,8 +2,12 @@
 #define AV_SPEECH_IN_NOISE_LIB_PLAYER_INCLUDE_AVSPEECHINNOISE_PLAYER_TARGETPLAYERIMPLHPP_
 
 #include "AudioReader.hpp"
+#include "av-speech-in-noise/Model.hpp"
+#include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/ITargetPlayer.hpp>
+
 #include <gsl/gsl>
+
 #include <vector>
 #include <string>
 #include <atomic>
@@ -13,14 +17,14 @@ class VideoPlayer {
   public:
     class Observer {
       public:
-        virtual ~Observer() = default;
+        AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Observer);
         virtual void playbackComplete() = 0;
         virtual void notifyThatPreRollHasCompleted() = 0;
         virtual void fillAudioBuffer(
             const std::vector<gsl::span<float>> &audio) = 0;
     };
 
-    virtual ~VideoPlayer() = default;
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(VideoPlayer);
     virtual void attach(Observer *) = 0;
     virtual void subscribeToPlaybackCompletion() = 0;
     virtual void show() = 0;
@@ -42,7 +46,7 @@ class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
     void attach(TargetPlayer::Observer *) override;
     void play() override;
     void playAt(const PlayerTimeWithDelay &) override;
-    void loadFile(const LocalUrl &, RationalNumber scale) override;
+    void loadFile(const LocalUrl &, RationalNumber) override;
     void hideVideo() override;
     void showVideo() override;
     auto digitalLevel() -> DigitalLevel override;
@@ -62,7 +66,7 @@ class TargetPlayerImpl : public TargetPlayer, public VideoPlayer::Observer {
   private:
     auto readAudio_() -> audio_type;
 
-    std::string filePath_{};
+    std::string filePath_;
     VideoPlayer *player;
     AudioReader *reader;
     TargetPlayer::Observer *listener_{};

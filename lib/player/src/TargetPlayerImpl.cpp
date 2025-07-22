@@ -1,5 +1,7 @@
 #include "TargetPlayerImpl.hpp"
+
 #include <gsl/gsl>
+
 #include <cmath>
 #include <algorithm>
 #include <limits>
@@ -18,15 +20,16 @@ void TargetPlayerImpl::playAt(const PlayerTimeWithDelay &t) {
     player->playAt(t);
 }
 
-void TargetPlayerImpl::loadFile(const LocalUrl &file, RationalNumber scale) {
-    player->loadFile(filePath_ = file.path, scale);
+void TargetPlayerImpl::loadFile(
+    const LocalUrl &file, RationalNumber videoScale) {
+    player->loadFile(filePath_ = file.path, videoScale);
 }
 
 void TargetPlayerImpl::hideVideo() { player->hide(); }
 
 void TargetPlayerImpl::showVideo() { player->show(); }
 
-template <typename T> auto rms(const std::vector<T> &x) -> T {
+template <typename T> static auto rms(const std::vector<T> &x) -> T {
     return std::sqrt(std::accumulate(x.begin(), x.end(), T{0}, [](T a, T b) {
         return a += b * b;
     }) / x.size());
@@ -37,7 +40,7 @@ auto TargetPlayerImpl::digitalLevel() -> DigitalLevel {
     if (audio.empty())
         return DigitalLevel{-std::numeric_limits<double>::infinity()};
 
-    auto firstChannel{audio.front()};
+    const auto &firstChannel{audio.front()};
     return DigitalLevel{20 * std::log10(rms(firstChannel))};
 }
 
@@ -55,12 +58,12 @@ void TargetPlayerImpl::apply(LevelAmplification x) {
 
 void TargetPlayerImpl::playbackComplete() { listener_->playbackComplete(); }
 
-constexpr auto begin(const gsl::span<float> &channel)
+static constexpr auto begin(const gsl::span<float> &channel)
     -> gsl::span<float>::iterator {
     return channel.begin();
 }
 
-constexpr auto end(const gsl::span<float> &channel)
+static constexpr auto end(const gsl::span<float> &channel)
     -> gsl::span<float>::iterator {
     return channel.end();
 }
