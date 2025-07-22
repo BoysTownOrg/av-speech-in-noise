@@ -77,6 +77,25 @@ static auto operator<<(std::ostream &os, ParameterSpaceSetting s)
               << s.lower << ' ' << s.upper << ' ' << s.N;
 }
 
+static constexpr auto name(PriorProbabilityKind k) -> const char * {
+    switch (k) {
+    case PriorProbabilityKind::LinearNorm:
+        return "linearnorm";
+    case PriorProbabilityKind::LogNorm:
+        return "lognorm";
+    case PriorProbabilityKind::Flat:
+        return "flat";
+    }
+}
+
+static auto operator<<(std::ostream &os, PriorProbabilitySetting s)
+    -> std::ostream & {
+    os << name(s.kind);
+    if (s.kind != PriorProbabilityKind::Flat)
+        os << ' ' << s.mu << ' ' << s.sigma;
+    return os;
+}
+
 template <typename T>
 static auto insert(std::ostream &stream, const T &item) -> std::ostream & {
     return stream << item;
@@ -199,6 +218,7 @@ static auto operator<<(std::ostream &stream, const LevittSettings &s)
 static auto operator<<(std::ostream &stream, const UmlSettings &s)
     -> std::ostream & {
     insertLabeledLine(stream, "alpha space", s.alpha.space);
+    insertLabeledLine(stream, "alpha prior", s.alpha.priorProbability);
     insertLabeledLine(stream, "beta space", s.beta.space);
     insertLabeledLine(stream, "gamma space", s.gamma.space);
     insertLabeledLine(stream, "lambda space", s.lambda.space);
