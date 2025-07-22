@@ -1093,10 +1093,15 @@ OUTPUT_FILE_TEST(writesUmlTrackSettings) {
     settings.alpha.space.lower = -12.3;
     settings.alpha.space.upper = 45.6;
     settings.alpha.space.N = 7;
+    settings.beta.space.space = ParameterSpace::Log;
+    settings.beta.space.lower = -2.3;
+    settings.beta.space.upper = 5.6;
+    settings.beta.space.N = 70;
     test.trackSettings = settings;
     file.write(test);
     assertContainsColonDelimitedEntry(
         writer, "alpha space", "linear -12.3 45.6 7");
+    assertContainsColonDelimitedEntry(writer, "beta space", "log -2.3 5.6 70");
     assertEndsWith(writer, "\n\n");
 }
 

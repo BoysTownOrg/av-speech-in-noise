@@ -199,6 +199,9 @@ static auto operator<<(std::ostream &stream, const LevittSettings &s)
 static auto operator<<(std::ostream &stream, const UmlSettings &s)
     -> std::ostream & {
     insertLabeledLine(stream, "alpha space", s.alpha.space);
+    insertLabeledLine(stream, "beta space", s.beta.space);
+    insertLabeledLine(stream, "gamma space", s.gamma.space);
+    insertLabeledLine(stream, "lambda space", s.lambda.space);
     return insertNewLine(stream);
 }
 
