@@ -1092,7 +1092,7 @@ RECOGNITION_TEST_MODEL_TEST(maskerFadeOutCompleteHidesTargetPlayer) {
 
 RECOGNITION_TEST_MODEL_TEST(
     maskerFadeOutCompleteDoesNotHideTargetPlayerWhenKeepingVideoShown) {
-    test.keepVideoShown = true;
+    model.configure("keep video shown", "true");
     run(initializingTest, model);
     targetPlayer.clearHidden();
     fadeOutComplete(maskerPlayer);
