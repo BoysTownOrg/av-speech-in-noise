@@ -181,8 +181,7 @@ void assertOverridesTestIdentity(
             entryWithNewline(TestSetting::session, "f"),
             entryWithNewline(TestSetting::rmeSetting, "i"),
             entryWithNewline(TestSetting::transducer, "j"),
-            entryWithNewline(TestSetting::meta, "m"),
-            entryWithNewline(TestSetting::relativeOutputPath, "p")},
+            entryWithNewline(TestSetting::meta, "m")},
         0, testIdentity);
     assertSubjectIdEquals("d", f);
     assertTesterIdEquals("e", f);

@@ -99,7 +99,6 @@ enum class TestSetting : std::uint8_t {
     rmeSetting,
     transducer,
     meta,
-    relativeOutputPath,
     puzzle,
     uml,
     trials,
@@ -151,8 +150,6 @@ constexpr auto name(TestSetting p) -> const char * {
         return "transducer";
     case TestSetting::meta:
         return "meta";
-    case TestSetting::relativeOutputPath:
-        return "relative output path";
     case TestSetting::puzzle:
         return "puzzle";
     case TestSetting::uml:

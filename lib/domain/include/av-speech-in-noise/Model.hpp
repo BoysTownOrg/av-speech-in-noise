@@ -48,7 +48,6 @@ struct TestIdentity {
     std::string rmeSetting;
     std::string transducer;
     std::string meta;
-    LocalUrl relativeOutputUrl;
 };
 
 enum class Consonant : std::uint8_t {

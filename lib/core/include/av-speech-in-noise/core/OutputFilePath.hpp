@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_OUTPUTFILEPATHHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_OUTPUTFILEPATHHPP_
 
+#include "Configuration.hpp"
 #include "OutputFile.hpp"
 #include "FileSystemPath.hpp"
 #include <filesystem>
@@ -30,12 +31,13 @@ class MetaConditionOutputFileName : public OutputFileName {
     TimeStamp &timeStamp;
 };
 
-class OutputFilePathImpl : public OutputFilePath {
+class OutputFilePathImpl : public OutputFilePath, public Configurable {
   public:
-    OutputFilePathImpl(OutputFileName &, FileSystemPath &);
+    OutputFilePathImpl(
+        OutputFileName &, FileSystemPath &, ConfigurationRegistry &);
     auto generateFileName(const TestIdentity &) -> std::string override;
     auto outputDirectory() -> std::string override;
-    void setRelativeOutputDirectory(std::filesystem::path) override;
+    void configure(const std::string &key, const std::string &value) override;
 
   private:
     auto outputDirectory_() -> std::string;

@@ -2,9 +2,11 @@
 #include <sstream>
 
 namespace av_speech_in_noise {
-OutputFilePathImpl::OutputFilePathImpl(
-    OutputFileName &outputFileName, FileSystemPath &systemPath)
-    : outputFileName{outputFileName}, systemPath{systemPath} {}
+OutputFilePathImpl::OutputFilePathImpl(OutputFileName &outputFileName,
+    FileSystemPath &systemPath, ConfigurationRegistry &registry)
+    : outputFileName{outputFileName}, systemPath{systemPath} {
+    registry.subscribe(*this, "relative output path");
+}
 
 static auto format(const TestIdentity &test) -> std::string {
     std::stringstream stream;
@@ -71,8 +73,11 @@ auto OutputFilePathImpl::outputDirectory_() -> std::string {
     return systemPath.homeDirectory() / relativeOutputDirectory;
 }
 
-void OutputFilePathImpl::setRelativeOutputDirectory(std::filesystem::path s) {
-    relativeOutputDirectory = std::move(s);
-    systemPath.createDirectory(outputDirectory_());
+void OutputFilePathImpl::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "relative output path") {
+        relativeOutputDirectory = std::move(value);
+        systemPath.createDirectory(outputDirectory_());
+    }
 }
 }

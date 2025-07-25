@@ -1,3 +1,4 @@
+#include "ConfigurationRegistryStub.hpp"
 #include "TimeStampStub.hpp"
 #include "assert-utility.hpp"
 
@@ -51,14 +52,15 @@ void setHomeDirectory(FileSystemPathStub &systemPath, std::string s) {
 }
 
 void setRelativeOutputDirectory(OutputFilePathImpl &path, std::string s) {
-    path.setRelativeOutputDirectory(std::move(s));
+    path.configure("relative output path", s);
 }
 
 class OutputFilePathTests : public ::testing::Test {
   protected:
     OutputFileNameStub fileName;
     FileSystemPathStub systemPath;
-    OutputFilePathImpl path{fileName, systemPath};
+    ConfigurationRegistryStub registry;
+    OutputFilePathImpl path{fileName, systemPath, registry};
 };
 
 class OutputFileNameTests : public ::testing::Test {
