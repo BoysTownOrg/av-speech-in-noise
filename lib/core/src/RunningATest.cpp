@@ -331,7 +331,7 @@ void RunningATestImpl::playTrial(const AudioSettings &settings) {
     playTrialTime_ = clock.time();
     for (auto observer : testObservers)
         observer.get().notifyThatTrialWillBegin(trialNumber_);
-    if (test.condition == Condition::audioVisual)
+    if (condition == Condition::audioVisual)
         show(targetPlayer);
     targetPlayer.preRoll();
     trialInProgress_ = true;
@@ -428,5 +428,9 @@ void RunningATestImpl::configure(
         videoScale.numerator = integer(value);
     else if (key == "keep video shown")
         keepVideoShown = boolean(value);
+    else if (key == "condition")
+        for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
+            if (value == name(c))
+                condition = c;
 }
 }
