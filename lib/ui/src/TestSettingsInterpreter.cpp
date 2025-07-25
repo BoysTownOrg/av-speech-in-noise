@@ -100,6 +100,15 @@ static void broadcast(
             each.get().configure(key, value);
 }
 
+void broadcast(
+    const std::map<std::string,
+        std::vector<std::reference_wrapper<Configurable>>> &configurables,
+    const std::string &entryName, const std::string &entry) {
+    if (auto search = configurables.find(entryName);
+        search != configurables.end())
+        for (auto each : search->second)
+            each.get().configure(entryName, entry);
+}
 static void assign(Test &test,
     const std::map<std::string,
         std::vector<std::reference_wrapper<Configurable>>> &configurables,
@@ -126,10 +135,8 @@ static void assign(Test &test,
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
             if (entry == name(c))
                 test.condition = c;
-    } else if (auto search = configurables.find(entryName);
-        search != configurables.end())
-        for (auto each : search->second)
-            each.get().configure(entryName, entry);
+    } else
+        broadcast(configurables, entryName, entry);
 }
 
 static void assign(FixedLevelTest &test,
@@ -419,6 +426,9 @@ static auto localUrlFromPath(const std::string &path) -> LocalUrl {
 
 void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     const TestIdentity &identity, SNR startingSnr) {
+    broadcast(configurables, "relative output path",
+        "Documents/AvSpeechInNoise Data");
+
     std::stringstream stream{contents};
     auto usingPuzzle = false;
     for (std::string line; std::getline(stream, line);) {
