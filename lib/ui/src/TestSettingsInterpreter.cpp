@@ -131,11 +131,7 @@ static void assign(Test &test,
         test.identity.transducer = entry;
     else if (entryName == name(TestSetting::meta))
         test.identity.meta = entry;
-    else if (entryName == name(TestSetting::condition)) {
-        for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
-            if (entry == name(c))
-                test.condition = c;
-    } else
+    else
         broadcast(configurables, entryName, entry);
 }
 

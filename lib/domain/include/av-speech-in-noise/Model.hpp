@@ -148,7 +148,6 @@ struct Test {
     LocalUrl maskerFileUrl;
     RealLevel maskerLevel;
     RealLevel fullScaleLevel;
-    Condition condition{};
     AudioChannelOption audioChannelOption{AudioChannelOption::all};
     bool enableVibrotactileStimulus{};
 };
