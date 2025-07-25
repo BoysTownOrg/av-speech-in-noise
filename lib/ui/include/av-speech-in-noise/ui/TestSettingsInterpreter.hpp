@@ -100,8 +100,6 @@ enum class TestSetting : std::uint8_t {
     transducer,
     meta,
     relativeOutputPath,
-    videoScaleNumerator,
-    videoScaleDenominator,
     keepVideoShown,
     puzzle,
     uml,
@@ -160,10 +158,6 @@ constexpr auto name(TestSetting p) -> const char * {
         return "keep video shown";
     case TestSetting::puzzle:
         return "puzzle";
-    case TestSetting::videoScaleNumerator:
-        return "video scale numerator";
-    case TestSetting::videoScaleDenominator:
-        return "video scale denominator";
     case TestSetting::uml:
         return "uml";
     case TestSetting::trials:
