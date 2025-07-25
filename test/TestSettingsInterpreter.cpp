@@ -173,7 +173,6 @@ void assertOverridesTestIdentity(
     testIdentity.rmeSetting = "g";
     testIdentity.transducer = "h";
     testIdentity.meta = "k";
-    testIdentity.relativeOutputUrl.path = "n";
     initializeTest(interpreter,
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::subjectId, "d"),
@@ -189,7 +188,6 @@ void assertOverridesTestIdentity(
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"i"}, f.rmeSetting);
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"j"}, f.transducer);
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"m"}, f.meta);
-    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(std::string{"p"}, f.relativeOutputUrl.path);
 }
 
 void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter,
@@ -1199,6 +1197,17 @@ TEST_SETTINGS_INTERPRETER_TEST(tbd) {
             "hello: 1 2 3"});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("hello", configurable.key);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("1 2 3", configurable.value);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    initializingTestBroadcastsDefaultRelativeOutputDirectory) {
+    ConfigurableStub configurable;
+    interpreter.subscribe(configurable, "relative output path");
+    initializeTest(interpreter,
+        {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants)});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("relative output path", configurable.key);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "Documents/AvSpeechInNoise Data", configurable.value);
 }
 }
 }

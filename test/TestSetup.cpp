@@ -425,14 +425,6 @@ TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesTransducer) {
         std::string{"a"}, testSettingsInterpreter.identity().transducer);
 }
 
-TEST_SETUP_CONTROLLER_TEST(
-    confirmingTestSetupPassesDefaultRelativeOutputDirectory) {
-    run(confirmingTestSetup);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"Documents/AvSpeechInNoise Data"},
-        testSettingsInterpreter.identity().relativeOutputUrl.path);
-}
-
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesLevel) {
     assertPassesLevel(playingCalibration);
 }
@@ -534,8 +526,8 @@ TEST_SETUP_PRESENTER_TEST(presenterHidesViewWhenStopped) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.hidden());
 }
 
-auto contains(
-    const std::vector<std::string> &items, const std::string &item) -> bool {
+auto contains(const std::vector<std::string> &items, const std::string &item)
+    -> bool {
     return std::find(items.begin(), items.end(), item) != items.end();
 }
 
