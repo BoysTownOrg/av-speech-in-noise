@@ -100,8 +100,6 @@ enum class TestSetting : std::uint8_t {
     transducer,
     meta,
     relativeOutputPath,
-    videoScaleNumerator,
-    videoScaleDenominator,
     keepVideoShown,
     puzzle,
     uml,
@@ -160,10 +158,6 @@ constexpr auto name(TestSetting p) -> const char * {
         return "keep video shown";
     case TestSetting::puzzle:
         return "puzzle";
-    case TestSetting::videoScaleNumerator:
-        return "video scale numerator";
-    case TestSetting::videoScaleDenominator:
-        return "video scale denominator";
     case TestSetting::uml:
         return "uml";
     case TestSetting::trials:
@@ -187,7 +181,8 @@ constexpr auto name(TestSetting p) -> const char * {
     }
 }
 
-class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
+class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
+                                    public ConfigurationRegistry {
   public:
     TestSettingsInterpreterImpl(RunningATest &runningATest,
         AdaptiveMethod &adaptiveMethod, FixedLevelMethod &fixedLevelMethod,
@@ -218,6 +213,9 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
+    void subscribe(Configurable &c, const std::string &key) override {
+        configurables[key].push_back(c);
+    }
 
   private:
     std::map<std::string, std::vector<std::reference_wrapper<Configurable>>>

@@ -6,6 +6,7 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/core/Configuration.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/RunningATest.hpp>
@@ -451,6 +452,11 @@ void fadeInComplete(
     player.fadeInComplete(t);
 }
 
+class ConfigurationRegistryStub : public ConfigurationRegistry {
+  public:
+    void subscribe(Configurable &, const std::string &key) override {}
+};
+
 class RunningATestTests : public ::testing::Test {
   protected:
     ModelObserverStub listener;
@@ -460,8 +466,9 @@ class RunningATestTests : public ::testing::Test {
     OutputFileStub outputFile;
     RandomizerStub randomizer;
     ClockStub clock;
-    RunningATestImpl model{
-        targetPlayer, maskerPlayer, evaluator, outputFile, randomizer, clock};
+    ConfigurationRegistryStub configRegistry;
+    RunningATestImpl model{targetPlayer, maskerPlayer, evaluator, outputFile,
+        randomizer, clock, configRegistry};
     TestMethodStub testMethod;
     Calibration calibration{};
     PlayingCalibration playingCalibration{calibration, targetPlayer};
@@ -877,7 +884,8 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestPassesVideoScaleToTargetPlayer) {
-    test.videoScale = RationalNumber{3, 4};
+    model.configure("video scale numerator", "3");
+    model.configure("video scale denominator", "4");
     run(initializingTest, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3, targetPlayer.videoScale().numerator);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4, targetPlayer.videoScale().denominator);
@@ -923,7 +931,8 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     submittingCoordinateResponsePassesVideoScaleToTargetPlayer) {
-    test.videoScale = RationalNumber{3, 4};
+    model.configure("video scale numerator", "3");
+    model.configure("video scale denominator", "4");
     run(initializingTest, model);
     run(submittingCoordinateResponse, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3, targetPlayer.videoScale().numerator);
@@ -938,7 +947,8 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     preparingNextTrialIfNeededPassesVideoScaleToTargetPlayer) {
-    test.videoScale = RationalNumber{3, 4};
+    model.configure("video scale numerator", "3");
+    model.configure("video scale denominator", "4");
     run(initializingTest, model);
     run(preparingNextTrialIfNeeded, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(3, targetPlayer.videoScale().numerator);

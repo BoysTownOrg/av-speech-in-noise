@@ -6,7 +6,6 @@
 #include "TrackStub.hpp"
 #include "assert-utility.hpp"
 #include "PuzzleStub.hpp"
-#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/ui/SessionController.hpp>
@@ -282,8 +281,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
             entryWithNewline(TestSetting::maskerLevel, "65"),                  \
             entryWithNewline(TestSetting::thresholdReversals, "4"),            \
             entryWithNewline(TestSetting::condition, Condition::audioVisual),  \
-            entryWithNewline(TestSetting::videoScaleNumerator, "7"),           \
-            entryWithNewline(TestSetting::videoScaleDenominator, "9"),         \
             entryWithNewline(TestSetting::keepVideoShown, "true")},            \
         5);                                                                    \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
@@ -304,10 +301,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         SessionControllerImpl::fullScaleLevel.dB_SPL,                          \
         adaptiveMethod.test.fullScaleLevel.dB_SPL);                            \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        7, adaptiveMethod.test.videoScale.numerator);                          \
-    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(                                           \
-        9, adaptiveMethod.test.videoScale.denominator);                        \
     AV_SPEECH_IN_NOISE_ASSERT_EQUAL(true, adaptiveMethod.test.keepVideoShown)
 
 #define AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS( \
@@ -1189,6 +1182,26 @@ TEST_SETTINGS_INTERPRETER_TEST(
             entryWithNewline(
                 TestSetting::method, Method::fixedLevelConsonants)});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0, eachTargetNTimes.repeats());
+}
+
+class ConfigurableStub : public Configurable {
+  public:
+    void configure(const std::string &key, const std::string &value) override {
+        this->key = key;
+        this->value = value;
+    }
+    std::string key;
+    std::string value;
+};
+
+TEST_SETTINGS_INTERPRETER_TEST(tbd) {
+    ConfigurableStub configurable;
+    interpreter.subscribe(configurable, "hello");
+    initializeTest(interpreter,
+        {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
+            "hello: 1 2 3"});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("hello", configurable.key);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("1 2 3", configurable.value);
 }
 }
 }
