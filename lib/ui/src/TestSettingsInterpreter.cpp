@@ -122,8 +122,6 @@ static void assign(Test &test,
         test.identity.transducer = entry;
     else if (entryName == name(TestSetting::meta))
         test.identity.meta = entry;
-    else if (entryName == name(TestSetting::relativeOutputPath))
-        test.identity.relativeOutputUrl.path = entry;
     else if (entryName == name(TestSetting::condition)) {
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
             if (entry == name(c))

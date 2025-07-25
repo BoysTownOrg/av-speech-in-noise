@@ -43,8 +43,8 @@ static auto readTestSettingsFile(
     }
 }
 
-static auto roundedInteger(
-    const std::string &x, const std::string &identifier) -> int {
+static auto roundedInteger(const std::string &x, const std::string &identifier)
+    -> int {
     try {
         return gsl::narrow<int>(std::lround(std::stod(x)));
     } catch (const std::exception &) {

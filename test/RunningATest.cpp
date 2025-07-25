@@ -1,4 +1,5 @@
 #include "LogString.hpp"
+#include "ConfigurationRegistryStub.hpp"
 #include "MaskerPlayerStub.hpp"
 #include "ModelObserverStub.hpp"
 #include "OutputFileStub.hpp"
@@ -6,7 +7,6 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/core/Configuration.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/RunningATest.hpp>
@@ -451,11 +451,6 @@ void fadeInComplete(
     MaskerPlayerStub &player, const AudioSampleTimeWithOffset &t) {
     player.fadeInComplete(t);
 }
-
-class ConfigurationRegistryStub : public ConfigurationRegistry {
-  public:
-    void subscribe(Configurable &, const std::string &key) override {}
-};
 
 class RunningATestTests : public ::testing::Test {
   protected:
