@@ -67,6 +67,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     TestMethod *testMethod{};
     int trialNumber_{};
     bool trialInProgress_{};
+    bool keepVideoShown{};
 };
 }
 

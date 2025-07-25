@@ -6,6 +6,8 @@
 #include <string>
 
 namespace av_speech_in_noise {
+inline auto boolean(const std::string &s) -> bool { return s == "true"; }
+
 class Configurable {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Configurable);

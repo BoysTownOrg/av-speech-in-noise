@@ -151,7 +151,6 @@ struct Test {
     RealLevel fullScaleLevel;
     Condition condition{};
     AudioChannelOption audioChannelOption{AudioChannelOption::all};
-    bool keepVideoShown{};
     bool enableVibrotactileStimulus{};
 };
 

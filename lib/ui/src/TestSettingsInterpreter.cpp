@@ -90,8 +90,6 @@ static void applyToEachEntry(
         f(entryName(line), entry(line));
 }
 
-static auto boolean(const std::string &s) -> bool { return s == "true"; }
-
 static auto integer(const std::string &s) -> int {
     try {
         return std::stoi(s);
@@ -124,8 +122,6 @@ static void assign(Test &test,
         test.identity.meta = entry;
     else if (entryName == name(TestSetting::relativeOutputPath))
         test.identity.relativeOutputUrl.path = entry;
-    else if (entryName == name(TestSetting::keepVideoShown))
-        test.keepVideoShown = boolean(entry);
     else if (entryName == name(TestSetting::condition)) {
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
             if (entry == name(c))

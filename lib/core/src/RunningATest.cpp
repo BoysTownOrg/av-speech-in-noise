@@ -266,6 +266,7 @@ RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
       clock{clock}, testMethod{&nullTestMethod} {
     registry.subscribe(*this, "video scale denominator");
     registry.subscribe(*this, "video scale numerator");
+    registry.subscribe(*this, "keep video shown");
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
 }
@@ -352,7 +353,7 @@ void RunningATestImpl::fadeInComplete(const AudioSampleTimeWithOffset &t) {
 }
 
 void RunningATestImpl::fadeOutComplete() {
-    if (!test.keepVideoShown)
+    if (!keepVideoShown)
         hide(targetPlayer);
     for (auto observer : testObservers)
         observer.get().notifyThatStimulusHasEnded();
@@ -425,5 +426,7 @@ void RunningATestImpl::configure(
         videoScale.denominator = integer(value);
     else if (key == "video scale numerator")
         videoScale.numerator = integer(value);
+    else if (key == "keep video shown")
+        keepVideoShown = boolean(value);
 }
 }

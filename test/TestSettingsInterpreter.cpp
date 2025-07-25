@@ -280,8 +280,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
             entryWithNewline(TestSetting::masker, "b"),                        \
             entryWithNewline(TestSetting::maskerLevel, "65"),                  \
             entryWithNewline(TestSetting::thresholdReversals, "4"),            \
-            entryWithNewline(TestSetting::condition, Condition::audioVisual),  \
-            entryWithNewline(TestSetting::keepVideoShown, "true")},            \
+            entryWithNewline(TestSetting::condition, Condition::audioVisual)}, \
         5);                                                                    \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         std::string{"a"}, adaptiveMethod.test.targetsUrl.path);                \
@@ -300,8 +299,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         adaptiveMethod.test.trackBumpLimit);                                   \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         SessionControllerImpl::fullScaleLevel.dB_SPL,                          \
-        adaptiveMethod.test.fullScaleLevel.dB_SPL);                            \
-    AV_SPEECH_IN_NOISE_ASSERT_EQUAL(true, adaptiveMethod.test.keepVideoShown)
+        adaptiveMethod.test.fullScaleLevel.dB_SPL);
 
 #define AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS( \
     m, test)                                                                   \
