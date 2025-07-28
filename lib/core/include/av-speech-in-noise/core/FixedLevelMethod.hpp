@@ -19,7 +19,9 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     void submit(const Flaggable &) override;
     void submit(const ThreeKeywordsResponse &) override;
     void writeLastCoordinateResponse(OutputFile &) override;
-    void writeTestingParameters(OutputFile &) override;
+    void writeTestingParameters(OutputFile &,
+        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
+        override;
     void writeTestResult(OutputFile &) override {}
     auto snr() -> FloatSNR override;
     auto nextTarget() -> LocalUrl override;

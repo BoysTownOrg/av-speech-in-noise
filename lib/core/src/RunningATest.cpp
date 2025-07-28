@@ -4,6 +4,8 @@
 #include <gsl/gsl>
 
 #include <functional>
+#include <utility>
+#include <vector>
 
 namespace av_speech_in_noise {
 namespace {
@@ -14,7 +16,8 @@ class NullTestMethod : public TestMethod {
     auto snr() -> FloatSNR override { return FloatSNR{}; }
     void submit(const coordinate_response_measure::Response &) override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
-    void writeTestingParameters(OutputFile &) override {}
+    void writeTestingParameters(OutputFile &,
+        gsl::span<std::pair<std::string, std::string>>) override {}
     void writeTestResult(OutputFile &) override {}
 };
 }
@@ -297,7 +300,9 @@ void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test,
     maskerPlayer.apply(maskerLevelAmplification(maskerPlayer, test));
     preparePlayersForNextTrial(
         testMethod, randomizer, targetPlayer, maskerPlayer, test, videoScale);
-    testMethod->writeTestingParameters(outputFile);
+    std::vector<std::pair<std::string, std::string>> additionalKeyValues{
+        std::make_pair("condition", name(condition))};
+    testMethod->writeTestingParameters(outputFile, additionalKeyValues);
 
     useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);

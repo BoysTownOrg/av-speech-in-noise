@@ -191,8 +191,9 @@ void AdaptiveMethodImpl::writeTestResult(OutputFile &file) {
     file.write(av_speech_in_noise::testResults(targetListsWithTracks));
 }
 
-void AdaptiveMethodImpl::writeTestingParameters(OutputFile &file) {
-    file.write(*test);
+void AdaptiveMethodImpl::writeTestingParameters(OutputFile &file,
+    gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs) {
+    file.write(*test, additionalKeyValuePairs);
 }
 
 void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile &file) {

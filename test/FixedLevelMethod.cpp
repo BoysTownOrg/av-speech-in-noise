@@ -325,7 +325,7 @@ FIXED_LEVEL_METHOD_TEST(writeIncorrectCoordinateResponse) {
 }
 
 FIXED_LEVEL_METHOD_TEST(writeTestPassesSettings) {
-    method.writeTestingParameters(outputFile);
+    method.writeTestingParameters(outputFile, {});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &static_cast<const FixedLevelTest &>(std::as_const(test)),
         outputFile.fixedLevelTest());
@@ -394,7 +394,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(nextReturnsNextTarget) {
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
-    method.writeTestingParameters(outputFile);
+    method.writeTestingParameters(outputFile, {});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(test), outputFile.fixedLevelTest());
 }
@@ -469,7 +469,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
     writeTestPassesSettings) {
     OutputFileStub outputFile;
-    method.writeTestingParameters(outputFile);
+    method.writeTestingParameters(outputFile, {});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(test), outputFile.fixedLevelTest());
 }

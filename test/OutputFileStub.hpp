@@ -36,12 +36,16 @@ class OutputFileStub : public OutputFile {
         adaptiveCoordinateResponseTrial_ = trial;
     }
 
-    void write(const AdaptiveTest &test) override {
+    void write(const AdaptiveTest &test,
+        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
+        override {
         addToLog("writeTest ");
         adaptiveTest_ = &test;
     }
 
-    void write(const FixedLevelTest &p) override {
+    void write(const FixedLevelTest &p,
+        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
+        override {
         addToLog("writeTest ");
         fixedLevelTest_ = &p;
     }

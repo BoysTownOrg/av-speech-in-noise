@@ -556,7 +556,7 @@ ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithBumpLimit) {
 
 ADAPTIVE_METHOD_TEST(writeTestParametersPassesToOutputFile) {
     initialize(method, test, targetListReader, snrTrackFactory);
-    method.writeTestingParameters(outputFile);
+    method.writeTestingParameters(outputFile, {});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(test), outputFile.adaptiveTest());
 }

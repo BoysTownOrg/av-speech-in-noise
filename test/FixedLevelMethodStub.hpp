@@ -34,7 +34,9 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     void submit(const Flaggable &) override { submittedFlaggable = true; }
 
-    void writeTestingParameters(OutputFile &) override {}
+    void writeTestingParameters(OutputFile &,
+        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
+        override {}
 
     void writeLastCoordinateResponse(OutputFile &) override {}
 
