@@ -7,6 +7,7 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/RunningATest.hpp>
@@ -54,9 +55,11 @@ class TestMethodStub : public TestMethod {
         insert(log_, "submitCoordinateResponse ");
     }
 
-    void writeTestingParameters(OutputFile &file) override {
+    void writeTestingParameters(OutputFile &file,
+        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
+        override {
         insert(log_, "writeTestingParameters ");
-        file.write(AdaptiveTest{});
+        file.write(AdaptiveTest{}, {});
     }
 
     void writeLastCoordinateResponse(OutputFile &) override {
@@ -1074,7 +1077,7 @@ RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationSetsTargetPlayerLevel) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {
-    test.condition = Condition::audioVisual;
+    model.configure("condition", name(Condition::audioVisual));
     run(initializingTest, model);
     run(playingTrial, model);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(shown(targetPlayer));
@@ -1095,7 +1098,7 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialDoesNotShowTargetPlayerWhenAuditoryOnly) {
-    test.condition = Condition::auditoryOnly;
+    model.configure("condition", name(Condition::auditoryOnly));
     run(initializingTest, model);
     run(playingTrial, model);
     assertNotShown(targetPlayer);
@@ -1221,7 +1224,7 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestDoesNotLoadMaskerIfTrialInProgress) {
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress) {
-    test.condition = Condition::auditoryOnly;
+    model.configure("condition", name(Condition::auditoryOnly));
     runIgnoringFailureWithTrialInProgress(initializingTest);
     assertNotHidden(targetPlayer);
 }

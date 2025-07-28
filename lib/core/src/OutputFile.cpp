@@ -166,11 +166,6 @@ static auto insertMaskerLevel(std::ostream &stream, const Test &p)
         stream, "masker level (dB SPL)", p.maskerLevel.dB_SPL);
 }
 
-static auto insertCondition(std::ostream &stream, const Test &p)
-    -> std::ostream & {
-    return insertLabeledLine(stream, "condition", name(p.condition));
-}
-
 constexpr auto correct{"correct"};
 constexpr auto incorrect{"incorrect"};
 
@@ -238,9 +233,8 @@ static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
     insertMaskerLevel(stream, test);
     insertLabeledLine(stream, "starting SNR (dB)", test.startingSnr.dB);
     std::visit([&stream](const auto &s) { stream << s; }, test.trackSettings);
-    insertCondition(stream, test);
-    insertLabeledLine(stream, "threshold reversals", test.thresholdReversals);
-    return insertNewLine(stream);
+    return insertLabeledLine(
+        stream, "threshold reversals", test.thresholdReversals);
 }
 
 static auto operator<<(std::ostream &stream, const FixedLevelTest &test)
@@ -249,9 +243,7 @@ static auto operator<<(std::ostream &stream, const FixedLevelTest &test)
     insertMasker(stream, test);
     insertTargetPlaylist(stream, test);
     insertMaskerLevel(stream, test);
-    insertLabeledLine(stream, "SNR (dB)", test.snr.dB);
-    insertCondition(stream, test);
-    return insertNewLine(stream);
+    return insertLabeledLine(stream, "SNR (dB)", test.snr.dB);
 }
 
 static auto operator<<(std::ostream &stream,
@@ -815,15 +807,23 @@ void OutputFileImpl::write(const EmotionTrial &trial) {
     av_speech_in_noise::write(writer, formatter, currentTrial, Trial::Emotion);
 }
 
-void OutputFileImpl::write(const AdaptiveTest &test) {
+void OutputFileImpl::write(const AdaptiveTest &test,
+    gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs) {
     std::stringstream stream;
     stream << test;
+    for (const auto &[key, value] : additionalKeyValuePairs)
+        insertLabeledLine(stream, key, value);
+    insertNewLine(stream);
     write(string(stream));
 }
 
-void OutputFileImpl::write(const FixedLevelTest &test) {
+void OutputFileImpl::write(const FixedLevelTest &test,
+    gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs) {
     std::stringstream stream;
     stream << test;
+    for (const auto &[key, value] : additionalKeyValuePairs)
+        insertLabeledLine(stream, key, value);
+    insertNewLine(stream);
     write(string(stream));
 }
 

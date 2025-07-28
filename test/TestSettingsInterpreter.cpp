@@ -71,10 +71,6 @@ auto entryWithNewline(TestSetting p, Method m) -> std::string {
     return entryWithNewline(p, name(m));
 }
 
-auto entryWithNewline(TestSetting p, Condition c) -> std::string {
-    return entryWithNewline(p, name(c));
-}
-
 void initializeTest(TestSettingsInterpreterImpl &interpreter,
     const std::vector<std::string> &v, int startingSnr = {},
     const TestIdentity &identity = {}) {
@@ -276,8 +272,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
             entryWithNewline(TestSetting::targets, "a"),                       \
             entryWithNewline(TestSetting::masker, "b"),                        \
             entryWithNewline(TestSetting::maskerLevel, "65"),                  \
-            entryWithNewline(TestSetting::thresholdReversals, "4"),            \
-            entryWithNewline(TestSetting::condition, Condition::audioVisual)}, \
+            entryWithNewline(TestSetting::thresholdReversals, "4")},           \
         5);                                                                    \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         std::string{"a"}, adaptiveMethod.test.targetsUrl.path);                \
@@ -1016,49 +1011,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     assertOverridesStartingSnr(interpreter,
         Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
         fixedLevelMethod.fixedLevelFixedTrialsTest);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(adaptiveAudioVisual) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            entryWithNewline(TestSetting::condition, Condition::audioVisual)});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Condition::audioVisual, adaptiveMethod.test.condition);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(adaptiveAuditoryOnly) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            entryWithNewline(TestSetting::condition, Condition::auditoryOnly)});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Condition::auditoryOnly, adaptiveMethod.test.condition);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAudioVisual) {
-    initializeTest(interpreter,
-        {entryWithNewline(
-             TestSetting::method, Method::fixedLevelFreeResponseWithAllTargets),
-            entryWithNewline(TestSetting::condition, Condition::audioVisual)});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Condition::audioVisual, runningATest.test.condition);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(fixedLevelFixedTargetsAudioVisual) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method,
-             Method::fixedLevelFreeResponseWithTargetReplacement),
-            entryWithNewline(TestSetting::condition, Condition::audioVisual)});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Condition::audioVisual, runningATest.test.condition);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAuditoryOnly) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method,
-             Method::fixedLevelFreeResponseWithTargetReplacement),
-            entryWithNewline(TestSetting::condition, Condition::auditoryOnly)});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        Condition::auditoryOnly, runningATest.test.condition);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

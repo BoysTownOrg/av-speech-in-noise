@@ -30,7 +30,9 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void writeLastCorrectResponse(OutputFile &) override;
     void writeLastIncorrectResponse(OutputFile &) override;
     void writeLastCorrectKeywords(OutputFile &) override;
-    void writeTestingParameters(OutputFile &) override;
+    void writeTestingParameters(OutputFile &,
+        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
+        override;
     void writeTestResult(OutputFile &) override;
     auto snr() -> FloatSNR override;
     auto complete() -> bool override;

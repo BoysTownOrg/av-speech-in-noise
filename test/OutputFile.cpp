@@ -90,26 +90,41 @@ class UseCase {
 class WritingTest : public virtual UseCase {
   public:
     virtual auto test() -> Test & = 0;
+    virtual void addAdditionalKeyValue(std::string key, std::string value) {}
 };
 
 class WritingAdaptiveTest : public WritingTest {
   public:
-    void run(OutputFileImpl &file) override { file.write(test_); }
+    void run(OutputFileImpl &file) override {
+        file.write(test_, additionalKeyValues);
+    }
 
     auto test() -> Test & override { return test_; }
 
+    void addAdditionalKeyValue(std::string key, std::string value) override {
+        additionalKeyValues.push_back(std::make_pair(key, value));
+    }
+
   private:
     AdaptiveTest test_{};
+    std::vector<std::pair<std::string, std::string>> additionalKeyValues;
 };
 
 class WritingFixedLevelTest : public WritingTest {
   public:
-    void run(OutputFileImpl &file) override { file.write(test_); }
+    void run(OutputFileImpl &file) override {
+        file.write(test_, additionalKeyValues);
+    }
 
     auto test() -> Test & override { return test_; }
 
+    void addAdditionalKeyValue(std::string key, std::string value) override {
+        additionalKeyValues.push_back(std::make_pair(key, value));
+    }
+
   private:
     FixedLevelTest test_{};
+    std::vector<std::pair<std::string, std::string>> additionalKeyValues;
 };
 
 class WritingTrial : public virtual UseCase {
@@ -716,7 +731,7 @@ class OutputFileTests : public ::testing::Test {
     BinocularGazeSamples eyeGazes;
 
     void assertConditionNameWritten(WritingTest &useCase, Condition c) {
-        useCase.test().condition = c;
+        useCase.addAdditionalKeyValue("condition", name(c));
         run(useCase, file);
         assertContainsColonDelimitedEntry(writer, "condition", name(c));
     }
@@ -1073,7 +1088,7 @@ OUTPUT_FILE_TEST(writesLevittTrackSettings) {
     levittSettings.trackingRule.push_back(second);
     test.trackSettings = levittSettings;
     test.thresholdReversals = 9;
-    file.write(test);
+    file.write(test, {});
     assertContainsColonDelimitedEntry(writer, "up", "1 5");
     assertContainsColonDelimitedEntry(writer, "down", "2 6");
     assertContainsColonDelimitedEntry(writer, "reversals per step size", "3 7");
@@ -1104,7 +1119,7 @@ OUTPUT_FILE_TEST(writesUmlTrackSettings) {
     settings.down = 64;
     settings.trials = 123;
     test.trackSettings = settings;
-    file.write(test);
+    file.write(test, {});
     assertContainsColonDelimitedEntry(
         writer, "alpha space", "linear -12.3 45.6 7");
     assertContainsColonDelimitedEntry(writer, "beta space", "log -2.3 5.6 70");
@@ -1146,7 +1161,7 @@ OUTPUT_FILE_TEST(writeCommonFixedLevelTest) {
 OUTPUT_FILE_TEST(writeAdaptiveTest) {
     AdaptiveTest adaptiveTest;
     adaptiveTest.startingSnr.dB = 2;
-    file.write(adaptiveTest);
+    file.write(adaptiveTest, {});
     assertContainsColonDelimitedEntry(writer, "starting SNR (dB)", "2");
     assertEndsWith(writer, "\n\n");
 }
@@ -1154,7 +1169,7 @@ OUTPUT_FILE_TEST(writeAdaptiveTest) {
 OUTPUT_FILE_TEST(writeFixedLevelTest) {
     FixedLevelTest fixedLevelTest;
     fixedLevelTest.snr.dB = 2;
-    file.write(fixedLevelTest);
+    file.write(fixedLevelTest, {});
     assertContainsColonDelimitedEntry(writer, "SNR (dB)", "2");
     assertEndsWith(writer, "\n\n");
 }

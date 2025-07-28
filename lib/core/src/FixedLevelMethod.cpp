@@ -97,8 +97,9 @@ auto FixedLevelMethodImpl::currentTarget() -> LocalUrl {
     return current(targetList);
 }
 
-void FixedLevelMethodImpl::writeTestingParameters(OutputFile &file) {
-    file.write(*test_);
+void FixedLevelMethodImpl::writeTestingParameters(OutputFile &file,
+    gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs) {
+    file.write(*test_, additionalKeyValuePairs);
 }
 
 void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile &file) {
