@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_IADAPTIVEMETHODHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_IADAPTIVEMETHODHPP_
 
+#include "IOutputFile.hpp"
 #include "TargetPlaylist.hpp"
 #include "TestMethod.hpp"
 
@@ -40,7 +41,7 @@ class AdaptiveTrack {
     virtual auto result() -> std::variant<Threshold, Phi> = 0;
     virtual auto phi() -> std::optional<Phi> { return {}; }
 
-    class Factory {
+    class Factory : public Writable {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Factory);
         virtual auto make(const std::variant<UmlSettings, LevittSettings> &,

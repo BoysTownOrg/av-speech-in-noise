@@ -239,28 +239,6 @@ class KeyPressUI : public submitting_keypress::Control,
     Observer *observer{};
     NSEvent *lastPressEvent;
 };
-
-auto make(const UmlSettings &specific, const AdaptiveTrack::Settings &s)
-    -> std::shared_ptr<AdaptiveTrack> {
-    return std::make_shared<UpdatedMaximumLikelihood>(specific, s);
-}
-
-auto make(const LevittSettings &specific, const AdaptiveTrack::Settings &s)
-    -> std::shared_ptr<AdaptiveTrack> {
-    return std::make_shared<LevittTrack>(specific, s);
-}
-
-class AdaptiveTrackFactory : public AdaptiveTrack::Factory {
-    auto make(const std::variant<UmlSettings, LevittSettings> &specific,
-        const AdaptiveTrack::Settings &s)
-        -> std::shared_ptr<AdaptiveTrack> override {
-        return std::visit(
-            [&s](const auto &specific) {
-                return av_speech_in_noise::make(specific, s);
-            },
-            specific);
-    }
-};
 }
 
 void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,

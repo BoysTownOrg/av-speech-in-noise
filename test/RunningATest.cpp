@@ -27,6 +27,8 @@ constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
 namespace {
 class TestMethodStub : public TestMethod {
   public:
+    void write(std::ostream &) override {}
+
     void setSnr_dB(double x) { snr_dB_ = x; }
 
     auto snr() -> FloatSNR override {
@@ -53,13 +55,6 @@ class TestMethodStub : public TestMethod {
 
     void submit(const coordinate_response_measure::Response &) override {
         insert(log_, "submitCoordinateResponse ");
-    }
-
-    void writeTestingParameters(OutputFile &file,
-        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
-        override {
-        insert(log_, "writeTestingParameters ");
-        file.write(AdaptiveTest{}, {});
     }
 
     void writeLastCoordinateResponse(OutputFile &) override {

@@ -3,10 +3,19 @@
 
 #include "av-speech-in-noise/Interface.hpp"
 
+#include <stdexcept>
 #include <string>
 
 namespace av_speech_in_noise {
 inline auto boolean(const std::string &s) -> bool { return s == "true"; }
+
+inline auto integer(const std::string &s) -> int {
+    try {
+        return std::stoi(s);
+    } catch (const std::invalid_argument &) {
+        return 0;
+    }
+}
 
 class Configurable {
   public:

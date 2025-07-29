@@ -26,7 +26,8 @@ auto trialDuration(TargetPlayer &target, MaskerPlayer &masker) -> Duration;
 class RunningATestImpl : public TargetPlayer::Observer,
                          public MaskerPlayer::Observer,
                          public Configurable,
-                         public RunningATest {
+                         public RunningATest,
+                         public Writable {
   public:
     RunningATestImpl(TargetPlayer &, MaskerPlayer &, ResponseEvaluator &,
         OutputFile &, Randomizer &, Clock &, ConfigurationRegistry &);
@@ -48,6 +49,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     void notifyThatPreRollHasCompleted() override;
     auto playTrialTime() -> std::string override;
     void configure(const std::string &key, const std::string &value) override;
+    void write(std::ostream &stream) override;
     static constexpr Delay maskerChannelDelay{0.004};
     static constexpr Duration targetOffsetFringeDuration{
         targetOnsetFringeDuration};

@@ -1,10 +1,10 @@
 #include "RunningATest.hpp"
 #include "Configuration.hpp"
+#include "IOutputFile.hpp"
 
 #include <gsl/gsl>
 
 #include <functional>
-#include <utility>
 #include <vector>
 
 namespace av_speech_in_noise {
@@ -16,9 +16,8 @@ class NullTestMethod : public TestMethod {
     auto snr() -> FloatSNR override { return FloatSNR{}; }
     void submit(const coordinate_response_measure::Response &) override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
-    void writeTestingParameters(OutputFile &,
-        gsl::span<std::pair<std::string, std::string>>) override {}
     void writeTestResult(OutputFile &) override {}
+    void write(std::ostream &) override {}
 };
 }
 
@@ -300,9 +299,7 @@ void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test,
     maskerPlayer.apply(maskerLevelAmplification(maskerPlayer, test));
     preparePlayersForNextTrial(
         testMethod, randomizer, targetPlayer, maskerPlayer, test, videoScale);
-    std::vector<std::pair<std::string, std::string>> additionalKeyValues{
-        std::make_pair("condition", name(condition))};
-    testMethod->writeTestingParameters(outputFile, additionalKeyValues);
+    outputFile.write(*this);
 
     useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);
@@ -417,12 +414,57 @@ auto RunningATestImpl::targetFileName() -> std::string {
 
 auto RunningATestImpl::playTrialTime() -> std::string { return playTrialTime_; }
 
-static auto integer(const std::string &s) -> int {
-    try {
-        return std::stoi(s);
-    } catch (const std::invalid_argument &) {
-        return 0;
-    }
+static auto insertSubjectId(std::ostream &stream, const TestIdentity &p)
+    -> std::ostream & {
+    return insertLabeledLine(stream, "subject", p.subjectId);
+}
+
+static auto insertTester(std::ostream &stream, const TestIdentity &p)
+    -> std::ostream & {
+    return insertLabeledLine(stream, "tester", p.testerId);
+}
+
+static auto insertSession(std::ostream &stream, const TestIdentity &p)
+    -> std::ostream & {
+    return insertLabeledLine(stream, "session", p.session);
+}
+
+static auto insertMethod(std::ostream &stream, const TestIdentity &p)
+    -> std::ostream & {
+    return insertLabeledLine(stream, "method", p.method);
+}
+
+static auto insertRmeSetting(std::ostream &stream, const TestIdentity &p)
+    -> std::ostream & {
+    return insertLabeledLine(stream, "RME setting", p.rmeSetting);
+}
+
+static auto insertTransducer(std::ostream &stream, const TestIdentity &p)
+    -> std::ostream & {
+    return insertLabeledLine(stream, "transducer", p.transducer);
+}
+
+static auto operator<<(std::ostream &stream, const TestIdentity &identity)
+    -> std::ostream & {
+    return insertTransducer(
+        insertRmeSetting(
+            insertMethod(
+                insertSession(
+                    insertTester(insertSubjectId(stream, identity), identity),
+                    identity),
+                identity),
+            identity),
+        identity);
+}
+
+void RunningATestImpl::write(std::ostream &stream) {
+    stream << test.identity;
+    insertLabeledLine(stream, "masker", test.maskerFileUrl.path);
+    insertLabeledLine(stream, "targets", test.targetsUrl.path);
+    insertLabeledLine(stream, "masker level (dB SPL)", test.maskerLevel.dB_SPL);
+    insertLabeledLine(stream, "condition", name(condition));
+    testMethod->write(stream);
+    insertNewLine(stream);
 }
 
 void RunningATestImpl::configure(

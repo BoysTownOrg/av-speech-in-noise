@@ -1097,43 +1097,6 @@ OUTPUT_FILE_TEST(writesLevittTrackSettings) {
     assertEndsWith(writer, "\n\n");
 }
 
-OUTPUT_FILE_TEST(writesUmlTrackSettings) {
-    AdaptiveTest test;
-    UmlSettings settings;
-    settings.alpha.space.space = ParameterSpace::Linear;
-    settings.alpha.space.lower = -12.3;
-    settings.alpha.space.upper = 45.6;
-    settings.alpha.space.N = 7;
-    settings.beta.space.space = ParameterSpace::Log;
-    settings.beta.space.lower = -2.3;
-    settings.beta.space.upper = 5.6;
-    settings.beta.space.N = 70;
-    settings.alpha.priorProbability.kind = PriorProbabilityKind::LinearNorm;
-    settings.alpha.priorProbability.mu = 1.2;
-    settings.alpha.priorProbability.sigma = 3.4;
-    settings.beta.priorProbability.kind = PriorProbabilityKind::LogNorm;
-    settings.beta.priorProbability.mu = 1.01;
-    settings.beta.priorProbability.sigma = 2.02;
-    settings.gamma.priorProbability.kind = PriorProbabilityKind::Flat;
-    settings.up = 42;
-    settings.down = 64;
-    settings.trials = 123;
-    test.trackSettings = settings;
-    file.write(test, {});
-    assertContainsColonDelimitedEntry(
-        writer, "alpha space", "linear -12.3 45.6 7");
-    assertContainsColonDelimitedEntry(writer, "beta space", "log -2.3 5.6 70");
-    assertContainsColonDelimitedEntry(
-        writer, "alpha prior", "linearnorm 1.2 3.4");
-    assertContainsColonDelimitedEntry(
-        writer, "beta prior", "lognorm 1.01 2.02");
-    assertContainsColonDelimitedEntry(writer, "gamma prior", "flat");
-    assertContainsColonDelimitedEntry(writer, "up", "42");
-    assertContainsColonDelimitedEntry(writer, "down", "64");
-    assertContainsColonDelimitedEntry(writer, "trials", "123");
-    assertEndsWith(writer, "\n\n");
-}
-
 OUTPUT_FILE_TEST(writeAdaptiveTestResult) {
     AdaptiveTestResults results{};
     results.push_back({{"a"}, 1.});

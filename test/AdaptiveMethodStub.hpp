@@ -6,6 +6,7 @@
 namespace av_speech_in_noise {
 class AdaptiveMethodStub : public AdaptiveMethod {
   public:
+    void write(std::ostream &) override {}
     void initialize(const AdaptiveTest &t, TargetPlaylistReader *reader,
         AdaptiveTrack::Factory *f) override {
         test = t;
@@ -21,9 +22,6 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const CorrectKeywords &) override {}
-    void writeTestingParameters(OutputFile &,
-        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
-        override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
     void writeLastCorrectResponse(OutputFile &) override {}
     void writeLastIncorrectResponse(OutputFile &) override {}

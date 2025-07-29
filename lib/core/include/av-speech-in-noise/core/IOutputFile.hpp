@@ -80,6 +80,39 @@ struct KeyPressTrial : KeyPressResponse, open_set::Trial {
 
 struct PassFailTrial : Evaluative, Target {};
 
+template <typename T>
+auto operator<<(std::ostream &os, const std::vector<T> &v) -> std::ostream & {
+    if (!v.empty()) {
+        auto first{true};
+        os << v.front();
+        for (auto x : v) {
+            if (first) {
+                first = false;
+                continue;
+            }
+            os << " ";
+            os << x;
+        }
+    }
+    return os;
+}
+
+template <typename T>
+auto insert(std::ostream &stream, const T &item) -> std::ostream & {
+    return stream << item;
+}
+
+inline auto insertNewLine(std::ostream &stream) -> std::ostream & {
+    return insert(stream, '\n');
+}
+
+template <typename T>
+auto insertLabeledLine(std::ostream &stream, const std::string &label,
+    const T &thing) -> std::ostream & {
+    return insertNewLine(
+        insert(insert(insert(stream, label), std::string_view{": "}), thing));
+}
+
 class Writable {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Writable);
