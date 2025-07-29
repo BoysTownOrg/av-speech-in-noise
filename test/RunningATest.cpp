@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 
 #include <functional>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -1265,6 +1266,23 @@ RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseQueriesNextTargetAfterWritingResponse) {
     assertTestMethodLogContains(
         submittingCoordinateResponse, "writeLastCoordinateResponse next ");
+}
+
+RECOGNITION_TEST_MODEL_TEST(tbd) {
+    model.configure("condition", name(Condition::auditoryOnly));
+    std::stringstream stream;
+    model.write(stream);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(R"(subject: a
+tester: b
+session: c
+method: d
+RME setting: e
+transducer: f
+masker: idk
+targets: idk
+masker level (dB SPL): idk
+condition: auditory only)",
+        stream.str());
 }
 }
 }

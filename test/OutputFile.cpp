@@ -87,46 +87,6 @@ class UseCase {
     virtual void run(OutputFileImpl &) = 0;
 };
 
-class WritingTest : public virtual UseCase {
-  public:
-    virtual auto test() -> Test & = 0;
-    virtual void addAdditionalKeyValue(std::string key, std::string value) {}
-};
-
-class WritingAdaptiveTest : public WritingTest {
-  public:
-    void run(OutputFileImpl &file) override {
-        file.write(test_, additionalKeyValues);
-    }
-
-    auto test() -> Test & override { return test_; }
-
-    void addAdditionalKeyValue(std::string key, std::string value) override {
-        additionalKeyValues.push_back(std::make_pair(key, value));
-    }
-
-  private:
-    AdaptiveTest test_{};
-    std::vector<std::pair<std::string, std::string>> additionalKeyValues;
-};
-
-class WritingFixedLevelTest : public WritingTest {
-  public:
-    void run(OutputFileImpl &file) override {
-        file.write(test_, additionalKeyValues);
-    }
-
-    auto test() -> Test & override { return test_; }
-
-    void addAdditionalKeyValue(std::string key, std::string value) override {
-        additionalKeyValues.push_back(std::make_pair(key, value));
-    }
-
-  private:
-    FixedLevelTest test_{};
-    std::vector<std::pair<std::string, std::string>> additionalKeyValues;
-};
-
 class WritingTrial : public virtual UseCase {
   public:
     virtual auto headingLabels() -> std::map<HeadingItem, gsl::index> = 0;
@@ -194,10 +154,6 @@ auto upUntilFirstOfAny(const std::string &content, std::vector<char> v)
     return content.substr(0, content.find_first_of({v.begin(), v.end()}));
 }
 
-auto testIdentity(WritingTest &useCase) -> TestIdentity & {
-    return useCase.test().identity;
-}
-
 auto nthCommaDelimitedEntryOfLine(
     WriterStub &writer, gsl::index n, gsl::index line) -> std::string {
     const auto precedingNewLine{
@@ -236,8 +192,6 @@ void assertNthEntryOfSecondLine(
     WriterStub &writer, const std::string &what, gsl::index n) {
     assertNthCommaDelimitedEntryOfLine(writer, what, n, 2);
 }
-
-auto test(WritingTest &useCase) -> Test & { return useCase.test(); }
 
 auto at(const std::map<HeadingItem, gsl::index> &m, HeadingItem item)
     -> gsl::index {
@@ -725,8 +679,6 @@ class OutputFileTests : public ::testing::Test {
     WritingEmotionTrial writingEmotionTrial;
     WritingThreeKeywordsTrial writingThreeKeywordsTrial;
     WritingSyllableTrial writingSyllableTrial;
-    WritingFixedLevelTest writingFixedLevelTest;
-    WritingAdaptiveTest writingAdaptiveTest;
     FreeResponseTrial freeResponseTrial;
     BinocularGazeSamples eyeGazes;
 
@@ -740,33 +692,6 @@ class OutputFileTests : public ::testing::Test {
         for (auto [headingItem, index] : useCase.headingLabels())
             assertNthCommaDelimitedEntryOfLine(
                 writer, headingItem, index, line);
-    }
-
-    void assertTestIdentityWritten(WritingTest &useCase) {
-        testIdentity(useCase).subjectId = "a";
-        testIdentity(useCase).testerId = "b";
-        testIdentity(useCase).session = "c";
-        testIdentity(useCase).method = "d";
-        testIdentity(useCase).rmeSetting = "e";
-        testIdentity(useCase).transducer = "f";
-        run(useCase, file);
-        assertContainsColonDelimitedEntry(writer, "subject", "a");
-        assertContainsColonDelimitedEntry(writer, "tester", "b");
-        assertContainsColonDelimitedEntry(writer, "session", "c");
-        assertContainsColonDelimitedEntry(writer, "method", "d");
-        assertContainsColonDelimitedEntry(writer, "RME setting", "e");
-        assertContainsColonDelimitedEntry(writer, "transducer", "f");
-    }
-
-    void assertCommonTestWritten(WritingTest &useCase) {
-        test(useCase).maskerFileUrl.path = "a";
-        test(useCase).targetsUrl.path = "d";
-        test(useCase).maskerLevel.dB_SPL = 1;
-        run(useCase, file);
-        assertContainsColonDelimitedEntry(writer, "masker", "a");
-        assertContainsColonDelimitedEntry(writer, "targets", "d");
-        assertContainsColonDelimitedEntry(writer, "masker level (dB SPL)", "1");
-        assertEndsWith(writer, "\n\n");
     }
 
     void assertIncorrectTrialWritesEvaluation(WritingEvaluatedTrial &useCase) {
@@ -1067,10 +992,6 @@ OUTPUT_FILE_TEST(uninitializedColorDoesNotBreak) {
     file.write(uninitialized);
 }
 
-OUTPUT_FILE_TEST(writeCommonAdaptiveTest) {
-    assertCommonTestWritten(writingAdaptiveTest);
-}
-
 OUTPUT_FILE_TEST(writesLevittTrackSettings) {
     AdaptiveTest test;
     TrackingSequence first;
@@ -1143,22 +1064,6 @@ OUTPUT_FILE_TEST(writeAdaptiveTestInformation) {
 
 OUTPUT_FILE_TEST(writeFixedLevelTestInformation) {
     assertTestIdentityWritten(writingFixedLevelTest);
-}
-
-OUTPUT_FILE_TEST(writeAdaptiveTestWithAvCondition) {
-    assertConditionNameWritten(writingAdaptiveTest, Condition::audioVisual);
-}
-
-OUTPUT_FILE_TEST(writeAdaptiveTestWithAuditoryOnlyCondition) {
-    assertConditionNameWritten(writingAdaptiveTest, Condition::auditoryOnly);
-}
-
-OUTPUT_FILE_TEST(writeFixedLevelTestWithAvCondition) {
-    assertConditionNameWritten(writingFixedLevelTest, Condition::audioVisual);
-}
-
-OUTPUT_FILE_TEST(writeFixedLevelTestWithAuditoryOnlyCondition) {
-    assertConditionNameWritten(writingFixedLevelTest, Condition::auditoryOnly);
 }
 
 OUTPUT_FILE_TEST(writeGazePositionsRelativeScreenAndEyeTrackerTime) {

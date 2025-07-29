@@ -8,11 +8,9 @@
 
 #include <exception>
 #include <filesystem>
-#include <gsl/span>
 #include <optional>
 #include <ostream>
 #include <string>
-#include <utility>
 
 namespace av_speech_in_noise {
 struct Target {
@@ -133,12 +131,6 @@ class OutputFile {
     virtual void write(const open_set::AdaptiveTrial &) = 0;
     virtual void write(const ConsonantTrial &) = 0;
     virtual void write(const EmotionTrial &) = 0;
-    virtual void write(const AdaptiveTest &,
-        gsl::span<std::pair<std::string, std::string>>
-            additionalKeyValuePairs) = 0;
-    virtual void write(const FixedLevelTest &,
-        gsl::span<std::pair<std::string, std::string>>
-            additionalKeyValuePairs) = 0;
     virtual void write(const AdaptiveTestResults &) = 0;
     virtual void write(const BinocularGazeSamples &) = 0;
     virtual void write(TargetStartTime) = 0;

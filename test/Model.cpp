@@ -1,3 +1,4 @@
+#include "LogString.hpp"
 #include "MaskerPlayerStub.hpp"
 #include "OutputFileStub.hpp"
 #include "RandomizerStub.hpp"
