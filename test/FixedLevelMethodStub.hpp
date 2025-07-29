@@ -34,10 +34,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     void submit(const Flaggable &) override { submittedFlaggable = true; }
 
-    void writeTestingParameters(OutputFile &,
-        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
-        override {}
-
     void writeLastCoordinateResponse(OutputFile &) override {}
 
     void writeTestResult(OutputFile &) override {}
@@ -51,6 +47,8 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     void submit(const ThreeKeywordsResponse &r) override {
         threeKeywords_ = &r;
     }
+
+    void write(std::ostream &) override {}
 
     KeywordsTestResults keywordsTestResults_{};
     LocalUrl currentTarget_;

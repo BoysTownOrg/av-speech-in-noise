@@ -76,6 +76,7 @@ class TrackStub : public AdaptiveTrack {
 
 class TrackFactoryStub : public AdaptiveTrack::Factory {
   public:
+    void write(std::ostream &) override {}
     [[nodiscard]] auto parameters() const -> auto & { return parameters_; }
 
     auto make(const std::variant<UmlSettings, LevittSettings> &,

@@ -100,15 +100,6 @@ static void broadcast(
             each.get().configure(key, value);
 }
 
-void broadcast(
-    const std::map<std::string,
-        std::vector<std::reference_wrapper<Configurable>>> &configurables,
-    const std::string &entryName, const std::string &entry) {
-    if (auto search = configurables.find(entryName);
-        search != configurables.end())
-        for (auto each : search->second)
-            each.get().configure(entryName, entry);
-}
 static void assign(Test &test,
     const std::map<std::string,
         std::vector<std::reference_wrapper<Configurable>>> &configurables,
@@ -164,37 +155,7 @@ static void assign(Calibration &calibration, const std::string &entryName,
         calibration.level.dB_SPL = integer(entry);
 }
 
-static void initializeParameterSpace(
-    PhiParameterSetting &s, const std::string &entry) {
-    std::stringstream stream{entry};
-    std::string kind;
-    stream >> kind;
-    if (kind == "linear")
-        s.space.space = ParameterSpace::Linear;
-    else if (kind == "log")
-        s.space.space = ParameterSpace::Log;
-    stream >> s.space.lower;
-    stream >> s.space.upper;
-    stream >> s.space.N;
-}
-
-static void initializeParameterPrior(
-    PhiParameterSetting &s, const std::string &entry) {
-    std::stringstream stream{entry};
-    std::string kind;
-    stream >> kind;
-    if (kind == "linearnorm")
-        s.priorProbability.kind = PriorProbabilityKind::LinearNorm;
-    else if (kind == "lognorm")
-        s.priorProbability.kind = PriorProbabilityKind::LogNorm;
-    else if (kind == "flat")
-        s.priorProbability.kind = PriorProbabilityKind::Flat;
-    stream >> s.priorProbability.mu;
-    stream >> s.priorProbability.sigma;
-}
-
-static void assign(AdaptiveTest &test, UmlSettings &umlSettings,
-    LevittSettings &levittSettings,
+static void assign(AdaptiveTest &test, LevittSettings &levittSettings,
     const std::map<std::string,
         std::vector<std::reference_wrapper<Configurable>>> &configurables,
     const std::string &entryName, const std::string &entry) {
@@ -210,26 +171,6 @@ static void assign(AdaptiveTest &test, UmlSettings &umlSettings,
         test.thresholdReversals = integer(entry);
     else if (entryName == name(TestSetting::startingSnr))
         test.startingSnr.dB = integer(entry);
-    else if (entryName == name(TestSetting::uml))
-        test.uml = boolean(entry);
-    else if (entryName == name(TestSetting::alphaSpace))
-        initializeParameterSpace(umlSettings.alpha, entry);
-    else if (entryName == name(TestSetting::alphaPrior))
-        initializeParameterPrior(umlSettings.alpha, entry);
-    else if (entryName == name(TestSetting::betaSpace))
-        initializeParameterSpace(umlSettings.beta, entry);
-    else if (entryName == name(TestSetting::betaPrior))
-        initializeParameterPrior(umlSettings.beta, entry);
-    else if (entryName == name(TestSetting::gammaSpace))
-        initializeParameterSpace(umlSettings.gamma, entry);
-    else if (entryName == name(TestSetting::gammaPrior))
-        initializeParameterPrior(umlSettings.gamma, entry);
-    else if (entryName == name(TestSetting::lambdaSpace))
-        initializeParameterSpace(umlSettings.lambda, entry);
-    else if (entryName == name(TestSetting::lambdaPrior))
-        initializeParameterPrior(umlSettings.lambda, entry);
-    else if (entryName == name(TestSetting::trials))
-        umlSettings.trials = integer(entry);
     else
         assign(static_cast<Test &>(test), configurables, entryName, entry);
 }
@@ -284,8 +225,7 @@ static auto methodWithName(const std::string &contents)
     throw std::runtime_error{"Test method not found"};
 }
 
-static void initialize(AdaptiveTest &test, UmlSettings &umlSettings,
-    LevittSettings &levittSettings,
+static void initialize(AdaptiveTest &test, LevittSettings &levittSettings,
     const std::map<std::string,
         std::vector<std::reference_wrapper<Configurable>>> &configurables,
     const std::string &contents, const std::string &methodName,
@@ -294,8 +234,7 @@ static void initialize(AdaptiveTest &test, UmlSettings &umlSettings,
     test.startingSnr = startingSnr;
     applyToEachEntry(
         [&](const auto &entryName, const auto &entry) {
-            assign(test, umlSettings, levittSettings, configurables, entryName,
-                entry);
+            assign(test, levittSettings, configurables, entryName, entry);
         },
         contents);
     test.ceilingSnr = SessionControllerImpl::ceilingSnr;
@@ -345,14 +284,8 @@ static void initialize(
     const TestIdentity &identity, SNR startingSnr,
     const std::function<void(AdaptiveTest &)> &f) {
     AdaptiveTest test;
-    UmlSettings umlSettings;
-    LevittSettings levittSettings;
-    av_speech_in_noise::initialize(test, umlSettings, levittSettings,
-        configurables, contents, method, identity, startingSnr);
-    if (test.uml)
-        test.trackSettings = umlSettings;
-    else
-        test.trackSettings = levittSettings;
+    av_speech_in_noise::initialize(test, test.trackSettings, configurables,
+        contents, method, identity, startingSnr);
     f(test);
 }
 

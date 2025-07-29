@@ -5,6 +5,7 @@
 #include "IResponseEvaluator.hpp"
 #include "IAdaptiveMethod.hpp"
 #include "IOutputFile.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 
@@ -30,10 +31,8 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void writeLastCorrectResponse(OutputFile &) override;
     void writeLastIncorrectResponse(OutputFile &) override;
     void writeLastCorrectKeywords(OutputFile &) override;
-    void writeTestingParameters(OutputFile &,
-        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
-        override;
     void writeTestResult(OutputFile &) override;
+    void write(std::ostream &) override;
     auto snr() -> FloatSNR override;
     auto complete() -> bool override;
     auto nextTarget() -> LocalUrl override;
@@ -50,10 +49,13 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     open_set::AdaptiveTrial lastOpenSetTrial{};
     CorrectKeywordsTrial lastCorrectKeywordsTrial{};
     const AdaptiveTest *test{};
+    FloatSNR startingSNR;
+    int thresholdReversals;
     ResponseEvaluator &evaluator;
     Randomizer &randomizer;
     AdaptiveTrack *snrTrack{};
     TargetPlaylist *targetList{};
+    AdaptiveTrack::Factory *adaptiveTrackFactory{};
 };
 }
 

@@ -92,6 +92,9 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(
 void AdaptiveMethodImpl::initialize(const AdaptiveTest &t,
     TargetPlaylistReader *targetListSetReader,
     AdaptiveTrack::Factory *factory) {
+    this->adaptiveTrackFactory = factory;
+    startingSNR.dB = t.startingSnr.dB;
+    thresholdReversals = t.thresholdReversals;
     test = &t;
     targetListsWithTracks.clear();
     for (const auto &list : targetListSetReader->read(t.targetsUrl))
@@ -191,9 +194,10 @@ void AdaptiveMethodImpl::writeTestResult(OutputFile &file) {
     file.write(av_speech_in_noise::testResults(targetListsWithTracks));
 }
 
-void AdaptiveMethodImpl::writeTestingParameters(OutputFile &file,
-    gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs) {
-    file.write(*test, additionalKeyValuePairs);
+void AdaptiveMethodImpl::write(std::ostream &stream) {
+    insertLabeledLine(stream, "starting SNR (dB)", startingSNR.dB);
+    insertLabeledLine(stream, "threshold reversals", thresholdReversals);
+    adaptiveTrackFactory->write(stream);
 }
 
 void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile &file) {

@@ -554,13 +554,6 @@ ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithBumpLimit) {
     forEachSettings(snrTrackFactory, assertBumpLimitEqualsOne);
 }
 
-ADAPTIVE_METHOD_TEST(writeTestParametersPassesToOutputFile) {
-    initialize(method, test, targetListReader, snrTrackFactory);
-    method.writeTestingParameters(outputFile, {});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &std::as_const(test), outputFile.adaptiveTest());
-}
-
 ADAPTIVE_METHOD_TEST(initializePassesTargetPlaylistDirectory) {
     test.targetsUrl.path = "a";
     initialize(method, test, targetListReader, snrTrackFactory);

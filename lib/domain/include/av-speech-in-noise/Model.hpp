@@ -214,13 +214,12 @@ struct FloatSNR {
 };
 
 struct AdaptiveTest : Test {
-    std::variant<UmlSettings, LevittSettings> trackSettings;
+    LevittSettings trackSettings;
     SNR startingSnr{};
     SNR ceilingSnr{};
     SNR floorSnr{};
     int trackBumpLimit{};
     int thresholdReversals{};
-    bool uml{false};
 };
 
 struct Phi {

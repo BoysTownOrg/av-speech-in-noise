@@ -76,6 +76,10 @@ static auto current(TargetPlaylist *list) -> LocalUrl {
     return list->current();
 }
 
+void FixedLevelMethodImpl::write(std::ostream &stream) {
+    insertLabeledLine(stream, "SNR (dB)", snr_.dB);
+}
+
 void FixedLevelMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
     lastCoordinateResponseMeasureTrial.subjectColor = response.color;
@@ -95,11 +99,6 @@ void FixedLevelMethodImpl::submit(
 
 auto FixedLevelMethodImpl::currentTarget() -> LocalUrl {
     return current(targetList);
-}
-
-void FixedLevelMethodImpl::writeTestingParameters(OutputFile &file,
-    gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs) {
-    file.write(*test_, additionalKeyValuePairs);
 }
 
 void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile &file) {

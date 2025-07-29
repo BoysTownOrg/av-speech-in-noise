@@ -32,6 +32,8 @@ static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
 namespace {
 class AdaptiveMethodStub : public AdaptiveMethod {
   public:
+    void write(std::ostream &) override {}
+
     [[nodiscard]] auto tracksResetted() const -> bool {
         return tracksResetted_;
     }
@@ -72,9 +74,6 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void submit(const CorrectKeywords &) override {
         log_ << "submitCorrectKeywords ";
     }
-    void writeTestingParameters(OutputFile &,
-        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
-        override {}
     void writeLastCoordinateResponse(OutputFile &) override {}
     void writeLastCorrectResponse(OutputFile &) override {
         log_ << "writeLastCorrectResponse ";
@@ -98,6 +97,8 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 
 class FixedLevelMethodStub : public FixedLevelMethod {
   public:
+    void write(std::ostream &) override {}
+
     void initialize(
         const FixedLevelFixedTrialsTest &t, TargetPlaylist *list) override {
         targetList_ = list;
@@ -146,10 +147,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     auto snr() -> FloatSNR override { return FloatSNR{}; }
 
     void submit(const Flaggable &) override { submittedFlaggable = true; }
-
-    void writeTestingParameters(OutputFile &,
-        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
-        override {}
 
     void writeLastCoordinateResponse(OutputFile &) override {}
 

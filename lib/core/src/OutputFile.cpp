@@ -26,23 +26,6 @@ enum class OutputFileImpl::Trial {
     none
 };
 
-static auto operator<<(std::ostream &os, const std::vector<int> &v)
-    -> std::ostream & {
-    if (!v.empty()) {
-        auto first{true};
-        os << v.front();
-        for (auto x : v) {
-            if (first) {
-                first = false;
-                continue;
-            }
-            os << " ";
-            os << x;
-        }
-    }
-    return os;
-}
-
 static auto operator<<(std::ostream &os, HeadingItem item) -> std::ostream & {
     return os << name(item);
 }
@@ -71,99 +54,12 @@ static auto operator<<(std::ostream &os, Point2D point) -> std::ostream & {
     return os << point.x << ' ' << point.y;
 }
 
-static auto operator<<(std::ostream &os, ParameterSpaceSetting s)
-    -> std::ostream & {
-    return os << (s.space == ParameterSpace::Linear ? "linear" : "log") << ' '
-              << s.lower << ' ' << s.upper << ' ' << s.N;
-}
-
-static constexpr auto name(PriorProbabilityKind k) -> const char * {
-    switch (k) {
-    case PriorProbabilityKind::LinearNorm:
-        return "linearnorm";
-    case PriorProbabilityKind::LogNorm:
-        return "lognorm";
-    case PriorProbabilityKind::Flat:
-        return "flat";
-    }
-}
-
-static auto operator<<(std::ostream &os, PriorProbabilitySetting s)
-    -> std::ostream & {
-    os << name(s.kind);
-    if (s.kind != PriorProbabilityKind::Flat)
-        os << ' ' << s.mu << ' ' << s.sigma;
-    return os;
-}
-
-template <typename T>
-static auto insert(std::ostream &stream, const T &item) -> std::ostream & {
-    return stream << item;
-}
-
 static auto insertCommaAndSpace(std::ostream &stream) -> std::ostream & {
     return insert(stream, std::string_view{", "});
 }
 
-static auto insertNewLine(std::ostream &stream) -> std::ostream & {
-    return insert(stream, '\n');
-}
-
-template <typename T>
-static auto insertLabeledLine(std::ostream &stream, const std::string &label,
-    const T &thing) -> std::ostream & {
-    return insertNewLine(
-        insert(insert(insert(stream, label), std::string_view{": "}), thing));
-}
-
 static auto string(const std::stringstream &stream) -> std::string {
     return stream.str();
-}
-
-static auto insertSubjectId(std::ostream &stream, const TestIdentity &p)
-    -> std::ostream & {
-    return insertLabeledLine(stream, "subject", p.subjectId);
-}
-
-static auto insertTester(std::ostream &stream, const TestIdentity &p)
-    -> std::ostream & {
-    return insertLabeledLine(stream, "tester", p.testerId);
-}
-
-static auto insertSession(std::ostream &stream, const TestIdentity &p)
-    -> std::ostream & {
-    return insertLabeledLine(stream, "session", p.session);
-}
-
-static auto insertMethod(std::ostream &stream, const TestIdentity &p)
-    -> std::ostream & {
-    return insertLabeledLine(stream, "method", p.method);
-}
-
-static auto insertRmeSetting(std::ostream &stream, const TestIdentity &p)
-    -> std::ostream & {
-    return insertLabeledLine(stream, "RME setting", p.rmeSetting);
-}
-
-static auto insertTransducer(std::ostream &stream, const TestIdentity &p)
-    -> std::ostream & {
-    return insertLabeledLine(stream, "transducer", p.transducer);
-}
-
-static auto insertMasker(std::ostream &stream, const Test &p)
-    -> std::ostream & {
-    return insertLabeledLine(stream, "masker", p.maskerFileUrl.path);
-}
-
-static auto insertTargetPlaylist(std::ostream &stream, const Test &p)
-    -> std::ostream & {
-    return insertLabeledLine(stream, "targets", p.targetsUrl.path);
-}
-
-static auto insertMaskerLevel(std::ostream &stream, const Test &p)
-    -> std::ostream & {
-    return insertLabeledLine(
-        stream, "masker level (dB SPL)", p.maskerLevel.dB_SPL);
 }
 
 constexpr auto correct{"correct"};
@@ -175,75 +71,6 @@ static auto evaluation(bool b) -> std::string {
 
 static auto evaluation(const Evaluative &trial) -> std::string {
     return evaluation(trial.correct);
-}
-
-static auto identity(const Test &test) -> TestIdentity { return test.identity; }
-
-static auto operator<<(std::ostream &stream, const TestIdentity &identity)
-    -> std::ostream & {
-    return insertTransducer(
-        insertRmeSetting(
-            insertMethod(
-                insertSession(
-                    insertTester(insertSubjectId(stream, identity), identity),
-                    identity),
-                identity),
-            identity),
-        identity);
-}
-
-static auto operator<<(std::ostream &stream, const LevittSettings &s)
-    -> std::ostream & {
-    std::vector<int> up;
-    std::vector<int> down;
-    std::vector<int> runCounts;
-    std::vector<int> stepSizes;
-    for (auto sequence : s.trackingRule) {
-        up.push_back(sequence.up);
-        down.push_back(sequence.down);
-        runCounts.push_back(sequence.runCount);
-        stepSizes.push_back(sequence.stepSize);
-    }
-    insertLabeledLine(stream, "up", up);
-    insertLabeledLine(stream, "down", down);
-    insertLabeledLine(stream, "reversals per step size", runCounts);
-    return insertLabeledLine(stream, "step sizes (dB)", stepSizes);
-}
-
-static auto operator<<(std::ostream &stream, const UmlSettings &s)
-    -> std::ostream & {
-    insertLabeledLine(stream, "alpha space", s.alpha.space);
-    insertLabeledLine(stream, "alpha prior", s.alpha.priorProbability);
-    insertLabeledLine(stream, "beta space", s.beta.space);
-    insertLabeledLine(stream, "beta prior", s.beta.priorProbability);
-    insertLabeledLine(stream, "gamma space", s.gamma.space);
-    insertLabeledLine(stream, "gamma prior", s.gamma.priorProbability);
-    insertLabeledLine(stream, "lambda space", s.lambda.space);
-    insertLabeledLine(stream, "lambda prior", s.lambda.priorProbability);
-    insertLabeledLine(stream, "up", s.up);
-    insertLabeledLine(stream, "down", s.down);
-    return insertLabeledLine(stream, "trials", s.trials);
-}
-
-static auto operator<<(std::ostream &stream, const AdaptiveTest &test)
-    -> std::ostream & {
-    stream << identity(test);
-    insertMasker(stream, test);
-    insertTargetPlaylist(stream, test);
-    insertMaskerLevel(stream, test);
-    insertLabeledLine(stream, "starting SNR (dB)", test.startingSnr.dB);
-    std::visit([&stream](const auto &s) { stream << s; }, test.trackSettings);
-    return insertLabeledLine(
-        stream, "threshold reversals", test.thresholdReversals);
-}
-
-static auto operator<<(std::ostream &stream, const FixedLevelTest &test)
-    -> std::ostream & {
-    stream << identity(test);
-    insertMasker(stream, test);
-    insertTargetPlaylist(stream, test);
-    insertMaskerLevel(stream, test);
-    return insertLabeledLine(stream, "SNR (dB)", test.snr.dB);
 }
 
 static auto operator<<(std::ostream &stream,
@@ -805,26 +632,6 @@ void OutputFileImpl::write(const PassFailTrial &trial) {
 void OutputFileImpl::write(const EmotionTrial &trial) {
     EmotionTrialFormatter formatter{trial};
     av_speech_in_noise::write(writer, formatter, currentTrial, Trial::Emotion);
-}
-
-void OutputFileImpl::write(const AdaptiveTest &test,
-    gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs) {
-    std::stringstream stream;
-    stream << test;
-    for (const auto &[key, value] : additionalKeyValuePairs)
-        insertLabeledLine(stream, key, value);
-    insertNewLine(stream);
-    write(string(stream));
-}
-
-void OutputFileImpl::write(const FixedLevelTest &test,
-    gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs) {
-    std::stringstream stream;
-    stream << test;
-    for (const auto &[key, value] : additionalKeyValuePairs)
-        insertLabeledLine(stream, key, value);
-    insertNewLine(stream);
-    write(string(stream));
 }
 
 void OutputFileImpl::write(const BinocularGazeSamples &gazeSamples) {

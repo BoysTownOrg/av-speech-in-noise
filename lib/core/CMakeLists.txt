@@ -17,7 +17,8 @@ add_library(
   src/SubmittingEmotion.cpp
   src/AudioRecording.cpp
   src/EyeTracking.cpp
-  src/UpdatedMaximumLikelihood.cpp)
+  src/UpdatedMaximumLikelihood.cpp
+  src/AdaptiveTrackFactory.cpp)
 target_include_directories(
   av-speech-in-noise-core-lib
   PUBLIC include
