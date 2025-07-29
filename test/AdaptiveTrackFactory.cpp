@@ -5,6 +5,12 @@
 #include <sstream>
 
 namespace av_speech_in_noise {
+static constexpr auto operator==(
+    const TrackingSequence &a, const TrackingSequence &b) -> bool {
+    return a.down == b.down && a.up == b.up && a.runCount == b.runCount &&
+        a.stepSize == b.stepSize;
+}
+
 namespace {
 class AdaptiveTrackFactoryTests : public ::testing::Test {};
 
@@ -52,16 +58,16 @@ TEST_F(AdaptiveTrackFactoryTests, oneSequence) {
     sequence.down = 2;
     sequence.runCount = 3;
     sequence.stepSize = 4;
-    factory.configure(up, "1");
-    factory.configure(down, "2");
-    factory.configure(reversalsPerStepSize, "3");
-    factory.configure(stepSizes, "4");
-    assertEqual({sequence},
-        std::get<LevittSettings>(adaptiveMethod.test.trackSettings)
-            .trackingRule);
+    factory.configure("up", "1");
+    factory.configure("down", "2");
+    factory.configure("reversalsPerStepSize", "3");
+    factory.configure("stepSizes", "4");
+    assertEqual({sequence}, factory.levittSettings.trackingRule);
 }
 
 TEST_F(AdaptiveTrackFactoryTests, twoSequences) {
+    ConfigurationRegistryStub registry;
+    AdaptiveTrackFactory factory{registry};
     TrackingSequence first{};
     first.up = 1;
     first.down = 3;
@@ -76,9 +82,7 @@ TEST_F(AdaptiveTrackFactoryTests, twoSequences) {
     factory.configure("down", "3 4");
     factory.configure("reversalsPerStepSize", "5 6");
     factory.configure("stepSizes", "7 8");
-    assertEqual({first, second},
-        std::get<LevittSettings>(adaptiveMethod.test.trackSettings)
-            .trackingRule);
+    assertEqual({first, second}, factory.levittSettings.trackingRule);
 }
 
 TEST_F(AdaptiveTrackFactoryTests, writesUmlTrackSettings) {

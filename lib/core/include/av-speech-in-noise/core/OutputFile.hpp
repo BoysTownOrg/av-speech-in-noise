@@ -286,12 +286,6 @@ class OutputFileImpl : public OutputFile {
     void openNewFile(const TestIdentity &) override;
     void close() override;
     void save() override;
-    void write(const AdaptiveTest &,
-        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
-        override;
-    void write(const FixedLevelTest &,
-        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
-        override;
     void write(const coordinate_response_measure::AdaptiveTrial &) override;
     void write(const open_set::AdaptiveTrial &) override;
     void write(const coordinate_response_measure::FixedLevelTrial &) override;

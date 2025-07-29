@@ -1,8 +1,6 @@
 #ifndef AV_SPEECH_IN_NOISE_TEST_OUTPUTFILESTUB_HPP_
 #define AV_SPEECH_IN_NOISE_TEST_OUTPUTFILESTUB_HPP_
 
-#include "LogString.hpp"
-
 #include <av-speech-in-noise/core/IOutputFile.hpp>
 
 #include <filesystem>
@@ -34,20 +32,6 @@ class OutputFileStub : public OutputFile {
         const coordinate_response_measure::AdaptiveTrial &trial) override {
         addToLog("writeTrial ");
         adaptiveCoordinateResponseTrial_ = trial;
-    }
-
-    void write(const AdaptiveTest &test,
-        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
-        override {
-        addToLog("writeTest ");
-        adaptiveTest_ = &test;
-    }
-
-    void write(const FixedLevelTest &p,
-        gsl::span<std::pair<std::string, std::string>> additionalKeyValuePairs)
-        override {
-        addToLog("writeTest ");
-        fixedLevelTest_ = &p;
     }
 
     void write(const FreeResponseTrial &p) override {
