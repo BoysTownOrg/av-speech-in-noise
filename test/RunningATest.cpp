@@ -7,7 +7,6 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/RunningATest.hpp>

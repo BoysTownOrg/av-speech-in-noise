@@ -1,6 +1,5 @@
 #include "TestSettingsInterpreter.hpp"
 #include "SessionController.hpp"
-#include "av-speech-in-noise/Model.hpp"
 
 #include <gsl/gsl>
 

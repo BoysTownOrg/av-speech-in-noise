@@ -1,7 +1,6 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_DOMAIN_INCLUDE_AVSPEECHINNOISE_MODELHPP_
 #define AV_SPEECH_IN_NOISE_LIB_DOMAIN_INCLUDE_AVSPEECHINNOISE_MODELHPP_
 
-#include <cstddef>
 #include <ostream>
 #include <string>
 #include <variant>
@@ -150,55 +149,6 @@ struct Test {
     RealLevel fullScaleLevel;
     AudioChannelOption audioChannelOption{AudioChannelOption::all};
     bool enableVibrotactileStimulus{};
-};
-
-struct TrackingSequence {
-    int runCount{};
-    int stepSize{};
-    int down{};
-    int up{};
-};
-
-using TrackingRule = typename std::vector<TrackingSequence>;
-
-enum class PriorProbabilityKind : std::uint8_t { LinearNorm, LogNorm, Flat };
-
-enum class ParameterSpace : std::uint8_t { Linear, Log };
-
-struct PriorProbabilitySetting {
-    double mu;
-    double sigma;
-    PriorProbabilityKind kind;
-};
-
-struct ParameterSpaceSetting {
-    double lower;
-    double upper;
-    std::size_t N;
-    ParameterSpace space;
-};
-
-struct PhiParameterSetting {
-    ParameterSpaceSetting space;
-    PriorProbabilitySetting priorProbability;
-};
-
-struct UmlSettings {
-    PhiParameterSetting alpha{{-30, 30, 61, ParameterSpace::Linear},
-        {0, 10, PriorProbabilityKind::LinearNorm}};
-    PhiParameterSetting beta{{0.1, 10, 41, ParameterSpace::Log},
-        {-0.5, 0.4, PriorProbabilityKind::LogNorm}};
-    PhiParameterSetting gamma{{0.02, 0.2, 11, ParameterSpace::Linear},
-        {{}, {}, PriorProbabilityKind::Flat}};
-    PhiParameterSetting lambda{{0.02, 0.2, 11, ParameterSpace::Linear},
-        {{}, {}, PriorProbabilityKind::Flat}};
-    int up{1};
-    int down{2};
-    int trials{};
-};
-
-struct LevittSettings {
-    TrackingRule trackingRule;
 };
 
 struct RealLevelDifference {
