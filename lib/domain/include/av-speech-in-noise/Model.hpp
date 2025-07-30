@@ -168,7 +168,6 @@ struct AdaptiveTest : Test {
     SNR ceilingSnr{};
     SNR floorSnr{};
     int trackBumpLimit{};
-    int thresholdReversals{};
 };
 
 struct Phi {

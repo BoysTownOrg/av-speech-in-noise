@@ -50,7 +50,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     CorrectKeywordsTrial lastCorrectKeywordsTrial{};
     const AdaptiveTest *test{};
     FloatSNR startingSNR;
-    int thresholdReversals;
     ResponseEvaluator &evaluator;
     Randomizer &randomizer;
     AdaptiveTrack *snrTrack{};

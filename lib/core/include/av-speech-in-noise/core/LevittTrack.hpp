@@ -16,6 +16,7 @@ using TrackingRule = typename std::vector<TrackingSequence>;
 
 struct LevittSettings {
     TrackingRule trackingRule;
+    int thresholdReversals;
 };
 
 class LevittTrack : public AdaptiveTrack {

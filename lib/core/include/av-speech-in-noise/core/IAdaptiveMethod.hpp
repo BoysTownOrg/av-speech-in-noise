@@ -30,7 +30,6 @@ class AdaptiveTrack {
         int ceiling{maximumInt};
         int floor{minimumInt};
         int bumpLimit{maximumInt};
-        int thresholdReversals;
     };
     virtual void down() = 0;
     virtual void up() = 0;

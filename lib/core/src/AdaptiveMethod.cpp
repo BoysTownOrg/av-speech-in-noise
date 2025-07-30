@@ -41,7 +41,6 @@ static auto trackSettings(const AdaptiveTest &test) -> AdaptiveTrack::Settings {
     trackSettings.startingX = test.startingSnr.dB;
     trackSettings.floor = test.floorSnr.dB;
     trackSettings.bumpLimit = test.trackBumpLimit;
-    trackSettings.thresholdReversals = test.thresholdReversals;
     return trackSettings;
 }
 
@@ -94,7 +93,6 @@ void AdaptiveMethodImpl::initialize(const AdaptiveTest &t,
     AdaptiveTrack::Factory *factory) {
     this->adaptiveTrackFactory = factory;
     startingSNR.dB = t.startingSnr.dB;
-    thresholdReversals = t.thresholdReversals;
     test = &t;
     targetListsWithTracks.clear();
     for (const auto &list : targetListSetReader->read(t.targetsUrl))
@@ -196,7 +194,6 @@ void AdaptiveMethodImpl::writeTestResult(OutputFile &file) {
 
 void AdaptiveMethodImpl::write(std::ostream &stream) {
     insertLabeledLine(stream, "starting SNR (dB)", startingSNR.dB);
-    insertLabeledLine(stream, "threshold reversals", thresholdReversals);
     adaptiveTrackFactory->write(stream);
 }
 

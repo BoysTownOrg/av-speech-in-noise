@@ -6,7 +6,7 @@ namespace av_speech_in_noise {
 LevittTrack::LevittTrack(const LevittSettings &s, const Settings &p)
     : startingX_{p.startingX}, x_{p.startingX}, ceiling_{p.ceiling},
       floor_{p.floor}, bumpLimit_{p.bumpLimit}, bumpCount_{0},
-      thresholdReversals{p.thresholdReversals} {
+      thresholdReversals{s.thresholdReversals} {
     for (const auto &sequence : s.trackingRule)
         if (sequence.runCount != 0) {
             stepSizes.push_back(sequence.stepSize);
