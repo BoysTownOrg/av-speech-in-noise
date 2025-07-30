@@ -1,6 +1,7 @@
 #include "av-speech-in-noise/core/AdaptiveTrackFactory.hpp"
 #include "ConfigurationRegistryStub.hpp"
 #include "assert-utility.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <gtest/gtest.h>
 #include <sstream>
 
@@ -60,8 +61,8 @@ TEST_F(AdaptiveTrackFactoryTests, oneSequence) {
     sequence.stepSize = 4;
     factory.configure("up", "1");
     factory.configure("down", "2");
-    factory.configure("reversalsPerStepSize", "3");
-    factory.configure("stepSizes", "4");
+    factory.configure("reversals per step size", "3");
+    factory.configure("step sizes (dB)", "4");
     assertEqual({sequence}, factory.levittSettings.trackingRule);
 }
 
@@ -80,8 +81,8 @@ TEST_F(AdaptiveTrackFactoryTests, twoSequences) {
     second.stepSize = 8;
     factory.configure("up", "1 2");
     factory.configure("down", "3 4");
-    factory.configure("reversalsPerStepSize", "5 6");
-    factory.configure("stepSizes", "7 8");
+    factory.configure("reversals per step size", "5 6");
+    factory.configure("step sizes (dB)", "7 8");
     assertEqual({first, second}, factory.levittSettings.trackingRule);
 }
 
@@ -92,19 +93,31 @@ TEST_F(AdaptiveTrackFactoryTests, writesUmlTrackSettings) {
     factory.umlSettings.alpha.space.lower = -12.3;
     factory.umlSettings.alpha.space.upper = 45.6;
     factory.umlSettings.alpha.space.N = 7;
-    factory.umlSettings.beta.space.space = ParameterSpace::Log;
-    factory.umlSettings.beta.space.lower = -2.3;
-    factory.umlSettings.beta.space.upper = 5.6;
-    factory.umlSettings.beta.space.N = 70;
+    factory.umlSettings.alpha.priorProbability.kind =
+        PriorProbabilityKind::Flat;
     factory.umlSettings.alpha.priorProbability.kind =
         PriorProbabilityKind::LinearNorm;
     factory.umlSettings.alpha.priorProbability.mu = 1.2;
     factory.umlSettings.alpha.priorProbability.sigma = 3.4;
+    factory.umlSettings.beta.space.space = ParameterSpace::Log;
+    factory.umlSettings.beta.space.lower = -2.3;
+    factory.umlSettings.beta.space.upper = 5.6;
+    factory.umlSettings.beta.space.N = 70;
     factory.umlSettings.beta.priorProbability.kind =
         PriorProbabilityKind::LogNorm;
     factory.umlSettings.beta.priorProbability.mu = 1.01;
     factory.umlSettings.beta.priorProbability.sigma = 2.02;
+    factory.umlSettings.gamma.space.space = ParameterSpace::Linear;
+    factory.umlSettings.gamma.space.lower = 31;
+    factory.umlSettings.gamma.space.upper = 323;
+    factory.umlSettings.gamma.space.N = 23;
     factory.umlSettings.gamma.priorProbability.kind =
+        PriorProbabilityKind::Flat;
+    factory.umlSettings.lambda.space.space = ParameterSpace::Linear;
+    factory.umlSettings.lambda.space.lower = 31;
+    factory.umlSettings.lambda.space.upper = 323;
+    factory.umlSettings.lambda.space.N = 23;
+    factory.umlSettings.lambda.priorProbability.kind =
         PriorProbabilityKind::Flat;
     factory.umlSettings.up = 42;
     factory.umlSettings.down = 64;
@@ -113,13 +126,17 @@ TEST_F(AdaptiveTrackFactoryTests, writesUmlTrackSettings) {
     std::stringstream stream;
     factory.write(stream);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(R"(alpha space: linear -12.3 45.6 7
-beta space: log -2.3 5.6 70
 alpha prior: linearnorm 1.2 3.4
+beta space: log -2.3 5.6 70
 beta prior: lognorm 1.01 2.02
+gamma space: linear 31 323 23
 gamma prior: flat
+lambda space: linear 31 323 23
+lambda prior: flat
 up: 42
 down: 64
-trials: 123)",
+trials: 123
+)",
         stream.str());
 }
 }

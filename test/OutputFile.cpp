@@ -682,12 +682,6 @@ class OutputFileTests : public ::testing::Test {
     FreeResponseTrial freeResponseTrial;
     BinocularGazeSamples eyeGazes;
 
-    void assertConditionNameWritten(WritingTest &useCase, Condition c) {
-        useCase.addAdditionalKeyValue("condition", name(c));
-        run(useCase, file);
-        assertContainsColonDelimitedEntry(writer, "condition", name(c));
-    }
-
     void assertHeadingAtLine(WritingTrial &useCase, gsl::index line) {
         for (auto [headingItem, index] : useCase.headingLabels())
             assertNthCommaDelimitedEntryOfLine(
@@ -992,32 +986,6 @@ OUTPUT_FILE_TEST(uninitializedColorDoesNotBreak) {
     file.write(uninitialized);
 }
 
-OUTPUT_FILE_TEST(writesLevittTrackSettings) {
-    AdaptiveTest test;
-    TrackingSequence first;
-    first.up = 1;
-    first.down = 2;
-    first.runCount = 3;
-    first.stepSize = 4;
-    TrackingSequence second;
-    second.up = 5;
-    second.down = 6;
-    second.runCount = 7;
-    second.stepSize = 8;
-    LevittSettings levittSettings;
-    levittSettings.trackingRule.push_back(first);
-    levittSettings.trackingRule.push_back(second);
-    test.trackSettings = levittSettings;
-    test.thresholdReversals = 9;
-    file.write(test, {});
-    assertContainsColonDelimitedEntry(writer, "up", "1 5");
-    assertContainsColonDelimitedEntry(writer, "down", "2 6");
-    assertContainsColonDelimitedEntry(writer, "reversals per step size", "3 7");
-    assertContainsColonDelimitedEntry(writer, "step sizes (dB)", "4 8");
-    assertContainsColonDelimitedEntry(writer, "threshold reversals", "9");
-    assertEndsWith(writer, "\n\n");
-}
-
 OUTPUT_FILE_TEST(writeAdaptiveTestResult) {
     AdaptiveTestResults results{};
     results.push_back({{"a"}, 1.});
@@ -1036,34 +1004,6 @@ OUTPUT_FILE_TEST(writeUmlAdaptiveTestResult) {
     file.write(results);
     assertContainsColonDelimitedEntry(writer, "a", "1 2 3 4");
     assertContainsColonDelimitedEntry(writer, "b", "3 1 2 4");
-}
-
-OUTPUT_FILE_TEST(writeCommonFixedLevelTest) {
-    assertCommonTestWritten(writingFixedLevelTest);
-}
-
-OUTPUT_FILE_TEST(writeAdaptiveTest) {
-    AdaptiveTest adaptiveTest;
-    adaptiveTest.startingSnr.dB = 2;
-    file.write(adaptiveTest, {});
-    assertContainsColonDelimitedEntry(writer, "starting SNR (dB)", "2");
-    assertEndsWith(writer, "\n\n");
-}
-
-OUTPUT_FILE_TEST(writeFixedLevelTest) {
-    FixedLevelTest fixedLevelTest;
-    fixedLevelTest.snr.dB = 2;
-    file.write(fixedLevelTest, {});
-    assertContainsColonDelimitedEntry(writer, "SNR (dB)", "2");
-    assertEndsWith(writer, "\n\n");
-}
-
-OUTPUT_FILE_TEST(writeAdaptiveTestInformation) {
-    assertTestIdentityWritten(writingAdaptiveTest);
-}
-
-OUTPUT_FILE_TEST(writeFixedLevelTestInformation) {
-    assertTestIdentityWritten(writingFixedLevelTest);
 }
 
 OUTPUT_FILE_TEST(writeGazePositionsRelativeScreenAndEyeTrackerTime) {

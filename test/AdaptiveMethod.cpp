@@ -11,6 +11,7 @@
 #include <gsl/gsl>
 #include <algorithm>
 #include <functional>
+#include <sstream>
 #include <variant>
 
 namespace av_speech_in_noise {
@@ -914,6 +915,14 @@ ADAPTIVE_METHOD_TEST(completeWhenAllTracksComplete) {
     assertTestIncompleteAfterCoordinateResponse();
     setComplete(tracks, 2);
     assertTestCompleteAfterCoordinateResponse();
+}
+
+ADAPTIVE_METHOD_TEST(tbd) {
+    test.startingSnr.dB = 2;
+    initialize(method, test, targetListReader, snrTrackFactory);
+    std::stringstream stream;
+    method.write(stream);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(R"(starting SNR (dB): 2)", stream.str());
 }
 }
 }
