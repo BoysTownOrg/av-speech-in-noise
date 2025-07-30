@@ -265,8 +265,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         {entryWithNewline(TestSetting::method, m),                             \
             entryWithNewline(TestSetting::targets, "a"),                       \
             entryWithNewline(TestSetting::masker, "b"),                        \
-            entryWithNewline(TestSetting::maskerLevel, "65"),                  \
-            entryWithNewline(TestSetting::thresholdReversals, "4")},           \
+            entryWithNewline(TestSetting::maskerLevel, "65")},                 \
         5);                                                                    \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         std::string{"a"}, adaptiveMethod.test.targetsUrl.path);                \
@@ -275,8 +274,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         65, adaptiveMethod.test.maskerLevel.dB_SPL);                           \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(5, adaptiveMethod.test.startingSnr.dB);    \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        4, adaptiveMethod.test.thresholdReversals);                            \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(SessionControllerImpl::ceilingSnr.dB,      \
         adaptiveMethod.test.ceilingSnr.dB);                                    \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \

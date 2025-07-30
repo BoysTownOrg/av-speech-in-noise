@@ -826,17 +826,6 @@ ADAPTIVE_METHOD_TEST(testResults) {
         method.testResults());
 }
 
-ADAPTIVE_METHOD_TEST(passesThresholdReversals) {
-    test.thresholdReversals = 1;
-    initialize(method, test, targetListReader, snrTrackFactory);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        snrTrackFactory.parameters()[0].thresholdReversals, 1);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        snrTrackFactory.parameters()[1].thresholdReversals, 1);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        snrTrackFactory.parameters()[2].thresholdReversals, 1);
-}
-
 ADAPTIVE_METHOD_TEST(submitCorrectResponsePassesCurrentToEvaluator) {
     assertPassesCurrentTargetToEvaluatorForFileName(submittingCorrectResponse);
 }
@@ -919,12 +908,10 @@ ADAPTIVE_METHOD_TEST(completeWhenAllTracksComplete) {
 
 ADAPTIVE_METHOD_TEST(tbd) {
     test.startingSnr.dB = 2;
-    test.thresholdReversals = 3;
     initialize(method, test, targetListReader, snrTrackFactory);
     std::stringstream stream;
     method.write(stream);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(R"(starting SNR (dB): 2
-threshold reversals: 3
 )",
         stream.str());
 }

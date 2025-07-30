@@ -117,9 +117,7 @@ static void assign(AdaptiveTest &test,
     const std::map<std::string,
         std::vector<std::reference_wrapper<Configurable>>> &configurables,
     const std::string &entryName, const std::string &entry) {
-    if (entryName == name(TestSetting::thresholdReversals))
-        test.thresholdReversals = integer(entry);
-    else if (entryName == name(TestSetting::startingSnr))
+    if (entryName == name(TestSetting::startingSnr))
         test.startingSnr.dB = integer(entry);
     else
         assign(static_cast<Test &>(test), configurables, entryName, entry);

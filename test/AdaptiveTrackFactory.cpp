@@ -140,5 +140,30 @@ trials: 123
 )",
         stream.str());
 }
+
+TEST_F(AdaptiveTrackFactoryTests, writesLevittTrackSettings) {
+    ConfigurationRegistryStub registry;
+    AdaptiveTrackFactory factory{registry};
+    factory.uml = false;
+    factory.levittSettings.thresholdReversals = 3;
+    factory.levittSettings.trackingRule.resize(2);
+    factory.levittSettings.trackingRule[0].up = 4;
+    factory.levittSettings.trackingRule[0].down = 5;
+    factory.levittSettings.trackingRule[0].stepSize = 6;
+    factory.levittSettings.trackingRule[0].runCount = 7;
+    factory.levittSettings.trackingRule[1].up = 8;
+    factory.levittSettings.trackingRule[1].down = 9;
+    factory.levittSettings.trackingRule[1].stepSize = 10;
+    factory.levittSettings.trackingRule[1].runCount = 11;
+    std::stringstream stream;
+    factory.write(stream);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(R"(up: 4 8
+down: 5 9
+reversals per step size: 7 11
+step sizes (dB): 6 10
+threshold reversals: 3
+)",
+        stream.str());
+}
 }
 }

@@ -342,7 +342,7 @@ LEVITT_TRACK_TEST(incompleteIfPushedUpBumpLimitNonconsecutiveTimesAtCeiling) {
 }
 
 LEVITT_TRACK_TEST(threshold) {
-    settings.thresholdReversals = 4;
+    levittSettings.thresholdReversals = 4;
     setStartingX(0);
     setFirstSequenceRunCount(7);
     setFirstSequenceStepSize(3);
@@ -363,7 +363,7 @@ LEVITT_TRACK_TEST(threshold) {
 }
 
 LEVITT_TRACK_TEST(thresholdFromTwoSequences) {
-    settings.thresholdReversals = 6;
+    levittSettings.thresholdReversals = 6;
     setStartingX(0);
     setFirstSequenceRunCount(4);
     setFirstSequenceStepSize(3);
@@ -391,7 +391,7 @@ LEVITT_TRACK_TEST(thresholdFromTwoSequences) {
 }
 
 LEVITT_TRACK_TEST(thresholdTooManyReversals) {
-    settings.thresholdReversals = 5;
+    levittSettings.thresholdReversals = 5;
     setStartingX(0);
     setFirstSequenceRunCount(4);
     setFirstSequenceStepSize(3);
@@ -411,7 +411,7 @@ LEVITT_TRACK_TEST(thresholdTooManyReversals) {
 }
 
 LEVITT_TRACK_TEST(thresholdNegativeReversals) {
-    settings.thresholdReversals = -1;
+    levittSettings.thresholdReversals = -1;
     setStartingX(0);
     setFirstSequenceRunCount(4);
     setFirstSequenceStepSize(3);

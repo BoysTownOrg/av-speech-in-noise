@@ -17,6 +17,7 @@ AdaptiveTrackFactory::AdaptiveTrackFactory(ConfigurationRegistry &registry) {
     registry.subscribe(*this, "down");
     registry.subscribe(*this, "reversals per step size");
     registry.subscribe(*this, "step sizes (dB)");
+    registry.subscribe(*this, "threshold");
 }
 
 static void initializeParameterSpace(
@@ -90,7 +91,9 @@ static void assignToEachElementOfTrackingRule(LevittSettings &s,
 
 void AdaptiveTrackFactory::configure(
     const std::string &key, const std::string &value) {
-    if (key == "up")
+    if (key == "threshold")
+        levittSettings.thresholdReversals = integer(value);
+    else if (key == "up")
         assignToEachElementOfTrackingRule(levittSettings, up, value);
     else if (key == "down")
         assignToEachElementOfTrackingRule(levittSettings, down, value);
@@ -177,6 +180,8 @@ void AdaptiveTrackFactory::write(std::ostream &stream) {
         insertLabeledLine(stream, "down", down);
         insertLabeledLine(stream, "reversals per step size", runCounts);
         insertLabeledLine(stream, "step sizes (dB)", stepSizes);
+        insertLabeledLine(
+            stream, "threshold reversals", levittSettings.thresholdReversals);
     }
 }
 
