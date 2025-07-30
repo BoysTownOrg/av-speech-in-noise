@@ -13,6 +13,10 @@ AdaptiveTrackFactory::AdaptiveTrackFactory(ConfigurationRegistry &registry) {
     registry.subscribe(*this, "lambda space");
     registry.subscribe(*this, "lambda prior");
     registry.subscribe(*this, "trials");
+    registry.subscribe(*this, "up");
+    registry.subscribe(*this, "down");
+    registry.subscribe(*this, "reversals per step size");
+    registry.subscribe(*this, "step sizes (dB)");
 }
 
 static void initializeParameterSpace(
