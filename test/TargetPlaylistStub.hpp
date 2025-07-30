@@ -61,18 +61,6 @@ class FiniteTargetPlaylistStub : public virtual FiniteTargetPlaylist,
     bool empty_{};
 };
 
-class RepeatableFiniteTargetPlaylistStub
-    : public virtual RepeatableFiniteTargetPlaylist,
-      public FiniteTargetPlaylistStub {
-  public:
-    void setRepeats(gsl::index n) override { repeats_ = n; }
-
-    auto repeats() const -> gsl::index { return repeats_; }
-
-  private:
-    gsl::index repeats_{};
-};
-
 class FiniteTargetPlaylistWithRepeatablesStub
     : public virtual FiniteTargetPlaylistWithRepeatables,
       public FiniteTargetPlaylistStub {

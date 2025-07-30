@@ -94,17 +94,6 @@ static void assign(FixedLevelTest &test,
         assign(static_cast<Test &>(test), configurables, entryName, entry);
 }
 
-static void assign(FixedLevelTestWithEachTargetNTimes &test,
-    const std::map<std::string,
-        std::vector<std::reference_wrapper<Configurable>>> &configurables,
-    const std::string &entryName, const std::string &entry) {
-    if (entryName == name(TestSetting::targetRepetitions))
-        test.timesEachTargetIsPlayed = integer(entry);
-    else
-        assign(static_cast<FixedLevelTest &>(test), configurables, entryName,
-            entry);
-}
-
 static void assign(Calibration &calibration, const std::string &entryName,
     const std::string &entry) {
     if (entryName == name(TestSetting::masker))
@@ -211,17 +200,6 @@ static void initialize(FixedLevelTest &test,
         });
 }
 
-static void initialize(FixedLevelTestWithEachTargetNTimes &test,
-    const std::map<std::string,
-        std::vector<std::reference_wrapper<Configurable>>> &configurables,
-    const std::string &contents, const std::string &method,
-    const TestIdentity &identity, SNR startingSnr) {
-    initialize(test, contents, method, identity, startingSnr,
-        [&](const auto &entryName, const auto &entry) {
-            assign(test, configurables, entryName, entry);
-        });
-}
-
 static void initialize(
     const std::map<std::string,
         std::vector<std::reference_wrapper<Configurable>>> &configurables,
@@ -253,18 +231,6 @@ static void initializeFixedLevelFixedTrialsTest(
     const TestIdentity &identity, SNR startingSnr,
     const std::function<void(const FixedLevelFixedTrialsTest &)> &f) {
     FixedLevelFixedTrialsTest test;
-    av_speech_in_noise::initialize(
-        test, configurables, contents, method, identity, startingSnr);
-    f(test);
-}
-
-static void initializeFixedLevelTestWithEachTargetNTimes(
-    const std::map<std::string,
-        std::vector<std::reference_wrapper<Configurable>>> &configurables,
-    const std::string &method, const std::string &contents,
-    const TestIdentity &identity, SNR startingSnr,
-    const std::function<void(const FixedLevelTestWithEachTargetNTimes &)> &f) {
-    FixedLevelTestWithEachTargetNTimes test;
     av_speech_in_noise::initialize(
         test, configurables, contents, method, identity, startingSnr);
     f(test);
@@ -423,10 +389,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             });
         break;
     case Method::fixedLevelConsonants:
-        av_speech_in_noise::initializeFixedLevelTestWithEachTargetNTimes(
-            configurables, methodName, contents, identity, startingSnr,
-            [&](const FixedLevelTestWithEachTargetNTimes &test) {
-                eachTargetNTimes.setRepeats(test.timesEachTargetIsPlayed - 1);
+        av_speech_in_noise::initialize(configurables, methodName, contents,
+            identity, startingSnr, [&](const FixedLevelTest &test) {
                 fixedLevelMethod.initialize(test, &eachTargetNTimes);
                 av_speech_in_noise::initialize(
                     runningATest, fixedLevelMethod, test, testObservers);
@@ -504,7 +468,7 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
-    RepeatableFiniteTargetPlaylist &eachTargetNTimes,
+    FiniteTargetPlaylist &eachTargetNTimes,
     TargetPlaylist &targetsWithReplacement,
     AdaptiveTrack::Factory &adaptiveTrackFactory,
     submitting_free_response::Puzzle &puzzle,

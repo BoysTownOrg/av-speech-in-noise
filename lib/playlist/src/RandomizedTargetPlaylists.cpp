@@ -130,9 +130,17 @@ auto CyclicRandomizedTargetPlaylist::directory() -> LocalUrl {
 }
 
 EachTargetPlayedOnceThenShuffleAndRepeat::
-    EachTargetPlayedOnceThenShuffleAndRepeat(
+    EachTargetPlayedOnceThenShuffleAndRepeat(ConfigurationRegistry &registry,
         DirectoryReader *reader, target_list::Randomizer *randomizer)
-    : reader{reader}, randomizer{randomizer} {}
+    : reader{reader}, randomizer{randomizer} {
+    registry.subscribe(*this, "target repetitions");
+}
+
+void EachTargetPlayedOnceThenShuffleAndRepeat::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "target repetitions")
+        repeats = integer(value);
+}
 
 void EachTargetPlayedOnceThenShuffleAndRepeat::load(const LocalUrl &d) {
     shuffle(randomizer, files = filesIn(reader, directory_ = d));
@@ -164,9 +172,5 @@ auto EachTargetPlayedOnceThenShuffleAndRepeat::directory() -> LocalUrl {
 
 auto EachTargetPlayedOnceThenShuffleAndRepeat::empty() -> bool {
     return endOfPlaylistCount > repeats;
-}
-
-void EachTargetPlayedOnceThenShuffleAndRepeat::setRepeats(gsl::index n) {
-    repeats = n;
 }
 }

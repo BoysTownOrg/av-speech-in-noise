@@ -86,7 +86,6 @@ enum class TestSetting : std::uint8_t {
     masker,
     maskerLevel,
     startingSnr,
-    targetRepetitions,
     subjectId,
     testerId,
     session,
@@ -108,8 +107,6 @@ constexpr auto name(TestSetting p) -> const char * {
         return "masker level (dB SPL)";
     case TestSetting::startingSnr:
         return "starting SNR (dB)";
-    case TestSetting::targetRepetitions:
-        return "target repetitions";
     case TestSetting::subjectId:
         return "subject ID";
     case TestSetting::testerId:
@@ -139,7 +136,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
         FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
-        RepeatableFiniteTargetPlaylist &eachTargetNTimes,
+        FiniteTargetPlaylist &eachTargetNTimes,
         TargetPlaylist &targetsWithReplacement, AdaptiveTrack::Factory &,
         submitting_free_response::Puzzle &puzzle,
         FreeResponseController &freeResponseController,
@@ -177,7 +174,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets;
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce;
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets;
-    RepeatableFiniteTargetPlaylist &eachTargetNTimes;
+    FiniteTargetPlaylist &eachTargetNTimes;
     TargetPlaylist &targetsWithReplacement;
     submitting_free_response::Puzzle &puzzle;
     FreeResponseController &freeResponseController;

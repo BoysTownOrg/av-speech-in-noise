@@ -5,6 +5,7 @@
 
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/TargetPlaylist.hpp>
+#include <av-speech-in-noise/core/Configuration.hpp>
 
 #include <gsl/gsl>
 
@@ -104,32 +105,34 @@ class CyclicRandomizedTargetPlaylist : public TargetPlaylist {
     target_list::Randomizer *randomizer;
 };
 
-class EachTargetPlayedOnceThenShuffleAndRepeat
-    : public RepeatableFiniteTargetPlaylist {
+class EachTargetPlayedOnceThenShuffleAndRepeat : public FiniteTargetPlaylist,
+                                                 public Configurable {
   public:
     class Factory : public TargetPlaylistFactory {
       public:
-        Factory(DirectoryReader *reader, target_list::Randomizer *randomizer)
-            : reader{reader}, randomizer{randomizer} {}
+        Factory(ConfigurationRegistry &registry, DirectoryReader *reader,
+            target_list::Randomizer *randomizer)
+            : registry{registry}, reader{reader}, randomizer{randomizer} {}
 
         auto make() -> std::shared_ptr<TargetPlaylist> override {
             return std::make_shared<EachTargetPlayedOnceThenShuffleAndRepeat>(
-                reader, randomizer);
+                registry, reader, randomizer);
         }
 
       private:
+        ConfigurationRegistry &registry;
         DirectoryReader *reader;
         target_list::Randomizer *randomizer;
     };
 
     EachTargetPlayedOnceThenShuffleAndRepeat(
-        DirectoryReader *, target_list::Randomizer *);
+        ConfigurationRegistry &, DirectoryReader *, target_list::Randomizer *);
     void load(const LocalUrl &directory) override;
     auto next() -> LocalUrl override;
     auto current() -> LocalUrl override;
     auto directory() -> LocalUrl override;
     auto empty() -> bool override;
-    void setRepeats(gsl::index) override;
+    void configure(const std::string &key, const std::string &value) override;
 
   private:
     LocalUrls files{};
@@ -138,7 +141,7 @@ class EachTargetPlayedOnceThenShuffleAndRepeat
     DirectoryReader *reader;
     target_list::Randomizer *randomizer;
     LocalUrls::const_iterator currentFileIt{};
-    gsl::index repeats{};
+    gsl::index repeats{0};
     gsl::index endOfPlaylistCount{};
 };
 }
