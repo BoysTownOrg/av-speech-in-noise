@@ -274,10 +274,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         65, adaptiveMethod.test.maskerLevel.dB_SPL);                           \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(5, adaptiveMethod.test.startingSnr.dB);    \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(SessionControllerImpl::ceilingSnr.dB,      \
-        adaptiveMethod.test.ceilingSnr.dB);                                    \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        SessionControllerImpl::floorSnr.dB, adaptiveMethod.test.floorSnr.dB);  \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(SessionControllerImpl::trackBumpLimit,     \
         adaptiveMethod.test.trackBumpLimit);                                   \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \

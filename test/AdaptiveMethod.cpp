@@ -287,14 +287,6 @@ void assertStartingXEqualsOne(const AdaptiveTrack::Settings &s) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, s.startingX);
 }
 
-void assertCeilingEqualsOne(const AdaptiveTrack::Settings &s) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, s.ceiling);
-}
-
-void assertFloorEqualsOne(const AdaptiveTrack::Settings &s) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, s.floor);
-}
-
 void assertBumpLimitEqualsOne(const AdaptiveTrack::Settings &s) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, s.bumpLimit);
 }
@@ -535,18 +527,6 @@ ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithSnr) {
     test.startingSnr.dB = 1;
     initialize(method, test, targetListReader, snrTrackFactory);
     forEachSettings(snrTrackFactory, assertStartingXEqualsOne);
-}
-
-ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithCeiling) {
-    test.ceilingSnr.dB = 1;
-    initialize(method, test, targetListReader, snrTrackFactory);
-    forEachSettings(snrTrackFactory, assertCeilingEqualsOne);
-}
-
-ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithFloor) {
-    test.floorSnr.dB = 1;
-    initialize(method, test, targetListReader, snrTrackFactory);
-    forEachSettings(snrTrackFactory, assertFloorEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithBumpLimit) {
