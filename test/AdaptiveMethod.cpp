@@ -287,10 +287,6 @@ void assertStartingXEqualsOne(const AdaptiveTrack::Settings &s) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, s.startingX);
 }
 
-void assertBumpLimitEqualsOne(const AdaptiveTrack::Settings &s) {
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, s.bumpLimit);
-}
-
 void write(AdaptiveMethodImpl &method,
     const coordinate_response_measure::Response &response,
     OutputFile &outputFile) {
@@ -527,12 +523,6 @@ ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithSnr) {
     test.startingSnr.dB = 1;
     initialize(method, test, targetListReader, snrTrackFactory);
     forEachSettings(snrTrackFactory, assertStartingXEqualsOne);
-}
-
-ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithBumpLimit) {
-    test.trackBumpLimit = 1;
-    initialize(method, test, targetListReader, snrTrackFactory);
-    forEachSettings(snrTrackFactory, assertBumpLimitEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializePassesTargetPlaylistDirectory) {

@@ -165,7 +165,6 @@ struct FloatSNR {
 
 struct AdaptiveTest : Test {
     SNR startingSnr{};
-    int trackBumpLimit{};
 };
 
 struct Phi {

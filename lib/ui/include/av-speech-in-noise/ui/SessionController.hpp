@@ -20,7 +20,6 @@ class SessionControllerImpl : public SessionController {
     void attach(Observer *) override;
 
     static constexpr RealLevel fullScaleLevel{119};
-    static constexpr auto trackBumpLimit{10};
 
   private:
     Presenter &testSetupPresenter;
