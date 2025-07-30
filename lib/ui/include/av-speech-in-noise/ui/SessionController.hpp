@@ -20,8 +20,6 @@ class SessionControllerImpl : public SessionController {
     void attach(Observer *) override;
 
     static constexpr RealLevel fullScaleLevel{119};
-    static constexpr SNR ceilingSnr{20};
-    static constexpr SNR floorSnr{-40};
     static constexpr auto trackBumpLimit{10};
 
   private:

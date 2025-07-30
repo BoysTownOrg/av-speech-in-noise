@@ -37,9 +37,9 @@ static auto fileName(ResponseEvaluator &evaluator, const LocalUrl &target)
 
 static auto trackSettings(const AdaptiveTest &test) -> AdaptiveTrack::Settings {
     AdaptiveTrack::Settings trackSettings{};
-    trackSettings.ceiling = test.ceilingSnr.dB;
     trackSettings.startingX = test.startingSnr.dB;
-    trackSettings.floor = test.floorSnr.dB;
+    trackSettings.ceiling = 20;
+    trackSettings.floor = -40;
     trackSettings.bumpLimit = test.trackBumpLimit;
     return trackSettings;
 }
