@@ -86,10 +86,6 @@ enum class TestSetting : std::uint8_t {
     masker,
     maskerLevel,
     startingSnr,
-    up,
-    down,
-    reversalsPerStepSize,
-    stepSizes,
     thresholdReversals,
     targetRepetitions,
     subjectId,
@@ -113,14 +109,6 @@ constexpr auto name(TestSetting p) -> const char * {
         return "masker level (dB SPL)";
     case TestSetting::startingSnr:
         return "starting SNR (dB)";
-    case TestSetting::up:
-        return "up";
-    case TestSetting::down:
-        return "down";
-    case TestSetting::reversalsPerStepSize:
-        return "reversals per step size";
-    case TestSetting::stepSizes:
-        return "step sizes (dB)";
     case TestSetting::thresholdReversals:
         return "threshold";
     case TestSetting::targetRepetitions:

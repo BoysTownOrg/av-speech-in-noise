@@ -17,8 +17,7 @@ class AdaptiveTrackFactory : public AdaptiveTrack::Factory,
                              public Configurable {
   public:
     explicit AdaptiveTrackFactory(ConfigurationRegistry &);
-    auto make(const std::variant<UmlSettings, LevittSettings> &specific,
-        const AdaptiveTrack::Settings &s)
+    auto make(const AdaptiveTrack::Settings &s)
         -> std::shared_ptr<AdaptiveTrack> override;
     void configure(const std::string &key, const std::string &value) override;
     void write(std::ostream &) override;

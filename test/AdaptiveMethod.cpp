@@ -919,10 +919,14 @@ ADAPTIVE_METHOD_TEST(completeWhenAllTracksComplete) {
 
 ADAPTIVE_METHOD_TEST(tbd) {
     test.startingSnr.dB = 2;
+    test.thresholdReversals = 3;
     initialize(method, test, targetListReader, snrTrackFactory);
     std::stringstream stream;
     method.write(stream);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(R"(starting SNR (dB): 2)", stream.str());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(R"(starting SNR (dB): 2
+threshold reversals: 3
+)",
+        stream.str());
 }
 }
 }

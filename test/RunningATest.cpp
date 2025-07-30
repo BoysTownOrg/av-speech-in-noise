@@ -492,7 +492,7 @@ class RunningATestTests : public ::testing::Test {
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"close openNewFile writeTest "},
+            std::string{"close openNewFile writeWritable "},
             string(log(outputFile)));
     }
 
@@ -1270,6 +1270,16 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(tbd) {
     model.configure("condition", name(Condition::auditoryOnly));
+    test.identity.subjectId = "a";
+    test.identity.testerId = "b";
+    test.identity.session = "c";
+    test.identity.method = "d";
+    test.identity.rmeSetting = "e";
+    test.identity.transducer = "f";
+    test.maskerFileUrl.path = "g";
+    test.targetsUrl.path = "h";
+    test.maskerLevel.dB_SPL = 3;
+    run(initializingTest, model);
     std::stringstream stream;
     model.write(stream);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(R"(subject: a
@@ -1278,10 +1288,12 @@ session: c
 method: d
 RME setting: e
 transducer: f
-masker: idk
-targets: idk
-masker level (dB SPL): idk
-condition: auditory only)",
+masker: g
+targets: h
+masker level (dB SPL): 3
+condition: auditory-only
+
+)",
         stream.str());
 }
 }

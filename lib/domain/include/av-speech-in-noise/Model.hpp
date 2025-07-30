@@ -214,7 +214,6 @@ struct FloatSNR {
 };
 
 struct AdaptiveTest : Test {
-    LevittSettings trackSettings;
     SNR startingSnr{};
     SNR ceilingSnr{};
     SNR floorSnr{};

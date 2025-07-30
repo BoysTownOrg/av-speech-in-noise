@@ -570,7 +570,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(tbd) {
     run(initializingMethod, method);
     std::stringstream stream;
     method.write(stream);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(R"(SNR (dB): 2)", stream.str());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("SNR (dB): 2\n", stream.str());
 }
 }
 }

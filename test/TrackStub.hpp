@@ -79,8 +79,7 @@ class TrackFactoryStub : public AdaptiveTrack::Factory {
     void write(std::ostream &) override {}
     [[nodiscard]] auto parameters() const -> auto & { return parameters_; }
 
-    auto make(const std::variant<UmlSettings, LevittSettings> &,
-        const AdaptiveTrack::Settings &s)
+    auto make(const AdaptiveTrack::Settings &s)
         -> std::shared_ptr<AdaptiveTrack> override {
         parameters_.push_back(s);
         auto track = tracks_.front();
