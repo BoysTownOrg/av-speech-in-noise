@@ -40,7 +40,7 @@ static auto trackSettings(const AdaptiveTest &test) -> AdaptiveTrack::Settings {
     trackSettings.startingX = test.startingSnr.dB;
     trackSettings.ceiling = 20;
     trackSettings.floor = -40;
-    trackSettings.bumpLimit = test.trackBumpLimit;
+    trackSettings.bumpLimit = 10;
     return trackSettings;
 }
 

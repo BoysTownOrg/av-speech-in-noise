@@ -184,7 +184,6 @@ static void initialize(AdaptiveTest &test,
             assign(test, configurables, entryName, entry);
         },
         contents);
-    test.trackBumpLimit = SessionControllerImpl::trackBumpLimit;
     test.fullScaleLevel = SessionControllerImpl::fullScaleLevel;
     test.identity.method = methodName;
 }
