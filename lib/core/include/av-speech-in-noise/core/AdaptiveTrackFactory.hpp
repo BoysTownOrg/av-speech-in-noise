@@ -7,12 +7,6 @@
 #include "UpdatedMaximumLikelihood.hpp"
 
 namespace av_speech_in_noise {
-auto make(const UmlSettings &specific, const AdaptiveTrack::Settings &s)
-    -> std::shared_ptr<AdaptiveTrack>;
-
-auto make(const LevittSettings &specific, const AdaptiveTrack::Settings &s)
-    -> std::shared_ptr<AdaptiveTrack>;
-
 class AdaptiveTrackFactory : public AdaptiveTrack::Factory,
                              public Configurable {
   public:

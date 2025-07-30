@@ -5,6 +5,19 @@
 #include <vector>
 
 namespace av_speech_in_noise {
+struct TrackingSequence {
+    int runCount{};
+    int stepSize{};
+    int down{};
+    int up{};
+};
+
+using TrackingRule = typename std::vector<TrackingSequence>;
+
+struct LevittSettings {
+    TrackingRule trackingRule;
+};
+
 class LevittTrack : public AdaptiveTrack {
   public:
     explicit LevittTrack(const LevittSettings &, const Settings &);

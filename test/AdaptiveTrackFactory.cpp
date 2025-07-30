@@ -1,7 +1,8 @@
-#include "av-speech-in-noise/core/AdaptiveTrackFactory.hpp"
 #include "ConfigurationRegistryStub.hpp"
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/Model.hpp"
+
+#include <av-speech-in-noise/core/AdaptiveTrackFactory.hpp>
+
 #include <gtest/gtest.h>
 #include <sstream>
 
