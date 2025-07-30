@@ -201,10 +201,6 @@ struct FixedLevelFixedTrialsTest : FixedLevelTest {
     int trials{30};
 };
 
-struct FixedLevelTestWithEachTargetNTimes : FixedLevelTest {
-    int timesEachTargetIsPlayed{1};
-};
-
 struct AudioSettings {
     std::string audioDevice;
 };

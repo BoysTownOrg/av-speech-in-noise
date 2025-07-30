@@ -23,11 +23,6 @@ class FiniteTargetPlaylist : public virtual TargetPlaylist {
     virtual auto empty() -> bool = 0;
 };
 
-class RepeatableFiniteTargetPlaylist : public virtual FiniteTargetPlaylist {
-  public:
-    virtual void setRepeats(gsl::index) = 0;
-};
-
 class FiniteTargetPlaylistWithRepeatables
     : public virtual FiniteTargetPlaylist {
   public:

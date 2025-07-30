@@ -1,3 +1,4 @@
+#include "ConfigurationRegistryStub.hpp"
 #include "DirectoryReaderStub.hpp"
 #include "assert-utility.hpp"
 #include "CannotReadDirectory.hpp"
@@ -174,7 +175,9 @@ class EachTargetPlayedOnceThenShuffleAndRepeatTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
-    EachTargetPlayedOnceThenShuffleAndRepeat list{&reader, &randomizer};
+    ConfigurationRegistryStub registry;
+    EachTargetPlayedOnceThenShuffleAndRepeat list{
+        registry, &reader, &randomizer};
 };
 
 #define RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(a)                    \
@@ -326,7 +329,7 @@ RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(
 
 EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     nextShufflesAllWhenExhaustedAndSetToRepeat) {
-    list.setRepeats(1);
+    list.configure("target repetitions", "1");
     setFileNames(reader, {{"a"}, {"b"}, {"c"}, {"d"}});
     loadFromDirectory(list);
     next(list);
@@ -374,7 +377,7 @@ EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
 
 EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     emptyWhenStimulusFilesExhaustedWithRepeats) {
-    list.setRepeats(1);
+    list.configure("target repetitions", "1");
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list);
     next(list);
@@ -391,7 +394,7 @@ EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
 
 EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(
     emptyWhenStimulusFilesExhaustedWithRepeatsAfterReload) {
-    list.setRepeats(1);
+    list.configure("target repetitions", "1");
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list);
     next(list);

@@ -211,7 +211,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     FiniteTargetPlaylistWithRepeatablesStub predeterminedTargets;
     FiniteTargetPlaylistWithRepeatablesStub everyTargetOnce;
     FiniteTargetPlaylistWithRepeatablesStub silentIntervalTargets;
-    RepeatableFiniteTargetPlaylistStub eachTargetNTimes;
+    FiniteTargetPlaylistStub eachTargetNTimes;
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
     TrackFactoryStub adaptiveTrackFactory;
@@ -950,9 +950,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
     initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
-            entryWithNewline(TestSetting::targetRepetitions, "5")});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(4, eachTargetNTimes.repeats());
+        {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants)});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &eachTargetNTimes);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -1002,23 +1000,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesSettingsWithExtraneousWhitespace) {
     assertPassesSettingsWithExtraneousWhitespace(interpreter,
         Method::fixedLevelFreeResponseWithAllTargets, fixedLevelMethod.test);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(consonantTestWithTargetRepetitions) {
-    initializeTest(interpreter,
-        {"\n",
-            entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
-            "\n", entryWithNewline(TestSetting::targetRepetitions, "2")});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, eachTargetNTimes.repeats());
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    consonantTestWithTargetRepetitionsDefaultsToOne) {
-    initializeTest(interpreter,
-        {"\n",
-            entryWithNewline(
-                TestSetting::method, Method::fixedLevelConsonants)});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0, eachTargetNTimes.repeats());
 }
 
 class ConfigurableStub : public Configurable {
