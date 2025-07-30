@@ -44,8 +44,8 @@ class AdaptiveTrack {
     class Factory : public Writable {
       public:
         AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(Factory);
-        virtual auto make(const std::variant<UmlSettings, LevittSettings> &,
-            const Settings &) -> std::shared_ptr<AdaptiveTrack> = 0;
+        virtual auto make(const Settings &)
+            -> std::shared_ptr<AdaptiveTrack> = 0;
     };
 };
 

@@ -99,7 +99,7 @@ void AdaptiveMethodImpl::initialize(const AdaptiveTest &t,
     targetListsWithTracks.clear();
     for (const auto &list : targetListSetReader->read(t.targetsUrl))
         targetListsWithTracks.push_back(
-            {list, factory->make(t.trackSettings, trackSettings(t))});
+            {list, factory->make(trackSettings(t))});
     selectNextList();
 }
 

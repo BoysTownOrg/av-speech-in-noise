@@ -3,16 +3,6 @@
 #include <sstream>
 
 namespace av_speech_in_noise {
-auto make(const UmlSettings &specific, const AdaptiveTrack::Settings &s)
-    -> std::shared_ptr<AdaptiveTrack> {
-    return std::make_shared<UpdatedMaximumLikelihood>(specific, s);
-}
-
-auto make(const LevittSettings &specific, const AdaptiveTrack::Settings &s)
-    -> std::shared_ptr<AdaptiveTrack> {
-    return std::make_shared<LevittTrack>(specific, s);
-}
-
 AdaptiveTrackFactory::AdaptiveTrackFactory(ConfigurationRegistry &registry) {
     registry.subscribe(*this, "alpha space");
     registry.subscribe(*this, "alpha prior");
@@ -54,9 +44,57 @@ static void initializeParameterPrior(
     stream >> s.priorProbability.sigma;
 }
 
+static auto vectorOfInts(const std::string &s) -> std::vector<int> {
+    std::vector<int> v;
+    std::stringstream stream{s};
+    int x{};
+    while (stream >> x)
+        v.push_back(x);
+    return v;
+}
+
+static auto trackingRule(LevittSettings &s) -> TrackingRule & {
+    return s.trackingRule;
+}
+
+static void resizeTrackingRuleEnough(
+    LevittSettings &s, const std::vector<int> &v) {
+    if (trackingRule(s).size() < v.size())
+        trackingRule(s).resize(v.size());
+}
+
+static auto up(TrackingSequence &sequence) -> int & { return sequence.up; }
+
+static auto down(TrackingSequence &sequence) -> int & { return sequence.down; }
+
+static auto runCount(TrackingSequence &sequence) -> int & {
+    return sequence.runCount;
+}
+
+static auto stepSize(TrackingSequence &sequence) -> int & {
+    return sequence.stepSize;
+}
+
+static void assignToEachElementOfTrackingRule(LevittSettings &s,
+    const std::function<int &(TrackingSequence &)> &elementRef,
+    const std::string &entry) {
+    auto v{vectorOfInts(entry)};
+    resizeTrackingRuleEnough(s, v);
+    for (std::size_t i{0}; i < v.size(); ++i)
+        elementRef(trackingRule(s).at(i)) = v.at(i);
+}
+
 void AdaptiveTrackFactory::configure(
     const std::string &key, const std::string &value) {
-    if (key == "alpha space")
+    if (key == "up")
+        assignToEachElementOfTrackingRule(levittSettings, up, value);
+    else if (key == "down")
+        assignToEachElementOfTrackingRule(levittSettings, down, value);
+    else if (key == "reversals per step size")
+        assignToEachElementOfTrackingRule(levittSettings, runCount, value);
+    else if (key == "step sizes (dB)")
+        assignToEachElementOfTrackingRule(levittSettings, stepSize, value);
+    else if (key == "alpha space")
         initializeParameterSpace(umlSettings.alpha, value);
     else if (key == "alpha prior")
         initializeParameterPrior(umlSettings.alpha, value);
@@ -131,20 +169,17 @@ void AdaptiveTrackFactory::write(std::ostream &stream) {
             runCounts.push_back(sequence.runCount);
             stepSizes.push_back(sequence.stepSize);
         }
-        // insertLabeledLine(stream, "up", up);
-        // insertLabeledLine(stream, "down", down);
-        // insertLabeledLine(stream, "reversals per step size", runCounts);
-        // insertLabeledLine(stream, "step sizes (dB)", stepSizes);
+        insertLabeledLine(stream, "up", up);
+        insertLabeledLine(stream, "down", down);
+        insertLabeledLine(stream, "reversals per step size", runCounts);
+        insertLabeledLine(stream, "step sizes (dB)", stepSizes);
     }
 }
 
-auto AdaptiveTrackFactory::make(
-    const std::variant<UmlSettings, LevittSettings> &specific,
-    const AdaptiveTrack::Settings &s) -> std::shared_ptr<AdaptiveTrack> {
-    return std::visit(
-        [&s](const auto &specific) {
-            return av_speech_in_noise::make(specific, s);
-        },
-        specific);
+auto AdaptiveTrackFactory::make(const AdaptiveTrack::Settings &s)
+    -> std::shared_ptr<AdaptiveTrack> {
+    if (uml)
+        return std::make_shared<UpdatedMaximumLikelihood>(umlSettings, s);
+    return std::make_shared<LevittTrack>(levittSettings, s);
 }
 }
