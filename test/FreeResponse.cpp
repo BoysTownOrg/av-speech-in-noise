@@ -1,3 +1,4 @@
+#include "ConfigurationRegistryStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
@@ -90,7 +91,9 @@ class FreeResponseControllerTests : public ::testing::Test {
     PuzzleStub puzzle;
     TimerStub timer;
     TestControllerStub testController;
-    Controller controller{testController, model, control, puzzle, timer};
+    ConfigurationRegistryStub registry;
+    Controller controller{
+        registry, testController, model, control, puzzle, timer};
 };
 
 class FreeResponsePresenterTests : public ::testing::Test {
@@ -170,7 +173,7 @@ FREE_RESPONSE_PRESENTER_TEST(presenterResetsPuzzleOnStart) {
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerNotifiesThatUserHasRespondedButTrialIsNotQuiteDoneAfterResponseButtonIsClickedWhenUsingPuzzle) {
     controller.setNTrialsPerNewPuzzlePiece(1);
-    controller.initialize(true);
+    controller.configure("puzzle", "/Users/user/puzzle.png");
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserHasRespondedButTrialIsNotQuiteDone());
@@ -179,7 +182,7 @@ FREE_RESPONSE_CONTROLLER_TEST(
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerNotifiesThatUserHasRespondedButTrialIsNotQuiteDoneAfterResponseButtonIsClickedWhenUsingPuzzleEveryNTrials) {
     controller.setNTrialsPerNewPuzzlePiece(3);
-    controller.initialize(true);
+    controller.configure("puzzle", "/Users/user/puzzle.png");
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
@@ -207,7 +210,7 @@ FREE_RESPONSE_CONTROLLER_TEST(
 
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerNotifiesThatUserIsDoneRespondingAfterResponseButtonIsClickedIfFlaggedAndUsingPuzzle) {
-    controller.initialize(true);
+    controller.configure("puzzle", "/Users/user/puzzle.png");
     control.setFlagged();
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
@@ -217,7 +220,7 @@ FREE_RESPONSE_CONTROLLER_TEST(
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerShowsPuzzleAfterResponseButtonIsClickedWhenUsingPuzzle) {
     controller.setNTrialsPerNewPuzzlePiece(1);
-    controller.initialize(true);
+    controller.configure("puzzle", "/Users/user/puzzle.png");
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.shown());
 }
@@ -225,7 +228,7 @@ FREE_RESPONSE_CONTROLLER_TEST(
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerSchedulesCallbackAfterResponseButtonIsClickedWhenUsingPuzzle) {
     controller.setNTrialsPerNewPuzzlePiece(1);
-    controller.initialize(true);
+    controller.configure("puzzle", "/Users/user/puzzle.png");
     notifyThatSubmitButtonHasBeenClicked(control);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(timer.callbackScheduled());
 }
@@ -233,7 +236,7 @@ FREE_RESPONSE_CONTROLLER_TEST(
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerAdvancesPuzzleAfterFirstCallbackWhenUsingPuzzle) {
     controller.setNTrialsPerNewPuzzlePiece(1);
-    controller.initialize(true);
+    controller.configure("puzzle", "/Users/user/puzzle.png");
     notifyThatSubmitButtonHasBeenClicked(control);
     timer.callback();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.advanced());
@@ -241,7 +244,7 @@ FREE_RESPONSE_CONTROLLER_TEST(
 
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerHidesPuzzleAfterSecondCallbackWhenUsingPuzzle) {
-    controller.initialize(true);
+    controller.configure("puzzle", "/Users/user/puzzle.png");
     notifyThatSubmitButtonHasBeenClicked(control);
     timer.callback();
     timer.callback();
@@ -249,7 +252,7 @@ FREE_RESPONSE_CONTROLLER_TEST(
 }
 
 FREE_RESPONSE_CONTROLLER_TEST(controllerOnlyAdvancesPuzzleOnceWhenUsingPuzzle) {
-    controller.initialize(true);
+    controller.configure("puzzle", "/Users/user/puzzle.png");
     notifyThatSubmitButtonHasBeenClicked(control);
     timer.callback();
     puzzle.clearAdvanced();
@@ -260,7 +263,7 @@ FREE_RESPONSE_CONTROLLER_TEST(controllerOnlyAdvancesPuzzleOnceWhenUsingPuzzle) {
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerSchedulesCallbackAfterPuzzleAdvancedWhenUsingPuzzle) {
     controller.setNTrialsPerNewPuzzlePiece(1);
-    controller.initialize(true);
+    controller.configure("puzzle", "/Users/user/puzzle.png");
     notifyThatSubmitButtonHasBeenClicked(control);
     timer.clearCallbackCount();
     timer.callback();
@@ -269,12 +272,18 @@ FREE_RESPONSE_CONTROLLER_TEST(
 
 FREE_RESPONSE_CONTROLLER_TEST(
     controllerNotifiesThatUserIsDoneRespondingAfterPuzzleHiddenWhenUsingPuzzle) {
-    controller.initialize(true);
+    controller.configure("puzzle", "/Users/user/puzzle.png");
     notifyThatSubmitButtonHasBeenClicked(control);
     timer.callback();
     timer.callback();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
+}
+
+FREE_RESPONSE_CONTROLLER_TEST(tbd) {
+    controller.configure("puzzle", "/Users/user/puzzle.png");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "/Users/user/puzzle.png", puzzle.url().path);
 }
 }
 }
