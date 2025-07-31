@@ -56,6 +56,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
 
   private:
     Test test;
+    TestIdentity testIdentity;
     RationalNumber videoScale{2, 3};
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;

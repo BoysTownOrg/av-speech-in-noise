@@ -10,6 +10,7 @@
 #include <av-speech-in-noise/Model.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 
+#include <cstdint>
 #include <string>
 
 namespace av_speech_in_noise {
@@ -22,7 +23,12 @@ class TestSettingsInterpreter {
     virtual auto calibration(const std::string &contents) -> Calibration = 0;
 };
 
-enum class Transducer { headphone, oneSpeaker, twoSpeakers, unknown };
+enum class Transducer : std::uint8_t {
+    headphone,
+    oneSpeaker,
+    twoSpeakers,
+    unknown
+};
 
 constexpr auto name(Transducer c) -> const char * {
     switch (c) {

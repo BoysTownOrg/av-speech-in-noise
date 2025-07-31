@@ -628,12 +628,6 @@ class RunningATestTests : public ::testing::Test {
         assertChannelDelaysCleared(maskerPlayer);
     }
 
-    void assertPassesTestIdentityToOutputFile(UseCase &useCase) {
-        run(useCase, model);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            outputFile.openNewFileParameters(), &std::as_const(test.identity));
-    }
-
     void assertPassesMaskerFilePathToMaskerPlayer(UseCase &useCase) {
         setMaskerFilePath(test, "a");
         run(useCase, model);
@@ -757,13 +751,8 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestDisablesVibrotactileStimulus) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(maskerPlayer.vibrotactileStimulusDisabled);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeDefaultTestOpensNewOutputFilePassingTestInformation) {
-    assertPassesTestIdentityToOutputFile(initializingTest);
-}
-
 RECOGNITION_TEST_MODEL_TEST(initializeTestNotifiesObserverOfNewTest) {
-    test.identity.session = "smile";
+    model.configure("session", "smile");
     run(initializingTest, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("smile", observer.session);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("smile", secondObserver.session);
@@ -787,13 +776,6 @@ RECOGNITION_TEST_MODEL_TEST(playTrialCapturesTimeStampForEventualReporting) {
     run(initializingTest, model);
     run(playingTrial, model);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(clock.timeQueried());
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestOpensNewOutputFilePassingTestIdentity) {
-    run(initializingTest, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        outputFile.openNewFileParameters(), &std::as_const(test.identity));
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToTargetPlayer) {
@@ -1269,12 +1251,12 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(tbd) {
     model.configure("condition", name(Condition::auditoryOnly));
-    test.identity.subjectId = "a";
-    test.identity.testerId = "b";
-    test.identity.session = "c";
-    test.identity.method = "d";
-    test.identity.rmeSetting = "e";
-    test.identity.transducer = "f";
+    model.configure("subject ID", "a");
+    model.configure("tester ID", "b");
+    model.configure("session", "c");
+    model.configure("method", "d");
+    model.configure("RME setting", "e");
+    model.configure("transducer", "f");
     test.maskerFileUrl.path = "g";
     test.targetsUrl.path = "h";
     test.maskerLevel.dB_SPL = 3;

@@ -142,7 +142,6 @@ struct RationalNumber {
 };
 
 struct Test {
-    TestIdentity identity;
     LocalUrl targetsUrl;
     LocalUrl maskerFileUrl;
     RealLevel maskerLevel;
