@@ -85,12 +85,6 @@ enum class TestSetting : std::uint8_t {
     masker,
     maskerLevel,
     startingSnr,
-    subjectId,
-    testerId,
-    session,
-    rmeSetting,
-    transducer,
-    meta,
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -105,18 +99,6 @@ constexpr auto name(TestSetting p) -> const char * {
         return "masker level (dB SPL)";
     case TestSetting::startingSnr:
         return "starting SNR (dB)";
-    case TestSetting::subjectId:
-        return "subject ID";
-    case TestSetting::testerId:
-        return "tester ID";
-    case TestSetting::session:
-        return "session";
-    case TestSetting::rmeSetting:
-        return "RME setting";
-    case TestSetting::transducer:
-        return "transducer";
-    case TestSetting::meta:
-        return "meta";
     }
 }
 

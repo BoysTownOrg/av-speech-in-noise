@@ -269,6 +269,13 @@ RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     registry.subscribe(*this, "video scale denominator");
     registry.subscribe(*this, "video scale numerator");
     registry.subscribe(*this, "keep video shown");
+    registry.subscribe(*this, "subject ID");
+    registry.subscribe(*this, "tester ID");
+    registry.subscribe(*this, "session");
+    registry.subscribe(*this, "RME setting");
+    registry.subscribe(*this, "transducer");
+    registry.subscribe(*this, "meta");
+    registry.subscribe(*this, "method");
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
 }
@@ -289,7 +296,7 @@ void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test,
     this->testObservers = testObservers;
     trialNumber_ = 1;
 
-    tryOpening(outputFile, test.identity);
+    tryOpening(outputFile, testIdentity);
     maskerPlayer.stop();
     throwRequestFailureOnInvalidAudioFile(
         [&](const LocalUrl &file) { maskerPlayer.loadFile(file); },
@@ -318,7 +325,7 @@ void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test,
         maskerPlayer.disableVibrotactileStimulus();
 
     for (auto observer : testObservers)
-        observer.get().notifyThatNewTestIsReady(test.identity.session);
+        observer.get().notifyThatNewTestIsReady(testIdentity.session);
 }
 
 void RunningATestImpl::playTrial(const AudioSettings &settings) {
@@ -458,7 +465,7 @@ static auto operator<<(std::ostream &stream, const TestIdentity &identity)
 }
 
 void RunningATestImpl::write(std::ostream &stream) {
-    stream << test.identity;
+    stream << testIdentity;
     insertLabeledLine(stream, "masker", test.maskerFileUrl.path);
     insertLabeledLine(stream, "targets", test.targetsUrl.path);
     insertLabeledLine(stream, "masker level (dB SPL)", test.maskerLevel.dB_SPL);
@@ -469,7 +476,21 @@ void RunningATestImpl::write(std::ostream &stream) {
 
 void RunningATestImpl::configure(
     const std::string &key, const std::string &value) {
-    if (key == "video scale denominator")
+    if (key == "subject ID")
+        testIdentity.subjectId = value;
+    else if (key == "tester ID")
+        testIdentity.testerId = value;
+    else if (key == "session")
+        testIdentity.session = value;
+    else if (key == "RME setting")
+        testIdentity.rmeSetting = value;
+    else if (key == "transducer")
+        testIdentity.transducer = value;
+    else if (key == "meta")
+        testIdentity.meta = value;
+    else if (key == "method")
+        testIdentity.method = value;
+    else if (key == "video scale denominator")
         videoScale.denominator = integer(value);
     else if (key == "video scale numerator")
         videoScale.numerator = integer(value);
