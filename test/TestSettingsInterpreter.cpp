@@ -5,7 +5,6 @@
 #include "TargetPlaylistStub.hpp"
 #include "TrackStub.hpp"
 #include "assert-utility.hpp"
-#include "PuzzleStub.hpp"
 
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
 #include <av-speech-in-noise/ui/SessionController.hpp>
@@ -189,16 +188,6 @@ void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter,
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6, f.snr.dB);
 }
 
-class FreeResponseControllerStub : public FreeResponseController {
-  public:
-    void initialize(bool usingPuzzle) override { usingPuzzle_ = usingPuzzle; }
-
-    [[nodiscard]] auto usingPuzzle() const -> bool { return usingPuzzle_; }
-
-  private:
-    bool usingPuzzle_{};
-};
-
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     RunningATestStub runningATest;
@@ -215,8 +204,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
     TrackFactoryStub adaptiveTrackFactory;
-    submitting_free_response::PuzzleStub puzzle;
-    FreeResponseControllerStub freeResponseController;
     TaskPresenterStub coordinateResponseMeasurePresenter;
     TaskPresenterStub freeResponsePresenter;
     TaskPresenterStub chooseKeywordsPresenter;
@@ -234,7 +221,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         fixedLevelMethod, eyeTracking, audioRecording, cyclicTargetsReader,
         targetsWithReplacementReader, predeterminedTargets, everyTargetOnce,
         silentIntervalTargets, eachTargetNTimes, targetsWithReplacement,
-        adaptiveTrackFactory, puzzle, freeResponseController, sessionController,
+        adaptiveTrackFactory, sessionController,
         coordinateResponseMeasurePresenter, freeResponsePresenter,
         chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
         consonantPresenter, submittingConsonantResponse, passFailPresenter,
@@ -859,30 +846,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     runningATest.testComplete_ = true;
     initializeTest(interpreter, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(initializesPuzzleWithPath) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method,
-             Method::fixedLevelFreeResponseWithPredeterminedTargets),
-            entryWithNewline(TestSetting::puzzle, "/Users/user/puzzle.png")});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        "/Users/user/puzzle.png", puzzle.url().path);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(initializesFreeResponseControllerWithPuzzle) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method,
-             Method::fixedLevelFreeResponseWithPredeterminedTargets),
-            entryWithNewline(TestSetting::puzzle, "/Users/user/puzzle.png")});
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(freeResponseController.usingPuzzle());
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(initializesFreeResponseControllerWithoutPuzzle) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method,
-            Method::fixedLevelFreeResponseWithPredeterminedTargets)});
-    AV_SPEECH_IN_NOISE_EXPECT_FALSE(freeResponseController.usingPuzzle());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

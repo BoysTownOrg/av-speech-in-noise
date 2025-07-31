@@ -4,6 +4,7 @@
 #include "Task.hpp"
 #include "Test.hpp"
 #include "View.hpp"
+#include "av-speech-in-noise/core/Configuration.hpp"
 
 #include <av-speech-in-noise/core/ITimer.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
@@ -11,15 +12,6 @@
 #include <av-speech-in-noise/Model.hpp>
 
 #include <string>
-
-namespace av_speech_in_noise {
-class FreeResponseController {
-  public:
-    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
-        FreeResponseController);
-    virtual void initialize(bool usingPuzzle) = 0;
-};
-}
 
 namespace av_speech_in_noise::submitting_free_response {
 class Control {
@@ -51,16 +43,17 @@ class Puzzle {
     virtual void hide() {}
 };
 
-class Controller : public FreeResponseController,
-                   public TaskController,
+class Controller : public TaskController,
                    public Control::Observer,
-                   public Timer::Observer {
+                   public Timer::Observer,
+                   public Configurable {
   public:
-    Controller(TestController &, Interactor &, Control &, Puzzle &, Timer &);
-    void initialize(bool usingPuzzle) override;
+    Controller(ConfigurationRegistry &, TestController &, Interactor &,
+        Control &, Puzzle &, Timer &);
     void notifyThatSubmitButtonHasBeenClicked() override;
     void callback() override;
     void setNTrialsPerNewPuzzlePiece(int n);
+    void configure(const std::string &key, const std::string &value) override;
 
   private:
     TestController &testController;

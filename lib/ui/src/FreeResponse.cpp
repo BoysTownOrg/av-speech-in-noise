@@ -1,17 +1,28 @@
 #include "FreeResponse.hpp"
 
 namespace av_speech_in_noise::submitting_free_response {
-Controller::Controller(TestController &testController, Interactor &interactor,
-    Control &control, Puzzle &puzzle, Timer &timer)
-    : testController{testController},
-      interactor{interactor}, control{control}, puzzle{puzzle}, timer{timer} {
+Controller::Controller(ConfigurationRegistry &registry,
+    TestController &testController, Interactor &interactor, Control &control,
+    Puzzle &puzzle, Timer &timer)
+    : testController{testController}, interactor{interactor}, control{control},
+      puzzle{puzzle}, timer{timer} {
+    registry.subscribe(*this, "puzzle");
     control.attach(this);
     timer.attach(this);
 }
 
-void Controller::initialize(bool usingPuzzle) {
-    this->usingPuzzle = usingPuzzle;
-    trialsTowardNewPuzzlePiece = 0;
+void Controller::configure(const std::string &key, const std::string &value) {
+    if (key == "puzzle") {
+        if (value.empty()) {
+            usingPuzzle = false;
+        } else {
+            LocalUrl url;
+            url.path = value;
+            puzzle.initialize(url);
+            usingPuzzle = true;
+        }
+        trialsTowardNewPuzzlePiece = 0;
+    }
 }
 
 void Controller::setNTrialsPerNewPuzzlePiece(int n) {

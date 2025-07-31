@@ -1,7 +1,6 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETTINGSINTERPRETER_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETTINGSINTERPRETER_HPP_
 
-#include "FreeResponse.hpp"
 #include "Task.hpp"
 #include "TestSetupImpl.hpp"
 
@@ -92,7 +91,6 @@ enum class TestSetting : std::uint8_t {
     rmeSetting,
     transducer,
     meta,
-    puzzle,
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -119,8 +117,6 @@ constexpr auto name(TestSetting p) -> const char * {
         return "transducer";
     case TestSetting::meta:
         return "meta";
-    case TestSetting::puzzle:
-        return "puzzle";
     }
 }
 
@@ -138,8 +134,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
         FiniteTargetPlaylist &eachTargetNTimes,
         TargetPlaylist &targetsWithReplacement, AdaptiveTrack::Factory &,
-        submitting_free_response::Puzzle &puzzle,
-        FreeResponseController &freeResponseController,
         SessionController &sessionController,
         TaskPresenter &coordinateResponseMeasurePresenter,
         TaskPresenter &freeResponsePresenter,
@@ -176,8 +170,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets;
     FiniteTargetPlaylist &eachTargetNTimes;
     TargetPlaylist &targetsWithReplacement;
-    submitting_free_response::Puzzle &puzzle;
-    FreeResponseController &freeResponseController;
     SessionController &sessionController;
     TaskPresenter &coordinateResponseMeasurePresenter;
     TaskPresenter &freeResponsePresenter;

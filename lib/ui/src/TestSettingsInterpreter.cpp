@@ -257,12 +257,6 @@ static void initialize(FixedLevelMethod &method,
     method.initialize(test, &targets);
 }
 
-static auto localUrlFromPath(const std::string &path) -> LocalUrl {
-    LocalUrl url;
-    url.path = path;
-    return url;
-}
-
 static auto contains(const std::string_view &s, const std::string &what)
     -> bool {
     return s.find(what) != std::string::npos;
@@ -272,18 +266,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     const TestIdentity &identity, SNR startingSnr) {
     broadcast(configurables, "relative output path",
         "Documents/AvSpeechInNoise Data");
-
-    std::stringstream stream{contents};
-    auto usingPuzzle = false;
-    for (std::string line; std::getline(stream, line);) {
-        const auto key{entryName(line)};
-        const auto value{entry(line)};
-        if (key == name(TestSetting::puzzle)) {
-            puzzle.initialize(localUrlFromPath(value));
-            usingPuzzle = true;
-        }
-    }
-    freeResponseController.initialize(usingPuzzle);
+    broadcast(configurables, "puzzle", "");
 
     const auto [method, methodName] =
         av_speech_in_noise::methodWithName(contents);
@@ -474,8 +457,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     FiniteTargetPlaylist &eachTargetNTimes,
     TargetPlaylist &targetsWithReplacement,
     AdaptiveTrack::Factory &adaptiveTrackFactory,
-    submitting_free_response::Puzzle &puzzle,
-    FreeResponseController &freeResponseController,
     SessionController &sessionController,
     TaskPresenter &coordinateResponseMeasurePresenter,
     TaskPresenter &freeResponsePresenter,
@@ -496,8 +477,7 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       everyTargetOnce{everyTargetOnce},
       silentIntervalTargets{silentIntervalTargets},
       eachTargetNTimes{eachTargetNTimes},
-      targetsWithReplacement{targetsWithReplacement}, puzzle{puzzle},
-      freeResponseController{freeResponseController},
+      targetsWithReplacement{targetsWithReplacement},
       sessionController{sessionController},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       freeResponsePresenter{freeResponsePresenter},
