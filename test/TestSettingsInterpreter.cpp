@@ -76,12 +76,9 @@ void assertPassesSettingsWithExtraneousWhitespace(
     initializeTest(interpreter,
         {withNewLine(std::string{"  "} + name(TestSetting::method) +
              std::string{" :  "} + name(m) + "  "),
-            withNewLine(name(TestSetting::targets) + std::string{" :a "}),
-            entryWithNewline(TestSetting::masker, "b"),
+            "targets :a \n", entryWithNewline(TestSetting::masker, "b"),
             entryWithNewline(TestSetting::maskerLevel, "65")},
         5);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, fixedLevelTest.targetsUrl.path);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"b"}, fixedLevelTest.maskerFileUrl.path);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(65, fixedLevelTest.maskerLevel.dB_SPL);
@@ -176,12 +173,9 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 #define AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_ADAPTIVE_SETTINGS(m)  \
     initializeTest(interpreter,                                                \
         {entryWithNewline(TestSetting::method, m),                             \
-            entryWithNewline(TestSetting::targets, "a"),                       \
             entryWithNewline(TestSetting::masker, "b"),                        \
             entryWithNewline(TestSetting::maskerLevel, "65")},                 \
         5);                                                                    \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        std::string{"a"}, adaptiveMethod.test.targetsUrl.path);                \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         std::string{"b"}, adaptiveMethod.test.maskerFileUrl.path);             \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
@@ -195,11 +189,9 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     m, test)                                                                   \
     initializeTest(interpreter,                                                \
         {entryWithNewline(TestSetting::method, m),                             \
-            entryWithNewline(TestSetting::targets, "a"),                       \
             entryWithNewline(TestSetting::masker, "b"),                        \
             entryWithNewline(TestSetting::maskerLevel, "65")},                 \
         5);                                                                    \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, (test).targetsUrl.path); \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         std::string{"b"}, (test).maskerFileUrl.path);                          \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(65, (test).maskerLevel.dB_SPL);            \
@@ -653,25 +645,25 @@ TEST_SETTINGS_INTERPRETER_TEST(throwsRuntimeErrorIfMethodUnknown) {
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
     initializeTest(interpreter,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            "f:\n", entryWithNewline(TestSetting::targets, "a")});
+            "f:\n", entryWithNewline(TestSetting::masker, "a")});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, adaptiveMethod.test.targetsUrl.path);
+        std::string{"a"}, adaptiveMethod.test.maskerFileUrl.path);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine2) {
     initializeTest(interpreter,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail), "\n",
-            entryWithNewline(TestSetting::targets, "a")});
+            entryWithNewline(TestSetting::masker, "a")});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, adaptiveMethod.test.targetsUrl.path);
+        std::string{"a"}, adaptiveMethod.test.maskerFileUrl.path);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
     initializeTest(interpreter,
         {"\n", entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            "\n", entryWithNewline(TestSetting::targets, "a")});
+            "\n", entryWithNewline(TestSetting::masker, "a")});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, adaptiveMethod.test.targetsUrl.path);
+        std::string{"a"}, adaptiveMethod.test.maskerFileUrl.path);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(badMaskerLevelResolvesToZero) {

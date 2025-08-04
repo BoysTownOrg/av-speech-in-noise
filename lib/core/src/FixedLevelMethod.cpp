@@ -4,24 +4,27 @@
 #include <stdexcept>
 
 namespace av_speech_in_noise {
-FixedLevelMethodImpl::FixedLevelMethodImpl(ResponseEvaluator &evaluator)
-    : evaluator{evaluator} {}
+FixedLevelMethodImpl::FixedLevelMethodImpl(
+    ConfigurationRegistry &registry, ResponseEvaluator &evaluator)
+    : evaluator{evaluator} {
+    registry.subscribe(*this, "targets");
+}
 
-static void load(TargetPlaylist *list, const FixedLevelTest &test) {
-    list->load(test.targetsUrl);
+static void load(TargetPlaylist *list, const LocalUrl &targetsUrl) {
+    list->load(targetsUrl);
 }
 
 static void initialize(TargetPlaylist *&targetList,
     const FixedLevelTest *&test_, SNR &snr_, const FixedLevelTest &test,
-    TargetPlaylist *list) {
+    const LocalUrl &targetsUrl, TargetPlaylist *list) {
     targetList = list;
     test_ = &test;
     snr_ = test.snr;
     try {
-        load(targetList, test);
+        load(targetList, targetsUrl);
     } catch (const FiniteTargetPlaylist::LoadFailure &) {
         std::stringstream stream;
-        stream << "Unable to load targets from " << test.targetsUrl.path;
+        stream << "Unable to load targets from " << targetsUrl.path;
         throw std::runtime_error{stream.str()};
     }
 }
@@ -37,13 +40,15 @@ static void initialize(bool &usingFiniteTargetPlaylist_,
 void FixedLevelMethodImpl::initialize(
     const FixedLevelFixedTrialsTest &test, TargetPlaylist *list) {
     usingFiniteTargetPlaylist_ = false;
-    av_speech_in_noise::initialize(targetList, test_, snr_, test, list);
+    av_speech_in_noise::initialize(
+        targetList, test_, snr_, test, targetsUrl, list);
     trials_ = test.trials;
 }
 
 void FixedLevelMethodImpl::initialize(
     const FixedLevelTest &test, FiniteTargetPlaylistWithRepeatables *list) {
-    av_speech_in_noise::initialize(targetList, test_, snr_, test, list);
+    av_speech_in_noise::initialize(
+        targetList, test_, snr_, test, targetsUrl, list);
     av_speech_in_noise::initialize(usingFiniteTargetPlaylist_,
         finiteTargetPlaylist, finiteTargetsExhausted_, list);
     finiteTargetPlaylistWithRepeatables = list;
@@ -53,7 +58,8 @@ void FixedLevelMethodImpl::initialize(
 
 void FixedLevelMethodImpl::initialize(
     const FixedLevelTest &test, FiniteTargetPlaylist *list) {
-    av_speech_in_noise::initialize(targetList, test_, snr_, test, list);
+    av_speech_in_noise::initialize(
+        targetList, test_, snr_, test, targetsUrl, list);
     av_speech_in_noise::initialize(usingFiniteTargetPlaylist_,
         finiteTargetPlaylist, finiteTargetsExhausted_, list);
 }
@@ -77,6 +83,7 @@ static auto current(TargetPlaylist *list) -> LocalUrl {
 }
 
 void FixedLevelMethodImpl::write(std::ostream &stream) {
+    insertLabeledLine(stream, "targets", targetsUrl.path);
     insertLabeledLine(stream, "SNR (dB)", snr_.dB);
 }
 
@@ -139,5 +146,11 @@ auto FixedLevelMethodImpl::keywordsTestResults() -> KeywordsTestResults {
             ? 0
             : totalKeywordsCorrect_ * 100. / totalKeywordsSubmitted_,
         totalKeywordsCorrect_};
+}
+
+void FixedLevelMethodImpl::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "targets")
+        targetsUrl.path = value;
 }
 }
