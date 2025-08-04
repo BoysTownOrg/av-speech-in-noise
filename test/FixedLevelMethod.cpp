@@ -1,3 +1,4 @@
+#include "ConfigurationRegistryStub.hpp"
 #include "LogString.hpp"
 #include "OutputFileStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
@@ -136,7 +137,8 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
     TargetPlaylistStub targetList;
     FiniteTargetPlaylistWithRepeatablesStub finiteTargetPlaylistWithRepeatables;
     FiniteTargetPlaylistStub finiteTargetPlaylist;
-    FixedLevelMethodImpl method{evaluator};
+    ConfigurationRegistryStub registry;
+    FixedLevelMethodImpl method{registry, evaluator};
     FixedLevelTest test{};
     FixedLevelFixedTrialsTest testWithFixedTrials{};
     InitializingMethod initializingMethod{targetList, testWithFixedTrials};
@@ -172,7 +174,7 @@ PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
 
 PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     initializePassesTargetPlaylistDirectory) {
-    testWithFixedTrials.targetsUrl.path = "a";
+    method.configure("targets", "a");
     run(initializingMethod, method);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, targetList.directory().path);
@@ -180,7 +182,7 @@ PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
 
 PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     initializeWithFiniteTargetPlaylistPassesTargetPlaylistDirectory) {
-    test.targetsUrl.path = "a";
+    method.configure("targets", "a");
     run(initializingMethodWithFiniteTargetPlaylist, method);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, finiteTargetPlaylist.directory().path);
@@ -188,7 +190,7 @@ PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
 
 PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     initializeWithFiniteTargetPlaylistWithRepeatablesPassesTargetPlaylistDirectory) {
-    test.targetsUrl.path = "a";
+    method.configure("targets", "a");
     run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, finiteTargetPlaylistWithRepeatables.directory().path);
@@ -240,7 +242,8 @@ class FixedLevelMethodTests : public ::testing::Test {
     ResponseEvaluatorStub evaluator;
     TargetPlaylistStub targetList;
     OutputFileStub outputFile;
-    FixedLevelMethodImpl method{evaluator};
+    ConfigurationRegistryStub registry;
+    FixedLevelMethodImpl method{registry, evaluator};
     FixedLevelFixedTrialsTest test{};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
@@ -362,7 +365,8 @@ class FixedLevelMethodWithFiniteTargetPlaylistTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
     FiniteTargetPlaylistStub targetList;
-    FixedLevelMethodImpl method{evaluator};
+    ConfigurationRegistryStub registry;
+    FixedLevelMethodImpl method{registry, evaluator};
     OutputFileStub outputFile;
     FixedLevelTest test{};
     InitializingMethodWithFiniteTargetPlaylist initializingMethod{
@@ -429,7 +433,8 @@ class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests
   protected:
     ResponseEvaluatorStub evaluator;
     FiniteTargetPlaylistWithRepeatablesStub targetList;
-    FixedLevelMethodImpl method{evaluator};
+    ConfigurationRegistryStub registry;
+    FixedLevelMethodImpl method{registry, evaluator};
     FixedLevelTest test{};
     InitializingMethodWithFiniteTargetPlaylistWithRepeatables
         initializingMethod{targetList, test};
@@ -567,10 +572,14 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(tbd) {
     test.snr.dB = 2;
+    method.configure("targets", "a");
     run(initializingMethod, method);
     std::stringstream stream;
     method.write(stream);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("SNR (dB): 2\n", stream.str());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(R"(targets: a
+SNR (dB): 2
+)",
+        stream.str());
 }
 }
 }

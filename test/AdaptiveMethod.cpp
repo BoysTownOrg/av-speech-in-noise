@@ -1,3 +1,4 @@
+#include "ConfigurationRegistryStub.hpp"
 #include "OutputFileStub.hpp"
 #include "RandomizerStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
@@ -380,7 +381,8 @@ class AdaptiveMethodTests : public ::testing::Test {
     TrackFactoryStub snrTrackFactory;
     ResponseEvaluatorStub evaluator;
     RandomizerStub randomizer;
-    AdaptiveMethodImpl method{evaluator, randomizer};
+    ConfigurationRegistryStub registry;
+    AdaptiveMethodImpl method{registry, evaluator, randomizer};
     OutputFileStub outputFile;
     TargetPlaylistSetReaderStub targetListReader;
     Initializing initializing{targetListReader, snrTrackFactory};
@@ -526,7 +528,7 @@ ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithSnr) {
 }
 
 ADAPTIVE_METHOD_TEST(initializePassesTargetPlaylistDirectory) {
-    test.targetsUrl.path = "a";
+    method.configure("targets", "a");
     initialize(method, test, targetListReader, snrTrackFactory);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, targetListReader.directory());
@@ -878,10 +880,12 @@ ADAPTIVE_METHOD_TEST(completeWhenAllTracksComplete) {
 
 ADAPTIVE_METHOD_TEST(tbd) {
     test.startingSnr.dB = 2;
+    method.configure("targets", "a");
     initialize(method, test, targetListReader, snrTrackFactory);
     std::stringstream stream;
     method.write(stream);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(R"(starting SNR (dB): 2
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(R"(targets: a
+starting SNR (dB): 2
 )",
         stream.str());
 }

@@ -84,9 +84,11 @@ static auto testResults(
     return results;
 }
 
-AdaptiveMethodImpl::AdaptiveMethodImpl(
+AdaptiveMethodImpl::AdaptiveMethodImpl(ConfigurationRegistry &registry,
     ResponseEvaluator &evaluator, Randomizer &randomizer)
-    : evaluator{evaluator}, randomizer{randomizer} {}
+    : evaluator{evaluator}, randomizer{randomizer} {
+    registry.subscribe(*this, "targets");
+}
 
 void AdaptiveMethodImpl::initialize(const AdaptiveTest &t,
     TargetPlaylistReader *targetListSetReader,
@@ -95,7 +97,7 @@ void AdaptiveMethodImpl::initialize(const AdaptiveTest &t,
     startingSNR.dB = t.startingSnr.dB;
     test = &t;
     targetListsWithTracks.clear();
-    for (const auto &list : targetListSetReader->read(t.targetsUrl))
+    for (const auto &list : targetListSetReader->read(targetsUrl))
         targetListsWithTracks.push_back(
             {list, factory->make(trackSettings(t))});
     selectNextList();
@@ -193,6 +195,7 @@ void AdaptiveMethodImpl::writeTestResult(OutputFile &file) {
 }
 
 void AdaptiveMethodImpl::write(std::ostream &stream) {
+    insertLabeledLine(stream, "targets", targetsUrl.path);
     insertLabeledLine(stream, "starting SNR (dB)", startingSNR.dB);
     adaptiveTrackFactory->write(stream);
 }
@@ -215,5 +218,11 @@ void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile &file) {
 
 auto AdaptiveMethodImpl::testResults() -> AdaptiveTestResults {
     return av_speech_in_noise::testResults(targetListsWithTracks);
+}
+
+void AdaptiveMethodImpl::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "targets")
+        targetsUrl.path = value;
 }
 }

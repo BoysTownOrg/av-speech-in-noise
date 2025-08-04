@@ -81,7 +81,6 @@ constexpr auto name(Method c) -> const char * {
 
 enum class TestSetting : std::uint8_t {
     method,
-    targets,
     masker,
     maskerLevel,
     startingSnr,
@@ -91,8 +90,6 @@ constexpr auto name(TestSetting p) -> const char * {
     switch (p) {
     case TestSetting::method:
         return "method";
-    case TestSetting::targets:
-        return "targets";
     case TestSetting::masker:
         return "masker";
     case TestSetting::maskerLevel:

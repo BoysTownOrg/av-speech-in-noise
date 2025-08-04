@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_ADAPTIVEMETHODHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_ADAPTIVEMETHODHPP_
 
+#include "Configuration.hpp"
 #include "Randomizer.hpp"
 #include "IResponseEvaluator.hpp"
 #include "IAdaptiveMethod.hpp"
@@ -18,9 +19,10 @@ struct TargetPlaylistWithTrack {
     std::shared_ptr<AdaptiveTrack> track;
 };
 
-class AdaptiveMethodImpl : public AdaptiveMethod {
+class AdaptiveMethodImpl : public AdaptiveMethod, public Configurable {
   public:
-    AdaptiveMethodImpl(ResponseEvaluator &, Randomizer &);
+    AdaptiveMethodImpl(
+        ConfigurationRegistry &, ResponseEvaluator &, Randomizer &);
     void initialize(const AdaptiveTest &, TargetPlaylistReader *,
         AdaptiveTrack::Factory *) override;
     void submitIncorrectResponse() override;
@@ -39,6 +41,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     auto currentTarget() -> LocalUrl override;
     auto testResults() -> AdaptiveTestResults override;
     void resetTracks() override;
+    void configure(const std::string &, const std::string &) override;
 
   private:
     void selectNextList();
@@ -48,6 +51,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
         lastCoordinateResponseMeasureTrial{};
     open_set::AdaptiveTrial lastOpenSetTrial{};
     CorrectKeywordsTrial lastCorrectKeywordsTrial{};
+    LocalUrl targetsUrl;
     const AdaptiveTest *test{};
     FloatSNR startingSNR;
     ResponseEvaluator &evaluator;

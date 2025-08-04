@@ -62,9 +62,7 @@ static void assign(Test &test,
     const std::map<std::string,
         std::vector<std::reference_wrapper<Configurable>>> &configurables,
     const std::string &key, const std::string &value) {
-    if (key == name(TestSetting::targets))
-        test.targetsUrl.path = value;
-    else if (key == name(TestSetting::masker))
+    if (key == name(TestSetting::masker))
         test.maskerFileUrl.path = value;
     else if (key == name(TestSetting::maskerLevel))
         test.maskerLevel.dB_SPL = integer(value);

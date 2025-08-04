@@ -1258,7 +1258,6 @@ RECOGNITION_TEST_MODEL_TEST(tbd) {
     model.configure("RME setting", "e");
     model.configure("transducer", "f");
     test.maskerFileUrl.path = "g";
-    test.targetsUrl.path = "h";
     test.maskerLevel.dB_SPL = 3;
     run(initializingTest, model);
     std::stringstream stream;
@@ -1270,7 +1269,6 @@ method: d
 RME setting: e
 transducer: f
 masker: g
-targets: h
 masker level (dB SPL): 3
 condition: auditory-only
 

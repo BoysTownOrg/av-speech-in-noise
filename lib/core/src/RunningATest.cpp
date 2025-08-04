@@ -467,7 +467,6 @@ static auto operator<<(std::ostream &stream, const TestIdentity &identity)
 void RunningATestImpl::write(std::ostream &stream) {
     stream << testIdentity;
     insertLabeledLine(stream, "masker", test.maskerFileUrl.path);
-    insertLabeledLine(stream, "targets", test.targetsUrl.path);
     insertLabeledLine(stream, "masker level (dB SPL)", test.maskerLevel.dB_SPL);
     insertLabeledLine(stream, "condition", name(condition));
     testMethod->write(stream);
