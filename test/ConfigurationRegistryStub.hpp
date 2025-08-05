@@ -6,7 +6,7 @@
 namespace av_speech_in_noise {
 class ConfigurationRegistryStub : public ConfigurationRegistry {
   public:
-    void subscribe(Configurable &, const std::string &key) override {}
+    void subscribe(Configurable &, const std::string &) override {}
 };
 }
 

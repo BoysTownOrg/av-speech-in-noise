@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_CONFIGURATIONHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_CONFIGURATIONHPP_
 
-#include "av-speech-in-noise/Interface.hpp"
+#include <av-speech-in-noise/Interface.hpp>
 
 #include <stdexcept>
 #include <string>
@@ -15,6 +15,10 @@ inline auto integer(const std::string &s) -> int {
     } catch (const std::invalid_argument &) {
         return 0;
     }
+}
+
+inline auto contains(const std::string &s, const std::string &what) -> bool {
+    return s.find(what) != std::string::npos;
 }
 
 class Configurable {
