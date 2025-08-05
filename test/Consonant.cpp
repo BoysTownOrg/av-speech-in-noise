@@ -1,3 +1,5 @@
+#include "ConfigurationRegistryStub.hpp"
+#include "TestPresenterStub.hpp"
 #include "assert-utility.hpp"
 #include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
@@ -141,7 +143,9 @@ class ConsonantTaskControllerTests : public ::testing::Test {
 class ConsonantTaskPresenterTests : public ::testing::Test {
   protected:
     ConsonantViewStub view;
-    PresenterImpl presenter{view};
+    ConfigurationRegistryStub registry;
+    TestPresenterStub testPresenter;
+    PresenterImpl presenter{registry, view, testPresenter};
 };
 
 #define CONSONANT_TASK_CONTROLLER_TEST(a)                                      \
@@ -199,6 +203,11 @@ CONSONANT_TASK_PRESENTER_TEST(
 CONSONANT_TASK_PRESENTER_TEST(showsCursorWithResponseSubmission) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.cursorShown());
+}
+
+CONSONANT_TASK_PRESENTER_TEST(tbd) {
+    presenter.configure("method", "fixed-level consonants");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&presenter, testPresenter.taskPresenter);
 }
 
 CONSONANT_TASK_CONTROLLER_TEST(

@@ -281,7 +281,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         break;
     case Method::fixedLevelConsonants:
         testObservers.emplace_back(submittingConsonantResponse);
-        taskPresenter = &consonantPresenter;
         break;
     case Method::fixedLevelChooseKeywordsWithAllTargets:
     case Method::fixedLevelSyllablesWithAllTargets:
@@ -423,7 +422,7 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     FiniteTargetPlaylist &eachTargetNTimes,
     TargetPlaylist &targetsWithReplacement,
     AdaptiveTrack::Factory &adaptiveTrackFactory,
-    SessionController &sessionController, TaskPresenter &consonantPresenter,
+    SessionController &sessionController,
     RunningATest::TestObserver &submittingConsonantResponse,
     TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter,
     RunningATest::TestObserver &submittingKeyPressResponse,
@@ -441,7 +440,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       eachTargetNTimes{eachTargetNTimes},
       targetsWithReplacement{targetsWithReplacement},
       sessionController{sessionController},
-      consonantPresenter{consonantPresenter},
       submittingConsonantResponse{submittingConsonantResponse},
       passFailPresenter{passFailPresenter},
       keypressPresenter{keypressPresenter},

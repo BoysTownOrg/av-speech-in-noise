@@ -21,7 +21,18 @@ void Controller::notifyThatResponseButtonHasBeenClicked() {
     testController.notifyThatUserIsDoneRespondingAndIsReadyForNextTrial();
 }
 
-PresenterImpl::PresenterImpl(View &view) : view{view} {}
+PresenterImpl::PresenterImpl(
+    ConfigurationRegistry &registry, View &view, TestPresenter &testPresenter)
+    : view{view}, testPresenter{testPresenter} {
+    registry.subscribe(*this, "method");
+}
+
+void PresenterImpl::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "method")
+        if (contains(value, "consonants"))
+            testPresenter.initialize(*this);
+}
 
 void PresenterImpl::start() {
     view.show();
