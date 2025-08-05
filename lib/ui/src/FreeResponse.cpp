@@ -1,4 +1,5 @@
 #include "FreeResponse.hpp"
+#include "av-speech-in-noise/core/Configuration.hpp"
 
 namespace av_speech_in_noise::submitting_free_response {
 Controller::Controller(ConfigurationRegistry &registry,
@@ -57,8 +58,18 @@ void Controller::callback() {
     }
 }
 
-Presenter::Presenter(TestView &testView, View &view, Puzzle &puzzle)
-    : testView{testView}, view{view}, puzzle{puzzle} {}
+Presenter::Presenter(ConfigurationRegistry &registry, TestView &testView,
+    View &view, TestPresenter &testPresenter, Puzzle &puzzle)
+    : testView{testView}, view{view}, testPresenter{testPresenter},
+      puzzle{puzzle} {
+    registry.subscribe(*this, "method");
+}
+
+void Presenter::configure(const std::string &key, const std::string &value) {
+    if (key == "method")
+        if (contains(value, "free response"))
+            testPresenter.initialize(*this);
+}
 
 void Presenter::start() {
     puzzle.reset();

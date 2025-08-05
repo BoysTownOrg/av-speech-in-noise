@@ -4,8 +4,8 @@
 #include "Task.hpp"
 #include "Test.hpp"
 #include "View.hpp"
-#include "av-speech-in-noise/core/Configuration.hpp"
 
+#include <av-speech-in-noise/core/Configuration.hpp>
 #include <av-speech-in-noise/core/ITimer.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
@@ -67,17 +67,20 @@ class Controller : public TaskController,
     bool usingPuzzle{};
 };
 
-class Presenter : public TaskPresenter {
+class Presenter : public TaskPresenter, public Configurable {
   public:
-    Presenter(TestView &, View &, Puzzle &);
+    Presenter(
+        ConfigurationRegistry &, TestView &, View &, TestPresenter &, Puzzle &);
     void start() override;
     void stop() override;
     void hideResponseSubmission() override;
     void showResponseSubmission() override;
+    void configure(const std::string &, const std::string &) override;
 
   private:
     TestView &testView;
     View &view;
+    TestPresenter &testPresenter;
     Puzzle &puzzle;
 };
 }

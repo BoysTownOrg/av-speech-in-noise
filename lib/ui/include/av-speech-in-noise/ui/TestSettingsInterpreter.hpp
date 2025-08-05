@@ -9,6 +9,7 @@
 #include <av-speech-in-noise/core/IFixedLevelMethod.hpp>
 #include <av-speech-in-noise/core/IRunningATest.hpp>
 #include <av-speech-in-noise/core/TargetPlaylist.hpp>
+
 #include <cstdint>
 #include <functional>
 #include <map>
@@ -115,7 +116,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
         TargetPlaylist &targetsWithReplacement, AdaptiveTrack::Factory &,
         SessionController &sessionController,
         TaskPresenter &coordinateResponseMeasurePresenter,
-        TaskPresenter &freeResponsePresenter, TaskPresenter &syllablesPresenter,
+        TaskPresenter &syllablesPresenter,
         TaskPresenter &correctKeywordsPresenter,
         TaskPresenter &consonantPresenter,
         RunningATest::TestObserver &submittingConsonantResponse,
@@ -149,7 +150,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
     TargetPlaylist &targetsWithReplacement;
     SessionController &sessionController;
     TaskPresenter &coordinateResponseMeasurePresenter;
-    TaskPresenter &freeResponsePresenter;
     TaskPresenter &syllablesPresenter;
     TaskPresenter &correctKeywordsPresenter;
     TaskPresenter &consonantPresenter;
