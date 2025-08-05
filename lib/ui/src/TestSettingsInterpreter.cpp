@@ -264,7 +264,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::adaptiveCoordinateResponseMeasure:
     case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
     case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
-        break;
     case Method::fixedLevelFreeResponseWithTargetReplacement:
     case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
     case Method::fixedLevelFreeResponseWithAllTargets:
@@ -280,7 +279,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         taskPresenter = &passFailPresenter;
         break;
     case Method::adaptiveCorrectKeywords:
-        taskPresenter = &correctKeywordsPresenter;
         break;
     case Method::fixedLevelConsonants:
         testObservers.emplace_back(submittingConsonantResponse);
@@ -429,7 +427,7 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     TargetPlaylist &targetsWithReplacement,
     AdaptiveTrack::Factory &adaptiveTrackFactory,
     SessionController &sessionController, TaskPresenter &syllablesPresenter,
-    TaskPresenter &correctKeywordsPresenter, TaskPresenter &consonantPresenter,
+    TaskPresenter &consonantPresenter,
     RunningATest::TestObserver &submittingConsonantResponse,
     TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter,
     RunningATest::TestObserver &submittingKeyPressResponse,
@@ -448,7 +446,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       targetsWithReplacement{targetsWithReplacement},
       sessionController{sessionController},
       syllablesPresenter{syllablesPresenter},
-      correctKeywordsPresenter{correctKeywordsPresenter},
       consonantPresenter{consonantPresenter},
       submittingConsonantResponse{submittingConsonantResponse},
       passFailPresenter{passFailPresenter},

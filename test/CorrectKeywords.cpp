@@ -1,10 +1,14 @@
+#include "ConfigurationRegistryStub.hpp"
+#include "TestPresenterStub.hpp"
 #include "assert-utility.hpp"
 #include "SessionViewStub.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
-#include "av-speech-in-noise/Model.hpp"
+
 #include <av-speech-in-noise/ui/CorrectKeywords.hpp>
+
 #include <gtest/gtest.h>
+
 #include <utility>
 
 namespace av_speech_in_noise::submitting_number_keywords {
@@ -76,7 +80,9 @@ class CorrectKeywordsPresenterTests : public ::testing::Test {
   protected:
     TestViewStub testView;
     ViewStub view;
-    Presenter presenter{testView, view};
+    ConfigurationRegistryStub registry;
+    TestPresenterStub testPresenter;
+    Presenter presenter{registry, testView, view, testPresenter};
 };
 
 #define CORRECT_KEYWORDS_CONTROLLER_TEST(a)                                    \
@@ -109,6 +115,11 @@ CORRECT_KEYWORDS_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.correctKeywordsSubmissionShown());
 }
 
+CORRECT_KEYWORDS_PRESENTER_TEST(tbd) {
+    presenter.configure("method", "adaptive number keywords");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&presenter, testPresenter.taskPresenter);
+}
+
 CORRECT_KEYWORDS_CONTROLLER_TEST(
     responderSubmitsConsonantAfterResponseButtonIsClicked) {
     control.setCorrectKeywords("1");
@@ -119,8 +130,7 @@ CORRECT_KEYWORDS_CONTROLLER_TEST(
 CORRECT_KEYWORDS_CONTROLLER_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
     notifyThatSubmitButtonHasBeenClicked(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testController
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
