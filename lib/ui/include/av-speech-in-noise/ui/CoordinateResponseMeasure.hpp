@@ -5,6 +5,7 @@
 #include "Task.hpp"
 #include "Test.hpp"
 
+#include <av-speech-in-noise/core/Configuration.hpp>
 #include <av-speech-in-noise/core/IRunningATest.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
@@ -55,18 +56,21 @@ class CoordinateResponseMeasureController
 };
 
 class CoordinateResponseMeasurePresenter : public TaskController::Observer,
-                                           public TaskPresenter {
+                                           public TaskPresenter,
+                                           public Configurable {
   public:
-    explicit CoordinateResponseMeasurePresenter(
-        CoordinateResponseMeasureView &);
+    CoordinateResponseMeasurePresenter(ConfigurationRegistry &,
+        CoordinateResponseMeasureView &, TestPresenter &);
     void start() override;
     void stop() override;
     void notifyThatTaskHasStarted() override;
     void hideResponseSubmission() override;
     void showResponseSubmission() override;
+    void configure(const std::string &, const std::string &) override;
 
   private:
     CoordinateResponseMeasureView &view;
+    TestPresenter &testPresenter;
 };
 }
 

@@ -24,8 +24,8 @@ static auto subjectResponse(CoordinateResponseMeasureControl &control)
 CoordinateResponseMeasureController::CoordinateResponseMeasureController(
     TestController &testController, RunningATest &runningATest,
     CoordinateResponseMeasureControl &control)
-    : testController{testController}, runningATest{runningATest}, control{
-                                                                      control} {
+    : testController{testController}, runningATest{runningATest},
+      control{control} {
     control.attach(this);
 }
 
@@ -50,8 +50,18 @@ static void hideResponseButtons(CoordinateResponseMeasureView &view) {
 }
 
 CoordinateResponseMeasurePresenter::CoordinateResponseMeasurePresenter(
-    CoordinateResponseMeasureView &view)
-    : view{view} {}
+    ConfigurationRegistry &registry, CoordinateResponseMeasureView &view,
+    TestPresenter &testPresenter)
+    : view{view}, testPresenter{testPresenter} {
+    registry.subscribe(*this, "method");
+}
+
+void CoordinateResponseMeasurePresenter::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "method")
+        if (contains(value, "CRM"))
+            testPresenter.initialize(*this);
+}
 
 void CoordinateResponseMeasurePresenter::start() {
     view.show();
