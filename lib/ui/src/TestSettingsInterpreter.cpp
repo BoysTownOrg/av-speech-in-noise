@@ -231,12 +231,6 @@ static void initialize(FixedLevelMethod &method,
     method.initialize(test, &targets);
 }
 
-static auto localUrlFromPath(const std::string &path) -> LocalUrl {
-    LocalUrl url;
-    url.path = path;
-    return url;
-}
-
 void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     const TestIdentity &testIdentity, SNR startingSnr) {
     broadcast(configurables, "relative output path",
@@ -295,7 +289,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         taskPresenter = &consonantPresenter;
         break;
     case Method::fixedLevelChooseKeywordsWithAllTargets:
-        taskPresenter = &chooseKeywordsPresenter;
         break;
     case Method::fixedLevelSyllablesWithAllTargets:
         taskPresenter = &syllablesPresenter;
@@ -439,8 +432,7 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     AdaptiveTrack::Factory &adaptiveTrackFactory,
     SessionController &sessionController,
     TaskPresenter &coordinateResponseMeasurePresenter,
-    TaskPresenter &freeResponsePresenter,
-    TaskPresenter &chooseKeywordsPresenter, TaskPresenter &syllablesPresenter,
+    TaskPresenter &freeResponsePresenter, TaskPresenter &syllablesPresenter,
     TaskPresenter &correctKeywordsPresenter, TaskPresenter &consonantPresenter,
     RunningATest::TestObserver &submittingConsonantResponse,
     TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter,
@@ -461,7 +453,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       sessionController{sessionController},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       freeResponsePresenter{freeResponsePresenter},
-      chooseKeywordsPresenter{chooseKeywordsPresenter},
       syllablesPresenter{syllablesPresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
       consonantPresenter{consonantPresenter},

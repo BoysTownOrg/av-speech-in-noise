@@ -68,10 +68,10 @@ class TestMethodStub : public TestMethod {
     auto log() const -> const std::stringstream & { return log_; }
 
   private:
-    std::stringstream log_{};
-    std::string currentTarget_{};
-    std::string currentTargetWhenNextTarget_{};
-    std::string nextTarget_{};
+    std::stringstream log_;
+    std::string currentTarget_;
+    std::string currentTargetWhenNextTarget_;
+    std::string nextTarget_;
     double snr_dB_{};
     bool complete_{};
 };
@@ -597,7 +597,7 @@ class RunningATestTests : public ::testing::Test {
         UseCase &useCase, const std::string &what) {
         run(initializingTest, model);
         run(useCase, model);
-        AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(testMethod.log(), what));
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(testMethod.log().str(), what));
     }
 
     void assertYieldsTrialNumber(UseCase &useCase, int n) {
@@ -834,7 +834,7 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAt) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
         targetPlayer.timePlayedAt().playerTime.system);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds,
+        (2 / 3.) + RunningATestImpl::targetOnsetFringeDuration.seconds,
         targetPlayer.timePlayedAt().delay.seconds);
 }
 
@@ -848,7 +848,7 @@ RECOGNITION_TEST_MODEL_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(player_system_time_type{1},
         observer.playerTimeWithDelay.playerTime.system);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        2 / 3. + RunningATestImpl::targetOnsetFringeDuration.seconds,
+        (2 / 3.) + RunningATestImpl::targetOnsetFringeDuration.seconds,
         observer.playerTimeWithDelay.delay.seconds);
 }
 

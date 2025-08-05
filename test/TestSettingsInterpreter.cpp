@@ -129,7 +129,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TrackFactoryStub adaptiveTrackFactory;
     TaskPresenterStub coordinateResponseMeasurePresenter;
     TaskPresenterStub freeResponsePresenter;
-    TaskPresenterStub chooseKeywordsPresenter;
     TaskPresenterStub syllablesPresenter;
     TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub consonantPresenter;
@@ -146,10 +145,10 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         silentIntervalTargets, eachTargetNTimes, targetsWithReplacement,
         adaptiveTrackFactory, sessionController,
         coordinateResponseMeasurePresenter, freeResponsePresenter,
-        chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
-        consonantPresenter, submittingConsonantResponse, passFailPresenter,
-        keypressPresenter, submittingKeyPressResponse, emotionPresenter,
-        childEmotionPresenter, fixedPassFailPresenter};
+        syllablesPresenter, correctKeywordsPresenter, consonantPresenter,
+        submittingConsonantResponse, passFailPresenter, keypressPresenter,
+        submittingKeyPressResponse, emotionPresenter, childEmotionPresenter,
+        fixedPassFailPresenter};
     TestIdentity testIdentity;
 };
 
@@ -409,12 +408,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initializeTest(interpreter, Method::fixedLevelConsonants);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &consonantPresenter, sessionController.taskPresenter());
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelChooseKeywordsWithAllTargets_PassesTaskPresenter) {
-    initializeTest(interpreter, Method::fixedLevelChooseKeywordsWithAllTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &chooseKeywordsPresenter, sessionController.taskPresenter());
 }
 TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelSyllablesWithAllTargets_PassesTaskPresenter) {

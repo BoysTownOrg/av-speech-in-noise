@@ -1,4 +1,6 @@
+#include "ConfigurationRegistryStub.hpp"
 #include "FixedLevelMethodStub.hpp"
+#include "TestPresenterStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
@@ -292,7 +294,10 @@ class ChooseKeywordsPresenterTests : public ::testing::Test {
     FixedLevelMethodStub fixedLevelMethod;
     TestViewStub testView;
     ViewStub view;
-    PresenterImpl presenter{model, fixedLevelMethod, testView, view,
+    TestPresenterStub testPresenter;
+    ConfigurationRegistryStub registry;
+    PresenterImpl presenter{registry, model, fixedLevelMethod, testView, view,
+        testPresenter,
         {{"The visitors stretched before dinner.", "visitors", "stretched",
              "dinner"},
             {"Daddy's mouth is turning yellow.", "Daddy's", "mouth", "turning"},
@@ -437,6 +442,11 @@ CHOOSE_KEYWORDS_PRESENTER_TEST(completeShowsKeywordTestResults) {
     presenter.complete();
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"5 (12.3%) keywords correct"}, testView.sheetMessage());
+}
+
+CHOOSE_KEYWORDS_PRESENTER_TEST(tbd) {
+    presenter.configure("method", "fixed-level choose keywords all stimuli");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&presenter, testPresenter.taskPresenter);
 }
 
 CHOOSE_KEYWORDS_CONTROLLER_TEST(

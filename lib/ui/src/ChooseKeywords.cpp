@@ -1,4 +1,5 @@
 #include "ChooseKeywords.hpp"
+
 #include <regex>
 #include <utility>
 #include <sstream>
@@ -9,8 +10,8 @@
 namespace av_speech_in_noise::submitting_keywords {
 Controller::Controller(TestController &testController, Interactor &interactor,
     Control &control, Presenter &presenter)
-    : testController{testController},
-      interactor{interactor}, control{control}, presenter{presenter} {
+    : testController{testController}, interactor{interactor}, control{control},
+      presenter{presenter} {
     control.attach(this);
 }
 
@@ -67,13 +68,23 @@ static auto transformToSentencesWithThreeKeywordsFromExpectedFileNameSentence(
     return map;
 }
 
-PresenterImpl::PresenterImpl(RunningATest &model,
-    FixedLevelMethod &fixedLevelMethod, TestView &testView, View &view,
+PresenterImpl::PresenterImpl(ConfigurationRegistry &registry,
+    RunningATest &model, FixedLevelMethod &fixedLevelMethod, TestView &testView,
+    View &view, TestPresenter &testPresenter,
     const std::vector<SentenceWithThreeKeywords> &sentencesWithThreeKeywords)
     : sentencesWithThreeKeywordsFromExpectedFileNameSentence{transformToSentencesWithThreeKeywordsFromExpectedFileNameSentence(
           sentencesWithThreeKeywords)},
-      model{model},
-      fixedLevelMethod{fixedLevelMethod}, testView{testView}, view{view} {}
+      model{model}, fixedLevelMethod{fixedLevelMethod}, testView{testView},
+      view{view}, testPresenter{testPresenter} {
+    registry.subscribe(*this, "method");
+}
+
+void PresenterImpl::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "method")
+        if (contains(value, "choose keywords"))
+            testPresenter.initialize(*this);
+}
 
 void PresenterImpl::start() { testView.showNextTrialButton(); }
 

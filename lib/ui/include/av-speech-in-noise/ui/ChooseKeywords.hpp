@@ -1,10 +1,10 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CHOOSEKEYWORDS_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_CHOOSEKEYWORDS_HPP_
 
-#include "View.hpp"
 #include "Task.hpp"
 #include "Test.hpp"
 
+#include <av-speech-in-noise/core/Configuration.hpp>
 #include <av-speech-in-noise/core/IFixedLevelMethod.hpp>
 #include <av-speech-in-noise/core/IRunningATest.hpp>
 #include <av-speech-in-noise/Model.hpp>
@@ -100,9 +100,12 @@ static auto operator==(const SentenceWithThreeKeywords &a,
         a.secondKeyword == b.secondKeyword && a.thirdKeyword == b.thirdKeyword;
 }
 
-class PresenterImpl : public Presenter, public TaskPresenter {
+class PresenterImpl : public Presenter,
+                      public TaskPresenter,
+                      public Configurable {
   public:
-    PresenterImpl(RunningATest &, FixedLevelMethod &, TestView &, View &,
+    PresenterImpl(ConfigurationRegistry &, RunningATest &, FixedLevelMethod &,
+        TestView &, View &, TestPresenter &,
         const std::vector<SentenceWithThreeKeywords> &);
     void start() override;
     void stop() override;
@@ -115,6 +118,7 @@ class PresenterImpl : public Presenter, public TaskPresenter {
     void markAllKeywordsIncorrect() override;
     void markAllKeywordsCorrect() override;
     void complete() override;
+    void configure(const std::string &, const std::string &) override;
 
   private:
     std::map<std::string, SentenceWithThreeKeywords>
@@ -123,6 +127,7 @@ class PresenterImpl : public Presenter, public TaskPresenter {
     FixedLevelMethod &fixedLevelMethod;
     TestView &testView;
     View &view;
+    TestPresenter &testPresenter;
 };
 }
 
