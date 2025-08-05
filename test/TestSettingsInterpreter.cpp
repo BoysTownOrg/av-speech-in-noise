@@ -127,7 +127,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
     TrackFactoryStub adaptiveTrackFactory;
-    TaskPresenterStub coordinateResponseMeasurePresenter;
     TaskPresenterStub syllablesPresenter;
     TaskPresenterStub correctKeywordsPresenter;
     TaskPresenterStub consonantPresenter;
@@ -142,8 +141,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         fixedLevelMethod, eyeTracking, audioRecording, cyclicTargetsReader,
         targetsWithReplacementReader, predeterminedTargets, everyTargetOnce,
         silentIntervalTargets, eachTargetNTimes, targetsWithReplacement,
-        adaptiveTrackFactory, sessionController,
-        coordinateResponseMeasurePresenter, syllablesPresenter,
+        adaptiveTrackFactory, sessionController, syllablesPresenter,
         correctKeywordsPresenter, consonantPresenter,
         submittingConsonantResponse, passFailPresenter, keypressPresenter,
         submittingKeyPressResponse, emotionPresenter, childEmotionPresenter,
@@ -349,31 +347,11 @@ TEST_SETTINGS_INTERPRETER_TEST(
         &correctKeywordsPresenter, sessionController.taskPresenter());
 }
 TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_adaptiveCoordinateResponseMeasure_PassesTaskPresenter) {
-    initializeTest(interpreter, Method::adaptiveCoordinateResponseMeasure);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &coordinateResponseMeasurePresenter, sessionController.taskPresenter());
-}
-TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelButtonResponseWithPredeterminedTargets_PassesTaskPresenter) {
     initializeTest(
         interpreter, Method::fixedLevelButtonResponseWithPredeterminedTargets);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &keypressPresenter, sessionController.taskPresenter());
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelCoordinateResponseMeasureWithTargetReplacement_PassesTaskPresenter) {
-    initializeTest(interpreter,
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &coordinateResponseMeasurePresenter, sessionController.taskPresenter());
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets_PassesTaskPresenter) {
-    initializeTest(interpreter,
-        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &coordinateResponseMeasurePresenter, sessionController.taskPresenter());
 }
 TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelConsonants_PassesTaskPresenter) {

@@ -1,4 +1,6 @@
+#include "ConfigurationRegistryStub.hpp"
 #include "RunningATestStub.hpp"
+#include "TestPresenterStub.hpp"
 #include "assert-utility.hpp"
 #include "TaskControllerObserverStub.hpp"
 #include "TestControllerStub.hpp"
@@ -121,7 +123,9 @@ class CoordinateResponseMeasureControllerTests : public ::testing::Test {
 class CoordinateResponseMeasurePresenterTests : public ::testing::Test {
   protected:
     CoordinateResponseMeasureViewStub view;
-    CoordinateResponseMeasurePresenter presenter{view};
+    ConfigurationRegistryStub registry;
+    TestPresenterStub testPresenter;
+    CoordinateResponseMeasurePresenter presenter{registry, view, testPresenter};
 };
 
 #define AV_SPEECH_IN_NOISE_EXPECT_RESPONSE_BUTTONS_HIDDEN(a)                   \
@@ -172,6 +176,11 @@ COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.responseButtonsShown());
 }
 
+COORDINATE_RESPONSE_MEASURE_PRESENTER_TEST(tbd) {
+    presenter.configure("method", "fixed-level CRM with replacement");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&presenter, testPresenter.taskPresenter);
+}
+
 COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
     notifiesThatUserIsReadyForNextTrialAfterReadyButtonIsClicked) {
     clickReadyButton(control);
@@ -188,8 +197,7 @@ COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
 COORDINATE_RESPONSE_MEASURE_CONTROLLER_TEST(
     notifiesThatUserIsReadyForNextTrialAfterResponseButtonIsClicked) {
     clickResponseButton(control);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testController
             .notifiedThatUserIsDoneRespondingAndIsReadyForNextTrial());
 }
 
