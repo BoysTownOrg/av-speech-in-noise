@@ -4,8 +4,8 @@
 namespace av_speech_in_noise::submitting_syllable {
 Controller::Controller(Control &control, TestController &testController,
     Interactor &model, std::map<std::string, Syllable, std::less<>> map)
-    : map{std::move(map)}, control{control},
-      testController{testController}, model{model} {
+    : map{std::move(map)}, control{control}, testController{testController},
+      model{model} {
     control.attach(this);
 }
 
@@ -22,8 +22,18 @@ void Controller::notifyThatResponseButtonHasBeenClicked() {
     testController.notifyThatUserIsDoneResponding();
 }
 
-PresenterImpl::PresenterImpl(View &view, TestView &testView)
-    : view{view}, testView{testView} {}
+PresenterImpl::PresenterImpl(ConfigurationRegistry &registry, View &view,
+    TestView &testView, TestPresenter &testPresenter)
+    : view{view}, testView{testView}, testPresenter{testPresenter} {
+    registry.subscribe(*this, "method");
+}
+
+void PresenterImpl::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "method")
+        if (contains(value, "syllables"))
+            testPresenter.initialize(*this);
+}
 
 void PresenterImpl::start() { testView.showNextTrialButton(); }
 

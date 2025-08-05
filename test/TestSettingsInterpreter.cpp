@@ -127,7 +127,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
     TrackFactoryStub adaptiveTrackFactory;
-    TaskPresenterStub syllablesPresenter;
     TaskPresenterStub consonantPresenter;
     RunningATest::TestObserver submittingConsonantResponse;
     TaskPresenterStub passFailPresenter;
@@ -140,10 +139,10 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         fixedLevelMethod, eyeTracking, audioRecording, cyclicTargetsReader,
         targetsWithReplacementReader, predeterminedTargets, everyTargetOnce,
         silentIntervalTargets, eachTargetNTimes, targetsWithReplacement,
-        adaptiveTrackFactory, sessionController, syllablesPresenter,
-        consonantPresenter, submittingConsonantResponse, passFailPresenter,
-        keypressPresenter, submittingKeyPressResponse, emotionPresenter,
-        childEmotionPresenter, fixedPassFailPresenter};
+        adaptiveTrackFactory, sessionController, consonantPresenter,
+        submittingConsonantResponse, passFailPresenter, keypressPresenter,
+        submittingKeyPressResponse, emotionPresenter, childEmotionPresenter,
+        fixedPassFailPresenter};
     TestIdentity testIdentity;
 };
 
@@ -350,12 +349,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initializeTest(interpreter, Method::fixedLevelConsonants);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &consonantPresenter, sessionController.taskPresenter());
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelSyllablesWithAllTargets_PassesTaskPresenter) {
-    initializeTest(interpreter, Method::fixedLevelSyllablesWithAllTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &syllablesPresenter, sessionController.taskPresenter());
 }
 TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelEmotionsWithPredeterminedTargets_PassesTaskPresenter) {
