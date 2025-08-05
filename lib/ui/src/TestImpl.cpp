@@ -121,7 +121,12 @@ void TestPresenterImpl::configure(
         showTargetFilename = boolean(value);
 }
 
-void TestPresenterImpl::start() { view.show(); }
+void TestPresenterImpl::start() {
+    view.show();
+    updateTrialInformation();
+    if (taskPresenter != nullptr)
+        taskPresenter->start();
+}
 
 void TestPresenterImpl::stop() {
     if (taskPresenter != nullptr)
@@ -170,12 +175,7 @@ void TestPresenterImpl::updateAdaptiveTestResults() {
     view.setContinueTestingDialogMessage(thresholds.str());
 }
 
-void TestPresenterImpl::initialize(TaskPresenter &p) {
-    updateTrialInformation();
-    taskPresenter = &p;
-    if (taskPresenter != nullptr)
-        taskPresenter->start();
-}
+void TestPresenterImpl::initialize(TaskPresenter &p) { taskPresenter = &p; }
 
 void TestPresenterImpl::hideExitTestButton() { view.hideExitTestButton(); }
 

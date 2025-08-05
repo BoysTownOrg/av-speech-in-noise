@@ -279,6 +279,10 @@ class Initializing : public PresenterUseCase {
     TaskPresenterStub taskPresenter;
 };
 
+class Starting : public PresenterUseCase {
+    void run(TestPresenter &p) override { p.start(); }
+};
+
 class TestControllerTests : public ::testing::Test {
   protected:
     RunningATestStub runningATest;
@@ -316,6 +320,7 @@ class TestPresenterTests : public ::testing::Test {
     TestPresenterImpl presenter{runningATest, adaptiveMethod, view};
     UpdatingTrialInformation updatingTrialInformation;
     Initializing initializing;
+    Starting starting;
 };
 
 void run(ControllerUseCase &useCase) { useCase.run(); }
@@ -621,8 +626,9 @@ TEST_PRESENTER_TEST(showsNextTrialButtonAfterNextTrialIsReady) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.nextTrialButtonShown());
 }
 
-TEST_PRESENTER_TEST(startsTaskPresenterWhenInitializing) {
+TEST_PRESENTER_TEST(startsTaskPresenterWhenStarting) {
     presenter.initialize(taskPresenter);
+    presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.started);
 }
 
@@ -636,14 +642,14 @@ TEST_PRESENTER_TEST(displaysTargetWhenUpdatingTrialInformation) {
         presenter, runningATest, updatingTrialInformation, view);
 }
 
-TEST_PRESENTER_TEST(displaysTrialNumberWhenInitializing) {
+TEST_PRESENTER_TEST(displaysTrialNumberWhenStarting) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TRIAL(
-        presenter, runningATest, initializing, view);
+        presenter, runningATest, starting, view);
 }
 
-TEST_PRESENTER_TEST(displaysTargetWhenInitializing) {
+TEST_PRESENTER_TEST(displaysTargetWhenStarting) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(
-        presenter, runningATest, initializing, view);
+        presenter, runningATest, starting, view);
 }
 
 TEST_PRESENTER_TEST(doesNotShowTargetFilename) {
