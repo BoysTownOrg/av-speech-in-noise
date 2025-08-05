@@ -102,18 +102,18 @@ void TestControllerImpl::notifyThatUserHasRespondedButTrialIsNotQuiteDone() {
     presenter.hideExitTestButton();
 }
 
-TestPresenterImpl::TestPresenterImpl(RunningATest &runningATest,
-    AdaptiveMethod &adaptiveMethod, TestView &view,
-    UninitializedTaskPresenter *taskPresenter)
+TestPresenterImpl::TestPresenterImpl(
+    RunningATest &runningATest, AdaptiveMethod &adaptiveMethod, TestView &view)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod}, view{view},
-      taskPresenter{taskPresenter} {
+      taskPresenter{} {
     runningATest.attach(this);
 }
 
 void TestPresenterImpl::start() { view.show(); }
 
 void TestPresenterImpl::stop() {
-    taskPresenter->stop();
+    if (taskPresenter != nullptr)
+        taskPresenter->stop();
     view.hideContinueTestingDialog();
     view.hide();
 }
@@ -121,12 +121,14 @@ void TestPresenterImpl::stop() {
 void TestPresenterImpl::notifyThatTrialHasStarted() {
     view.hideExitTestButton();
     view.hideNextTrialButton();
-    taskPresenter->notifyThatTrialHasStarted();
+    if (taskPresenter != nullptr)
+        taskPresenter->notifyThatTrialHasStarted();
 }
 
 void TestPresenterImpl::notifyThatPlayTrialHasCompleted() {
     view.showExitTestButton();
-    taskPresenter->showResponseSubmission();
+    if (taskPresenter != nullptr)
+        taskPresenter->showResponseSubmission();
 }
 
 void TestPresenterImpl::notifyThatNextTrialIsReady() {
@@ -157,15 +159,20 @@ void TestPresenterImpl::updateAdaptiveTestResults() {
 
 void TestPresenterImpl::initialize(TaskPresenter &p) {
     updateTrialInformation();
-    taskPresenter->initialize(&p);
-    taskPresenter->start();
+    taskPresenter = &p;
+    if (taskPresenter != nullptr)
+        taskPresenter->start();
 }
 
 void TestPresenterImpl::hideExitTestButton() { view.hideExitTestButton(); }
 
 void TestPresenterImpl::hideResponseSubmission() {
-    taskPresenter->hideResponseSubmission();
+    if (taskPresenter != nullptr)
+        taskPresenter->hideResponseSubmission();
 }
 
-void TestPresenterImpl::completeTask() { taskPresenter->complete(); }
+void TestPresenterImpl::completeTask() {
+    if (taskPresenter != nullptr)
+        taskPresenter->complete();
+}
 }

@@ -34,54 +34,10 @@ class TestControllerImpl : public TestControl::Observer, public TestController {
     TestPresenter &presenter;
 };
 
-class UninitializedTaskPresenter : public TaskPresenter {
-  public:
-    virtual void initialize(TaskPresenter *p) = 0;
-};
-
-class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
-  public:
-    void initialize(TaskPresenter *p) override { presenter = p; }
-
-    void showResponseSubmission() override {
-        if (presenter != nullptr)
-            presenter->showResponseSubmission();
-    }
-
-    void hideResponseSubmission() override {
-        if (presenter != nullptr)
-            presenter->hideResponseSubmission();
-    }
-
-    void start() override {
-        if (presenter != nullptr)
-            presenter->start();
-    }
-
-    void stop() override {
-        if (presenter != nullptr)
-            presenter->stop();
-    }
-
-    void complete() override {
-        if (presenter != nullptr)
-            presenter->complete();
-    }
-
-    void notifyThatTrialHasStarted() override {
-        if (presenter != nullptr)
-            presenter->notifyThatTrialHasStarted();
-    }
-
-  private:
-    TaskPresenter *presenter{};
-};
-
 class TestPresenterImpl : public RunningATest::RequestObserver,
                           public TestPresenter {
   public:
-    TestPresenterImpl(RunningATest &, AdaptiveMethod &, TestView &,
-        UninitializedTaskPresenter *);
+    TestPresenterImpl(RunningATest &, AdaptiveMethod &, TestView &);
     void initialize(TaskPresenter &) override;
     void start() override;
     void stop() override;
@@ -98,7 +54,7 @@ class TestPresenterImpl : public RunningATest::RequestObserver,
     RunningATest &runningATest;
     AdaptiveMethod &adaptiveMethod;
     TestView &view;
-    UninitializedTaskPresenter *taskPresenter;
+    TaskPresenter *taskPresenter;
 };
 }
 
