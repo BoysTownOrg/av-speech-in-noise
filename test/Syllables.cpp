@@ -1,3 +1,5 @@
+#include "ConfigurationRegistryStub.hpp"
+#include "TestPresenterStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
@@ -77,7 +79,9 @@ class SyllablesPresenterTests : public ::testing::Test {
   protected:
     ViewStub view;
     TestViewStub testView;
-    PresenterImpl presenter{view, testView};
+    ConfigurationRegistryStub registry;
+    TestPresenterStub testPresenter;
+    PresenterImpl presenter{registry, view, testView, testPresenter};
 };
 
 #define SYLLABLES_CONTROLLER_TEST(a) TEST_F(SyllablesControllerTests, a)
@@ -107,6 +111,11 @@ SYLLABLES_PRESENTER_TEST(showsResponseButtonsWhenShowingResponseSubmission) {
 SYLLABLES_PRESENTER_TEST(clearsViewWhenShown) {
     presenter.showResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(view.flagCleared());
+}
+
+SYLLABLES_PRESENTER_TEST(tbd) {
+    presenter.configure("method", "fixed-level syllables all stimuli");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&presenter, testPresenter.taskPresenter);
 }
 
 SYLLABLES_CONTROLLER_TEST(submitsKeywordResponseAfterSubmitButtonIsClicked) {
