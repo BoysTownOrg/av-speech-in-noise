@@ -32,10 +32,19 @@ class TestControlStub : public TestControl {
 
 class TaskPresenterStub : public TaskPresenter {
   public:
-    void showResponseSubmission() override {}
-    void hideResponseSubmission() override {}
-    void start() override {}
-    void stop() override {}
+    void showResponseSubmission() override { responseSubmissionShown = true; }
+    void hideResponseSubmission() override { responseSubmissionHidden = true; }
+    void start() override { started = true; }
+    void stop() override { stopped = true; }
+    void complete() override { completed = true; }
+    void notifyThatTrialHasStarted() override { notified = true; }
+
+    bool stopped{};
+    bool started{};
+    bool completed{};
+    bool notified{};
+    bool responseSubmissionShown{};
+    bool responseSubmissionHidden{};
 };
 
 class PresenterUseCase {
@@ -259,54 +268,6 @@ class NotifyingThatUserIsDoneRespondingAndIsReadyForNextTrial
     TestControllerImpl &controller;
 };
 
-class UninitializedTaskPresenterStub : public UninitializedTaskPresenter {
-  public:
-    void initialize(TaskPresenter *p) override { presenter_ = p; }
-
-    auto presenter() -> TaskPresenter * { return presenter_; }
-
-    void showResponseSubmission() override { responseSubmissionShown_ = true; }
-
-    [[nodiscard]] auto responseSubmissionShown() const -> bool {
-        return responseSubmissionShown_;
-    }
-
-    void start() override { started_ = true; }
-
-    [[nodiscard]] auto started() const -> bool { return started_; }
-
-    void stop() override { stopped_ = true; }
-
-    [[nodiscard]] auto stopped() const -> bool { return stopped_; }
-
-    [[nodiscard]] auto responseSubmissionHidden() const -> bool {
-        return responseSubmissionHidden_;
-    }
-
-    void hideResponseSubmission() override { responseSubmissionHidden_ = true; }
-
-    [[nodiscard]] auto completed() const -> bool { return completed_; }
-
-    void complete() override { completed_ = true; }
-
-    void notifyThatTrialHasStarted() override {
-        notifiedThatTrialHasStarted_ = true;
-    }
-
-    [[nodiscard]] auto notifiedThatTrialHasStarted() const -> bool {
-        return notifiedThatTrialHasStarted_;
-    }
-
-  private:
-    TaskPresenter *presenter_{};
-    bool responseSubmissionHidden_{};
-    bool completed_{};
-    bool stopped_{};
-    bool started_{};
-    bool responseSubmissionShown_{};
-    bool notifiedThatTrialHasStarted_{};
-};
-
 class UpdatingTrialInformation : public PresenterUseCase {
     void run(TestPresenter &p) override { p.updateTrialInformation(); }
 };
@@ -350,10 +311,9 @@ class TestPresenterTests : public ::testing::Test {
     RunningATestStub runningATest;
     AdaptiveMethodStub adaptiveMethod;
     TestViewStub view;
-    UninitializedTaskPresenterStub taskPresenter;
     ConfigurationRegistryStub registry;
-    TestPresenterImpl presenter{
-        runningATest, adaptiveMethod, view, &taskPresenter};
+    TaskPresenterStub taskPresenter;
+    TestPresenterImpl presenter{runningATest, adaptiveMethod, view};
     UpdatingTrialInformation updatingTrialInformation;
     Initializing initializing;
 };
@@ -395,12 +355,6 @@ void run(PresenterUseCase &useCase, TestPresenter &presenter) {
     setTestComplete(runningATest);                                              \
     run(useCase);                                                               \
     AV_SPEECH_IN_NOISE_EXPECT_NOTIFIED_THAT_TEST_IS_COMPLETE(sessionController)
-
-#define AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(                  \
-    experimenterPresenter, expected)                                           \
-    experimenterPresenter.initialize(expected);                                \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        static_cast<TaskPresenter *>(&(expected)), taskPresenter.presenter())
 
 #define AV_SPEECH_IN_NOISE_EXPECT_PLAYS_TRIAL(useCase, sessionView, model)     \
     setAudioDevice(sessionView, "a");                                          \
@@ -609,8 +563,9 @@ TEST_PRESENTER_TEST(hidesContinueTestingDialogAfterStopping) {
 }
 
 TEST_PRESENTER_TEST(stopsTaskAfterStopping) {
+    presenter.initialize(taskPresenter);
     presenter.stop();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.stopped());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.stopped);
 }
 
 TEST_PRESENTER_TEST(hidesExitTestButton) {
@@ -629,13 +584,15 @@ TEST_PRESENTER_TEST(hidesNextTrialButtonAfterTrialStarts) {
 }
 
 TEST_PRESENTER_TEST(forwardsTrialStartNotification) {
+    presenter.initialize(taskPresenter);
     presenter.notifyThatTrialHasStarted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.notifiedThatTrialHasStarted());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.notified);
 }
 
 TEST_PRESENTER_TEST(hidesResponseSubmission) {
+    presenter.initialize(taskPresenter);
     presenter.hideResponseSubmission();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionHidden());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionHidden);
 }
 
 TEST_PRESENTER_TEST(showsExitTestButtonWhenTrialCompletes) {
@@ -644,8 +601,9 @@ TEST_PRESENTER_TEST(showsExitTestButtonWhenTrialCompletes) {
 }
 
 TEST_PRESENTER_TEST(showsTaskResponseSubmissionWhenTrialCompletes) {
+    presenter.initialize(taskPresenter);
     runningATest.facadeObserver->notifyThatPlayTrialHasCompleted();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionShown());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionShown);
 }
 
 TEST_PRESENTER_TEST(showsExitTestButtonAfterNextTrialIsReady) {
@@ -664,21 +622,8 @@ TEST_PRESENTER_TEST(showsNextTrialButtonAfterNextTrialIsReady) {
 }
 
 TEST_PRESENTER_TEST(startsTaskPresenterWhenInitializing) {
-    TaskPresenterStub taskPresenter_;
-    presenter.initialize(taskPresenter_);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.started());
-}
-
-TEST_PRESENTER_TEST(initializingFixedLevelConsonantMethodInitializesTask) {
-    TaskPresenterStub taskPresenter_;
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        presenter, taskPresenter_);
-}
-
-TEST_PRESENTER_TEST(initializingAdaptivePassFailMethodInitializesTask) {
-    TaskPresenterStub taskPresenter_;
-    AV_SPEECH_IN_NOISE_EXPECT_TASK_PRESENTER_INITIALIZED(
-        presenter, taskPresenter_);
+    presenter.initialize(taskPresenter);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.started);
 }
 
 TEST_PRESENTER_TEST(displaysTrialNumberWhenUpdatingTrialInformation) {
@@ -711,8 +656,9 @@ TEST_PRESENTER_TEST(doesNotShowTargetFilename) {
 }
 
 TEST_PRESENTER_TEST(completeTaskCompletesTask) {
+    presenter.initialize(taskPresenter);
     presenter.completeTask();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.completed());
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.completed);
 }
 }
 }
