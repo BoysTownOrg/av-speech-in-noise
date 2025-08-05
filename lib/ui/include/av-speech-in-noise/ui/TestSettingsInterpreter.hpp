@@ -115,7 +115,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
         FiniteTargetPlaylist &eachTargetNTimes,
         TargetPlaylist &targetsWithReplacement, AdaptiveTrack::Factory &,
         SessionController &sessionController, TaskPresenter &syllablesPresenter,
-        TaskPresenter &correctKeywordsPresenter,
         TaskPresenter &consonantPresenter,
         RunningATest::TestObserver &submittingConsonantResponse,
         TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter,
@@ -148,7 +147,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
     TargetPlaylist &targetsWithReplacement;
     SessionController &sessionController;
     TaskPresenter &syllablesPresenter;
-    TaskPresenter &correctKeywordsPresenter;
     TaskPresenter &consonantPresenter;
     RunningATest::TestObserver &submittingConsonantResponse;
     TaskPresenter &passFailPresenter;

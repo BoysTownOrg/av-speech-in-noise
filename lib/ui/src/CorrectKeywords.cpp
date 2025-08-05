@@ -4,8 +4,8 @@
 namespace av_speech_in_noise::submitting_number_keywords {
 Controller::Controller(TestController &testController, Interactor &interactor,
     SessionView &view, Control &keywordsView)
-    : testController{testController}, interactor{interactor},
-      sessionView{view}, control{keywordsView} {
+    : testController{testController}, interactor{interactor}, sessionView{view},
+      control{keywordsView} {
     keywordsView.attach(this);
 }
 
@@ -25,8 +25,17 @@ void Controller::notifyThatSubmitButtonHasBeenClicked() {
     }
 }
 
-Presenter::Presenter(TestView &testView, View &view)
-    : testView{testView}, view{view} {}
+Presenter::Presenter(ConfigurationRegistry &registry, TestView &testView,
+    View &view, TestPresenter &testPresenter)
+    : testView{testView}, view{view}, testPresenter{testPresenter} {
+    registry.subscribe(*this, "method");
+}
+
+void Presenter::configure(const std::string &key, const std::string &value) {
+    if (key == "method")
+        if (contains(value, "number keywords"))
+            testPresenter.initialize(*this);
+}
 
 void Presenter::start() { testView.showNextTrialButton(); }
 

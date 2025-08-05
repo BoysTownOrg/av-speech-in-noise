@@ -4,6 +4,7 @@
 #include "Task.hpp"
 #include "Test.hpp"
 #include "Session.hpp"
+#include "av-speech-in-noise/core/Configuration.hpp"
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
@@ -36,17 +37,19 @@ class Controller : public TaskController, public Control::Observer {
     Control &control;
 };
 
-class Presenter : public TaskPresenter {
+class Presenter : public TaskPresenter, public Configurable {
   public:
-    explicit Presenter(TestView &, View &);
+    Presenter(ConfigurationRegistry &, TestView &, View &, TestPresenter &);
     void start() override;
     void stop() override;
     void showResponseSubmission() override;
     void hideResponseSubmission() override;
+    void configure(const std::string &, const std::string &) override;
 
   private:
     TestView &testView;
     View &view;
+    TestPresenter &testPresenter;
 };
 }
 
