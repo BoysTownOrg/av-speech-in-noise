@@ -270,7 +270,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
     case Method::fixedLevelFreeResponseWithAllTargets:
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
-        taskPresenter = &freeResponsePresenter;
         break;
     case Method::fixedLevelButtonThenPassFailResponseWithPredeterminedTargets:
         keypressPresenter.enableDualTask(&fixedPassFailPresenter);
@@ -432,8 +431,8 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     AdaptiveTrack::Factory &adaptiveTrackFactory,
     SessionController &sessionController,
     TaskPresenter &coordinateResponseMeasurePresenter,
-    TaskPresenter &freeResponsePresenter, TaskPresenter &syllablesPresenter,
-    TaskPresenter &correctKeywordsPresenter, TaskPresenter &consonantPresenter,
+    TaskPresenter &syllablesPresenter, TaskPresenter &correctKeywordsPresenter,
+    TaskPresenter &consonantPresenter,
     RunningATest::TestObserver &submittingConsonantResponse,
     TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter,
     RunningATest::TestObserver &submittingKeyPressResponse,
@@ -452,7 +451,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       targetsWithReplacement{targetsWithReplacement},
       sessionController{sessionController},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
-      freeResponsePresenter{freeResponsePresenter},
       syllablesPresenter{syllablesPresenter},
       correctKeywordsPresenter{correctKeywordsPresenter},
       consonantPresenter{consonantPresenter},

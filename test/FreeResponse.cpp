@@ -1,4 +1,5 @@
 #include "ConfigurationRegistryStub.hpp"
+#include "TestPresenterStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
@@ -101,7 +102,9 @@ class FreeResponsePresenterTests : public ::testing::Test {
     TestViewStub testView;
     ViewStub view;
     PuzzleStub puzzle;
-    Presenter presenter{testView, view, puzzle};
+    ConfigurationRegistryStub registry;
+    TestPresenterStub testPresenter;
+    Presenter presenter{registry, testView, view, testPresenter, puzzle};
 };
 
 #define FREE_RESPONSE_CONTROLLER_TEST(a) TEST_F(FreeResponseControllerTests, a)
@@ -168,6 +171,11 @@ FREE_RESPONSE_CONTROLLER_TEST(
 FREE_RESPONSE_PRESENTER_TEST(presenterResetsPuzzleOnStart) {
     presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(puzzle.hasBeenReset());
+}
+
+FREE_RESPONSE_PRESENTER_TEST(tbd) {
+    presenter.configure("method", "fixed-level free response with replacement");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&presenter, testPresenter.taskPresenter);
 }
 
 FREE_RESPONSE_CONTROLLER_TEST(
