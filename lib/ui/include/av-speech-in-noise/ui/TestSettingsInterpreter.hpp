@@ -84,7 +84,6 @@ enum class TestSetting : std::uint8_t {
     method,
     masker,
     maskerLevel,
-    startingSnr,
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -95,8 +94,6 @@ constexpr auto name(TestSetting p) -> const char * {
         return "masker";
     case TestSetting::maskerLevel:
         return "masker level (dB SPL)";
-    case TestSetting::startingSnr:
-        return "starting SNR (dB)";
     }
 }
 
@@ -120,8 +117,8 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
         RunningATest::TestObserver &submittingKeyPressResponse,
         TaskPresenter &emotionPresenter, TaskPresenter &childEmotionPresenter,
         TaskPresenter &fixedPassFailPresenter);
-    void initializeTest(
-        const std::string &, const TestIdentity &, SNR) override;
+    void initializeTest(const std::string &, const TestIdentity &,
+        const std::string &startingSNR) override;
     static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
     void subscribe(Configurable &c, const std::string &key) override {

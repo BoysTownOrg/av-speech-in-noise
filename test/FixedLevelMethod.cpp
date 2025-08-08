@@ -153,21 +153,21 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
     TEST_F(PreInitializedFixedLevelMethodTests, a)
 
 PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(snrReturnsInitializedSnr) {
-    testWithFixedTrials.snr.dB = 1;
+    method.configure("starting SNR (dB)", "1");
     run(initializingMethod, method);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, method.snr().dB);
 }
 
 PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     snrReturnsInitializedWithFiniteTargetPlaylistWithRepeatablesSnr) {
-    test.snr.dB = 1;
+    method.configure("starting SNR (dB)", "1");
     run(initializingMethodWithFiniteTargetPlaylistWithRepeatables, method);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, method.snr().dB);
 }
 
 PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     snrReturnsInitializedWithFiniteTargetPlaylistSnr) {
-    test.snr.dB = 1;
+    method.configure("starting SNR (dB)", "1");
     run(initializingMethodWithFiniteTargetPlaylist, method);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, method.snr().dB);
 }
@@ -571,7 +571,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_WITH_REPEATABLES_TEST(tbd) {
-    test.snr.dB = 2;
+    method.configure("starting SNR (dB)", "2");
     method.configure("targets", "a");
     run(initializingMethod, method);
     std::stringstream stream;

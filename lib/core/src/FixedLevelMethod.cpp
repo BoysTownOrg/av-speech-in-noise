@@ -1,4 +1,5 @@
 #include "FixedLevelMethod.hpp"
+#include "Configuration.hpp"
 
 #include <sstream>
 #include <stdexcept>
@@ -8,6 +9,7 @@ FixedLevelMethodImpl::FixedLevelMethodImpl(
     ConfigurationRegistry &registry, ResponseEvaluator &evaluator)
     : evaluator{evaluator} {
     registry.subscribe(*this, "targets");
+    registry.subscribe(*this, "starting SNR (dB)");
 }
 
 static void load(TargetPlaylist *list, const LocalUrl &targetsUrl) {
@@ -15,11 +17,10 @@ static void load(TargetPlaylist *list, const LocalUrl &targetsUrl) {
 }
 
 static void initialize(TargetPlaylist *&targetList,
-    const FixedLevelTest *&test_, SNR &snr_, const FixedLevelTest &test,
+    const FixedLevelTest *&test_, const FixedLevelTest &test,
     const LocalUrl &targetsUrl, TargetPlaylist *list) {
     targetList = list;
     test_ = &test;
-    snr_ = test.snr;
     try {
         load(targetList, targetsUrl);
     } catch (const FiniteTargetPlaylist::LoadFailure &) {
@@ -40,15 +41,13 @@ static void initialize(bool &usingFiniteTargetPlaylist_,
 void FixedLevelMethodImpl::initialize(
     const FixedLevelFixedTrialsTest &test, TargetPlaylist *list) {
     usingFiniteTargetPlaylist_ = false;
-    av_speech_in_noise::initialize(
-        targetList, test_, snr_, test, targetsUrl, list);
+    av_speech_in_noise::initialize(targetList, test_, test, targetsUrl, list);
     trials_ = test.trials;
 }
 
 void FixedLevelMethodImpl::initialize(
     const FixedLevelTest &test, FiniteTargetPlaylistWithRepeatables *list) {
-    av_speech_in_noise::initialize(
-        targetList, test_, snr_, test, targetsUrl, list);
+    av_speech_in_noise::initialize(targetList, test_, test, targetsUrl, list);
     av_speech_in_noise::initialize(usingFiniteTargetPlaylist_,
         finiteTargetPlaylist, finiteTargetsExhausted_, list);
     finiteTargetPlaylistWithRepeatables = list;
@@ -58,8 +57,7 @@ void FixedLevelMethodImpl::initialize(
 
 void FixedLevelMethodImpl::initialize(
     const FixedLevelTest &test, FiniteTargetPlaylist *list) {
-    av_speech_in_noise::initialize(
-        targetList, test_, snr_, test, targetsUrl, list);
+    av_speech_in_noise::initialize(targetList, test_, test, targetsUrl, list);
     av_speech_in_noise::initialize(usingFiniteTargetPlaylist_,
         finiteTargetPlaylist, finiteTargetsExhausted_, list);
 }
@@ -152,5 +150,7 @@ void FixedLevelMethodImpl::configure(
     const std::string &key, const std::string &value) {
     if (key == "targets")
         targetsUrl.path = value;
+    else if (key == "starting SNR (dB)")
+        snr_.dB = integer(value);
 }
 }

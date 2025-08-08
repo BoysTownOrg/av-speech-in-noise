@@ -161,9 +161,7 @@ struct FloatSNR {
     double dB;
 };
 
-struct AdaptiveTest : Test {
-    SNR startingSnr{};
-};
+struct AdaptiveTest : Test {};
 
 struct Phi {
     double alpha;
@@ -191,9 +189,7 @@ struct KeywordsTestResults {
 
 using AdaptiveTestResults = typename std::vector<AdaptiveTestResult>;
 
-struct FixedLevelTest : Test {
-    SNR snr{};
-};
+struct FixedLevelTest : Test {};
 
 struct FixedLevelFixedTrialsTest : FixedLevelTest {
     int trials{30};

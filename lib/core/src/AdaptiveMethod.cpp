@@ -1,4 +1,5 @@
 #include "AdaptiveMethod.hpp"
+#include "Configuration.hpp"
 
 #include <gsl/gsl>
 
@@ -35,9 +36,9 @@ static auto fileName(ResponseEvaluator &evaluator, const LocalUrl &target)
     return evaluator.fileName(target);
 }
 
-static auto trackSettings(const AdaptiveTest &test) -> AdaptiveTrack::Settings {
+static auto trackSettings(FloatSNR startingSNR) -> AdaptiveTrack::Settings {
     AdaptiveTrack::Settings trackSettings{};
-    trackSettings.startingX = test.startingSnr.dB;
+    trackSettings.startingX = startingSNR.dB;
     trackSettings.ceiling = 20;
     trackSettings.floor = -40;
     trackSettings.bumpLimit = 10;
@@ -88,18 +89,18 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(ConfigurationRegistry &registry,
     ResponseEvaluator &evaluator, Randomizer &randomizer)
     : evaluator{evaluator}, randomizer{randomizer} {
     registry.subscribe(*this, "targets");
+    registry.subscribe(*this, "starting SNR (dB)");
 }
 
 void AdaptiveMethodImpl::initialize(const AdaptiveTest &t,
     TargetPlaylistReader *targetListSetReader,
     AdaptiveTrack::Factory *factory) {
     this->adaptiveTrackFactory = factory;
-    startingSNR.dB = t.startingSnr.dB;
     test = &t;
     targetListsWithTracks.clear();
     for (const auto &list : targetListSetReader->read(targetsUrl))
         targetListsWithTracks.push_back(
-            {list, factory->make(trackSettings(t))});
+            {list, factory->make(trackSettings(startingSNR))});
     selectNextList();
 }
 
@@ -224,5 +225,7 @@ void AdaptiveMethodImpl::configure(
     const std::string &key, const std::string &value) {
     if (key == "targets")
         targetsUrl.path = value;
+    else if (key == "starting SNR (dB)")
+        startingSNR.dB = integer(value);
 }
 }
