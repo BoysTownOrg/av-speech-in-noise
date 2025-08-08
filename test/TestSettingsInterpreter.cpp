@@ -12,6 +12,7 @@
 #include <gtest/gtest.h>
 
 #include <stdexcept>
+#include <string>
 
 namespace av_speech_in_noise {
 namespace {
@@ -67,7 +68,8 @@ auto entryWithNewline(TestSetting p, Method m) -> std::string {
 void initializeTest(TestSettingsInterpreterImpl &interpreter,
     const std::vector<std::string> &v, int startingSnr = {},
     const TestIdentity &identity = {}) {
-    interpreter.initializeTest(concatenate(v), identity, SNR{startingSnr});
+    interpreter.initializeTest(
+        concatenate(v), identity, std::to_string(startingSnr));
 }
 
 void assertPassesSettingsWithExtraneousWhitespace(
@@ -82,7 +84,6 @@ void assertPassesSettingsWithExtraneousWhitespace(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"b"}, fixedLevelTest.maskerFileUrl.path);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(65, fixedLevelTest.maskerLevel.dB_SPL);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(5, fixedLevelTest.snr.dB);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         SessionControllerImpl::fullScaleLevel.dB_SPL,
         fixedLevelTest.fullScaleLevel.dB_SPL);
@@ -102,13 +103,24 @@ void initializeTest(TestSettingsInterpreterImpl &interpreter, Method m,
         startingSnr, identity);
 }
 
-void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter,
-    Method m, const FixedLevelTest &f) {
+class ConfigurableStub : public Configurable {
+  public:
+    void configure(const std::string &key, const std::string &value) override {
+        this->key = key;
+        this->value = value;
+    }
+    std::string key;
+    std::string value;
+};
+
+void assertOverridesStartingSnr(
+    TestSettingsInterpreterImpl &interpreter, Method m) {
+    ConfigurableStub configurable;
+    interpreter.subscribe(configurable, "starting SNR (dB)");
     initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, m),
-            entryWithNewline(TestSetting::startingSnr, "6")},
+        {entryWithNewline(TestSetting::method, m), "starting SNR (dB): 6\n"},
         5);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6, f.snr.dB);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("6", configurable.value);
 }
 
 class TestSettingsInterpreterTests : public ::testing::Test {
@@ -171,7 +183,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         std::string{"b"}, adaptiveMethod.test.maskerFileUrl.path);             \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         65, adaptiveMethod.test.maskerLevel.dB_SPL);                           \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(5, adaptiveMethod.test.startingSnr.dB);    \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         SessionControllerImpl::fullScaleLevel.dB_SPL,                          \
         adaptiveMethod.test.fullScaleLevel.dB_SPL);
@@ -186,7 +197,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         std::string{"b"}, (test).maskerFileUrl.path);                          \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(65, (test).maskerLevel.dB_SPL);            \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(5, (test).snr.dB);                         \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
         SessionControllerImpl::fullScaleLevel.dB_SPL,                          \
         (test).fullScaleLevel.dB_SPL)
@@ -645,24 +655,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(5, runningATest.test.maskerLevel.dB_SPL);
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailOverridesStartingSnr) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            entryWithNewline(TestSetting::startingSnr, "6")},
-        5);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(6, adaptiveMethod.test.startingSnr.dB);
-}
-
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsOverridesStartingSnr) {
-    assertOverridesStartingSnr(
-        interpreter, Method::fixedLevelConsonants, fixedLevelMethod.test);
+    assertOverridesStartingSnr(interpreter, Method::fixedLevelConsonants);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementOverridesStartingSnr) {
     assertOverridesStartingSnr(interpreter,
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-        fixedLevelMethod.fixedLevelFixedTrialsTest);
+        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -670,16 +670,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     assertPassesSettingsWithExtraneousWhitespace(interpreter,
         Method::fixedLevelFreeResponseWithAllTargets, fixedLevelMethod.test);
 }
-
-class ConfigurableStub : public Configurable {
-  public:
-    void configure(const std::string &key, const std::string &value) override {
-        this->key = key;
-        this->value = value;
-    }
-    std::string key;
-    std::string value;
-};
 
 TEST_SETTINGS_INTERPRETER_TEST(tbd) {
     ConfigurableStub configurable;

@@ -522,7 +522,7 @@ ADAPTIVE_METHOD_TEST(initializeCreatesSnrTrackForEachList) {
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithSnr) {
-    test.startingSnr.dB = 1;
+    method.configure("starting SNR (dB)", "1");
     initialize(method, test, targetListReader, snrTrackFactory);
     forEachSettings(snrTrackFactory, assertStartingXEqualsOne);
 }
@@ -879,7 +879,7 @@ ADAPTIVE_METHOD_TEST(completeWhenAllTracksComplete) {
 }
 
 ADAPTIVE_METHOD_TEST(tbd) {
-    test.startingSnr.dB = 2;
+    method.configure("starting SNR (dB)", "2");
     method.configure("targets", "a");
     initialize(method, test, targetListReader, snrTrackFactory);
     std::stringstream stream;

@@ -67,7 +67,8 @@ void TestSetupController::notifyThatConfirmButtonHasBeenClicked() {
         testIdentity.transducer = control.transducer();
         testSettingsInterpreter.initializeTest(
             readTestSettingsFile(textFileReader, control), testIdentity,
-            SNR{roundedInteger(control.startingSnr(), "starting SNR")});
+            std::to_string(
+                roundedInteger(control.startingSnr(), "starting SNR")));
     });
 }
 

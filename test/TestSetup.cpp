@@ -110,9 +110,9 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return calibration_;
     }
 
-    void initializeTest(
-        const std::string &t, const TestIdentity &id, SNR snr) override {
-        startingSnr_ = snr.dB;
+    void initializeTest(const std::string &t, const TestIdentity &id,
+        const std::string &startingSNR) override {
+        this->startingSNR = startingSNR;
         text_ = t;
         identity_ = id;
         if (initializeAnyTestOnApply_)
@@ -123,20 +123,19 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
 
     [[nodiscard]] auto identity() const -> TestIdentity { return identity_; }
 
-    [[nodiscard]] auto startingSnr() const -> int { return startingSnr_; }
-
     void initializeAnyTestOnApply() { initializeAnyTestOnApply_ = true; }
 
     auto sessionController() -> const SessionController * {
         return sessionController_;
     }
 
+    std::string startingSNR;
+
   private:
     RunningATest &runningATest;
     std::string text_;
     std::string textForMethodQuery_;
     TestIdentity identity_{};
-    int startingSnr_{};
     const Calibration &calibration_;
     const SessionController *sessionController_{};
     bool initializeAnyTestOnApply_{};
@@ -380,13 +379,13 @@ TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesSubjectId) {
 TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesStartingSnr) {
     control.setStartingSnr("1");
     run(confirmingTestSetup);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, testSettingsInterpreter.startingSnr());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("1", testSettingsInterpreter.startingSNR);
 }
 
 TEST_SETUP_CONTROLLER_TEST(confirmingTestSetupRoundsStartingSnr) {
     control.setStartingSnr("1.5");
     run(confirmingTestSetup);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(2, testSettingsInterpreter.startingSnr());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("2", testSettingsInterpreter.startingSNR);
 }
 
 TEST_SETUP_CONTROLLER_TEST(confirmingTestWithInvalidStartingSnrShowsMessage) {

@@ -18,8 +18,8 @@ class TestSettingsInterpreter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
         TestSettingsInterpreter);
-    virtual void initializeTest(
-        const std::string &contents, const TestIdentity &, SNR) = 0;
+    virtual void initializeTest(const std::string &contents,
+        const TestIdentity &, const std::string &startingSNR) = 0;
     virtual auto calibration(const std::string &contents) -> Calibration = 0;
 };
 
