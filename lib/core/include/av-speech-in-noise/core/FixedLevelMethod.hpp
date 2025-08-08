@@ -11,11 +11,10 @@ namespace av_speech_in_noise {
 class FixedLevelMethodImpl : public FixedLevelMethod, public Configurable {
   public:
     FixedLevelMethodImpl(ConfigurationRegistry &, ResponseEvaluator &);
-    void initialize(const FixedLevelTest &, FiniteTargetPlaylist *) override;
+    void initialize(FiniteTargetPlaylist *) override;
     void initialize(
         const FixedLevelFixedTrialsTest &, TargetPlaylist *) override;
-    void initialize(
-        const FixedLevelTest &, FiniteTargetPlaylistWithRepeatables *) override;
+    void initialize(FiniteTargetPlaylistWithRepeatables *) override;
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const Flaggable &) override;
     void submit(const ThreeKeywordsResponse &) override;
@@ -33,7 +32,6 @@ class FixedLevelMethodImpl : public FixedLevelMethod, public Configurable {
     coordinate_response_measure::FixedLevelTrial
         lastCoordinateResponseMeasureTrial{};
     LocalUrl targetsUrl;
-    const FixedLevelTest *test_{};
     TargetPlaylist *targetList{};
     FiniteTargetPlaylist *finiteTargetPlaylist{};
     FiniteTargetPlaylistWithRepeatables *finiteTargetPlaylistWithRepeatables{};

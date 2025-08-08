@@ -39,13 +39,10 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return tracksResetted_;
     }
 
-    void initialize(const AdaptiveTest &t, TargetPlaylistReader *reader,
-        AdaptiveTrack::Factory *) override {
-        test_ = &t;
+    void initialize(
+        TargetPlaylistReader *reader, AdaptiveTrack::Factory *) override {
         targetListReader_ = reader;
     }
-
-    [[nodiscard]] auto test() const { return test_; }
 
     [[nodiscard]] auto targetListReader() const -> TargetPlaylistReader * {
         return targetListReader_;
@@ -91,7 +88,6 @@ class AdaptiveMethodStub : public AdaptiveMethod {
   private:
     AdaptiveTestResults testResults_;
     std::stringstream log_{};
-    const AdaptiveTest *test_{};
     TargetPlaylistReader *targetListReader_{};
     bool tracksResetted_{};
 };
@@ -106,21 +102,13 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         fixedTrialsTest_ = &t;
     }
 
-    void initialize(const FixedLevelTest &t,
-        FiniteTargetPlaylistWithRepeatables *list) override {
+    void initialize(FiniteTargetPlaylistWithRepeatables *list) override {
         targetList_ = list;
-        test_ = &t;
     }
 
-    void initialize(
-        const FixedLevelTest &t, FiniteTargetPlaylist *list) override {
-        targetList_ = list;
-        test_ = &t;
-    }
+    void initialize(FiniteTargetPlaylist *list) override { targetList_ = list; }
 
     [[nodiscard]] auto targetList() const { return targetList_; }
-
-    [[nodiscard]] auto test() const { return test_; }
 
     auto fixedTrialsTest() -> const FixedLevelFixedTrialsTest * {
         return fixedTrialsTest_;
@@ -178,7 +166,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     std::stringstream log_{};
     LocalUrl currentTarget_;
     const ThreeKeywordsResponse *threeKeywords_{};
-    const FixedLevelTest *test_{};
     const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
     TargetPlaylist *targetList_{};
     bool submittedConsonant_{};
