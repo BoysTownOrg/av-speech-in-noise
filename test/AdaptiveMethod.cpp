@@ -33,9 +33,9 @@ class UseCase {
     virtual void run(AdaptiveMethodImpl &) = 0;
 };
 
-void initialize(AdaptiveMethodImpl &method, const AdaptiveTest &test,
+void initialize(AdaptiveMethodImpl &method,
     TargetPlaylistReader &targetListReader, AdaptiveTrack::Factory &factory) {
-    method.initialize(test, &targetListReader, &factory);
+    method.initialize(&targetListReader, &factory);
 }
 
 class Initializing : public UseCase {
@@ -45,11 +45,10 @@ class Initializing : public UseCase {
         : reader{reader}, factory{factory} {}
 
     void run(AdaptiveMethodImpl &method) override {
-        initialize(method, test, reader, factory);
+        initialize(method, reader, factory);
     }
 
   private:
-    AdaptiveTest test{};
     TargetPlaylistReader &reader;
     AdaptiveTrack::Factory &factory;
 };
@@ -400,7 +399,6 @@ class AdaptiveMethodTests : public ::testing::Test {
     WritingCorrectResponse writingCorrectResponse{outputFile};
     WritingIncorrectResponse writingIncorrectResponse{outputFile};
     WritingCorrectKeywords writingCorrectKeywords{outputFile};
-    AdaptiveTest test{};
     coordinate_response_measure::Response coordinateResponse{};
     CorrectKeywords correctKeywords{};
     std::vector<std::shared_ptr<TargetPlaylistStub>> targetLists;
@@ -419,7 +417,7 @@ class AdaptiveMethodTests : public ::testing::Test {
   public:
     void assertWritesUpdatedReversals(WritingResponseUseCase &useCase) {
         selectNextList(randomizer, 1);
-        initialize(method, test, targetListReader, snrTrackFactory);
+        initialize(method, targetListReader, snrTrackFactory);
         at(tracks, 1)->setReversalsWhenUpdated(3);
         selectNextList(randomizer, 2);
         run(useCase);
@@ -428,7 +426,7 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     void assertWritesPreUpdatedSnr(WritingResponseUseCase &useCase) {
         selectNextList(randomizer, 1);
-        initialize(method, test, targetListReader, snrTrackFactory);
+        initialize(method, targetListReader, snrTrackFactory);
         at(tracks, 1)->setX(4);
         at(tracks, 1)->setXWhenUpdated(3);
         selectNextList(randomizer, 2);
@@ -453,7 +451,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     void run(UseCase &useCase) { useCase.run(method); }
 
     void assertSelectsListInRangeAfterRemovingCompleteTracks(UseCase &useCase) {
-        initialize(method, test, targetListReader, snrTrackFactory);
+        initialize(method, targetListReader, snrTrackFactory);
         setComplete(tracks, 2);
         run(useCase);
         assertPassedIntegerBounds(randomizer, 0, 1);
@@ -469,7 +467,7 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     void assertPushesSnrTrackDown(UseCase &useCase) {
         selectNextList(randomizer, 1);
-        initialize(method, test, targetListReader, snrTrackFactory);
+        initialize(method, targetListReader, snrTrackFactory);
         selectNextList(randomizer, 2);
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_TRUE(pushedDown(tracks, 1));
@@ -478,7 +476,7 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     void assertPushesSnrTrackUp(UseCase &useCase) {
         selectNextList(randomizer, 1);
-        initialize(method, test, targetListReader, snrTrackFactory);
+        initialize(method, targetListReader, snrTrackFactory);
         selectNextList(randomizer, 2);
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_FALSE(pushedDown(tracks, 1));
@@ -486,7 +484,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     }
 
     void assertSelectsListAmongThoseWithIncompleteTracks(UseCase &useCase) {
-        initialize(method, test, targetListReader, snrTrackFactory);
+        initialize(method, targetListReader, snrTrackFactory);
         setNext(targetLists, 2, "a");
         setComplete(tracks, 1);
         selectNextList(randomizer, 1);
@@ -495,7 +493,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     }
 
     void assertWritesTarget(WritingTargetUseCase &useCase) {
-        initialize(method, test, targetListReader, snrTrackFactory);
+        initialize(method, targetListReader, snrTrackFactory);
         evaluator.setFileName("a");
         run(useCase);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -504,7 +502,7 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     void assertPassesCurrentTargetToEvaluatorForFileName(UseCase &useCase) {
         selectNextList(randomizer, 1);
-        initialize(method, test, targetListReader, snrTrackFactory);
+        initialize(method, targetListReader, snrTrackFactory);
         setCurrent(targetLists, 1, "a");
         selectNextList(randomizer, 2);
         run(useCase);
@@ -516,20 +514,20 @@ class AdaptiveMethodTests : public ::testing::Test {
 #define ADAPTIVE_METHOD_TEST(a) TEST_F(AdaptiveMethodTests, a)
 
 ADAPTIVE_METHOD_TEST(initializeCreatesSnrTrackForEachList) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::size_t{3}, settings(snrTrackFactory).size());
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithSnr) {
     method.configure("starting SNR (dB)", "1");
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     forEachSettings(snrTrackFactory, assertStartingXEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializePassesTargetPlaylistDirectory) {
     method.configure("targets", "a");
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         std::string{"a"}, targetListReader.directory());
 }
@@ -539,32 +537,32 @@ ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterInitialize) {
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterCoordinateResponse) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     assertNextTargetEqualsNextFromSelectedTargetPlaylistAfter(
         submittingCoordinateResponse);
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterCorrectResponse) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     assertNextTargetEqualsNextFromSelectedTargetPlaylistAfter(
         submittingCorrectResponse);
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterIncorrectResponse) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     assertNextTargetEqualsNextFromSelectedTargetPlaylistAfter(
         submittingIncorrectResponse);
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterCorrectKeywords) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     assertNextTargetEqualsNextFromSelectedTargetPlaylistAfter(
         submittingCorrectKeywords);
 }
 
 ADAPTIVE_METHOD_TEST(
     randomizerPassedIntegerBoundsOfListsForSelectingListInRange) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     assertPassedIntegerBounds(randomizer, 0, 2);
 }
 
@@ -593,7 +591,7 @@ ADAPTIVE_METHOD_TEST(
 }
 
 ADAPTIVE_METHOD_TEST(resetTracksResetsEachTrack) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     resetTracks(method);
     for (auto &track : tracks)
         AV_SPEECH_IN_NOISE_EXPECT_TRUE(track->resetted());
@@ -602,13 +600,13 @@ ADAPTIVE_METHOD_TEST(resetTracksResetsEachTrack) {
 ADAPTIVE_METHOD_TEST(snrReturnsThatOfCurrentTrack) {
     at(tracks, 0)->setX(1.2);
     selectNextList(randomizer, 0);
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1.2, method.snr().dB);
 }
 
 ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesCurrentTargetToEvaluator) {
     selectNextList(randomizer, 1);
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     setCurrent(targetLists, 1, "a");
     selectNextList(randomizer, 2);
     submit(method, coordinateResponse);
@@ -620,7 +618,7 @@ ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesCurrentTargetToEvaluator) {
 
 ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesCorrectFilePathToEvaluator) {
     selectNextList(randomizer, 1);
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     setCurrent(targetLists, 1, "a");
     selectNextList(randomizer, 2);
     submit(method, coordinateResponse);
@@ -629,14 +627,14 @@ ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesCorrectFilePathToEvaluator) {
 }
 
 ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesResponseToEvaluator) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     submit(method, coordinateResponse);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         &std::as_const(coordinateResponse), evaluator.response());
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectColor) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     coordinateResponse.color = blue;
     write(method, coordinateResponse, outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -644,7 +642,7 @@ ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectColor) {
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectColor) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     evaluator.setCorrectColor(blue);
     write(method, coordinateResponse, outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -652,7 +650,7 @@ ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectColor) {
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectNumber) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     coordinateResponse.number = 1;
     write(method, coordinateResponse, outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -660,7 +658,7 @@ ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectNumber) {
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectNumber) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     evaluator.setCorrectNumber(1);
     write(method, coordinateResponse, outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -668,7 +666,7 @@ ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectNumber) {
 }
 
 ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesCorrectKeywords) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     correctKeywords.count = 1;
     method.submit(correctKeywords);
     method.writeLastCorrectKeywords(outputFile);
@@ -708,42 +706,42 @@ ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesSnrBeforeUpdatingTrack) {
 }
 
 ADAPTIVE_METHOD_TEST(writeCorrectCoordinateResponseIsCorrect) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     setCorrectCoordinateResponse();
     write(method, coordinateResponse, outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(coordinateResponseTrialCorrect(outputFile));
 }
 
 ADAPTIVE_METHOD_TEST(writeCorrectResponseIsCorrect) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     submitCorrectResponse(method);
     method.writeLastCorrectResponse(outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(outputFile.openSetAdaptiveTrial().correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeSufficientCorrectKeywordsIsCorrect) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     run(submittingSufficientCorrectKeywords);
     method.writeLastCorrectKeywords(outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(correctKeywordsTrial(outputFile).correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeIncorrectCoordinateResponseIsIncorrect) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     setIncorrectCoordinateResponse();
     write(method, coordinateResponse, outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(coordinateResponseTrialCorrect(outputFile));
 }
 
 ADAPTIVE_METHOD_TEST(writeIncorrectResponseIsIncorrect) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     submitIncorrectResponse(method);
     method.writeLastIncorrectResponse(outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(outputFile.openSetAdaptiveTrial().correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeInsufficientCorrectKeywordsIsIncorrect) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     run(submittingInsufficientCorrectKeywords);
     method.writeLastCorrectKeywords(outputFile);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(correctKeywordsTrial(outputFile).correct);
@@ -762,7 +760,7 @@ ADAPTIVE_METHOD_TEST(writeCorrectKeywordsWritesTarget) {
 }
 
 ADAPTIVE_METHOD_TEST(writeTestResult) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     at(tracks, 0)->setThreshold(11.);
     targetLists.at(0)->setDirectory("a");
     at(tracks, 1)->setThreshold(22.);
@@ -785,7 +783,7 @@ ADAPTIVE_METHOD_TEST(writeTestResult) {
 }
 
 ADAPTIVE_METHOD_TEST(testResults) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     at(tracks, 0)->setThreshold(11.);
     targetLists.at(0)->setDirectory("a");
     at(tracks, 1)->setThreshold(22.);
@@ -838,7 +836,7 @@ ADAPTIVE_METHOD_TEST(submitInsufficientCorrectKeywordsPushesSnrTrackDown) {
 ADAPTIVE_METHOD_TEST(resettingTracksSelectsListAmongThoseWithIncompleteTracks) {
     setComplete(tracks, 0);
     at(tracks, 0)->incompleteOnReset();
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     setNext(targetLists, 0, "a");
     setComplete(tracks, 1);
     selectNextList(randomizer, 1);
@@ -869,7 +867,7 @@ ADAPTIVE_METHOD_TEST(
 }
 
 ADAPTIVE_METHOD_TEST(completeWhenAllTracksComplete) {
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     setComplete(tracks, 0);
     assertTestIncompleteAfterCoordinateResponse();
     setComplete(tracks, 1);
@@ -881,7 +879,7 @@ ADAPTIVE_METHOD_TEST(completeWhenAllTracksComplete) {
 ADAPTIVE_METHOD_TEST(tbd) {
     method.configure("starting SNR (dB)", "2");
     method.configure("targets", "a");
-    initialize(method, test, targetListReader, snrTrackFactory);
+    initialize(method, targetListReader, snrTrackFactory);
     std::stringstream stream;
     method.write(stream);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(R"(targets: a

@@ -92,11 +92,9 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(ConfigurationRegistry &registry,
     registry.subscribe(*this, "starting SNR (dB)");
 }
 
-void AdaptiveMethodImpl::initialize(const AdaptiveTest &t,
-    TargetPlaylistReader *targetListSetReader,
+void AdaptiveMethodImpl::initialize(TargetPlaylistReader *targetListSetReader,
     AdaptiveTrack::Factory *factory) {
     this->adaptiveTrackFactory = factory;
-    test = &t;
     targetListsWithTracks.clear();
     for (const auto &list : targetListSetReader->read(targetsUrl))
         targetListsWithTracks.push_back(

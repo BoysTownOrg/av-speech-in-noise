@@ -74,7 +74,7 @@ void initializeTest(TestSettingsInterpreterImpl &interpreter,
 
 void assertPassesSettingsWithExtraneousWhitespace(
     TestSettingsInterpreterImpl &interpreter, Method m,
-    const FixedLevelTest &fixedLevelTest) {
+    const Test &fixedLevelTest) {
     initializeTest(interpreter,
         {withNewLine(std::string{"  "} + name(TestSetting::method) +
              std::string{" :  "} + name(m) + "  "),
@@ -172,107 +172,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 #define ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_METHOD(m)                    \
     initializeTest(interpreter, m);                                            \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.testMethod, &fixedLevelMethod);
-
-#define AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_ADAPTIVE_SETTINGS(m)  \
-    initializeTest(interpreter,                                                \
-        {entryWithNewline(TestSetting::method, m),                             \
-            entryWithNewline(TestSetting::masker, "b"),                        \
-            entryWithNewline(TestSetting::maskerLevel, "65")},                 \
-        5);                                                                    \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        std::string{"b"}, adaptiveMethod.test.maskerFileUrl.path);             \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        65, adaptiveMethod.test.maskerLevel.dB_SPL);                           \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        SessionControllerImpl::fullScaleLevel.dB_SPL,                          \
-        adaptiveMethod.test.fullScaleLevel.dB_SPL);
-
-#define AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS( \
-    m, test)                                                                   \
-    initializeTest(interpreter,                                                \
-        {entryWithNewline(TestSetting::method, m),                             \
-            entryWithNewline(TestSetting::masker, "b"),                        \
-            entryWithNewline(TestSetting::maskerLevel, "65")},                 \
-        5);                                                                    \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        std::string{"b"}, (test).maskerFileUrl.path);                          \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(65, (test).maskerLevel.dB_SPL);            \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                           \
-        SessionControllerImpl::fullScaleLevel.dB_SPL,                          \
-        (test).fullScaleLevel.dB_SPL)
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_adaptivePassFail_PassesAdaptiveSettings) {
-    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_ADAPTIVE_SETTINGS(
-        Method::adaptivePassFail);
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_adaptiveCorrectKeywords_PassesAdaptiveSettings) {
-    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_ADAPTIVE_SETTINGS(
-        Method::adaptiveCorrectKeywords);
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_adaptiveCoordinateResponseMeasure_PassesAdaptiveSettings) {
-    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_ADAPTIVE_SETTINGS(
-        Method::adaptiveCoordinateResponseMeasure);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelFreeResponseWithSilentIntervalTargets_PassesFixedLevelSettings) {
-    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
-        Method::fixedLevelFreeResponseWithSilentIntervalTargets,
-        fixedLevelMethod.test);
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelFreeResponseWithAllTargets_PassesFixedLevelSettings) {
-    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
-        Method::fixedLevelFreeResponseWithAllTargets, fixedLevelMethod.test);
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelButtonResponseWithPredeterminedTargets_PassesFixedLevelSettings) {
-    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
-        Method::fixedLevelButtonResponseWithPredeterminedTargets,
-        fixedLevelMethod.test);
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelFreeResponseWithPredeterminedTargets_PassesFixedLevelSettings) {
-    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
-        Method::fixedLevelFreeResponseWithPredeterminedTargets,
-        fixedLevelMethod.test);
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets_PassesFixedLevelSettings) {
-    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
-        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-        fixedLevelMethod.test);
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelConsonants_PassesFixedLevelSettings) {
-    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
-        Method::fixedLevelConsonants, fixedLevelMethod.test);
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelChooseKeywordsWithAllTargets_PassesFixedLevelSettings) {
-    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
-        Method::fixedLevelChooseKeywordsWithAllTargets, fixedLevelMethod.test);
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelSyllablesWithAllTargets_PassesFixedLevelSettings) {
-    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
-        Method::fixedLevelSyllablesWithAllTargets, fixedLevelMethod.test);
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelFreeResponseWithTargetReplacement_PassesFixedLevelSettings) {
-    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
-        Method::fixedLevelFreeResponseWithTargetReplacement,
-        fixedLevelMethod.fixedLevelFixedTrialsTest);
-}
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelCoordinateResponseMeasureWithTargetReplacement_PassesFixedLevelSettings) {
-    AV_SPEECH_IN_NOISE_ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_SETTINGS(
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-        fixedLevelMethod.fixedLevelFixedTrialsTest);
-}
 
 TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_adaptivePassFail_PassesTestMethod) {
@@ -573,34 +472,37 @@ TEST_SETTINGS_INTERPRETER_TEST(throwsRuntimeErrorIfMethodUnknown) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
+    ConfigurableStub configurable;
+    interpreter.subscribe(configurable, "boo");
     initializeTest(interpreter,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            "f:\n", entryWithNewline(TestSetting::masker, "a")});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, adaptiveMethod.test.maskerFileUrl.path);
+            "f:\n", "boo: a\n"});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, configurable.value);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine2) {
+    ConfigurableStub configurable;
+    interpreter.subscribe(configurable, "boo");
     initializeTest(interpreter,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail), "\n",
-            entryWithNewline(TestSetting::masker, "a")});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, adaptiveMethod.test.maskerFileUrl.path);
+            "boo: a\n"});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, configurable.value);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
+    ConfigurableStub configurable;
+    interpreter.subscribe(configurable, "boo");
     initializeTest(interpreter,
         {"\n", entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            "\n", entryWithNewline(TestSetting::masker, "a")});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, adaptiveMethod.test.maskerFileUrl.path);
+            "\n", "boo: a\n"});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, configurable.value);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(badMaskerLevelResolvesToZero) {
     initializeTest(interpreter,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::maskerLevel, "a")});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0, adaptiveMethod.test.maskerLevel.dB_SPL);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0, runningATest.test.maskerLevel.dB_SPL);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(meta) {
@@ -668,7 +570,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesSettingsWithExtraneousWhitespace) {
     assertPassesSettingsWithExtraneousWhitespace(interpreter,
-        Method::fixedLevelFreeResponseWithAllTargets, fixedLevelMethod.test);
+        Method::fixedLevelFreeResponseWithAllTargets, runningATest.test);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(tbd) {

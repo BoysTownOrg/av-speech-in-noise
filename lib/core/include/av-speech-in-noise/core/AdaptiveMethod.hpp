@@ -23,8 +23,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod, public Configurable {
   public:
     AdaptiveMethodImpl(
         ConfigurationRegistry &, ResponseEvaluator &, Randomizer &);
-    void initialize(const AdaptiveTest &, TargetPlaylistReader *,
-        AdaptiveTrack::Factory *) override;
+    void initialize(TargetPlaylistReader *, AdaptiveTrack::Factory *) override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
     void submit(const CorrectKeywords &) override;
@@ -52,7 +51,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod, public Configurable {
     open_set::AdaptiveTrial lastOpenSetTrial{};
     CorrectKeywordsTrial lastCorrectKeywordsTrial{};
     LocalUrl targetsUrl;
-    const AdaptiveTest *test{};
     FloatSNR startingSNR;
     ResponseEvaluator &evaluator;
     Randomizer &randomizer;

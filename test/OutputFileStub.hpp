@@ -115,12 +115,6 @@ class OutputFileStub : public OutputFile {
 
     auto log() const -> const std::stringstream & { return log_; }
 
-    auto adaptiveTest() const -> const AdaptiveTest * { return adaptiveTest_; }
-
-    auto fixedLevelTest() const -> const FixedLevelTest * {
-        return fixedLevelTest_;
-    }
-
     auto eyeGazes() const -> BinocularGazeSamples { return eyeGazes_; }
 
     auto targetStartTimeNanoseconds() const -> std::uintmax_t {
@@ -192,8 +186,6 @@ class OutputFileStub : public OutputFile {
     std::uintmax_t fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds_{};
     std::uintmax_t targetStartTimeNanoseconds_{};
     gsl::index fadeInCompleteAudioSampleOffset_{};
-    const AdaptiveTest *adaptiveTest_{};
-    const FixedLevelTest *fixedLevelTest_{};
     const TestIdentity *openNewFileParameters_{};
     bool throwOnOpen_{};
 };

@@ -35,28 +35,26 @@ class InitializingMethod : public UseCase {
 class InitializingMethodWithFiniteTargetPlaylistWithRepeatables
     : public UseCase {
   public:
-    InitializingMethodWithFiniteTargetPlaylistWithRepeatables(
-        FiniteTargetPlaylistWithRepeatables &list, const FixedLevelTest &test)
-        : list{list}, test{test} {}
+    explicit InitializingMethodWithFiniteTargetPlaylistWithRepeatables(
+        FiniteTargetPlaylistWithRepeatables &list)
+        : list{list} {}
 
-    void run(FixedLevelMethodImpl &m) override { m.initialize(test, &list); }
+    void run(FixedLevelMethodImpl &m) override { m.initialize(&list); }
 
   private:
     FiniteTargetPlaylistWithRepeatables &list;
-    const FixedLevelTest &test;
 };
 
 class InitializingMethodWithFiniteTargetPlaylist : public UseCase {
   public:
-    InitializingMethodWithFiniteTargetPlaylist(
-        FiniteTargetPlaylist &list, const FixedLevelTest &test)
-        : list{list}, test{test} {}
+    explicit InitializingMethodWithFiniteTargetPlaylist(
+        FiniteTargetPlaylist &list)
+        : list{list} {}
 
-    void run(FixedLevelMethodImpl &m) override { m.initialize(test, &list); }
+    void run(FixedLevelMethodImpl &m) override { m.initialize(&list); }
 
   private:
     FiniteTargetPlaylist &list;
-    const FixedLevelTest &test;
 };
 
 class SubmittingCoordinateResponse : public UseCase {
@@ -139,14 +137,13 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
     FiniteTargetPlaylistStub finiteTargetPlaylist;
     ConfigurationRegistryStub registry;
     FixedLevelMethodImpl method{registry, evaluator};
-    FixedLevelTest test{};
     FixedLevelFixedTrialsTest testWithFixedTrials{};
     InitializingMethod initializingMethod{targetList, testWithFixedTrials};
     InitializingMethodWithFiniteTargetPlaylistWithRepeatables
         initializingMethodWithFiniteTargetPlaylistWithRepeatables{
-            finiteTargetPlaylistWithRepeatables, test};
+            finiteTargetPlaylistWithRepeatables};
     InitializingMethodWithFiniteTargetPlaylist
-        initializingMethodWithFiniteTargetPlaylist{finiteTargetPlaylist, test};
+        initializingMethodWithFiniteTargetPlaylist{finiteTargetPlaylist};
 };
 
 #define PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(a)                             \
@@ -368,9 +365,7 @@ class FixedLevelMethodWithFiniteTargetPlaylistTests : public ::testing::Test {
     ConfigurationRegistryStub registry;
     FixedLevelMethodImpl method{registry, evaluator};
     OutputFileStub outputFile;
-    FixedLevelTest test{};
-    InitializingMethodWithFiniteTargetPlaylist initializingMethod{
-        targetList, test};
+    InitializingMethodWithFiniteTargetPlaylist initializingMethod{targetList};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
     SubmittingThreeKeywords submittingThreeKeywords;
@@ -435,9 +430,8 @@ class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests
     FiniteTargetPlaylistWithRepeatablesStub targetList;
     ConfigurationRegistryStub registry;
     FixedLevelMethodImpl method{registry, evaluator};
-    FixedLevelTest test{};
     InitializingMethodWithFiniteTargetPlaylistWithRepeatables
-        initializingMethod{targetList, test};
+        initializingMethod{targetList};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
     SubmittingKeyPressResponse submittingKeyPressResponse;

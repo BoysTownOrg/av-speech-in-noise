@@ -50,8 +50,8 @@ class AdaptiveTrack {
 
 class AdaptiveMethod : public virtual TestMethod {
   public:
-    virtual void initialize(const AdaptiveTest &, TargetPlaylistReader *,
-        AdaptiveTrack::Factory *) = 0;
+    virtual void initialize(
+        TargetPlaylistReader *, AdaptiveTrack::Factory *) = 0;
     virtual void resetTracks() = 0;
     virtual auto testResults() -> AdaptiveTestResults = 0;
     using TestMethod::submit;

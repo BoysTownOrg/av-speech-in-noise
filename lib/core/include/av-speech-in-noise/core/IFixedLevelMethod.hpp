@@ -7,9 +7,8 @@
 namespace av_speech_in_noise {
 class FixedLevelMethod : public virtual TestMethod {
   public:
-    virtual void initialize(const FixedLevelTest &, FiniteTargetPlaylist *) = 0;
-    virtual void initialize(
-        const FixedLevelTest &, FiniteTargetPlaylistWithRepeatables *) = 0;
+    virtual void initialize(FiniteTargetPlaylist *) = 0;
+    virtual void initialize(FiniteTargetPlaylistWithRepeatables *) = 0;
     virtual void initialize(
         const FixedLevelFixedTrialsTest &, TargetPlaylist *) = 0;
     virtual void submit(const Flaggable &) = 0;

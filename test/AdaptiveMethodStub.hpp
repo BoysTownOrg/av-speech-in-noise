@@ -7,9 +7,8 @@ namespace av_speech_in_noise {
 class AdaptiveMethodStub : public AdaptiveMethod {
   public:
     void write(std::ostream &) override {}
-    void initialize(const AdaptiveTest &t, TargetPlaylistReader *reader,
-        AdaptiveTrack::Factory *f) override {
-        test = t;
+    void initialize(
+        TargetPlaylistReader *reader, AdaptiveTrack::Factory *f) override {
         targetListReader = reader;
         trackFactory = f;
     }
@@ -30,7 +29,6 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void submit(const coordinate_response_measure::Response &) override {}
 
     AdaptiveTestResults testResults_;
-    AdaptiveTest test{};
     TargetPlaylistReader *targetListReader{};
     AdaptiveTrack::Factory *trackFactory{};
     bool tracksResetted{};

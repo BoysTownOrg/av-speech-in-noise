@@ -16,11 +16,9 @@ static void load(TargetPlaylist *list, const LocalUrl &targetsUrl) {
     list->load(targetsUrl);
 }
 
-static void initialize(TargetPlaylist *&targetList,
-    const FixedLevelTest *&test_, const FixedLevelTest &test,
-    const LocalUrl &targetsUrl, TargetPlaylist *list) {
+static void initialize(TargetPlaylist *&targetList, const LocalUrl &targetsUrl,
+    TargetPlaylist *list) {
     targetList = list;
-    test_ = &test;
     try {
         load(targetList, targetsUrl);
     } catch (const FiniteTargetPlaylist::LoadFailure &) {
@@ -41,13 +39,13 @@ static void initialize(bool &usingFiniteTargetPlaylist_,
 void FixedLevelMethodImpl::initialize(
     const FixedLevelFixedTrialsTest &test, TargetPlaylist *list) {
     usingFiniteTargetPlaylist_ = false;
-    av_speech_in_noise::initialize(targetList, test_, test, targetsUrl, list);
+    av_speech_in_noise::initialize(targetList, targetsUrl, list);
     trials_ = test.trials;
 }
 
 void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &test, FiniteTargetPlaylistWithRepeatables *list) {
-    av_speech_in_noise::initialize(targetList, test_, test, targetsUrl, list);
+    FiniteTargetPlaylistWithRepeatables *list) {
+    av_speech_in_noise::initialize(targetList, targetsUrl, list);
     av_speech_in_noise::initialize(usingFiniteTargetPlaylist_,
         finiteTargetPlaylist, finiteTargetsExhausted_, list);
     finiteTargetPlaylistWithRepeatables = list;
@@ -55,9 +53,8 @@ void FixedLevelMethodImpl::initialize(
     totalKeywordsCorrect_ = 0;
 }
 
-void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &test, FiniteTargetPlaylist *list) {
-    av_speech_in_noise::initialize(targetList, test_, test, targetsUrl, list);
+void FixedLevelMethodImpl::initialize(FiniteTargetPlaylist *list) {
+    av_speech_in_noise::initialize(targetList, targetsUrl, list);
     av_speech_in_noise::initialize(usingFiniteTargetPlaylist_,
         finiteTargetPlaylist, finiteTargetsExhausted_, list);
 }
