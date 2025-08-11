@@ -311,10 +311,10 @@ void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test,
     useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
-    if (test.audioChannelOption == AudioChannelOption::singleSpeaker) {
+    if (audioChannelOption == AudioChannelOption::singleSpeaker) {
         useFirstChannelOnly(targetPlayer);
         maskerPlayer.useFirstChannelOnly();
-    } else if (test.audioChannelOption == AudioChannelOption::delayedMasker) {
+    } else if (audioChannelOption == AudioChannelOption::delayedMasker) {
         useFirstChannelOnly(targetPlayer);
         maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
     }
@@ -487,9 +487,14 @@ void RunningATestImpl::configure(
         testIdentity.transducer = value;
     else if (key == "meta")
         testIdentity.meta = value;
-    else if (key == "method")
+    else if (key == "method") {
         testIdentity.method = value;
-    else if (key == "video scale denominator")
+        audioChannelOption = AudioChannelOption::all;
+        if (contains(value, "not spatial"))
+            audioChannelOption = AudioChannelOption::singleSpeaker;
+        else if (contains(value, "spatial"))
+            audioChannelOption = AudioChannelOption::delayedMasker;
+    } else if (key == "video scale denominator")
         videoScale.denominator = integer(value);
     else if (key == "video scale numerator")
         videoScale.numerator = integer(value);

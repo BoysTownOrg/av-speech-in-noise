@@ -70,6 +70,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     TestMethod *testMethod{};
     int trialNumber_{};
     Condition condition{};
+    AudioChannelOption audioChannelOption;
     bool trialInProgress_{};
     bool keepVideoShown{};
 };
