@@ -106,7 +106,7 @@ class InitializingTestWithSingleSpeaker : public UseCase {
 
     void run(RunningATestImpl &m) override {
         Test test;
-        test.audioChannelOption = AudioChannelOption::singleSpeaker;
+        m.configure("method", "adaptive pass fail not spatial");
         m.initialize(method, test, {});
     }
 
@@ -121,7 +121,7 @@ class InitializingTestWithDelayedMasker : public UseCase {
 
     void run(RunningATestImpl &m) override {
         Test test;
-        test.audioChannelOption = AudioChannelOption::delayedMasker;
+        m.configure("method", "adaptive pass fail spatial");
         m.initialize(method, test, {});
     }
 

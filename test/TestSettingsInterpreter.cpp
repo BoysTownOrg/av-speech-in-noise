@@ -523,22 +523,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(
-    adaptiveCoordinateResponseMeasureWithDelayedMaskerInitializesAdaptiveTest) {
-    initializeTest(
-        interpreter, Method::adaptiveCoordinateResponseMeasure, "spatial");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(AudioChannelOption::delayedMasker,
-        runningATest.test.audioChannelOption);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    adaptiveCoordinateResponseMeasureWithSingleSpeakerInitializesAdaptiveTest) {
-    initializeTest(
-        interpreter, Method::adaptiveCoordinateResponseMeasure, "not spatial");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(AudioChannelOption::singleSpeaker,
-        runningATest.test.audioChannelOption);
-}
-
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
     initializeTest(interpreter,
         {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants)});

@@ -204,12 +204,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     if (contains(methodName, "audio recording"))
         testObservers.emplace_back(audioRecording);
 
-    auto audioChannelOption{AudioChannelOption::all};
-    if (contains(methodName, "not spatial"))
-        audioChannelOption = AudioChannelOption::singleSpeaker;
-    else if (contains(methodName, "spatial"))
-        audioChannelOption = AudioChannelOption::delayedMasker;
-
     TaskPresenter *taskPresenter{};
     switch (method) {
     case Method::adaptiveCoordinateResponseMeasure:
@@ -264,7 +258,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::adaptivePassFail:
         av_speech_in_noise::initialize(
             configurables, contents, [&](Test &test) {
-                test.audioChannelOption = audioChannelOption;
                 av_speech_in_noise::initialize(adaptiveMethod,
                     targetsWithReplacementReader, adaptiveTrackFactory);
                 av_speech_in_noise::initialize(
