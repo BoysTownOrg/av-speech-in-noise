@@ -1,3 +1,5 @@
+#include "ConfigurationRegistryStub.hpp"
+#include "TestPresenterStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
@@ -79,7 +81,10 @@ class SubmittingFixedPassFailPresenterTests : public ::testing::Test {
     UIStub ui;
     TestControllerStub testController;
     TestViewStub testView;
-    Presenter presenter{testController, testView, model, ui};
+    ConfigurationRegistryStub registry;
+    TestPresenterStub testPresenter;
+    Presenter presenter{
+        registry, testController, testView, model, ui, testPresenter};
 };
 
 #define PASS_FAIL_PRESENTER_TEST(a)                                            \
@@ -137,6 +142,12 @@ PASS_FAIL_PRESENTER_TEST(
     notifyThatIncorrectButtonHasBeenClicked(ui);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
         testController.notifiedThatUserIsDoneResponding());
+}
+
+PASS_FAIL_PRESENTER_TEST(tbd) {
+    presenter.configure(
+        "method", "fixed-level pass fail predetermined stimuli");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&presenter, testPresenter.taskPresenter);
 }
 }
 }

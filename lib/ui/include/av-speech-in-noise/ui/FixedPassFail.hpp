@@ -5,16 +5,18 @@
 #include "Test.hpp"
 #include "PassFail.hpp"
 
+#include <av-speech-in-noise/core/Configuration.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise::submitting_fixed_pass_fail {
 class Presenter : public TaskPresenter,
-                  public submitting_pass_fail::UI::Observer {
+                  public submitting_pass_fail::UI::Observer,
+                  public Configurable {
   public:
-    Presenter(
-        TestController &, TestView &, Interactor &, submitting_pass_fail::UI &);
+    Presenter(ConfigurationRegistry &, TestController &, TestView &,
+        Interactor &, submitting_pass_fail::UI &, TestPresenter &);
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
     void notifyThatShowAnswerButtonHasBeenClicked() override {}
@@ -22,12 +24,14 @@ class Presenter : public TaskPresenter,
     void stop() override;
     void hideResponseSubmission() override;
     void showResponseSubmission() override;
+    void configure(const std::string &key, const std::string &value) override;
 
   private:
     TestController &testController;
     Interactor &interactor;
     TestView &testView;
     submitting_pass_fail::UI &ui;
+    TestPresenter &testPresenter;
 };
 }
 

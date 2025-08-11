@@ -1,10 +1,13 @@
 #include "FixedPassFail.hpp"
 
 namespace av_speech_in_noise::submitting_fixed_pass_fail {
-Presenter::Presenter(TestController &testController, TestView &testView,
-    Interactor &interactor, submitting_pass_fail::UI &ui)
+Presenter::Presenter(ConfigurationRegistry &registry,
+    TestController &testController, TestView &testView, Interactor &interactor,
+    submitting_pass_fail::UI &ui, TestPresenter &testPresenter)
     : testController{testController}, interactor{interactor},
-      testView{testView}, ui{ui} {}
+      testView{testView}, ui{ui}, testPresenter{testPresenter} {
+    registry.subscribe(*this, "method");
+}
 
 void Presenter::notifyThatCorrectButtonHasBeenClicked() {
     interactor.submitCorrectResponse();
@@ -25,5 +28,11 @@ void Presenter::hideResponseSubmission() { ui.hide(); }
 void Presenter::showResponseSubmission() {
     ui.attach(this);
     ui.show();
+}
+
+void Presenter::configure(const std::string &key, const std::string &value) {
+    if (key == "method")
+        if (contains(value, "fixed-level pass fail"))
+            testPresenter.initialize(*this);
 }
 }

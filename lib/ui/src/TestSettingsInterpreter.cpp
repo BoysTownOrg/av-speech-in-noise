@@ -226,7 +226,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         taskPresenter = &childEmotionPresenter;
         break;
     case Method::fixedLevelPassFailWithPredeterminedTargets:
-        taskPresenter = &fixedPassFailPresenter;
         break;
     case Method::unknown:
         break;
