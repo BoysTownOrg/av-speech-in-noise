@@ -109,9 +109,8 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
         FiniteTargetPlaylist &eachTargetNTimes,
         TargetPlaylist &targetsWithReplacement, AdaptiveTrack::Factory &,
-        SessionController &sessionController, TaskPresenter &passFailPresenter,
-        TaskPresenter &keypressPresenter, TaskPresenter &emotionPresenter,
-        TaskPresenter &childEmotionPresenter,
+        SessionController &sessionController, TaskPresenter &keypressPresenter,
+        TaskPresenter &emotionPresenter, TaskPresenter &childEmotionPresenter,
         TaskPresenter &fixedPassFailPresenter);
     void initializeTest(const std::string &, const TestIdentity &,
         const std::string &startingSNR) override;
@@ -136,7 +135,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
     FiniteTargetPlaylist &eachTargetNTimes;
     TargetPlaylist &targetsWithReplacement;
     SessionController &sessionController;
-    TaskPresenter &passFailPresenter;
     TaskPresenter &keypressPresenter;
     TaskPresenter &emotionPresenter;
     TaskPresenter &childEmotionPresenter;

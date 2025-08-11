@@ -137,7 +137,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
     TrackFactoryStub adaptiveTrackFactory;
-    TaskPresenterStub passFailPresenter;
     TaskPresenterStub keypressPresenter;
     TaskPresenterStub emotionPresenter;
     TaskPresenterStub childEmotionPresenter;
@@ -146,8 +145,8 @@ class TestSettingsInterpreterTests : public ::testing::Test {
         fixedLevelMethod, cyclicTargetsReader, targetsWithReplacementReader,
         predeterminedTargets, everyTargetOnce, silentIntervalTargets,
         eachTargetNTimes, targetsWithReplacement, adaptiveTrackFactory,
-        sessionController, passFailPresenter, keypressPresenter,
-        emotionPresenter, childEmotionPresenter, fixedPassFailPresenter};
+        sessionController, keypressPresenter, emotionPresenter,
+        childEmotionPresenter, fixedPassFailPresenter};
     TestIdentity testIdentity;
 };
 
@@ -233,12 +232,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::fixedLevelSyllablesWithAllTargets);
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_adaptivePassFail_PassesTaskPresenter) {
-    initializeTest(interpreter, Method::adaptivePassFail);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &passFailPresenter, sessionController.taskPresenter());
-}
 TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelEmotionsWithPredeterminedTargets_PassesTaskPresenter) {
     initializeTest(
@@ -473,9 +466,10 @@ TEST_SETTINGS_INTERPRETER_TEST(meta) {
 
 TEST_SETTINGS_INTERPRETER_TEST(preparesTestAfterConfirmButtonIsClicked) {
     runningATest.testComplete_ = false;
-    initializeTest(interpreter, Method::adaptivePassFail);
+    initializeTest(
+        interpreter, Method::fixedLevelChildEmotionsWithPredeterminedTargets);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &passFailPresenter, sessionController.taskPresenter());
+        &childEmotionPresenter, sessionController.taskPresenter());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

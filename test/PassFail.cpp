@@ -1,3 +1,5 @@
+#include "ConfigurationRegistryStub.hpp"
+#include "TestPresenterStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
@@ -75,7 +77,10 @@ class SubmittingPassFailPresenterTests : public ::testing::Test {
     UIStub ui;
     TestControllerStub testController;
     TestViewStub testView;
-    Presenter presenter{testController, testView, model, ui};
+    ConfigurationRegistryStub registry;
+    TestPresenterStub testPresenter;
+    Presenter presenter{
+        registry, testController, testView, model, ui, testPresenter};
 };
 
 #define PASS_FAIL_PRESENTER_TEST(a) TEST_F(SubmittingPassFailPresenterTests, a)
@@ -122,8 +127,7 @@ PASS_FAIL_PRESENTER_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterCorrectButtonIsClicked) {
     start(presenter);
     notifyThatCorrectButtonHasBeenClicked(ui);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testController
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
@@ -131,9 +135,13 @@ PASS_FAIL_PRESENTER_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterIncorrectButtonIsClicked) {
     start(presenter);
     notifyThatIncorrectButtonHasBeenClicked(ui);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testController
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
+}
+
+PASS_FAIL_PRESENTER_TEST(tbd) {
+    presenter.configure("method", "adaptive pass fail");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&presenter, testPresenter.taskPresenter);
 }
 }
 }

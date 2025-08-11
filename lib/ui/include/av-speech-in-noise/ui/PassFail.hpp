@@ -4,6 +4,7 @@
 #include "Task.hpp"
 #include "Test.hpp"
 #include "View.hpp"
+#include "av-speech-in-noise/core/Configuration.hpp"
 
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
@@ -22,21 +23,26 @@ class UI : public View {
     virtual void attach(Observer *) = 0;
 };
 
-class Presenter : public TaskPresenter, public UI::Observer {
+class Presenter : public TaskPresenter,
+                  public UI::Observer,
+                  public Configurable {
   public:
-    Presenter(TestController &, TestView &, Interactor &, UI &);
+    Presenter(ConfigurationRegistry &, TestController &, TestView &,
+        Interactor &, UI &, TestPresenter &);
     void start() override;
     void stop() override;
     void hideResponseSubmission() override;
     void showResponseSubmission() override;
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
+    void configure(const std::string &key, const std::string &value) override;
 
   private:
     TestController &testController;
     Interactor &interactor;
     TestView &testView;
     UI &ui;
+    TestPresenter &testPresenter;
 };
 }
 
