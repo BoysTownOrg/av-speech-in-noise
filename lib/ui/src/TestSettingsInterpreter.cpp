@@ -194,9 +194,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         av_speech_in_noise::methodWithName(contents);
     broadcast(configurables, "method", methodName);
 
-    std::vector<std::reference_wrapper<RunningATest::TestObserver>>
-        testObservers;
-
     TaskPresenter *taskPresenter{};
     switch (method) {
     case Method::adaptiveCoordinateResponseMeasure:
@@ -210,7 +207,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::fixedLevelButtonThenPassFailResponseWithPredeterminedTargets:
         keypressPresenter.enableDualTask(&fixedPassFailPresenter);
     case Method::fixedLevelButtonResponseWithPredeterminedTargets:
-        taskPresenter = &keypressPresenter;
         break;
     case Method::adaptivePassFail:
         taskPresenter = &passFailPresenter;

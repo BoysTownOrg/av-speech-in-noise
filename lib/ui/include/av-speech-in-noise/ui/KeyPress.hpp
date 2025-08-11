@@ -4,6 +4,7 @@
 #include "Task.hpp"
 #include "Test.hpp"
 
+#include <av-speech-in-noise/core/Configuration.hpp>
 #include <av-speech-in-noise/core/ITimer.hpp>
 #include <av-speech-in-noise/core/Player.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
@@ -29,9 +30,11 @@ class Control {
 
 class Presenter : public TaskPresenter,
                   public Control::Observer,
-                  public Timer::Observer {
+                  public Timer::Observer,
+                  public Configurable {
   public:
-    Presenter(TestView &, TestController &, Interactor &, Control &, Timer &);
+    Presenter(ConfigurationRegistry &, TestView &, TestController &,
+        Interactor &, Control &, Timer &, TestPresenter &);
     void notifyThatKeyHasBeenPressed() override;
     void start() override;
     void stop() override;
@@ -40,6 +43,7 @@ class Presenter : public TaskPresenter,
     void notifyThatTrialHasStarted() override;
     void callback() override;
     void enableDualTask(TaskPresenter *) override;
+    void configure(const std::string &key, const std::string &value) override;
 
   private:
     void attemptToSubmitResponse();
@@ -53,6 +57,7 @@ class Presenter : public TaskPresenter,
     Interactor &interactor;
     Control &control;
     Timer &timer;
+    TestPresenter &testPresenter;
     TaskPresenter *dualTask{};
     bool acceptingKeyPresses{};
     State state{State::singleTask};
