@@ -128,8 +128,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     RunningATestStub runningATest;
     AdaptiveMethodStub adaptiveMethod;
     FixedLevelMethodStub fixedLevelMethod;
-    RunningATest::TestObserver eyeTracking;
-    RunningATest::TestObserver audioRecording;
     TargetPlaylistSetReaderStub cyclicTargetsReader;
     TargetPlaylistSetReaderStub targetsWithReplacementReader;
     FiniteTargetPlaylistWithRepeatablesStub predeterminedTargets;
@@ -139,19 +137,16 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
     TrackFactoryStub adaptiveTrackFactory;
-    RunningATest::TestObserver submittingConsonantResponse;
     TaskPresenterStub passFailPresenter;
     TaskPresenterStub keypressPresenter;
-    RunningATest::TestObserver submittingKeyPressResponse;
     TaskPresenterStub emotionPresenter;
     TaskPresenterStub childEmotionPresenter;
     TaskPresenterStub fixedPassFailPresenter;
     TestSettingsInterpreterImpl interpreter{runningATest, adaptiveMethod,
-        fixedLevelMethod, eyeTracking, audioRecording, cyclicTargetsReader,
-        targetsWithReplacementReader, predeterminedTargets, everyTargetOnce,
-        silentIntervalTargets, eachTargetNTimes, targetsWithReplacement,
-        adaptiveTrackFactory, sessionController, submittingConsonantResponse,
-        passFailPresenter, keypressPresenter, submittingKeyPressResponse,
+        fixedLevelMethod, cyclicTargetsReader, targetsWithReplacementReader,
+        predeterminedTargets, everyTargetOnce, silentIntervalTargets,
+        eachTargetNTimes, targetsWithReplacement, adaptiveTrackFactory,
+        sessionController, passFailPresenter, keypressPresenter,
         emotionPresenter, childEmotionPresenter, fixedPassFailPresenter};
     TestIdentity testIdentity;
 };
@@ -283,8 +278,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         "audio recording");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &everyTargetOnce);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer.front().get(), &audioRecording);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -294,8 +287,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         "audio recording");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &predeterminedTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer.front().get(), &audioRecording);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -305,10 +296,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         "audio recording eye tracking");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &predeterminedTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer[0].get(), &eyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer[1].get(), &audioRecording);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -318,12 +305,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         "audio recording eye tracking vibrotactile");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &predeterminedTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer[0].get(), &eyeTracking);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer[1].get(), &audioRecording);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer[2].get(), &submittingKeyPressResponse);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -347,8 +328,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initializeTest(interpreter, Method::adaptivePassFail, "eye tracking");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         adaptiveMethod.targetListReader, &targetsWithReplacementReader);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer.front().get(), &eyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
@@ -364,8 +343,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         interpreter, Method::adaptiveCorrectKeywords, "eye tracking");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         adaptiveMethod.targetListReader, &cyclicTargetsReader);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer.front().get(), &eyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -382,8 +359,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         interpreter, Method::adaptiveCoordinateResponseMeasure, "eye tracking");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         adaptiveMethod.targetListReader, &targetsWithReplacementReader);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer.front().get(), &eyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -411,8 +386,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         "eye tracking");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &targetsWithReplacement);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer.front().get(), &eyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -421,8 +394,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::fixedLevelFreeResponseWithPredeterminedTargets, "eye tracking");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &predeterminedTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer.front().get(), &eyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -440,8 +411,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         "eye tracking");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &everyTargetOnce);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer.front().get(), &eyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
@@ -528,8 +497,6 @@ TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
         {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants)});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &eachTargetNTimes);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &runningATest.observer.front().get(), &submittingConsonantResponse);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

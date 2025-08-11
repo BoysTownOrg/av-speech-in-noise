@@ -1,5 +1,7 @@
 #include "AudioRecorderStub.hpp"
+#include "ConfigurationRegistryStub.hpp"
 #include "OutputFileStub.hpp"
+#include "RunningATestStub.hpp"
 #include "TimeStampStub.hpp"
 #include "assert-utility.hpp"
 
@@ -13,7 +15,10 @@ class AudioRecordingTests : public ::testing::Test {
     AudioRecorderStub audioRecorder;
     OutputFileStub outputFile;
     TimeStampStub timeStamp;
-    AudioRecording audioRecording{audioRecorder, outputFile, timeStamp};
+    ConfigurationRegistryStub registry;
+    RunningATestStub runningATest;
+    AudioRecording audioRecording{
+        registry, audioRecorder, outputFile, timeStamp, runningATest};
 };
 
 #define AUDIO_RECORDING_TEST(a) TEST_F(AudioRecordingTests, a)

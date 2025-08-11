@@ -32,8 +32,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     RunningATestImpl(TargetPlayer &, MaskerPlayer &, ResponseEvaluator &,
         OutputFile &, Randomizer &, Clock &, ConfigurationRegistry &);
     void attach(RunningATest::RequestObserver *) override;
-    void initialize(TestMethod *, const Test &,
-        std::vector<std::reference_wrapper<TestObserver>>) override;
+    void initialize(TestMethod *, const Test &) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
     void playLeftSpeakerCalibration(const Calibration &) override;
@@ -50,6 +49,8 @@ class RunningATestImpl : public TargetPlayer::Observer,
     auto playTrialTime() -> std::string override;
     void configure(const std::string &key, const std::string &value) override;
     void write(std::ostream &stream) override;
+    void add(TestObserver &) override;
+    void remove(TestObserver &) override;
     static constexpr Delay maskerChannelDelay{0.004};
     static constexpr Duration targetOffsetFringeDuration{
         targetOnsetFringeDuration};

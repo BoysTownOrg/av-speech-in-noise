@@ -6,16 +6,20 @@
 #include "IRunningATest.hpp"
 #include "IOutputFile.hpp"
 #include "IMaskerPlayer.hpp"
+#include "Configuration.hpp"
 
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise::submitting_consonant {
-class InteractorImpl : public Interactor, public RunningATest::TestObserver {
+class InteractorImpl : public Interactor,
+                       public RunningATest::TestObserver,
+                       public Configurable {
   public:
-    InteractorImpl(
-        FixedLevelMethod &, RunningATest &, OutputFile &, MaskerPlayer &);
+    InteractorImpl(ConfigurationRegistry &, FixedLevelMethod &, RunningATest &,
+        OutputFile &, MaskerPlayer &);
     void submit(const ConsonantResponse &r) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
+    void configure(const std::string &key, const std::string &value) override;
 
   private:
     FixedLevelMethod &method;

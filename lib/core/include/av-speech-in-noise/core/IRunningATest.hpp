@@ -7,8 +7,6 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
-#include <functional>
-#include <vector>
 
 namespace av_speech_in_noise {
 class RunningATest {
@@ -36,8 +34,9 @@ class RunningATest {
 
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATest);
     virtual void attach(RequestObserver *) = 0;
-    virtual void initialize(TestMethod *, const Test &,
-        std::vector<std::reference_wrapper<TestObserver>>) = 0;
+    virtual void initialize(TestMethod *, const Test &) = 0;
+    virtual void add(TestObserver &) = 0;
+    virtual void remove(TestObserver &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playLeftSpeakerCalibration(const Calibration &) = 0;

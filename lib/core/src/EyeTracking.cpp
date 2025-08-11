@@ -1,5 +1,5 @@
 #include "EyeTracking.hpp"
-
+#include "Configuration.hpp"
 #include "RunningATest.hpp"
 
 namespace av_speech_in_noise {
@@ -17,10 +17,15 @@ static auto nanoseconds(MaskerPlayer &player, const PlayerTimeWithDelay &t)
     return nanoseconds(player, t.playerTime) + nanoseconds(t.delay);
 }
 
-EyeTracking::EyeTracking(EyeTracker &eyeTracker, MaskerPlayer &maskerPlayer,
-    TargetPlayer &targetPlayer, OutputFile &outputFile)
+EyeTracking::EyeTracking(ConfigurationRegistry &registry,
+    EyeTracker &eyeTracker, MaskerPlayer &maskerPlayer,
+    TargetPlayer &targetPlayer, OutputFile &outputFile,
+    RunningATest &runningATest)
     : eyeTracker{eyeTracker}, maskerPlayer{maskerPlayer},
-      targetPlayer{targetPlayer}, outputFile{outputFile} {}
+      targetPlayer{targetPlayer}, outputFile{outputFile},
+      runningATest{runningATest} {
+    registry.subscribe(*this, "method");
+}
 
 void EyeTracking::notifyThatTrialWillBegin(int /*trialNumber*/) {
     eyeTracker.allocateRecordingTimeSeconds(
@@ -50,4 +55,13 @@ void EyeTracking::notifyThatSubjectHasResponded() {
 }
 
 void EyeTracking::notifyThatNewTestIsReady(std::string_view /*session*/) {}
+
+void EyeTracking::configure(const std::string &key, const std::string &value) {
+    if (key == "method") {
+        if (contains(value, "eye tracking"))
+            runningATest.add(*this);
+        else
+            runningATest.remove(*this);
+    }
+}
 }

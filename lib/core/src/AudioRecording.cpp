@@ -4,10 +4,13 @@
 #include <sstream>
 
 namespace av_speech_in_noise {
-AudioRecording::AudioRecording(
-    AudioRecorder &audioRecorder, OutputFile &outputFile, TimeStamp &timeStamp)
+AudioRecording::AudioRecording(ConfigurationRegistry &registry,
+    AudioRecorder &audioRecorder, OutputFile &outputFile, TimeStamp &timeStamp,
+    RunningATest &runningATest)
     : audioRecorder{audioRecorder}, outputFile{outputFile},
-      timeStamp{timeStamp} {}
+      timeStamp{timeStamp}, runningATest{runningATest} {
+    registry.subscribe(*this, "method");
+}
 
 void AudioRecording::notifyThatTrialWillBegin(int trialNumber) {
     timeStamp.capture();
@@ -34,5 +37,15 @@ void AudioRecording::notifyThatSubjectHasResponded() { audioRecorder.stop(); }
 
 void AudioRecording::notifyThatNewTestIsReady(std::string_view session) {
     this->session = session;
+}
+
+void AudioRecording::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "method") {
+        if (contains(value, "audio recording"))
+            runningATest.add(*this);
+        else
+            runningATest.remove(*this);
+    }
 }
 }
