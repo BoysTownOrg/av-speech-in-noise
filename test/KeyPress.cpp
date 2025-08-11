@@ -1,3 +1,5 @@
+#include "ConfigurationRegistryStub.hpp"
+#include "TestPresenterStub.hpp"
 #include "TimerStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
@@ -67,7 +69,10 @@ class KeyPressUITests : public ::testing::Test {
     ControlStub control;
     TestControllerStub testController;
     TimerStub timer;
-    Presenter presenter{testView, testController, model, control, timer};
+    ConfigurationRegistryStub registry;
+    TestPresenterStub testPresenter;
+    Presenter presenter{registry, testView, testController, model, control,
+        timer, testPresenter};
     TaskPresenterStub dualTask;
 };
 
@@ -182,6 +187,12 @@ KEY_PRESS_UI_TEST(dualTaskHidesDualResponse) {
     presenter.start();
     presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(dualTask.responseHidden);
+}
+
+KEY_PRESS_UI_TEST(tbd) {
+    presenter.configure(
+        "method", "fixed-level button response predetermined stimuli");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&presenter, testPresenter.taskPresenter);
 }
 }
 }

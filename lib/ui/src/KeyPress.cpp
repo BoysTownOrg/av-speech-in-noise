@@ -1,12 +1,15 @@
 #include "KeyPress.hpp"
 
 namespace av_speech_in_noise::submitting_keypress {
-Presenter::Presenter(TestView &testView, TestController &testController,
-    Interactor &interactor, Control &control, Timer &timer)
+Presenter::Presenter(ConfigurationRegistry &registry, TestView &testView,
+    TestController &testController, Interactor &interactor, Control &control,
+    Timer &timer, TestPresenter &testPresenter)
     : testView{testView}, testController{testController},
-      interactor{interactor}, control{control}, timer{timer} {
+      interactor{interactor}, control{control}, timer{timer},
+      testPresenter{testPresenter} {
     control.attach(this);
     timer.attach(this);
+    registry.subscribe(*this, "method");
 }
 
 void Presenter::notifyThatKeyHasBeenPressed() {
@@ -90,5 +93,11 @@ void Presenter::moveAlong() {
 void Presenter::enableDualTask(TaskPresenter *other) {
     dualTask = other;
     state = State::aboutToDualTask;
+}
+
+void Presenter::configure(const std::string &key, const std::string &value) {
+    if (key == "method")
+        if (contains(value, "button response"))
+            testPresenter.initialize(*this);
 }
 }

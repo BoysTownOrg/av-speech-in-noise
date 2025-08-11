@@ -240,13 +240,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         &passFailPresenter, sessionController.taskPresenter());
 }
 TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelButtonResponseWithPredeterminedTargets_PassesTaskPresenter) {
-    initializeTest(
-        interpreter, Method::fixedLevelButtonResponseWithPredeterminedTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &keypressPresenter, sessionController.taskPresenter());
-}
-TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelEmotionsWithPredeterminedTargets_PassesTaskPresenter) {
     initializeTest(
         interpreter, Method::fixedLevelEmotionsWithPredeterminedTargets);
