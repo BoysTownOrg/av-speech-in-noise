@@ -1,4 +1,6 @@
 #include "RunningATestStub.hpp"
+#include "ConfigurationRegistryStub.hpp"
+#include "TestPresenterStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
@@ -85,7 +87,10 @@ class SubmittingPassFailPresenterTests : public ::testing::Test {
     TestControllerStub testController;
     TestViewStub testView;
     RunningATestStub runningATest;
-    Presenter presenter{runningATest, testController, testView, model, ui};
+    ConfigurationRegistryStub registry;
+    TestPresenterStub testPresenter;
+    Presenter presenter{registry, runningATest, testController, testView, model,
+        ui, testPresenter};
 };
 
 #define PASS_FAIL_PRESENTER_TEST(a) TEST_F(SubmittingPassFailPresenterTests, a)
@@ -160,6 +165,11 @@ PASS_FAIL_PRESENTER_TEST(clearsDisplay) {
     ui.displayCleared = false;
     notifyThatIncorrectButtonHasBeenClicked(ui);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(ui.displayCleared);
+}
+
+PASS_FAIL_PRESENTER_TEST(tbd) {
+    presenter.configure("method", "adaptive pass fail");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&presenter, testPresenter.taskPresenter);
 }
 }
 }
