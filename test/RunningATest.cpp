@@ -84,14 +84,10 @@ class UseCase {
 
 class InitializingTest : public UseCase {
   public:
-    explicit InitializingTest(TestMethod *method, const Test &test,
-        std::vector<std::reference_wrapper<RunningATest::TestObserver>>
-            observer)
-        : test{test}, method{method}, observer{std::move(observer)} {}
+    explicit InitializingTest(TestMethod *method, const Test &test)
+        : test{test}, method{method} {}
 
-    void run(RunningATestImpl &m) override {
-        m.initialize(method, test, observer);
-    }
+    void run(RunningATestImpl &m) override { m.initialize(method, test); }
 
   private:
     const Test &test{};
@@ -107,7 +103,7 @@ class InitializingTestWithSingleSpeaker : public UseCase {
     void run(RunningATestImpl &m) override {
         Test test;
         m.configure("method", "adaptive pass fail not spatial");
-        m.initialize(method, test, {});
+        m.initialize(method, test);
     }
 
   private:
@@ -122,7 +118,7 @@ class InitializingTestWithDelayedMasker : public UseCase {
     void run(RunningATestImpl &m) override {
         Test test;
         m.configure("method", "adaptive pass fail spatial");
-        m.initialize(method, test, {});
+        m.initialize(method, test);
     }
 
   private:
@@ -472,8 +468,7 @@ class RunningATestTests : public ::testing::Test {
     av_speech_in_noise::Test test{};
     RunningATestObserverStub observer;
     RunningATestObserverStub secondObserver;
-    InitializingTest initializingTest{
-        &testMethod, test, {std::ref(observer), std::ref(secondObserver)}};
+    InitializingTest initializingTest{&testMethod, test};
     InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
         &testMethod};
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
@@ -486,7 +481,11 @@ class RunningATestTests : public ::testing::Test {
     AudioSampleTimeWithOffset fadeInCompleteTime{};
     PreparingNextTrialIfNeeded preparingNextTrialIfNeeded;
 
-    RunningATestTests() { model.attach(&listener); }
+    RunningATestTests() {
+        model.attach(&listener);
+        model.add(observer);
+        model.add(secondObserver);
+    }
 
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase, model);

@@ -8,11 +8,15 @@
 #include "IOutputFile.hpp"
 #include "Randomizer.hpp"
 
+#include <av-speech-in-noise/core/Configuration.hpp>
+
 namespace av_speech_in_noise::submitting_keypress {
-class InteractorImpl : public Interactor, public RunningATest::TestObserver {
+class InteractorImpl : public Interactor,
+                       public RunningATest::TestObserver,
+                       public Configurable {
   public:
-    InteractorImpl(FixedLevelMethod &, RunningATest &, OutputFile &,
-        MaskerPlayer &, Randomizer &);
+    InteractorImpl(ConfigurationRegistry &, FixedLevelMethod &, RunningATest &,
+        OutputFile &, MaskerPlayer &, Randomizer &);
     auto submits(const std::vector<KeyPressResponse> &) -> bool override;
     void forceSubmit(const std::vector<KeyPressResponse> &) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
@@ -20,6 +24,7 @@ class InteractorImpl : public Interactor, public RunningATest::TestObserver {
     void notifyThatStimulusHasEnded() override;
     void deferNextTrial() override { deferringNextTrial = true; }
     void dontDeferNextTrial() override { deferringNextTrial = false; }
+    void configure(const std::string &key, const std::string &value) override;
 
   private:
     void writeSaveAndReadyNextTrial(KeyPressTrial &);

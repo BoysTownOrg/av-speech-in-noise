@@ -3,19 +3,15 @@
 
 #include <av-speech-in-noise/core/IRunningATest.hpp>
 
-#include <utility>
-
 namespace av_speech_in_noise {
 class RunningATestStub : public RunningATest {
   public:
     void attach(RunningATest::RequestObserver *a) override {
         facadeObserver = a;
     }
-    void initialize(TestMethod *tm, const Test &t,
-        std::vector<std::reference_wrapper<TestObserver>> p) override {
+    void initialize(TestMethod *tm, const Test &t) override {
         test = t;
         testMethod = tm;
-        observer = std::move(p);
         if (failOnRequest)
             throw RequestFailure{errorMessage};
     }
@@ -46,6 +42,8 @@ class RunningATestStub : public RunningATest {
         nextTrialPreparedIfNeeded_ = true;
     }
     auto playTrialTime() -> std::string override { return {}; }
+    void add(TestObserver &) override {}
+    void remove(TestObserver &) override {}
 
     Calibration calibration_;
     Calibration leftSpeakerCalibration_;

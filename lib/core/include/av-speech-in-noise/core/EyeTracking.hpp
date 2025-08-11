@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_EYETRACKINGHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_EYETRACKINGHPP_
 
+#include "Configuration.hpp"
 #include "IMaskerPlayer.hpp"
 #include "IOutputFile.hpp"
 #include "IRunningATest.hpp"
@@ -19,14 +20,16 @@ class EyeTracker : public Writable {
     virtual auto currentSystemTime() -> EyeTrackerSystemTime = 0;
 };
 
-class EyeTracking : public RunningATest::TestObserver {
+class EyeTracking : public RunningATest::TestObserver, public Configurable {
   public:
-    EyeTracking(EyeTracker &, MaskerPlayer &, TargetPlayer &, OutputFile &);
+    EyeTracking(ConfigurationRegistry &, EyeTracker &, MaskerPlayer &,
+        TargetPlayer &, OutputFile &, RunningATest &);
     void notifyThatNewTestIsReady(std::string_view session) override;
     void notifyThatTrialWillBegin(int trialNumber) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
     void notifyThatStimulusHasEnded() override;
     void notifyThatSubjectHasResponded() override;
+    void configure(const std::string &, const std::string &) override;
 
   private:
     EyeTrackerTargetPlayerSynchronization
@@ -36,6 +39,7 @@ class EyeTracking : public RunningATest::TestObserver {
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
     OutputFile &outputFile;
+    RunningATest &runningATest;
 };
 }
 

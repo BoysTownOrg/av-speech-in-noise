@@ -5,14 +5,17 @@
 #include <limits>
 
 namespace av_speech_in_noise::submitting_keypress {
-InteractorImpl::InteractorImpl(FixedLevelMethod &method, RunningATest &model,
-    OutputFile &outputFile, MaskerPlayer &maskerPlayer, Randomizer &randomizer)
+InteractorImpl::InteractorImpl(ConfigurationRegistry &registry,
+    FixedLevelMethod &method, RunningATest &model, OutputFile &outputFile,
+    MaskerPlayer &maskerPlayer, Randomizer &randomizer)
     : method{method}, model{model}, outputFile{outputFile},
-      maskerPlayer{maskerPlayer}, randomizer{randomizer} {}
+      maskerPlayer{maskerPlayer}, randomizer{randomizer} {
+    registry.subscribe(*this, "method");
+}
 
 template <std::size_t N>
-auto randomSelection(
-    Randomizer &randomizer, std::array<double, N> x) -> double {
+auto randomSelection(Randomizer &randomizer, std::array<double, N> x)
+    -> double {
     return x.at(randomizer.betweenInclusive(0, x.size() - 1));
 }
 
@@ -53,8 +56,8 @@ void InteractorImpl::notifyThatTargetWillPlayAt(
             1000;
 }
 
-auto InteractorImpl::submits(
-    const std::vector<KeyPressResponse> &responses) -> bool {
+auto InteractorImpl::submits(const std::vector<KeyPressResponse> &responses)
+    -> bool {
     if (!readyForResponse)
         return false;
     auto min{responses.end()};
@@ -95,5 +98,15 @@ void InteractorImpl::writeSaveAndReadyNextTrial(KeyPressTrial &trial) {
         model.prepareNextTrialIfNeeded();
     }
     readyForResponse = false;
+}
+
+void InteractorImpl::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "method") {
+        if (contains(value, "button response"))
+            model.add(*this);
+        else
+            model.remove(*this);
+    }
 }
 }

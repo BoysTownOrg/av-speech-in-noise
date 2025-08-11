@@ -163,11 +163,9 @@ static void initialize(AdaptiveMethod &method, TargetPlaylistReader &reader,
     method.initialize(&reader, &factory);
 }
 
-static void initialize(RunningATest &model, TestMethod &method,
-    const Test &test,
-    std::vector<std::reference_wrapper<RunningATest::TestObserver>> observer =
-        {}) {
-    model.initialize(&method, test, std::move(observer));
+static void initialize(
+    RunningATest &model, TestMethod &method, const Test &test) {
+    model.initialize(&method, test);
 }
 
 static void initialize(
@@ -198,10 +196,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
 
     std::vector<std::reference_wrapper<RunningATest::TestObserver>>
         testObservers;
-    if (contains(methodName, "eye tracking"))
-        testObservers.emplace_back(eyeTracking);
-    if (contains(methodName, "audio recording"))
-        testObservers.emplace_back(audioRecording);
 
     TaskPresenter *taskPresenter{};
     switch (method) {
@@ -216,7 +210,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::fixedLevelButtonThenPassFailResponseWithPredeterminedTargets:
         keypressPresenter.enableDualTask(&fixedPassFailPresenter);
     case Method::fixedLevelButtonResponseWithPredeterminedTargets:
-        testObservers.emplace_back(submittingKeyPressResponse);
         taskPresenter = &keypressPresenter;
         break;
     case Method::adaptivePassFail:
@@ -225,7 +218,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::adaptiveCorrectKeywords:
         break;
     case Method::fixedLevelConsonants:
-        testObservers.emplace_back(submittingConsonantResponse);
         break;
     case Method::fixedLevelChooseKeywordsWithAllTargets:
     case Method::fixedLevelSyllablesWithAllTargets:
@@ -250,7 +242,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     adaptiveMethod, cyclicTargetsReader, adaptiveTrackFactory);
                 av_speech_in_noise::initialize(
-                    runningATest, adaptiveMethod, test, testObservers);
+                    runningATest, adaptiveMethod, test);
             });
         break;
     case Method::adaptiveCoordinateResponseMeasure:
@@ -260,7 +252,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(adaptiveMethod,
                     targetsWithReplacementReader, adaptiveTrackFactory);
                 av_speech_in_noise::initialize(
-                    runningATest, adaptiveMethod, test, testObservers);
+                    runningATest, adaptiveMethod, test);
             });
         break;
     case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
@@ -270,7 +262,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, silentIntervalTargets);
                 av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, testObservers);
+                    runningATest, fixedLevelMethod, test);
             });
         break;
     case Method::fixedLevelFreeResponseWithAllTargets:
@@ -281,7 +273,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, everyTargetOnce);
                 av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, testObservers);
+                    runningATest, fixedLevelMethod, test);
             });
         break;
     case Method::fixedLevelConsonants:
@@ -289,7 +281,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             configurables, contents, [&](const Test &test) {
                 fixedLevelMethod.initialize(&eachTargetNTimes);
                 av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, testObservers);
+                    runningATest, fixedLevelMethod, test);
             });
         break;
     case Method::fixedLevelEmotionsWithPredeterminedTargets:
@@ -301,7 +293,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, predeterminedTargets);
                 av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, testObservers);
+                    runningATest, fixedLevelMethod, test);
             });
         break;
     case Method::fixedLevelButtonResponseWithPredeterminedTargets:
@@ -312,7 +304,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, predeterminedTargets);
                 av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, testObservers);
+                    runningATest, fixedLevelMethod, test);
             });
         break;
     case Method::fixedLevelFreeResponseWithTargetReplacement:
@@ -322,7 +314,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, targetsWithReplacement);
                 av_speech_in_noise::initialize(
-                    runningATest, fixedLevelMethod, test, testObservers);
+                    runningATest, fixedLevelMethod, test);
             });
         break;
     case Method::unknown:
@@ -356,8 +348,7 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
 
 TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     RunningATest &runningATest, AdaptiveMethod &adaptiveMethod,
-    FixedLevelMethod &fixedLevelMethod, RunningATest::TestObserver &eyeTracking,
-    RunningATest::TestObserver &audioRecording,
+    FixedLevelMethod &fixedLevelMethod,
     TargetPlaylistReader &cyclicTargetsReader,
     TargetPlaylistReader &targetsWithReplacementReader,
     FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
@@ -366,15 +357,11 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     FiniteTargetPlaylist &eachTargetNTimes,
     TargetPlaylist &targetsWithReplacement,
     AdaptiveTrack::Factory &adaptiveTrackFactory,
-    SessionController &sessionController,
-    RunningATest::TestObserver &submittingConsonantResponse,
-    TaskPresenter &passFailPresenter, TaskPresenter &keypressPresenter,
-    RunningATest::TestObserver &submittingKeyPressResponse,
-    TaskPresenter &emotionPresenter, TaskPresenter &childEmotionPresenter,
-    TaskPresenter &fixedPassFailPresenter)
+    SessionController &sessionController, TaskPresenter &passFailPresenter,
+    TaskPresenter &keypressPresenter, TaskPresenter &emotionPresenter,
+    TaskPresenter &childEmotionPresenter, TaskPresenter &fixedPassFailPresenter)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
-      fixedLevelMethod{fixedLevelMethod}, eyeTracking{eyeTracking},
-      audioRecording{audioRecording},
+      fixedLevelMethod{fixedLevelMethod},
       adaptiveTrackFactory{adaptiveTrackFactory},
       cyclicTargetsReader{cyclicTargetsReader},
       targetsWithReplacementReader{targetsWithReplacementReader},
@@ -384,11 +371,8 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       eachTargetNTimes{eachTargetNTimes},
       targetsWithReplacement{targetsWithReplacement},
       sessionController{sessionController},
-      submittingConsonantResponse{submittingConsonantResponse},
       passFailPresenter{passFailPresenter},
-      keypressPresenter{keypressPresenter},
-      submittingKeyPressResponse{submittingKeyPressResponse},
-      emotionPresenter{emotionPresenter},
+      keypressPresenter{keypressPresenter}, emotionPresenter{emotionPresenter},
       childEmotionPresenter{childEmotionPresenter},
       fixedPassFailPresenter{fixedPassFailPresenter} {}
 }

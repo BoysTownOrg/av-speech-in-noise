@@ -2,6 +2,7 @@
 #include "Configuration.hpp"
 #include "IOutputFile.hpp"
 
+#include <algorithm>
 #include <gsl/gsl>
 
 #include <functional>
@@ -284,8 +285,7 @@ void RunningATestImpl::attach(RunningATest::RequestObserver *listener) {
     requestObserver = listener;
 }
 
-void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test,
-    std::vector<std::reference_wrapper<TestObserver>> testObservers) {
+void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     if (testMethod->complete())
@@ -293,7 +293,6 @@ void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test,
 
     this->testMethod = testMethod;
     this->test = test;
-    this->testObservers = testObservers;
     trialNumber_ = 1;
 
     tryOpening(outputFile, testIdentity);
@@ -504,5 +503,18 @@ void RunningATestImpl::configure(
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
             if (value == name(c))
                 condition = c;
+}
+
+void RunningATestImpl::add(TestObserver &t) {
+    testObservers.emplace_back(std::ref(t));
+}
+
+void RunningATestImpl::remove(TestObserver &t) {
+    testObservers.erase(
+        std::remove_if(testObservers.begin(), testObservers.end(),
+            [&t](const std::reference_wrapper<TestObserver> &to) {
+                return &to.get() == &t;
+            }),
+        testObservers.end());
 }
 }

@@ -4,10 +4,13 @@
 #include <string>
 
 namespace av_speech_in_noise::submitting_consonant {
-InteractorImpl::InteractorImpl(FixedLevelMethod &method, RunningATest &model,
-    OutputFile &outputFile, MaskerPlayer &maskerPlayer)
+InteractorImpl::InteractorImpl(ConfigurationRegistry &registry,
+    FixedLevelMethod &method, RunningATest &model, OutputFile &outputFile,
+    MaskerPlayer &maskerPlayer)
     : method{method}, model{model}, outputFile{outputFile},
-      maskerPlayer{maskerPlayer} {}
+      maskerPlayer{maskerPlayer} {
+    registry.subscribe(*this, "method");
+}
 
 static auto consonant(const std::string &match) -> Consonant {
     if (match == "bi")
@@ -74,5 +77,15 @@ void InteractorImpl::notifyThatTargetWillPlayAt(
         static_cast<double>(nanoToMilliseconds(
             maskerPlayer.nanoseconds(targetStart.playerTime))) +
         targetStart.delay.seconds * 1000;
+}
+
+void InteractorImpl::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "method") {
+        if (contains(value, "consonants"))
+            model.add(*this);
+        else
+            model.remove(*this);
+    }
 }
 }

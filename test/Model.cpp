@@ -1,3 +1,4 @@
+#include "ConfigurationRegistryStub.hpp"
 #include "LogString.hpp"
 #include "MaskerPlayerStub.hpp"
 #include "OutputFileStub.hpp"
@@ -189,11 +190,9 @@ class RunningATestStub : public RunningATest {
         fixedLevelMethodStub.log("TOOLATE ");
     }
 
-    void initialize(TestMethod *method, const Test &test,
-        std::vector<std::reference_wrapper<TestObserver>> observer) override {
+    void initialize(TestMethod *method, const Test &test) override {
         testMethod_ = method;
         test_ = &test;
-        this->observer = observer;
     }
 
     auto trialNumber() -> int override { return trialNumber_; }
@@ -260,6 +259,10 @@ class RunningATestStub : public RunningATest {
 
     void setPlayTrialTime(std::string s) { playTrialTime_ = std::move(s); }
 
+    void add(TestObserver &) override {}
+
+    void remove(TestObserver &) override {}
+
     std::vector<std::reference_wrapper<TestObserver>> observer{};
 
   private:
@@ -299,8 +302,9 @@ class SubmittingConsonantTests : public ::testing::Test {
     RunningATestStub model{adaptiveTestMethod, testMethod};
     OutputFileStub outputFile;
     MaskerPlayerStub maskerPlayer;
+    ConfigurationRegistryStub registry;
     submitting_consonant::InteractorImpl interactor{
-        testMethod, model, outputFile, maskerPlayer};
+        registry, testMethod, model, outputFile, maskerPlayer};
     ConsonantResponse response;
 
     void assertIncorrect(const std::string &s, Consonant r) {
@@ -390,8 +394,9 @@ class SubmittingKeypressTests : public ::testing::Test {
     OutputFileStub outputFile;
     MaskerPlayerStub maskerPlayer;
     RandomizerStub randomizer;
+    ConfigurationRegistryStub registry;
     submitting_keypress::InteractorImpl interactor{
-        testMethod, model, outputFile, maskerPlayer, randomizer};
+        registry, testMethod, model, outputFile, maskerPlayer, randomizer};
     std::vector<KeyPressResponse> responses;
 };
 
@@ -465,14 +470,14 @@ SUBMITTING_FREE_RESPONSE_TEST(submitFreeResponseSubmitsResponse) {
 SUBMITTING_PASS_FAIL_TEST(
     submitCorrectResponseWritesTrialAfterSubmittingResponse) {
     interactor.submitCorrectResponse();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(
-        testMethod.log(), "submitCorrectResponse writeLastCorrectResponse "));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(testMethod.log().str(),
+        "submitCorrectResponse writeLastCorrectResponse "));
 }
 
 SUBMITTING_PASS_FAIL_TEST(
     submitIncorrectResponseWritesTrialAfterSubmittingResponse) {
     interactor.submitIncorrectResponse();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(testMethod.log(),
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(testMethod.log().str(),
         "submitIncorrectResponse writeLastIncorrectResponse "));
 }
 
@@ -480,14 +485,14 @@ SUBMITTING_PASS_FAIL_TEST(
     submitCorrectResponseQueriesNextTargetAfterWritingResponse) {
     interactor.submitCorrectResponse();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        contains(testMethod.log(), "writeLastCorrectResponse TOOLATE "));
+        contains(testMethod.log().str(), "writeLastCorrectResponse TOOLATE "));
 }
 
 SUBMITTING_PASS_FAIL_TEST(
     submitIncorrectResponseQueriesNextTargetAfterWritingResponse) {
     interactor.submitIncorrectResponse();
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        contains(testMethod.log(), "writeLastIncorrectResponse TOOLATE "));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(
+        testMethod.log().str(), "writeLastIncorrectResponse TOOLATE "));
 }
 
 SUBMITTING_PASS_FAIL_TEST(submittingCorrectPreparesNextTrialIfNeeded) {
@@ -604,14 +609,14 @@ SUBMITTING_NUMBER_KEYWORDS_TEST(preparesNextTrialIfNeeded) {
 
 SUBMITTING_NUMBER_KEYWORDS_TEST(writesTrialAfterSubmittingResponse) {
     interactor.submit(correctKeywords);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(
-        testMethod.log(), "submitCorrectKeywords writeLastCorrectKeywords "));
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(contains(testMethod.log().str(),
+        "submitCorrectKeywords writeLastCorrectKeywords "));
 }
 
 SUBMITTING_NUMBER_KEYWORDS_TEST(queriesNextTargetAfterWritingResponse) {
     interactor.submit(correctKeywords);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        contains(testMethod.log(), "writeLastCorrectKeywords TOOLATE "));
+        contains(testMethod.log().str(), "writeLastCorrectKeywords TOOLATE "));
 }
 
 SUBMITTING_NUMBER_KEYWORDS_TEST(savesOutputFileAfterWritingTrial) {

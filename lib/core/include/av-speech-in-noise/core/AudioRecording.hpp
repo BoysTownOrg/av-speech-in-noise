@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_AUDIORECORDINGHPP_
 #define AV_SPEECH_IN_NOISE_LIB_CORE_INCLUDE_AVSPEECHINNOISE_CORE_AUDIORECORDINGHPP_
 
+#include "Configuration.hpp"
 #include "IRunningATest.hpp"
 #include "IOutputFile.hpp"
 #include "FileSystemPath.hpp"
@@ -18,20 +19,23 @@ class AudioRecorder {
     virtual void stop() = 0;
 };
 
-class AudioRecording : public RunningATest::TestObserver {
+class AudioRecording : public RunningATest::TestObserver, public Configurable {
   public:
-    AudioRecording(AudioRecorder &, OutputFile &, TimeStamp &);
+    AudioRecording(ConfigurationRegistry &, AudioRecorder &, OutputFile &,
+        TimeStamp &, RunningATest &);
     void notifyThatNewTestIsReady(std::string_view session) override;
     void notifyThatTrialWillBegin(int trialNumber) override;
     void notifyThatTargetWillPlayAt(const PlayerTimeWithDelay &) override;
     void notifyThatStimulusHasEnded() override;
     void notifyThatSubjectHasResponded() override;
+    void configure(const std::string &key, const std::string &value) override;
 
   private:
     std::string session;
     AudioRecorder &audioRecorder;
     OutputFile &outputFile;
     TimeStamp &timeStamp;
+    RunningATest &runningATest;
 };
 }
 

@@ -1,6 +1,8 @@
+#include "ConfigurationRegistryStub.hpp"
 #include "OutputFileStub.hpp"
 #include "EyeTrackerStub.hpp"
 #include "MaskerPlayerStub.hpp"
+#include "RunningATestStub.hpp"
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
 
@@ -46,7 +48,10 @@ class EyeTrackingTests : public ::testing::Test {
     MaskerPlayerStub maskerPlayer;
     TargetPlayerStub targetPlayer;
     OutputFileStub outputFile;
-    EyeTracking eyeTracking{eyeTracker, maskerPlayer, targetPlayer, outputFile};
+    ConfigurationRegistryStub registry;
+    RunningATestStub runningATest;
+    EyeTracking eyeTracking{registry, eyeTracker, maskerPlayer, targetPlayer,
+        outputFile, runningATest};
 };
 
 #define EYE_TRACKING_TEST(a) TEST_F(EyeTrackingTests, a)
