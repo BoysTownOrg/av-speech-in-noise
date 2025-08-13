@@ -1,6 +1,7 @@
 #include "RunningATest.hpp"
 #include "Configuration.hpp"
 #include "IOutputFile.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <algorithm>
 #include <gsl/gsl>
@@ -151,10 +152,6 @@ static void show(TargetPlayer &player) { player.showVideo(); }
 
 static void hide(TargetPlayer &player) { player.hideVideo(); }
 
-static auto maskerFileUrl(const Test &test) -> LocalUrl {
-    return test.maskerFileUrl;
-}
-
 static void throwRequestFailureOnInvalidAudioFile(
     const std::function<void(const LocalUrl &)> &f, const LocalUrl &s) {
     try {
@@ -203,25 +200,27 @@ static void play(MaskerPlayer &maskerPlayer, const Calibration &calibration) {
     play(maskerPlayer);
 }
 
-static auto maskerLevelAmplification(
-    MaskerPlayer &maskerPlayer, const Test &test) -> LevelAmplification {
+static auto maskerLevelAmplification(MaskerPlayer &maskerPlayer,
+    RealLevel maskerLevel, const Test &test) -> LevelAmplification {
     return LevelAmplification{DigitalLevel{
-        test.maskerLevel - test.fullScaleLevel - maskerPlayer.digitalLevel()}
+        maskerLevel - test.fullScaleLevel - maskerPlayer.digitalLevel()}
             .dBov};
 }
 
-static auto targetLevelAmplification(
-    TestMethod *testMethod, MaskerPlayer &maskerPlayer, const Test &test) {
+static auto targetLevelAmplification(TestMethod *testMethod,
+    MaskerPlayer &maskerPlayer, RealLevel maskerLevel, const Test &test) {
     return LevelAmplification{
-        maskerLevelAmplification(maskerPlayer, test).dB + testMethod->snr().dB};
+        maskerLevelAmplification(maskerPlayer, maskerLevel, test).dB +
+        testMethod->snr().dB};
 }
 
 static void preparePlayersForNextTrial(TestMethod *testMethod,
     Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, const Test &test, RationalNumber videoScale) {
+    MaskerPlayer &maskerPlayer, RealLevel maskerLevel, const Test &test,
+    RationalNumber videoScale) {
     loadFile(targetPlayer, testMethod->nextTarget(), videoScale);
-    apply(
-        targetPlayer, targetLevelAmplification(testMethod, maskerPlayer, test));
+    apply(targetPlayer,
+        targetLevelAmplification(testMethod, maskerPlayer, maskerLevel, test));
     const auto maskerPlayerSeekTimeUpperLimit{
         maskerPlayer.duration() - trialDuration(targetPlayer, maskerPlayer)};
     maskerPlayer.seekSeconds(randomizer.betweenInclusive(
@@ -234,13 +233,13 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     MaskerPlayer &maskerPlayer,
     const std::vector<std::reference_wrapper<RunningATest::TestObserver>>
         &observers,
-    const Test &test, RationalNumber videoScale) {
+    RealLevel maskerLevel, const Test &test, RationalNumber videoScale) {
     for (auto observer : observers)
         observer.get().notifyThatSubjectHasResponded();
     if (!testMethod->complete()) {
         ++trialNumber_;
         preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
-            maskerPlayer, test, videoScale);
+            maskerPlayer, maskerLevel, test, videoScale);
     } else {
         testMethod->writeTestResult(outputFile);
         save(outputFile);
@@ -253,11 +252,11 @@ static void saveOutputFileAndPrepareNextTrialAfter(
     MaskerPlayer &maskerPlayer,
     const std::vector<std::reference_wrapper<RunningATest::TestObserver>>
         &observer,
-    const Test &test, RationalNumber videoScale) {
+    RealLevel maskerLevel, const Test &test, RationalNumber videoScale) {
     f();
     save(outputFile);
     prepareNextTrialIfNeeded(testMethod, trialNumber_, outputFile, randomizer,
-        targetPlayer, maskerPlayer, observer, test, videoScale);
+        targetPlayer, maskerPlayer, observer, maskerLevel, test, videoScale);
 }
 
 RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
@@ -277,6 +276,9 @@ RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     registry.subscribe(*this, "transducer");
     registry.subscribe(*this, "meta");
     registry.subscribe(*this, "method");
+    registry.subscribe(*this, "masker");
+    registry.subscribe(*this, "masker level (dB SPL)");
+
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
 }
@@ -299,12 +301,13 @@ void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test) {
     maskerPlayer.stop();
     throwRequestFailureOnInvalidAudioFile(
         [&](const LocalUrl &file) { maskerPlayer.loadFile(file); },
-        maskerFileUrl(test));
+        maskerFileUrl);
 
     hide(targetPlayer);
-    maskerPlayer.apply(maskerLevelAmplification(maskerPlayer, test));
-    preparePlayersForNextTrial(
-        testMethod, randomizer, targetPlayer, maskerPlayer, test, videoScale);
+    maskerPlayer.apply(
+        maskerLevelAmplification(maskerPlayer, maskerLevel, test));
+    preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
+        maskerPlayer, maskerLevel, test, videoScale);
     outputFile.write(*this);
 
     useAllChannels(targetPlayer);
@@ -377,13 +380,13 @@ void RunningATestImpl::submit(
             testMethod->writeLastCoordinateResponse(outputFile);
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, testObservers, test, videoScale);
+        maskerPlayer, testObservers, maskerLevel, test, videoScale);
 }
 
 void RunningATestImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
-        outputFile, randomizer, targetPlayer, maskerPlayer, testObservers, test,
-        videoScale);
+        outputFile, randomizer, targetPlayer, maskerPlayer, testObservers,
+        maskerLevel, test, videoScale);
 }
 
 void RunningATestImpl::playCalibration(const Calibration &calibration) {
@@ -465,8 +468,8 @@ static auto operator<<(std::ostream &stream, const TestIdentity &identity)
 
 void RunningATestImpl::write(std::ostream &stream) {
     stream << testIdentity;
-    insertLabeledLine(stream, "masker", test.maskerFileUrl.path);
-    insertLabeledLine(stream, "masker level (dB SPL)", test.maskerLevel.dB_SPL);
+    insertLabeledLine(stream, "masker", maskerFileUrl.path);
+    insertLabeledLine(stream, "masker level (dB SPL)", maskerLevel.dB_SPL);
     insertLabeledLine(stream, "condition", name(condition));
     testMethod->write(stream);
     insertNewLine(stream);
@@ -499,6 +502,10 @@ void RunningATestImpl::configure(
         videoScale.numerator = integer(value);
     else if (key == "keep video shown")
         keepVideoShown = boolean(value);
+    else if (key == "masker")
+        maskerFileUrl.path = value;
+    else if (key == "masker level (dB SPL)")
+        maskerLevel.dB_SPL = integer(value);
     else if (key == "condition")
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
             if (value == name(c))

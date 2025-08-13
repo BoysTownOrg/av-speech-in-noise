@@ -57,17 +57,6 @@ static void broadcast(
         for (const auto each : search->second)
             each.get().configure(key, value);
 }
-static void assign(Test &test,
-    const std::map<std::string,
-        std::vector<std::reference_wrapper<Configurable>>> &configurables,
-    const std::string &key, const std::string &value) {
-    if (key == name(TestSetting::masker))
-        test.maskerFileUrl.path = value;
-    else if (key == name(TestSetting::maskerLevel))
-        test.maskerLevel.dB_SPL = integer(value);
-    else
-        broadcast(configurables, key, value);
-}
 
 static void assign(Calibration &calibration, const std::string &key,
     const std::string &value) {
@@ -132,8 +121,8 @@ static void initialize(Test &test,
         std::vector<std::reference_wrapper<Configurable>>> &configurables,
     const std::string &contents) {
     applyToEachEntry(
-        [&](const auto &entryName, const auto &entry) {
-            assign(test, configurables, entryName, entry);
+        [&](const auto &key, const auto &value) {
+            broadcast(configurables, key, value);
         },
         contents);
     test.fullScaleLevel = SessionControllerImpl::fullScaleLevel;

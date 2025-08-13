@@ -82,9 +82,6 @@ void assertPassesSettingsWithExtraneousWhitespace(
             entryWithNewline(TestSetting::maskerLevel, "65")},
         5);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"b"}, fixedLevelTest.maskerFileUrl.path);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(65, fixedLevelTest.maskerLevel.dB_SPL);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         SessionControllerImpl::fullScaleLevel.dB_SPL,
         fixedLevelTest.fullScaleLevel.dB_SPL);
 }
@@ -453,13 +450,6 @@ TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, configurable.value);
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(badMaskerLevelResolvesToZero) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            entryWithNewline(TestSetting::maskerLevel, "a")});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(0, runningATest.test.maskerLevel.dB_SPL);
-}
-
 TEST_SETTINGS_INTERPRETER_TEST(meta) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", interpreter.meta("meta: a\n"));
 }
@@ -484,15 +474,6 @@ TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
         {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants)});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &eachTargetNTimes);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithTargetReplacementInitializesFixedLevelTest) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method,
-             Method::fixedLevelFreeResponseWithTargetReplacement),
-            entryWithNewline(TestSetting::maskerLevel, "5")});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(5, runningATest.test.maskerLevel.dB_SPL);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsOverridesStartingSnr) {

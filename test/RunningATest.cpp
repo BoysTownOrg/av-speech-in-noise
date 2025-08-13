@@ -282,7 +282,9 @@ class RunningATestObserverStub : public RunningATest::TestObserver {
     bool notifiedThatSubjectHasResponded{};
 };
 
-void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel.dB_SPL = x; }
+void setMaskerLevel_dB_SPL(RunningATestImpl &model, const std::string &value) {
+    model.configure("masker level (dB SPL)", value);
+}
 
 void setCurrentTarget(TestMethodStub &m, std::string s) {
     m.setCurrentTarget(std::move(s));
@@ -362,8 +364,8 @@ void setFullScaleLevel_dB_SPL(Test &test, int x) {
     test.fullScaleLevel.dB_SPL = x;
 }
 
-void setMaskerFilePath(Test &test, std::string s) {
-    test.maskerFileUrl.path = std::move(s);
+void setMaskerFilePath(RunningATestImpl &model, const std::string &value) {
+    model.configure("masker", value);
 }
 
 void setDigitalLevel(MaskerPlayerStub &player, DigitalLevel x) {
@@ -574,7 +576,7 @@ class RunningATestTests : public ::testing::Test {
     }
 
     void assertSetsTargetLevel(UseCase &useCase) {
-        setMaskerLevel_dB_SPL(test, 3);
+        setMaskerLevel_dB_SPL(model, "3");
         setFullScaleLevel_dB_SPL(test, 4);
         run(initializingTest, model);
         setDigitalLevel(maskerPlayer, DigitalLevel{5.5});
@@ -628,7 +630,7 @@ class RunningATestTests : public ::testing::Test {
     }
 
     void assertPassesMaskerFilePathToMaskerPlayer(UseCase &useCase) {
-        setMaskerFilePath(test, "a");
+        setMaskerFilePath(model, "a");
         run(useCase, model);
         AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
             std::string{"a"}, maskerPlayer.filePath());
@@ -961,7 +963,7 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestPassesMaskerFilePathToMaskerPlayer) {
-    setMaskerFilePath(test, "a");
+    setMaskerFilePath(model, "a");
     run(initializingTest, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, maskerPlayer.filePath());
 }
@@ -1007,7 +1009,7 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsInitialMaskerPlayerLevel) {
-    setMaskerLevel_dB_SPL(test, 1);
+    setMaskerLevel_dB_SPL(model, "1");
     setFullScaleLevel_dB_SPL(test, 2);
     setDigitalLevel(maskerPlayer, DigitalLevel{3});
     run(initializingTest, model);
@@ -1016,7 +1018,7 @@ RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsInitialMaskerPlayerLevel) {
 
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsTargetPlayerLevel) {
     setSnr_dB(testMethod, 2);
-    setMaskerLevel_dB_SPL(test, 3);
+    setMaskerLevel_dB_SPL(model, "3");
     setFullScaleLevel_dB_SPL(test, 4);
     setDigitalLevel(maskerPlayer, DigitalLevel{5});
     run(initializingTest, model);
@@ -1141,7 +1143,7 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile) {
-    setMaskerFilePath(test, "a");
+    setMaskerFilePath(model, "a");
     maskerPlayer.throwInvalidAudioFileOnLoad();
     assertCallThrowsRequestFailure(initializingTest, "unable to read a");
 }
@@ -1193,7 +1195,7 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestDoesNotLoadMaskerIfTrialInProgress) {
-    setMaskerFilePath(test, "a");
+    setMaskerFilePath(model, "a");
     runIgnoringFailureWithTrialInProgress(initializingTest);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{""}, maskerPlayer.filePath());
 }
@@ -1256,8 +1258,8 @@ RECOGNITION_TEST_MODEL_TEST(tbd) {
     model.configure("method", "d");
     model.configure("RME setting", "e");
     model.configure("transducer", "f");
-    test.maskerFileUrl.path = "g";
-    test.maskerLevel.dB_SPL = 3;
+    model.configure("masker", "g");
+    model.configure("masker level (dB SPL)", "3");
     run(initializingTest, model);
     std::stringstream stream;
     model.write(stream);
