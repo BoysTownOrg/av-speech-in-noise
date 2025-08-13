@@ -257,16 +257,12 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
     case Method::fixedLevelPassFailWithPredeterminedTargets:
         av_speech_in_noise::initialize(configurables, contents, [&]() {
-            av_speech_in_noise::initialize(
-                fixedLevelMethod, predeterminedTargets);
             av_speech_in_noise::initialize(runningATest, fixedLevelMethod);
         });
         break;
     case Method::fixedLevelButtonResponseWithPredeterminedTargets:
     case Method::fixedLevelButtonThenPassFailResponseWithPredeterminedTargets:
         av_speech_in_noise::initialize(configurables, contents, [&]() {
-            av_speech_in_noise::initialize(
-                fixedLevelMethod, predeterminedTargets);
             av_speech_in_noise::initialize(runningATest, fixedLevelMethod);
         });
         break;
@@ -312,7 +308,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     FixedLevelMethod &fixedLevelMethod,
     TargetPlaylistReader &cyclicTargetsReader,
     TargetPlaylistReader &targetsWithReplacementReader,
-    FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
     FiniteTargetPlaylist &eachTargetNTimes,
@@ -326,7 +321,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       adaptiveTrackFactory{adaptiveTrackFactory},
       cyclicTargetsReader{cyclicTargetsReader},
       targetsWithReplacementReader{targetsWithReplacementReader},
-      predeterminedTargets{predeterminedTargets},
       everyTargetOnce{everyTargetOnce},
       silentIntervalTargets{silentIntervalTargets},
       eachTargetNTimes{eachTargetNTimes},

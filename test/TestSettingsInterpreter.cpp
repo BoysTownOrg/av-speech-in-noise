@@ -113,7 +113,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     FixedLevelMethodStub fixedLevelMethod;
     TargetPlaylistSetReaderStub cyclicTargetsReader;
     TargetPlaylistSetReaderStub targetsWithReplacementReader;
-    FiniteTargetPlaylistWithRepeatablesStub predeterminedTargets;
     FiniteTargetPlaylistWithRepeatablesStub everyTargetOnce;
     FiniteTargetPlaylistWithRepeatablesStub silentIntervalTargets;
     FiniteTargetPlaylistStub eachTargetNTimes;
@@ -126,10 +125,10 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TaskPresenterStub fixedPassFailPresenter;
     TestSettingsInterpreterImpl interpreter{runningATest, adaptiveMethod,
         fixedLevelMethod, cyclicTargetsReader, targetsWithReplacementReader,
-        predeterminedTargets, everyTargetOnce, silentIntervalTargets,
-        eachTargetNTimes, targetsWithReplacement, adaptiveTrackFactory,
-        sessionController, keypressPresenter, emotionPresenter,
-        childEmotionPresenter, fixedPassFailPresenter};
+        everyTargetOnce, silentIntervalTargets, eachTargetNTimes,
+        targetsWithReplacement, adaptiveTrackFactory, sessionController,
+        keypressPresenter, emotionPresenter, childEmotionPresenter,
+        fixedPassFailPresenter};
     TestIdentity testIdentity;
 };
 
@@ -249,33 +248,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         fixedLevelMethod.targetList, &everyTargetOnce);
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithPredeterminedTargetsAndAudioRecordingSelectsAudioRecordingPeripheral) {
-    initializeTest(interpreter,
-        Method::fixedLevelFreeResponseWithPredeterminedTargets,
-        "audio recording");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        fixedLevelMethod.targetList, &predeterminedTargets);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithPredeterminedTargetsAudioRecordingAndEyeTrackingSelectsAudioRecordingAndEyeTracking) {
-    initializeTest(interpreter,
-        Method::fixedLevelFreeResponseWithPredeterminedTargets,
-        "audio recording eye tracking");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        fixedLevelMethod.targetList, &predeterminedTargets);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelButtonResponseWithPredeterminedTargetsAudioRecordingEyeTrackingAndVibrotactileSelectsAudioRecordingAndEyeTracking) {
-    initializeTest(interpreter,
-        Method::fixedLevelButtonResponseWithPredeterminedTargets,
-        "audio recording eye tracking vibrotactile");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        fixedLevelMethod.targetList, &predeterminedTargets);
-}
-
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
     initializeTest(interpreter, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -346,23 +318,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         "eye tracking");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &targetsWithReplacement);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithPredeterminedTargetsAndEyeTrackingInitializesFixedLevelTest) {
-    initializeTest(interpreter,
-        Method::fixedLevelFreeResponseWithPredeterminedTargets, "eye tracking");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        fixedLevelMethod.targetList, &predeterminedTargets);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithPredeterminedTargetsInitializesFixedLevelTest) {
-    initializeTest(
-        interpreter, Method::fixedLevelFreeResponseWithPredeterminedTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        fixedLevelMethod.targetList, &predeterminedTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.observer.empty());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

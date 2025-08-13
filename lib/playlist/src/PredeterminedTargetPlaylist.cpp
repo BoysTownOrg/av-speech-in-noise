@@ -5,8 +5,12 @@
 
 namespace av_speech_in_noise {
 PredeterminedTargetPlaylist::PredeterminedTargetPlaylist(
-    TextFileReader &fileReader, TargetValidator &fileValidator)
-    : fileReader{fileReader}, targetValidator{fileValidator} {}
+    ConfigurationRegistry &registry, TextFileReader &fileReader,
+    TargetValidator &fileValidator, FixedLevelMethod &fixedLevelMethod)
+    : fileReader{fileReader}, targetValidator{fileValidator},
+      fixedLevelMethod{fixedLevelMethod} {
+    registry.subscribe(*this, "method");
+}
 
 // https://stackoverflow.com/a/25829178
 static auto trim(std::string s) -> std::string {
@@ -50,5 +54,12 @@ auto PredeterminedTargetPlaylist::empty() -> bool { return targets.empty(); }
 
 void PredeterminedTargetPlaylist::reinsertCurrent() {
     targets.push_back(current_);
+}
+
+void PredeterminedTargetPlaylist::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "method")
+        if (contains(value, "predetermined stimuli"))
+            fixedLevelMethod.initialize(this);
 }
 }

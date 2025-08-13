@@ -104,7 +104,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
         AdaptiveMethod &adaptiveMethod, FixedLevelMethod &fixedLevelMethod,
         TargetPlaylistReader &cyclicTargetsReader,
         TargetPlaylistReader &targetsWithReplacementReader,
-        FiniteTargetPlaylistWithRepeatables &predeterminedTargets,
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
         FiniteTargetPlaylist &eachTargetNTimes,
@@ -129,7 +128,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
     AdaptiveTrack::Factory &adaptiveTrackFactory;
     TargetPlaylistReader &cyclicTargetsReader;
     TargetPlaylistReader &targetsWithReplacementReader;
-    FiniteTargetPlaylistWithRepeatables &predeterminedTargets;
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce;
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets;
     FiniteTargetPlaylist &eachTargetNTimes;
