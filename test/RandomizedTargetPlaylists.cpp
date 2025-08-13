@@ -430,7 +430,7 @@ RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(reinsertCurrent) {
 }
 
 EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(tbd) {
-    list.configure("method", "fixed-level free response all stimuli");
+    list.configure("method", "fixed-level consonants");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&list, method.targetList);
 }
 

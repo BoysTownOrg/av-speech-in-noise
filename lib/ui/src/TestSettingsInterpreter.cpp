@@ -248,7 +248,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         break;
     case Method::fixedLevelConsonants:
         av_speech_in_noise::initialize(configurables, contents, [&]() {
-            fixedLevelMethod.initialize(&eachTargetNTimes);
             av_speech_in_noise::initialize(runningATest, fixedLevelMethod);
         });
         break;
@@ -310,7 +309,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     TargetPlaylistReader &targetsWithReplacementReader,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
-    FiniteTargetPlaylist &eachTargetNTimes,
     TargetPlaylist &targetsWithReplacement,
     AdaptiveTrack::Factory &adaptiveTrackFactory,
     SessionController &sessionController, TaskPresenter &keypressPresenter,
@@ -323,7 +321,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       targetsWithReplacementReader{targetsWithReplacementReader},
       everyTargetOnce{everyTargetOnce},
       silentIntervalTargets{silentIntervalTargets},
-      eachTargetNTimes{eachTargetNTimes},
       targetsWithReplacement{targetsWithReplacement},
       sessionController{sessionController},
       keypressPresenter{keypressPresenter}, emotionPresenter{emotionPresenter},
