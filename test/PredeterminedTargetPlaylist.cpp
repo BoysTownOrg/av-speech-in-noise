@@ -1,3 +1,5 @@
+#include "ConfigurationRegistryStub.hpp"
+#include "FixedLevelMethodStub.hpp"
 #include "assert-utility.hpp"
 
 #include <av-speech-in-noise/playlist/PredeterminedTargetPlaylist.hpp>
@@ -49,7 +51,10 @@ class PredeterminedTargetPlaylistTests : public ::testing::Test {
   protected:
     TextFileReaderStub fileReader;
     FileValidatorStub fileValidator;
-    PredeterminedTargetPlaylist playlist{fileReader, fileValidator};
+    ConfigurationRegistryStub registry;
+    FixedLevelMethodStub method;
+    PredeterminedTargetPlaylist playlist{
+        registry, fileReader, fileValidator, method};
 };
 
 TEST_F(PredeterminedTargetPlaylistTests, passesPlaylistToTextFileReader) {
@@ -176,11 +181,20 @@ TEST_F(PredeterminedTargetPlaylistTests, ignoresEmptyLines) {
     playlist.load({});
 }
 
+TEST_F(PredeterminedTargetPlaylistTests, tbd) {
+    playlist.configure(
+        "method", "fixed-level free response predetermined stimuli");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&playlist, method.targetList);
+}
+
 TEST(PredeterminedTargetPlaylistWithFailingFileReaderTests,
     throwsLoadFailureIfFileNotFound) {
     FailingFileReader fileReader;
     FileValidatorStub fileValidator;
-    PredeterminedTargetPlaylist playlist{fileReader, fileValidator};
+    ConfigurationRegistryStub registry;
+    FixedLevelMethodStub method;
+    PredeterminedTargetPlaylist playlist{
+        registry, fileReader, fileValidator, method};
     try {
         playlist.load({});
         FAIL() << "Expected TargetPlaylist::LoadFailure";
