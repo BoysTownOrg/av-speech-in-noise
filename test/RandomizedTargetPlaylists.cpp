@@ -1,5 +1,6 @@
 #include "ConfigurationRegistryStub.hpp"
 #include "DirectoryReaderStub.hpp"
+#include "FixedLevelMethodStub.hpp"
 #include "assert-utility.hpp"
 #include "CannotReadDirectory.hpp"
 
@@ -176,8 +177,9 @@ class EachTargetPlayedOnceThenShuffleAndRepeatTests : public ::testing::Test {
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
     ConfigurationRegistryStub registry;
+    FixedLevelMethodStub method;
     EachTargetPlayedOnceThenShuffleAndRepeat list{
-        registry, &reader, &randomizer};
+        registry, &reader, &randomizer, method};
 };
 
 #define RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(a)                    \
@@ -425,6 +427,11 @@ RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(reinsertCurrent) {
     reinsertCurrent(list);
     assertNextEquals(list, "C:/c");
     assertNextEquals(list, "C:/b");
+}
+
+EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(tbd) {
+    list.configure("method", "fixed-level free response all stimuli");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&list, method.targetList);
 }
 
 CYCLIC_RANDOMIZED_TARGET_PLAYLIST_TEST(nextCyclesBackToBeginningOfFiles) {
