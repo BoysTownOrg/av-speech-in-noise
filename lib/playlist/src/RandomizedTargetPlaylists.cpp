@@ -1,5 +1,7 @@
 #include "RandomizedTargetPlaylists.hpp"
 #include "SubdirectoryTargetPlaylistReader.hpp"
+#include "av-speech-in-noise/core/Configuration.hpp"
+#include "av-speech-in-noise/core/IFixedLevelMethod.hpp"
 
 #include <algorithm>
 #include <filesystem>
@@ -131,15 +133,20 @@ auto CyclicRandomizedTargetPlaylist::directory() -> LocalUrl {
 
 EachTargetPlayedOnceThenShuffleAndRepeat::
     EachTargetPlayedOnceThenShuffleAndRepeat(ConfigurationRegistry &registry,
-        DirectoryReader *reader, target_list::Randomizer *randomizer)
-    : reader{reader}, randomizer{randomizer} {
+        DirectoryReader *reader, target_list::Randomizer *randomizer,
+        FixedLevelMethod &method)
+    : reader{reader}, randomizer{randomizer}, method{method} {
     registry.subscribe(*this, "target repetitions");
+    registry.subscribe(*this, "method");
 }
 
 void EachTargetPlayedOnceThenShuffleAndRepeat::configure(
     const std::string &key, const std::string &value) {
     if (key == "target repetitions")
         repeats = integer(value);
+    else if (key == "method")
+        if (contains(value, "all stimuli"))
+            method.initialize(this);
 }
 
 void EachTargetPlayedOnceThenShuffleAndRepeat::load(const LocalUrl &d) {

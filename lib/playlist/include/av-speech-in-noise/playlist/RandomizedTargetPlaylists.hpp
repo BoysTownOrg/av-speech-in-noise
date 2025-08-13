@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_LIB_PLAYLIST_INCLUDE_AVSPEECHINNOISE_PLAYLIST_RANDOMIZEDTARGETPLAYLISTSHPP_
 
 #include "SubdirectoryTargetPlaylistReader.hpp"
+#include "av-speech-in-noise/core/IFixedLevelMethod.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/TargetPlaylist.hpp>
@@ -111,22 +112,24 @@ class EachTargetPlayedOnceThenShuffleAndRepeat : public FiniteTargetPlaylist,
     class Factory : public TargetPlaylistFactory {
       public:
         Factory(ConfigurationRegistry &registry, DirectoryReader *reader,
-            target_list::Randomizer *randomizer)
-            : registry{registry}, reader{reader}, randomizer{randomizer} {}
+            target_list::Randomizer *randomizer, FixedLevelMethod &method)
+            : registry{registry}, reader{reader}, randomizer{randomizer},
+              method{method} {}
 
         auto make() -> std::shared_ptr<TargetPlaylist> override {
             return std::make_shared<EachTargetPlayedOnceThenShuffleAndRepeat>(
-                registry, reader, randomizer);
+                registry, reader, randomizer, method);
         }
 
       private:
         ConfigurationRegistry &registry;
         DirectoryReader *reader;
         target_list::Randomizer *randomizer;
+        FixedLevelMethod &method;
     };
 
-    EachTargetPlayedOnceThenShuffleAndRepeat(
-        ConfigurationRegistry &, DirectoryReader *, target_list::Randomizer *);
+    EachTargetPlayedOnceThenShuffleAndRepeat(ConfigurationRegistry &,
+        DirectoryReader *, target_list::Randomizer *, FixedLevelMethod &);
     void load(const LocalUrl &directory) override;
     auto next() -> LocalUrl override;
     auto current() -> LocalUrl override;
@@ -140,6 +143,7 @@ class EachTargetPlayedOnceThenShuffleAndRepeat : public FiniteTargetPlaylist,
     LocalUrl currentFile{};
     DirectoryReader *reader;
     target_list::Randomizer *randomizer;
+    FixedLevelMethod &method;
     LocalUrls::const_iterator currentFileIt{};
     gsl::index repeats{0};
     gsl::index endOfPlaylistCount{};
