@@ -1,11 +1,10 @@
 #include "RunningATest.hpp"
 #include "Configuration.hpp"
 #include "IOutputFile.hpp"
-#include "av-speech-in-noise/Model.hpp"
 
-#include <algorithm>
 #include <gsl/gsl>
 
+#include <algorithm>
 #include <functional>
 #include <vector>
 
@@ -295,14 +294,13 @@ void RunningATestImpl::attach(RunningATest::RequestObserver *listener) {
     requestObserver = listener;
 }
 
-void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test) {
+void RunningATestImpl::initialize(TestMethod *testMethod) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     if (testMethod->complete())
         return;
 
     this->testMethod = testMethod;
-    this->test = test;
     trialNumber_ = 1;
 
     tryOpening(outputFile, testIdentity);
@@ -329,7 +327,7 @@ void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test) {
         maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
     }
 
-    if (test.enableVibrotactileStimulus)
+    if (enableVibrotactileStimulus)
         maskerPlayer.enableVibrotactileStimulus();
     else
         maskerPlayer.disableVibrotactileStimulus();
@@ -498,6 +496,7 @@ void RunningATestImpl::configure(
     else if (key == "meta")
         testIdentity.meta = value;
     else if (key == "method") {
+        enableVibrotactileStimulus = contains(value, "button response");
         testIdentity.method = value;
         audioChannelOption = AudioChannelOption::all;
         if (contains(value, "not spatial"))

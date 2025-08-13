@@ -276,15 +276,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         fixedLevelMethod.targetList, &predeterminedTargets);
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelButtonResponseWithPredeterminedTargetsAndVibrotactileEnablesVibrotactile) {
-    initializeTest(interpreter,
-        Method::fixedLevelButtonResponseWithPredeterminedTargets,
-        "vibrotactile");
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        runningATest.test.enableVibrotactileStimulus);
-}
-
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
     initializeTest(interpreter, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(

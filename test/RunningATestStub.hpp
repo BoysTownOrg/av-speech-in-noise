@@ -9,8 +9,7 @@ class RunningATestStub : public RunningATest {
     void attach(RunningATest::RequestObserver *a) override {
         facadeObserver = a;
     }
-    void initialize(TestMethod *tm, const Test &t) override {
-        test = t;
+    void initialize(TestMethod *tm) override {
         testMethod = tm;
         if (failOnRequest)
             throw RequestFailure{errorMessage};
@@ -51,7 +50,6 @@ class RunningATestStub : public RunningATest {
     AudioSettings trialAudioSettings;
     AudioDevices audioDevices_;
     coordinate_response_measure::Response coordinateResponse;
-    Test test;
     RunningATest::RequestObserver *facadeObserver;
     const TestMethod *testMethod{};
     std::vector<std::reference_wrapper<TestObserver>> observer{};
