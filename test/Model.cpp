@@ -190,10 +190,7 @@ class RunningATestStub : public RunningATest {
         fixedLevelMethodStub.log("TOOLATE ");
     }
 
-    void initialize(TestMethod *method, const Test &test) override {
-        testMethod_ = method;
-        test_ = &test;
-    }
+    void initialize(TestMethod *method) override { testMethod_ = method; }
 
     auto trialNumber() -> int override { return trialNumber_; }
 
@@ -232,8 +229,6 @@ class RunningATestStub : public RunningATest {
     }
 
     [[nodiscard]] auto testMethod() const { return testMethod_; }
-
-    [[nodiscard]] auto test() const { return test_; }
 
     [[nodiscard]] auto playTrialSettings() const { return playTrialSettings_; }
 
@@ -276,7 +271,6 @@ class RunningATestStub : public RunningATest {
     const Calibration *leftSpeakerCalibration_{};
     const Calibration *rightSpeakerCalibration_{};
     const AudioSettings *playTrialSettings_{};
-    const Test *test_{};
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
     int trialNumber_{};

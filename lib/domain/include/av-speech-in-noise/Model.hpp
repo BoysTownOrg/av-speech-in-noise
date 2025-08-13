@@ -141,10 +141,6 @@ struct RationalNumber {
     int denominator;
 };
 
-struct Test {
-    bool enableVibrotactileStimulus{};
-};
-
 struct RealLevelDifference {
     int dB;
 };
@@ -183,7 +179,7 @@ struct KeywordsTestResults {
 
 using AdaptiveTestResults = typename std::vector<AdaptiveTestResult>;
 
-struct FixedLevelFixedTrialsTest : Test {
+struct FixedLevelFixedTrialsTest {
     int trials{30};
 };
 

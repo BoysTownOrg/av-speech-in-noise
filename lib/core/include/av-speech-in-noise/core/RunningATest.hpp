@@ -32,7 +32,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     RunningATestImpl(TargetPlayer &, MaskerPlayer &, ResponseEvaluator &,
         OutputFile &, Randomizer &, Clock &, ConfigurationRegistry &);
     void attach(RunningATest::RequestObserver *) override;
-    void initialize(TestMethod *, const Test &) override;
+    void initialize(TestMethod *) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
     void playLeftSpeakerCalibration(const Calibration &) override;
@@ -56,7 +56,6 @@ class RunningATestImpl : public TargetPlayer::Observer,
         targetOnsetFringeDuration};
 
   private:
-    Test test;
     TestIdentity testIdentity;
     RationalNumber videoScale{2, 3};
     MaskerPlayer &maskerPlayer;
@@ -77,6 +76,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     AudioChannelOption audioChannelOption;
     bool trialInProgress_{};
     bool keepVideoShown{};
+    bool enableVibrotactileStimulus{};
 };
 }
 

@@ -84,13 +84,11 @@ class UseCase {
 
 class InitializingTest : public UseCase {
   public:
-    explicit InitializingTest(TestMethod *method, const Test &test)
-        : test{test}, method{method} {}
+    explicit InitializingTest(TestMethod *method) : method{method} {}
 
-    void run(RunningATestImpl &m) override { m.initialize(method, test); }
+    void run(RunningATestImpl &m) override { m.initialize(method); }
 
   private:
-    const Test &test{};
     TestMethod *method;
     std::vector<std::reference_wrapper<RunningATest::TestObserver>> observer;
 };
@@ -101,9 +99,8 @@ class InitializingTestWithSingleSpeaker : public UseCase {
         : method{method} {}
 
     void run(RunningATestImpl &m) override {
-        Test test;
         m.configure("method", "adaptive pass fail not spatial");
-        m.initialize(method, test);
+        m.initialize(method);
     }
 
   private:
@@ -116,9 +113,8 @@ class InitializingTestWithDelayedMasker : public UseCase {
         : method{method} {}
 
     void run(RunningATestImpl &m) override {
-        Test test;
         m.configure("method", "adaptive pass fail spatial");
-        m.initialize(method, test);
+        m.initialize(method);
     }
 
   private:
@@ -463,10 +459,9 @@ class RunningATestTests : public ::testing::Test {
         calibration, maskerPlayer};
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{
         calibration, maskerPlayer};
-    av_speech_in_noise::Test test{};
     RunningATestObserverStub observer;
     RunningATestObserverStub secondObserver;
-    InitializingTest initializingTest{&testMethod, test};
+    InitializingTest initializingTest{&testMethod};
     InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
         &testMethod};
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
@@ -736,13 +731,14 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestEnablesVibrotactileStimulus) {
-    test.enableVibrotactileStimulus = true;
+    model.configure(
+        "method", "fixed-level button response predetermined stimuli");
     run(initializingTest, model);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(maskerPlayer.vibrotactileStimulusEnabled);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestDisablesVibrotactileStimulus) {
-    test.enableVibrotactileStimulus = false;
+    model.configure("method", "adaptive CRM");
     run(initializingTest, model);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(maskerPlayer.vibrotactileStimulusDisabled);
 }
