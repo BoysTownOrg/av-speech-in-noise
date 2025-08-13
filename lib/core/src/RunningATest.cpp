@@ -136,16 +136,16 @@ static constexpr auto operator-(
     return DigitalLevel{a.dB - b.dBov};
 }
 
-static auto levelAmplification(TargetPlayer &player, const Calibration &p)
-    -> LevelAmplification {
+static auto levelAmplification(TargetPlayer &player, RealLevel fullScaleLevel,
+    const Calibration &p) -> LevelAmplification {
     return LevelAmplification{
-        DigitalLevel{p.level - p.fullScaleLevel - player.digitalLevel()}.dBov};
+        DigitalLevel{p.level - fullScaleLevel - player.digitalLevel()}.dBov};
 }
 
-static auto levelAmplification(MaskerPlayer &player, const Calibration &p)
-    -> LevelAmplification {
+static auto levelAmplification(MaskerPlayer &player, RealLevel fullScaleLevel,
+    const Calibration &p) -> LevelAmplification {
     return LevelAmplification{
-        DigitalLevel{p.level - p.fullScaleLevel - player.digitalLevel()}.dBov};
+        DigitalLevel{p.level - fullScaleLevel - player.digitalLevel()}.dBov};
 }
 
 static void show(TargetPlayer &player) { player.showVideo(); }
@@ -172,21 +172,23 @@ static constexpr auto operator-(const Duration &a, const Duration &b)
 }
 
 static void play(TargetPlayer &targetPlayer, const Calibration &calibration,
-    RationalNumber videoScale) {
+    RealLevel fullScaleLevel, RationalNumber videoScale) {
     throwRequestFailureOnInvalidAudioDevice(
         [&](const auto &device) { setAudioDevice(targetPlayer, device); },
         calibration.audioDevice);
     throwRequestFailureOnInvalidAudioFile(
         [&](const auto &file) {
             loadFile(targetPlayer, file, videoScale);
-            apply(targetPlayer, levelAmplification(targetPlayer, calibration));
+            apply(targetPlayer,
+                levelAmplification(targetPlayer, fullScaleLevel, calibration));
         },
         calibration.fileUrl);
     show(targetPlayer);
     play(targetPlayer);
 }
 
-static void play(MaskerPlayer &maskerPlayer, const Calibration &calibration) {
+static void play(MaskerPlayer &maskerPlayer, RealLevel fullScaleLevel,
+    const Calibration &calibration) {
     maskerPlayer.stop();
     throwRequestFailureOnInvalidAudioDevice(
         [&](const auto &device) { setAudioDevice(maskerPlayer, device); },
@@ -194,33 +196,36 @@ static void play(MaskerPlayer &maskerPlayer, const Calibration &calibration) {
     throwRequestFailureOnInvalidAudioFile(
         [&](const auto &file) {
             loadFile(maskerPlayer, file);
-            apply(maskerPlayer, levelAmplification(maskerPlayer, calibration));
+            apply(maskerPlayer,
+                levelAmplification(maskerPlayer, fullScaleLevel, calibration));
         },
         calibration.fileUrl);
     play(maskerPlayer);
 }
 
 static auto maskerLevelAmplification(MaskerPlayer &maskerPlayer,
-    RealLevel maskerLevel, const Test &test) -> LevelAmplification {
-    return LevelAmplification{DigitalLevel{
-        maskerLevel - test.fullScaleLevel - maskerPlayer.digitalLevel()}
+    RealLevel maskerLevel, RealLevel fullScaleLevel) -> LevelAmplification {
+    return LevelAmplification{
+        DigitalLevel{maskerLevel - fullScaleLevel - maskerPlayer.digitalLevel()}
             .dBov};
 }
 
 static auto targetLevelAmplification(TestMethod *testMethod,
-    MaskerPlayer &maskerPlayer, RealLevel maskerLevel, const Test &test) {
+    MaskerPlayer &maskerPlayer, RealLevel maskerLevel,
+    RealLevel fullScaleLevel) {
     return LevelAmplification{
-        maskerLevelAmplification(maskerPlayer, maskerLevel, test).dB +
+        maskerLevelAmplification(maskerPlayer, maskerLevel, fullScaleLevel).dB +
         testMethod->snr().dB};
 }
 
 static void preparePlayersForNextTrial(TestMethod *testMethod,
     Randomizer &randomizer, TargetPlayer &targetPlayer,
-    MaskerPlayer &maskerPlayer, RealLevel maskerLevel, const Test &test,
+    MaskerPlayer &maskerPlayer, RealLevel maskerLevel, RealLevel fullScaleLevel,
     RationalNumber videoScale) {
     loadFile(targetPlayer, testMethod->nextTarget(), videoScale);
     apply(targetPlayer,
-        targetLevelAmplification(testMethod, maskerPlayer, maskerLevel, test));
+        targetLevelAmplification(
+            testMethod, maskerPlayer, maskerLevel, fullScaleLevel));
     const auto maskerPlayerSeekTimeUpperLimit{
         maskerPlayer.duration() - trialDuration(targetPlayer, maskerPlayer)};
     maskerPlayer.seekSeconds(randomizer.betweenInclusive(
@@ -233,13 +238,14 @@ static void prepareNextTrialIfNeeded(TestMethod *testMethod, int &trialNumber_,
     MaskerPlayer &maskerPlayer,
     const std::vector<std::reference_wrapper<RunningATest::TestObserver>>
         &observers,
-    RealLevel maskerLevel, const Test &test, RationalNumber videoScale) {
+    RealLevel maskerLevel, RealLevel fullScaleLevel,
+    RationalNumber videoScale) {
     for (auto observer : observers)
         observer.get().notifyThatSubjectHasResponded();
     if (!testMethod->complete()) {
         ++trialNumber_;
         preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
-            maskerPlayer, maskerLevel, test, videoScale);
+            maskerPlayer, maskerLevel, fullScaleLevel, videoScale);
     } else {
         testMethod->writeTestResult(outputFile);
         save(outputFile);
@@ -252,11 +258,13 @@ static void saveOutputFileAndPrepareNextTrialAfter(
     MaskerPlayer &maskerPlayer,
     const std::vector<std::reference_wrapper<RunningATest::TestObserver>>
         &observer,
-    RealLevel maskerLevel, const Test &test, RationalNumber videoScale) {
+    RealLevel maskerLevel, RealLevel fullScaleLevel,
+    RationalNumber videoScale) {
     f();
     save(outputFile);
     prepareNextTrialIfNeeded(testMethod, trialNumber_, outputFile, randomizer,
-        targetPlayer, maskerPlayer, observer, maskerLevel, test, videoScale);
+        targetPlayer, maskerPlayer, observer, maskerLevel, fullScaleLevel,
+        videoScale);
 }
 
 RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
@@ -305,9 +313,9 @@ void RunningATestImpl::initialize(TestMethod *testMethod, const Test &test) {
 
     hide(targetPlayer);
     maskerPlayer.apply(
-        maskerLevelAmplification(maskerPlayer, maskerLevel, test));
+        maskerLevelAmplification(maskerPlayer, maskerLevel, fullScaleLevel));
     preparePlayersForNextTrial(testMethod, randomizer, targetPlayer,
-        maskerPlayer, maskerLevel, test, videoScale);
+        maskerPlayer, maskerLevel, fullScaleLevel, videoScale);
     outputFile.write(*this);
 
     useAllChannels(targetPlayer);
@@ -380,33 +388,33 @@ void RunningATestImpl::submit(
             testMethod->writeLastCoordinateResponse(outputFile);
         },
         testMethod, trialNumber_, outputFile, randomizer, targetPlayer,
-        maskerPlayer, testObservers, maskerLevel, test, videoScale);
+        maskerPlayer, testObservers, maskerLevel, fullScaleLevel, videoScale);
 }
 
 void RunningATestImpl::prepareNextTrialIfNeeded() {
     av_speech_in_noise::prepareNextTrialIfNeeded(testMethod, trialNumber_,
         outputFile, randomizer, targetPlayer, maskerPlayer, testObservers,
-        maskerLevel, test, videoScale);
+        maskerLevel, fullScaleLevel, videoScale);
 }
 
 void RunningATestImpl::playCalibration(const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
     targetPlayer.useAllChannels();
-    play(targetPlayer, calibration, RationalNumber{1, 1});
+    play(targetPlayer, calibration, fullScaleLevel, RationalNumber{1, 1});
 }
 
 void RunningATestImpl::playLeftSpeakerCalibration(
     const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
     maskerPlayer.useFirstChannelOnly();
-    play(maskerPlayer, calibration);
+    play(maskerPlayer, fullScaleLevel, calibration);
 }
 
 void RunningATestImpl::playRightSpeakerCalibration(
     const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
     maskerPlayer.useSecondChannelOnly();
-    play(maskerPlayer, calibration);
+    play(maskerPlayer, fullScaleLevel, calibration);
 }
 
 auto RunningATestImpl::testComplete() -> bool { return testMethod->complete(); }

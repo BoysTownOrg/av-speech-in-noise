@@ -142,7 +142,6 @@ struct RationalNumber {
 };
 
 struct Test {
-    RealLevel fullScaleLevel;
     bool enableVibrotactileStimulus{};
 };
 
@@ -195,7 +194,6 @@ struct AudioSettings {
 struct Calibration : AudioSettings {
     LocalUrl fileUrl;
     RealLevel level;
-    RealLevel fullScaleLevel;
 };
 
 using AudioDevices = typename std::vector<std::string>;

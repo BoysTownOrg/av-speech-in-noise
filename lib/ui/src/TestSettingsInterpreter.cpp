@@ -1,5 +1,4 @@
 #include "TestSettingsInterpreter.hpp"
-#include "SessionController.hpp"
 
 #include <gsl/gsl>
 
@@ -116,7 +115,7 @@ static auto methodWithName(const std::string &contents)
     throw std::runtime_error{"Test method not found"};
 }
 
-static void initialize(Test &test,
+static void initialize(
     const std::map<std::string,
         std::vector<std::reference_wrapper<Configurable>>> &configurables,
     const std::string &contents) {
@@ -125,7 +124,6 @@ static void initialize(Test &test,
             broadcast(configurables, key, value);
         },
         contents);
-    test.fullScaleLevel = SessionControllerImpl::fullScaleLevel;
 }
 
 static void initialize(
@@ -133,7 +131,7 @@ static void initialize(
         std::vector<std::reference_wrapper<Configurable>>> &configurables,
     const std::string &contents, const std::function<void(Test &)> &f) {
     Test test;
-    av_speech_in_noise::initialize(test, configurables, contents);
+    av_speech_in_noise::initialize(configurables, contents);
     f(test);
 }
 
@@ -143,7 +141,7 @@ static void initializeFixedLevelFixedTrialsTest(
     const std::string &contents,
     const std::function<void(const FixedLevelFixedTrialsTest &)> &f) {
     FixedLevelFixedTrialsTest test;
-    av_speech_in_noise::initialize(test, configurables, contents);
+    av_speech_in_noise::initialize(configurables, contents);
     f(test);
 }
 
@@ -316,7 +314,6 @@ auto TestSettingsInterpreterImpl::calibration(const std::string &contents)
             assign(calibration, entryName, entry);
         },
         contents);
-    calibration.fullScaleLevel = SessionControllerImpl::fullScaleLevel;
     return calibration;
 }
 

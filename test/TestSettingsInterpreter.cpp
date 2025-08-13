@@ -72,20 +72,6 @@ void initializeTest(TestSettingsInterpreterImpl &interpreter,
         concatenate(v), identity, std::to_string(startingSnr));
 }
 
-void assertPassesSettingsWithExtraneousWhitespace(
-    TestSettingsInterpreterImpl &interpreter, Method m,
-    const Test &fixedLevelTest) {
-    initializeTest(interpreter,
-        {withNewLine(std::string{"  "} + name(TestSetting::method) +
-             std::string{" :  "} + name(m) + "  "),
-            "targets :a \n", entryWithNewline(TestSetting::masker, "b"),
-            entryWithNewline(TestSetting::maskerLevel, "65")},
-        5);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        SessionControllerImpl::fullScaleLevel.dB_SPL,
-        fixedLevelTest.fullScaleLevel.dB_SPL);
-}
-
 void initializeTest(TestSettingsInterpreterImpl &interpreter, Method m,
     const TestIdentity &identity = {}, int startingSnr = {}) {
     initializeTest(interpreter, {entryWithNewline(TestSetting::method, m)},
@@ -402,9 +388,6 @@ TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
             entryWithNewline(TestSetting::maskerLevel, "1")}))};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, calibration.fileUrl.path);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, calibration.level.dB_SPL);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        SessionControllerImpl::fullScaleLevel.dB_SPL,
-        calibration.fullScaleLevel.dB_SPL);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(throwsRuntimeErrorIfMethodUnknown) {
@@ -484,12 +467,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementOverridesStartingSnr) {
     assertOverridesStartingSnr(interpreter,
         Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithAllTargetsPassesSettingsWithExtraneousWhitespace) {
-    assertPassesSettingsWithExtraneousWhitespace(interpreter,
-        Method::fixedLevelFreeResponseWithAllTargets, runningATest.test);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(tbd) {

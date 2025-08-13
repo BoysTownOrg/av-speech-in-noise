@@ -360,10 +360,6 @@ auto secondsSeeked(MaskerPlayerStub &player) -> double {
     return player.secondsSeeked();
 }
 
-void setFullScaleLevel_dB_SPL(Test &test, int x) {
-    test.fullScaleLevel.dB_SPL = x;
-}
-
 void setMaskerFilePath(RunningATestImpl &model, const std::string &value) {
     model.configure("masker", value);
 }
@@ -577,12 +573,11 @@ class RunningATestTests : public ::testing::Test {
 
     void assertSetsTargetLevel(UseCase &useCase) {
         setMaskerLevel_dB_SPL(model, "3");
-        setFullScaleLevel_dB_SPL(test, 4);
         run(initializingTest, model);
         setDigitalLevel(maskerPlayer, DigitalLevel{5.5});
         setSnr_dB(testMethod, 2.2);
         run(useCase, model);
-        assertLevelEquals_dB(targetPlayer, 2.2 + 3 - 4 - 5.5);
+        assertLevelEquals_dB(targetPlayer, 2.2 + 3 - 119 - 5.5);
     }
 
     void assertResponseDoesNotLoadNextTargetWhenComplete(UseCase &useCase) {
@@ -1010,19 +1005,17 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsInitialMaskerPlayerLevel) {
     setMaskerLevel_dB_SPL(model, "1");
-    setFullScaleLevel_dB_SPL(test, 2);
     setDigitalLevel(maskerPlayer, DigitalLevel{3});
     run(initializingTest, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1 - 2 - 3., maskerPlayer.level_dB());
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1 - 119 - 3., maskerPlayer.level_dB());
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsTargetPlayerLevel) {
     setSnr_dB(testMethod, 2);
     setMaskerLevel_dB_SPL(model, "3");
-    setFullScaleLevel_dB_SPL(test, 4);
     setDigitalLevel(maskerPlayer, DigitalLevel{5});
     run(initializingTest, model);
-    assertLevelEquals_dB(targetPlayer, 2 + 3 - 4 - 5);
+    assertLevelEquals_dB(targetPlayer, 2 + 3 - 119 - 5);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseSetsTargetPlayerLevel) {
@@ -1036,10 +1029,10 @@ RECOGNITION_TEST_MODEL_TEST(preparingNextTrialIfNeededSetsTargetPlayerLevel) {
 void assertLevelSet(Calibration &calibration, PlayerLevelUseCase &useCase,
     RunningATestImpl &model) {
     calibration.level.dB_SPL = 1;
-    calibration.fullScaleLevel.dB_SPL = 2;
     useCase.set(DigitalLevel{3});
     run(useCase, model);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1 - 2 - 3, useCase.levelAmplification().dB);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        1 - 119 - 3, useCase.levelAmplification().dB);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {

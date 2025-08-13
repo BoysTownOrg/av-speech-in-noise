@@ -69,6 +69,7 @@ class RunningATestImpl : public TargetPlayer::Observer,
     std::vector<std::reference_wrapper<TestObserver>> testObservers;
     LocalUrl maskerFileUrl;
     RealLevel maskerLevel;
+    RealLevel fullScaleLevel{119};
     RunningATest::RequestObserver *requestObserver{};
     TestMethod *testMethod{};
     int trialNumber_{};
