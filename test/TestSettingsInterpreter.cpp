@@ -115,7 +115,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TargetPlaylistSetReaderStub targetsWithReplacementReader;
     FiniteTargetPlaylistWithRepeatablesStub everyTargetOnce;
     FiniteTargetPlaylistWithRepeatablesStub silentIntervalTargets;
-    FiniteTargetPlaylistStub eachTargetNTimes;
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
     TrackFactoryStub adaptiveTrackFactory;
@@ -125,10 +124,9 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TaskPresenterStub fixedPassFailPresenter;
     TestSettingsInterpreterImpl interpreter{runningATest, adaptiveMethod,
         fixedLevelMethod, cyclicTargetsReader, targetsWithReplacementReader,
-        everyTargetOnce, silentIntervalTargets, eachTargetNTimes,
-        targetsWithReplacement, adaptiveTrackFactory, sessionController,
-        keypressPresenter, emotionPresenter, childEmotionPresenter,
-        fixedPassFailPresenter};
+        everyTargetOnce, silentIntervalTargets, targetsWithReplacement,
+        adaptiveTrackFactory, sessionController, keypressPresenter,
+        emotionPresenter, childEmotionPresenter, fixedPassFailPresenter};
     TestIdentity testIdentity;
 };
 
@@ -396,13 +394,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     runningATest.testComplete_ = true;
     initializeTest(interpreter, Method::adaptivePassFail);
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsInitializesFixedLevelTest) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants)});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        fixedLevelMethod.targetList, &eachTargetNTimes);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsOverridesStartingSnr) {

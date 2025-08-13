@@ -145,7 +145,7 @@ void EachTargetPlayedOnceThenShuffleAndRepeat::configure(
     if (key == "target repetitions")
         repeats = integer(value);
     else if (key == "method")
-        if (contains(value, "all stimuli"))
+        if (contains(value, "consonants"))
             method.initialize(this);
 }
 
