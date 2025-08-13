@@ -142,8 +142,6 @@ struct RationalNumber {
 };
 
 struct Test {
-    LocalUrl maskerFileUrl;
-    RealLevel maskerLevel;
     RealLevel fullScaleLevel;
     bool enableVibrotactileStimulus{};
 };

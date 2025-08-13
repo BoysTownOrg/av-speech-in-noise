@@ -67,6 +67,8 @@ class RunningATestImpl : public TargetPlayer::Observer,
     Clock &clock;
     std::string playTrialTime_;
     std::vector<std::reference_wrapper<TestObserver>> testObservers;
+    LocalUrl maskerFileUrl;
+    RealLevel maskerLevel;
     RunningATest::RequestObserver *requestObserver{};
     TestMethod *testMethod{};
     int trialNumber_{};
