@@ -40,8 +40,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return tracksResetted_;
     }
 
-    void initialize(
-        TargetPlaylistReader *reader, AdaptiveTrack::Factory *) override {
+    void initialize(TargetPlaylistReader *reader) override {
         targetListReader_ = reader;
     }
 
@@ -88,7 +87,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 
   private:
     AdaptiveTestResults testResults_;
-    std::stringstream log_{};
+    std::stringstream log_;
     TargetPlaylistReader *targetListReader_{};
     bool tracksResetted_{};
 };
@@ -164,7 +163,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
   private:
     KeywordsTestResults keywordsTestResults_{};
-    std::stringstream log_{};
+    std::stringstream log_;
     LocalUrl currentTarget_;
     const ThreeKeywordsResponse *threeKeywords_{};
     const FixedLevelFixedTrialsTest *fixedTrialsTest_{};
@@ -258,11 +257,11 @@ class RunningATestStub : public RunningATest {
 
     void remove(TestObserver &) override {}
 
-    std::vector<std::reference_wrapper<TestObserver>> observer{};
+    std::vector<std::reference_wrapper<TestObserver>> observer;
 
   private:
-    std::vector<std::string> audioDevices_{};
-    std::string targetFileName_{};
+    std::vector<std::string> audioDevices_;
+    std::string targetFileName_;
     std::string playTrialTime_;
     AdaptiveMethodStub &adaptiveMethod;
     FixedLevelMethodStub &fixedLevelMethodStub;

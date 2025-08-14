@@ -21,9 +21,9 @@ struct TargetPlaylistWithTrack {
 
 class AdaptiveMethodImpl : public AdaptiveMethod, public Configurable {
   public:
-    AdaptiveMethodImpl(
-        ConfigurationRegistry &, ResponseEvaluator &, Randomizer &);
-    void initialize(TargetPlaylistReader *, AdaptiveTrack::Factory *) override;
+    AdaptiveMethodImpl(ConfigurationRegistry &, ResponseEvaluator &,
+        Randomizer &, AdaptiveTrack::Factory &);
+    void initialize(TargetPlaylistReader *) override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
     void submit(const CorrectKeywords &) override;
@@ -56,7 +56,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod, public Configurable {
     Randomizer &randomizer;
     AdaptiveTrack *snrTrack{};
     TargetPlaylist *targetList{};
-    AdaptiveTrack::Factory *adaptiveTrackFactory{};
+    AdaptiveTrack::Factory &adaptiveTrackFactory;
 };
 }
 
