@@ -3,7 +3,6 @@
 #include "RunningATestStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "TargetPlaylistStub.hpp"
-#include "TrackStub.hpp"
 #include "assert-utility.hpp"
 
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
@@ -117,7 +116,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     FiniteTargetPlaylistWithRepeatablesStub silentIntervalTargets;
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
-    TrackFactoryStub adaptiveTrackFactory;
     TaskPresenterStub keypressPresenter;
     TaskPresenterStub emotionPresenter;
     TaskPresenterStub childEmotionPresenter;
@@ -125,8 +123,8 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TestSettingsInterpreterImpl interpreter{runningATest, adaptiveMethod,
         fixedLevelMethod, cyclicTargetsReader, targetsWithReplacementReader,
         everyTargetOnce, silentIntervalTargets, targetsWithReplacement,
-        adaptiveTrackFactory, sessionController, keypressPresenter,
-        emotionPresenter, childEmotionPresenter, fixedPassFailPresenter};
+        sessionController, keypressPresenter, emotionPresenter,
+        childEmotionPresenter, fixedPassFailPresenter};
     TestIdentity testIdentity;
 };
 

@@ -86,19 +86,19 @@ static auto testResults(
 }
 
 AdaptiveMethodImpl::AdaptiveMethodImpl(ConfigurationRegistry &registry,
-    ResponseEvaluator &evaluator, Randomizer &randomizer)
-    : evaluator{evaluator}, randomizer{randomizer} {
+    ResponseEvaluator &evaluator, Randomizer &randomizer,
+    AdaptiveTrack::Factory &adaptiveTrackFactory)
+    : evaluator{evaluator}, randomizer{randomizer},
+      adaptiveTrackFactory{adaptiveTrackFactory} {
     registry.subscribe(*this, "targets");
     registry.subscribe(*this, "starting SNR (dB)");
 }
 
-void AdaptiveMethodImpl::initialize(TargetPlaylistReader *targetListSetReader,
-    AdaptiveTrack::Factory *factory) {
-    this->adaptiveTrackFactory = factory;
+void AdaptiveMethodImpl::initialize(TargetPlaylistReader *targetListSetReader) {
     targetListsWithTracks.clear();
     for (const auto &list : targetListSetReader->read(targetsUrl))
         targetListsWithTracks.push_back(
-            {list, factory->make(trackSettings(startingSNR))});
+            {list, adaptiveTrackFactory.make(trackSettings(startingSNR))});
     selectNextList();
 }
 
@@ -196,7 +196,7 @@ void AdaptiveMethodImpl::writeTestResult(OutputFile &file) {
 void AdaptiveMethodImpl::write(std::ostream &stream) {
     insertLabeledLine(stream, "targets", targetsUrl.path);
     insertLabeledLine(stream, "starting SNR (dB)", startingSNR.dB);
-    adaptiveTrackFactory->write(stream);
+    adaptiveTrackFactory.write(stream);
 }
 
 void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile &file) {
