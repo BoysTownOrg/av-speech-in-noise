@@ -1,3 +1,4 @@
+#include "RunningATestStub.hpp"
 #include "assert-utility.hpp"
 #include "TestViewStub.hpp"
 #include "TestControllerStub.hpp"
@@ -5,6 +6,7 @@
 #include <av-speech-in-noise/ui/PassFail.hpp>
 
 #include <gtest/gtest.h>
+#include <utility>
 
 namespace av_speech_in_noise::submitting_pass_fail {
 namespace {
@@ -28,10 +30,17 @@ class UIStub : public UI {
 
     [[nodiscard]] auto hidden() const -> bool { return hidden_; }
 
+    void display(std::string s) override { displayed = std::move(s); }
+
+    void clearDisplay() override { displayCleared = true; }
+
+    std::string displayed;
+    Observer *listener_{};
+    bool displayCleared{};
+
   private:
     bool shown_{};
     bool hidden_{};
-    Observer *listener_{};
 };
 
 class ViewStub : public View {};
@@ -75,7 +84,8 @@ class SubmittingPassFailPresenterTests : public ::testing::Test {
     UIStub ui;
     TestControllerStub testController;
     TestViewStub testView;
-    Presenter presenter{testController, testView, model, ui};
+    RunningATestStub runningATest;
+    Presenter presenter{runningATest, testController, testView, model, ui};
 };
 
 #define PASS_FAIL_PRESENTER_TEST(a) TEST_F(SubmittingPassFailPresenterTests, a)
@@ -122,8 +132,7 @@ PASS_FAIL_PRESENTER_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterCorrectButtonIsClicked) {
     start(presenter);
     notifyThatCorrectButtonHasBeenClicked(ui);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testController
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
 }
 
@@ -131,9 +140,26 @@ PASS_FAIL_PRESENTER_TEST(
     responderNotifiesThatUserIsReadyForNextTrialAfterIncorrectButtonIsClicked) {
     start(presenter);
     notifyThatIncorrectButtonHasBeenClicked(ui);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(
-        testController
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(testController
             .notifiedThatUserIsDoneRespondingForATestThatMayContinueAfterCompletion());
+}
+
+PASS_FAIL_PRESENTER_TEST(showsTargetFilename) {
+    start(presenter);
+    runningATest.targetFileName_ = "hi";
+    ui.listener_->notifyThatShowAnswerButtonHasBeenClicked();
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("hi", ui.displayed);
+}
+
+PASS_FAIL_PRESENTER_TEST(clearsDisplay) {
+    start(presenter);
+    AV_SPEECH_IN_NOISE_EXPECT_FALSE(ui.displayCleared);
+    notifyThatCorrectButtonHasBeenClicked(ui);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(ui.displayCleared);
+
+    ui.displayCleared = false;
+    notifyThatIncorrectButtonHasBeenClicked(ui);
+    AV_SPEECH_IN_NOISE_EXPECT_TRUE(ui.displayCleared);
 }
 }
 }
