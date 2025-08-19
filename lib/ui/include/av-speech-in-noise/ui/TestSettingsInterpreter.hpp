@@ -5,11 +5,16 @@
 #include "Task.hpp"
 #include "TestSetupImpl.hpp"
 
+#include <av-speech-in-noise/core/Configuration.hpp>
 #include <av-speech-in-noise/core/IAdaptiveMethod.hpp>
 #include <av-speech-in-noise/core/IFixedLevelMethod.hpp>
 #include <av-speech-in-noise/core/IRunningATest.hpp>
 #include <av-speech-in-noise/core/TargetPlaylist.hpp>
 #include <cstdint>
+#include <functional>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace av_speech_in_noise {
 enum class Method : std::uint8_t {
@@ -182,7 +187,8 @@ constexpr auto name(TestSetting p) -> const char * {
     }
 }
 
-class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
+class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
+                                    public ConfigurationRegistry {
   public:
     TestSettingsInterpreterImpl(RunningATest &runningATest,
         AdaptiveMethod &adaptiveMethod, FixedLevelMethod &fixedLevelMethod,
@@ -213,8 +219,13 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
         const std::string &, const TestIdentity &, SNR) override;
     static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
+    void subscribe(Configurable &c, const std::string &key) override {
+        configurables[key].emplace_back(c);
+    }
 
   private:
+    std::map<std::string, std::vector<std::reference_wrapper<Configurable>>>
+        configurables;
     RunningATest &runningATest;
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;

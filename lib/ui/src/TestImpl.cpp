@@ -1,5 +1,7 @@
 #include "TestImpl.hpp"
 
+#include <av-speech-in-noise/core/Configuration.hpp>
+
 #include <sstream>
 #include <functional>
 #include <variant>
@@ -102,12 +104,19 @@ void TestControllerImpl::notifyThatUserHasRespondedButTrialIsNotQuiteDone() {
     presenter.hideExitTestButton();
 }
 
-TestPresenterImpl::TestPresenterImpl(RunningATest &runningATest,
-    AdaptiveMethod &adaptiveMethod, TestView &view,
+TestPresenterImpl::TestPresenterImpl(ConfigurationRegistry &registry,
+    RunningATest &runningATest, AdaptiveMethod &adaptiveMethod, TestView &view,
     UninitializedTaskPresenter *taskPresenter)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod}, view{view},
       taskPresenter{taskPresenter} {
     runningATest.attach(this);
+    registry.subscribe(*this, "show target filename");
+}
+
+void TestPresenterImpl::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "show target filename")
+        showTargetFilename = boolean(value);
 }
 
 void TestPresenterImpl::start() { view.show(); }
@@ -139,7 +148,8 @@ void TestPresenterImpl::updateTrialInformation() {
     std::stringstream stream;
     stream << "Trial " << runningATest.trialNumber();
     view.display(stream.str());
-    view.secondaryDisplay(runningATest.targetFileName());
+    if (showTargetFilename)
+        view.secondaryDisplay(runningATest.targetFileName());
 }
 
 void TestPresenterImpl::updateAdaptiveTestResults() {

@@ -1,3 +1,4 @@
+#include "ConfigurationRegistryStub.hpp"
 #include "RunningATestStub.hpp"
 #include "AdaptiveMethodStub.hpp"
 #include "assert-utility.hpp"
@@ -350,8 +351,9 @@ class TestPresenterTests : public ::testing::Test {
     AdaptiveMethodStub adaptiveMethod;
     TestViewStub view;
     UninitializedTaskPresenterStub taskPresenter;
+    ConfigurationRegistryStub registry;
     TestPresenterImpl presenter{
-        runningATest, adaptiveMethod, view, &taskPresenter};
+        registry, runningATest, adaptiveMethod, view, &taskPresenter};
     UpdatingTrialInformation updatingTrialInformation;
     Initializing initializing;
 };
@@ -697,6 +699,15 @@ TEST_PRESENTER_TEST(displaysTrialNumberWhenInitializing) {
 TEST_PRESENTER_TEST(displaysTargetWhenInitializing) {
     AV_SPEECH_IN_NOISE_EXPECT_DISPLAYS_TARGET(
         presenter, runningATest, initializing, view);
+}
+
+TEST_PRESENTER_TEST(doesNotShowTargetFilename) {
+    presenter.configure("show target filename", "false");
+    runningATest.targetFileName_ = "a";
+    run(initializing, presenter);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{""}, view.secondaryDisplayed());
+    run(updatingTrialInformation, presenter);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{""}, view.secondaryDisplayed());
 }
 
 TEST_PRESENTER_TEST(completeTaskCompletesTask) {
