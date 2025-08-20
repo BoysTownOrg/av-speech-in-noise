@@ -1,7 +1,6 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETTINGSINTERPRETER_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_TESTSETTINGSINTERPRETER_HPP_
 
-#include "Task.hpp"
 #include "TestSetupImpl.hpp"
 
 #include <av-speech-in-noise/core/Configuration.hpp>
@@ -107,8 +106,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
         TargetPlaylist &targetsWithReplacement,
-        SessionController &sessionController, TaskPresenter &keypressPresenter,
-        TaskPresenter &fixedPassFailPresenter);
+        SessionController &sessionController);
     void initializeTest(const std::string &, const TestIdentity &,
         const std::string &startingSNR) override;
     static auto meta(const std::string &) -> std::string;
@@ -129,8 +127,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets;
     TargetPlaylist &targetsWithReplacement;
     SessionController &sessionController;
-    TaskPresenter &keypressPresenter;
-    TaskPresenter &fixedPassFailPresenter;
 };
 }
 

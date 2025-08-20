@@ -185,7 +185,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
         break;
     case Method::fixedLevelButtonThenPassFailResponseWithPredeterminedTargets:
-        keypressPresenter.enableDualTask(&fixedPassFailPresenter);
     case Method::fixedLevelButtonResponseWithPredeterminedTargets:
         break;
     case Method::adaptivePassFail:
@@ -292,8 +291,7 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
     TargetPlaylist &targetsWithReplacement,
-    SessionController &sessionController, TaskPresenter &keypressPresenter,
-    TaskPresenter &fixedPassFailPresenter)
+    SessionController &sessionController)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
       fixedLevelMethod{fixedLevelMethod},
       cyclicTargetsReader{cyclicTargetsReader},
@@ -301,7 +299,5 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       everyTargetOnce{everyTargetOnce},
       silentIntervalTargets{silentIntervalTargets},
       targetsWithReplacement{targetsWithReplacement},
-      sessionController{sessionController},
-      keypressPresenter{keypressPresenter},
-      fixedPassFailPresenter{fixedPassFailPresenter} {}
+      sessionController{sessionController} {}
 }

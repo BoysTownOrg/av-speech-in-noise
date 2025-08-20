@@ -3,9 +3,11 @@
 namespace av_speech_in_noise::submitting_fixed_pass_fail {
 Presenter::Presenter(ConfigurationRegistry &registry,
     TestController &testController, TestView &testView, Interactor &interactor,
-    submitting_pass_fail::UI &ui, TestPresenter &testPresenter)
+    submitting_pass_fail::UI &ui, TestPresenter &testPresenter,
+    TaskPresenter &keypressPresenter)
     : testController{testController}, interactor{interactor},
-      testView{testView}, ui{ui}, testPresenter{testPresenter} {
+      testView{testView}, ui{ui}, testPresenter{testPresenter},
+      keypressPresenter{keypressPresenter} {
     registry.subscribe(*this, "method");
 }
 
@@ -31,8 +33,11 @@ void Presenter::showResponseSubmission() {
 }
 
 void Presenter::configure(const std::string &key, const std::string &value) {
-    if (key == "method")
+    if (key == "method") {
         if (contains(value, "fixed-level pass fail"))
             testPresenter.initialize(*this);
+        else if (contains(value, "fixed-level button response pass fail"))
+            keypressPresenter.enableDualTask(this);
+    }
 }
 }

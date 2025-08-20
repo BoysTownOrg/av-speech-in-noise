@@ -16,7 +16,8 @@ class Presenter : public TaskPresenter,
                   public Configurable {
   public:
     Presenter(ConfigurationRegistry &, TestController &, TestView &,
-        Interactor &, submitting_pass_fail::UI &, TestPresenter &);
+        Interactor &, submitting_pass_fail::UI &, TestPresenter &,
+        TaskPresenter &keypressPresenter);
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
     void notifyThatShowAnswerButtonHasBeenClicked() override {}
@@ -32,6 +33,7 @@ class Presenter : public TaskPresenter,
     TestView &testView;
     submitting_pass_fail::UI &ui;
     TestPresenter &testPresenter;
+    TaskPresenter &keypressPresenter;
 };
 }
 

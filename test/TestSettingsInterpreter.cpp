@@ -33,16 +33,6 @@ class SessionControllerStub : public SessionController {
     bool prepareCalled_{};
 };
 
-class TaskPresenterStub : public TaskPresenter {
-  public:
-    void showResponseSubmission() override {}
-    void hideResponseSubmission() override {}
-    void start() override {}
-    void stop() override {}
-    void complete() override {}
-    void notifyThatTrialHasStarted() override {}
-};
-
 auto concatenate(const std::vector<std::string> &v) -> std::string {
     std::string result;
     for (const auto &v_ : v)
@@ -116,12 +106,10 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     FiniteTargetPlaylistWithRepeatablesStub silentIntervalTargets;
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
-    TaskPresenterStub keypressPresenter;
-    TaskPresenterStub fixedPassFailPresenter;
     TestSettingsInterpreterImpl interpreter{runningATest, adaptiveMethod,
         fixedLevelMethod, cyclicTargetsReader, targetsWithReplacementReader,
         everyTargetOnce, silentIntervalTargets, targetsWithReplacement,
-        sessionController, keypressPresenter, fixedPassFailPresenter};
+        sessionController};
     TestIdentity testIdentity;
 };
 

@@ -75,6 +75,16 @@ void stop(TaskPresenter &presenter) { presenter.stop(); }
 
 void start(TaskPresenter &presenter) { presenter.start(); }
 
+class TaskPresenterStub : public TaskPresenter {
+  public:
+    void showResponseSubmission() override {}
+    void hideResponseSubmission() override {}
+    void start() override {}
+    void stop() override {}
+    void complete() override {}
+    void notifyThatTrialHasStarted() override {}
+};
+
 class SubmittingFixedPassFailPresenterTests : public ::testing::Test {
   protected:
     InteractorStub model;
@@ -83,8 +93,9 @@ class SubmittingFixedPassFailPresenterTests : public ::testing::Test {
     TestViewStub testView;
     ConfigurationRegistryStub registry;
     TestPresenterStub testPresenter;
-    Presenter presenter{
-        registry, testController, testView, model, ui, testPresenter};
+    TaskPresenterStub keypressPresenter;
+    Presenter presenter{registry, testController, testView, model, ui,
+        testPresenter, keypressPresenter};
 };
 
 #define PASS_FAIL_PRESENTER_TEST(a)                                            \
