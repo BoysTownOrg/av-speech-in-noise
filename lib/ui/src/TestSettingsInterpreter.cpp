@@ -91,14 +91,14 @@ static void applyToEachEntry(
         f(entryName(line), entry(line));
 }
 
-static auto boolean(const std::string &s) -> bool { return s == "true"; }
-
-static auto integer(const std::string &s) -> int {
-    try {
-        return std::stoi(s);
-    } catch (const std::invalid_argument &) {
-        return 0;
-    }
+static void broadcast(
+    const std::map<std::string,
+        std::vector<std::reference_wrapper<Configurable>>> &configurables,
+    const std::string &key, const std::string &value) {
+    if (const auto search{configurables.find(key)};
+        search != configurables.end())
+        for (const auto each : search->second)
+            each.get().configure(key, value);
 }
 
 static void assign(
@@ -394,11 +394,6 @@ static auto localUrlFromPath(const std::string &path) -> LocalUrl {
     return url;
 }
 
-static auto contains(const std::string_view &s, const std::string &what)
-    -> bool {
-    return s.find(what) != std::string::npos;
-}
-
 void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     const TestIdentity &identity, SNR startingSnr) {
     std::stringstream stream{contents};
@@ -406,6 +401,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     for (std::string line; std::getline(stream, line);) {
         const auto key{entryName(line)};
         const auto value{entry(line)};
+        broadcast(configurables, key, value);
         if (key == name(TestSetting::puzzle)) {
             puzzle.initialize(localUrlFromPath(value));
             usingPuzzle = true;

@@ -39,6 +39,7 @@
 @protocol PassFailUIObserver
 - (void)notifyThatCorrectButtonHasBeenClicked;
 - (void)notifyThatIncorrectButtonHasBeenClicked;
+- (void)notifyThatShowAnswerButtonHasBeenClicked;
 @end
 
 @protocol ChooseKeywordsUI
@@ -133,6 +134,8 @@
 - (void)attach:(id<PassFailUIObserver>)observer;
 - (void)hideEvaluationButtons;
 - (void)showEvaluationButtons;
+- (void)display:(NSString *)text;
+- (void)clearDisplay;
 @end
 
 @protocol TestSetupUIFactory

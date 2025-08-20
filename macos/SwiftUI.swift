@@ -829,15 +829,21 @@ class SwiftCorrectKeywordsUI: NSObject, CorrectKeywordsUI {
 struct SwiftPassFailView: View {
     @ObservedObject var showing: ObservableBool
     @ObservedObject var observableObserver: PassFailUIObserverObservable
+    @ObservedObject var text: ObservableString
 
     init(ui: SwiftPassFailUI) {
         showing = ui.showing
         observableObserver = ui.observableObserver
+        text = ui.text
     }
 
     var body: some View {
         if showing.value {
             Form {
+                Text(text.string)
+                Button("Show Answer", action: {
+                    observableObserver.observer?.notifyThatShowAnswerButtonHasBeenClicked()
+                })
                 HStack {
                     Button("Incorrect", action: {
                         observableObserver.observer?.notifyThatIncorrectButtonHasBeenClicked()
@@ -854,6 +860,7 @@ struct SwiftPassFailView: View {
 class SwiftPassFailUI: NSObject, PassFailUI {
     let showing = ObservableBool()
     let observableObserver = PassFailUIObserverObservable()
+    let text = ObservableString()
 
     func attach(_ observer: PassFailUIObserver!) {
         observableObserver.observer = observer
@@ -865,6 +872,14 @@ class SwiftPassFailUI: NSObject, PassFailUI {
 
     func showEvaluationButtons() {
         showing.value = true
+    }
+
+    func clearDisplay() {
+        text.string = ""
+    }
+
+    func display(_ t: String!) {
+        text.string = t
     }
 }
 

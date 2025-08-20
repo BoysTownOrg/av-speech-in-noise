@@ -28,6 +28,10 @@ class UIStub : public submitting_pass_fail::UI {
 
     [[nodiscard]] auto hidden() const -> bool { return hidden_; }
 
+    void display(std::string) override {}
+
+    void clearDisplay() override {}
+
   private:
     bool shown_{};
     bool hidden_{};

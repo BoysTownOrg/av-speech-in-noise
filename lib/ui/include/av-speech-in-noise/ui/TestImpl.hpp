@@ -5,6 +5,7 @@
 #include "Session.hpp"
 #include "Task.hpp"
 
+#include <av-speech-in-noise/core/Configuration.hpp>
 #include <av-speech-in-noise/core/IAdaptiveMethod.hpp>
 #include <av-speech-in-noise/core/IRunningATest.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
@@ -78,10 +79,12 @@ class UninitializedTaskPresenterImpl : public UninitializedTaskPresenter {
 };
 
 class TestPresenterImpl : public RunningATest::RequestObserver,
-                          public TestPresenter {
+                          public TestPresenter,
+                          public Configurable {
   public:
-    TestPresenterImpl(RunningATest &, AdaptiveMethod &, TestView &,
-        UninitializedTaskPresenter *);
+    TestPresenterImpl(RunningATest &, AdaptiveMethod &,
+        TestView &, UninitializedTaskPresenter *);
+    void subscribe(ConfigurationRegistry &);
     void initialize(TaskPresenter &) override;
     void start() override;
     void stop() override;
@@ -93,12 +96,14 @@ class TestPresenterImpl : public RunningATest::RequestObserver,
     void updateTrialInformation() override;
     void updateAdaptiveTestResults() override;
     void completeTask() override;
+    void configure(const std::string &key, const std::string &value) override;
 
   private:
     RunningATest &runningATest;
     AdaptiveMethod &adaptiveMethod;
     TestView &view;
     UninitializedTaskPresenter *taskPresenter;
+    bool showTargetFilename{true};
 };
 }
 

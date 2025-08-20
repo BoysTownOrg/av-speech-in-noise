@@ -95,6 +95,10 @@
 - (void)notifyThatIncorrectButtonHasBeenClicked {
     observer->notifyThatIncorrectButtonHasBeenClicked();
 }
+
+- (void)notifyThatShowAnswerButtonHasBeenClicked {
+    observer->notifyThatShowAnswerButtonHasBeenClicked();
+}
 @end
 
 @interface SyllablesUIObserverImpl : NSObject <SyllablesUIObserver>
@@ -430,5 +434,9 @@ void UIImpl::attach(Observer *a) {
 void UIImpl::show() { [ui showEvaluationButtons]; }
 
 void UIImpl::hide() { [ui hideEvaluationButtons]; }
+
+void UIImpl::display(std::string s) { [ui display:nsString(s)]; }
+
+void UIImpl::clearDisplay() { [ui clearDisplay]; }
 }
 }

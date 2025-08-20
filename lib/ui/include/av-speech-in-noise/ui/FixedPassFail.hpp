@@ -17,6 +17,7 @@ class Presenter : public TaskPresenter,
         TestController &, TestView &, Interactor &, submitting_pass_fail::UI &);
     void notifyThatCorrectButtonHasBeenClicked() override;
     void notifyThatIncorrectButtonHasBeenClicked() override;
+    void notifyThatShowAnswerButtonHasBeenClicked() override {}
     void start() override;
     void stop() override;
     void hideResponseSubmission() override;

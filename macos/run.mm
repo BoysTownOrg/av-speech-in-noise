@@ -502,7 +502,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     freeResponseController.setNTrialsPerNewPuzzlePiece(5);
     static submitting_pass_fail::InteractorImpl submittingPassFailInteractor{
         adaptiveMethod, runningATest, outputFile};
-    static submitting_pass_fail::Presenter passFailPresenter{
+    static submitting_pass_fail::Presenter passFailPresenter{runningATest,
         testController, testUI, submittingPassFailInteractor, passFailUI};
     static submitting_consonant::InteractorImpl submittingConsonantInteractor{
         fixedLevelMethod, runningATest, outputFile, maskerPlayer};
@@ -559,6 +559,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         testSetupPresenter, runningATest, testSettingsInterpreter,
         textFileReader};
     sessionController.attach(sessionControllerObserver);
+    testPresenter.subscribe(testSettingsInterpreter);
     NSLog(@"Finished main initialization.");
 }
 }
