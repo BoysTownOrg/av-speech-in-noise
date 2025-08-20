@@ -5,9 +5,11 @@
 #include "Task.hpp"
 #include "Test.hpp"
 
+#include <av-speech-in-noise/core/Configuration.hpp>
 #include <av-speech-in-noise/core/IModel.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/Model.hpp>
+#include <vector>
 
 namespace av_speech_in_noise::submitting_emotion {
 class UI : public virtual View {
@@ -24,6 +26,8 @@ class UI : public virtual View {
     virtual auto playButton() -> View & = 0;
     virtual auto cursor() -> View & = 0;
     virtual auto responseButtons() -> View & = 0;
+    virtual void populateResponseButtons(
+        const std::vector<std::vector<Emotion>> &) = 0;
 };
 
 class SystemTime {
@@ -32,9 +36,12 @@ class SystemTime {
     virtual auto nowSeconds() -> double = 0;
 };
 
-class Presenter : public UI::Observer, public TaskPresenter {
+class Presenter : public UI::Observer,
+                  public TaskPresenter,
+                  public Configurable {
   public:
-    Presenter(UI &, TestController &, Interactor &, SystemTime &);
+    Presenter(ConfigurationRegistry &, UI &, TestController &, Interactor &,
+        SystemTime &, TestPresenter &);
     void notifyThatPlayButtonHasBeenClicked() override;
     void notifyThatResponseButtonHasBeenClicked() override;
     void start() override;
@@ -42,12 +49,14 @@ class Presenter : public UI::Observer, public TaskPresenter {
     void showResponseSubmission() override;
     void hideResponseSubmission() override;
     void notifyThatTrialHasStarted() override;
+    void configure(const std::string &key, const std::string &value) override;
 
   private:
     UI &ui;
     TestController &testController;
     Interactor &interactor;
     SystemTime &systemTime;
+    TestPresenter &testPresenter;
     double lastResponseShownSeconds{};
 };
 }

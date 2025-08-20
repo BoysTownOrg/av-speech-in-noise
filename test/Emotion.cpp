@@ -1,3 +1,5 @@
+#include "ConfigurationRegistryStub.hpp"
+#include "TestPresenterStub.hpp"
 #include "assert-utility.hpp"
 #include "TestControllerStub.hpp"
 
@@ -29,6 +31,9 @@ class UIStub : public UI, public ViewStub {
 
     auto cursor() -> View & override { return cursor_; }
 
+    void populateResponseButtons(
+        const std::vector<std::vector<Emotion>> &) override {}
+
     ViewStub playButton_;
     ViewStub responseButtons_;
     ViewStub cursor_;
@@ -55,7 +60,10 @@ class PresenterTests : public ::testing::Test {
     InteractorStub model;
     TestControllerStub testController;
     SystemTimeStub systemTime;
-    Presenter presenter{ui, testController, model, systemTime};
+    ConfigurationRegistryStub registry;
+    TestPresenterStub testPresenter;
+    Presenter presenter{
+        registry, ui, testController, model, systemTime, testPresenter};
 };
 
 #define EMOTION_PRESENTER_TEST(a) TEST_F(PresenterTests, a)
@@ -128,6 +136,12 @@ EMOTION_PRESENTER_TEST(
 EMOTION_PRESENTER_TEST(showsPlayButtonAfterResponseButtonIsClicked) {
     ui.observer->notifyThatResponseButtonHasBeenClicked();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(ui.playButton_.shown);
+}
+
+EMOTION_PRESENTER_TEST(tbd) {
+    presenter.configure(
+        "method", "fixed-level child emotions predetermined stimuli");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&presenter, testPresenter.taskPresenter);
 }
 }
 }

@@ -1,11 +1,31 @@
 #include "Emotion.hpp"
 
 namespace av_speech_in_noise::submitting_emotion {
-Presenter::Presenter(UI &ui, TestController &testController,
-    Interactor &interactor, SystemTime &systemTime)
+Presenter::Presenter(ConfigurationRegistry &registry, UI &ui,
+    TestController &testController, Interactor &interactor,
+    SystemTime &systemTime, TestPresenter &testPresenter)
     : ui{ui}, testController{testController}, interactor{interactor},
-      systemTime{systemTime} {
+      systemTime{systemTime}, testPresenter{testPresenter} {
     ui.attach(this);
+    registry.subscribe(*this, "method");
+}
+
+void Presenter::configure(const std::string &key, const std::string &value) {
+    if (key == "method") {
+        if (contains(value, "emotions")) {
+            testPresenter.initialize(*this);
+            if (contains(value, "child emotions")) {
+                ui.populateResponseButtons({{Emotion::angry},
+                    {Emotion::happy, Emotion::neutral, Emotion::sad},
+                    {Emotion::scared}});
+            } else {
+                ui.populateResponseButtons(
+                    {{Emotion::angry, Emotion::disgusted},
+                        {Emotion::happy, Emotion::neutral, Emotion::sad},
+                        {Emotion::scared, Emotion::surprised}});
+            }
+        }
+    }
 }
 
 void Presenter::start() {

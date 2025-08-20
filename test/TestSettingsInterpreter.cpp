@@ -117,14 +117,11 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
     TaskPresenterStub keypressPresenter;
-    TaskPresenterStub emotionPresenter;
-    TaskPresenterStub childEmotionPresenter;
     TaskPresenterStub fixedPassFailPresenter;
     TestSettingsInterpreterImpl interpreter{runningATest, adaptiveMethod,
         fixedLevelMethod, cyclicTargetsReader, targetsWithReplacementReader,
         everyTargetOnce, silentIntervalTargets, targetsWithReplacement,
-        sessionController, keypressPresenter, emotionPresenter,
-        childEmotionPresenter, fixedPassFailPresenter};
+        sessionController, keypressPresenter, fixedPassFailPresenter};
     TestIdentity testIdentity;
 };
 
@@ -208,14 +205,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initializeTestWith_fixedLevelSyllablesWithAllTargets_PassesTestMethod) {
     ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_METHOD(
         Method::fixedLevelSyllablesWithAllTargets);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializeTestWith_fixedLevelEmotionsWithPredeterminedTargets_PassesTaskPresenter) {
-    initializeTest(
-        interpreter, Method::fixedLevelEmotionsWithPredeterminedTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &emotionPresenter, sessionController.taskPresenter());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -377,14 +366,6 @@ TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
 
 TEST_SETTINGS_INTERPRETER_TEST(meta) {
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", interpreter.meta("meta: a\n"));
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(preparesTestAfterConfirmButtonIsClicked) {
-    runningATest.testComplete_ = false;
-    initializeTest(
-        interpreter, Method::fixedLevelChildEmotionsWithPredeterminedTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &childEmotionPresenter, sessionController.taskPresenter());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

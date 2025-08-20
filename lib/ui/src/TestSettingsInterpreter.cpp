@@ -202,10 +202,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::fixedLevelSyllablesWithAllTargets:
         break;
     case Method::fixedLevelEmotionsWithPredeterminedTargets:
-        taskPresenter = &emotionPresenter;
         break;
     case Method::fixedLevelChildEmotionsWithPredeterminedTargets:
-        taskPresenter = &childEmotionPresenter;
         break;
     case Method::fixedLevelPassFailWithPredeterminedTargets:
         break;
@@ -309,7 +307,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
     TargetPlaylist &targetsWithReplacement,
     SessionController &sessionController, TaskPresenter &keypressPresenter,
-    TaskPresenter &emotionPresenter, TaskPresenter &childEmotionPresenter,
     TaskPresenter &fixedPassFailPresenter)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
       fixedLevelMethod{fixedLevelMethod},
@@ -319,7 +316,6 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
       silentIntervalTargets{silentIntervalTargets},
       targetsWithReplacement{targetsWithReplacement},
       sessionController{sessionController},
-      keypressPresenter{keypressPresenter}, emotionPresenter{emotionPresenter},
-      childEmotionPresenter{childEmotionPresenter},
+      keypressPresenter{keypressPresenter},
       fixedPassFailPresenter{fixedPassFailPresenter} {}
 }
