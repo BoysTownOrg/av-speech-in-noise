@@ -19,17 +19,11 @@ class SessionControllerStub : public SessionController {
   public:
     void notifyThatTestIsComplete() override {}
 
-    void prepare(TaskPresenter &p) override {
-        taskPresenter_ = &p;
-        prepareCalled_ = true;
-    }
-
-    auto taskPresenter() -> const TaskPresenter * { return taskPresenter_; }
+    void prepare() override { prepareCalled_ = true; }
 
     [[nodiscard]] auto prepareCalled() const -> bool { return prepareCalled_; }
 
   private:
-    const TaskPresenter *taskPresenter_{};
     bool prepareCalled_{};
 };
 

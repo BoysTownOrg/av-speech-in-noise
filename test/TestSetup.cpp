@@ -268,7 +268,7 @@ class SessionControllerStub : public SessionController {
   public:
     void notifyThatTestIsComplete() override {}
 
-    void prepare(TaskPresenter &) override {}
+    void prepare() override {}
 
   private:
 };

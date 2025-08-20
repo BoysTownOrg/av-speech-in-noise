@@ -7,9 +7,8 @@ SessionControllerImpl::SessionControllerImpl(
     : testSetupPresenter{testSetupPresenter}, testPresenter{testPresenter},
       subjectPresenter{subjectPresenter} {}
 
-void SessionControllerImpl::prepare(TaskPresenter &p) {
+void SessionControllerImpl::prepare() {
     testSetupPresenter.stop();
-    testPresenter.initialize(p);
     testPresenter.start();
     subjectPresenter.start();
 }

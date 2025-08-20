@@ -6,8 +6,6 @@
 
 #include <gtest/gtest.h>
 
-#include <utility>
-
 namespace av_speech_in_noise {
 namespace {
 class TestPresenterStub : public TestPresenter {
@@ -91,28 +89,18 @@ class SessionControllerTests : public ::testing::Test {
 #define SESSION_CONTROLLER_TEST(a) TEST_F(SessionControllerTests, a)
 
 SESSION_CONTROLLER_TEST(prepareStopsTestSetup) {
-    TaskPresenterStub taskPresenter;
-    controller.prepare(taskPresenter);
+    controller.prepare();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testSetupPresenter.stopped());
 }
 
 SESSION_CONTROLLER_TEST(prepareStartsTest) {
-    TaskPresenterStub taskPresenter;
-    controller.prepare(taskPresenter);
+    controller.prepare();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(testPresenter.started());
 }
 
 SESSION_CONTROLLER_TEST(prepareStartsSubject) {
-    TaskPresenterStub taskPresenter;
-    controller.prepare(taskPresenter);
+    controller.prepare();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(subjectPresenter.started());
-}
-
-SESSION_CONTROLLER_TEST(preparePassesTaskPresenter) {
-    TaskPresenterStub taskPresenter;
-    controller.prepare(taskPresenter);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        &taskPresenter, testPresenter.taskPresenter());
 }
 
 SESSION_CONTROLLER_TEST(testSetupStartsAfterTestIsComplete) {

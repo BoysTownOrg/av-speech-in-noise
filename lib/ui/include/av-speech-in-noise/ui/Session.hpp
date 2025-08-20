@@ -1,7 +1,6 @@
 #ifndef AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_SESSION_HPP_
 #define AV_SPEECH_IN_NOISE_PRESENTATION_INCLUDE_PRESENTATION_SESSION_HPP_
 
-#include "Task.hpp"
 #include "Presenter.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
@@ -21,7 +20,7 @@ class SessionController {
     };
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(SessionController);
     virtual void notifyThatTestIsComplete() = 0;
-    virtual void prepare(TaskPresenter &) = 0;
+    virtual void prepare() = 0;
     virtual void attach(Observer *) {}
 };
 

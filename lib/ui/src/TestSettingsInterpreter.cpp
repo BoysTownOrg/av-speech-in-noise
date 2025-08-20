@@ -174,38 +174,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         av_speech_in_noise::methodWithName(contents);
     broadcast(configurables, "method", methodName);
 
-    TaskPresenter *taskPresenter{};
-    switch (method) {
-    case Method::adaptiveCoordinateResponseMeasure:
-    case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
-    case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
-    case Method::fixedLevelFreeResponseWithTargetReplacement:
-    case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
-    case Method::fixedLevelFreeResponseWithAllTargets:
-    case Method::fixedLevelFreeResponseWithPredeterminedTargets:
-        break;
-    case Method::fixedLevelButtonThenPassFailResponseWithPredeterminedTargets:
-    case Method::fixedLevelButtonResponseWithPredeterminedTargets:
-        break;
-    case Method::adaptivePassFail:
-        break;
-    case Method::adaptiveCorrectKeywords:
-        break;
-    case Method::fixedLevelConsonants:
-        break;
-    case Method::fixedLevelChooseKeywordsWithAllTargets:
-    case Method::fixedLevelSyllablesWithAllTargets:
-        break;
-    case Method::fixedLevelEmotionsWithPredeterminedTargets:
-        break;
-    case Method::fixedLevelChildEmotionsWithPredeterminedTargets:
-        break;
-    case Method::fixedLevelPassFailWithPredeterminedTargets:
-        break;
-    case Method::unknown:
-        break;
-    }
-
     switch (method) {
     case Method::adaptiveCorrectKeywords:
         av_speech_in_noise::initialize(configurables, contents, [&]() {
@@ -260,7 +228,7 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
 
     runningATest.initialize();
     if (!runningATest.testComplete())
-        sessionController.prepare(*taskPresenter);
+        sessionController.prepare();
 }
 
 auto TestSettingsInterpreterImpl::calibration(const std::string &contents)

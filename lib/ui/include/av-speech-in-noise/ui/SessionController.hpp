@@ -16,7 +16,7 @@ class SessionControllerImpl : public SessionController {
     SessionControllerImpl(
         TestSetupPresenter &, TestPresenter &, SubjectPresenter &);
     void notifyThatTestIsComplete() override;
-    void prepare(TaskPresenter &) override;
+    void prepare() override;
     void attach(Observer *) override;
 
     static constexpr RealLevel fullScaleLevel{119};
