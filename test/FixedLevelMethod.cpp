@@ -2,6 +2,7 @@
 #include "LogString.hpp"
 #include "OutputFileStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
+#include "RunningATestStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "assert-utility.hpp"
 
@@ -136,7 +137,8 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
     FiniteTargetPlaylistWithRepeatablesStub finiteTargetPlaylistWithRepeatables;
     FiniteTargetPlaylistStub finiteTargetPlaylist;
     ConfigurationRegistryStub registry;
-    FixedLevelMethodImpl method{registry, evaluator};
+    RunningATestStub runningATest;
+    FixedLevelMethodImpl method{registry, evaluator, runningATest};
     FixedLevelFixedTrialsTest testWithFixedTrials{};
     InitializingMethod initializingMethod{targetList, testWithFixedTrials};
     InitializingMethodWithFiniteTargetPlaylistWithRepeatables
@@ -203,6 +205,11 @@ PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     }
 }
 
+PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(attaches) {
+    method.configure("method", "fixed-level consonants");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&method, runningATest.testMethod);
+}
+
 void assertComplete(FixedLevelMethodImpl &method) {
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(method.complete());
 }
@@ -240,7 +247,8 @@ class FixedLevelMethodTests : public ::testing::Test {
     TargetPlaylistStub targetList;
     OutputFileStub outputFile;
     ConfigurationRegistryStub registry;
-    FixedLevelMethodImpl method{registry, evaluator};
+    RunningATestStub runningATest;
+    FixedLevelMethodImpl method{registry, evaluator, runningATest};
     FixedLevelFixedTrialsTest test{};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
@@ -363,7 +371,8 @@ class FixedLevelMethodWithFiniteTargetPlaylistTests : public ::testing::Test {
     ResponseEvaluatorStub evaluator;
     FiniteTargetPlaylistStub targetList;
     ConfigurationRegistryStub registry;
-    FixedLevelMethodImpl method{registry, evaluator};
+    RunningATestStub runningATest;
+    FixedLevelMethodImpl method{registry, evaluator, runningATest};
     OutputFileStub outputFile;
     InitializingMethodWithFiniteTargetPlaylist initializingMethod{targetList};
     SubmittingCoordinateResponse submittingCoordinateResponse;
@@ -429,7 +438,8 @@ class FixedLevelMethodWithFiniteTargetPlaylistWithRepeatablesTests
     ResponseEvaluatorStub evaluator;
     FiniteTargetPlaylistWithRepeatablesStub targetList;
     ConfigurationRegistryStub registry;
-    FixedLevelMethodImpl method{registry, evaluator};
+    RunningATestStub runningATest;
+    FixedLevelMethodImpl method{registry, evaluator, runningATest};
     InitializingMethodWithFiniteTargetPlaylistWithRepeatables
         initializingMethod{targetList};
     SubmittingCoordinateResponse submittingCoordinateResponse;

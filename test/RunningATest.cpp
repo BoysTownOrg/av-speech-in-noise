@@ -86,7 +86,10 @@ class InitializingTest : public UseCase {
   public:
     explicit InitializingTest(TestMethod *method) : method{method} {}
 
-    void run(RunningATestImpl &m) override { m.initialize(method); }
+    void run(RunningATestImpl &m) override {
+        m.attach(method);
+        m.initialize();
+    }
 
   private:
     TestMethod *method;
@@ -100,7 +103,8 @@ class InitializingTestWithSingleSpeaker : public UseCase {
 
     void run(RunningATestImpl &m) override {
         m.configure("method", "adaptive pass fail not spatial");
-        m.initialize(method);
+        m.attach(method);
+        m.initialize();
     }
 
   private:
@@ -114,7 +118,8 @@ class InitializingTestWithDelayedMasker : public UseCase {
 
     void run(RunningATestImpl &m) override {
         m.configure("method", "adaptive pass fail spatial");
-        m.initialize(method);
+        m.attach(method);
+        m.initialize();
     }
 
   private:

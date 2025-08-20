@@ -148,10 +148,6 @@ static void initialize(AdaptiveMethod &method, TargetPlaylistReader &reader) {
     method.initialize(&reader);
 }
 
-static void initialize(RunningATest &model, TestMethod &method) {
-    model.initialize(&method);
-}
-
 static void initialize(
     FixedLevelMethod &method, FiniteTargetPlaylistWithRepeatables &targets) {
     method.initialize(&targets);
@@ -215,7 +211,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::adaptiveCorrectKeywords:
         av_speech_in_noise::initialize(configurables, contents, [&]() {
             av_speech_in_noise::initialize(adaptiveMethod, cyclicTargetsReader);
-            av_speech_in_noise::initialize(runningATest, adaptiveMethod);
         });
         break;
     case Method::adaptiveCoordinateResponseMeasure:
@@ -223,7 +218,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         av_speech_in_noise::initialize(configurables, contents, [&]() {
             av_speech_in_noise::initialize(
                 adaptiveMethod, targetsWithReplacementReader);
-            av_speech_in_noise::initialize(runningATest, adaptiveMethod);
         });
         break;
     case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
@@ -231,7 +225,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         av_speech_in_noise::initialize(configurables, contents, [&]() {
             av_speech_in_noise::initialize(
                 fixedLevelMethod, silentIntervalTargets);
-            av_speech_in_noise::initialize(runningATest, fixedLevelMethod);
         });
         break;
     case Method::fixedLevelFreeResponseWithAllTargets:
@@ -239,27 +232,20 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     case Method::fixedLevelSyllablesWithAllTargets:
         av_speech_in_noise::initialize(configurables, contents, [&]() {
             av_speech_in_noise::initialize(fixedLevelMethod, everyTargetOnce);
-            av_speech_in_noise::initialize(runningATest, fixedLevelMethod);
         });
         break;
     case Method::fixedLevelConsonants:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {
-            av_speech_in_noise::initialize(runningATest, fixedLevelMethod);
-        });
+        av_speech_in_noise::initialize(configurables, contents, [&]() {});
         break;
     case Method::fixedLevelEmotionsWithPredeterminedTargets:
     case Method::fixedLevelChildEmotionsWithPredeterminedTargets:
     case Method::fixedLevelFreeResponseWithPredeterminedTargets:
     case Method::fixedLevelPassFailWithPredeterminedTargets:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {
-            av_speech_in_noise::initialize(runningATest, fixedLevelMethod);
-        });
+        av_speech_in_noise::initialize(configurables, contents, [&]() {});
         break;
     case Method::fixedLevelButtonResponseWithPredeterminedTargets:
     case Method::fixedLevelButtonThenPassFailResponseWithPredeterminedTargets:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {
-            av_speech_in_noise::initialize(runningATest, fixedLevelMethod);
-        });
+        av_speech_in_noise::initialize(configurables, contents, [&]() {});
         break;
     case Method::fixedLevelFreeResponseWithTargetReplacement:
     case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
@@ -267,13 +253,13 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
             contents, [&](const FixedLevelFixedTrialsTest &test) {
                 av_speech_in_noise::initialize(
                     fixedLevelMethod, test, targetsWithReplacement);
-                av_speech_in_noise::initialize(runningATest, fixedLevelMethod);
             });
         break;
     case Method::unknown:
         break;
     }
 
+    runningATest.initialize();
     if (!runningATest.testComplete())
         sessionController.prepare(*taskPresenter);
 }

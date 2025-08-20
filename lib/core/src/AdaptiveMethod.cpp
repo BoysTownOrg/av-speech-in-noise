@@ -87,11 +87,23 @@ static auto testResults(
 
 AdaptiveMethodImpl::AdaptiveMethodImpl(ConfigurationRegistry &registry,
     ResponseEvaluator &evaluator, Randomizer &randomizer,
-    AdaptiveTrack::Factory &adaptiveTrackFactory)
-    : evaluator{evaluator}, randomizer{randomizer},
+    AdaptiveTrack::Factory &adaptiveTrackFactory, RunningATest &runningATest)
+    : evaluator{evaluator}, randomizer{randomizer}, runningATest{runningATest},
       adaptiveTrackFactory{adaptiveTrackFactory} {
     registry.subscribe(*this, "targets");
     registry.subscribe(*this, "starting SNR (dB)");
+    registry.subscribe(*this, "method");
+}
+
+void AdaptiveMethodImpl::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "targets")
+        targetsUrl.path = value;
+    else if (key == "starting SNR (dB)")
+        startingSNR.dB = integer(value);
+    else if (key == "method")
+        if (contains(value, "adaptive"))
+            runningATest.attach(this);
 }
 
 void AdaptiveMethodImpl::initialize(TargetPlaylistReader *targetListSetReader) {
@@ -217,13 +229,5 @@ void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile &file) {
 
 auto AdaptiveMethodImpl::testResults() -> AdaptiveTestResults {
     return av_speech_in_noise::testResults(targetListsWithTracks);
-}
-
-void AdaptiveMethodImpl::configure(
-    const std::string &key, const std::string &value) {
-    if (key == "targets")
-        targetsUrl.path = value;
-    else if (key == "starting SNR (dB)")
-        startingSNR.dB = integer(value);
 }
 }

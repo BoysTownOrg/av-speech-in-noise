@@ -116,7 +116,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         text_ = t;
         identity_ = id;
         if (initializeAnyTestOnApply_)
-            runningATest.initialize(nullptr);
+            runningATest.initialize();
     }
 
     [[nodiscard]] auto text() const -> std::string { return text_; }

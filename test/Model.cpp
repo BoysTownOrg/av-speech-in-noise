@@ -189,7 +189,9 @@ class RunningATestStub : public RunningATest {
         fixedLevelMethodStub.log("TOOLATE ");
     }
 
-    void initialize(TestMethod *method) override { testMethod_ = method; }
+    void attach(TestMethod *method) override { testMethod_ = method; }
+
+    void initialize() override {}
 
     auto trialNumber() -> int override { return trialNumber_; }
 

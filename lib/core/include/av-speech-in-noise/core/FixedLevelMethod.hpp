@@ -4,13 +4,15 @@
 #include "Configuration.hpp"
 #include "IResponseEvaluator.hpp"
 #include "IFixedLevelMethod.hpp"
+#include "IRunningATest.hpp"
 
 #include <av-speech-in-noise/core/IOutputFile.hpp>
 
 namespace av_speech_in_noise {
 class FixedLevelMethodImpl : public FixedLevelMethod, public Configurable {
   public:
-    FixedLevelMethodImpl(ConfigurationRegistry &, ResponseEvaluator &);
+    FixedLevelMethodImpl(
+        ConfigurationRegistry &, ResponseEvaluator &, RunningATest &);
     void initialize(FiniteTargetPlaylist *) override;
     void initialize(
         const FixedLevelFixedTrialsTest &, TargetPlaylist *) override;
@@ -36,6 +38,7 @@ class FixedLevelMethodImpl : public FixedLevelMethod, public Configurable {
     FiniteTargetPlaylist *finiteTargetPlaylist{};
     FiniteTargetPlaylistWithRepeatables *finiteTargetPlaylistWithRepeatables{};
     ResponseEvaluator &evaluator;
+    RunningATest &runningATest;
     SNR snr_{};
     int totalKeywordsCorrect_{};
     int totalKeywordsSubmitted_{};

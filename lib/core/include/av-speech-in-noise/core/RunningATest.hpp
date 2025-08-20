@@ -32,7 +32,8 @@ class RunningATestImpl : public TargetPlayer::Observer,
     RunningATestImpl(TargetPlayer &, MaskerPlayer &, ResponseEvaluator &,
         OutputFile &, Randomizer &, Clock &, ConfigurationRegistry &);
     void attach(RunningATest::RequestObserver *) override;
-    void initialize(TestMethod *) override;
+    void attach(TestMethod *) override;
+    void initialize() override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
     void playLeftSpeakerCalibration(const Calibration &) override;

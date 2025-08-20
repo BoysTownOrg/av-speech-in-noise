@@ -2,6 +2,7 @@
 #include "OutputFileStub.hpp"
 #include "RandomizerStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
+#include "RunningATestStub.hpp"
 #include "TargetPlaylistSetReaderStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "TrackStub.hpp"
@@ -381,7 +382,9 @@ class AdaptiveMethodTests : public ::testing::Test {
     ResponseEvaluatorStub evaluator;
     RandomizerStub randomizer;
     ConfigurationRegistryStub registry;
-    AdaptiveMethodImpl method{registry, evaluator, randomizer, snrTrackFactory};
+    RunningATestStub runningATest;
+    AdaptiveMethodImpl method{
+        registry, evaluator, randomizer, snrTrackFactory, runningATest};
     OutputFileStub outputFile;
     TargetPlaylistSetReaderStub targetListReader;
     Initializing initializing{targetListReader};
@@ -886,6 +889,11 @@ ADAPTIVE_METHOD_TEST(tbd) {
 starting SNR (dB): 2
 )",
         stream.str());
+}
+
+ADAPTIVE_METHOD_TEST(attaches) {
+    method.configure("method", "adaptive pass fail");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&method, runningATest.testMethod);
 }
 }
 }

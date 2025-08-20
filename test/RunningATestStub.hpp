@@ -9,8 +9,8 @@ class RunningATestStub : public RunningATest {
     void attach(RunningATest::RequestObserver *a) override {
         facadeObserver = a;
     }
-    void initialize(TestMethod *tm) override {
-        testMethod = tm;
+    void attach(TestMethod *tm) override { testMethod = tm; }
+    void initialize() override {
         if (failOnRequest)
             throw RequestFailure{errorMessage};
     }

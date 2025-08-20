@@ -34,7 +34,8 @@ class RunningATest {
 
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(RunningATest);
     virtual void attach(RequestObserver *) = 0;
-    virtual void initialize(TestMethod *) = 0;
+    virtual void attach(TestMethod *) = 0;
+    virtual void initialize() = 0;
     virtual void add(TestObserver &) = 0;
     virtual void remove(TestObserver &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;

@@ -7,6 +7,7 @@
 #include "IAdaptiveMethod.hpp"
 #include "IOutputFile.hpp"
 #include "av-speech-in-noise/Model.hpp"
+#include "av-speech-in-noise/core/IRunningATest.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
 
@@ -22,7 +23,7 @@ struct TargetPlaylistWithTrack {
 class AdaptiveMethodImpl : public AdaptiveMethod, public Configurable {
   public:
     AdaptiveMethodImpl(ConfigurationRegistry &, ResponseEvaluator &,
-        Randomizer &, AdaptiveTrack::Factory &);
+        Randomizer &, AdaptiveTrack::Factory &, RunningATest &);
     void initialize(TargetPlaylistReader *) override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
@@ -54,6 +55,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod, public Configurable {
     FloatSNR startingSNR;
     ResponseEvaluator &evaluator;
     Randomizer &randomizer;
+    RunningATest &runningATest;
     AdaptiveTrack *snrTrack{};
     TargetPlaylist *targetList{};
     AdaptiveTrack::Factory &adaptiveTrackFactory;

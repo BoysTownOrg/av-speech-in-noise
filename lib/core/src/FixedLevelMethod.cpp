@@ -5,11 +5,23 @@
 #include <stdexcept>
 
 namespace av_speech_in_noise {
-FixedLevelMethodImpl::FixedLevelMethodImpl(
-    ConfigurationRegistry &registry, ResponseEvaluator &evaluator)
-    : evaluator{evaluator} {
+FixedLevelMethodImpl::FixedLevelMethodImpl(ConfigurationRegistry &registry,
+    ResponseEvaluator &evaluator, RunningATest &runningATest)
+    : evaluator{evaluator}, runningATest{runningATest} {
     registry.subscribe(*this, "targets");
     registry.subscribe(*this, "starting SNR (dB)");
+    registry.subscribe(*this, "method");
+}
+
+void FixedLevelMethodImpl::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "targets")
+        targetsUrl.path = value;
+    else if (key == "starting SNR (dB)")
+        snr_.dB = integer(value);
+    else if (key == "method")
+        if (contains(value, "fixed-level"))
+            runningATest.attach(this);
 }
 
 static void load(TargetPlaylist *list, const LocalUrl &targetsUrl) {
@@ -141,13 +153,5 @@ auto FixedLevelMethodImpl::keywordsTestResults() -> KeywordsTestResults {
             ? 0
             : totalKeywordsCorrect_ * 100. / totalKeywordsSubmitted_,
         totalKeywordsCorrect_};
-}
-
-void FixedLevelMethodImpl::configure(
-    const std::string &key, const std::string &value) {
-    if (key == "targets")
-        targetsUrl.path = value;
-    else if (key == "starting SNR (dB)")
-        snr_.dB = integer(value);
 }
 }

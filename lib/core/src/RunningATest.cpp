@@ -1,6 +1,7 @@
 #include "RunningATest.hpp"
 #include "Configuration.hpp"
 #include "IOutputFile.hpp"
+#include "TestMethod.hpp"
 
 #include <gsl/gsl>
 
@@ -294,13 +295,14 @@ void RunningATestImpl::attach(RunningATest::RequestObserver *listener) {
     requestObserver = listener;
 }
 
-void RunningATestImpl::initialize(TestMethod *testMethod) {
+void RunningATestImpl::attach(TestMethod *method) { testMethod = method; }
+
+void RunningATestImpl::initialize() {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
     if (testMethod->complete())
         return;
 
-    this->testMethod = testMethod;
     trialNumber_ = 1;
 
     tryOpening(outputFile, testIdentity);
