@@ -82,8 +82,9 @@ class TestPresenterImpl : public RunningATest::RequestObserver,
                           public TestPresenter,
                           public Configurable {
   public:
-    TestPresenterImpl(ConfigurationRegistry &, RunningATest &, AdaptiveMethod &,
+    TestPresenterImpl(RunningATest &, AdaptiveMethod &,
         TestView &, UninitializedTaskPresenter *);
+    void subscribe(ConfigurationRegistry &);
     void initialize(TaskPresenter &) override;
     void start() override;
     void stop() override;

@@ -104,12 +104,15 @@ void TestControllerImpl::notifyThatUserHasRespondedButTrialIsNotQuiteDone() {
     presenter.hideExitTestButton();
 }
 
-TestPresenterImpl::TestPresenterImpl(ConfigurationRegistry &registry,
+TestPresenterImpl::TestPresenterImpl(
     RunningATest &runningATest, AdaptiveMethod &adaptiveMethod, TestView &view,
     UninitializedTaskPresenter *taskPresenter)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod}, view{view},
       taskPresenter{taskPresenter} {
     runningATest.attach(this);
+}
+
+void TestPresenterImpl::subscribe(ConfigurationRegistry &registry) {
     registry.subscribe(*this, "show target filename");
 }
 

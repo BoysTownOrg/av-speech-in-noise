@@ -154,6 +154,8 @@ class UIImpl : public UI {
     void attach(Observer *a) override;
     void show() override;
     void hide() override;
+    void display(std::string) override;
+    void clearDisplay() override;
 
   private:
     NSObject<PassFailUI> *ui;

@@ -353,7 +353,7 @@ class TestPresenterTests : public ::testing::Test {
     UninitializedTaskPresenterStub taskPresenter;
     ConfigurationRegistryStub registry;
     TestPresenterImpl presenter{
-        registry, runningATest, adaptiveMethod, view, &taskPresenter};
+        runningATest, adaptiveMethod, view, &taskPresenter};
     UpdatingTrialInformation updatingTrialInformation;
     Initializing initializing;
 };
