@@ -60,16 +60,20 @@ static auto roundedInteger(const std::string &x, const std::string &identifier)
 
 void TestSetupController::notifyThatConfirmButtonHasBeenClicked() {
     showErrorMessageOnRuntimeError(presenter, [&] {
-        TestIdentity testIdentity;
-        testIdentity.subjectId = control.subjectId();
-        testIdentity.testerId = control.testerId();
-        testIdentity.session = control.session();
-        testIdentity.rmeSetting = control.rmeSetting();
-        testIdentity.transducer = control.transducer();
-        testSettingsInterpreter.initializeTest(
-            readTestSettingsFile(textFileReader, control), testIdentity,
+        testSettingsInterpreter.set(
+            "relative output path", "Documents/AvSpeechInNoise Data");
+        testSettingsInterpreter.set("puzzle", "");
+        testSettingsInterpreter.set("subject ID", control.subjectId());
+        testSettingsInterpreter.set("tester ID", control.testerId());
+        testSettingsInterpreter.set("session", control.session());
+        testSettingsInterpreter.set("RME setting", control.rmeSetting());
+        testSettingsInterpreter.set("transducer", control.transducer());
+        testSettingsInterpreter.set("starting SNR (dB)",
             std::to_string(
                 roundedInteger(control.startingSnr(), "starting SNR")));
+
+        testSettingsInterpreter.initializeTest(
+            readTestSettingsFile(textFileReader, control));
     });
 }
 

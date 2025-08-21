@@ -17,10 +17,10 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
   public:
     TestSettingsInterpreterImpl(
         RunningATest &runningATest, SessionController &sessionController);
-    void initializeTest(const std::string &, const TestIdentity &,
-        const std::string &startingSNR) override;
+    void initializeTest(const std::string &) override;
     void apply(
         const std::string &, const std::vector<std::string> &matches) override;
+    void set(const std::string &key, const std::string &value) override;
     static auto meta(const std::string &) -> std::string;
     void subscribe(Configurable &c, const std::string &key) override;
 

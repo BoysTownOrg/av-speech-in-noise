@@ -8,6 +8,8 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <map>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -110,18 +112,17 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         this->matches = matches;
     }
 
-    void initializeTest(const std::string &t, const TestIdentity &id,
-        const std::string &startingSNR) override {
-        this->startingSNR = startingSNR;
+    void set(const std::string &key, const std::string &value) override {
+        settings[key] = value;
+    }
+
+    void initializeTest(const std::string &t) override {
         text_ = t;
-        identity_ = id;
         if (initializeAnyTestOnApply_)
             runningATest.initialize();
     }
 
     [[nodiscard]] auto text() const -> std::string { return text_; }
-
-    [[nodiscard]] auto identity() const -> TestIdentity { return identity_; }
 
     void initializeAnyTestOnApply() { initializeAnyTestOnApply_ = true; }
 
@@ -130,13 +131,12 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     }
 
     std::vector<std::string> matches;
-    std::string startingSNR;
+    std::map<std::string, std::string> settings;
 
   private:
     RunningATest &runningATest;
     std::string text_;
     std::string textForMethodQuery_;
-    TestIdentity identity_{};
     const SessionController *sessionController_{};
     bool initializeAnyTestOnApply_{};
 };
@@ -365,19 +365,21 @@ TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesSubjectId) {
     control.setSubjectId("b");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"b"}, testSettingsInterpreter.identity().subjectId);
+        "b", testSettingsInterpreter.settings.at("subject ID"));
 }
 
 TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesStartingSnr) {
     control.setStartingSnr("1");
     run(confirmingTestSetup);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("1", testSettingsInterpreter.startingSNR);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "1", testSettingsInterpreter.settings.at("starting SNR (dB)"));
 }
 
 TEST_SETUP_CONTROLLER_TEST(confirmingTestSetupRoundsStartingSnr) {
     control.setStartingSnr("1.5");
     run(confirmingTestSetup);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("2", testSettingsInterpreter.startingSNR);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
+        "2", testSettingsInterpreter.settings.at("starting SNR (dB)"));
 }
 
 TEST_SETUP_CONTROLLER_TEST(confirmingTestWithInvalidStartingSnrShowsMessage) {
@@ -392,28 +394,34 @@ TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesTesterId) {
     control.setTesterId("c");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"c"}, testSettingsInterpreter.identity().testerId);
+        "c", testSettingsInterpreter.settings.at("tester ID"));
 }
 
 TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesSession) {
     control.setSession("e");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"e"}, testSettingsInterpreter.identity().session);
+        "e", testSettingsInterpreter.settings.at("session"));
 }
 
 TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesRmeSetting) {
     control.setRmeSetting("e");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"e"}, testSettingsInterpreter.identity().rmeSetting);
+        "e", testSettingsInterpreter.settings.at("RME setting"));
 }
 
 TEST_SETUP_CONTROLLER_TEST(confirmingTestPassesTransducer) {
     control.setTransducer("a");
     run(confirmingTestSetup);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        std::string{"a"}, testSettingsInterpreter.identity().transducer);
+        "a", testSettingsInterpreter.settings.at("transducer"));
+}
+
+TEST_SETUP_CONTROLLER_TEST(confirmingTestSetsDefaultRelativeOutputDirectory) {
+    run(confirmingTestSetup);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("Documents/AvSpeechInNoise Data",
+        testSettingsInterpreter.settings.at("relative output path"));
 }
 
 TEST_SETUP_CONTROLLER_TEST(playCalibrationPassesLevel) {

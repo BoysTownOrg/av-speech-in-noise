@@ -74,18 +74,7 @@ void TestSettingsInterpreterImpl::apply(
         contents);
 }
 
-void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
-    const TestIdentity &testIdentity, const std::string &startingSnr) {
-    broadcast(configurables, "relative output path",
-        "Documents/AvSpeechInNoise Data");
-    broadcast(configurables, "puzzle", "");
-    broadcast(configurables, "subject ID", testIdentity.subjectId);
-    broadcast(configurables, "tester ID", testIdentity.testerId);
-    broadcast(configurables, "session", testIdentity.session);
-    broadcast(configurables, "RME setting", testIdentity.rmeSetting);
-    broadcast(configurables, "transducer", testIdentity.transducer);
-    broadcast(configurables, "starting SNR (dB)", startingSnr);
-
+void TestSettingsInterpreterImpl::initializeTest(const std::string &contents) {
     applyToEachEntry(
         [&](const auto &key, const auto &value) {
             broadcast(configurables, key, value);
@@ -104,5 +93,10 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
         if (key(line) == "meta")
             return value(line);
     return "";
+}
+
+void TestSettingsInterpreterImpl::set(
+    const std::string &key, const std::string &value) {
+    broadcast(configurables, key, value);
 }
 }

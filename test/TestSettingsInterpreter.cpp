@@ -22,10 +22,9 @@ class SessionControllerStub : public SessionController {
     bool prepareCalled_{};
 };
 
-void initializeTest(TestSettingsInterpreterImpl &interpreter,
-    const std::string &contents, int startingSnr = {},
-    const TestIdentity &identity = {}) {
-    interpreter.initializeTest(contents, identity, std::to_string(startingSnr));
+void initializeTest(
+    TestSettingsInterpreterImpl &interpreter, const std::string &contents) {
+    interpreter.initializeTest(contents);
 }
 
 class ConfigurableStub : public Configurable {
@@ -37,13 +36,6 @@ class ConfigurableStub : public Configurable {
     std::string key;
     std::string value;
 };
-
-void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter) {
-    ConfigurableStub configurable;
-    interpreter.subscribe(configurable, "starting SNR (dB)");
-    initializeTest(interpreter, {"starting SNR (dB): 6\n"}, 5);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("6", configurable.value);
-}
 
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
@@ -97,26 +89,12 @@ TEST_SETTINGS_INTERPRETER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(overridesStartingSnr) {
-    assertOverridesStartingSnr(interpreter);
-}
-
 TEST_SETTINGS_INTERPRETER_TEST(tbd) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "hello");
     initializeTest(interpreter, "hello: 1 2 3\n");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("hello", configurable.key);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("1 2 3", configurable.value);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    initializingTestBroadcastsDefaultRelativeOutputDirectory) {
-    ConfigurableStub configurable;
-    interpreter.subscribe(configurable, "relative output path");
-    initializeTest(interpreter, {});
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("relative output path", configurable.key);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        "Documents/AvSpeechInNoise Data", configurable.value);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(broadcastFiltered) {
