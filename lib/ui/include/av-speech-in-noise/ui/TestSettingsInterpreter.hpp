@@ -4,10 +4,7 @@
 #include "TestSetupImpl.hpp"
 
 #include <av-speech-in-noise/core/Configuration.hpp>
-#include <av-speech-in-noise/core/IAdaptiveMethod.hpp>
-#include <av-speech-in-noise/core/IFixedLevelMethod.hpp>
 #include <av-speech-in-noise/core/IRunningATest.hpp>
-#include <av-speech-in-noise/core/TargetPlaylist.hpp>
 
 #include <cstdint>
 #include <functional>

@@ -2,9 +2,9 @@
 #define AV_SPEECH_IN_NOISE_LIB_PLAYLIST_INCLUDE_AVSPEECHINNOISE_PLAYLIST_RANDOMIZEDTARGETPLAYLISTSHPP_
 
 #include "SubdirectoryTargetPlaylistReader.hpp"
-#include "av-speech-in-noise/core/IAdaptiveMethod.hpp"
-#include "av-speech-in-noise/core/IFixedLevelMethod.hpp"
 
+#include <av-speech-in-noise/core/IAdaptiveMethod.hpp>
+#include <av-speech-in-noise/core/IFixedLevelMethod.hpp>
 #include <av-speech-in-noise/Interface.hpp>
 #include <av-speech-in-noise/core/TargetPlaylist.hpp>
 #include <av-speech-in-noise/core/Configuration.hpp>

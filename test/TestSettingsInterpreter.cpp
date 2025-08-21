@@ -1,5 +1,3 @@
-#include "AdaptiveMethodStub.hpp"
-#include "FixedLevelMethodStub.hpp"
 #include "RunningATestStub.hpp"
 #include "assert-utility.hpp"
 
@@ -68,8 +66,6 @@ void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter) {
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     RunningATestStub runningATest;
-    AdaptiveMethodStub adaptiveMethod;
-    FixedLevelMethodStub fixedLevelMethod;
     SessionControllerStub sessionController;
     TestSettingsInterpreterImpl interpreter{runningATest, sessionController};
     TestIdentity testIdentity;
