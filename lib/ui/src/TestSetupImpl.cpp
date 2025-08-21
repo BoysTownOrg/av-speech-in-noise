@@ -71,8 +71,8 @@ void TestSetupController::notifyThatConfirmButtonHasBeenClicked() {
             std::to_string(
                 roundedInteger(control.startingSnr(), "starting SNR")));
 
-        testSettingsInterpreter.initializeTest(
-            readTestSettingsFile(textFileReader, control));
+        testSettingsInterpreter.apply(
+            readTestSettingsFile(textFileReader, control), {});
 
         runningATest.initialize();
         if (!runningATest.testComplete())

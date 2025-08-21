@@ -64,16 +64,9 @@ void TestSettingsInterpreterImpl::apply(
     const std::string &contents, const std::vector<std::string> &matches) {
     applyToEachEntry(
         [&](const auto &key, const auto &value) {
-            if (std::find(matches.begin(), matches.end(), key) != matches.end())
+            if (matches.empty() ||
+                std::find(matches.begin(), matches.end(), key) != matches.end())
                 broadcast(configurables, key, value);
-        },
-        contents);
-}
-
-void TestSettingsInterpreterImpl::initializeTest(const std::string &contents) {
-    applyToEachEntry(
-        [&](const auto &key, const auto &value) {
-            broadcast(configurables, key, value);
         },
         contents);
 }

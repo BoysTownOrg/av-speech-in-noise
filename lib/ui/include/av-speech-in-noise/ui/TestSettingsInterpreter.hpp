@@ -14,7 +14,6 @@ namespace av_speech_in_noise {
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
                                     public ConfigurationRegistry {
   public:
-    void initializeTest(const std::string &) override;
     void apply(
         const std::string &, const std::vector<std::string> &matches) override;
     void set(const std::string &key, const std::string &value) override;

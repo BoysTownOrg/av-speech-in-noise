@@ -110,16 +110,12 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         const std::vector<std::string> &matches) override {
         text_ = t;
         this->matches = matches;
+        if (initializeAnyTestOnApply_)
+            runningATest.initialize();
     }
 
     void set(const std::string &key, const std::string &value) override {
         settings[key] = value;
-    }
-
-    void initializeTest(const std::string &t) override {
-        text_ = t;
-        if (initializeAnyTestOnApply_)
-            runningATest.initialize();
     }
 
     [[nodiscard]] auto text() const -> std::string { return text_; }

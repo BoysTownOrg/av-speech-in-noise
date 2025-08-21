@@ -19,7 +19,7 @@ class TestSettingsInterpreter {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
         TestSettingsInterpreter);
-    virtual void initializeTest(const std::string &contents) = 0;
+    // if you want all the keys, leave it empty
     virtual void apply(
         const std::string &contents, const std::vector<std::string> &keys) = 0;
     virtual void set(const std::string &key, const std::string &value) = 0;

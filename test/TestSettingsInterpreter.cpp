@@ -22,9 +22,9 @@ class SessionControllerStub : public SessionController {
     bool prepareCalled_{};
 };
 
-void initializeTest(
+void apply(
     TestSettingsInterpreterImpl &interpreter, const std::string &contents) {
-    interpreter.initializeTest(contents);
+    interpreter.apply(contents, {});
 }
 
 class ConfigurableStub : public Configurable {
@@ -51,7 +51,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "boo");
-    initializeTest(interpreter, R"(method: adaptive pass fail
+    apply(interpreter, R"(method: adaptive pass fail
 f:
 boo: a
 )");
@@ -61,7 +61,7 @@ boo: a
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine2) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "boo");
-    initializeTest(interpreter, R"(method: adaptive pass fail
+    apply(interpreter, R"(method: adaptive pass fail
 
 boo: a
 )");
@@ -71,7 +71,7 @@ boo: a
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "boo");
-    initializeTest(interpreter, R"(
+    apply(interpreter, R"(
 method: adaptive pass fail
 boo: a
 )");
@@ -85,14 +85,14 @@ TEST_SETTINGS_INTERPRETER_TEST(meta) {
 TEST_SETTINGS_INTERPRETER_TEST(
     doesNotPrepareTestAfterConfirmButtonIsClickedWhenTestWouldAlreadyBeComplete) {
     runningATest.testComplete_ = true;
-    initializeTest(interpreter, {});
+    apply(interpreter, {});
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(tbd) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "hello");
-    initializeTest(interpreter, "hello: 1 2 3\n");
+    apply(interpreter, "hello: 1 2 3\n");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("hello", configurable.key);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("1 2 3", configurable.value);
 }
