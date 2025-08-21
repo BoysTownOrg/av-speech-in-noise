@@ -148,7 +148,10 @@ class RandomizedTargetPlaylistWithReplacementTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
-    RandomizedTargetPlaylistWithReplacement list{&reader, &randomizer};
+    ConfigurationRegistryStub registry;
+    FixedLevelMethodStub method;
+    RandomizedTargetPlaylistWithReplacement list{
+        &registry, &reader, &randomizer, &method};
 };
 
 class RandomizedTargetPlaylistWithReplacementFactoryTests
@@ -167,7 +170,10 @@ class RandomizedTargetPlaylistWithReplacementFailureTests
   protected:
     CannotReadDirectory reader;
     RandomizerStub randomizer;
-    RandomizedTargetPlaylistWithReplacement list{&reader, &randomizer};
+    ConfigurationRegistryStub registry;
+    FixedLevelMethodStub method;
+    RandomizedTargetPlaylistWithReplacement list{
+        &registry, &reader, &randomizer, &method};
 };
 
 class RandomizedTargetPlaylistWithoutReplacementTests : public ::testing::Test {
@@ -227,6 +233,11 @@ TEST_F(RandomizedTargetPlaylistWithReplacementFactoryTests, tbd) {
     playlistReader.playlistFactory = nullptr;
     factory.configure("method", "adaptive CRM");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&factory, playlistReader.playlistFactory);
+}
+
+RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(tbd) {
+    list.configure("method", "fixed-level free response with replacement");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&list, method.targetList);
 }
 
 RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(

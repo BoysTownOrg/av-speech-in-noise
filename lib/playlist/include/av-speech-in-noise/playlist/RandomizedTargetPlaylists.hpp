@@ -24,7 +24,8 @@ class Randomizer {
 };
 }
 
-class RandomizedTargetPlaylistWithReplacement : public TargetPlaylist {
+class RandomizedTargetPlaylistWithReplacement : public TargetPlaylist,
+                                                public Configurable {
   public:
     class Factory : public TargetPlaylistFactory, public Configurable {
       public:
@@ -40,12 +41,13 @@ class RandomizedTargetPlaylistWithReplacement : public TargetPlaylist {
         TargetPlaylistReader &playlistReader;
     };
 
-    RandomizedTargetPlaylistWithReplacement(
-        DirectoryReader *, target_list::Randomizer *);
+    RandomizedTargetPlaylistWithReplacement(ConfigurationRegistry *,
+        DirectoryReader *, target_list::Randomizer *, FixedLevelMethod *method);
     void load(const LocalUrl &) override;
     auto next() -> LocalUrl override;
     auto current() -> LocalUrl override;
     auto directory() -> LocalUrl override;
+    void configure(const std::string &key, const std::string &value) override;
 
   private:
     LocalUrls files;
@@ -53,6 +55,7 @@ class RandomizedTargetPlaylistWithReplacement : public TargetPlaylist {
     LocalUrl currentFile{};
     DirectoryReader *reader;
     target_list::Randomizer *randomizer;
+    FixedLevelMethod *method;
 };
 
 class RandomizedTargetPlaylistWithoutReplacement

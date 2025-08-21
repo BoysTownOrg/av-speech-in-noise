@@ -103,7 +103,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
         AdaptiveMethod &adaptiveMethod, FixedLevelMethod &fixedLevelMethod,
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
-        TargetPlaylist &targetsWithReplacement,
         SessionController &sessionController);
     void initializeTest(const std::string &, const TestIdentity &,
         const std::string &startingSNR) override;
@@ -121,7 +120,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
     FixedLevelMethod &fixedLevelMethod;
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce;
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets;
-    TargetPlaylist &targetsWithReplacement;
     SessionController &sessionController;
 };
 }

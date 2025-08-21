@@ -95,11 +95,10 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     FixedLevelMethodStub fixedLevelMethod;
     FiniteTargetPlaylistWithRepeatablesStub everyTargetOnce;
     FiniteTargetPlaylistWithRepeatablesStub silentIntervalTargets;
-    TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
     TestSettingsInterpreterImpl interpreter{runningATest, adaptiveMethod,
         fixedLevelMethod, everyTargetOnce, silentIntervalTargets,
-        targetsWithReplacement, sessionController};
+        sessionController};
     TestIdentity testIdentity;
 };
 
@@ -153,24 +152,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &silentIntervalTargets);
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.observer.empty());
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelCoordinateResponseMeasureWithTargetReplacementInitializesFixedLevelTest) {
-    initializeTest(interpreter,
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        fixedLevelMethod.targetList, &targetsWithReplacement);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.observer.empty());
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingInitializesFixedLevelTest) {
-    initializeTest(interpreter,
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-        "eye tracking");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        fixedLevelMethod.targetList, &targetsWithReplacement);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

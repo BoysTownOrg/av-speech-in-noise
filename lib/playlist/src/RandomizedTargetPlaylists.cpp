@@ -48,9 +48,21 @@ static auto allButLast(gsl::span<av_speech_in_noise::LocalUrl> s)
 }
 
 RandomizedTargetPlaylistWithReplacement::
-    RandomizedTargetPlaylistWithReplacement(
-        DirectoryReader *reader, target_list::Randomizer *randomizer)
-    : reader{reader}, randomizer{randomizer} {}
+    RandomizedTargetPlaylistWithReplacement(ConfigurationRegistry *registry,
+        DirectoryReader *reader, target_list::Randomizer *randomizer,
+        FixedLevelMethod *method)
+    : reader{reader}, randomizer{randomizer}, method{method} {
+    if (registry != nullptr)
+        registry->subscribe(*this, "method");
+}
+
+void RandomizedTargetPlaylistWithReplacement::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "method")
+        if (contains(value, "with replacement"))
+            if (method != nullptr)
+                method->initialize(FixedLevelFixedTrialsTest{}, this);
+}
 
 void RandomizedTargetPlaylistWithReplacement::load(const LocalUrl &d) {
     shuffle(randomizer, files = filesIn(reader, directory_ = d));
@@ -210,8 +222,10 @@ RandomizedTargetPlaylistWithReplacement::Factory::Factory(
 
 auto RandomizedTargetPlaylistWithReplacement::Factory::make()
     -> std::shared_ptr<TargetPlaylist> {
+    // The factory is only used for adaptive tests. These temporary playlists
+    // should not respond to configuration
     return std::make_shared<RandomizedTargetPlaylistWithReplacement>(
-        reader, randomizer);
+        nullptr, reader, randomizer, nullptr);
 }
 
 void RandomizedTargetPlaylistWithReplacement::Factory::configure(

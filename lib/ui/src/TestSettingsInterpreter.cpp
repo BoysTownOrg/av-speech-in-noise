@@ -149,11 +149,6 @@ static void initialize(
     method.initialize(&targets);
 }
 
-static void initialize(FixedLevelMethod &method,
-    const FixedLevelFixedTrialsTest &test, TargetPlaylist &targets) {
-    method.initialize(test, &targets);
-}
-
 void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     const TestIdentity &testIdentity, const std::string &startingSnr) {
     broadcast(configurables, "relative output path",
@@ -207,11 +202,8 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         break;
     case Method::fixedLevelFreeResponseWithTargetReplacement:
     case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
-        av_speech_in_noise::initializeFixedLevelFixedTrialsTest(configurables,
-            contents, [&](const FixedLevelFixedTrialsTest &test) {
-                av_speech_in_noise::initialize(
-                    fixedLevelMethod, test, targetsWithReplacement);
-            });
+        av_speech_in_noise::initializeFixedLevelFixedTrialsTest(
+            configurables, contents, [&](const FixedLevelFixedTrialsTest &) {});
         break;
     case Method::unknown:
         break;
@@ -247,11 +239,9 @@ TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     FixedLevelMethod &fixedLevelMethod,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
-    TargetPlaylist &targetsWithReplacement,
     SessionController &sessionController)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
       fixedLevelMethod{fixedLevelMethod}, everyTargetOnce{everyTargetOnce},
       silentIntervalTargets{silentIntervalTargets},
-      targetsWithReplacement{targetsWithReplacement},
       sessionController{sessionController} {}
 }
