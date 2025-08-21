@@ -14,15 +14,12 @@
 
 namespace av_speech_in_noise {
 enum class TestSetting : std::uint8_t {
-    method,
     masker,
     maskerLevel,
 };
 
 constexpr auto name(TestSetting p) -> const char * {
     switch (p) {
-    case TestSetting::method:
-        return "method";
     case TestSetting::masker:
         return "masker";
     case TestSetting::maskerLevel:
@@ -39,9 +36,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
         const std::string &startingSNR) override;
     static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
-    void subscribe(Configurable &c, const std::string &key) override {
-        configurables[key].emplace_back(c);
-    }
+    void subscribe(Configurable &c, const std::string &key) override;
 
   private:
     std::map<std::string, std::vector<std::reference_wrapper<Configurable>>>

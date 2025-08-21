@@ -1,5 +1,4 @@
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/Model.hpp"
 
 #include <av-speech-in-noise/core/UpdatedMaximumLikelihood.hpp>
 
@@ -54,7 +53,7 @@ TEST_F(LogisticSweetPointTester, testSimpleParameters) {
 
 class UpdatedMaximumLikelihoodTester : public ::testing::Test {};
 
-auto exampleLogisticConfiguration() -> UmlSettings {
+static auto exampleLogisticConfiguration() -> UmlSettings {
     return {PhiParameterSetting{{-30, 30, 61, ParameterSpace::Linear},
                 {0, 10, PriorProbabilityKind::LinearNorm}},
         PhiParameterSetting{{0.1, 10, 41, ParameterSpace::Log},

@@ -108,4 +108,9 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
 TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     RunningATest &runningATest, SessionController &sessionController)
     : runningATest{runningATest}, sessionController{sessionController} {}
+
+void TestSettingsInterpreterImpl::subscribe(
+    Configurable &c, const std::string &key) {
+    configurables[key].emplace_back(c);
+}
 }
