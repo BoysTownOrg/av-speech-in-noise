@@ -34,6 +34,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
         RunningATest &runningATest, SessionController &sessionController);
     void initializeTest(const std::string &, const TestIdentity &,
         const std::string &startingSNR) override;
+    void apply(const std::string &, const std::vector<std::string> &matches);
     static auto meta(const std::string &) -> std::string;
     auto calibration(const std::string &) -> Calibration override;
     void subscribe(Configurable &c, const std::string &key) override;

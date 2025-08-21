@@ -22,28 +22,10 @@ class SessionControllerStub : public SessionController {
     bool prepareCalled_{};
 };
 
-auto concatenate(const std::vector<std::string> &v) -> std::string {
-    std::string result;
-    for (const auto &v_ : v)
-        result.append(v_);
-    return result;
-}
-
-auto entry(TestSetting p, std::string s) -> std::string {
-    return std::string{name(p)} + ": " + std::move(s);
-}
-
-auto withNewLine(std::string s) -> std::string { return std::move(s) + '\n'; }
-
-auto entryWithNewline(TestSetting p, std::string s) -> std::string {
-    return withNewLine(entry(p, std::move(s)));
-}
-
 void initializeTest(TestSettingsInterpreterImpl &interpreter,
-    const std::vector<std::string> &v, int startingSnr = {},
+    const std::string &contents, int startingSnr = {},
     const TestIdentity &identity = {}) {
-    interpreter.initializeTest(
-        concatenate(v), identity, std::to_string(startingSnr));
+    interpreter.initializeTest(contents, identity, std::to_string(startingSnr));
 }
 
 class ConfigurableStub : public Configurable {
@@ -76,33 +58,40 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 
 TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
     auto calibration{interpreter.calibration(
-        concatenate({entryWithNewline(TestSetting::masker, "a"),
-            entryWithNewline(TestSetting::maskerLevel, "1")}))};
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, calibration.fileUrl.path);
+        R"(masker: a
+masker level (dB SPL): 1
+)")};
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", calibration.fileUrl.path);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, calibration.level.dB_SPL);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "boo");
-    initializeTest(
-        interpreter, {"method: adaptive pass fail\n", "f:\n", "boo: a\n"});
+    initializeTest(interpreter, R"(method: adaptive pass fail
+f:
+boo: a
+)");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, configurable.value);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine2) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "boo");
-    initializeTest(
-        interpreter, {"method: adaptive pass fail\n", "\n", "boo: a\n"});
+    initializeTest(interpreter, R"(method: adaptive pass fail
+
+boo: a
+)");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, configurable.value);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "boo");
-    initializeTest(
-        interpreter, {"\n", "method: adaptive pass fail\n", "\n", "boo: a\n"});
+    initializeTest(interpreter, R"(
+method: adaptive pass fail
+boo: a
+)");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, configurable.value);
 }
 
@@ -124,7 +113,7 @@ TEST_SETTINGS_INTERPRETER_TEST(overridesStartingSnr) {
 TEST_SETTINGS_INTERPRETER_TEST(tbd) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "hello");
-    initializeTest(interpreter, {"hello: 1 2 3\n"});
+    initializeTest(interpreter, "hello: 1 2 3\n");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("hello", configurable.key);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("1 2 3", configurable.value);
 }
@@ -137,6 +126,18 @@ TEST_SETTINGS_INTERPRETER_TEST(
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("relative output path", configurable.key);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "Documents/AvSpeechInNoise Data", configurable.value);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(broadcastFiltered) {
+    ConfigurableStub configurable;
+    interpreter.subscribe(configurable, "hello");
+    interpreter.subscribe(configurable, "howdy");
+    interpreter.apply(R"(hello: 1 2 3
+howdy: 4
+)",
+        {"hello"});
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("hello", configurable.key);
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("1 2 3", configurable.value);
 }
 }
 }

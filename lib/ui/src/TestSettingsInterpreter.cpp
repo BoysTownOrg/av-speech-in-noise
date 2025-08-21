@@ -1,5 +1,6 @@
 #include "TestSettingsInterpreter.hpp"
 
+#include <algorithm>
 #include <gsl/gsl>
 
 #include <sstream>
@@ -62,6 +63,25 @@ static void assign(Calibration &calibration, const std::string &key,
         calibration.level.dB_SPL = integer(value);
 }
 
+TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
+    RunningATest &runningATest, SessionController &sessionController)
+    : runningATest{runningATest}, sessionController{sessionController} {}
+
+void TestSettingsInterpreterImpl::subscribe(
+    Configurable &c, const std::string &key) {
+    configurables[key].emplace_back(c);
+}
+
+void TestSettingsInterpreterImpl::apply(
+    const std::string &contents, const std::vector<std::string> &matches) {
+    applyToEachEntry(
+        [&](const auto &key, const auto &value) {
+            if (std::find(matches.begin(), matches.end(), key) != matches.end())
+                broadcast(configurables, key, value);
+        },
+        contents);
+}
+
 void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     const TestIdentity &testIdentity, const std::string &startingSnr) {
     broadcast(configurables, "relative output path",
@@ -103,14 +123,5 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
         if (key(line) == "meta")
             return value(line);
     return "";
-}
-
-TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
-    RunningATest &runningATest, SessionController &sessionController)
-    : runningATest{runningATest}, sessionController{sessionController} {}
-
-void TestSettingsInterpreterImpl::subscribe(
-    Configurable &c, const std::string &key) {
-    configurables[key].emplace_back(c);
 }
 }
