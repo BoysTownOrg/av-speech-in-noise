@@ -101,13 +101,13 @@ class TestSetupControlStub : public TestSetupControl {
 
 class TestSettingsInterpreterStub : public TestSettingsInterpreter {
   public:
-    explicit TestSettingsInterpreterStub(
-        RunningATest &runningATest, const Calibration &calibration_)
-        : runningATest{runningATest}, calibration_{calibration_} {}
+    explicit TestSettingsInterpreterStub(RunningATest &runningATest)
+        : runningATest{runningATest} {}
 
-    auto calibration(const std::string &t) -> Calibration override {
+    void apply(const std::string &t,
+        const std::vector<std::string> &matches) override {
         text_ = t;
-        return calibration_;
+        this->matches = matches;
     }
 
     void initializeTest(const std::string &t, const TestIdentity &id,
@@ -129,6 +129,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return sessionController_;
     }
 
+    std::vector<std::string> matches;
     std::string startingSNR;
 
   private:
@@ -136,7 +137,6 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     std::string text_;
     std::string textForMethodQuery_;
     TestIdentity identity_{};
-    const Calibration &calibration_;
     const SessionController *sessionController_{};
     bool initializeAnyTestOnApply_{};
 };
@@ -278,9 +278,7 @@ class TestSetupControllerTests : public ::testing::Test {
     RunningATestStub runningATest;
     SessionControlStub sessionView;
     TestSetupControlStub control;
-    Calibration calibration;
-    TestSettingsInterpreterStub testSettingsInterpreter{
-        runningATest, calibration};
+    TestSettingsInterpreterStub testSettingsInterpreter{runningATest};
     TextFileReaderStub textFileReader;
     TestSetupPresenterStub presenter;
     TestSetupController controller{control, sessionView, presenter,
@@ -306,17 +304,20 @@ class TestSetupControllerTests : public ::testing::Test {
     }
 
     void assertPassesLevel(CalibrationUseCase &useCase) {
-        calibration.level.dB_SPL = 1;
         run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            1, useCase.calibration(runningATest).level.dB_SPL);
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+            std::find(testSettingsInterpreter.matches.begin(),
+                testSettingsInterpreter.matches.end(),
+                "masker level (dB SPL)") !=
+            testSettingsInterpreter.matches.end());
     }
 
     void assertPassesAudioFileUrl(CalibrationUseCase &useCase) {
-        calibration.fileUrl.path = "a";
         run(useCase);
-        AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-            std::string{"a"}, useCase.calibration(runningATest).fileUrl.path);
+        AV_SPEECH_IN_NOISE_EXPECT_TRUE(
+            std::find(testSettingsInterpreter.matches.begin(),
+                testSettingsInterpreter.matches.end(),
+                "masker") != testSettingsInterpreter.matches.end());
     }
 
     void assertPassesAudioDevice(CalibrationUseCase &useCase) {
@@ -341,9 +342,7 @@ class TestSetupFailureTests : public ::testing::Test {
     SessionViewStub sessionView;
     TestSetupViewStub view;
     TestSetupControlStub control;
-    Calibration calibration;
-    TestSettingsInterpreterStub testSettingsInterpreter{
-        runningATest, calibration};
+    TestSettingsInterpreterStub testSettingsInterpreter{runningATest};
     TestSetupPresenterImpl testSetupPresenter{view, sessionView};
     TextFileReaderStub textFileReader;
     TestSetupController controller{

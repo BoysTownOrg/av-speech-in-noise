@@ -55,14 +55,6 @@ static void broadcast(
             each.get().configure(key, value);
 }
 
-static void assign(Calibration &calibration, const std::string &key,
-    const std::string &value) {
-    if (key == name(TestSetting::masker))
-        calibration.fileUrl.path = value;
-    else if (key == name(TestSetting::maskerLevel))
-        calibration.level.dB_SPL = integer(value);
-}
-
 TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     RunningATest &runningATest, SessionController &sessionController)
     : runningATest{runningATest}, sessionController{sessionController} {}
@@ -103,17 +95,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     runningATest.initialize();
     if (!runningATest.testComplete())
         sessionController.prepare();
-}
-
-auto TestSettingsInterpreterImpl::calibration(const std::string &contents)
-    -> Calibration {
-    Calibration calibration;
-    applyToEachEntry(
-        [&](const auto &key, const auto &value) {
-            assign(calibration, key, value);
-        },
-        contents);
-    return calibration;
 }
 
 auto TestSettingsInterpreterImpl::meta(const std::string &contents)

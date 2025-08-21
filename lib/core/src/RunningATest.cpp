@@ -2,6 +2,7 @@
 #include "Configuration.hpp"
 #include "IOutputFile.hpp"
 #include "TestMethod.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <gsl/gsl>
 
@@ -137,15 +138,15 @@ static constexpr auto operator-(
 }
 
 static auto levelAmplification(TargetPlayer &player, RealLevel fullScaleLevel,
-    const Calibration &p) -> LevelAmplification {
+    RealLevel level) -> LevelAmplification {
     return LevelAmplification{
-        DigitalLevel{p.level - fullScaleLevel - player.digitalLevel()}.dBov};
+        DigitalLevel{level - fullScaleLevel - player.digitalLevel()}.dBov};
 }
 
 static auto levelAmplification(MaskerPlayer &player, RealLevel fullScaleLevel,
-    const Calibration &p) -> LevelAmplification {
+    RealLevel level) -> LevelAmplification {
     return LevelAmplification{
-        DigitalLevel{p.level - fullScaleLevel - player.digitalLevel()}.dBov};
+        DigitalLevel{level - fullScaleLevel - player.digitalLevel()}.dBov};
 }
 
 static void show(TargetPlayer &player) { player.showVideo(); }
@@ -172,7 +173,8 @@ static constexpr auto operator-(const Duration &a, const Duration &b)
 }
 
 static void play(TargetPlayer &targetPlayer, const Calibration &calibration,
-    RealLevel fullScaleLevel, RationalNumber videoScale) {
+    RealLevel level, RealLevel fullScaleLevel, RationalNumber videoScale,
+    const LocalUrl &url) {
     throwRequestFailureOnInvalidAudioDevice(
         [&](const auto &device) { setAudioDevice(targetPlayer, device); },
         calibration.audioDevice);
@@ -180,15 +182,16 @@ static void play(TargetPlayer &targetPlayer, const Calibration &calibration,
         [&](const auto &file) {
             loadFile(targetPlayer, file, videoScale);
             apply(targetPlayer,
-                levelAmplification(targetPlayer, fullScaleLevel, calibration));
+                levelAmplification(targetPlayer, fullScaleLevel, level));
         },
-        calibration.fileUrl);
+        url);
     show(targetPlayer);
     play(targetPlayer);
 }
 
-static void play(MaskerPlayer &maskerPlayer, RealLevel fullScaleLevel,
-    const Calibration &calibration) {
+static void play(MaskerPlayer &maskerPlayer, RealLevel level,
+    RealLevel fullScaleLevel, const Calibration &calibration,
+    const LocalUrl &url) {
     maskerPlayer.stop();
     throwRequestFailureOnInvalidAudioDevice(
         [&](const auto &device) { setAudioDevice(maskerPlayer, device); },
@@ -197,9 +200,9 @@ static void play(MaskerPlayer &maskerPlayer, RealLevel fullScaleLevel,
         [&](const auto &file) {
             loadFile(maskerPlayer, file);
             apply(maskerPlayer,
-                levelAmplification(maskerPlayer, fullScaleLevel, calibration));
+                levelAmplification(maskerPlayer, fullScaleLevel, level));
         },
-        calibration.fileUrl);
+        url);
     play(maskerPlayer);
 }
 
@@ -400,21 +403,22 @@ void RunningATestImpl::prepareNextTrialIfNeeded() {
 void RunningATestImpl::playCalibration(const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
     targetPlayer.useAllChannels();
-    play(targetPlayer, calibration, fullScaleLevel, RationalNumber{1, 1});
+    play(targetPlayer, calibration, maskerLevel, fullScaleLevel,
+        RationalNumber{1, 1}, maskerFileUrl);
 }
 
 void RunningATestImpl::playLeftSpeakerCalibration(
     const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
     maskerPlayer.useFirstChannelOnly();
-    play(maskerPlayer, fullScaleLevel, calibration);
+    play(maskerPlayer, maskerLevel, fullScaleLevel, calibration, maskerFileUrl);
 }
 
 void RunningATestImpl::playRightSpeakerCalibration(
     const Calibration &calibration) {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
     maskerPlayer.useSecondChannelOnly();
-    play(maskerPlayer, fullScaleLevel, calibration);
+    play(maskerPlayer, maskerLevel, fullScaleLevel, calibration, maskerFileUrl);
 }
 
 auto RunningATestImpl::testComplete() -> bool { return testMethod->complete(); }

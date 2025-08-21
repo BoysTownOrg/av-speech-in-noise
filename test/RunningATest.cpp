@@ -20,7 +20,7 @@
 #include <vector>
 
 namespace av_speech_in_noise {
-constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
+static constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
     return a.x == b.x && a.y == b.y;
 }
 
@@ -928,7 +928,7 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
-    calibration.fileUrl.path = "a";
+    model.configure("masker", "a");
     run(playingCalibration, model);
     assertFilePathEquals(targetPlayer, "a");
 }
@@ -941,14 +941,14 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationKeepsOriginalVideoScaling) {
 
 RECOGNITION_TEST_MODEL_TEST(
     playLeftSpeakerCalibrationPassesAudioFileToMaskerPlayer) {
-    calibration.fileUrl.path = "a";
+    model.configure("masker", "a");
     run(playingLeftSpeakerCalibration, model);
     assertFilePathEquals(maskerPlayer, "a");
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     playRightSpeakerCalibrationPassesAudioFileToMaskerPlayer) {
-    calibration.fileUrl.path = "a";
+    model.configure("masker", "a");
     run(playingRightSpeakerCalibration, model);
     assertFilePathEquals(maskerPlayer, "a");
 }
@@ -1027,9 +1027,8 @@ RECOGNITION_TEST_MODEL_TEST(preparingNextTrialIfNeededSetsTargetPlayerLevel) {
     assertSetsTargetLevel(preparingNextTrialIfNeeded);
 }
 
-void assertLevelSet(Calibration &calibration, PlayerLevelUseCase &useCase,
-    RunningATestImpl &model) {
-    calibration.level.dB_SPL = 1;
+void assertLevelSet(PlayerLevelUseCase &useCase, RunningATestImpl &model) {
+    model.configure("masker level (dB SPL)", "1");
     useCase.set(DigitalLevel{3});
     run(useCase, model);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
@@ -1037,15 +1036,15 @@ void assertLevelSet(Calibration &calibration, PlayerLevelUseCase &useCase,
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
-    assertLevelSet(calibration, playingCalibration, model);
+    assertLevelSet(playingCalibration, model);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playLeftSpeakerCalibrationSetsTargetPlayerLevel) {
-    assertLevelSet(calibration, playingLeftSpeakerCalibration, model);
+    assertLevelSet(playingLeftSpeakerCalibration, model);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playRightSpeakerCalibrationSetsTargetPlayerLevel) {
-    assertLevelSet(calibration, playingRightSpeakerCalibration, model);
+    assertLevelSet(playingRightSpeakerCalibration, model);
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {
@@ -1114,14 +1113,14 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     playCalibrationThrowsRequestFailureWhenTargetPlayerThrowsInvalidAudioFile) {
-    calibration.fileUrl.path = "a";
+    model.configure("masker", "a");
     targetPlayer.throwInvalidAudioFileOnDigitalLevel();
     assertCallThrowsRequestFailure(playingCalibration, "unable to read a");
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     playingLeftSpeakerCalibrationThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile) {
-    calibration.fileUrl.path = "a";
+    model.configure("masker", "a");
     maskerPlayer.throwInvalidAudioFileOnLoad();
     assertCallThrowsRequestFailure(
         playingLeftSpeakerCalibration, "unable to read a");
@@ -1129,7 +1128,7 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     playingRightSpeakerCalibrationThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile) {
-    calibration.fileUrl.path = "a";
+    model.configure("masker", "a");
     maskerPlayer.throwInvalidAudioFileOnLoad();
     assertCallThrowsRequestFailure(
         playingRightSpeakerCalibration, "unable to read a");

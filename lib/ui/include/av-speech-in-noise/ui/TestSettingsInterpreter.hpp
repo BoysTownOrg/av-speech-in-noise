@@ -6,27 +6,12 @@
 #include <av-speech-in-noise/core/Configuration.hpp>
 #include <av-speech-in-noise/core/IRunningATest.hpp>
 
-#include <cstdint>
 #include <functional>
 #include <map>
 #include <string>
 #include <vector>
 
 namespace av_speech_in_noise {
-enum class TestSetting : std::uint8_t {
-    masker,
-    maskerLevel,
-};
-
-constexpr auto name(TestSetting p) -> const char * {
-    switch (p) {
-    case TestSetting::masker:
-        return "masker";
-    case TestSetting::maskerLevel:
-        return "masker level (dB SPL)";
-    }
-}
-
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
                                     public ConfigurationRegistry {
   public:
@@ -34,9 +19,9 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
         RunningATest &runningATest, SessionController &sessionController);
     void initializeTest(const std::string &, const TestIdentity &,
         const std::string &startingSNR) override;
-    void apply(const std::string &, const std::vector<std::string> &matches);
+    void apply(
+        const std::string &, const std::vector<std::string> &matches) override;
     static auto meta(const std::string &) -> std::string;
-    auto calibration(const std::string &) -> Calibration override;
     void subscribe(Configurable &c, const std::string &key) override;
 
   private:

@@ -12,6 +12,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace av_speech_in_noise {
 class TestSettingsInterpreter {
@@ -20,7 +21,8 @@ class TestSettingsInterpreter {
         TestSettingsInterpreter);
     virtual void initializeTest(const std::string &contents,
         const TestIdentity &, const std::string &startingSNR) = 0;
-    virtual auto calibration(const std::string &contents) -> Calibration = 0;
+    virtual void apply(
+        const std::string &contents, const std::vector<std::string> &keys) = 0;
 };
 
 enum class Transducer : std::uint8_t {

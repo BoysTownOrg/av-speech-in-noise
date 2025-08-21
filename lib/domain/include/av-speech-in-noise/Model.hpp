@@ -187,10 +187,7 @@ struct AudioSettings {
     std::string audioDevice;
 };
 
-struct Calibration : AudioSettings {
-    LocalUrl fileUrl;
-    RealLevel level;
-};
+struct Calibration : AudioSettings {};
 
 using AudioDevices = typename std::vector<std::string>;
 

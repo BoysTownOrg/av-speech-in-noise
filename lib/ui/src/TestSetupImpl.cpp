@@ -1,5 +1,6 @@
 #include "TestSetupImpl.hpp"
 #include "Input.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 #include <cmath>
 #include <exception>
@@ -75,8 +76,9 @@ void TestSetupController::notifyThatConfirmButtonHasBeenClicked() {
 static auto calibration(TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader, TestSetupControl &control,
     SessionControl &sessionControl) -> Calibration {
-    auto calibration{testSettingsInterpreter.calibration(
-        readTestSettingsFile(textFileReader, control))};
+    testSettingsInterpreter.apply(readTestSettingsFile(textFileReader, control),
+        {"masker", "masker level (dB SPL)"});
+    Calibration calibration;
     calibration.audioDevice = sessionControl.audioDevice();
     return calibration;
 }

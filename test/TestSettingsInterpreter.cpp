@@ -56,15 +56,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 #define TEST_SETTINGS_INTERPRETER_TEST(a)                                      \
     TEST_F(TestSettingsInterpreterTests, a)
 
-TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
-    auto calibration{interpreter.calibration(
-        R"(masker: a
-masker level (dB SPL): 1
-)")};
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL("a", calibration.fileUrl.path);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, calibration.level.dB_SPL);
-}
-
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "boo");
