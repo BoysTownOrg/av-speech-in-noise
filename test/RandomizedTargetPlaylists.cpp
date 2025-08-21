@@ -1,6 +1,7 @@
 #include "ConfigurationRegistryStub.hpp"
 #include "DirectoryReaderStub.hpp"
 #include "FixedLevelMethodStub.hpp"
+#include "TargetPlaylistSetReaderStub.hpp"
 #include "assert-utility.hpp"
 #include "CannotReadDirectory.hpp"
 
@@ -150,6 +151,17 @@ class RandomizedTargetPlaylistWithReplacementTests : public ::testing::Test {
     RandomizedTargetPlaylistWithReplacement list{&reader, &randomizer};
 };
 
+class RandomizedTargetPlaylistWithReplacementFactoryTests
+    : public ::testing::Test {
+  protected:
+    DirectoryReaderStub reader;
+    RandomizerStub randomizer;
+    ConfigurationRegistryStub registry;
+    TargetPlaylistSetReaderStub playlistReader;
+    RandomizedTargetPlaylistWithReplacement::Factory factory{
+        registry, &reader, &randomizer, playlistReader};
+};
+
 class RandomizedTargetPlaylistWithReplacementFailureTests
     : public ::testing::Test {
   protected:
@@ -170,6 +182,16 @@ class CyclicRandomizedTargetPlaylistTests : public ::testing::Test {
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
     CyclicRandomizedTargetPlaylist list{&reader, &randomizer};
+};
+
+class CyclicRandomizedTargetPlaylistFactoryTests : public ::testing::Test {
+  protected:
+    DirectoryReaderStub reader;
+    RandomizerStub randomizer;
+    ConfigurationRegistryStub registry;
+    TargetPlaylistSetReaderStub playlistReader;
+    CyclicRandomizedTargetPlaylist::Factory factory{
+        registry, &reader, &randomizer, playlistReader};
 };
 
 class EachTargetPlayedOnceThenShuffleAndRepeatTests : public ::testing::Test {
@@ -193,6 +215,19 @@ class EachTargetPlayedOnceThenShuffleAndRepeatTests : public ::testing::Test {
 
 #define EACH_TARGET_PLAYED_ONCE_THEN_SHUFFLE_AND_REPEAT_TEST(a)                \
     TEST_F(EachTargetPlayedOnceThenShuffleAndRepeatTests, a)
+
+TEST_F(CyclicRandomizedTargetPlaylistFactoryTests, tbd) {
+    factory.configure("method", "adaptive number keywords");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&factory, playlistReader.playlistFactory);
+}
+
+TEST_F(RandomizedTargetPlaylistWithReplacementFactoryTests, tbd) {
+    factory.configure("method", "adaptive pass fail");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&factory, playlistReader.playlistFactory);
+    playlistReader.playlistFactory = nullptr;
+    factory.configure("method", "adaptive CRM");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&factory, playlistReader.playlistFactory);
+}
 
 RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {

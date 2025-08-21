@@ -101,8 +101,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
   public:
     TestSettingsInterpreterImpl(RunningATest &runningATest,
         AdaptiveMethod &adaptiveMethod, FixedLevelMethod &fixedLevelMethod,
-        TargetPlaylistReader &cyclicTargetsReader,
-        TargetPlaylistReader &targetsWithReplacementReader,
         FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
         FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
         TargetPlaylist &targetsWithReplacement,
@@ -121,8 +119,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
     RunningATest &runningATest;
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
-    TargetPlaylistReader &cyclicTargetsReader;
-    TargetPlaylistReader &targetsWithReplacementReader;
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce;
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets;
     TargetPlaylist &targetsWithReplacement;

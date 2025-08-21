@@ -1,7 +1,6 @@
 #include "AdaptiveMethodStub.hpp"
 #include "FixedLevelMethodStub.hpp"
 #include "RunningATestStub.hpp"
-#include "TargetPlaylistSetReaderStub.hpp"
 #include "TargetPlaylistStub.hpp"
 #include "assert-utility.hpp"
 
@@ -94,16 +93,13 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     RunningATestStub runningATest;
     AdaptiveMethodStub adaptiveMethod;
     FixedLevelMethodStub fixedLevelMethod;
-    TargetPlaylistSetReaderStub cyclicTargetsReader;
-    TargetPlaylistSetReaderStub targetsWithReplacementReader;
     FiniteTargetPlaylistWithRepeatablesStub everyTargetOnce;
     FiniteTargetPlaylistWithRepeatablesStub silentIntervalTargets;
     TargetPlaylistStub targetsWithReplacement;
     SessionControllerStub sessionController;
     TestSettingsInterpreterImpl interpreter{runningATest, adaptiveMethod,
-        fixedLevelMethod, cyclicTargetsReader, targetsWithReplacementReader,
-        everyTargetOnce, silentIntervalTargets, targetsWithReplacement,
-        sessionController};
+        fixedLevelMethod, everyTargetOnce, silentIntervalTargets,
+        targetsWithReplacement, sessionController};
     TestIdentity testIdentity;
 };
 
@@ -148,51 +144,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         "audio recording");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         fixedLevelMethod.targetList, &everyTargetOnce);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
-    initializeTest(interpreter, Method::adaptivePassFail);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        adaptiveMethod.targetListReader, &targetsWithReplacementReader);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.observer.empty());
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    adaptivePassFailWithEyeTrackingInitializesAdaptiveTest) {
-    initializeTest(interpreter, Method::adaptivePassFail, "eye tracking");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        adaptiveMethod.targetListReader, &targetsWithReplacementReader);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
-    initializeTest(interpreter, Method::adaptiveCorrectKeywords);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        adaptiveMethod.targetListReader, &cyclicTargetsReader);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.observer.empty());
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    adaptiveCorrectKeywordsWithEyeTrackingInitializesAdaptiveTest) {
-    initializeTest(
-        interpreter, Method::adaptiveCorrectKeywords, "eye tracking");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        adaptiveMethod.targetListReader, &cyclicTargetsReader);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    adaptiveCoordinateResponseMeasureInitializesAdaptiveTest) {
-    initializeTest(interpreter, Method::adaptiveCoordinateResponseMeasure);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        adaptiveMethod.targetListReader, &targetsWithReplacementReader);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.observer.empty());
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    adaptiveCoordinateResponseMeasureWithEyeTrackingInitializesAdaptiveTest) {
-    initializeTest(
-        interpreter, Method::adaptiveCoordinateResponseMeasure, "eye tracking");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        adaptiveMethod.targetListReader, &targetsWithReplacementReader);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

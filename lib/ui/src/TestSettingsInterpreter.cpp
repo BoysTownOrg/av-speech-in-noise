@@ -144,10 +144,6 @@ static void initializeFixedLevelFixedTrialsTest(
     f(test);
 }
 
-static void initialize(AdaptiveMethod &method, TargetPlaylistReader &reader) {
-    method.initialize(&reader);
-}
-
 static void initialize(
     FixedLevelMethod &method, FiniteTargetPlaylistWithRepeatables &targets) {
     method.initialize(&targets);
@@ -176,16 +172,11 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
 
     switch (method) {
     case Method::adaptiveCorrectKeywords:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {
-            av_speech_in_noise::initialize(adaptiveMethod, cyclicTargetsReader);
-        });
+        av_speech_in_noise::initialize(configurables, contents, [&]() {});
         break;
     case Method::adaptiveCoordinateResponseMeasure:
     case Method::adaptivePassFail:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {
-            av_speech_in_noise::initialize(
-                adaptiveMethod, targetsWithReplacementReader);
-        });
+        av_speech_in_noise::initialize(configurables, contents, [&]() {});
         break;
     case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
     case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
@@ -254,17 +245,12 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
 TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
     RunningATest &runningATest, AdaptiveMethod &adaptiveMethod,
     FixedLevelMethod &fixedLevelMethod,
-    TargetPlaylistReader &cyclicTargetsReader,
-    TargetPlaylistReader &targetsWithReplacementReader,
     FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
     FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
     TargetPlaylist &targetsWithReplacement,
     SessionController &sessionController)
     : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
-      fixedLevelMethod{fixedLevelMethod},
-      cyclicTargetsReader{cyclicTargetsReader},
-      targetsWithReplacementReader{targetsWithReplacementReader},
-      everyTargetOnce{everyTargetOnce},
+      fixedLevelMethod{fixedLevelMethod}, everyTargetOnce{everyTargetOnce},
       silentIntervalTargets{silentIntervalTargets},
       targetsWithReplacement{targetsWithReplacement},
       sessionController{sessionController} {}

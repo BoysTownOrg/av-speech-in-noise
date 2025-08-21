@@ -12,11 +12,20 @@
 #include <memory>
 
 namespace av_speech_in_noise {
+class TargetPlaylistFactory {
+  public:
+    AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(
+        TargetPlaylistFactory);
+    virtual auto make()
+        -> std::shared_ptr<av_speech_in_noise::TargetPlaylist> = 0;
+};
+
 class TargetPlaylistReader {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TargetPlaylistReader);
     using lists_type = typename std::vector<std::shared_ptr<TargetPlaylist>>;
     virtual auto read(const LocalUrl &) -> lists_type = 0;
+    virtual void attach(TargetPlaylistFactory *) = 0;
 };
 
 constexpr auto maximumInt{std::numeric_limits<int>::max()};

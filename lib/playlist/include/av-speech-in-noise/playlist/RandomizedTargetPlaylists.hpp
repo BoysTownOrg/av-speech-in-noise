@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_LIB_PLAYLIST_INCLUDE_AVSPEECHINNOISE_PLAYLIST_RANDOMIZEDTARGETPLAYLISTSHPP_
 
 #include "SubdirectoryTargetPlaylistReader.hpp"
+#include "av-speech-in-noise/core/IAdaptiveMethod.hpp"
 #include "av-speech-in-noise/core/IFixedLevelMethod.hpp"
 
 #include <av-speech-in-noise/Interface.hpp>
@@ -25,19 +26,18 @@ class Randomizer {
 
 class RandomizedTargetPlaylistWithReplacement : public TargetPlaylist {
   public:
-    class Factory : public TargetPlaylistFactory {
+    class Factory : public TargetPlaylistFactory, public Configurable {
       public:
-        Factory(DirectoryReader *reader, target_list::Randomizer *randomizer)
-            : reader{reader}, randomizer{randomizer} {}
-
-        auto make() -> std::shared_ptr<TargetPlaylist> override {
-            return std::make_shared<RandomizedTargetPlaylistWithReplacement>(
-                reader, randomizer);
-        }
+        Factory(ConfigurationRegistry &, DirectoryReader *,
+            target_list::Randomizer *, TargetPlaylistReader &);
+        auto make() -> std::shared_ptr<TargetPlaylist> override;
+        void configure(
+            const std::string &key, const std::string &value) override;
 
       private:
         DirectoryReader *reader;
         target_list::Randomizer *randomizer;
+        TargetPlaylistReader &playlistReader;
     };
 
     RandomizedTargetPlaylistWithReplacement(
@@ -48,7 +48,7 @@ class RandomizedTargetPlaylistWithReplacement : public TargetPlaylist {
     auto directory() -> LocalUrl override;
 
   private:
-    LocalUrls files{};
+    LocalUrls files;
     LocalUrl directory_{};
     LocalUrl currentFile{};
     DirectoryReader *reader;
@@ -68,7 +68,7 @@ class RandomizedTargetPlaylistWithoutReplacement
     auto directory() -> LocalUrl override;
 
   private:
-    LocalUrls files{};
+    LocalUrls files;
     LocalUrl directory_{};
     LocalUrl currentFile{};
     DirectoryReader *reader;
@@ -77,19 +77,18 @@ class RandomizedTargetPlaylistWithoutReplacement
 
 class CyclicRandomizedTargetPlaylist : public TargetPlaylist {
   public:
-    class Factory : public TargetPlaylistFactory {
+    class Factory : public TargetPlaylistFactory, public Configurable {
       public:
-        Factory(DirectoryReader *reader, target_list::Randomizer *randomizer)
-            : reader{reader}, randomizer{randomizer} {}
-
-        auto make() -> std::shared_ptr<TargetPlaylist> override {
-            return std::make_shared<CyclicRandomizedTargetPlaylist>(
-                reader, randomizer);
-        }
+        Factory(ConfigurationRegistry &, DirectoryReader *,
+            target_list::Randomizer *, TargetPlaylistReader &);
+        auto make() -> std::shared_ptr<TargetPlaylist> override;
+        void configure(
+            const std::string &key, const std::string &value) override;
 
       private:
         DirectoryReader *reader;
         target_list::Randomizer *randomizer;
+        TargetPlaylistReader &playlistReader;
     };
 
     CyclicRandomizedTargetPlaylist(
@@ -100,7 +99,7 @@ class CyclicRandomizedTargetPlaylist : public TargetPlaylist {
     auto directory() -> LocalUrl override;
 
   private:
-    LocalUrls files{};
+    LocalUrls files;
     LocalUrl directory_{};
     DirectoryReader *reader;
     target_list::Randomizer *randomizer;
@@ -138,13 +137,13 @@ class EachTargetPlayedOnceThenShuffleAndRepeat : public FiniteTargetPlaylist,
     void configure(const std::string &key, const std::string &value) override;
 
   private:
-    LocalUrls files{};
+    LocalUrls files;
     LocalUrl directory_{};
     LocalUrl currentFile{};
     DirectoryReader *reader;
     target_list::Randomizer *randomizer;
     FixedLevelMethod &method;
-    LocalUrls::const_iterator currentFileIt{};
+    LocalUrls::const_iterator currentFileIt;
     gsl::index repeats{0};
     gsl::index endOfPlaylistCount{};
 };

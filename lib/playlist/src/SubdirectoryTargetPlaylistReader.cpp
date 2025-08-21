@@ -4,8 +4,12 @@
 
 namespace av_speech_in_noise {
 SubdirectoryTargetPlaylistReader::SubdirectoryTargetPlaylistReader(
-    TargetPlaylistFactory *targetListFactory, DirectoryReader *directoryReader)
-    : targetListFactory{targetListFactory}, directoryReader{directoryReader} {}
+    DirectoryReader *directoryReader)
+    : directoryReader{directoryReader} {}
+
+void SubdirectoryTargetPlaylistReader::attach(TargetPlaylistFactory *f) {
+    targetListFactory = f;
+}
 
 static void add(TargetPlaylistReader::lists_type &lists,
     TargetPlaylistFactory *factory, const LocalUrl &url) {

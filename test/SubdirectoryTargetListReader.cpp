@@ -12,7 +12,7 @@
 namespace av_speech_in_noise {
 namespace {
 class TargetPlaylistFactoryStub : public TargetPlaylistFactory {
-    std::vector<std::shared_ptr<av_speech_in_noise::TargetPlaylist>> lists_{};
+    std::vector<std::shared_ptr<av_speech_in_noise::TargetPlaylist>> lists_;
 
   public:
     auto make()
@@ -32,12 +32,14 @@ class SubdirectoryTargetPlaylistReaderTests : public ::testing::Test {
   protected:
     TargetPlaylistFactoryStub targetListFactory;
     DirectoryReaderStub directoryReader;
-    SubdirectoryTargetPlaylistReader listReader{
-        &targetListFactory, &directoryReader};
+    SubdirectoryTargetPlaylistReader listReader{&directoryReader};
     std::vector<std::shared_ptr<av_speech_in_noise::TargetPlaylistStub>>
         targetLists;
 
-    SubdirectoryTargetPlaylistReaderTests() { setListCount(1); }
+    SubdirectoryTargetPlaylistReaderTests() {
+        listReader.attach(&targetListFactory);
+        setListCount(1);
+    }
 
     void setListCount(int n) {
         targetLists.clear();
@@ -105,8 +107,8 @@ class SubdirectoryTargetPlaylistReaderFailureTests : public ::testing::Test {};
 TEST_F(SubdirectoryTargetPlaylistReaderFailureTests, returnsEmptyList) {
     TargetPlaylistFactoryStub targetListFactory;
     CannotReadDirectory directoryReader;
-    SubdirectoryTargetPlaylistReader listReader{
-        &targetListFactory, &directoryReader};
+    SubdirectoryTargetPlaylistReader listReader{&directoryReader};
+    listReader.attach(&targetListFactory);
     EXPECT_TRUE(listReader.read({""}).empty());
 }
 }

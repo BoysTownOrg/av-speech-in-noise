@@ -1,7 +1,8 @@
 #include "RandomizedTargetPlaylists.hpp"
 #include "SubdirectoryTargetPlaylistReader.hpp"
-#include "av-speech-in-noise/core/Configuration.hpp"
-#include "av-speech-in-noise/core/IFixedLevelMethod.hpp"
+
+#include <av-speech-in-noise/core/Configuration.hpp>
+#include <av-speech-in-noise/core/IFixedLevelMethod.hpp>
 
 #include <algorithm>
 #include <filesystem>
@@ -179,5 +180,44 @@ auto EachTargetPlayedOnceThenShuffleAndRepeat::directory() -> LocalUrl {
 
 auto EachTargetPlayedOnceThenShuffleAndRepeat::empty() -> bool {
     return endOfPlaylistCount > repeats;
+}
+
+CyclicRandomizedTargetPlaylist::Factory::Factory(
+    ConfigurationRegistry &registry, DirectoryReader *reader,
+    target_list::Randomizer *randomizer, TargetPlaylistReader &playlistReader)
+    : reader{reader}, randomizer{randomizer}, playlistReader{playlistReader} {
+    registry.subscribe(*this, "method");
+}
+
+auto CyclicRandomizedTargetPlaylist::Factory::make()
+    -> std::shared_ptr<TargetPlaylist> {
+    return std::make_shared<CyclicRandomizedTargetPlaylist>(reader, randomizer);
+}
+
+void CyclicRandomizedTargetPlaylist::Factory::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "method")
+        if (value == "adaptive number keywords")
+            playlistReader.attach(this);
+}
+
+RandomizedTargetPlaylistWithReplacement::Factory::Factory(
+    ConfigurationRegistry &registry, DirectoryReader *reader,
+    target_list::Randomizer *randomizer, TargetPlaylistReader &playlistReader)
+    : reader{reader}, randomizer{randomizer}, playlistReader{playlistReader} {
+    registry.subscribe(*this, "method");
+}
+
+auto RandomizedTargetPlaylistWithReplacement::Factory::make()
+    -> std::shared_ptr<TargetPlaylist> {
+    return std::make_shared<RandomizedTargetPlaylistWithReplacement>(
+        reader, randomizer);
+}
+
+void RandomizedTargetPlaylistWithReplacement::Factory::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "method")
+        if (value == "adaptive pass fail" || value == "adaptive CRM")
+            playlistReader.attach(this);
 }
 }
