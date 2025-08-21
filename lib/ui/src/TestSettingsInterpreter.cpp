@@ -37,14 +37,6 @@ static auto value(const std::string &line) -> std::string {
         : trim(line.substr(entryDelimiter(line) + 1));
 }
 
-static void applyToEachEntry(
-    const std::function<void(const std::string &, const std::string &)> &f,
-    const std::string &contents) {
-    std::stringstream stream{contents};
-    for (std::string line; std::getline(stream, line);)
-        f(key(line), value(line));
-}
-
 static void broadcast(
     const std::map<std::string,
         std::vector<std::reference_wrapper<Configurable>>> &configurables,
@@ -62,13 +54,14 @@ void TestSettingsInterpreterImpl::subscribe(
 
 void TestSettingsInterpreterImpl::apply(
     const std::string &contents, const std::vector<std::string> &matches) {
-    applyToEachEntry(
-        [&](const auto &key, const auto &value) {
-            if (matches.empty() ||
-                std::find(matches.begin(), matches.end(), key) != matches.end())
-                broadcast(configurables, key, value);
-        },
-        contents);
+    std::stringstream stream{contents};
+    for (std::string line; std::getline(stream, line);) {
+        const auto key{av_speech_in_noise::key(line)};
+        const auto value{av_speech_in_noise::value(line)};
+        if (matches.empty() ||
+            std::find(matches.begin(), matches.end(), key) != matches.end())
+            broadcast(configurables, key, value);
+    }
 }
 
 auto TestSettingsInterpreterImpl::meta(const std::string &contents)
