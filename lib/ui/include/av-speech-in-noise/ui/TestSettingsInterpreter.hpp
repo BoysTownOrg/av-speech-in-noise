@@ -99,9 +99,8 @@ constexpr auto name(TestSetting p) -> const char * {
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
                                     public ConfigurationRegistry {
   public:
-    TestSettingsInterpreterImpl(RunningATest &runningATest,
-        FixedLevelMethod &fixedLevelMethod,
-        SessionController &sessionController);
+    TestSettingsInterpreterImpl(
+        RunningATest &runningATest, SessionController &sessionController);
     void initializeTest(const std::string &, const TestIdentity &,
         const std::string &startingSNR) override;
     static auto meta(const std::string &) -> std::string;
@@ -114,7 +113,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
     std::map<std::string, std::vector<std::reference_wrapper<Configurable>>>
         configurables;
     RunningATest &runningATest;
-    FixedLevelMethod &fixedLevelMethod;
     SessionController &sessionController;
 };
 }

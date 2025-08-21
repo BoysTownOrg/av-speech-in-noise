@@ -4,10 +4,7 @@
 
 #include <sstream>
 #include <functional>
-#include <stdexcept>
 #include <string>
-#include <string_view>
-#include <tuple>
 #include <utility>
 
 namespace av_speech_in_noise {
@@ -65,85 +62,6 @@ static void assign(Calibration &calibration, const std::string &key,
         calibration.level.dB_SPL = integer(value);
 }
 
-// https://stackoverflow.com/a/31836401
-template <typename C, C beginVal, C endVal> class EnumIterator {
-    using val_t = std::underlying_type_t<C>;
-    int val;
-
-  public:
-    EnumIterator(const C &f) : val(static_cast<val_t>(f)) {}
-    EnumIterator() : val(static_cast<val_t>(beginVal)) {}
-    auto operator++() -> EnumIterator {
-        ++val;
-        return *this;
-    }
-    auto operator*() -> C { return static_cast<C>(val); }
-    auto begin() -> EnumIterator { return *this; }
-    auto end() -> EnumIterator {
-        static const EnumIterator endIter = ++EnumIterator(endVal);
-        return endIter;
-    }
-    auto operator!=(const EnumIterator &i) -> bool { return val != i.val; }
-};
-
-static auto matches(const std::string_view &s, gsl::index position,
-    const std::string_view &other) -> bool {
-    return 0 == s.compare(position, other.length(), other);
-}
-
-static auto startsWith(const std::string_view &s, const std::string_view &what)
-    -> bool {
-    if (s.length() >= what.length())
-        return matches(s, 0, what);
-    return false;
-}
-
-static auto methodWithName(const std::string &contents)
-    -> std::tuple<Method, std::string> {
-    std::stringstream stream{contents};
-    for (std::string line; std::getline(stream, line);)
-        if (key(line) == name(TestSetting::method)) {
-            const auto actual{value(line)};
-            for (const auto e : EnumIterator<Method, Method::adaptivePassFail,
-                     Method::fixedLevelSyllablesWithAllTargets>{})
-                if (startsWith(actual, name(e)))
-                    return std::make_tuple(e, actual);
-            std::stringstream stream;
-            stream << "Test method not recognized: " << actual;
-            throw std::runtime_error{stream.str()};
-        }
-    throw std::runtime_error{"Test method not found"};
-}
-
-static void initialize(
-    const std::map<std::string,
-        std::vector<std::reference_wrapper<Configurable>>> &configurables,
-    const std::string &contents) {
-    applyToEachEntry(
-        [&](const auto &key, const auto &value) {
-            broadcast(configurables, key, value);
-        },
-        contents);
-}
-
-static void initialize(
-    const std::map<std::string,
-        std::vector<std::reference_wrapper<Configurable>>> &configurables,
-    const std::string &contents, const std::function<void()> &f) {
-    av_speech_in_noise::initialize(configurables, contents);
-    f();
-}
-
-static void initializeFixedLevelFixedTrialsTest(
-    const std::map<std::string,
-        std::vector<std::reference_wrapper<Configurable>>> &configurables,
-    const std::string &contents,
-    const std::function<void(const FixedLevelFixedTrialsTest &)> &f) {
-    FixedLevelFixedTrialsTest test;
-    av_speech_in_noise::initialize(configurables, contents);
-    f(test);
-}
-
 void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     const TestIdentity &testIdentity, const std::string &startingSnr) {
     broadcast(configurables, "relative output path",
@@ -156,48 +74,11 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     broadcast(configurables, "transducer", testIdentity.transducer);
     broadcast(configurables, "starting SNR (dB)", startingSnr);
 
-    const auto [method, methodName] =
-        av_speech_in_noise::methodWithName(contents);
-    broadcast(configurables, "method", methodName);
-
-    switch (method) {
-    case Method::adaptiveCorrectKeywords:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {});
-        break;
-    case Method::adaptiveCoordinateResponseMeasure:
-    case Method::adaptivePassFail:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {});
-        break;
-    case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
-    case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {});
-        break;
-    case Method::fixedLevelFreeResponseWithAllTargets:
-    case Method::fixedLevelChooseKeywordsWithAllTargets:
-    case Method::fixedLevelSyllablesWithAllTargets:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {});
-        break;
-    case Method::fixedLevelConsonants:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {});
-        break;
-    case Method::fixedLevelEmotionsWithPredeterminedTargets:
-    case Method::fixedLevelChildEmotionsWithPredeterminedTargets:
-    case Method::fixedLevelFreeResponseWithPredeterminedTargets:
-    case Method::fixedLevelPassFailWithPredeterminedTargets:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {});
-        break;
-    case Method::fixedLevelButtonResponseWithPredeterminedTargets:
-    case Method::fixedLevelButtonThenPassFailResponseWithPredeterminedTargets:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {});
-        break;
-    case Method::fixedLevelFreeResponseWithTargetReplacement:
-    case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
-        av_speech_in_noise::initializeFixedLevelFixedTrialsTest(
-            configurables, contents, [&](const FixedLevelFixedTrialsTest &) {});
-        break;
-    case Method::unknown:
-        break;
-    }
+    applyToEachEntry(
+        [&](const auto &key, const auto &value) {
+            broadcast(configurables, key, value);
+        },
+        contents);
 
     runningATest.initialize();
     if (!runningATest.testComplete())
@@ -208,8 +89,8 @@ auto TestSettingsInterpreterImpl::calibration(const std::string &contents)
     -> Calibration {
     Calibration calibration;
     applyToEachEntry(
-        [&](const auto &entryName, const auto &entry) {
-            assign(calibration, entryName, entry);
+        [&](const auto &key, const auto &value) {
+            assign(calibration, key, value);
         },
         contents);
     return calibration;
@@ -225,8 +106,6 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
 }
 
 TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
-    RunningATest &runningATest, FixedLevelMethod &fixedLevelMethod,
-    SessionController &sessionController)
-    : runningATest{runningATest}, fixedLevelMethod{fixedLevelMethod},
-      sessionController{sessionController} {}
+    RunningATest &runningATest, SessionController &sessionController)
+    : runningATest{runningATest}, sessionController{sessionController} {}
 }

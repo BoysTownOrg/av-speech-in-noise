@@ -59,14 +59,6 @@ void initializeTest(TestSettingsInterpreterImpl &interpreter, Method m,
         startingSnr, identity);
 }
 
-void initializeTest(TestSettingsInterpreterImpl &interpreter, Method m,
-    const std::string &extendedName, const TestIdentity &identity = {},
-    int startingSnr = {}) {
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, name(m) + (" " + extendedName))},
-        startingSnr, identity);
-}
-
 class ConfigurableStub : public Configurable {
   public:
     void configure(const std::string &key, const std::string &value) override {
@@ -93,8 +85,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     AdaptiveMethodStub adaptiveMethod;
     FixedLevelMethodStub fixedLevelMethod;
     SessionControllerStub sessionController;
-    TestSettingsInterpreterImpl interpreter{
-        runningATest, fixedLevelMethod, sessionController};
+    TestSettingsInterpreterImpl interpreter{runningATest, sessionController};
     TestIdentity testIdentity;
 };
 
@@ -115,22 +106,6 @@ TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
             entryWithNewline(TestSetting::maskerLevel, "1")}))};
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, calibration.fileUrl.path);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(1, calibration.level.dB_SPL);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(throwsRuntimeErrorIfMethodUnknown) {
-    try {
-        initializeTest(interpreter,
-            {
-                entryWithNewline(
-                    TestSetting::method, "this is not a real test method"),
-            });
-        FAIL() << "Expected std::runtime_error";
-    } catch (const std::runtime_error &e) {
-        AV_SPEECH_IN_NOISE_ASSERT_EQUAL(
-            std::string{
-                "Test method not recognized: this is not a real test method"},
-            e.what());
-    }
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
