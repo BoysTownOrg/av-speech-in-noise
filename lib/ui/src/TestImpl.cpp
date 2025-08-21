@@ -175,7 +175,7 @@ void TestPresenterImpl::updateAdaptiveTestResults() {
     view.setContinueTestingDialogMessage(thresholds.str());
 }
 
-void TestPresenterImpl::initialize(TaskPresenter &p) { taskPresenter = &p; }
+void TestPresenterImpl::apply(TaskPresenter &p) { taskPresenter = &p; }
 
 void TestPresenterImpl::hideExitTestButton() { view.hideExitTestButton(); }
 

@@ -13,7 +13,7 @@ Presenter::Presenter(ConfigurationRegistry &registry, UI &ui,
 void Presenter::configure(const std::string &key, const std::string &value) {
     if (key == "method") {
         if (contains(value, "emotions")) {
-            testPresenter.initialize(*this);
+            testPresenter.apply(*this);
             if (contains(value, "child emotions")) {
                 ui.populateResponseButtons({{Emotion::angry},
                     {Emotion::happy, Emotion::neutral, Emotion::sad},

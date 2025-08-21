@@ -6,7 +6,7 @@
 namespace av_speech_in_noise {
 class TestPresenterStub : public TestPresenter {
   public:
-    void initialize(TaskPresenter &p) override { taskPresenter = &p; }
+    void apply(TaskPresenter &p) override { taskPresenter = &p; }
     void notifyThatTrialHasStarted() override {}
     void updateAdaptiveTestResults() override {}
     void updateTrialInformation() override {}

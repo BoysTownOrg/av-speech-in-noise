@@ -50,7 +50,7 @@ class TestController {
 
 class TestPresenter : public Presenter {
   public:
-    virtual void initialize(TaskPresenter &) = 0;
+    virtual void apply(TaskPresenter &) = 0;
     virtual void notifyThatTrialHasStarted() = 0;
     virtual void updateAdaptiveTestResults() = 0;
     virtual void updateTrialInformation() = 0;

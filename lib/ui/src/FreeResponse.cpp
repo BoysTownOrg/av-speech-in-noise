@@ -68,7 +68,7 @@ Presenter::Presenter(ConfigurationRegistry &registry, TestView &testView,
 void Presenter::configure(const std::string &key, const std::string &value) {
     if (key == "method")
         if (contains(value, "free response"))
-            testPresenter.initialize(*this);
+            testPresenter.apply(*this);
 }
 
 void Presenter::start() {

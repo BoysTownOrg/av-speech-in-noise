@@ -32,7 +32,7 @@ void PresenterImpl::configure(
     const std::string &key, const std::string &value) {
     if (key == "method")
         if (contains(value, "syllables"))
-            testPresenter.initialize(*this);
+            testPresenter.apply(*this);
 }
 
 void PresenterImpl::start() { testView.showNextTrialButton(); }

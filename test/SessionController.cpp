@@ -19,7 +19,7 @@ class TestPresenterStub : public TestPresenter {
     [[nodiscard]] auto started() const -> bool { return started_; }
     [[nodiscard]] auto stopped() const -> bool { return stopped_; }
     auto taskPresenter() -> TaskPresenter * { return taskPresenter_; }
-    void initialize(TaskPresenter &p) override { taskPresenter_ = &p; }
+    void apply(TaskPresenter &p) override { taskPresenter_ = &p; }
     void hideResponseSubmission() override {}
     void completeTask() override {}
 

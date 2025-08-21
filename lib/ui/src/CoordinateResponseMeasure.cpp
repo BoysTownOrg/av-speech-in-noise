@@ -60,7 +60,7 @@ void CoordinateResponseMeasurePresenter::configure(
     const std::string &key, const std::string &value) {
     if (key == "method")
         if (contains(value, "CRM"))
-            testPresenter.initialize(*this);
+            testPresenter.apply(*this);
 }
 
 void CoordinateResponseMeasurePresenter::start() {

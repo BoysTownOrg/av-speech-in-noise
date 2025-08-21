@@ -98,6 +98,6 @@ void Presenter::enableDualTask(TaskPresenter *other) {
 void Presenter::configure(const std::string &key, const std::string &value) {
     if (key == "method")
         if (contains(value, "button response"))
-            testPresenter.initialize(*this);
+            testPresenter.apply(*this);
 }
 }

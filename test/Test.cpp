@@ -93,7 +93,7 @@ class TestPresenterStub : public TestPresenter {
   public:
     void start() override {}
     void stop() override {}
-    void initialize(TaskPresenter &) override {}
+    void apply(TaskPresenter &) override {}
 
     void notifyThatTrialHasStarted() override {
         notifiedThatTrialHasStarted_ = true;
@@ -273,7 +273,7 @@ class UpdatingTrialInformation : public PresenterUseCase {
 };
 
 class Initializing : public PresenterUseCase {
-    void run(TestPresenter &p) override { p.initialize(taskPresenter); }
+    void run(TestPresenter &p) override { p.apply(taskPresenter); }
 
   private:
     TaskPresenterStub taskPresenter;
@@ -568,7 +568,7 @@ TEST_PRESENTER_TEST(hidesContinueTestingDialogAfterStopping) {
 }
 
 TEST_PRESENTER_TEST(stopsTaskAfterStopping) {
-    presenter.initialize(taskPresenter);
+    presenter.apply(taskPresenter);
     presenter.stop();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.stopped);
 }
@@ -589,13 +589,13 @@ TEST_PRESENTER_TEST(hidesNextTrialButtonAfterTrialStarts) {
 }
 
 TEST_PRESENTER_TEST(forwardsTrialStartNotification) {
-    presenter.initialize(taskPresenter);
+    presenter.apply(taskPresenter);
     presenter.notifyThatTrialHasStarted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.notified);
 }
 
 TEST_PRESENTER_TEST(hidesResponseSubmission) {
-    presenter.initialize(taskPresenter);
+    presenter.apply(taskPresenter);
     presenter.hideResponseSubmission();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionHidden);
 }
@@ -606,7 +606,7 @@ TEST_PRESENTER_TEST(showsExitTestButtonWhenTrialCompletes) {
 }
 
 TEST_PRESENTER_TEST(showsTaskResponseSubmissionWhenTrialCompletes) {
-    presenter.initialize(taskPresenter);
+    presenter.apply(taskPresenter);
     runningATest.facadeObserver->notifyThatPlayTrialHasCompleted();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.responseSubmissionShown);
 }
@@ -627,7 +627,7 @@ TEST_PRESENTER_TEST(showsNextTrialButtonAfterNextTrialIsReady) {
 }
 
 TEST_PRESENTER_TEST(startsTaskPresenterWhenStarting) {
-    presenter.initialize(taskPresenter);
+    presenter.apply(taskPresenter);
     presenter.start();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.started);
 }
@@ -662,7 +662,7 @@ TEST_PRESENTER_TEST(doesNotShowTargetFilename) {
 }
 
 TEST_PRESENTER_TEST(completeTaskCompletesTask) {
-    presenter.initialize(taskPresenter);
+    presenter.apply(taskPresenter);
     presenter.completeTask();
     AV_SPEECH_IN_NOISE_EXPECT_TRUE(taskPresenter.completed);
 }

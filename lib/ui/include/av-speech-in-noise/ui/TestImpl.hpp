@@ -41,7 +41,7 @@ class TestPresenterImpl : public RunningATest::RequestObserver,
   public:
     TestPresenterImpl(RunningATest &, AdaptiveMethod &, TestView &);
     void subscribe(ConfigurationRegistry &);
-    void initialize(TaskPresenter &) override;
+    void apply(TaskPresenter &) override;
     void start() override;
     void stop() override;
     void notifyThatPlayTrialHasCompleted() override;

@@ -44,6 +44,6 @@ void Presenter::showResponseSubmission() { ui.show(); };
 void Presenter::configure(const std::string &key, const std::string &value) {
     if (key == "method")
         if (contains(value, "adaptive pass fail"))
-            testPresenter.initialize(*this);
+            testPresenter.apply(*this);
 }
 }
