@@ -1,7 +1,6 @@
 #include "AdaptiveMethodStub.hpp"
 #include "FixedLevelMethodStub.hpp"
 #include "RunningATestStub.hpp"
-#include "TargetPlaylistStub.hpp"
 #include "assert-utility.hpp"
 
 #include <av-speech-in-noise/ui/TestSettingsInterpreter.hpp>
@@ -93,23 +92,14 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     RunningATestStub runningATest;
     AdaptiveMethodStub adaptiveMethod;
     FixedLevelMethodStub fixedLevelMethod;
-    FiniteTargetPlaylistWithRepeatablesStub everyTargetOnce;
-    FiniteTargetPlaylistWithRepeatablesStub silentIntervalTargets;
     SessionControllerStub sessionController;
-    TestSettingsInterpreterImpl interpreter{runningATest, adaptiveMethod,
-        fixedLevelMethod, everyTargetOnce, silentIntervalTargets,
-        sessionController};
+    TestSettingsInterpreterImpl interpreter{
+        runningATest, fixedLevelMethod, sessionController};
     TestIdentity testIdentity;
 };
 
 #define TEST_SETTINGS_INTERPRETER_TEST(a)                                      \
     TEST_F(TestSettingsInterpreterTests, a)
-
-#define TEST_SETTINGS_INTREPRETER_TEST_EXPECT_INITIALIZES_FIXED_LEVEL_TEST_WITH_ALL_TARGETS( \
-    m)                                                                                       \
-    initializeTest(interpreter, m);                                                          \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(                                                         \
-        fixedLevelMethod.targetList, &everyTargetOnce)
 
 #define ASSERT_INITIALIZE_TEST_PASSES_ADAPTIVE_METHOD(m)                       \
     initializeTest(interpreter, m);                                            \
@@ -118,49 +108,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 #define ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_METHOD(m)                    \
     initializeTest(interpreter, m);                                            \
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.testMethod, &fixedLevelMethod);
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithAllTargetsInitializesFixedLevelTest) {
-    TEST_SETTINGS_INTREPRETER_TEST_EXPECT_INITIALIZES_FIXED_LEVEL_TEST_WITH_ALL_TARGETS(
-        Method::fixedLevelFreeResponseWithAllTargets);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelChooseKeywordsWithAllTargetsInitializesFixedLevelTest) {
-    TEST_SETTINGS_INTREPRETER_TEST_EXPECT_INITIALIZES_FIXED_LEVEL_TEST_WITH_ALL_TARGETS(
-        Method::fixedLevelChooseKeywordsWithAllTargets);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelSyllablesWithAllTargetsInitializesFixedLevelTest) {
-    TEST_SETTINGS_INTREPRETER_TEST_EXPECT_INITIALIZES_FIXED_LEVEL_TEST_WITH_ALL_TARGETS(
-        Method::fixedLevelSyllablesWithAllTargets);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithAllTargetsAndAudioRecordingSelectsAudioRecordingPeripheral) {
-    initializeTest(interpreter, Method::fixedLevelFreeResponseWithAllTargets,
-        "audio recording");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        fixedLevelMethod.targetList, &everyTargetOnce);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsInitializesFixedLevelTest) {
-    initializeTest(interpreter,
-        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        fixedLevelMethod.targetList, &silentIntervalTargets);
-    AV_SPEECH_IN_NOISE_EXPECT_TRUE(runningATest.observer.empty());
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithAllTargetsAndEyeTrackingInitializesFixedLevelTest) {
-    initializeTest(interpreter, Method::fixedLevelFreeResponseWithAllTargets,
-        "eye tracking");
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
-        fixedLevelMethod.targetList, &everyTargetOnce);
-}
 
 TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
     auto calibration{interpreter.calibration(

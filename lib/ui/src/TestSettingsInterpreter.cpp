@@ -144,11 +144,6 @@ static void initializeFixedLevelFixedTrialsTest(
     f(test);
 }
 
-static void initialize(
-    FixedLevelMethod &method, FiniteTargetPlaylistWithRepeatables &targets) {
-    method.initialize(&targets);
-}
-
 void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
     const TestIdentity &testIdentity, const std::string &startingSnr) {
     broadcast(configurables, "relative output path",
@@ -175,17 +170,12 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents,
         break;
     case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
     case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {
-            av_speech_in_noise::initialize(
-                fixedLevelMethod, silentIntervalTargets);
-        });
+        av_speech_in_noise::initialize(configurables, contents, [&]() {});
         break;
     case Method::fixedLevelFreeResponseWithAllTargets:
     case Method::fixedLevelChooseKeywordsWithAllTargets:
     case Method::fixedLevelSyllablesWithAllTargets:
-        av_speech_in_noise::initialize(configurables, contents, [&]() {
-            av_speech_in_noise::initialize(fixedLevelMethod, everyTargetOnce);
-        });
+        av_speech_in_noise::initialize(configurables, contents, [&]() {});
         break;
     case Method::fixedLevelConsonants:
         av_speech_in_noise::initialize(configurables, contents, [&]() {});
@@ -235,13 +225,8 @@ auto TestSettingsInterpreterImpl::meta(const std::string &contents)
 }
 
 TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
-    RunningATest &runningATest, AdaptiveMethod &adaptiveMethod,
-    FixedLevelMethod &fixedLevelMethod,
-    FiniteTargetPlaylistWithRepeatables &everyTargetOnce,
-    FiniteTargetPlaylistWithRepeatables &silentIntervalTargets,
+    RunningATest &runningATest, FixedLevelMethod &fixedLevelMethod,
     SessionController &sessionController)
-    : runningATest{runningATest}, adaptiveMethod{adaptiveMethod},
-      fixedLevelMethod{fixedLevelMethod}, everyTargetOnce{everyTargetOnce},
-      silentIntervalTargets{silentIntervalTargets},
+    : runningATest{runningATest}, fixedLevelMethod{fixedLevelMethod},
       sessionController{sessionController} {}
 }

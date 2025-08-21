@@ -180,7 +180,10 @@ class RandomizedTargetPlaylistWithoutReplacementTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
-    RandomizedTargetPlaylistWithoutReplacement list{&reader, &randomizer};
+    ConfigurationRegistryStub registry;
+    FixedLevelMethodStub method;
+    RandomizedTargetPlaylistWithoutReplacement list{
+        registry, &reader, &randomizer, method};
 };
 
 class CyclicRandomizedTargetPlaylistTests : public ::testing::Test {
@@ -237,6 +240,11 @@ TEST_F(RandomizedTargetPlaylistWithReplacementFactoryTests, tbd) {
 
 RANDOMIZED_TARGET_PLAYLIST_WITH_REPLACEMENT_TEST(tbd) {
     list.configure("method", "fixed-level free response with replacement");
+    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&list, method.targetList);
+}
+
+RANDOMIZED_TARGET_PLAYLIST_WITHOUT_REPLACEMENT_TEST(tbd) {
+    list.configure("method", "fixed-level syllables all stimuli");
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(&list, method.targetList);
 }
 

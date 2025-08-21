@@ -86,9 +86,19 @@ auto RandomizedTargetPlaylistWithReplacement::directory() -> LocalUrl {
 }
 
 RandomizedTargetPlaylistWithoutReplacement::
-    RandomizedTargetPlaylistWithoutReplacement(
-        DirectoryReader *reader, target_list::Randomizer *randomizer)
-    : reader{reader}, randomizer{randomizer} {}
+    RandomizedTargetPlaylistWithoutReplacement(ConfigurationRegistry &registry,
+        DirectoryReader *reader, target_list::Randomizer *randomizer,
+        FixedLevelMethod &method)
+    : reader{reader}, randomizer{randomizer}, method{method} {
+    registry.subscribe(*this, "method");
+}
+
+void RandomizedTargetPlaylistWithoutReplacement::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "method")
+        if (contains(value, "all stimuli"))
+            method.initialize(this);
+}
 
 void RandomizedTargetPlaylistWithoutReplacement::load(const LocalUrl &d) {
     shuffle(randomizer, files = filesIn(reader, directory_ = d));

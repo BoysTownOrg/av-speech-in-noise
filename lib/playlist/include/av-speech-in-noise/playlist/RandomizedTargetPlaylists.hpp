@@ -59,16 +59,18 @@ class RandomizedTargetPlaylistWithReplacement : public TargetPlaylist,
 };
 
 class RandomizedTargetPlaylistWithoutReplacement
-    : public FiniteTargetPlaylistWithRepeatables {
+    : public FiniteTargetPlaylistWithRepeatables,
+      public Configurable {
   public:
-    RandomizedTargetPlaylistWithoutReplacement(
-        DirectoryReader *, target_list::Randomizer *);
+    RandomizedTargetPlaylistWithoutReplacement(ConfigurationRegistry &,
+        DirectoryReader *, target_list::Randomizer *, FixedLevelMethod &);
     auto empty() -> bool override;
     void load(const LocalUrl &directory) override;
     auto next() -> LocalUrl override;
     auto current() -> LocalUrl override;
     void reinsertCurrent() override;
     auto directory() -> LocalUrl override;
+    void configure(const std::string &key, const std::string &value) override;
 
   private:
     LocalUrls files;
@@ -76,6 +78,7 @@ class RandomizedTargetPlaylistWithoutReplacement
     LocalUrl currentFile{};
     DirectoryReader *reader;
     target_list::Randomizer *randomizer;
+    FixedLevelMethod &method;
 };
 
 class CyclicRandomizedTargetPlaylist : public TargetPlaylist {
