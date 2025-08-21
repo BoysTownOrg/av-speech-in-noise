@@ -2,7 +2,6 @@
 #include "Configuration.hpp"
 #include "IOutputFile.hpp"
 #include "TestMethod.hpp"
-#include "av-speech-in-noise/Model.hpp"
 
 #include <gsl/gsl>
 
@@ -276,7 +275,7 @@ RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     ConfigurationRegistry &registry)
     : maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
       evaluator{evaluator}, outputFile{outputFile}, randomizer{randomizer},
-      clock{clock}, testMethod{&nullTestMethod} {
+      clock{clock}, testMethod{&nullTestMethod}, audioChannelOption{} {
     registry.subscribe(*this, "video scale denominator");
     registry.subscribe(*this, "video scale numerator");
     registry.subscribe(*this, "keep video shown");
@@ -294,11 +293,43 @@ RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     maskerPlayer.attach(this);
 }
 
-void RunningATestImpl::attach(RunningATest::RequestObserver *listener) {
-    requestObserver = listener;
+void RunningATestImpl::configure(
+    const std::string &key, const std::string &value) {
+    if (key == "subject ID")
+        testIdentity.subjectId = value;
+    else if (key == "tester ID")
+        testIdentity.testerId = value;
+    else if (key == "session")
+        testIdentity.session = value;
+    else if (key == "RME setting")
+        testIdentity.rmeSetting = value;
+    else if (key == "transducer")
+        testIdentity.transducer = value;
+    else if (key == "meta")
+        testIdentity.meta = value;
+    else if (key == "method") {
+        enableVibrotactileStimulus = contains(value, "button response");
+        testIdentity.method = value;
+        audioChannelOption = AudioChannelOption::all;
+        if (contains(value, "not spatial"))
+            audioChannelOption = AudioChannelOption::singleSpeaker;
+        else if (contains(value, "spatial"))
+            audioChannelOption = AudioChannelOption::delayedMasker;
+    } else if (key == "video scale denominator")
+        videoScale.denominator = integer(value);
+    else if (key == "video scale numerator")
+        videoScale.numerator = integer(value);
+    else if (key == "keep video shown")
+        keepVideoShown = boolean(value);
+    else if (key == "masker")
+        maskerFileUrl.path = value;
+    else if (key == "masker level (dB SPL)")
+        maskerLevel.dB_SPL = integer(value);
+    else if (key == "condition")
+        for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
+            if (value == name(c))
+                condition = c;
 }
-
-void RunningATestImpl::attach(TestMethod *method) { testMethod = method; }
 
 void RunningATestImpl::initialize() {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
@@ -487,43 +518,11 @@ void RunningATestImpl::write(std::ostream &stream) {
     insertNewLine(stream);
 }
 
-void RunningATestImpl::configure(
-    const std::string &key, const std::string &value) {
-    if (key == "subject ID")
-        testIdentity.subjectId = value;
-    else if (key == "tester ID")
-        testIdentity.testerId = value;
-    else if (key == "session")
-        testIdentity.session = value;
-    else if (key == "RME setting")
-        testIdentity.rmeSetting = value;
-    else if (key == "transducer")
-        testIdentity.transducer = value;
-    else if (key == "meta")
-        testIdentity.meta = value;
-    else if (key == "method") {
-        enableVibrotactileStimulus = contains(value, "button response");
-        testIdentity.method = value;
-        audioChannelOption = AudioChannelOption::all;
-        if (contains(value, "not spatial"))
-            audioChannelOption = AudioChannelOption::singleSpeaker;
-        else if (contains(value, "spatial"))
-            audioChannelOption = AudioChannelOption::delayedMasker;
-    } else if (key == "video scale denominator")
-        videoScale.denominator = integer(value);
-    else if (key == "video scale numerator")
-        videoScale.numerator = integer(value);
-    else if (key == "keep video shown")
-        keepVideoShown = boolean(value);
-    else if (key == "masker")
-        maskerFileUrl.path = value;
-    else if (key == "masker level (dB SPL)")
-        maskerLevel.dB_SPL = integer(value);
-    else if (key == "condition")
-        for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
-            if (value == name(c))
-                condition = c;
+void RunningATestImpl::attach(RunningATest::RequestObserver *listener) {
+    requestObserver = listener;
 }
+
+void RunningATestImpl::attach(TestMethod *method) { testMethod = method; }
 
 void RunningATestImpl::add(TestObserver &t) {
     testObservers.emplace_back(std::ref(t));

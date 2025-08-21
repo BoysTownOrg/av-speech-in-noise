@@ -124,8 +124,6 @@ struct SyllableResponse : Flaggable {
     Syllable syllable{};
 };
 
-enum class Condition : std::uint8_t { auditoryOnly, audioVisual };
-
 struct RealLevel {
     int dB_SPL{};
 };
@@ -178,10 +176,6 @@ struct KeywordsTestResults {
 };
 
 using AdaptiveTestResults = typename std::vector<AdaptiveTestResult>;
-
-struct FixedLevelFixedTrialsTest {
-    int trials{30};
-};
 
 struct AudioSettings {
     std::string audioDevice;
@@ -248,15 +242,6 @@ struct TargetStartTime : TargetPlayerSystemTime {
     explicit constexpr TargetStartTime(std::uintmax_t nanoseconds = 0)
         : TargetPlayerSystemTime{nanoseconds} {}
 };
-
-constexpr auto name(Condition c) -> const char * {
-    switch (c) {
-    case Condition::auditoryOnly:
-        return "auditory-only";
-    case Condition::audioVisual:
-        return "audio-visual";
-    }
-}
 }
 
 #endif

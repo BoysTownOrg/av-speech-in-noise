@@ -23,6 +23,17 @@ class Clock {
 
 auto trialDuration(TargetPlayer &target, MaskerPlayer &masker) -> Duration;
 
+enum class Condition : std::uint8_t { auditoryOnly, audioVisual };
+
+constexpr auto name(Condition c) -> const char * {
+    switch (c) {
+    case Condition::auditoryOnly:
+        return "auditory-only";
+    case Condition::audioVisual:
+        return "audio-visual";
+    }
+}
+
 class RunningATestImpl : public TargetPlayer::Observer,
                          public MaskerPlayer::Observer,
                          public Configurable,

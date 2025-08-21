@@ -5,11 +5,12 @@
 
 #include <av-speech-in-noise/Interface.hpp>
 
+#include <cstdint>
 #include <filesystem>
 #include <string>
 
 namespace av_speech_in_noise {
-enum class HeadingItem {
+enum class HeadingItem : std::uint8_t {
     snr_dB,
     correctNumber,
     subjectNumber,

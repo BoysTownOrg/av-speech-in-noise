@@ -5,6 +5,10 @@
 #include "TestMethod.hpp"
 
 namespace av_speech_in_noise {
+struct FixedLevelFixedTrialsTest {
+    int trials{30};
+};
+
 class FixedLevelMethod : public virtual TestMethod {
   public:
     virtual void initialize(FiniteTargetPlaylist *) = 0;
