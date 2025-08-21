@@ -16,69 +16,6 @@
 #include <vector>
 
 namespace av_speech_in_noise {
-enum class Method : std::uint8_t {
-    adaptivePassFail, // <-- this one should be first...
-    adaptiveCorrectKeywords,
-    adaptiveCoordinateResponseMeasure,
-    fixedLevelPassFailWithPredeterminedTargets,
-    fixedLevelFreeResponseWithTargetReplacement,
-    fixedLevelFreeResponseWithSilentIntervalTargets,
-    fixedLevelFreeResponseWithAllTargets,
-    fixedLevelFreeResponseWithPredeterminedTargets,
-    fixedLevelButtonResponseWithPredeterminedTargets,
-    fixedLevelButtonThenPassFailResponseWithPredeterminedTargets,
-    fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-    fixedLevelConsonants,
-    fixedLevelEmotionsWithPredeterminedTargets,
-    fixedLevelChildEmotionsWithPredeterminedTargets,
-    fixedLevelChooseKeywordsWithAllTargets,
-    fixedLevelSyllablesWithAllTargets, // <-- this one should be last...
-    unknown
-};
-
-// None of these should be prefixes of another...
-constexpr auto name(Method c) -> const char * {
-    switch (c) {
-    case Method::adaptivePassFail:
-        return "adaptive pass fail";
-    case Method::adaptiveCorrectKeywords:
-        return "adaptive number keywords";
-    case Method::adaptiveCoordinateResponseMeasure:
-        return "adaptive CRM";
-    case Method::fixedLevelFreeResponseWithTargetReplacement:
-        return "fixed-level free response with replacement";
-    case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
-        return "fixed-level CRM with replacement";
-    case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
-        return "fixed-level free response silent intervals";
-    case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
-        return "fixed-level CRM silent intervals";
-    case Method::fixedLevelFreeResponseWithAllTargets:
-        return "fixed-level free response all stimuli";
-    case Method::fixedLevelConsonants:
-        return "fixed-level consonants";
-    case Method::fixedLevelChooseKeywordsWithAllTargets:
-        return "fixed-level choose keywords all stimuli";
-    case Method::fixedLevelFreeResponseWithPredeterminedTargets:
-        return "fixed-level free response predetermined stimuli";
-    case Method::fixedLevelButtonResponseWithPredeterminedTargets:
-        return "fixed-level button response predetermined stimuli";
-    case Method::fixedLevelButtonThenPassFailResponseWithPredeterminedTargets:
-        return "fixed-level button response pass fail predetermined stimuli";
-    case Method::fixedLevelSyllablesWithAllTargets:
-        return "fixed-level syllables all stimuli";
-    case Method::fixedLevelEmotionsWithPredeterminedTargets:
-        return "fixed-level emotions predetermined stimuli";
-    case Method::fixedLevelChildEmotionsWithPredeterminedTargets:
-        return "fixed-level child emotions predetermined stimuli";
-    case Method::fixedLevelPassFailWithPredeterminedTargets:
-        return "fixed-level pass fail predetermined stimuli";
-    case Method::unknown:
-        return "unknown";
-    }
-}
-
 enum class TestSetting : std::uint8_t {
     method,
     masker,

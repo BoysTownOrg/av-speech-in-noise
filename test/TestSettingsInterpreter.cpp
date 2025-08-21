@@ -8,7 +8,6 @@
 
 #include <gtest/gtest.h>
 
-#include <stdexcept>
 #include <string>
 
 namespace av_speech_in_noise {
@@ -42,21 +41,11 @@ auto entryWithNewline(TestSetting p, std::string s) -> std::string {
     return withNewLine(entry(p, std::move(s)));
 }
 
-auto entryWithNewline(TestSetting p, Method m) -> std::string {
-    return entryWithNewline(p, name(m));
-}
-
 void initializeTest(TestSettingsInterpreterImpl &interpreter,
     const std::vector<std::string> &v, int startingSnr = {},
     const TestIdentity &identity = {}) {
     interpreter.initializeTest(
         concatenate(v), identity, std::to_string(startingSnr));
-}
-
-void initializeTest(TestSettingsInterpreterImpl &interpreter, Method m,
-    const TestIdentity &identity = {}, int startingSnr = {}) {
-    initializeTest(interpreter, {entryWithNewline(TestSetting::method, m)},
-        startingSnr, identity);
 }
 
 class ConfigurableStub : public Configurable {
@@ -69,13 +58,10 @@ class ConfigurableStub : public Configurable {
     std::string value;
 };
 
-void assertOverridesStartingSnr(
-    TestSettingsInterpreterImpl &interpreter, Method m) {
+void assertOverridesStartingSnr(TestSettingsInterpreterImpl &interpreter) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "starting SNR (dB)");
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, m), "starting SNR (dB): 6\n"},
-        5);
+    initializeTest(interpreter, {"starting SNR (dB): 6\n"}, 5);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("6", configurable.value);
 }
 
@@ -92,14 +78,6 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 #define TEST_SETTINGS_INTERPRETER_TEST(a)                                      \
     TEST_F(TestSettingsInterpreterTests, a)
 
-#define ASSERT_INITIALIZE_TEST_PASSES_ADAPTIVE_METHOD(m)                       \
-    initializeTest(interpreter, m);                                            \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.testMethod, &adaptiveMethod);
-
-#define ASSERT_INITIALIZE_TEST_PASSES_FIXED_LEVEL_METHOD(m)                    \
-    initializeTest(interpreter, m);                                            \
-    AV_SPEECH_IN_NOISE_EXPECT_EQUAL(runningATest.testMethod, &fixedLevelMethod);
-
 TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
     auto calibration{interpreter.calibration(
         concatenate({entryWithNewline(TestSetting::masker, "a"),
@@ -111,27 +89,24 @@ TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "boo");
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            "f:\n", "boo: a\n"});
+    initializeTest(
+        interpreter, {"method: adaptive pass fail\n", "f:\n", "boo: a\n"});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, configurable.value);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine2) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "boo");
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail), "\n",
-            "boo: a\n"});
+    initializeTest(
+        interpreter, {"method: adaptive pass fail\n", "\n", "boo: a\n"});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, configurable.value);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "boo");
-    initializeTest(interpreter,
-        {"\n", entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            "\n", "boo: a\n"});
+    initializeTest(
+        interpreter, {"\n", "method: adaptive pass fail\n", "\n", "boo: a\n"});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(std::string{"a"}, configurable.value);
 }
 
@@ -142,26 +117,18 @@ TEST_SETTINGS_INTERPRETER_TEST(meta) {
 TEST_SETTINGS_INTERPRETER_TEST(
     doesNotPrepareTestAfterConfirmButtonIsClickedWhenTestWouldAlreadyBeComplete) {
     runningATest.testComplete_ = true;
-    initializeTest(interpreter, Method::adaptivePassFail);
+    initializeTest(interpreter, {});
     AV_SPEECH_IN_NOISE_EXPECT_FALSE(sessionController.prepareCalled());
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(fixedLevelConsonantsOverridesStartingSnr) {
-    assertOverridesStartingSnr(interpreter, Method::fixedLevelConsonants);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelCoordinateResponseMeasureWithTargetReplacementOverridesStartingSnr) {
-    assertOverridesStartingSnr(interpreter,
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
+TEST_SETTINGS_INTERPRETER_TEST(overridesStartingSnr) {
+    assertOverridesStartingSnr(interpreter);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(tbd) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "hello");
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants),
-            "hello: 1 2 3"});
+    initializeTest(interpreter, {"hello: 1 2 3\n"});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("hello", configurable.key);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("1 2 3", configurable.value);
 }
@@ -170,8 +137,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
     initializingTestBroadcastsDefaultRelativeOutputDirectory) {
     ConfigurableStub configurable;
     interpreter.subscribe(configurable, "relative output path");
-    initializeTest(interpreter,
-        {entryWithNewline(TestSetting::method, Method::fixedLevelConsonants)});
+    initializeTest(interpreter, {});
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL("relative output path", configurable.key);
     AV_SPEECH_IN_NOISE_EXPECT_EQUAL(
         "Documents/AvSpeechInNoise Data", configurable.value);
