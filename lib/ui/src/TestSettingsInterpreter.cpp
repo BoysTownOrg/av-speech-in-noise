@@ -55,10 +55,6 @@ static void broadcast(
             each.get().configure(key, value);
 }
 
-TestSettingsInterpreterImpl::TestSettingsInterpreterImpl(
-    RunningATest &runningATest, SessionController &sessionController)
-    : runningATest{runningATest}, sessionController{sessionController} {}
-
 void TestSettingsInterpreterImpl::subscribe(
     Configurable &c, const std::string &key) {
     configurables[key].emplace_back(c);
@@ -80,10 +76,6 @@ void TestSettingsInterpreterImpl::initializeTest(const std::string &contents) {
             broadcast(configurables, key, value);
         },
         contents);
-
-    runningATest.initialize();
-    if (!runningATest.testComplete())
-        sessionController.prepare();
 }
 
 auto TestSettingsInterpreterImpl::meta(const std::string &contents)

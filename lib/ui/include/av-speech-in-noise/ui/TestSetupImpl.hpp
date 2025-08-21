@@ -49,7 +49,7 @@ class TestSetupController : public TestSetupControl::Observer {
   public:
     TestSetupController(TestSetupControl &, SessionControl &,
         TestSetupPresenter &, RunningATest &, TestSettingsInterpreter &,
-        TextFileReader &);
+        TextFileReader &, SessionController &);
     void notifyThatConfirmButtonHasBeenClicked() override;
     void notifyThatPlayCalibrationButtonHasBeenClicked() override;
     void notifyThatPlayLeftSpeakerCalibrationButtonHasBeenClicked() override;
@@ -62,6 +62,7 @@ class TestSetupController : public TestSetupControl::Observer {
     RunningATest &runningATest;
     TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
+    SessionController &sessionController;
 };
 
 class TestSetupPresenterImpl : public TestSetupPresenter {

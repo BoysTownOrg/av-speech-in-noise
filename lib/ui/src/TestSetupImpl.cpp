@@ -1,6 +1,5 @@
 #include "TestSetupImpl.hpp"
 #include "Input.hpp"
-#include "av-speech-in-noise/Model.hpp"
 
 #include <cmath>
 #include <exception>
@@ -15,11 +14,11 @@ TestSetupController::TestSetupController(TestSetupControl &control,
     SessionControl &sessionControl, TestSetupPresenter &presenter,
     RunningATest &runningATest,
     TestSettingsInterpreter &testSettingsInterpreter,
-    TextFileReader &textFileReader)
+    TextFileReader &textFileReader, SessionController &sessionController)
     : control{control}, sessionControl{sessionControl}, presenter{presenter},
       runningATest{runningATest},
       testSettingsInterpreter{testSettingsInterpreter},
-      textFileReader{textFileReader} {
+      textFileReader{textFileReader}, sessionController{sessionController} {
     control.attach(this);
 }
 
@@ -74,6 +73,10 @@ void TestSetupController::notifyThatConfirmButtonHasBeenClicked() {
 
         testSettingsInterpreter.initializeTest(
             readTestSettingsFile(textFileReader, control));
+
+        runningATest.initialize();
+        if (!runningATest.testComplete())
+            sessionController.prepare();
     });
 }
 

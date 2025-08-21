@@ -4,7 +4,6 @@
 #include "TestSetupImpl.hpp"
 
 #include <av-speech-in-noise/core/Configuration.hpp>
-#include <av-speech-in-noise/core/IRunningATest.hpp>
 
 #include <functional>
 #include <map>
@@ -15,8 +14,6 @@ namespace av_speech_in_noise {
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
                                     public ConfigurationRegistry {
   public:
-    TestSettingsInterpreterImpl(
-        RunningATest &runningATest, SessionController &sessionController);
     void initializeTest(const std::string &) override;
     void apply(
         const std::string &, const std::vector<std::string> &matches) override;
@@ -27,8 +24,6 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter,
   private:
     std::map<std::string, std::vector<std::reference_wrapper<Configurable>>>
         configurables;
-    RunningATest &runningATest;
-    SessionController &sessionController;
 };
 }
 

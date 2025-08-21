@@ -281,8 +281,10 @@ class TestSetupControllerTests : public ::testing::Test {
     TestSettingsInterpreterStub testSettingsInterpreter{runningATest};
     TextFileReaderStub textFileReader;
     TestSetupPresenterStub presenter;
+    SessionControllerStub sessionController;
     TestSetupController controller{control, sessionView, presenter,
-        runningATest, testSettingsInterpreter, textFileReader};
+        runningATest, testSettingsInterpreter, textFileReader,
+        sessionController};
     PlayingCalibration playingCalibration{control};
     PlayingLeftSpeakerCalibration playingLeftSpeakerCalibration{control};
     PlayingRightSpeakerCalibration playingRightSpeakerCalibration{control};
@@ -345,14 +347,10 @@ class TestSetupFailureTests : public ::testing::Test {
     TestSettingsInterpreterStub testSettingsInterpreter{runningATest};
     TestSetupPresenterImpl testSetupPresenter{view, sessionView};
     TextFileReaderStub textFileReader;
-    TestSetupController controller{
-        control,
-        sessionControl,
-        testSetupPresenter,
-        runningATest,
-        testSettingsInterpreter,
-        textFileReader,
-    };
+    SessionControllerStub sessionController;
+    TestSetupController controller{control, sessionControl, testSetupPresenter,
+        runningATest, testSettingsInterpreter, textFileReader,
+        sessionController};
 };
 
 #define TEST_SETUP_CONTROLLER_TEST(a) TEST_F(TestSetupControllerTests, a)

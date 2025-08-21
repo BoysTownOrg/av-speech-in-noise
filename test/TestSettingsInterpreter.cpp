@@ -41,7 +41,7 @@ class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     RunningATestStub runningATest;
     SessionControllerStub sessionController;
-    TestSettingsInterpreterImpl interpreter{runningATest, sessionController};
+    TestSettingsInterpreterImpl interpreter;
     TestIdentity testIdentity;
 };
 
