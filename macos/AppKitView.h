@@ -45,7 +45,7 @@ class SubjectAppKitView : public SubjectView {
 namespace submitting_emotion {
 class AppKitUI : public UI {
   public:
-    explicit AppKitUI(NSView *, const std::vector<std::vector<Emotion>> &);
+    explicit AppKitUI(NSView *);
     void attach(Observer *) override;
     auto emotion() -> Emotion override;
     auto playButton() -> View & override;
@@ -53,6 +53,8 @@ class AppKitUI : public UI {
     auto cursor() -> View & override;
     void show() override;
     void hide() override;
+    void populateResponseButtons(
+        const std::vector<std::vector<Emotion>> &) override;
 
     class PlayButton : public View, public ObjCToCppResponder {
       public:
@@ -71,8 +73,8 @@ class AppKitUI : public UI {
 
     class ResponseButtons : public View, public ObjCToCppResponder {
       public:
-        explicit ResponseButtons(
-            NSView *, const std::vector<std::vector<Emotion>> &);
+        ResponseButtons();
+        void populate(NSView *, const std::vector<std::vector<Emotion>> &);
         void attach(Observer *);
         void show() override;
         void hide() override;

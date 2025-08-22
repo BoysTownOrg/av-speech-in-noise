@@ -165,14 +165,17 @@ static auto equallyDistributedConsonantImageButtonGrid(
 }
 
 namespace submitting_emotion {
-AppKitUI::AppKitUI(
-    NSView *view, const std::vector<std::vector<Emotion>> &layout)
-    : playButton_{view}, responseButtons_{view, layout}, view{view} {}
+AppKitUI::AppKitUI(NSView *view) : playButton_{view}, view{view} {}
 
 void AppKitUI::attach(Observer *ob) {
     this->observer = ob;
     playButton_.attach(ob);
     responseButtons_.attach(ob);
+}
+
+void AppKitUI::populateResponseButtons(
+    const std::vector<std::vector<Emotion>> &layout) {
+    responseButtons_.populate(view, layout);
 }
 
 auto AppKitUI::emotion() -> Emotion { return responseButtons_.emotion(); }
@@ -267,10 +270,13 @@ static auto emotionLabel(Emotion emotion) -> const char * {
     }
 }
 
-AppKitUI::ResponseButtons::ResponseButtons(
-    NSView *view, const std::vector<std::vector<Emotion>> &layout)
-    : action{[ObjCToCppAction new]} {
+AppKitUI::ResponseButtons::ResponseButtons() : action{[ObjCToCppAction new]} {
     action->responder = this;
+}
+
+void AppKitUI::ResponseButtons::populate(
+    NSView *view, const std::vector<std::vector<Emotion>> &layout) {
+    emotions.clear();
 
     std::vector<NSView *> columns(layout.size());
     const auto font{[NSFont fontWithName:@"Courier" size:16]};
@@ -312,6 +318,8 @@ AppKitUI::ResponseButtons::ResponseButtons(
             stack.orientation = NSUserInterfaceLayoutOrientationVertical;
             return stack;
         });
+
+    [buttons removeFromSuperview];
     buttons = [NSStackView stackViewWithViews:nsArray(columns)];
     addAutolayoutEnabledSubview(view, buttons);
     [NSLayoutConstraint activateConstraints:@[

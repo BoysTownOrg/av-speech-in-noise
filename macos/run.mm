@@ -5,6 +5,7 @@
 #include "Timer.h"
 #include "Foundation-utility.h"
 #include "AppKit-utility.h"
+#include "av-speech-in-noise/core/AdaptiveTrackFactory.hpp"
 #include "masking-images.h"
 
 #include <av-speech-in-noise/core/SubmittingFixedPassFail.hpp>
@@ -251,6 +252,7 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     submitting_pass_fail::UI &passFailUI, SubjectPresenter &subjectPresenter,
     KeyableSubjectWindow *subjectNSWindow,
     SessionController::Observer *sessionControllerObserver) {
+    static TestSettingsInterpreterImpl testSettingsInterpreter{};
     const auto videoNSView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
     addAutolayoutEnabledSubview(subjectNSWindow.contentView, videoNSView);
@@ -273,88 +275,62 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static TimeStampImpl timeStamp;
     static UnixFileSystemPath systemPath;
     static const auto outputFileName{outputFileNameFactory.make(timeStamp)};
-    static OutputFilePathImpl outputFilePath{*outputFileName, systemPath};
+    static OutputFilePathImpl outputFilePath{
+        *outputFileName, systemPath, testSettingsInterpreter};
     static OutputFileImpl outputFile{fileWriter, outputFilePath};
     NSLog(@"Initializing adaptive method...");
-    static AdaptiveTrackFactory adaptiveTrackFactory;
+    static AdaptiveTrackFactory adaptiveTrackFactory{testSettingsInterpreter};
     static ResponseEvaluatorImpl responseEvaluator;
     static TextFileReaderImpl textFileReader;
     static MersenneTwisterRandomizer randomizer;
-    static AdaptiveMethodImpl adaptiveMethod{responseEvaluator, randomizer};
     NSLog(@"Initializing target playlists...");
     static MacOsDirectoryReader directoryReader;
     static FileExtensionFilter targetFileExtensionFilter{
         {".mov", ".avi", ".wav", ".mp4"}};
     static FileFilterDecorator onlyIncludesTargetFileExtensions{
         &directoryReader, &targetFileExtensionFilter};
-    static RandomizedTargetPlaylistWithReplacement targetsWithReplacement{
-        &onlyIncludesTargetFileExtensions, &randomizer};
-    static FileIdentifierExcluderFilter
-        excludesTargetsThatHave100_200_300Or400InTheirName{
-            {"100", "200", "300", "400"}};
-    static FileIdentifierFilter targetsThatHave100InTheirName{"100"};
-    static FileIdentifierFilter targetsThatHave200InTheirName{"200"};
-    static FileIdentifierFilter targetsThatHave300InTheirName{"300"};
-    static FileIdentifierFilter targetsThatHave400InTheirName{"400"};
-    static FileFilterDecorator allButSilentIntervalTargets{
-        &onlyIncludesTargetFileExtensions,
-        &excludesTargetsThatHave100_200_300Or400InTheirName};
-    static FileFilterDecorator oneHundred_ms_SilentIntervalTargets{
-        &onlyIncludesTargetFileExtensions, &targetsThatHave100InTheirName};
-    static FileFilterDecorator twoHundred_ms_SilentIntervalTargets{
-        &onlyIncludesTargetFileExtensions, &targetsThatHave200InTheirName};
-    static FileFilterDecorator threeHundred_ms_SilentIntervalTargets{
-        &onlyIncludesTargetFileExtensions, &targetsThatHave300InTheirName};
-    static FileFilterDecorator fourHundred_ms_SilentIntervalTargets{
-        &onlyIncludesTargetFileExtensions, &targetsThatHave400InTheirName};
+    static SubdirectoryTargetPlaylistReader subdirectoryTargetPlaylistReader{
+        &directoryReader};
     static RandomSubsetFiles passesThirtyRandomFiles{&randomizer, 30};
-    static FileFilterDecorator thirtyRandomAllButSilentIntervalTargets{
-        &allButSilentIntervalTargets, &passesThirtyRandomFiles};
-    static FileFilterDecorator thirtyRandomOneHundred_ms_SilentIntervalTargets{
-        &oneHundred_ms_SilentIntervalTargets, &passesThirtyRandomFiles};
-    static FileFilterDecorator thirtyRandomTwoHundred_ms_SilentIntervalTargets{
-        &twoHundred_ms_SilentIntervalTargets, &passesThirtyRandomFiles};
-    static FileFilterDecorator
-        thirtyRandomThreeHundred_ms_SilentIntervalTargets{
-            &threeHundred_ms_SilentIntervalTargets, &passesThirtyRandomFiles};
-    static FileFilterDecorator thirtyRandomFourHundred_ms_SilentIntervalTargets{
-        &fourHundred_ms_SilentIntervalTargets, &passesThirtyRandomFiles};
-    static DirectoryReaderComposite silentIntervalTargetsDirectoryReader{
-        {&thirtyRandomAllButSilentIntervalTargets,
-            &thirtyRandomOneHundred_ms_SilentIntervalTargets,
-            &thirtyRandomTwoHundred_ms_SilentIntervalTargets,
-            &thirtyRandomThreeHundred_ms_SilentIntervalTargets,
-            &thirtyRandomFourHundred_ms_SilentIntervalTargets}};
-    static RandomizedTargetPlaylistWithoutReplacement silentIntervalTargets{
-        &silentIntervalTargetsDirectoryReader, &randomizer};
-    static RandomizedTargetPlaylistWithoutReplacement everyTargetOnce{
-        &onlyIncludesTargetFileExtensions, &randomizer};
-    static EachTargetPlayedOnceThenShuffleAndRepeat allTargetsNTimes{
-        &onlyIncludesTargetFileExtensions, &randomizer};
     NSLog(@"Initializing fixed level method...");
-    static FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
     static LocalTimeClock localTimeClock;
     NSLog(@"Initializing audio recorder...");
     static AvFoundationAudioRecorder audioRecorder;
     static RunningATestImpl runningATest{targetPlayer, maskerPlayer,
-        responseEvaluator, outputFile, randomizer, localTimeClock};
+        responseEvaluator, outputFile, randomizer, localTimeClock,
+        testSettingsInterpreter};
+    static FixedLevelMethodImpl fixedLevelMethod{
+        testSettingsInterpreter, responseEvaluator, runningATest};
+    static RandomizedTargetPlaylistWithReplacement targetsWithReplacement{
+        &testSettingsInterpreter, &onlyIncludesTargetFileExtensions,
+        &randomizer, &fixedLevelMethod};
+    static EachTargetPlayedOnceThenShuffleAndRepeat allTargetsNTimes{
+        testSettingsInterpreter, &onlyIncludesTargetFileExtensions, &randomizer,
+        fixedLevelMethod};
+    static RandomizedTargetPlaylistWithoutReplacement everyTargetOnce{
+        testSettingsInterpreter, &onlyIncludesTargetFileExtensions, &randomizer,
+        fixedLevelMethod};
+    static AdaptiveMethodImpl adaptiveMethod{testSettingsInterpreter,
+        responseEvaluator, randomizer, adaptiveTrackFactory, runningATest};
     static RandomizedTargetPlaylistWithReplacement::Factory
-        targetsWithReplacementFactory{
-            &onlyIncludesTargetFileExtensions, &randomizer};
-    static SubdirectoryTargetPlaylistReader targetsWithReplacementReader{
-        &targetsWithReplacementFactory, &directoryReader};
+        targetsWithReplacementFactory{testSettingsInterpreter,
+            &onlyIncludesTargetFileExtensions, &randomizer,
+            subdirectoryTargetPlaylistReader};
     static CyclicRandomizedTargetPlaylist::Factory cyclicTargetsFactory{
-        &onlyIncludesTargetFileExtensions, &randomizer};
+        testSettingsInterpreter, &onlyIncludesTargetFileExtensions, &randomizer,
+        subdirectoryTargetPlaylistReader};
     static SubdirectoryTargetPlaylistReader cyclicTargetsReader{
-        &cyclicTargetsFactory, &directoryReader};
+        &directoryReader};
     static MacOsTargetValidator targetValidator;
     static PredeterminedTargetPlaylist predeterminedTargetPlaylist{
-        textFileReader, targetValidator};
+        testSettingsInterpreter, textFileReader, targetValidator,
+        fixedLevelMethod};
     NSLog(@"Initializing audio recording...");
-    static AudioRecording audioRecording{audioRecorder, outputFile, timeStamp};
+    static AudioRecording audioRecording{testSettingsInterpreter, audioRecorder,
+        outputFile, timeStamp, runningATest};
     NSLog(@"Initializing eye tracking...");
-    static EyeTracking eyeTracking{
-        eyeTracker, maskerPlayer, targetPlayer, outputFile};
+    static EyeTracking eyeTracking{testSettingsInterpreter, eyeTracker,
+        maskerPlayer, targetPlayer, outputFile, runningATest};
     NSLog(@"Initializing test setup UI...");
     static const auto testSetupUI{testSetupUIFactory.make(nil)};
     NSLog(@"Initializing consonant UI...");
@@ -387,20 +363,6 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         [emotionNSView.centerYAnchor
             constraintEqualToAnchor:subjectNSWindow.contentView.centerYAnchor]
     ]];
-    const auto childEmotionNSView{
-        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]};
-    addAutolayoutEnabledSubview(
-        subjectNSWindow.contentView, childEmotionNSView);
-    [NSLayoutConstraint activateConstraints:@[
-        [childEmotionNSView.centerXAnchor
-            constraintEqualToAnchor:subjectNSWindow.contentView.centerXAnchor],
-        [childEmotionNSView.widthAnchor
-            constraintEqualToAnchor:subjectNSWindow.contentView.widthAnchor],
-        [childEmotionNSView.heightAnchor
-            constraintEqualToAnchor:subjectNSWindow.contentView.heightAnchor],
-        [childEmotionNSView.centerYAnchor
-            constraintEqualToAnchor:subjectNSWindow.contentView.centerYAnchor]
-    ]];
 
     static submitting_consonant::AppKitUI consonantUI{consonantNSView};
     NSLog(@"Initializing CRM UI...");
@@ -424,25 +386,28 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
     static AppKitCoordinateResponseMeasureUI coordinateResponseMeasureView{
         coordinateResponseMeasureNSView};
     NSLog(@"Initializing presenters...");
-    static submitting_consonant::PresenterImpl consonantPresenter{consonantUI};
     static MaskedCoreGraphicsImage maskedImage{subjectNSWindow};
     static RevealImage revealImagePuzzle{maskedImage, randomizer, 6, 7};
-    static submitting_free_response::Presenter freeResponsePresenter{
-        testUI, freeResponseUI, revealImagePuzzle};
+    static TestSetupPresenterImpl testSetupPresenter{*testSetupUI, sessionUI};
+    static TestPresenterImpl testPresenter{
+        runningATest, adaptiveMethod, testUI};
+    static CoordinateResponseMeasurePresenter
+        coordinateResponseMeasurePresenter{testSettingsInterpreter,
+            coordinateResponseMeasureView, testPresenter};
+    static submitting_number_keywords::Presenter correctKeywordsPresenter{
+        testSettingsInterpreter, testUI, correctKeywordsUI, testPresenter};
+    static submitting_syllable::PresenterImpl syllablesPresenter{
+        testSettingsInterpreter, syllablesUI, testUI, testPresenter};
     static submitting_keywords::PresenterImpl chooseKeywordsPresenter{
-        runningATest, fixedLevelMethod, testUI, chooseKeywordsUI,
+        testSettingsInterpreter, runningATest, fixedLevelMethod, testUI,
+        chooseKeywordsUI, testPresenter,
         submitting_keywords::sentencesWithThreeKeywords(
             read_file(resourceUrl("mlst-c", "txt").path))};
-    static submitting_syllable::PresenterImpl syllablesPresenter{
-        syllablesUI, testUI};
-    static submitting_number_keywords::Presenter correctKeywordsPresenter{
-        testUI, correctKeywordsUI};
-    static CoordinateResponseMeasurePresenter
-        coordinateResponseMeasurePresenter{coordinateResponseMeasureView};
-    static TestSetupPresenterImpl testSetupPresenter{*testSetupUI, sessionUI};
-    static UninitializedTaskPresenterImpl taskPresenter;
-    static TestPresenterImpl testPresenter{
-        runningATest, adaptiveMethod, testUI, &taskPresenter};
+    static submitting_free_response::Presenter freeResponsePresenter{
+        testSettingsInterpreter, testUI, freeResponseUI, testPresenter,
+        revealImagePuzzle};
+    static submitting_consonant::PresenterImpl consonantPresenter{
+        testSettingsInterpreter, consonantUI, testPresenter};
     static SessionPresenterImpl sessionPresenter{sessionUI, runningATest};
     static SessionControllerImpl sessionController{
         testSetupPresenter, testPresenter, subjectPresenter};
@@ -475,67 +440,50 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
             fixedLevelMethod, runningATest, outputFile};
     static TimerImpl puzzleTimer;
     static submitting_free_response::Controller freeResponseController{
-        testController, submittingFreeResponseInteractor, freeResponseUI,
-        revealImagePuzzle, puzzleTimer};
+        testSettingsInterpreter, testController,
+        submittingFreeResponseInteractor, freeResponseUI, revealImagePuzzle,
+        puzzleTimer};
     freeResponseController.setNTrialsPerNewPuzzlePiece(5);
     static submitting_pass_fail::InteractorImpl submittingPassFailInteractor{
         adaptiveMethod, runningATest, outputFile};
-    static submitting_pass_fail::Presenter passFailPresenter{runningATest,
-        testController, testUI, submittingPassFailInteractor, passFailUI};
+    static submitting_pass_fail::Presenter passFailPresenter{
+        testSettingsInterpreter, runningATest, testController, testUI,
+        submittingPassFailInteractor, passFailUI, testPresenter};
     static submitting_consonant::InteractorImpl submittingConsonantInteractor{
-        fixedLevelMethod, runningATest, outputFile, maskerPlayer};
+        testSettingsInterpreter, fixedLevelMethod, runningATest, outputFile,
+        maskerPlayer};
     static submitting_consonant::Controller consonantTaskController{
         testController, submittingConsonantInteractor, consonantUI,
         consonantPresenter};
     static submitting_keypress::InteractorImpl submittingKeyPressInteractor{
-        fixedLevelMethod, runningATest, outputFile, maskerPlayer, randomizer};
+        testSettingsInterpreter, fixedLevelMethod, runningATest, outputFile,
+        maskerPlayer, randomizer};
     static KeyPressUI keyPressControl{subjectNSWindow};
     static TimerImpl keyPressTimer;
-    static submitting_keypress::Presenter keypressPresenter{testUI,
-        testController, submittingKeyPressInteractor, keyPressControl,
-        keyPressTimer};
-
-    std::vector<std::vector<Emotion>> emotionLayout{
-        {Emotion::angry, Emotion::disgusted},
-        {Emotion::happy, Emotion::neutral, Emotion::sad},
-        {Emotion::scared, Emotion::surprised}};
-
-    std::vector<std::vector<Emotion>> childEmotionLayout{{Emotion::angry},
-        {Emotion::happy, Emotion::neutral, Emotion::sad}, {Emotion::scared}};
-
-    static submitting_emotion::AppKitUI emotionUI{emotionNSView, emotionLayout};
-    static submitting_emotion::AppKitUI childEmotionUI{
-        childEmotionNSView, childEmotionLayout};
+    static submitting_keypress::Presenter keypressPresenter{
+        testSettingsInterpreter, testUI, testController,
+        submittingKeyPressInteractor, keyPressControl, keyPressTimer,
+        testPresenter};
+    static submitting_emotion::AppKitUI emotionUI{emotionNSView};
     static submitting_emotion::InteractorImpl emotionInteractor{
         fixedLevelMethod, runningATest, outputFile};
     static MacosSystemTime systemTime;
     static submitting_emotion::Presenter emotionPresenter{
-        emotionUI, testController, emotionInteractor, systemTime};
-    static submitting_emotion::Presenter childEmotionPresenter{
-        childEmotionUI, testController, emotionInteractor, systemTime};
+        testSettingsInterpreter, emotionUI, testController, emotionInteractor,
+        systemTime, testPresenter};
     static submitting_fixed_pass_fail::InteractorImpl fixedPassFailInteractor(
         fixedLevelMethod, runningATest, outputFile);
-    static submitting_fixed_pass_fail::Presenter fixedPassFailPresenter(
-        testController, testUI, fixedPassFailInteractor, passFailUI);
+    static submitting_fixed_pass_fail::Presenter fixedPassFailPresenter{
+        testSettingsInterpreter, testController, testUI,
+        fixedPassFailInteractor, passFailUI, testPresenter, keypressPresenter};
     static CoordinateResponseMeasureController
         coordinateResponseMeasureController{
             testController, runningATest, coordinateResponseMeasureView};
     coordinateResponseMeasureController.attach(
         &coordinateResponseMeasurePresenter);
-    static TestSettingsInterpreterImpl testSettingsInterpreter{runningATest,
-        adaptiveMethod, fixedLevelMethod, eyeTracking, audioRecording,
-        cyclicTargetsReader, targetsWithReplacementReader,
-        predeterminedTargetPlaylist, everyTargetOnce, silentIntervalTargets,
-        allTargetsNTimes, targetsWithReplacement, adaptiveTrackFactory,
-        revealImagePuzzle, freeResponseController, sessionController,
-        coordinateResponseMeasurePresenter, freeResponsePresenter,
-        chooseKeywordsPresenter, syllablesPresenter, correctKeywordsPresenter,
-        consonantPresenter, submittingConsonantInteractor, passFailPresenter,
-        keypressPresenter, submittingKeyPressInteractor, emotionPresenter,
-        childEmotionPresenter, fixedPassFailPresenter};
     static TestSetupController testSetupController{*testSetupUI, sessionUI,
         testSetupPresenter, runningATest, testSettingsInterpreter,
-        textFileReader};
+        textFileReader, sessionController};
     sessionController.attach(sessionControllerObserver);
     testPresenter.subscribe(testSettingsInterpreter);
     NSLog(@"Finished main initialization.");
