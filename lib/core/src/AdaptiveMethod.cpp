@@ -87,9 +87,11 @@ static auto testResults(
 
 AdaptiveMethodImpl::AdaptiveMethodImpl(ConfigurationRegistry &registry,
     ResponseEvaluator &evaluator, Randomizer &randomizer,
-    AdaptiveTrack::Factory &adaptiveTrackFactory, RunningATest &runningATest)
+    AdaptiveTrack::Factory &adaptiveTrackFactory, RunningATest &runningATest,
+    TargetPlaylistReader &playlistReader)
     : evaluator{evaluator}, randomizer{randomizer}, runningATest{runningATest},
-      adaptiveTrackFactory{adaptiveTrackFactory} {
+      adaptiveTrackFactory{adaptiveTrackFactory},
+      playlistReader{playlistReader} {
     registry.subscribe(*this, "targets");
     registry.subscribe(*this, "starting SNR (dB)");
     registry.subscribe(*this, "method");
@@ -106,9 +108,9 @@ void AdaptiveMethodImpl::configure(
             runningATest.attach(this);
 }
 
-void AdaptiveMethodImpl::initialize(TargetPlaylistReader *targetListSetReader) {
+void AdaptiveMethodImpl::initialize() {
     targetListsWithTracks.clear();
-    for (const auto &list : targetListSetReader->read(targetsUrl))
+    for (const auto &list : playlistReader.read(targetsUrl))
         targetListsWithTracks.push_back(
             {list, adaptiveTrackFactory.make(trackSettings(startingSNR))});
     selectNextList();

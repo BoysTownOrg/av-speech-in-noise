@@ -11,9 +11,9 @@ struct FixedLevelFixedTrialsTest {
 
 class FixedLevelMethod : public virtual TestMethod {
   public:
-    virtual void initialize(FiniteTargetPlaylist *) = 0;
-    virtual void initialize(FiniteTargetPlaylistWithRepeatables *) = 0;
-    virtual void initialize(
+    virtual void attach(FiniteTargetPlaylist *) = 0;
+    virtual void attach(FiniteTargetPlaylistWithRepeatables *) = 0;
+    virtual void attach(
         const FixedLevelFixedTrialsTest &, TargetPlaylist *) = 0;
     virtual void submit(const Flaggable &) = 0;
     virtual void submit(const ThreeKeywordsResponse &) = 0;

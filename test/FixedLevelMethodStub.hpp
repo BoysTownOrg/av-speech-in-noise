@@ -6,17 +6,19 @@
 namespace av_speech_in_noise {
 class FixedLevelMethodStub : public FixedLevelMethod {
   public:
-    void initialize(
+    void initialize() override {}
+
+    void attach(
         const FixedLevelFixedTrialsTest &t, TargetPlaylist *list) override {
         targetList = list;
         fixedLevelFixedTrialsTest = t;
     }
 
-    void initialize(FiniteTargetPlaylistWithRepeatables *list) override {
+    void attach(FiniteTargetPlaylistWithRepeatables *list) override {
         targetList = list;
     }
 
-    void initialize(FiniteTargetPlaylist *list) override { targetList = list; }
+    void attach(FiniteTargetPlaylist *list) override { targetList = list; }
 
     auto complete() -> bool override { return {}; }
 

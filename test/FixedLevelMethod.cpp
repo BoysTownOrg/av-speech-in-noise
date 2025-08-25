@@ -30,7 +30,10 @@ class InitializingMethod : public UseCase {
         TargetPlaylist &list, const FixedLevelFixedTrialsTest &test)
         : list{list}, test{test} {}
 
-    void run(FixedLevelMethodImpl &m) override { m.initialize(test, &list); }
+    void run(FixedLevelMethodImpl &m) override {
+        m.attach(test, &list);
+        m.initialize();
+    }
 };
 
 class InitializingMethodWithFiniteTargetPlaylistWithRepeatables
@@ -40,7 +43,10 @@ class InitializingMethodWithFiniteTargetPlaylistWithRepeatables
         FiniteTargetPlaylistWithRepeatables &list)
         : list{list} {}
 
-    void run(FixedLevelMethodImpl &m) override { m.initialize(&list); }
+    void run(FixedLevelMethodImpl &m) override {
+        m.attach(&list);
+        m.initialize();
+    }
 
   private:
     FiniteTargetPlaylistWithRepeatables &list;
@@ -52,7 +58,10 @@ class InitializingMethodWithFiniteTargetPlaylist : public UseCase {
         FiniteTargetPlaylist &list)
         : list{list} {}
 
-    void run(FixedLevelMethodImpl &m) override { m.initialize(&list); }
+    void run(FixedLevelMethodImpl &m) override {
+        m.attach(&list);
+        m.initialize();
+    }
 
   private:
     FiniteTargetPlaylist &list;
@@ -199,7 +208,8 @@ PRE_INITIALIZED_FIXED_LEVEL_METHOD_TEST(
     failingTargetListLoadThrowsRequestFailure) {
     FailingTargetPlaylistStub targetPlaylist;
     try {
-        method.initialize({}, &targetPlaylist);
+        method.attach({}, &targetPlaylist);
+        method.initialize();
         FAIL() << "Expected std::runtime_error";
     } catch (const std::runtime_error &) {
     }

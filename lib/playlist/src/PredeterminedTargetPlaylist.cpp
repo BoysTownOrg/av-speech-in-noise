@@ -60,6 +60,6 @@ void PredeterminedTargetPlaylist::configure(
     const std::string &key, const std::string &value) {
     if (key == "method")
         if (contains(value, "predetermined stimuli"))
-            fixedLevelMethod.initialize(this);
+            fixedLevelMethod.attach(this);
 }
 }

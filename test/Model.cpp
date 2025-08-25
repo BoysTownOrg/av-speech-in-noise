@@ -40,9 +40,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return tracksResetted_;
     }
 
-    void initialize(TargetPlaylistReader *reader) override {
-        targetListReader_ = reader;
-    }
+    void initialize() override {}
 
     [[nodiscard]] auto targetListReader() const -> TargetPlaylistReader * {
         return targetListReader_;
@@ -94,19 +92,21 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 
 class FixedLevelMethodStub : public FixedLevelMethod {
   public:
+    void initialize() override {}
+
     void write(std::ostream &) override {}
 
-    void initialize(
+    void attach(
         const FixedLevelFixedTrialsTest &t, TargetPlaylist *list) override {
         targetList_ = list;
         fixedTrialsTest_ = &t;
     }
 
-    void initialize(FiniteTargetPlaylistWithRepeatables *list) override {
+    void attach(FiniteTargetPlaylistWithRepeatables *list) override {
         targetList_ = list;
     }
 
-    void initialize(FiniteTargetPlaylist *list) override { targetList_ = list; }
+    void attach(FiniteTargetPlaylist *list) override { targetList_ = list; }
 
     [[nodiscard]] auto targetList() const { return targetList_; }
 

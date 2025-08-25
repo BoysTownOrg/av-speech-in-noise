@@ -28,9 +28,7 @@ static void load(TargetPlaylist *list, const LocalUrl &targetsUrl) {
     list->load(targetsUrl);
 }
 
-static void initialize(TargetPlaylist *&targetList, const LocalUrl &targetsUrl,
-    TargetPlaylist *list) {
-    targetList = list;
+static void initialize(TargetPlaylist *targetList, const LocalUrl &targetsUrl) {
     try {
         load(targetList, targetsUrl);
     } catch (const FiniteTargetPlaylist::LoadFailure &) {
@@ -40,35 +38,32 @@ static void initialize(TargetPlaylist *&targetList, const LocalUrl &targetsUrl,
     }
 }
 
-static void initialize(bool &usingFiniteTargetPlaylist_,
-    FiniteTargetPlaylist *&finiteTargetPlaylist, bool &finiteTargetsExhausted_,
-    FiniteTargetPlaylist *list) {
-    usingFiniteTargetPlaylist_ = true;
-    finiteTargetPlaylist = list;
-    finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
+void FixedLevelMethodImpl::initialize() {
+    av_speech_in_noise::initialize(targetList, targetsUrl);
+    if (usingFiniteTargetPlaylist_)
+        finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
 }
 
-void FixedLevelMethodImpl::initialize(
+void FixedLevelMethodImpl::attach(
     const FixedLevelFixedTrialsTest &test, TargetPlaylist *list) {
+    targetList = list;
     usingFiniteTargetPlaylist_ = false;
-    av_speech_in_noise::initialize(targetList, targetsUrl, list);
     trials_ = test.trials;
 }
 
-void FixedLevelMethodImpl::initialize(
-    FiniteTargetPlaylistWithRepeatables *list) {
-    av_speech_in_noise::initialize(targetList, targetsUrl, list);
-    av_speech_in_noise::initialize(usingFiniteTargetPlaylist_,
-        finiteTargetPlaylist, finiteTargetsExhausted_, list);
+void FixedLevelMethodImpl::attach(FiniteTargetPlaylistWithRepeatables *list) {
+    targetList = list;
+    usingFiniteTargetPlaylist_ = true;
+    finiteTargetPlaylist = list;
     finiteTargetPlaylistWithRepeatables = list;
     totalKeywordsSubmitted_ = 0;
     totalKeywordsCorrect_ = 0;
 }
 
-void FixedLevelMethodImpl::initialize(FiniteTargetPlaylist *list) {
-    av_speech_in_noise::initialize(targetList, targetsUrl, list);
-    av_speech_in_noise::initialize(usingFiniteTargetPlaylist_,
-        finiteTargetPlaylist, finiteTargetsExhausted_, list);
+void FixedLevelMethodImpl::attach(FiniteTargetPlaylist *list) {
+    targetList = list;
+    usingFiniteTargetPlaylist_ = true;
+    finiteTargetPlaylist = list;
 }
 
 auto FixedLevelMethodImpl::complete() -> bool {

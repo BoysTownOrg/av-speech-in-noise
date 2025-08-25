@@ -59,7 +59,6 @@ class AdaptiveTrack {
 
 class AdaptiveMethod : public virtual TestMethod {
   public:
-    virtual void initialize(TargetPlaylistReader *) = 0;
     virtual void resetTracks() = 0;
     virtual auto testResults() -> AdaptiveTestResults = 0;
     using TestMethod::submit;

@@ -10,6 +10,7 @@ namespace av_speech_in_noise {
 class TestMethod : public Writable {
   public:
     AV_SPEECH_IN_NOISE_INTERFACE_SPECIAL_MEMBER_FUNCTIONS(TestMethod);
+    virtual void initialize() = 0;
     virtual auto complete() -> bool = 0;
     virtual auto nextTarget() -> LocalUrl = 0;
     virtual auto currentTarget() -> LocalUrl = 0;

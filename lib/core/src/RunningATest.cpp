@@ -12,6 +12,7 @@
 namespace av_speech_in_noise {
 namespace {
 class NullTestMethod : public TestMethod {
+    void initialize() override {}
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> LocalUrl override { return {}; }
     auto currentTarget() -> LocalUrl override { return {}; }
@@ -334,6 +335,7 @@ void RunningATestImpl::configure(
 void RunningATestImpl::initialize() {
     throwRequestFailureIfTrialInProgress(trialInProgress_);
 
+    testMethod->initialize();
     if (testMethod->complete())
         return;
 

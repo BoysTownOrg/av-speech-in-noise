@@ -27,6 +27,8 @@ static constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
 namespace {
 class TestMethodStub : public TestMethod {
   public:
+    void initialize() override {}
+
     void write(std::ostream &) override {}
 
     void setSnr_dB(double x) { snr_dB_ = x; }

@@ -61,7 +61,7 @@ void RandomizedTargetPlaylistWithReplacement::configure(
     if (key == "method")
         if (contains(value, "with replacement"))
             if (method != nullptr)
-                method->initialize(FixedLevelFixedTrialsTest{}, this);
+                method->attach(FixedLevelFixedTrialsTest{}, this);
 }
 
 void RandomizedTargetPlaylistWithReplacement::load(const LocalUrl &d) {
@@ -97,7 +97,7 @@ void RandomizedTargetPlaylistWithoutReplacement::configure(
     const std::string &key, const std::string &value) {
     if (key == "method")
         if (contains(value, "all stimuli"))
-            method.initialize(this);
+            method.attach(this);
 }
 
 void RandomizedTargetPlaylistWithoutReplacement::load(const LocalUrl &d) {
@@ -169,7 +169,7 @@ void EachTargetPlayedOnceThenShuffleAndRepeat::configure(
         repeats = integer(value);
     else if (key == "method")
         if (contains(value, "consonants"))
-            method.initialize(this);
+            method.attach(this);
 }
 
 void EachTargetPlayedOnceThenShuffleAndRepeat::load(const LocalUrl &d) {

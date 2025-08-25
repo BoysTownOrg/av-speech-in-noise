@@ -13,10 +13,10 @@ class FixedLevelMethodImpl : public FixedLevelMethod, public Configurable {
   public:
     FixedLevelMethodImpl(
         ConfigurationRegistry &, ResponseEvaluator &, RunningATest &);
-    void initialize(FiniteTargetPlaylist *) override;
-    void initialize(
-        const FixedLevelFixedTrialsTest &, TargetPlaylist *) override;
-    void initialize(FiniteTargetPlaylistWithRepeatables *) override;
+    void initialize() override;
+    void attach(FiniteTargetPlaylist *) override;
+    void attach(const FixedLevelFixedTrialsTest &, TargetPlaylist *) override;
+    void attach(FiniteTargetPlaylistWithRepeatables *) override;
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const Flaggable &) override;
     void submit(const ThreeKeywordsResponse &) override;
