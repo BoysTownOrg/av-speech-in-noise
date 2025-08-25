@@ -311,7 +311,8 @@ void initializeAppAndRunEventLoop(EyeTracker &eyeTracker,
         testSettingsInterpreter, &onlyIncludesTargetFileExtensions, &randomizer,
         fixedLevelMethod};
     static AdaptiveMethodImpl adaptiveMethod{testSettingsInterpreter,
-        responseEvaluator, randomizer, adaptiveTrackFactory, runningATest};
+        responseEvaluator, randomizer, adaptiveTrackFactory, runningATest,
+        subdirectoryTargetPlaylistReader};
     static RandomizedTargetPlaylistWithReplacement::Factory
         targetsWithReplacementFactory{testSettingsInterpreter,
             &onlyIncludesTargetFileExtensions, &randomizer,
