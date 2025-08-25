@@ -18,6 +18,7 @@ AdaptiveTrackFactory::AdaptiveTrackFactory(ConfigurationRegistry &registry) {
     registry.subscribe(*this, "reversals per step size");
     registry.subscribe(*this, "step sizes (dB)");
     registry.subscribe(*this, "threshold");
+    registry.subscribe(*this, "uml");
 }
 
 static void initializeParameterSpace(
