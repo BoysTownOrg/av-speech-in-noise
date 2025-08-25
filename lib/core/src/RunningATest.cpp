@@ -289,6 +289,7 @@ RunningATestImpl::RunningATestImpl(TargetPlayer &targetPlayer,
     registry.subscribe(*this, "method");
     registry.subscribe(*this, "masker");
     registry.subscribe(*this, "masker level (dB SPL)");
+    registry.subscribe(*this, "condition");
 
     targetPlayer.attach(this);
     maskerPlayer.attach(this);
